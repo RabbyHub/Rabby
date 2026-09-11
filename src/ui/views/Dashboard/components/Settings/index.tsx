@@ -77,10 +77,6 @@ import { ga4 } from '@/utils/ga4';
 import { EcosystemBanner } from './components/EcosystemBanner';
 import { ExtensionUpdateCard } from './components/ExtensionUpdateCard';
 import { ExtensionUpdateDialog } from './components/ExtensionUpdateDialog';
-import {
-  EXTENSION_UPDATE_PREVIEW,
-  EXTENSION_UPDATE_PREVIEW_VERSION,
-} from '../extensionUpdatePreview';
 import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
@@ -813,15 +809,11 @@ const SettingsInner = ({
     });
   };
 
-  const previewExtensionUpdate = EXTENSION_UPDATE_PREVIEW;
-  const hasPendingUpdate = useExtensionUpdateStore(
-    selectHasNewExtensionVersion
+  const hasNewVersion = useExtensionUpdateStore(selectHasNewExtensionVersion);
+  const pendingVersion = useExtensionUpdateStore((s) => s.version);
+  const changelog = useExtensionUpdateStore(
+    (s) => s.versionInfo?.latest_version.changelog || ''
   );
-  const hasNewVersion = previewExtensionUpdate || hasPendingUpdate;
-  const storedPendingVersion = useExtensionUpdateStore((s) => s.version);
-  const pendingVersion = previewExtensionUpdate
-    ? storedPendingVersion || EXTENSION_UPDATE_PREVIEW_VERSION
-    : storedPendingVersion;
   const reloadForUpdate = useExtensionUpdateStore((s) => s.reloadForUpdate);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
 
@@ -1638,6 +1630,7 @@ const SettingsInner = ({
           {hasNewVersion && (
             <ExtensionUpdateCard
               version={pendingVersion}
+              changelog={changelog}
               onUpdate={reloadForUpdate}
             />
           )}
@@ -1738,6 +1731,7 @@ const SettingsInner = ({
       <ExtensionUpdateDialog
         visible={!!visible && hasNewVersion && updateDialogVisible}
         version={pendingVersion}
+        changelog={changelog}
         onClose={() => setUpdateDialogVisible(false)}
         onUpdate={reloadForUpdate}
       />

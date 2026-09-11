@@ -4,10 +4,18 @@ import browser from 'webextension-polyfill';
 import eventBus from '@/eventBus';
 import {
   selectHasNewExtensionVersion,
+  selectExtensionUpdateBadge,
+  selectExtensionUpdateBanner,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 import { wallet } from '@/ui/wallet';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
+import { VersionInfo, UPDATE_BANNER_COOLDOWN } from '@/utils/extensionVersion';
+
+const makeInfo = (latest = '1.1.0', level: 1 | 2 | 3 | 4 = 2): VersionInfo => ({
+  version: { id: '1.0.0', level, changelog: 'Current' },
+  latest_version: { id: latest, level: 1, changelog: 'Latest' },
+});
 
 jest.mock('webextension-polyfill', () => ({
   runtime: {
@@ -27,6 +35,8 @@ jest.mock('@/ui/wallet', () => ({
     }),
     setStorageItem: jest.fn(),
     reloadExtensionForUpdate: jest.fn().mockResolvedValue(undefined),
+    requestExtensionUpdateCheck: jest.fn().mockResolvedValue(undefined),
+    openapi: { getVersionInfo: jest.fn() },
   },
   onWalletReconnect: jest.fn(() => () => undefined),
 }));
@@ -72,6 +82,7 @@ describe('extension update store', () => {
     (browser.runtime.getManifest as jest.Mock).mockReturnValue({
       version: '1.0.0',
     });
+    useExtensionUpdateStore.setState({ versionInfo: makeInfo() });
     container = document.createElement('div');
     document.body.appendChild(container);
     root = createRoot(container);
@@ -127,7 +138,7 @@ describe('extension update store', () => {
         )
       );
     });
-    act(() => broadcast({ currentVersion: '1.0.0', version: '1.0.0.1' }));
+    act(() => broadcast({ currentVersion: '1.0.0', version: '1.1.0' }));
     expect(container.textContent).toBe('Update availableUpdate available');
     expect(browser.runtime.reload).not.toHaveBeenCalled();
     await useExtensionUpdateStore.persist.flush();
@@ -162,6 +173,128 @@ describe('extension update store', () => {
     expect(
       selectHasNewExtensionVersion(useExtensionUpdateStore.getState())
     ).toBe(false);
+  });
+
+  it.each([1, 2, 3, 4] as const)(
+    'uses current version level %s for banner and badge',
+    (level) => {
+      const state = {
+        ...useExtensionUpdateStore.getState(),
+        currentVersion: '1.0.0',
+        version: '1.1.0',
+        versionInfo: makeInfo('1.1.0', level),
+        dismissedUntil: 0,
+      };
+      expect(selectHasNewExtensionVersion(state)).toBe(true);
+      expect(selectExtensionUpdateBadge(state)).toBe(level >= 2);
+      expect(selectExtensionUpdateBanner(state)).toBe(level >= 3);
+      const cooling = {
+        ...state,
+        dismissedUntil: Date.now() + UPDATE_BANNER_COOLDOWN,
+      };
+      expect(selectExtensionUpdateBanner(cooling)).toBe(level === 4);
+      expect(selectExtensionUpdateBadge(cooling)).toBe(level >= 2);
+      expect(selectExtensionUpdateBanner(cooling, cooling.dismissedUntil)).toBe(
+        level >= 3
+      );
+    }
+  );
+
+  it.each(['', '1.0.1', '1.2.0'])(
+    'hides all update hints for unmatched pending %s',
+    (version) => {
+      const state = {
+        ...useExtensionUpdateStore.getState(),
+        currentVersion: '1.0.0',
+        version,
+        versionInfo: makeInfo('1.1.0', 4),
+      };
+      expect(selectHasNewExtensionVersion(state)).toBe(false);
+      expect(selectExtensionUpdateBadge(state)).toBe(false);
+      expect(selectExtensionUpdateBanner(state)).toBe(false);
+    }
+  );
+
+  it.each([
+    ['', 1],
+    ['1.0.0.1', 1],
+    ['1.1.0', 0],
+    ['1.2.0', 0],
+  ])('checks pending %s against the backend', async (version, count) => {
+    broadcast({ currentVersion: '1.0.0', version: version as string });
+    (wallet.openapi.getVersionInfo as jest.Mock).mockResolvedValue(makeInfo());
+    await useExtensionUpdateStore.getState().refreshVersionInfo();
+    expect(wallet.openapi.getVersionInfo).toHaveBeenCalledWith({
+      version_id: '1.0.0',
+    });
+    expect(wallet.requestExtensionUpdateCheck).toHaveBeenCalledTimes(
+      count as number
+    );
+    await useExtensionUpdateStore.persist.flush();
+    expect(wallet.setStorageItem).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { version: null, latest_version: makeInfo().latest_version },
+    { version: makeInfo().version, latest_version: null },
+    { version: null, latest_version: null },
+  ])(
+    'clears hints for nullable version responses without checking Chrome',
+    async (response) => {
+      const log = jest
+        .spyOn(console, 'error')
+        .mockImplementation(() => undefined);
+      try {
+        (wallet.openapi.getVersionInfo as jest.Mock).mockResolvedValue(
+          response
+        );
+        await useExtensionUpdateStore.getState().refreshVersionInfo();
+        expect(useExtensionUpdateStore.getState().versionInfo).toBeNull();
+        expect(wallet.requestExtensionUpdateCheck).not.toHaveBeenCalled();
+        expect(log).not.toHaveBeenCalled();
+      } finally {
+        log.mockRestore();
+      }
+    }
+  );
+
+  it('persists only the cooldown when dismissed', async () => {
+    useExtensionUpdateStore.setState({ versionInfo: makeInfo('1.1.0', 3) });
+    const before = Date.now();
+    useExtensionUpdateStore.getState().dismissBanner();
+    await useExtensionUpdateStore.persist.flush();
+    expect(
+      useExtensionUpdateStore.getState().dismissedUntil
+    ).toBeGreaterThanOrEqual(before + UPDATE_BANNER_COOLDOWN);
+    expect(wallet.setStorageItem).toHaveBeenCalledWith(
+      'pendingExtensionUpdate',
+      { dismissedUntil: expect.any(Number) },
+      []
+    );
+  });
+
+  it('does not allow mandatory updates to be dismissed', () => {
+    useExtensionUpdateStore.setState({ versionInfo: makeInfo('1.1.0', 4) });
+    const until = useExtensionUpdateStore.getState().dismissedUntil;
+    useExtensionUpdateStore.getState().dismissBanner();
+    expect(useExtensionUpdateStore.getState().dismissedUntil).toBe(until);
+  });
+
+  it('clears stale hints on an invalid backend response', async () => {
+    const log = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    try {
+      (wallet.openapi.getVersionInfo as jest.Mock).mockResolvedValue({
+        ...makeInfo(),
+        version: { id: '9.0.0', level: 4, changelog: '' },
+      });
+      await useExtensionUpdateStore.getState().refreshVersionInfo();
+      expect(useExtensionUpdateStore.getState().versionInfo).toBeNull();
+      expect(wallet.requestExtensionUpdateCheck).not.toHaveBeenCalled();
+    } finally {
+      log.mockRestore();
+    }
   });
 
   it('restores a full snapshot when the background restarts', async () => {

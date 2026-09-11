@@ -48,12 +48,23 @@ describe('extension update card', () => {
   });
   const render = (version = '1.2.3.4') =>
     act(() => {
-      root.render(createElement(ExtensionUpdateCard, { version, onUpdate }));
+      root.render(
+        createElement(ExtensionUpdateCard, {
+          version,
+          changelog: '1. New feature\n2. Bug fix',
+          onUpdate,
+        })
+      );
     });
 
   it('shows the pending version without initiating an update', () => {
     render();
     expect(container.textContent).toContain('V 1.2.3.4');
+    expect(container.textContent).toContain('1. New feature');
+    expect(container.textContent).toContain('2. Bug fix');
+    const notes = container.querySelector('.extension-update-card-notes')!;
+    expect(notes.textContent).toBe('1. New feature\n2. Bug fix');
+    expect(notes.querySelector('li, img')).toBeNull();
     expect(onUpdate).not.toHaveBeenCalled();
   });
 
@@ -64,6 +75,7 @@ describe('extension update card', () => {
         createElement(ExtensionUpdateDialog, {
           visible: true,
           version: '1.2.3.4',
+          changelog: '1. New feature',
           onClose,
           onUpdate,
         })
@@ -91,6 +103,7 @@ describe('extension update card', () => {
           createElement(ExtensionUpdateDialog, {
             visible,
             version: '1.2.3.4',
+            changelog: '1. New feature',
             onClose,
             onUpdate,
           })

@@ -132,7 +132,6 @@
     }
 
     &-notes {
-      list-style: none;
       margin: 0;
       padding: 0;
       width: 100%;
@@ -140,17 +139,8 @@
       font-size: 12px;
       font-weight: 500;
       line-height: 14px;
-      li {
-        display: flex;
-        align-items: flex-start;
-        gap: 4px;
-        & + li {
-          margin-top: 4px;
-        }
-      }
-      img {
-        flex-shrink: 0;
-      }
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
     }
 
     &-button.ant-btn {

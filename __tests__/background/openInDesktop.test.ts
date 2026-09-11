@@ -50,8 +50,19 @@ jest.mock('@/utils/env', () => ({
 }));
 
 jest.mock('webextension-polyfill', () => ({
+  runtime: { getManifest: jest.fn(() => ({ version: '1.1.0' })) },
   action: { openPopup: jest.fn() },
   browserAction: { openPopup: jest.fn() },
+}));
+
+jest.mock('@/background/service/extensionUpdate', () => ({
+  __esModule: true,
+  default: {
+    getPendingVersion: jest.fn().mockResolvedValue(null),
+    getLocalTestUpdateStatus: jest
+      .fn()
+      .mockResolvedValue({ version: '0.94.8', pendingVersion: null }),
+  },
 }));
 
 jest.mock('@/background/service/metamaskModeService', () => ({
@@ -68,6 +79,7 @@ jest.mock('@/utils/ga4', () => ({
 
 import { keyringService, preferenceService } from 'background/service';
 import wallet from '@/background/controller/wallet';
+import extensionUpdateService from '@/background/service/extensionUpdate';
 import internalMethods from '@/background/controller/provider/internalMethod';
 import browser from 'webextension-polyfill';
 import * as env from '@/utils/env';
@@ -81,6 +93,7 @@ const walletOpenInDesktopMock = wallet.openInDesktop as jest.Mock;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  (env as any).appIsDev = false;
   isUnlockedMock.mockReturnValue(true);
   getCurrentAccountMock.mockReturnValue(null);
   getAccountByAddressMock.mockResolvedValue(null);
@@ -185,8 +198,83 @@ describe('rabby:openInDesktop', () => {
   });
 });
 
+describe('rabby:getUpdateStatus', () => {
+  const getUpdateStatus = internalMethods['rabby:getUpdateStatus'];
+
+  it('allows localhost test status in development only', async () => {
+    const req = {
+      origin: 'http://localhost:5173',
+      data: { method: 'rabby:getUpdateStatus' },
+    };
+    await expect(getUpdateStatus(req)).rejects.toMatchObject({ code: 4100 });
+    (env as any).appIsDev = true;
+    await expect(getUpdateStatus(req)).resolves.toEqual({
+      version: '0.94.8',
+      pendingVersion: null,
+    });
+  });
+
+  it('returns the installed and pending versions without opening the wallet', async () => {
+    (extensionUpdateService.getPendingVersion as jest.Mock).mockResolvedValueOnce(
+      '1.2.0'
+    );
+    await expect(
+      getUpdateStatus({
+        origin: 'https://rabby.io',
+        data: { method: 'rabby:getUpdateStatus' },
+      })
+    ).resolves.toEqual({ version: '1.1.0', pendingVersion: '1.2.0' });
+    expect(browser.action.openPopup).not.toHaveBeenCalled();
+    expect(setCurrentAccountMock).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    undefined,
+    'null',
+    'http://rabby.io',
+    'https://www.rabby.io',
+    'https://rabby.io.evil.test',
+    'https://rabby.io:8443',
+  ])('rejects untrusted origin %s', async (origin) => {
+    await expect(
+      getUpdateStatus({
+        origin,
+        data: {
+          method: 'rabby:getUpdateStatus',
+          params: [{ origin: 'https://rabby.io' }],
+        },
+      })
+    ).rejects.toMatchObject({ code: 4100 });
+    expect(extensionUpdateService.getPendingVersion).not.toHaveBeenCalled();
+  });
+});
+
 describe('rabby:openPopup', () => {
   const openPopup = internalMethods['rabby:openPopup'];
+
+  it('allows localhost popup in development only', async () => {
+    const req = {
+      origin: 'http://localhost:5173',
+      data: { method: 'rabby:openPopup' },
+    };
+    await expect(openPopup(req)).rejects.toMatchObject({ code: 4100 });
+    (env as any).appIsDev = true;
+    await expect(openPopup(req)).resolves.toEqual({ opened: true });
+  });
+
+  it.each([
+    'http://localhost:5174',
+    'http://localhost.evil.test:5173',
+    'http://127.0.0.1:5173',
+  ])(
+    'rejects non-allowlisted local origin %s even in development',
+    async (origin) => {
+      (env as any).appIsDev = true;
+      await expect(
+        openPopup({ origin, data: { method: 'rabby:openPopup' } })
+      ).rejects.toMatchObject({ code: 4100 });
+    }
+  );
 
   beforeEach(() => {
     (env as any).isManifestV3 = true;

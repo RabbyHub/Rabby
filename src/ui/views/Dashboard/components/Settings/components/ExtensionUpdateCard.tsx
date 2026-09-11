@@ -5,15 +5,16 @@ import Logo from '@/ui/assets/settings/update/logo.svg';
 import Glow from '@/ui/assets/settings/update/glow.svg';
 import Close from '@/ui/assets/settings/update/close.svg';
 import Dot from '@/ui/assets/settings/update/dot.svg';
-import Bullet from '@/ui/assets/settings/update/bullet.svg';
 
 export const ExtensionUpdateCard = ({
   version,
+  changelog,
   onUpdate,
   variant = 'card',
   onClose,
 }: {
   version: string;
+  changelog: string;
   onUpdate: () => Promise<void>;
   variant?: 'card' | 'dialog';
   onClose?: () => void;
@@ -65,20 +66,13 @@ export const ExtensionUpdateCard = ({
             {t('page.dashboard.settings.updateCard.title')}
           </div>
           <div className="extension-update-card-version">
-            <span>V {version}</span>
+            <span>v{version}</span>
             {variant === 'card' && (
               <img src={Dot} width={5} height={5} alt="" />
             )}
           </div>
         </div>
-        <ul className="extension-update-card-notes">
-          {['perps', 'screenshots'].map((key) => (
-            <li key={key}>
-              <img src={Bullet} width={16} height={12} alt="" />
-              <span>{t(`page.dashboard.settings.updateCard.${key}`)}</span>
-            </li>
-          ))}
-        </ul>
+        <div className="extension-update-card-notes">{changelog}</div>
         <Button
           type="primary"
           className="extension-update-card-button"

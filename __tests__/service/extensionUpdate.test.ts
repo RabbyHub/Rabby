@@ -1,6 +1,9 @@
 import browser from 'webextension-polyfill';
 import { ExtensionUpdateService } from '@/background/service/extensionUpdate';
 import { storage } from '@/background/webapi';
+import * as env from '@/utils/env';
+
+jest.mock('@/utils/env', () => ({ __esModule: true, appIsDev: false }));
 
 jest.mock('@/background/utils', () => {
   const { default: createPersistStore, patchPersistStore } = jest.requireActual(
@@ -38,12 +41,63 @@ describe('extension update service', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    (env as any).appIsDev = false;
     getManifest.mockReturnValue({ version: '1.0.0' });
     getStorage.mockResolvedValue({});
     setStorage.mockResolvedValue(undefined);
     (browser.tabs.create as jest.Mock).mockResolvedValue({ id: 1 });
     service = new ExtensionUpdateService();
     onUpdateAvailable = (details) => addListener.mock.calls[0][0](details);
+  });
+
+  it('mocks completion only in the next runtime and opens localhost for local tests', async () => {
+    (env as any).appIsDev = true;
+    getManifest.mockReturnValue({ version: '0.94.7' });
+    const values = new Map<string, unknown>();
+    getStorage.mockImplementation(async (key: string) => values.get(key));
+    setStorage.mockImplementation(async (key: string, value: unknown) => {
+      values.set(key, value);
+    });
+    await expect(service.getLocalTestUpdateStatus()).resolves.toEqual({
+      version: '0.94.7',
+      pendingVersion: '0.94.8',
+    });
+    await service.reloadForUpdate();
+    expect(browser.tabs.create).toHaveBeenCalledWith({
+      url: 'http://localhost:5173/updating?version=0.94.8',
+      active: true,
+    });
+    expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
+    await expect(service.getLocalTestUpdateStatus()).resolves.toEqual({
+      version: '0.94.7',
+      pendingVersion: '0.94.8',
+    });
+    const restarted = new ExtensionUpdateService();
+    await expect(restarted.getLocalTestUpdateStatus()).resolves.toEqual({
+      version: '0.94.8',
+      pendingVersion: null,
+    });
+    expect(browser.runtime.getManifest().version).toBe('0.94.7');
+    const record = values.get('extensionUpdateLocalTest') as {
+      startedAt: number;
+    };
+    values.set('extensionUpdateLocalTest', {
+      ...record,
+      startedAt: Date.now() - 600001,
+    });
+    await expect(restarted.getLocalTestUpdateStatus()).resolves.toEqual({
+      version: '0.94.7',
+      pendingVersion: '0.94.8',
+    });
+  });
+
+  it('does not open or reload when the local test marker cannot be persisted', async () => {
+    (env as any).appIsDev = true;
+    await service.init();
+    setStorage.mockRejectedValueOnce(new Error('storage failed'));
+    await expect(service.reloadForUpdate()).rejects.toThrow('storage failed');
+    expect(browser.tabs.create).not.toHaveBeenCalled();
+    expect(browser.runtime.reload).not.toHaveBeenCalled();
   });
 
   it('registers once without checking for updates or reloading', async () => {
@@ -65,6 +119,7 @@ describe('extension update service', () => {
     expect(setStorage).toHaveBeenCalledWith('pendingExtensionUpdate', {
       currentVersion: '1.0.0',
       version: '1.0.0.1',
+      dismissedUntil: 0,
     });
     expect(browser.runtime.reload).not.toHaveBeenCalled();
   });
@@ -110,6 +165,7 @@ describe('extension update service', () => {
     expect(setStorage).toHaveBeenLastCalledWith('pendingExtensionUpdate', {
       currentVersion: '1.0.0',
       version: '1.2.0',
+      dismissedUntil: 0,
     });
   });
 
@@ -117,7 +173,11 @@ describe('extension update service', () => {
     getStorage.mockResolvedValue({ currentVersion: null, version: 42 });
 
     await expect(service.getPendingVersion()).resolves.toBeNull();
-    expect(service.store).toEqual({ currentVersion: '', version: '' });
+    expect(service.store).toEqual({
+      currentVersion: '',
+      version: '',
+      dismissedUntil: 0,
+    });
 
     onUpdateAvailable({ version: '1.1.0' });
     await expect(service.getPendingVersion()).resolves.toBe('1.1.0');
@@ -133,6 +193,68 @@ describe('extension update service', () => {
     ).toThrow();
     expect(setStorage).not.toHaveBeenCalled();
     await expect(service.getPendingVersion()).resolves.toBe('1.1.0');
+  });
+
+  it('checks for an update when pending is absent, deduplicates and cools down', async () => {
+    (browser.runtime.requestUpdateCheck as jest.Mock).mockResolvedValue([
+      'no_update',
+    ]);
+    const check = service.requestUpdateCheck('1.2.0');
+    expect(service.requestUpdateCheck('1.2.0')).toBe(check);
+    await check;
+    await service.requestUpdateCheck('1.2.0');
+    expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(1);
+    expect(await service.getPendingVersion()).toBeNull();
+    await service.requestUpdateCheck('1.3.0');
+    expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(2);
+  });
+
+  it.each(['1.0.0', '0.9.0'])(
+    'does not request an installed or older target %s',
+    async (target) => {
+      await service.requestUpdateCheck(target);
+      expect(browser.runtime.requestUpdateCheck).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([
+    ['1.1.0', 1],
+    ['1.2.0', 0],
+    ['1.3.0', 0],
+  ])(
+    'checks only if pending %s is behind the target',
+    async (pending, count) => {
+      await service.init();
+      onUpdateAvailable({ version: pending as string });
+      await service.requestUpdateCheck('1.2.0');
+      expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(
+        count as number
+      );
+    }
+  );
+
+  it('keeps pending unchanged when Chrome throttles or fails', async () => {
+    (browser.runtime.requestUpdateCheck as jest.Mock).mockResolvedValueOnce([
+      'throttled',
+    ]);
+    await service.requestUpdateCheck('1.2.0');
+    expect(await service.getPendingVersion()).toBeNull();
+    (browser.runtime.requestUpdateCheck as jest.Mock).mockRejectedValueOnce(
+      new Error('unavailable')
+    );
+    await expect(service.requestUpdateCheck('1.3.0')).rejects.toThrow(
+      'unavailable'
+    );
+    expect(await service.getPendingVersion()).toBeNull();
+  });
+
+  it('persists banner cooldown across background restarts', async () => {
+    await service.init();
+    service.patchStore({ dismissedUntil: Date.now() + 86400000 });
+    getStorage.mockResolvedValue({ ...service.store });
+    const restarted = new ExtensionUpdateService();
+    await restarted.init();
+    expect(restarted.store.dismissedUntil).toBe(service.store.dismissedUntil);
   });
 
   it('does not open a tab or reload without a pending update', async () => {
@@ -155,7 +277,7 @@ describe('extension update service', () => {
     await service.getPendingVersion();
     expect(browser.tabs.create).toHaveBeenCalledTimes(1);
     expect(browser.tabs.create).toHaveBeenCalledWith({
-      url: 'https://rabby.io/updating',
+      url: 'https://rabby.io/updating?version=1.1.0',
       active: true,
     });
     expect(browser.runtime.reload).not.toHaveBeenCalled();

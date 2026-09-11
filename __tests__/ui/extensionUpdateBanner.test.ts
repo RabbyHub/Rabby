@@ -18,6 +18,7 @@ describe('extension update banner', () => {
   let root: Root;
   let container: HTMLDivElement;
   const onCheck = jest.fn();
+  const onDismiss = jest.fn();
   const previousActEnvironment = (globalThis as any).IS_REACT_ACT_ENVIRONMENT;
   beforeAll(() => {
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
@@ -37,10 +38,16 @@ describe('extension update banner', () => {
   afterAll(() => {
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
   });
-  const render = (visible = true, version = '1.1.0') =>
+  const render = (visible = true, version = '1.1.0', closable = true) =>
     act(() => {
       root.render(
-        createElement(ExtensionUpdateBanner, { visible, onCheck, key: version })
+        createElement(ExtensionUpdateBanner, {
+          visible,
+          onCheck,
+          onDismiss,
+          closable,
+          key: version,
+        })
       );
     });
   const close = () =>
@@ -69,10 +76,12 @@ describe('extension update banner', () => {
     act(() => jest.advanceTimersByTime(299));
     expect(container.querySelector('section')).not.toBeNull();
     act(() => jest.advanceTimersByTime(1));
+    expect(onDismiss).toHaveBeenCalledTimes(1);
+    render(false);
     expect(container.querySelector('section')).toBeNull();
     expect(onCheck).not.toHaveBeenCalled();
   });
-  it('opens settings once on Check and dismisses the prompt', () => {
+  it('opens settings on Check without starting a dismissal cooldown', () => {
     render();
     act(() =>
       container
@@ -80,16 +89,17 @@ describe('extension update banner', () => {
         .click()
     );
     expect(onCheck).toHaveBeenCalledTimes(1);
+    expect(onDismiss).not.toHaveBeenCalled();
+    render(false);
     expect(container.querySelector('section')).toBeNull();
-  });
-  it('stays dismissed for this version but shows a newer one', () => {
-    render();
-    close();
-    act(() => jest.advanceTimersByTime(300));
-    render();
-    expect(container.querySelector('section')).toBeNull();
-    render(true, '1.2.0');
+    render(true);
     expect(container.querySelector('section')).not.toBeNull();
+  });
+  it('hides the close button for mandatory updates', () => {
+    render(true, '1.1.0', false);
+    expect(container.querySelector('[aria-label="dismiss"]')).toBeNull();
+    expect(container.querySelector('section')).not.toBeNull();
+    expect(onDismiss).not.toHaveBeenCalled();
   });
   it('cleans up the animation timer on unmount', () => {
     render();
