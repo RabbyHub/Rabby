@@ -98454,7 +98454,10 @@
   "src/ui/state/securityEngine.ts": {
     "enable": true,
     "require": [
+      "node_modules/lodash/lodash.js",
+      "node_modules/react/index.js",
       "node_modules/zustand/esm/react.mjs",
+      "src/ui/state/securityEngineScope.ts",
       "src/ui/wallet/index.ts"
     ]
   },
@@ -99829,6 +99832,13 @@
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/views/Approval/components/SecurityEngine/actionSecurity.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-security-engine/dist/rules/index.js",
+      "src/ui/state/securityEngineScope.ts"
+    ]
+  },
   "src/ui/views/Approval/components/SignTx.tsx": {
     "enable": true,
     "require": [
@@ -99897,6 +99907,7 @@
       "src/ui/views/Approval/components/map.ts",
       "src/ui/views/Approval/components/NoActionAlert/NoActionAlert.tsx",
       "src/ui/views/Approval/components/OriginInfo.tsx",
+      "src/ui/views/Approval/components/SecurityEngine/actionSecurity.ts",
       "src/ui/views/Approval/components/SecurityEngine/RuleDrawer.tsx",
       "src/ui/views/Approval/components/TextActions/index.tsx",
       "src/ui/views/Approval/components/TxComponents/BalanceChange.tsx",
@@ -100314,6 +100325,7 @@
       "src/ui/views/Approval/components/OriginInfo.tsx",
       "src/ui/views/Approval/components/Popup/Dots.tsx",
       "src/ui/views/Approval/components/Popup/FooterResendCancelGroup.tsx",
+      "src/ui/views/Approval/components/SecurityEngine/actionSecurity.ts",
       "src/ui/views/Approval/components/SecurityEngine/RuleDrawer.tsx",
       "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx",
       "src/ui/views/Approval/components/signMessageAddressData.ts",
@@ -100358,6 +100370,7 @@
       "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/antd/es/button/index.js",
       "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/popover/index.js",
       "node_modules/antd/es/skeleton/index.js",
       "node_modules/antd/es/switch/index.js",
       "node_modules/antd/es/tooltip/index.js",
@@ -100385,6 +100398,7 @@
       "src/ui/views/GasAccount/components/topUpContinuation.ts",
       "src/ui/views/GasAccount/hooks/index.ts",
       "src/ui/views/GasAccount/hooks/runtime.ts",
+      "src/ui/views/Swap/hooks/fee.ts",
       "src/utils/chain.ts",
       "src/utils/tempo.ts",
       "src/utils/transaction.ts"
@@ -103020,6 +103034,7 @@
   "src/ui/views/Swap/hooks/fee.ts": {
     "enable": true,
     "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
       "node_modules/bignumber.js/bignumber.js"
     ]
   },
@@ -103187,6 +103202,7 @@
       "src/ui/views/Swap/hooks/twoStepSwap.tsx",
       "src/utils/chain.ts",
       "src/utils/ga4.ts",
+      "src/utils/index.ts",
       "src/utils/matomo-request.ts"
     ]
   },
