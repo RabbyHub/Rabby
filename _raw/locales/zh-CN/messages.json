@@ -2065,7 +2065,16 @@
         "title": "Rabby 手续费",
         "button": "知道了",
         "bridgeDesc": "Rabby Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Rabby 收取 0.25% 的费用，该费用会自动包含在报价中。",
-        "swapDesc": "Rabby Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Rabby 收取 0.25% 费用（Wrap 为 0%），该费用已自动包含在报价中。"
+        "swapDesc": "Rabby Wallet 会始终从顶级聚合器中找到最佳汇率，并验证其报价的可靠性。Rabby 收取 0.25% 费用（Wrap 为 0%），该费用已自动包含在报价中。",
+        "discountTitle": "Rabby 手续费优惠",
+        "free": "免费",
+        "cases": {
+          "wrap": "封装/解封原生代币",
+          "stablecoins": "稳定币",
+          "lstLrt": "LST/LRT 代币",
+          "million": "交易量 $1M+",
+          "hundredThousand": "交易量 $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "该代币的信用价值较低",

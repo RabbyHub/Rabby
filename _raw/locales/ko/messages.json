@@ -969,7 +969,16 @@
         "rate": "수수료 비율",
         "wallet": "지갑",
         "swapDesc": "Rabby Wallet은 항상 주요 애그리게이터에서 가능한 최적의 환율을 찾고, 해당 오퍼의 신뢰성을 검증합니다. Rabby는 0.25% 수수료를 부과하며(Wrap은 0%), 이 수수료는 견적에 자동으로 포함됩니다.",
-        "bridgeDesc": "Rabby Wallet은 항상 최고의 집계기에서 가장 좋은 환율을 찾고, 그들의 제안의 신뢰성을 검증합니다. Rabby는 0.25%의 수수료를 부과하며, 이는 자동으로 견적에 포함됩니다."
+        "bridgeDesc": "Rabby Wallet은 항상 최고의 집계기에서 가장 좋은 환율을 찾고, 그들의 제안의 신뢰성을 검증합니다. Rabby는 0.25%의 수수료를 부과하며, 이는 자동으로 견적에 포함됩니다.",
+        "discountTitle": "Rabby 수수료 할인",
+        "free": "무료",
+        "cases": {
+          "wrap": "네이티브 토큰 래핑/언래핑",
+          "stablecoins": "스테이블코인",
+          "lstLrt": "LST/LRT 토큰",
+          "million": "거래량 $1M+",
+          "hundredThousand": "거래량 $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "이 토큰은 낮은 신용 가치를 가지고 있습니다.",

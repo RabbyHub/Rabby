@@ -969,7 +969,16 @@
         "rate": "Taxa de pagamento",
         "button": "Entendi",
         "swapDesc": "A Rabby Wallet encontra a melhor taxa disponível entre os principais agregadores e verifica a fiabilidade das respetivas ofertas. A Rabby cobra uma taxa de 0,25% (0% para Wrap), já incluída na cotação.",
-        "bridgeDesc": "A Rabby Wallet encontra a melhor taxa disponível entre os principais agregadores e verifica a fiabilidade das respetivas ofertas. A Rabby cobra uma taxa de 0,25%, já incluída na cotação."
+        "bridgeDesc": "A Rabby Wallet encontra a melhor taxa disponível entre os principais agregadores e verifica a fiabilidade das respetivas ofertas. A Rabby cobra uma taxa de 0,25%, já incluída na cotação.",
+        "discountTitle": "Desconto na taxa Rabby",
+        "free": "Gratuito",
+        "cases": {
+          "wrap": "Encapsular/desencapsular token nativo",
+          "stablecoins": "Stablecoins",
+          "lstLrt": "Token LST/LRT",
+          "million": "Volume $1M+",
+          "hundredThousand": "Volume $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "desc": "Um baixo valor de crédito geralmente sinaliza alto risco, como um token honeypot ou liquidez muito baixa.",

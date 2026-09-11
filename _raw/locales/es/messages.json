@@ -1041,7 +1041,16 @@
         "wallet": "Billetera",
         "button": "Entendido",
         "rate": "Porcentaje de la tarifa",
-        "bridgeDesc": "Rabby Wallet siempre encontrará el mejor tipo de cambio posible entre los principales agregadores y verificará la fiabilidad de sus ofertas. Rabby cobra una tarifa del 0,25 %, incluida automáticamente en la cotización."
+        "bridgeDesc": "Rabby Wallet siempre encontrará el mejor tipo de cambio posible entre los principales agregadores y verificará la fiabilidad de sus ofertas. Rabby cobra una tarifa del 0,25 %, incluida automáticamente en la cotización.",
+        "discountTitle": "Descuento en la tarifa de Rabby",
+        "free": "Gratis",
+        "cases": {
+          "wrap": "Envolver/desenvolver token nativo",
+          "stablecoins": "Stablecoins",
+          "lstLrt": "Token LST/LRT",
+          "million": "Volumen $1M+",
+          "hundredThousand": "Volumen $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Este token tiene un bajo valor de crédito",

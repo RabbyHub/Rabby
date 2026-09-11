@@ -2064,7 +2064,16 @@
         "wallet": "錢包",
         "title": "Rabby 手續費",
         "bridgeDesc": "Rabby Wallet 會始終從頂級聚合器中尋找最佳匯率，並驗證其報價的可靠性。Rabby 收取 0.25% 的費用，此費用已自動包含在報價中。",
-        "swapDesc": "Rabby Wallet 會始終從頂級聚合器中找到最佳匯率，並驗證其報價的可靠性。Rabby 收取 0.25% 費用（Wrap 為 0%），該費用已自動包含在報價中。"
+        "swapDesc": "Rabby Wallet 會始終從頂級聚合器中找到最佳匯率，並驗證其報價的可靠性。Rabby 收取 0.25% 費用（Wrap 為 0%），該費用已自動包含在報價中。",
+        "discountTitle": "Rabby 手續費優惠",
+        "free": "免費",
+        "cases": {
+          "wrap": "封裝/解封原生代幣",
+          "stablecoins": "穩定幣",
+          "lstLrt": "LST/LRT 代幣",
+          "million": "交易量 $1M+",
+          "hundredThousand": "交易量 $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "此代幣的信用值低。",

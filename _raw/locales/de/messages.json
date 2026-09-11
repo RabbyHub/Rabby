@@ -1041,7 +1041,16 @@
         "rate": "Gebührensatz",
         "swapDesc": "Rabby Wallet findet immer den bestmöglichen Kurs von Top-Aggregatoren und prüft die Zuverlässigkeit ihrer Angebote. Rabby erhebt eine Gebühr von 0,25 % (0 % für Wrap), die automatisch im Angebot enthalten ist.",
         "bridgeDesc": "Rabby Wallet findet stets den bestmöglichen Kurs von erstklassigen Aggregatoren und überprüft die Zuverlässigkeit ihrer Angebote. Rabby erhebt eine Gebühr von 0,25 %, die automatisch in das Angebot einbezogen wird.",
-        "button": "Verstanden"
+        "button": "Verstanden",
+        "discountTitle": "Rabatt auf Rabby-Gebühren",
+        "free": "Kostenlos",
+        "cases": {
+          "wrap": "Nativen Token wrappen/entwrappen",
+          "stablecoins": "Stablecoins",
+          "lstLrt": "LST/LRT-Token",
+          "million": "Volumen $1M+",
+          "hundredThousand": "Volumen $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "title": "Dieses Token hat einen niedrigen Kreditwert",

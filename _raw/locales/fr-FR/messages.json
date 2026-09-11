@@ -2485,7 +2485,16 @@
         "title": "Frais Rabby",
         "button": "Compris",
         "bridgeDesc": "Rabby Wallet recherche toujours le meilleur taux possible auprès des principaux agrégateurs et vérifie la fiabilité de leurs offres. Rabby facture des frais de 0,25 %, automatiquement inclus dans la cotation.",
-        "swapDesc": "Rabby Wallet recherche toujours le meilleur taux possible auprès des principaux agrégateurs et vérifie la fiabilité de leurs offres. Rabby facture des frais de 0,25 % (0 % pour Wrap), automatiquement inclus dans la cotation."
+        "swapDesc": "Rabby Wallet recherche toujours le meilleur taux possible auprès des principaux agrégateurs et vérifie la fiabilité de leurs offres. Rabby facture des frais de 0,25 % (0 % pour Wrap), automatiquement inclus dans la cotation.",
+        "discountTitle": "Réduction des frais Rabby",
+        "free": "Gratuit",
+        "cases": {
+          "wrap": "Wrapper/déwrapper le token natif",
+          "stablecoins": "Stablecoins",
+          "lstLrt": "Token LST/LRT",
+          "million": "Volume $1M+",
+          "hundredThousand": "Volume $100k - $1M"
+        }
       },
       "lowCreditModal": {
         "desc": "Une faible valeur de crédit indique souvent un risque élevé, comme un token piège ou une très faible liquidité.",
