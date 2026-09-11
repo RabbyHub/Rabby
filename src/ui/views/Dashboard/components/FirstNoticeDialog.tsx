@@ -26,7 +26,7 @@ export const FirstNoticeDialog = ({
           <div className="first-notice-title">
             {t('page.dashboard.home.firstNotice.title')}
           </div>
-          <div className="first-notice-version">V {version}</div>
+          <div className="first-notice-version">v{version}</div>
         </>
       }
       className="first-notice"

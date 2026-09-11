@@ -1537,7 +1537,7 @@
     font-size: 16px;
     font-weight: 700;
     line-height: 19px;
-    color: var(--r-neutral-title-1);
+    color: var(---r-neutral-title-1, #192945);
   }
 
   &-version {
@@ -1570,75 +1570,25 @@
   }
 
   &-notes {
-    color: var(--r-neutral-body);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 17px;
-    overflow-wrap: anywhere;
-
-    > * + * {
-      margin-top: 8px;
-    }
-
-    p,
-    ul,
-    ol {
-      margin-bottom: 0;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
+    color: var(--r-neutral-body, #3e495e);
+    h2 {
       color: var(--r-neutral-title-1);
-      font-size: 14px;
-      line-height: 17px;
     }
 
-    ul {
-      padding-left: 0;
-      list-style: none;
+    li {
+      padding-left: 10px;
+      position: relative;
 
-      > li {
-        position: relative;
-        padding-left: 20px;
-
-        &::before {
-          content: '';
-          position: absolute;
-          width: 16px;
-          height: 12px;
-          left: 0;
-          top: 0;
-          background: url('../../assets/settings/update/bullet.svg') no-repeat
-            center / 16px 12px;
-        }
+      &::before {
+        content: '';
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background-color: var(--r-neutral-body, #3e495e);
+        border-radius: 100%;
+        left: 0;
+        top: 9px;
       }
-    }
-
-    ol {
-      padding-left: 20px;
-      list-style: decimal;
-
-      > li::marker {
-        color: var(--r-neutral-foot);
-      }
-    }
-
-    li + li,
-    li > ul,
-    li > ol {
-      margin-top: 4px;
-    }
-
-    img {
-      max-width: 100%;
-    }
-
-    pre {
-      white-space: pre-wrap;
     }
   }
 
