@@ -323,7 +323,7 @@ class CustomTestnetService {
           ...res,
           hash: res.transactionHash,
           code: 0,
-          status: 1,
+          status: parseInt(res.status, 16),
           gas_used: Number(res.gasUsed),
           token: customTestnetTokenToTokenItem({
             amount: 0,
