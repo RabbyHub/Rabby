@@ -10,21 +10,24 @@ import Arrow from '@/ui/assets/settings/update/arrow.svg';
 export const ExtensionUpdateBanner = ({
   visible,
   onCheck,
+  closable,
+  onDismiss,
 }: {
   visible: boolean;
   onCheck: () => void;
+  closable: boolean;
+  onDismiss: () => void;
 }) => {
   const { t } = useTranslation();
   const [closing, setClosing] = useState(false);
-  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
     if (!closing) return;
-    const timer = setTimeout(() => setDismissed(true), 300);
+    const timer = setTimeout(onDismiss, 300);
     return () => clearTimeout(timer);
-  }, [closing]);
+  }, [closing, onDismiss]);
 
-  if (!visible || dismissed) return null;
+  if (!visible) return null;
 
   return (
     <section
@@ -38,21 +41,22 @@ export const ExtensionUpdateBanner = ({
         <img src={Arrow} width={16} height={16} alt="" />
         <span>{t('page.dashboard.settings.updateCard.title')}</span>
       </div>
-      <button
-        type="button"
-        className="extension-update-banner-close"
-        aria-label={t('page.dashboard.settings.updateCard.dismiss')}
-        disabled={closing}
-        onClick={() => setClosing(true)}
-      >
-        <img src={Close} width={16} height={16} alt="" />
-      </button>
+      {closable && (
+        <button
+          type="button"
+          className="extension-update-banner-close"
+          aria-label={t('page.dashboard.settings.updateCard.dismiss')}
+          disabled={closing}
+          onClick={() => setClosing(true)}
+        >
+          <img src={Close} width={16} height={16} alt="" />
+        </button>
+      )}
       <Button
         type="primary"
         className="extension-update-banner-check"
         disabled={closing}
         onClick={() => {
-          setDismissed(true);
           onCheck();
         }}
       >

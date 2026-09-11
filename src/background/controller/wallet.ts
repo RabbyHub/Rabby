@@ -7113,6 +7113,7 @@ export class WalletController extends BaseController {
   getReportGasLevel = miscService.getCurrentGasLevel;
 
   getPendingExtensionVersion = extensionUpdateService.getPendingVersion;
+  requestExtensionUpdateCheck = extensionUpdateService.requestUpdateCheck;
   reloadExtensionForUpdate = extensionUpdateService.reloadForUpdate;
 
   getScreenshotFeedbacks = feedbackService.getScreenshotFeedbacks;

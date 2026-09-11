@@ -27,14 +27,10 @@ import {
 import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
 import { useAppVersionStore } from '@/ui/state/appVersion';
 import {
-  selectHasNewExtensionVersion,
+  selectExtensionUpdateBanner,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 import { ExtensionUpdateBanner } from './components/ExtensionUpdateBanner';
-import {
-  EXTENSION_UPDATE_PREVIEW,
-  EXTENSION_UPDATE_PREVIEW_VERSION,
-} from './components/extensionUpdatePreview';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -130,10 +126,40 @@ const Dashboard = () => {
   );
 
   const [settingVisible, setSettingVisible] = useState(false);
-  const hasPendingUpdate = useExtensionUpdateStore(
-    selectHasNewExtensionVersion
+  const [updateClock, setUpdateClock] = useState(Date.now);
+  const showUpdateBanner = useExtensionUpdateStore((s) =>
+    selectExtensionUpdateBanner(s, updateClock)
+  );
+  const updateLevel = useExtensionUpdateStore(
+    (s) => s.versionInfo?.version.level
+  );
+  const dismissedUntil = useExtensionUpdateStore((s) => s.dismissedUntil);
+  const dismissBanner = useExtensionUpdateStore((s) => s.dismissBanner);
+  const refreshVersionInfo = useExtensionUpdateStore(
+    (s) => s.refreshVersionInfo
   );
   const pendingVersion = useExtensionUpdateStore((s) => s.version);
+  useEffect(() => {
+    const refresh = () => {
+      void refreshVersionInfo().catch(console.error);
+    };
+    refresh();
+    const timer = setInterval(refresh, 60_000);
+    window.addEventListener('focus', refresh);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('focus', refresh);
+    };
+  }, [refreshVersionInfo, pendingVersion]);
+  useEffect(() => {
+    setUpdateClock(Date.now());
+    if (dismissedUntil <= Date.now()) return;
+    const timer = setTimeout(
+      () => setUpdateClock(Date.now()),
+      Math.min(dismissedUntil - Date.now(), 2147483647)
+    );
+    return () => clearTimeout(timer);
+  }, [dismissedUntil]);
   const [autoScrollToBiometric, setAutoScrollToBiometric] = useState(false);
   const toggleShowMoreSettings = useMemoizedFn(() => {
     setSettingVisible(!settingVisible);
@@ -215,10 +241,10 @@ const Dashboard = () => {
         </div>
         <StablecoinSwapPopup />
         <ExtensionUpdateBanner
-          key={pendingVersion || EXTENSION_UPDATE_PREVIEW_VERSION}
-          visible={
-            (EXTENSION_UPDATE_PREVIEW || hasPendingUpdate) && !settingVisible
-          }
+          key={`${pendingVersion}:${updateLevel}:${dismissedUntil}`}
+          visible={showUpdateBanner && !settingVisible}
+          closable={updateLevel === 3}
+          onDismiss={dismissBanner}
           onCheck={() => {
             setAutoScrollToBiometric(false);
             setSettingVisible(true);

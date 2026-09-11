@@ -5,11 +5,13 @@ import { ExtensionUpdateCard } from './ExtensionUpdateCard';
 export const ExtensionUpdateDialog = ({
   visible,
   version,
+  changelog,
   onClose,
   onUpdate,
 }: {
   visible: boolean;
   version: string;
+  changelog: string;
   onClose: () => void;
   onUpdate: () => Promise<void>;
 }) => (
@@ -28,6 +30,7 @@ export const ExtensionUpdateDialog = ({
     <div className="popup-settings extension-update-dialog-content">
       <ExtensionUpdateCard
         version={version}
+        changelog={changelog}
         onUpdate={onUpdate}
         onClose={onClose}
         variant="dialog"
