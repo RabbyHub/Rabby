@@ -11,6 +11,7 @@ import {
   groupBy,
   isEqual,
   last,
+  omit,
   pick,
   sortBy,
   truncate,
@@ -199,6 +200,10 @@ import {
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
+import {
+  assertApprovalSigningBinding,
+  waitForApprovalSigning,
+} from './walletUtils/approvalSigning';
 import { gasMarketV2 as loadGasMarketV2 } from '../service/gasMarket';
 import {
   cancelAllSignTxPreparations,
@@ -551,8 +556,20 @@ export class WalletController extends BaseController {
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
-  rejectApproval = (err?: string, stay = false, isInternal = false) => {
-    return notificationService.rejectApproval(err, stay, isInternal);
+  rejectApproval = (
+    err?: string,
+    stay = false,
+    isInternal = false,
+    approvalId?: string,
+    approvalComponent?: Parameters<typeof notificationService.rejectApproval>[4]
+  ) => {
+    return notificationService.rejectApproval(
+      err,
+      stay,
+      isInternal,
+      approvalId,
+      approvalComponent
+    );
   };
 
   rejectAllApprovals = () => {
@@ -4974,10 +4991,19 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    assertApprovalSigningBinding(notificationService.getApproval(), {
+      type,
+      from,
+      data,
+      options,
+    });
+    const signingOptions = options
+      ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+      : options;
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
-      options
+      signingOptions
     );
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.SIGN_FINISHED,
@@ -4999,7 +5025,14 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const fn = () =>
-      waitSignComponentAmounted().then(() => {
+      waitForApprovalSigning({
+        type,
+        from,
+        data,
+        options,
+        getApproval: notificationService.getApproval,
+        waitForUI: waitSignComponentAmounted,
+      }).then(() => {
         return this.signTypedData(type, from, data as any, options);
       });
 
