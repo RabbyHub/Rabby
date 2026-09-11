@@ -1269,6 +1269,10 @@
         "rabbyIsInUseAndMetamaskIsBanned": "Rabby sedang digunakan dan Metamask dilarang",
         "offline": "Jaringan terputus dan tidak ada data yang diperoleh",
         "whatsNew": "Apa yang baru",
+        "firstNotice": {
+          "title": "Versi Baru Siap",
+          "gotIt": "Mengerti"
+        },
         "chainEnd": " rantai",
         "chain": " rantai, ",
         "viewFirstOne": "Lihat yang pertama",

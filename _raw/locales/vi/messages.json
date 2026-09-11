@@ -1268,6 +1268,10 @@
         "view": "Xem",
         "refreshTheWebPageToTakeEffect": "Làm mới trang web để có hiệu lực",
         "whatsNew": "Có gì mới",
+        "firstNotice": {
+          "title": "Phiên bản mới đã sẵn sàng",
+          "gotIt": "Đã hiểu"
+        },
         "rejectAll": "Từ chối Tất cả",
         "flip": "Lật",
         "metamaskIsInUseAndRabbyIsBanned": "MetaMask đang được sử dụng và Rabby bị cấm.",

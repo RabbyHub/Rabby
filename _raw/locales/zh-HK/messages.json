@@ -154,6 +154,10 @@
           "count": "{{count}} 筆"
         },
         "whatsNew": "更新內容",
+        "firstNotice": {
+          "title": "新版本已就緒",
+          "gotIt": "知道了"
+        },
         "importType": "由 {{type}} 匯入",
         "missingDataTooltip": "由於 {{text}} 目前存在網絡問題，地址結餘可能無法更新。",
         "chain": " 鏈、",

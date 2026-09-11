@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
 import { useHistory, useLocation } from 'react-router-dom';
-import remarkGfm from 'remark-gfm';
 
-import { AuthenticationModal, Modal } from 'ui/component';
+import { AuthenticationModal } from 'ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import './style.less';
@@ -31,6 +29,7 @@ import {
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 import { ExtensionUpdateBanner } from './components/ExtensionUpdateBanner';
+import { FirstNoticeDialog } from './components/FirstNoticeDialog';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -251,20 +250,12 @@ const Dashboard = () => {
           }}
         />
       </div>
-      <Modal
-        visible={firstNotice && updateContent}
-        title={t('page.dashboard.home.whatsNew')}
-        className="first-notice"
-        onCancel={() => {
-          afterFirstLogin();
-        }}
-        maxHeight="420px"
-      >
-        <div>
-          <p className="mb-12">{version}</p>
-          <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
-        </div>
-      </Modal>
+      <FirstNoticeDialog
+        visible={!!(firstNotice && updateContent)}
+        version={version}
+        updateContent={updateContent}
+        onClose={afterFirstLogin}
+      />
 
       {pendingApprovalCount > 0 && (
         <PendingApproval

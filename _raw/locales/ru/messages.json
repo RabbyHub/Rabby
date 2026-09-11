@@ -1183,6 +1183,10 @@
           "count": "{{count}} в"
         },
         "whatsNew": "Что нового",
+        "firstNotice": {
+          "title": "Новая версия готова",
+          "gotIt": "Понятно"
+        },
         "importType": "Импортировано по {{type}}",
         "missingDataTooltip": "Баланс может быть не актуальным из за задержек в сети {{text}}.",
         "chain": " сети, ",

@@ -1269,6 +1269,10 @@
         "soon": "Em breve",
         "comingSoon": "Em breve",
         "whatsNew": "O que há de novo",
+        "firstNotice": {
+          "title": "Nova versão pronta",
+          "gotIt": "Entendido"
+        },
         "refreshTheWebPageToTakeEffect": "Atualize a página da web para que tenha efeito.",
         "flip": "Virar",
         "pendingCountPlural": "{{countStr}} Pendentes",

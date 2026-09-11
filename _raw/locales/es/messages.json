@@ -1183,6 +1183,10 @@
           "count": "{{count}} en"
         },
         "whatsNew": "Novedades",
+        "firstNotice": {
+          "title": "Nueva versión lista",
+          "gotIt": "Entendido"
+        },
         "importType": "Importado mediante {{type}}",
         "missingDataTooltip": "El saldo puede no estar actualizado debido a problemas actuales de la red con {{text}}.",
         "chainEnd": " red",
