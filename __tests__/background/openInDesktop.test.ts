@@ -59,9 +59,6 @@ jest.mock('@/background/service/extensionUpdate', () => ({
   __esModule: true,
   default: {
     getPendingVersion: jest.fn().mockResolvedValue(null),
-    getLocalTestUpdateStatus: jest
-      .fn()
-      .mockResolvedValue({ version: '0.94.8', pendingVersion: null }),
   },
 }));
 
@@ -201,18 +198,18 @@ describe('rabby:openInDesktop', () => {
 describe('rabby:getUpdateStatus', () => {
   const getUpdateStatus = internalMethods['rabby:getUpdateStatus'];
 
-  it('allows localhost test status in development only', async () => {
-    const req = {
-      origin: 'http://localhost:5173',
-      data: { method: 'rabby:getUpdateStatus' },
-    };
-    await expect(getUpdateStatus(req)).rejects.toMatchObject({ code: 4100 });
-    (env as any).appIsDev = true;
-    await expect(getUpdateStatus(req)).resolves.toEqual({
-      version: '0.94.8',
-      pendingVersion: null,
-    });
-  });
+  it.each([false, true])(
+    'rejects localhost status requests when appIsDev is %s',
+    async (appIsDev) => {
+      (env as any).appIsDev = appIsDev;
+      const req = {
+        origin: 'http://localhost:5173',
+        data: { method: 'rabby:getUpdateStatus' },
+      };
+      await expect(getUpdateStatus(req)).rejects.toMatchObject({ code: 4100 });
+      expect(extensionUpdateService.getPendingVersion).not.toHaveBeenCalled();
+    }
+  );
 
   it('returns the installed and pending versions without opening the wallet', async () => {
     (extensionUpdateService.getPendingVersion as jest.Mock).mockResolvedValueOnce(
@@ -252,15 +249,18 @@ describe('rabby:getUpdateStatus', () => {
 describe('rabby:openPopup', () => {
   const openPopup = internalMethods['rabby:openPopup'];
 
-  it('allows localhost popup in development only', async () => {
-    const req = {
-      origin: 'http://localhost:5173',
-      data: { method: 'rabby:openPopup' },
-    };
-    await expect(openPopup(req)).rejects.toMatchObject({ code: 4100 });
-    (env as any).appIsDev = true;
-    await expect(openPopup(req)).resolves.toEqual({ opened: true });
-  });
+  it.each([false, true])(
+    'rejects localhost popup requests when appIsDev is %s',
+    async (appIsDev) => {
+      (env as any).appIsDev = appIsDev;
+      const req = {
+        origin: 'http://localhost:5173',
+        data: { method: 'rabby:openPopup' },
+      };
+      await expect(openPopup(req)).rejects.toMatchObject({ code: 4100 });
+      expect(browser.action.openPopup).not.toHaveBeenCalled();
+    }
+  );
 
   it.each([
     'http://localhost:5174',

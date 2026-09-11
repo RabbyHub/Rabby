@@ -2,21 +2,8 @@ import { createPersistStore, patchPersistStore } from 'background/utils';
 import browser from 'webextension-polyfill';
 import { z } from 'zod';
 import { compareExtensionVersions } from '@/utils/extensionVersion';
-import {
-  isLocalUpdateTest,
-  LOCAL_UPDATE_TEST_ORIGIN,
-  MOCK_PENDING_VERSION,
-} from '@/utils/extensionUpdateTest';
-import { storage } from 'background/webapi';
-import { nanoid } from 'nanoid';
 
 const STORAGE_KEY = 'pendingExtensionUpdate';
-const LOCAL_TEST_STORAGE_KEY = 'extensionUpdateLocalTest';
-type LocalUpdateTest = {
-  runtimeId: string;
-  version: string;
-  startedAt: number;
-};
 
 const extensionUpdateStoreSchema = z.object({
   currentVersion: z.string().default(''),
@@ -30,7 +17,6 @@ const createExtensionUpdateStoreTemplate = (): ExtensionUpdateStore =>
   extensionUpdateStoreSchema.parse({});
 
 export class ExtensionUpdateService {
-  private runtimeId = nanoid();
   store: ExtensionUpdateStore = createExtensionUpdateStoreTemplate();
   private initPromise?: Promise<void>;
   private initialized = false;
@@ -60,8 +46,6 @@ export class ExtensionUpdateService {
         this.patchStore(this.pendingUpdate);
         this.pendingUpdate = undefined;
       }
-      if (isLocalUpdateTest())
-        this.onUpdateAvailable({ version: MOCK_PENDING_VERSION });
     });
 
     return this.initPromise;
@@ -74,7 +58,7 @@ export class ExtensionUpdateService {
   private onUpdateAvailable = ({ version }: { version: string }) => {
     const update = {
       currentVersion: browser.runtime.getManifest().version,
-      version: isLocalUpdateTest() ? MOCK_PENDING_VERSION : version,
+      version,
     };
 
     if (!this.initialized) {
@@ -126,47 +110,14 @@ export class ExtensionUpdateService {
     return this.checkPromise;
   };
 
-  getLocalTestUpdateStatus = async () => {
-    const pendingVersion = await this.getPendingVersion();
-    if (isLocalUpdateTest()) {
-      const test = await storage.get<LocalUpdateTest | undefined>(
-        LOCAL_TEST_STORAGE_KEY
-      );
-      if (
-        test?.runtimeId &&
-        test.runtimeId !== this.runtimeId &&
-        test.version === MOCK_PENDING_VERSION &&
-        Date.now() >= test.startedAt &&
-        Date.now() - test.startedAt < 10 * 60 * 1000
-      ) {
-        return { version: test.version, pendingVersion: null };
-      }
-    }
-    return { version: browser.runtime.getManifest().version, pendingVersion };
-  };
-
   reloadForUpdate = (): Promise<void> => {
     this.reloadPromise ||= (async () => {
       const version = await this.getPendingVersion();
       if (!version) return;
 
-      if (isLocalUpdateTest()) {
-        // Await persistence before opening the page/reloading. This runtime must
-        // still report the old version; only the next runtime reports completion.
-        const test: LocalUpdateTest = {
-          runtimeId: this.runtimeId,
-          version,
-          startedAt: Date.now(),
-        };
-        await storage.set(LOCAL_TEST_STORAGE_KEY, test);
-      }
-      const origin = isLocalUpdateTest()
-        ? LOCAL_UPDATE_TEST_ORIGIN
-        : 'https://rabby.io';
-
       // Opening an active tab closes the popup; finish the update in background.
       await browser.tabs.create({
-        url: `${origin}/updating?version=${encodeURIComponent(version)}`,
+        url: `https://rabby.io/updating?version=${encodeURIComponent(version)}`,
         active: true,
       });
       browser.runtime.reload();
