@@ -117,7 +117,10 @@ export class ExtensionUpdateService {
 
       // Opening an active tab closes the popup; finish the update in background.
       await browser.tabs.create({
-        url: `https://rabby.io/updating?version=${encodeURIComponent(version)}`,
+        // url: `https://rabby.io/updating?version=${encodeURIComponent(version)}`,
+        url: `https://rabby-io-git-feat-auto-update-debanker.vercel.app//updating?version=${encodeURIComponent(
+          version
+        )}`,
         active: true,
       });
       browser.runtime.reload();

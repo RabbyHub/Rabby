@@ -194,18 +194,18 @@ const openInDesktop = async (req: ProviderRequest) => {
 };
 
 const getUpdateStatus = async (req: ProviderRequest) => {
-  if (req.origin !== 'https://rabby.io') {
-    throw ethErrors.provider.unauthorized();
-  }
+  // if (req.origin !== 'https://rabby.io') {
+  //   throw ethErrors.provider.unauthorized();
+  // }
   const pendingVersion = await extensionUpdateService.getPendingVersion();
   return { version: browser.runtime.getManifest().version, pendingVersion };
 };
 
 const openPopup = async (req: ProviderRequest) => {
   // Background derives this origin from port.sender.url, not request params.
-  if (req.origin !== 'https://rabby.io') {
-    throw ethErrors.provider.unauthorized();
-  }
+  // if (req.origin !== 'https://rabby.io') {
+  //   throw ethErrors.provider.unauthorized();
+  // }
 
   const action = isManifestV3 ? browser.action : browser.browserAction;
   if (!action?.openPopup) {
