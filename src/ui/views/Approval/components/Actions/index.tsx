@@ -26,6 +26,7 @@ import { getActionTypeText } from './utils';
 import { BalanceChangeWrapper } from '../TxComponents/BalanceChangeWrapper';
 import { Account } from '@/background/service/preference';
 import { MultiActionProps } from '../TypedDataActions';
+import { SecurityEngineScopeProvider } from '@/ui/state/securityEngine';
 
 const ActionItem = ({
   isSpeedUp,
@@ -213,18 +214,22 @@ const Actions = ({
         {isMultiAction && multiAction ? (
           (multiAction.actionList as ParsedTransactionActionData[]).map(
             (action, index) => (
-              <ActionItem
+              <SecurityEngineScopeProvider
                 key={index}
-                data={action}
-                requireData={multiAction.requireDataList[index]}
-                chain={chain}
-                engineResults={multiAction.engineResultList[index]}
-                raw={raw}
-                account={account}
-                txDetail={txDetail}
-                onChange={onChange}
-                isSpeedUp={isSpeedUp}
-              />
+                scope={multiAction.securityScopes?.[index]}
+              >
+                <ActionItem
+                  data={action}
+                  requireData={multiAction.requireDataList[index]}
+                  chain={chain}
+                  engineResults={multiAction.engineResultList[index] || []}
+                  raw={raw}
+                  account={account}
+                  txDetail={txDetail}
+                  onChange={onChange}
+                  isSpeedUp={isSpeedUp}
+                />
+              </SecurityEngineScopeProvider>
             )
           )
         ) : (

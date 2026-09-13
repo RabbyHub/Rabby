@@ -255,6 +255,12 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
   if (!context) return;
 
   const deviceModel = context.provider_metadata?.device_model;
+  const diagnosticValue =
+    context.wallet_provider === 'ledger'
+      ? context.provider_code ??
+        context.provider_error_tag ??
+        context.error_category
+      : context.error_category;
 
   event.tags = {
     ...event.tags,
@@ -267,6 +273,15 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     sign_outcome: context.outcome,
     error_category: context.error_category,
     duration_bucket: context.duration_bucket,
+    ...(context.wallet_provider === 'ledger' && context.provider_code
+      ? { signing_provider_code: context.provider_code }
+      : {}),
+    ...(context.wallet_provider === 'ledger' && context.provider_error_tag
+      ? { signing_provider_error_tag: context.provider_error_tag }
+      : {}),
+    ...(context.wallet_provider === 'ledger' && context.provider_stage
+      ? { signing_provider_stage: context.provider_stage }
+      : {}),
     ...(typeof deviceModel === 'string'
       ? { signing_device_model: deviceModel }
       : {}),
@@ -276,7 +291,7 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     context.wallet_family,
     context.wallet_provider,
     context.operation,
-    context.error_category,
+    diagnosticValue,
     '{{ default }}',
   ];
   event.message = `${context.wallet_provider} signing failed`;
@@ -286,13 +301,16 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
       {
         ...originalException,
         type: 'SigningError',
-        value: context.error_category,
+        value: diagnosticValue,
       },
     ],
   };
   event.extra = {
     ...(context.provider_code
       ? { signing_provider_code: context.provider_code }
+      : {}),
+    ...(context.provider_error_tag
+      ? { signing_provider_error_tag: context.provider_error_tag }
       : {}),
     ...(context.provider_stage
       ? { signing_provider_stage: context.provider_stage }

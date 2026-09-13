@@ -1,10 +1,11 @@
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { useRabbySelector } from '@/ui/store';
 import { useCommonPopupView } from '@/ui/utils';
 import clsx from 'clsx';
 import { sortBy } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChainToggleButton } from './ChainToggleButton';
+import { useExpandableList } from './useExpandableList';
 
 const COUNT = 5;
 
@@ -13,11 +14,17 @@ export const TestnetChainList = ({
 }: {
   onChange(id: string | null): void;
 }) => {
-  const { data, visible } = useCommonPopupView();
+  const { visible } = useCommonPopupView();
   const chainList = useRabbySelector((store) =>
     sortBy(store.chains.testnetList, (item) => item.name)
   );
-  const [showMore, setShowMore] = React.useState(false);
+  const {
+    showMore,
+    setShowMore,
+    expand,
+    collapse,
+    rootRef,
+  } = useExpandableList();
   const [activeChainId, setActiveChainId] = React.useState<string | null>(null);
   const { t } = useTranslation();
 
@@ -59,6 +66,7 @@ export const TestnetChainList = ({
 
   return (
     <div
+      ref={rootRef}
       className={clsx(
         'bg-r-neutral-card-1 rounded-[8px] p-[12px]',
         'flex gap-12 flex-wrap'
@@ -88,22 +96,21 @@ export const TestnetChainList = ({
           </div>
         );
       })}
-      {!showMore && moreLen ? (
-        <div
-          className={clsx(
-            'cursor-pointer text-12 underline text-r-neutral-foot leading-[20px]',
-            {
-              hidden: moreLen === 0,
-            }
-          )}
-          onClick={() => {
-            setShowMore(true);
-          }}
-        >
-          {moreLen > 1
-            ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
-            : t('page.dashboard.assets.unfoldChain')}
-        </div>
+      {showMore ? (
+        <ChainToggleButton
+          expanded
+          label={t('global.collapse')}
+          onClick={collapse}
+        />
+      ) : moreLen ? (
+        <ChainToggleButton
+          label={
+            moreLen > 1
+              ? t('page.dashboard.assets.unfoldChainPlural', { moreLen })
+              : t('page.dashboard.assets.unfoldChain')
+          }
+          onClick={expand}
+        />
       ) : null}
     </div>
   );

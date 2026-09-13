@@ -111,11 +111,15 @@ const StyledInput = styled(Input)<{
   }
 `;
 
-function isTestchain(chainServerId?: Chain['serverId']) {
-  if (!chainServerId) return false;
+function getDefaultSelectorChainId(
+  chainServerId: Chain['serverId'] | undefined,
+  type: TokenSelectorProps['type']
+) {
+  if (!chainServerId) return '';
 
   const chain = findChain({ serverId: chainServerId });
-  return chain?.isTestnet;
+  // Send starts with all mainnets; retain the current testnet tab behavior.
+  return type === 'send' && !chain?.isTestnet ? '' : chainServerId;
 }
 
 const TokenAmountInput = ({
@@ -171,12 +175,13 @@ const TokenAmountInput = ({
           }),
     [token?.chain]
   );
+  const defaultSelectorChainId = getDefaultSelectorChainId(token?.chain, type);
   const [
     { mainnet: mainnetChainServerId, testnet: testnetChainServerId },
     setNetVariedChainServerId,
   ] = useState({
-    mainnet: chainItemOfToken?.isTestnet ? '' : token?.chain || '',
-    testnet: chainItemOfToken?.isTestnet ? token?.chain || '' : '',
+    mainnet: chainItemOfToken?.isTestnet ? '' : defaultSelectorChainId,
+    testnet: chainItemOfToken?.isTestnet ? defaultSelectorChainId : '',
   });
   // const testnetChainItem = useMemo(
   //   () =>
@@ -234,16 +239,16 @@ const TokenAmountInput = ({
       setTokenSelectorVisible(false);
       setLpTokenMode(false);
       tokenInputRef.current?.focus();
-      setChainServerId(token?.chain);
+      setChainServerId(getDefaultSelectorChainId(token.chain, type));
     },
-    [applyInputValue, onTokenChange, setChainServerId]
+    [applyInputValue, onTokenChange, setChainServerId, type]
   );
 
   const handleTokenSelectorClose = useCallback(() => {
-    setChainServerId(token?.chain);
+    setChainServerId(defaultSelectorChainId);
     setLpTokenMode(false);
     setTokenSelectorVisible(false);
-  }, [token?.chain, setChainServerId]);
+  }, [defaultSelectorChainId, setChainServerId]);
 
   const checkBeforeConfirm = useCallback(
     (token: TokenItem) => {
@@ -296,11 +301,14 @@ const TokenAmountInput = ({
   });
 
   const handleSelectToken = useCallback(() => {
+    if (type === 'send') {
+      setChainServerId(defaultSelectorChainId);
+    }
     if (allTokens.length > 0) {
       setUpdateNonce(updateNonce + 1);
     }
     setTokenSelectorVisible(true);
-  }, [allTokens, updateNonce]);
+  }, [allTokens, defaultSelectorChainId, setChainServerId, type, updateNonce]);
 
   const allDisplayTokens = useMemo(() => {
     return allTokens.map(abstractTokenToTokenItem);
@@ -375,8 +383,8 @@ const TokenAmountInput = ({
   );
 
   useEffect(() => {
-    setChainServerId(token?.chain || '');
-  }, [token?.chain, setChainServerId]);
+    setChainServerId(defaultSelectorChainId);
+  }, [defaultSelectorChainId, setChainServerId]);
 
   const displayInputValue = displayValue ?? value ?? '';
   const actualInputValue = displayValueText ? '' : displayInputValue;

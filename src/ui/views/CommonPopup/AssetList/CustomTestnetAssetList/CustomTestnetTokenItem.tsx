@@ -131,7 +131,7 @@ export const TokenItemAmount: React.FC<Props & { className?: string }> = ({
     <TCell
       style={style}
       className={clsx(
-        'py-8 text-r-neutral-title-1 text-15 font-medium text-right w-[110px] ml-auto',
+        'py-8 text-r-neutral-title-1 text-15 font-medium text-right w-[110px] ml-auto truncate',
         className
       )}
     >

@@ -18,6 +18,7 @@ import stats from '@/stats';
 import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
 import { resolveTpSlTrigger } from '../../../tpslTrigger';
 import { calcAmountFromPercentage } from '../utils';
+import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
 import { perpsToast } from '../../PerpsToast';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import type { OrderConfirmContent } from '../../../modal/OrderConfirmProvider';
@@ -94,7 +95,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
   const [slippageVisible, setSlippageVisible] = React.useState(false);
 
-  // Form validation (direction-agnostic)
+  // Form validation (direction-agnostic; the per-side max gate lives at the buttons)
   const validation = React.useMemo(() => {
     let error: string = '';
     const size = Number(positionSize.amount) || 0;
@@ -107,20 +108,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     // Check minimum order size ($10)
     if (notionalNum < 10) {
       error = t('page.perpsPro.tradingPanel.minimumOrderSize');
-      return { isValid: false, error };
-    }
-
-    // Check max trade size
-    // reduceOnly: check against the opposite direction's max (position size)
-    const effectiveMaxTradeSize = reduceOnly
-      ? Number(
-          (currentPosition?.side === 'Long'
-            ? maxSellTradeSize
-            : maxBuyTradeSize) || 0
-        )
-      : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
-    if (effectiveMaxTradeSize > 0 && size > effectiveMaxTradeSize) {
-      error = t('page.perpsPro.tradingPanel.insufficientBalance');
       return { isValid: false, error };
     }
 
@@ -141,9 +128,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
   }, [
     markPrice,
     positionSize.amount,
-    maxBuyTradeSize,
-    maxSellTradeSize,
-    reduceOnly,
     tradeSize,
     currentMarketData,
     percentage,
@@ -500,7 +484,14 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   );
 
+  const checkDirectionMax = useDirectionMaxGate({
+    positionSize,
+    maxBuyTradeSize,
+    maxSellTradeSize,
+  });
+
   const handleSubmitClick = useMemoizedFn((isBuy: boolean) => {
+    if (!checkDirectionMax(isBuy)) return;
     // Keep the direction-specific TP/SL check ahead of the dialog: otherwise the
     // user would confirm an order that can only fail validation.
     if (!validateTpslForDirection(isBuy)) return;

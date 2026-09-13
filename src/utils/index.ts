@@ -51,7 +51,23 @@ export const resemblesETHAddress = (str: string): boolean => {
   return str.length === 42;
 };
 
-export const getAddressScanLink = (scanLink: string, address: string) => {
+// Explorer scan links are built from remotely synced chain data; restrict to
+// http(s) so a poisoned entry can't become a javascript:/data:/file: URL.
+export const isValidHttpUrl = (url: string) => {
+  try {
+    return ['http:', 'https:'].includes(new URL(url).protocol);
+  } catch {
+    return false;
+  }
+};
+
+export const getAddressScanLink = (
+  scanLink: string | undefined | null,
+  address: string
+) => {
+  if (!scanLink || !isValidHttpUrl(scanLink)) {
+    return '';
+  }
   if (/transaction\/_s_/.test(scanLink)) {
     return scanLink.replace(/transaction\/_s_/, `address/${address}`);
   } else if (/tx\/_s_/.test(scanLink)) {
@@ -63,7 +79,13 @@ export const getAddressScanLink = (scanLink: string, address: string) => {
   }
 };
 
-export const getTxScanLink = (scankLink: string, hash: string) => {
+export const getTxScanLink = (
+  scankLink: string | undefined | null,
+  hash: string
+) => {
+  if (!scankLink || !isValidHttpUrl(scankLink)) {
+    return '';
+  }
   if (scankLink.includes('_s_')) {
     return scankLink.replace('_s_', hash);
   }

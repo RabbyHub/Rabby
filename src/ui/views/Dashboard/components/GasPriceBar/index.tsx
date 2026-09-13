@@ -1,12 +1,15 @@
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { gasMarketQueryOptions } from '@/ui/query/resources/gasMarket';
+import { tokenQueryOptions } from '@/ui/query/resources/token';
+import { tokenPriceQueryOptions } from '@/ui/query/resources/tokenPrice';
 import { useRabbySelector } from '@/ui/store';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
-import { findChain, findChainByEnum } from '@/utils/chain';
-import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { findChainByEnum } from '@/utils/chain';
+import { CHAINS_ENUM } from '@debank/common';
+import { useQuery } from '@tanstack/react-query';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
-import { useAsync } from 'react-use';
 import { ReactComponent as RcIconGas } from 'ui/assets/dashboard/gas.svg';
 import IconUnknown from 'ui/assets/token-default.svg';
 
@@ -18,79 +21,34 @@ export const GasPriceBar: React.FC<Props> = ({ currentConnectedSiteChain }) => {
   const wallet = useWallet();
   const account = useRabbySelector((state) => state.account.currentAccount);
 
-  const currentConnectedSiteChainNativeToken = useMemo(
+  const chainItem = useMemo(
     () =>
-      currentConnectedSiteChain
-        ? findChain({
-            enum: currentConnectedSiteChain,
-          })?.nativeTokenAddress || 'eth'
-        : 'eth',
+      findChainByEnum(currentConnectedSiteChain, {
+        fallback: true,
+      })!,
     [currentConnectedSiteChain]
   );
+  const currentConnectedSiteChainNativeToken =
+    chainItem.nativeTokenAddress || 'eth';
 
-  const {
-    value: gasPrice = 0,
-    loading: gasPriceLoading,
-  } = useAsync(async () => {
-    try {
-      const chain = findChain({
-        serverId: currentConnectedSiteChainNativeToken,
-      });
-      const marketGas = chain?.isTestnet
-        ? await wallet.getCustomTestnetGasMarket({
-            chainId: chain?.id,
-          })
-        : await wallet.gasMarketV2({
-            chainId: currentConnectedSiteChainNativeToken,
-          });
-      const selectedGasPice = marketGas.find((item) => item.level === 'slow')
-        ?.price;
-      if (selectedGasPice) {
-        return Number(selectedGasPice / 1e9);
-      }
-    } catch (e) {
-      // DO NOTHING
-    }
-  }, [currentConnectedSiteChainNativeToken]);
+  const { data: gasPrice = 0, isLoading: gasPriceLoading } = useQuery(
+    gasMarketQueryOptions(wallet, chainItem.serverId || '')
+  );
 
-  const { value: tokenLogo, loading: tokenLoading } = useAsync(async () => {
-    const chainItem = findChainByEnum(currentConnectedSiteChain, {
-      fallback: true,
-    })!;
+  const { data: tokenInfo, isLoading: tokenLoading } = useQuery(
+    tokenQueryOptions(wallet, {
+      address: account?.address,
+      chainServerId: chainItem.serverId || '',
+      tokenId: chainItem.nativeTokenAddress || '',
+    })
+  );
+  const tokenLogo = tokenInfo?.logo_url || chainItem.nativeTokenLogo;
 
-    try {
-      const data = await wallet.openapi.getToken(
-        account!.address,
-        chainItem.serverId || '',
-        chainItem.nativeTokenAddress || ''
-      );
-      return data?.logo_url || chainItem.nativeTokenLogo;
-    } catch (error) {
-      return chainItem.nativeTokenLogo;
-    }
-  }, [currentConnectedSiteChain]);
-
-  const {
-    value: tokenPrice,
-    loading: currentPriceLoading,
-  } = useAsync(async () => {
-    try {
-      const {
-        change_percent = 0,
-        last_price = 0,
-      } = await wallet.openapi.tokenPrice(currentConnectedSiteChainNativeToken);
-
-      return { currentPrice: last_price, percentage: change_percent };
-    } catch (e) {
-      return {
-        currentPrice: null,
-        percentage: null,
-      };
-    }
-  }, [currentConnectedSiteChainNativeToken]);
+  const { data: tokenPrice, isLoading: currentPriceLoading } = useQuery(
+    tokenPriceQueryOptions(wallet, currentConnectedSiteChainNativeToken)
+  );
 
   const { currentPrice = null, percentage = null } = tokenPrice || {};
-  const isETH = currentConnectedSiteChainNativeToken === 'eth';
 
   return (
     <div

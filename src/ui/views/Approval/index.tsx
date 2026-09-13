@@ -41,7 +41,13 @@ const Approval: React.FC<{
     document.title = 'Rabby Wallet Notification';
     const account = approval.data.account || (await wallet.getCurrentAccount());
     if (!account) {
-      rejectApproval();
+      rejectApproval(
+        undefined,
+        false,
+        false,
+        approval.id,
+        approval.data.approvalComponent
+      );
       return;
     }
   };
@@ -62,6 +68,8 @@ const Approval: React.FC<{
       {approval && (
         <ApprovalUtilsProvider>
           <CurrentApprovalComponent
+            key={approval.id}
+            approvalId={approval.id}
             params={params}
             origin={origin}
             account={account}

@@ -9,7 +9,11 @@ import React, {
   useState,
 } from 'react';
 
-import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import {
+  selectIsLoadingMatteredChainBalances,
+  useAccountStore,
+} from '@/ui/state/account';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import { CHAINS_ENUM } from 'consts';
@@ -209,9 +213,7 @@ const ChainSelectorModal = ({
   }, [value, visible, onTabChange]);
 
   const rDispatch = useRabbyDispatch();
-  const isLoading = useRabbyGetter(
-    (s) => s.account.isLoadingMateeredChainBalances
-  );
+  const isLoading = useAccountStore(selectIsLoadingMatteredChainBalances);
 
   useEffect(() => {
     if (!visible) {

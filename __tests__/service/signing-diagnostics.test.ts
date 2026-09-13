@@ -89,7 +89,10 @@ describe('signing diagnostics port', () => {
 
     await expect(
       withSigningDiagnostics(
-        { type: 'Ledger Hardware', signingDiagnosticsProvider: 'tagged-ledger' },
+        {
+          type: 'Ledger Hardware',
+          signingDiagnosticsProvider: 'tagged-ledger',
+        },
         'transaction',
         () => Promise.reject(error)
       )

@@ -4,7 +4,7 @@ import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useMemoizedFn } from 'ahooks';
 import { useHistory } from 'react-router-dom';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
 import { PerpsLimitOrderItem } from './PerpsLimitOrderItem';

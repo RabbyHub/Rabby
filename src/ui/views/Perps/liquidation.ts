@@ -132,6 +132,7 @@ export const resolveProjectedLiquidationPrice = ({
   maxLeverage,
   pxDecimals,
   side,
+  assumeSufficientMargin,
 }: {
   /** Order size in the base asset. */
   baseSize: string;
@@ -144,6 +145,24 @@ export const resolveProjectedLiquidationPrice = ({
   maxLeverage: number;
   pxDecimals: number;
   side: 'buy' | 'sell';
+  /**
+   * Floor the cross balance at the initial margin of the size this order
+   * actually adds (net new size / leverage). With a balance shortfall the real
+   * balance prices liquidation on top of the entry, or hides the estimate
+   * entirely; with this flag the estimate is the one the order would have if it
+   * were affordable — for surfaces that keep quoting while the order is
+   * unaffordable. A sufficient balance is never lowered, an unavailable one
+   * (null) still fails closed, and isolated margin already charges the order's
+   * own margin.
+   *
+   * The floor is the *added* margin, not the merged position's: an existing
+   * position's margin is already real and carried by the cross balance, so
+   * flooring at the merged notional would invent margin for it too and quote a
+   * liquidation price far safer than the account's. It is applied to the free
+   * balance before the existing leg's maintenance margin is added back, since
+   * that add-back is locked by the old leg and cannot fund this order.
+   */
+  assumeSufficientMargin?: boolean;
 }): { liquidationPrice: string; liquidationPriceNum: number } | null => {
   const entry = positiveBn(entryPrice);
   const orderSize = positiveBn(baseSize);
@@ -189,15 +208,45 @@ export const resolveProjectedLiquidationPrice = ({
   const basePrice = isCross ? entry : projectedEntry;
   const baseNotional = isCross ? projectedSize.multipliedBy(entry) : notional;
 
-  const margin = isCross
-    ? // The cross balance already has the existing position's maintenance
-      // margin deducted, and `baseNotional` covers that same position — so the
-      // formula would charge it a second time. Add it back to charge it once.
-      new BigNumber(crossMarginAvailableAfterMaintenance ?? Number.NaN).plus(
-        currentSize
-          .multipliedBy(entry)
-          .multipliedBy(new BigNumber(1).dividedBy(maxLeverage).dividedBy(2))
+  const crossFree = new BigNumber(
+    crossMarginAvailableAfterMaintenance ?? Number.NaN
+  );
+  // The cross balance already has the existing position's maintenance margin
+  // deducted, and `baseNotional` covers that same position — so the formula
+  // would charge it a second time. Add it back to charge it once.
+  const crossMaintenanceAddBack = currentSize
+    .multipliedBy(entry)
+    .multipliedBy(new BigNumber(1).dividedBy(maxLeverage).dividedBy(2));
+  // Only the size this order adds needs margin invented for it: growing a
+  // position adds `orderSize`, flipping one adds the whole post-flip position
+  // (`projectedSize`) since the old leg is closed out, and with no position the
+  // two are the same. Charging `baseNotional` instead would also fabricate
+  // margin for the existing leg, which the cross balance already backs.
+  const addedMargin = (sameDirection ? orderSize : projectedSize)
+    .multipliedBy(entry)
+    .dividedBy(leverageValue);
+  // `isFinite` keeps the null-balance case failing closed: the floor only
+  // raises a real deficit, never invents a balance that couldn't be resolved.
+  const floorCross = assumeSufficientMargin && crossFree.isFinite();
+
+  // Flipping closes the old leg and releases its maintenance margin back into
+  // the balance, so the whole sum genuinely backs the new position.
+  const crossAfterRelease = crossFree.plus(crossMaintenanceAddBack);
+  const crossBacking = sameDirection
+    ? // Growing instead leaves that maintenance margin locked by the existing
+      // leg, where this order cannot spend it — so the floor has to land on the
+      // free balance underneath it. Flooring the sum would let a large enough
+      // add-back mask a deficit outright: 18 free against a 20 order reads as
+      // 20.5 and is never topped up.
+      (floorCross ? BigNumber.maximum(crossFree, addedMargin) : crossFree).plus(
+        crossMaintenanceAddBack
       )
+    : floorCross
+    ? BigNumber.maximum(crossAfterRelease, addedMargin)
+    : crossAfterRelease;
+
+  const margin = isCross
+    ? crossBacking
     : sameDirection
     ? new BigNumber(currentPosition?.marginUsed ?? 0).plus(
         orderSize.multipliedBy(entry).dividedBy(leverageValue)

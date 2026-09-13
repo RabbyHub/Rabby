@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { ReactComponent as RcIconManageMarginAlarmCC } from '@/ui/assets/perps/icon-alarm-manage-margin-cc.svg';
 import { useRequest } from 'ahooks';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import {
   calculateDistanceToLiquidation,
   calLiquidationPrice,

@@ -52,6 +52,7 @@ export type ProviderDiagnostics = {
   transport?: unknown;
   error_category?: unknown;
   provider_code?: unknown;
+  provider_error_tag?: unknown;
   provider_stage?: unknown;
   provider_reason?: unknown;
   provider_metadata?: unknown;
@@ -111,6 +112,7 @@ export type SigningContext = {
   error_category: SigningErrorCategory;
   duration_bucket: 'lt_100ms' | '100ms_1s' | '1s_5s' | 'gte_5s';
   provider_code?: string;
+  provider_error_tag?: string;
   provider_stage?: string;
   provider_reason?: string;
   provider_metadata?: Record<string, string | number | boolean>;
@@ -211,6 +213,7 @@ type NormalizedProviderDiagnostics = Partial<
     | 'transport'
     | 'error_category'
     | 'provider_code'
+    | 'provider_error_tag'
     | 'provider_stage'
     | 'provider_reason'
     | 'provider_metadata'
@@ -235,6 +238,8 @@ const providerMetadataKeys: Record<string, string[]> = {
     'session_reused',
     'clear_signing_context_errors',
     'clear_signing_type',
+    'last_required_user_interaction',
+    'used_fallback',
   ],
   onekey: commonMetadataKeys,
   trezor: commonMetadataKeys,
@@ -247,6 +252,7 @@ const normalizeMetadata = (
   if (!value || typeof value !== 'object') return {};
   const diagnostics = value as ProviderDiagnostics;
   const providerCode = diagnostics.provider_code;
+  const providerErrorTag = diagnostics.provider_error_tag;
   const providerStage = diagnostics.provider_stage;
   const providerReason = diagnostics.provider_reason;
   const providerMetadata = diagnostics.provider_metadata;
@@ -276,6 +282,10 @@ const normalizeMetadata = (
     ...(typeof providerCode === 'string' &&
     /^[a-z0-9_.:-]{1,32}$/i.test(providerCode)
       ? { provider_code: providerCode }
+      : {}),
+    ...(typeof providerErrorTag === 'string' &&
+    /^[a-z0-9_.:-]{1,64}$/i.test(providerErrorTag)
+      ? { provider_error_tag: providerErrorTag }
       : {}),
     ...(typeof providerStage === 'string' &&
     /^[a-z0-9_.:-]{1,32}$/i.test(providerStage)

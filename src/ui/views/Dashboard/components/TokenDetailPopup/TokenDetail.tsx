@@ -442,7 +442,7 @@ const TokenDetail = ({
                     title={(tokenWithAmount.amount || 0).toString()}
                     placement="bottom"
                   >
-                    <div className="balance-value truncate">
+                    <div className="balance-value truncate max-w-[200px]">
                       {splitNumberByStep(
                         (tokenWithAmount.amount || 0)?.toFixed(8)
                       )}{' '}

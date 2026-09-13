@@ -6,6 +6,7 @@ import { create } from 'zustand';
 export type WalletStatusState = {
   isBooted: boolean;
   isUnlocked: boolean;
+  hasUnlockedOnce: boolean;
   isInitialized: boolean;
   isSyncing: boolean;
 };
@@ -19,6 +20,7 @@ export type WalletStatusStore = WalletStatusState & WalletStatusActions;
 const initialState: WalletStatusState = {
   isBooted: false,
   isUnlocked: false,
+  hasUnlockedOnce: false,
   isInitialized: false,
   isSyncing: false,
 };
@@ -86,12 +88,13 @@ export async function syncWalletStatus() {
     const status = await wallet.getWalletStatus();
     if (request !== latestSyncRequest) return;
 
-    useWalletStatusStore.setState({
+    useWalletStatusStore.setState((state) => ({
       isBooted: status.isBooted,
       isUnlocked: status.isUnlocked,
+      hasUnlockedOnce: state.hasUnlockedOnce || status.isUnlocked,
       isInitialized: true,
       isSyncing: false,
-    });
+    }));
   } catch (error) {
     if (request === latestSyncRequest) {
       // Fail closed. Keeping the previous snapshot would leave a page gated on

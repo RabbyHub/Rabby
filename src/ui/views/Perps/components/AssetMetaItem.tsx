@@ -1,4 +1,4 @@
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import clsx from 'clsx';
 import React from 'react';
 import { TokenImg } from './TokenImg';

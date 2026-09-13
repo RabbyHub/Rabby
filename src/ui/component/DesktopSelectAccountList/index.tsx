@@ -11,7 +11,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
 import { isSameAddress, splitNumberByStep } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';

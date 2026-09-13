@@ -1,6 +1,6 @@
 import Popup from '@/ui/component/Popup';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { useRequest } from 'ahooks';

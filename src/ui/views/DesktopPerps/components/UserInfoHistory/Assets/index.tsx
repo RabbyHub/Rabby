@@ -28,7 +28,11 @@ interface AssetRow {
 
 export const Assets: React.FC = () => {
   const { t } = useTranslation();
-  const { isUnifiedAccount, spotBalancesMap } = usePerpsAccount();
+  const {
+    isUnifiedAccount,
+    isPortfolioMargin,
+    spotBalancesMap,
+  } = usePerpsAccount();
   const clearinghouseState = useRabbySelector(
     (s) => s.perps.clearinghouseState
   );
@@ -41,7 +45,7 @@ export const Assets: React.FC = () => {
   const { openPerpsPopup } = usePerpsPopupNav();
 
   const rows = useMemo<AssetRow[]>(() => {
-    if (!isUnifiedAccount) {
+    if (!isUnifiedAccount && !isPortfolioMargin) {
       const spotUsdc = rawSpotBalancesMap[getSpotBalanceKey('USDC')];
       const spotTotal = Number(spotUsdc?.total || 0);
       const spotAvailable = Number(spotUsdc?.available || 0);
@@ -83,6 +87,7 @@ export const Assets: React.FC = () => {
     });
   }, [
     isUnifiedAccount,
+    isPortfolioMargin,
     spotBalancesMap,
     rawSpotBalancesMap,
     clearinghouseState,

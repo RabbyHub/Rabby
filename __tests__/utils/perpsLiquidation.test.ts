@@ -159,6 +159,85 @@ describe('resolveProjectedLiquidationPrice (parity with rabby-mobile)', () => {
     ).toBe('779.48');
   });
 
+  it('assumeSufficientMargin floors a deficient cross balance at the order margin', () => {
+    // A 5 balance cannot fund the 20 order margin: unflagged the estimate is
+    // hidden (margin_available <= 0), flagged it matches the isolated one.
+    const facts = {
+      marginMode: 'cross' as const,
+      crossMarginAvailableAfterMaintenance: 5,
+    };
+    expect(resolve(facts)).toBeNull();
+    expect(
+      resolve({ ...facts, assumeSufficientMargin: true })?.liquidationPrice
+    ).toBe(expectedFrom(100, 20, 'Long', 2, 200, 20));
+  });
+
+  it('assumeSufficientMargin never lowers a sufficient cross balance', () => {
+    expect(
+      resolve({
+        marginMode: 'cross',
+        crossMarginAvailableAfterMaintenance: 30,
+        assumeSufficientMargin: true,
+      })?.liquidationPrice
+    ).toBe(expectedFrom(100, 30, 'Long', 2, 200, 20));
+  });
+
+  // Growing an existing 1 @ 80 long by 2 @ 100 at 10x. The order adds 20 of
+  // margin; the existing leg keeps 1*100/(2*20) = 2.5 of maintenance margin
+  // locked, which cross adds back on top of whatever the free balance is.
+  const growth = {
+    marginMode: 'cross' as const,
+    currentPosition: { entryPx: '80', marginUsed: '8', szi: '1' },
+    assumeSufficientMargin: true,
+  };
+
+  it('assumeSufficientMargin leaves a free balance that covers the added margin', () => {
+    // 22.5 free already funds the 20, so the estimate keeps the real balance:
+    // 22.5 + 2.5 = 25. Never lowered, never raised.
+    expect(
+      resolve({ ...growth, crossMarginAvailableAfterMaintenance: 22.5 })
+        ?.liquidationPrice
+    ).toBe(expectedFrom(100, 25, 'Long', 3, 300, 20));
+  });
+
+  it('assumeSufficientMargin floors growth on the free balance, under the maintenance add-back', () => {
+    // 18 free cannot fund the 20: the account has to be topped up to 20 before
+    // the 2.5 of still-locked maintenance is added back, giving 22.5.
+    //
+    // The interval matters — 18 is chosen so that every wrong floor is a
+    // different number: flooring the *sum* leaves 18 + 2.5 = 20.5 untouched
+    // (the add-back masks the deficit outright), and flooring at the merged
+    // position's margin (3 @ 100 at 10x = 30) invents margin for the existing
+    // leg the balance already carries.
+    expect(
+      resolve({ ...growth, crossMarginAvailableAfterMaintenance: 18 })
+        ?.liquidationPrice
+    ).toBe(expectedFrom(100, 22.5, 'Long', 3, 300, 20));
+  });
+
+  it('assumeSufficientMargin floors a flip on the balance the closed leg releases', () => {
+    // Flipping a 1 @ 80 long with a 2 @ 100 sell leaves a 1 short needing 10.
+    // The old leg is closed, so its 2.5 of maintenance is released and spendable
+    // — 8 free plus 2.5 backs the new leg with 10.5 and needs no top-up.
+    expect(
+      resolve({
+        ...growth,
+        side: 'sell',
+        crossMarginAvailableAfterMaintenance: 8,
+      })?.liquidationPrice
+    ).toBe(expectedFrom(100, 10.5, 'Short', 1, 100, 20));
+  });
+
+  it('assumeSufficientMargin still fails closed on an unavailable balance', () => {
+    expect(
+      resolve({
+        marginMode: 'cross',
+        crossMarginAvailableAfterMaintenance: null,
+        assumeSufficientMargin: true,
+      })
+    ).toBeNull();
+  });
+
   it('distinguishes the MSFT unpriced long from its finite short', () => {
     const msft = {
       crossMarginAvailableAfterMaintenance: 36.2449065,

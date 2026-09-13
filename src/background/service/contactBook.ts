@@ -1,37 +1,57 @@
-import { createPersistStore, isSameAddress } from 'background/utils';
+import {
+  createPersistStore,
+  isSameAddress,
+  patchPersistStore,
+} from 'background/utils';
 import { keyringService, openapiService, whitelistService } from '.';
 import { KEYRING_CLASS } from '@/constant';
 import PQueue from 'p-queue';
+import { z } from 'zod';
 
 const queue = new PQueue({
   concurrency: 8,
   interval: 1000,
   intervalCap: 8,
 });
-export interface ContactBookItem {
-  name: string;
-  address: string;
-  isAlias: boolean;
-  isContact: boolean;
-  cexId?: string;
-}
+const contactBookItemSchema = z.object({
+  name: z.string(),
+  address: z.string(),
+  isAlias: z.boolean(),
+  isContact: z.boolean(),
+  cexId: z.string().optional(),
+});
+
+const contactBookStoreSchema = z.record(
+  z.string(),
+  contactBookItemSchema.optional()
+);
+
+export type ContactBookItem = z.output<typeof contactBookItemSchema>;
 
 export interface UIContactBookItem {
   name: string;
   address: string;
 }
 
-export type ContactBookStore = Record<string, ContactBookItem | undefined>;
+export type ContactBookStore = z.output<typeof contactBookStoreSchema>;
+
+const createContactBookStoreTemplate = (): ContactBookStore =>
+  contactBookStoreSchema.parse({});
 
 class ContactBook {
-  store!: ContactBookStore;
+  store: ContactBookStore = createContactBookStoreTemplate();
   cache: ContactBookStore = {};
 
   init = async () => {
     this.store = await createPersistStore<ContactBookStore>({
       name: 'contactBook',
-      template: {},
+      template: createContactBookStoreTemplate(),
+      schema: contactBookStoreSchema,
     });
+  };
+
+  patchStore = (partials: Partial<ContactBookStore>) => {
+    patchPersistStore(this.store, partials);
   };
 
   getContactByAddress = (address: string) => {
@@ -106,7 +126,7 @@ class ContactBook {
         isAlias: false,
       });
     } else {
-      delete this.store[key];
+      this.patchStore({ [key]: undefined });
     }
   };
 

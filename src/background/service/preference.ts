@@ -157,7 +157,6 @@ export interface PreferenceStore {
   desktopTabIds?: {
     profile?: number;
     perps?: number;
-    lending?: number;
     prediction?: number;
   };
 

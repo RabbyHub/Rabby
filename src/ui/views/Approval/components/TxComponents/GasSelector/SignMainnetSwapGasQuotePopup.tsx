@@ -2,7 +2,6 @@ import IconUnknown from '@/ui/assets/token-default.svg';
 import { ReactComponent as IconArrowDownCC } from '@/ui/assets/swap/arrow-down-cc.svg';
 import { ReactComponent as IconGasCustomRightArrowCC } from 'ui/assets/approval/edit-arrow-right.svg';
 import { ReactComponent as RcIconLoading } from 'ui/component/ChainSelector/icons/loading-cc.svg';
-import { ReactComponent as RcIconGasBlurCC } from 'ui/assets/sign/tx/gas-blur-cc.svg';
 import { ReactComponent as RcIconGasTabActive } from '@/ui/assets/swap/gas-token-tab-active.svg';
 import { ReactComponent as RcIconGasAccountTabCC } from '@/ui/assets/swap/gas-account-tab-cc.svg';
 import { Popup, TokenWithChain } from 'ui/component';
@@ -335,7 +334,7 @@ export const SignMainnetSwapGasQuotePopup = ({
                   {renderGasMethod({
                     value: 'native',
                     ActiveComponent: RcIconGasTabActive,
-                    BlurComponent: RcIconGasBlurCC,
+                    BlurComponent: RcIconGasTabActive,
                     title: t('page.gasAccount.gasToken'),
                   })}
                   {renderGasMethod({

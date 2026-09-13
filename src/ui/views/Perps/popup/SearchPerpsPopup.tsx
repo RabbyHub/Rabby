@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input, Empty, InputRef } from 'antd';
 import { sortBy } from 'lodash';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
 import { ReactComponent as RcIconFavoriteStarCC } from '@/ui/assets/perps/IconFavoriteStarCC.svg';
 import clsx from 'clsx';

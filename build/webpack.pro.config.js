@@ -11,11 +11,10 @@ const config = {
     maxAssetSize: 2500000,
   },
   plugins: [
-    // new BundleAnalyzerPlugin(),
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
-    false &&
+    true &&
       new SecSDK({
         dev: false,
       }),

@@ -17,6 +17,7 @@ import stats from '@/stats';
 import { getStatsReportSide } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
 import { calcAmountFromPercentage } from '../utils';
+import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
 import perpsToast from '../../PerpsToast';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import { LiveLiquidation } from '../../../modal/OrderConfirmLiveValues';
@@ -86,7 +87,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
   const isStopLoss = takeOrStop === 'sl';
 
-  // Form validation (direction-agnostic)
+  // Form validation (direction-agnostic; the per-side max gate lives at the buttons)
   const validation = useMemo(() => {
     const tradeSize = Number(positionSize.amount) || 0;
     const notionalNum = tradeSize * Number(markPrice || 0);
@@ -107,22 +108,6 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       };
     }
 
-    // Check max trade size with reduceOnly awareness
-    const effectiveMaxTradeSize = reduceOnly
-      ? Number(
-          (currentPosition?.side === 'Long'
-            ? maxSellTradeSize
-            : maxBuyTradeSize) || 0
-        )
-      : Math.max(Number(maxBuyTradeSize || 0), Number(maxSellTradeSize || 0));
-
-    if (effectiveMaxTradeSize > 0 && tradeSize > effectiveMaxTradeSize) {
-      return {
-        isValid: false,
-        error: t('page.perpsPro.tradingPanel.insufficientBalance'),
-      };
-    }
-
     // Check maximum position size
     const maxUsdValue = Number(currentMarketData?.maxUsdValueSize || 1000000);
     if (notionalNum > maxUsdValue) {
@@ -136,17 +121,13 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     }
 
     return { isValid: true, error: '' };
-  }, [
-    positionSize.amount,
-    markPrice,
+  }, [positionSize.amount, markPrice, currentMarketData, triggerPrice, t]);
+
+  const checkDirectionMax = useDirectionMaxGate({
+    positionSize,
     maxBuyTradeSize,
     maxSellTradeSize,
-    reduceOnly,
-    currentPosition,
-    currentMarketData,
-    triggerPrice,
-    t,
-  ]);
+  });
 
   const {
     handleOpenTPSlMarketOrder,
@@ -268,6 +249,7 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
   const requestConfirm = useOrderConfirm();
 
   const handlePlaceOrder = useMemoizedFn((isBuy: boolean) => {
+    if (!checkDirectionMax(isBuy)) return;
     const order = buildOrder(isBuy);
     if (!checkTriggerDirection(isBuy, order.triggerPx)) return;
     // Whether the liquidation rows exist is settled at click time — the panel

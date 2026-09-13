@@ -43,7 +43,7 @@ export const ChainItem: React.FC<Props> = ({
     <div
       onClick={onClick}
       className={clsx(
-        'flex gap-6 items-center',
+        'flex gap-4 items-center',
         'cursor-pointer relative',
         className
       )}
@@ -61,7 +61,7 @@ export const ChainItem: React.FC<Props> = ({
       </TooltipWithMagnetArrow>
       <span
         className={clsx(
-          'text-13 leading-[16px] font-medium text-r-neutral-title-1 hover:text-r-blue-default',
+          'text-13 font-medium text-r-neutral-title-1 hover:text-r-blue-default',
           {
             'opacity-30': inactive,
           }
@@ -75,7 +75,7 @@ export const ChainItem: React.FC<Props> = ({
           title={t('component.ChainItem.appChain', { chain: name })}
         >
           <div
-            className={clsx('text-r-neutral-foot', {
+            className={clsx('text-r-neutral-foot ml-2', {
               'opacity-30': inactive,
             })}
           >
@@ -84,7 +84,7 @@ export const ChainItem: React.FC<Props> = ({
         </Tooltip>
       ) : (
         <span
-          className={clsx('text-12 leading-[16px] text-r-neutral-foot', {
+          className={clsx('text-12 text-r-neutral-foot font-normal', 'ml-2', {
             'opacity-30': inactive,
           })}
         >

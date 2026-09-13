@@ -20,7 +20,7 @@ import { RcIconAddWalletCC, RcIconMoreCC } from '@/ui/assets/desktop/profile';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { formatUsdValue, isSameAddress, splitNumberByStep } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { isSameAccount } from '@/utils/account';

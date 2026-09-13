@@ -98,6 +98,22 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
     options.onError?.(error);
   };
 
+  const mergeSnapshot = (persistedState: Partial<State>) => {
+    const currentState = store.getState();
+    return options.merge
+      ? options.merge(persistedState, currentState)
+      : ({ ...currentState, ...persistedState } as State);
+  };
+
+  const applyRemoteSnapshot = (persistedState: Partial<State>) => {
+    applyingRemote = true;
+    try {
+      rawSet(mergeSnapshot(persistedState), true);
+    } finally {
+      applyingRemote = false;
+    }
+  };
+
   const restoreBackgroundSnapshot = async () => {
     const request = ++latestSnapshotRequest;
     const snapshot = await options.storage.get();
@@ -111,7 +127,7 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
 
     latestOrigin = snapshot.origin;
     latestRevision = snapshot.revision;
-    applyRemoteState(snapshot.state);
+    applyRemoteSnapshot(snapshot.state);
   };
 
   const enqueuePersist = (
@@ -210,17 +226,7 @@ export const createRabbyStore = <State extends Record<string, unknown>>(
     try {
       const snapshot = await options.storage.get();
       const persistedState = snapshot.state;
-      const currentState = store.getState();
-      const mergedState = options.merge
-        ? options.merge(persistedState, currentState)
-        : ({ ...currentState, ...persistedState } as State);
-
-      applyingRemote = true;
-      try {
-        rawSet(mergedState, true);
-      } finally {
-        applyingRemote = false;
-      }
+      applyRemoteSnapshot(persistedState);
 
       latestOrigin = snapshot.origin;
       latestRevision = snapshot.revision;

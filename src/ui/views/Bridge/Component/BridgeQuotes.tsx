@@ -2,11 +2,14 @@ import { Popup } from '@/ui/component';
 import React, { useMemo } from 'react';
 import { QuoteLoading } from './loading';
 import { SelectedBridgeQuote, useSetRefreshId } from '../hooks';
-import BigNumber from 'bignumber.js';
 import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
 import { TokenItem } from '@/background/service/openapi';
-import { BridgeQuoteItem, bridgeQuoteScore } from './BridgeQuoteItem';
+import { BridgeQuoteItem } from './BridgeQuoteItem';
+import {
+  bridgeQuoteEstimatedValueBn,
+  bridgeQuoteScore,
+} from '../utils/bridgeQuote';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { DrawerProps } from 'antd';
 import { useRabbySelector } from '@/ui/store';
@@ -38,14 +41,8 @@ export const Quotes = ({
 
   const sortedList = useMemo(() => {
     return list?.sort((b, a) => {
-      return new BigNumber(a.to_token_amount)
-        .times(other.receiveToken.price || 1)
-        .minus(a.gas_fee.usd_value)
-        .minus(
-          new BigNumber(b.to_token_amount)
-            .times(other.receiveToken.price || 1)
-            .minus(b.gas_fee.usd_value)
-        )
+      return bridgeQuoteEstimatedValueBn(a, other.receiveToken)
+        .minus(bridgeQuoteEstimatedValueBn(b, other.receiveToken))
         .toNumber();
     });
   }, [list, other.receiveToken]);
@@ -73,10 +70,10 @@ export const Quotes = ({
     if (!bestQuote) {
       return '0';
     }
-    return new BigNumber(bestQuote.to_token_amount)
-      .times(other.receiveToken.price || 1)
-      .minus(bestQuote.gas_fee.usd_value)
-      .toString();
+    return bridgeQuoteEstimatedValueBn(
+      bestQuote,
+      other.receiveToken
+    ).toString();
   }, [sortedList, other.receiveToken]);
 
   return (

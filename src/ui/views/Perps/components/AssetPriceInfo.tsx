@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { formatPercent } from '../utils';
 import { splitNumberByStep } from '@/ui/utils';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 
 interface AssetPriceInfoProps {

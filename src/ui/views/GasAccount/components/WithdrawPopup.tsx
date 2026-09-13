@@ -14,7 +14,7 @@ import { useRabbySelector } from '@/ui/store';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { findChainByServerID } from '@/utils/chain';
 import styled from 'styled-components';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import {
   GasAccountInfo,

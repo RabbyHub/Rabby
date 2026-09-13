@@ -21,7 +21,8 @@ import { ReactComponent as RcInfoRowArrowRight } from '@/ui/assets/swap/info-row
 import { BridgeSlippage, SlippageValidationResult } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
-import { ReactComponent as RcIconFree } from '@/ui/assets/swap/free.svg';
+import { RabbyFeeTag } from '../../Swap/Component/RabbyFeeTag';
+import type { RabbyFeeTier } from '../../Swap/hooks/fee';
 import styled from 'styled-components';
 import { findChainByServerID } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
@@ -116,8 +117,7 @@ export const BridgeShowMore = ({
   autoSuggestSlippage,
   insufficient = false,
   signatureInstance,
-  isRabbyFeeFree = false,
-  isRabbyFeeHalf = false,
+  feeTier = 'default',
   getContainer,
   validateSlippage,
   renderSwapQuotes,
@@ -157,8 +157,7 @@ export const BridgeShowMore = ({
   autoSuggestSlippage?: string;
   supportDirectSign?: boolean;
   signatureInstance: SignatureManager;
-  isRabbyFeeFree?: boolean;
-  isRabbyFeeHalf?: boolean;
+  feeTier?: RabbyFeeTier;
   getContainer?: DrawerProps['getContainer'];
   validateSlippage?: (
     slippage: string
@@ -168,9 +167,6 @@ export const BridgeShowMore = ({
   swapQuotesLoading?: boolean;
 }) => {
   const { t } = useTranslation();
-
-  const RABBY_FEE = '0.25%';
-  const RABBY_HALF_FEE = '0.12%';
 
   const data = useMemo(() => {
     if (quoteLoading || (!sourceLogo && !sourceName)) {
@@ -362,45 +358,7 @@ export const BridgeShowMore = ({
 
   const rabbyFeeContentRender = () => (
     <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">
-      <div
-        className={clsx(
-          'text-12 font-medium',
-          isRabbyFeeFree
-            ? 'flex shrink-0 items-center gap-8'
-            : isRabbyFeeHalf
-            ? 'flex shrink-0 items-center gap-4 cursor-pointer'
-            : isWrapToken
-            ? 'text-r-neutral-foot'
-            : 'text-r-blue-default cursor-pointer'
-        )}
-        onClick={isRabbyFeeFree ? undefined : openFeePopup}
-      >
-        {isRabbyFeeFree ? (
-          <>
-            <RcIconFree
-              aria-hidden
-              className="h-16 w-[52px] shrink-0"
-              viewBox="0 0 52 16"
-            />
-            <span className="font-normal text-r-neutral-foot line-through">
-              {RABBY_FEE}
-            </span>
-          </>
-        ) : isRabbyFeeHalf ? (
-          <>
-            <span className="font-normal text-r-neutral-foot line-through">
-              {RABBY_FEE}
-            </span>
-            <span className="font-normal text-r-green-default">
-              {RABBY_HALF_FEE}
-            </span>
-          </>
-        ) : isWrapToken && type === 'swap' ? (
-          t('page.swap.no-fees-for-wrap')
-        ) : (
-          RABBY_FEE
-        )}
-      </div>
+      <RabbyFeeTag type={type} feeTier={feeTier} onOpenCompare={openFeePopup} />
     </ListItem>
   );
 
@@ -475,6 +433,9 @@ export const BridgeShowMore = ({
           >
             <Tooltip
               placement={'topRight'}
+              arrowPointAtCenter
+              // Arrow center: 13px right inset + half its 22px container.
+              align={{ offset: [24, -4] }}
               overlayClassName={clsx('rectangle', 'max-w-[312px]')}
               title={t('page.swap.preferMEVTip')}
             >

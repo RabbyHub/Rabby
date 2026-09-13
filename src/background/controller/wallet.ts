@@ -11,6 +11,7 @@ import {
   groupBy,
   isEqual,
   last,
+  omit,
   pick,
   sortBy,
   truncate,
@@ -44,7 +45,6 @@ import {
   OfflineChainsService,
   perpsService,
   miscService,
-  lendingService,
   feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
@@ -200,6 +200,10 @@ import {
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
+import {
+  assertApprovalSigningBinding,
+  waitForApprovalSigning,
+} from './walletUtils/approvalSigning';
 import { gasMarketV2 as loadGasMarketV2 } from '../service/gasMarket';
 import {
   cancelAllSignTxPreparations,
@@ -228,7 +232,6 @@ import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { GNOSIS_SUPPORT_CHAINS } from '@rabby-wallet/gnosis-sdk/dist/api';
-import { AccountScene } from '@/constant/scene-account';
 import { syncDbService } from '@/db/services/syncDbService';
 import { historyDbService } from '@/db/services/historyDbService';
 import { tokenDbService } from '@/db/services/tokenDbService';
@@ -457,12 +460,11 @@ const gnosisPQueue = new PQueue({
   concurrency: 2,
 });
 
-type DesktopPageType = 'profile' | 'perps' | 'lending' | 'prediction';
+type DesktopPageType = 'profile' | 'perps' | 'prediction';
 
 function getDesktopPageType(path: string): DesktopPageType {
   const normalized = path.replace(/^\//, '');
   if (normalized.startsWith('desktop/perps')) return 'perps';
-  if (normalized.startsWith('desktop/lending')) return 'lending';
   if (normalized.startsWith('desktop/prediction')) return 'prediction';
   return 'profile';
 }
@@ -554,8 +556,20 @@ export class WalletController extends BaseController {
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
-  rejectApproval = (err?: string, stay = false, isInternal = false) => {
-    return notificationService.rejectApproval(err, stay, isInternal);
+  rejectApproval = (
+    err?: string,
+    stay = false,
+    isInternal = false,
+    approvalId?: string,
+    approvalComponent?: Parameters<typeof notificationService.rejectApproval>[4]
+  ) => {
+    return notificationService.rejectApproval(
+      err,
+      stay,
+      isInternal,
+      approvalId,
+      approvalComponent
+    );
   };
 
   rejectAllApprovals = () => {
@@ -2635,19 +2649,6 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };
 
-  switchSceneAccount = ({
-    scene,
-    account,
-  }: {
-    scene: AccountScene;
-    account: Account;
-  }) => {
-    const prev = preferenceService.getPreference('sceneAccountMap') || {};
-    preferenceService.setPreferencePartials({
-      sceneAccountMap: { ...prev, [scene]: account },
-    });
-  };
-
   getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
   setLastTimeSendToken = (token: TokenItem) =>
     preferenceService.setLastTimeSendToken(token);
@@ -2696,6 +2697,10 @@ export class WalletController extends BaseController {
     key: Key
   ): PersistedStoreMap[Key] => {
     switch (key) {
+      case 'bridge':
+        return bridgeService.getBridgeData() as PersistedStoreMap[Key];
+      case 'contactBook':
+        return contactBookService.getContactsByMap() as PersistedStoreMap[Key];
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
       case 'openapi':
@@ -2740,6 +2745,14 @@ export class WalletController extends BaseController {
     }
 
     switch (key) {
+      case 'bridge':
+        bridgeService.patchStore(patch as PersistedStorePatch<'bridge'>);
+        return;
+      case 'contactBook':
+        contactBookService.patchStore(
+          patch as PersistedStorePatch<'contactBook'>
+        );
+        return;
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
         return;
@@ -2767,11 +2780,6 @@ export class WalletController extends BaseController {
   setRabbyPointsSignature = RabbyPointsService.setSignature;
   getRabbyPointsSignature = RabbyPointsService.getSignature;
   clearRabbyPointsSignature = RabbyPointsService.clearSignature;
-
-  getLastSelectedLendingChain = lendingService.getLastSelectedChain;
-  setLastSelectedLendingChain = lendingService.setLastSelectedChain;
-  getSkipHealthFactorWarning = lendingService.getSkipHealthFactorWarning;
-  setSkipHealthFactorWarning = lendingService.setSkipHealthFactorWarning;
 
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
@@ -4983,10 +4991,19 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    assertApprovalSigningBinding(notificationService.getApproval(), {
+      type,
+      from,
+      data,
+      options,
+    });
+    const signingOptions = options
+      ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+      : options;
     const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
-      options
+      signingOptions
     );
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.SIGN_FINISHED,
@@ -5008,7 +5025,14 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const fn = () =>
-      waitSignComponentAmounted().then(() => {
+      waitForApprovalSigning({
+        type,
+        from,
+        data,
+        options,
+        getApproval: notificationService.getApproval,
+        waitForUI: waitSignComponentAmounted,
+      }).then(() => {
         return this.signTypedData(type, from, data as any, options);
       });
 

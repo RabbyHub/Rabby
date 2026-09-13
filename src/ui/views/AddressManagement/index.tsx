@@ -22,7 +22,7 @@ import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 // import { AddressSortIconMapping, AddressSortPopup } from './SortPopup';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { SortInput } from './SortInput';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { KeystoneStatusBar } from '@/ui/component/ConnectStatus/KeystoneStatusBar';

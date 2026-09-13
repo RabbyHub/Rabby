@@ -12,7 +12,7 @@ import IconSearch from 'ui/assets/search.svg';
 import { Account } from '@/background/service/preference';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { isSameAccount } from '@/utils/account';
 import { flatten } from 'lodash';
 import { useTranslation } from 'react-i18next';

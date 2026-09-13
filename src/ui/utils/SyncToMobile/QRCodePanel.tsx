@@ -7,7 +7,7 @@ import { ReactComponent as GooglePlaySVG } from '@/ui/assets/sync-to-mobile/goog
 import clsx from 'clsx';
 import { DownloadCard } from './DownloadCard';
 import { SelectAddressModal } from './SelectAddressModal';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { AuthenticationModalPromise } from '@/ui/component/AuthenticationModal';
 
 const GOOGLE_PLAY_URL =

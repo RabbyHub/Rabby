@@ -248,6 +248,50 @@ describe('createRabbyStore', () => {
     store.persist.destroy();
   });
 
+  test('uses the store merge policy when restoring a full snapshot', async () => {
+    type DynamicStore = Record<string, number | undefined>;
+    let onRemote!: (update: BackgroundStoreSnapshot<DynamicStore>) => void;
+    const get = jest
+      .fn()
+      .mockResolvedValueOnce({
+        origin: TEST_ORIGIN,
+        revision: 5,
+        state: { old: 1 },
+      })
+      .mockResolvedValueOnce({
+        origin: 'background-2',
+        revision: 0,
+        state: { next: 2 },
+      });
+    const { storage, syncEngine } = createSyncedBackgroundStorage<
+      DynamicStore
+    >({
+      get,
+      set: async () => undefined,
+      subscribe(listener) {
+        onRemote = listener;
+        return () => undefined;
+      },
+    });
+    const store = createRabbyStore<DynamicStore>(() => ({}), {
+      storage,
+      sync: { engine: syncEngine },
+      merge: (persistedState) => ({ ...persistedState }),
+    });
+    await store.persist.hydrationPromise();
+
+    onRemote({
+      origin: 'background-2',
+      revision: 1,
+      state: { next: 2 },
+    });
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(store.getState()).toEqual({ next: 2 });
+    store.persist.destroy();
+  });
+
   test('restores a full snapshot after the wallet reconnects', async () => {
     let onReconnect!: () => void;
     const disposeReconnect = jest.fn();

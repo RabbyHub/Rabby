@@ -5,7 +5,7 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import Popup from '@/ui/component/Popup';
 import { splitNumberByStep } from '@/ui/utils';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
 import { computeFilledPct } from '../limitOrderUtils';

@@ -399,7 +399,12 @@ const uiConfig = {
       bundler: 'webpack',
     }),
     isHot && new webpack.HotModuleReplacementPlugin(),
-    isHot && new ReactRefreshWebpackPlugin(),
+    isHot &&
+      new ReactRefreshWebpackPlugin({
+        overlay: {
+          sockIntegration: 'whm',
+        },
+      }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,

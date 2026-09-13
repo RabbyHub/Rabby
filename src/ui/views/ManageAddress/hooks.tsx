@@ -6,7 +6,7 @@ import {
   WALLET_BRAND_TYPES,
   WALLET_SORT_SCORE,
 } from '@/constant';
-import { IDisplayedAccountWithBalance } from '@/ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWallet } from '@/ui/utils';
 import { sortAccountsByBalance } from '@/ui/utils/account';

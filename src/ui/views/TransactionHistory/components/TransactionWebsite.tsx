@@ -27,6 +27,7 @@ export const TransactionWebsite = ({ site }: { site: ConnectedSite }) => {
     <TransactionWebsiteWrapper
       href={site.origin}
       target="_blank"
+      rel="noopener noreferrer"
       title={site.origin}
     >
       {site.origin}

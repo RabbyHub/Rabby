@@ -59,7 +59,6 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
   const balanceBN = useMemo(() => new BigNumber(spotUsdc?.available || 0), [
     spotUsdc?.available,
   ]);
-  const balanceNum = useMemo(() => balanceBN.toNumber(), [balanceBN]);
 
   const amountBN = useMemo(() => new BigNumber(amount || 0), [amount]);
 
@@ -236,7 +235,9 @@ export const TransferToPerpsModal: React.FC<TransferToPerpsModalProps> = ({
               </span>
               <span className="text-rb-neutral-foot text-13">
                 {t('page.perps.PerpsTransferToPerps.balance')}:
-                {balanceNum.toFixed(2)} USDC
+                {/* Floored, not rounded: a rounded-up balance reads as an
+                    amount the account cannot actually transfer. */}
+                {balanceBN.toFixed(2, BigNumber.ROUND_DOWN)} USDC
               </span>
             </div>
             <div className="bg-rb-neutral-bg-2 rounded-[12px] px-16 py-14 mb-16">

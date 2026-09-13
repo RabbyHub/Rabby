@@ -1,4 +1,4 @@
-import { MarketData, PositionAndOpenOrder } from '@/ui/models/perps';
+import { MarketData, PositionAndOpenOrder } from '@/ui/state/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import React from 'react';

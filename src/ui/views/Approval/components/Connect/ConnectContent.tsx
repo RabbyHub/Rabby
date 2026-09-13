@@ -27,7 +27,7 @@ import RuleResult from './RuleResult';
 import UserListDrawer from './UserListDrawer';
 import { AccountSelector } from '@/ui/component/AccountSelector';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { useRabbySelector } from '@/ui/store';
 import { Account } from '@/background/service/preference';
 import { useMemoizedFn } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';

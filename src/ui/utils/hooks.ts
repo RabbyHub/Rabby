@@ -12,13 +12,48 @@ import { useDeviceConnect } from './useDeviceConnect';
 import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 
-export const useApproval = () => {
+export interface ApprovalBinding {
+  approvalId?: string;
+  approvalComponent: Approval['data']['approvalComponent'];
+  canResolve?: () => boolean;
+}
+
+export const useApproval = (binding?: ApprovalBinding) => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
   const deviceConnect = useDeviceConnect();
+  const mounted = useRef(true);
+  const bindingRef = useRef(binding);
+  bindingRef.current = binding;
+
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
+  const matchesBinding = (approval?: Approval, approvalId?: string) => {
+    if (!approval || (approvalId && approval.id !== approvalId)) return false;
+    if (!binding) return true;
+    return (
+      mounted.current &&
+      !!binding.approvalId &&
+      binding.approvalId === bindingRef.current?.approvalId &&
+      binding.approvalComponent === bindingRef.current?.approvalComponent &&
+      approval.id === binding.approvalId &&
+      approval.data.approvalComponent === binding.approvalComponent
+    );
+  };
+
+  const canResolve = () =>
+    !binding ||
+    (mounted.current &&
+      binding.canResolve?.() !== false &&
+      bindingRef.current?.canResolve?.() !== false);
 
   const resolveApproval = async (
     data?: any,
@@ -26,40 +61,68 @@ export const useApproval = () => {
     forceReject = false,
     approvalId?: string
   ) => {
+    if (!canResolve()) return false;
     const approval = await getApproval();
+    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
 
     // handle connect
     if (!(await deviceConnect(data, approval?.data?.account))) {
-      return;
+      return false;
     }
 
-    if (approval) {
-      wallet.resolveApproval(data, forceReject, approvalId);
-    }
+    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
+    const resolved = await wallet.resolveApproval(
+      data,
+      forceReject,
+      approval.id,
+      approval.data.approvalComponent
+    );
+    if (!resolved) return false;
 
     if (stay) {
-      return;
+      return true;
     }
     setTimeout(() => {
+      if (binding && !mounted.current) return;
       if (data && enablePopup(data.type)) {
         return showPopup();
       }
       history.replace('/');
     }, 0);
+    return true;
   };
 
-  const rejectApproval = async (err?, stay = false, isInternal = false) => {
+  const rejectApproval = async (
+    err?,
+    stay = false,
+    isInternal = false,
+    approvalId?: string,
+    approvalComponent?: Approval['data']['approvalComponent']
+  ) => {
     const approval = await getApproval();
+    if (
+      !matchesBinding(approval, approvalId) ||
+      (approvalComponent &&
+        approval.data.approvalComponent !== approvalComponent)
+    ) {
+      return false;
+    }
     if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }
 
-    if (approval) {
-      await wallet.rejectApproval(err, stay, isInternal);
-    }
-    if (!stay) {
+    const rejected = await wallet.rejectApproval(
+      err,
+      stay,
+      isInternal,
+      approval.id,
+      approval.data.approvalComponent
+    );
+    if (!rejected) return false;
+    if (!stay && (!binding || mounted.current)) {
       history.push('/');
     }
+    return true;
   };
   return [getApproval, resolveApproval, rejectApproval] as const;
 };

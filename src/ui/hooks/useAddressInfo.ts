@@ -9,7 +9,7 @@ import { KEYRING_CLASS } from '@/constant';
 import { findAccountByPriority } from '@/utils/account';
 import { ellipsisAddress } from '../utils/address';
 import type { Account } from '@/background/service/preference';
-import type { IDisplayedAccountWithBalance } from '../models/accountToDisplay';
+import type { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { findSupportedExchange, normalizeAddressDescCex } from '../utils/cex';
 import { useExchangeStore } from '../state/exchange';
 

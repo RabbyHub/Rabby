@@ -95,6 +95,7 @@ export const BridgeContent = () => {
     amount,
     handleAmountChange,
     feeRate,
+    feeTier,
 
     recommendFromToken,
     fillRecommendFromToken,
@@ -103,6 +104,7 @@ export const BridgeContent = () => {
 
     openQuotesList,
     quoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList,
@@ -120,6 +122,7 @@ export const BridgeContent = () => {
     isSlippageHigh,
     isSlippageLow,
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
 
     autoSlippage,
     isCustomSlippage,
@@ -157,11 +160,6 @@ export const BridgeContent = () => {
   const setVisible = useSetQuoteVisible();
 
   const refresh = useSetRefreshId();
-
-  const resumeQuoteRefresh = useCallback(() => {
-    setQuoteRefreshLocked(false);
-    refresh((id) => id + 1);
-  }, [refresh, setQuoteRefreshLocked]);
 
   const { t } = useTranslation();
 
@@ -260,6 +258,7 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               fee_rate: Number(feeRate),
+              duration: selectedBridgeQuote.duration,
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
             addHistoryData: {
@@ -326,6 +325,7 @@ export const BridgeContent = () => {
     selectedBridgeQuote?.aggregator.id,
     selectedBridgeQuote?.bridge_id,
     selectedBridgeQuote?.to_token_amount,
+    selectedBridgeQuote?.duration,
     wallet,
     amount,
     feeRate,
@@ -461,6 +461,7 @@ export const BridgeContent = () => {
               tx: tx,
               rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
               fee_rate: Number(feeRate),
+              duration: selectedBridgeQuote.duration,
               slippage: new BigNumber(slippage).div(100).toNumber(),
             },
             addHistoryData: {
@@ -618,11 +619,16 @@ export const BridgeContent = () => {
     !quoteLoading &&
     !quoteList?.length;
   const [bridgeProgressVisible, setBridgeProgressVisible] = useState(false);
+  const showQuoteAlert =
+    !inSufficientCanGetQuote || (noQuote && !recommendFromToken);
+  const showRecommendFromToken = noQuote && !!recommendFromToken;
   const showStickyInfo =
     !!fromToken &&
     !!toToken &&
     !noQuote &&
     !(bridgeProgressVisible && !amountAvailable);
+  const canScrollContent =
+    showStickyInfo && (showExternalDappTips || !inSufficientCanGetQuote);
 
   const btnDisabled =
     inSufficient ||
@@ -1126,7 +1132,8 @@ export const BridgeContent = () => {
       />
       <div
         className={clsx(
-          'flex-1 overflow-auto page-has-ant-input',
+          'flex-1 page-has-ant-input',
+          canScrollContent ? 'overflow-auto' : 'overflow-hidden',
           selectedBridgeQuote?.shouldApproveToken ? 'pb-[130px]' : 'pb-[110px]'
         )}
       >
@@ -1162,10 +1169,14 @@ export const BridgeContent = () => {
             getContainer={getContainer}
           />
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-            <BridgeSwitchBtn onClick={switchToken} loading={quoteLoading} />
+            <BridgeSwitchBtn
+              onClick={switchToken}
+              loading={quoteLoading}
+              refreshCountdown={quoteRefreshCountdown}
+            />
           </div>
         </div>
-        {!isSupportedChain && fromChain && toChain ? (
+        {showExternalDappTips ? (
           <div className="mt-16 mx-20">
             <ExternalSwapBridgeDappTips
               dappsAvailable={externalDapps?.length > 0}
@@ -1182,7 +1193,7 @@ export const BridgeContent = () => {
           </div>
         ) : null}
 
-        {!inSufficientCanGetQuote || (noQuote && !recommendFromToken) ? (
+        {showQuoteAlert ? (
           <Alert
             className={clsx(
               'mx-[20px] rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
@@ -1213,7 +1224,7 @@ export const BridgeContent = () => {
         ) : null}
 
         <div className="mx-20 mt-20">
-          {noQuote && recommendFromToken && (
+          {showRecommendFromToken && (
             <RecommendFromToken
               token={recommendFromToken}
               className="mt-16"
@@ -1265,8 +1276,7 @@ export const BridgeContent = () => {
                 setIsCustomSlippage={setIsCustomSlippage}
                 type="bridge"
                 getContainer={getContainer}
-                isRabbyFeeFree={feeRate === '0'}
-                isRabbyFeeHalf={feeRate === '0.12'}
+                feeTier={feeTier}
                 isBestQuote={
                   !!bestQuoteId &&
                   !!selectedBridgeQuote &&

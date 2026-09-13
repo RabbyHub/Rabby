@@ -4,11 +4,15 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type { DisplayChainWithWhiteLogo } from '@/utils/chain';
 import { sleep } from '@/ui/utils';
 import { CurvePointCollection } from '@/background/service/preference';
-import { useRabbyDispatch, useRabbyGetter } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { formChartData } from './useCurve';
 import { normalizeAndVaryChainList, normalizeChainList } from '@/utils/account';
 import { useRefState } from '@/ui/hooks/useRefState';
 import { usePrevious } from 'react-use';
+import {
+  selectCurrentBalanceAboutMap,
+  useAccountStore,
+} from '@/ui/state/account';
 
 /** @deprecated */
 const HomeBalanceViewCacheKey = 'HomeBalanceViewCacheKey';
@@ -58,9 +62,7 @@ export function useHomeBalanceViewOuterPrefetch(
 }
 
 export function useHomeBalanceView(currentAddress?: string | undefined) {
-  const cacheAboutData = useRabbyGetter(
-    (s) => s.account.currentBalanceAboutMap
-  );
+  const cacheAboutData = useAccountStore(selectCurrentBalanceAboutMap);
 
   const currentHomeBalanceCache = useMemo(() => {
     const { balanceMap, curvePointsMap } = cacheAboutData;

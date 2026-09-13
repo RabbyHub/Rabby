@@ -6,7 +6,7 @@ import {
   getDefaultRateModalState,
   useRateGuidanceStore,
 } from '@/ui/state/rateGuidance';
-import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
   coerceInteger,
   openTrustedExternalWebsiteInTab,
@@ -18,6 +18,14 @@ import { ensurePrefix } from '@/utils/string';
 import { ga4 } from '@/utils/ga4';
 import { KEYRING_CLASS } from '@/constant';
 import { pick } from 'lodash';
+import {
+  selectCurrentBalanceAboutMap,
+  useAccountStore,
+} from '@/ui/state/account';
+import {
+  selectRateGuideLastExposureTimestamp,
+  selectUserViewedRate,
+} from '@/ui/state/preference';
 
 const TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of transactions before showing the rate guide
 const STAR_COUNT = 5;
@@ -58,9 +66,11 @@ export function useExposureRateGuide() {
     shouldForceDisableOnLaunch: !!s.preference.rateGuideLastExposure
       ?.__UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__,
   }));
-  const userViewedRate = useRabbyGetter((s) => s.preference.userViewedRate);
-  const lastExposureTimestamp = useRabbyGetter(
-    (s) => s.preference.rateGuideLastExposureTimestamp
+  const userViewedRate = useRabbySelector((state) =>
+    selectUserViewedRate(state.preference)
+  );
+  const lastExposureTimestamp = useRabbySelector((state) =>
+    selectRateGuideLastExposureTimestamp(state.preference)
   );
   const rDispatch = useRabbyDispatch();
   const setRateModalState = useRateGuidanceStore((state) => state.setField);
@@ -109,9 +119,7 @@ function makeStarText(count: number, total = 5) {
 export const FEEDBACK_LEN_LIMIT = 300;
 
 export function useTotalBalanceTextForRate() {
-  const cacheAboutData = useRabbyGetter(
-    (s) => s.account.currentBalanceAboutMap
-  );
+  const cacheAboutData = useAccountStore(selectCurrentBalanceAboutMap);
   const accountsList = useRabbySelector((s) => s.accountToDisplay.accountsList);
 
   const { balanceMap } = cacheAboutData;

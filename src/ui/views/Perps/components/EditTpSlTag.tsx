@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { useMemoizedFn } from 'ahooks';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 import { AssetPriceInfo } from './AssetPriceInfo';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';

@@ -123,7 +123,6 @@ export const Main = () => {
 
     payTokenIsGasToken,
     isWrapToken,
-    isFreeTokenPair,
     inSufficient,
 
     slippageState,
@@ -137,9 +136,11 @@ export const Main = () => {
     setIsCustomSlippage,
 
     feeRate,
+    feeTier,
 
     openQuotesList,
     quoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList,
@@ -159,6 +160,7 @@ export const Main = () => {
     showMoreVisible,
     inSufficientCanGetQuote,
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
 
     autoSuggestSlippage,
     setAutoSuggestSlippage,
@@ -182,10 +184,6 @@ export const Main = () => {
   const mevProtection = useSwapStore((s) => s.mevProtection ?? true);
   const setMEVProtection = useSwapStore((s) => s.setMEVProtection);
   const setRecentSwapToToken = useSwapStore((s) => s.setRecentSwapToToken);
-  const resumeQuoteRefresh = useCallback(() => {
-    setQuoteRefreshLocked(false);
-    refresh((id) => id + 1);
-  }, [refresh, setQuoteRefreshLocked]);
 
   const switchPreferMEV = useCallback(
     (bool: boolean) => {
@@ -634,6 +632,7 @@ export const Main = () => {
     showUnsupportedChainTips,
     showQuoteAlert,
     showPendingTxItem,
+    hasSwapProgress,
     showStickyInfo,
     showSubmitTooltip,
     showDirectSignButton,
@@ -675,6 +674,8 @@ export const Main = () => {
       approveHash,
     },
   });
+  const canScrollContent =
+    showStickyInfo && showPendingTxItem && hasSwapProgress;
   const buildTopUpSnapshot = useCallback(
     (): SwapTopUpSnapshot => ({
       amount: inputAmount || '',
@@ -1199,7 +1200,10 @@ export const Main = () => {
         }}
       />
       <div
-        className={clsx('flex-1 overflow-auto page-has-ant-input', 'pb-[76px]')}
+        className={clsx(
+          'flex-1 page-has-ant-input pb-[76px]',
+          canScrollContent ? 'overflow-auto' : 'overflow-hidden'
+        )}
       >
         <div className="mx-20 flex flex-col gap-2 overflow-hidden rounded-lg">
           <ChainSelectorInForm
@@ -1256,6 +1260,7 @@ export const Main = () => {
             <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
               <BridgeSwitchBtn
                 onClick={exchangeToken}
+                refreshCountdown={quoteRefreshCountdown}
                 loading={
                   quoteLoading &&
                   amountAvailable &&
@@ -1387,10 +1392,7 @@ export const Main = () => {
                 type="swap"
                 getContainer={getContainer}
                 isWrapToken={isWrapToken}
-                isRabbyFeeFree={
-                  isFreeTokenPair || (!isWrapToken && feeRate === '0')
-                }
-                isRabbyFeeHalf={feeRate === '0.12'}
+                feeTier={feeTier}
                 isBestQuote={
                   !!activeProvider &&
                   !!bestQuoteDex &&

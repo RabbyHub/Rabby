@@ -8,7 +8,7 @@ import { splitNumberByStep } from '@/ui/utils';
 import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 import { computeLimitPriceDeviation } from '../limitOrderUtils';

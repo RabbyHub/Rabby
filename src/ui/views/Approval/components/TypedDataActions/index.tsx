@@ -51,11 +51,13 @@ import { Account } from '@/background/service/preference';
 import { Copy } from 'ui/component';
 import { SignMessageHighlightToken } from '../signMessageHighlighter';
 import { SignMessageAddressDataMap } from '../signMessageAddressData';
+import { SecurityEngineScopeProvider } from '@/ui/state/securityEngine';
 
 export interface MultiActionProps {
   actionList: ParsedTypedDataActionData[] | ParsedTransactionActionData[];
   requireDataList: ActionRequireData[];
   engineResultList: Result[][];
+  securityScopes?: string[];
 }
 
 const ActionItem = ({
@@ -370,17 +372,21 @@ const Actions = ({
         {isMultiAction && multiAction ? (
           (multiAction.actionList as ParsedTypedDataActionData[]).map(
             (action, index) => (
-              <ActionItem
+              <SecurityEngineScopeProvider
                 key={index}
-                data={action}
-                requireData={multiAction.requireDataList[index]}
-                chain={chain}
-                engineResults={multiAction.engineResultList[index]}
-                raw={raw}
-                message={message}
-                account={account}
-                origin={origin}
-              />
+                scope={multiAction.securityScopes?.[index]}
+              >
+                <ActionItem
+                  data={action}
+                  requireData={multiAction.requireDataList[index]}
+                  chain={chain}
+                  engineResults={multiAction.engineResultList[index] || []}
+                  raw={raw}
+                  message={message}
+                  account={account}
+                  origin={origin}
+                />
+              </SecurityEngineScopeProvider>
             )
           )
         ) : (

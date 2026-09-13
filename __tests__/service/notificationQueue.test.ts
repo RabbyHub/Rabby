@@ -34,6 +34,8 @@ jest.mock('@/background/service/transactionHistory', () => ({
   default: {
     addSigningTx: jest.fn(() => 'signing-tx-id'),
     getSigningTx: jest.fn(),
+    removeSigningTx: jest.fn(),
+    removeAllSigningTx: jest.fn(),
   },
 }));
 
@@ -58,7 +60,9 @@ jest.mock('@sentry/browser', () => ({
   captureException: (...args: unknown[]) => mockCaptureException(...args),
 }));
 
-import notificationService from '@/background/service/notification';
+import notificationService, {
+  Approval,
+} from '@/background/service/notification';
 
 const signTxRequest = (signTxPreparationId?: string) => ({
   approvalComponent: 'SignTx' as const,
@@ -68,6 +72,106 @@ const signTxRequest = (signTxPreparationId?: string) => ({
     data: [{}],
     ...(signTxPreparationId ? { signTxPreparationId } : {}),
   },
+});
+
+describe('notificationService approval identity', () => {
+  const makeApproval = (
+    id: string,
+    approvalComponent: Approval['data']['approvalComponent'] = 'SignTx'
+  ): Approval => ({
+    id,
+    taskId: null,
+    winProps: {},
+    data: {
+      approvalComponent,
+      account: {
+        address: '0xaccount',
+        type: 'PrivateKey',
+        brandName: 'PrivateKey',
+      },
+    },
+    resolve: jest.fn(),
+    reject: jest.fn(),
+  });
+
+  beforeEach(() => {
+    notificationService.approvals = [];
+    notificationService.currentApproval = null;
+    notificationService.notifiWindowId = null;
+    notificationService.dappManager.clear();
+  });
+
+  test.each(['resolve', 'reject'] as const)(
+    '%s refuses stale id or mismatched component without touching the queue',
+    async (method) => {
+      const approval = makeApproval('current');
+      notificationService.approvals = [approval];
+      notificationService.currentApproval = approval;
+      const settle = (
+        id: string | undefined,
+        component: 'SignTx' | 'SignTypedData'
+      ) =>
+        method === 'resolve'
+          ? notificationService.resolveApproval({}, false, id, component)
+          : notificationService.rejectApproval(
+              undefined,
+              true,
+              false,
+              id,
+              component
+            );
+
+      expect(await settle('stale', 'SignTx')).toBe(false);
+      expect(await settle('current', 'SignTypedData')).toBe(false);
+      expect(await settle(undefined, 'SignTx')).toBe(false);
+      expect(approval.resolve).not.toHaveBeenCalled();
+      expect(approval.reject).not.toHaveBeenCalled();
+      expect(notificationService.currentApproval).toBe(approval);
+      expect(notificationService.approvals).toEqual([approval]);
+    }
+  );
+
+  test('resolves exactly the displayed request and rejects reuse against the next queued request', async () => {
+    const first = makeApproval('first');
+    const second = makeApproval('second');
+    notificationService.approvals = [first, second];
+    notificationService.currentApproval = first;
+
+    expect(
+      await notificationService.resolveApproval(
+        { signed: true },
+        false,
+        'first',
+        'SignTx'
+      )
+    ).toBe(true);
+    expect(first.resolve).toHaveBeenCalledWith({ signed: true });
+    expect(notificationService.currentApproval).toBe(second);
+    expect(
+      await notificationService.resolveApproval({}, false, 'first', 'SignTx')
+    ).toBe(false);
+    expect(second.resolve).not.toHaveBeenCalled();
+  });
+
+  test('rejects only the bound request', async () => {
+    const first = makeApproval('first', 'SignTypedData');
+    const second = makeApproval('second');
+    notificationService.approvals = [first, second];
+    notificationService.currentApproval = first;
+
+    expect(
+      await notificationService.rejectApproval(
+        undefined,
+        true,
+        false,
+        'first',
+        'SignTypedData'
+      )
+    ).toBe(true);
+    expect(first.reject).toHaveBeenCalledTimes(1);
+    expect(second.reject).not.toHaveBeenCalled();
+    expect(notificationService.currentApproval).toBe(second);
+  });
 });
 
 describe('notificationService SignTx queueing', () => {

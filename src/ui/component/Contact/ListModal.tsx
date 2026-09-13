@@ -3,7 +3,7 @@ import { Button, DrawerProps, message } from 'antd';
 import styled from 'styled-components';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { useWhitelistStore } from '@/ui/state/whitelist';
-import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
+import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import EditWhitelist from './EditWhitelist';

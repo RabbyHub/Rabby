@@ -1,5 +1,6 @@
 import { formatUsdValue } from '@/ui/utils/number';
 import { BigNumber } from 'bignumber.js';
+import type { PositionSize } from '../../types';
 
 export const calcAssetAmountByNotional = (
   notional: string | number,
@@ -63,6 +64,24 @@ export const calcAmountFromPercentage = (
     .div(100)
     .toFixed(szDecimals, BigNumber.ROUND_DOWN);
   return Number(amount) > 0 ? amount : '0';
+};
+
+/**
+ * Whether the typed size exceeds one direction's max trade size.
+ *
+ * With a position open the closing direction's max includes the closable
+ * size, so buy and sell gate on different limits — each button must check
+ * its own side. Slider input is exempt: its per-direction size is derived
+ * from that side's max and can never exceed it. A max of 0 means "unknown
+ * or not tradable" and is left to other gates (e.g. the reduce-only locks).
+ */
+export const exceedsDirectionMax = (
+  positionSize: PositionSize,
+  directionMax: string | number | undefined
+): boolean => {
+  if (positionSize.inputSource === 'slider') return false;
+  const max = Number(directionMax || 0);
+  return max > 0 && (Number(positionSize.amount) || 0) > max;
 };
 
 export function removeTrailingZeros(value: string): string {

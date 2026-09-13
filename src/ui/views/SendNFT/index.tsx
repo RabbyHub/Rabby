@@ -64,7 +64,6 @@ import {
 } from '@/ui/hooks/useAddressRisk';
 import BottomArea from './BottomArea';
 import { useToAddressPositiveTips } from '@/ui/component/SendLike/hooks/useRecentSend';
-import { useContactBookStore } from '@/ui/state/contactBook';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -79,10 +78,6 @@ const SendNFT = () => {
   const { search } = useLocation();
   const { t } = useTranslation();
   const rbisource = useRbiSource();
-  const getContactBookAsync = useContactBookStore(
-    (state) => state.getContactBookAsync
-  );
-
   const currentAccount = useCurrentAccount();
   const [chain, setChain] = useState<CHAINS_ENUM | undefined>(undefined);
 
@@ -532,7 +527,6 @@ const SendNFT = () => {
   }, [nftItem, wallet, history.location.pathname, form]);
 
   const init = useCallback(async () => {
-    getContactBookAsync();
     const account = await wallet.syncGetCurrentAccount();
 
     if (!account) {
@@ -540,7 +534,7 @@ const SendNFT = () => {
       return;
     }
     setInited(true);
-  }, [getContactBookAsync, history, wallet]);
+  }, [history, wallet]);
 
   useEffect(() => {
     init();

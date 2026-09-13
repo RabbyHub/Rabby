@@ -18,10 +18,7 @@
       {
         "endOfLine": "auto"
       }
-    ],
-    "react-hooks/exhaustive-deps": ["off", {
-      "additionalHooks": "(useWallet)"
-    }]
+    ]
   },
   "env": {
     "browser": true,

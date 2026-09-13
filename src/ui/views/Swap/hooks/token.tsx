@@ -2,10 +2,7 @@ import { useSwapStore } from '@/ui/state/swap';
 import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import {
-  isSameTypeTokenPair,
-  WrapTokenAddressMap,
-} from '@rabby-wallet/rabby-swap';
+import { WrapTokenAddressMap } from '@rabby-wallet/rabby-swap';
 import BigNumber from 'bignumber.js';
 import {
   useCallback,
@@ -44,7 +41,7 @@ import { isTempoChain } from '@/utils/tempo';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getDefaultSwapToTokenItem } from '@/constant/dex-swap';
-import { getRabbyFeeRate, SwapFeeRate } from './fee';
+import { getRabbyFeeInfo, SwapFeeRate } from './fee';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -69,7 +66,7 @@ const isTokenOnChain = (token: TokenItem | undefined, chain: CHAINS_ENUM) => {
   return !!token && !!chainInfo && token.chain === chainInfo.serverId;
 };
 
-const getDexQuoteScore = ({
+export const getDexQuoteScore = ({
   quote,
   receiveToken,
   inSufficient,
@@ -82,16 +79,17 @@ const getDexQuoteScore = ({
     return new BigNumber(Number.MIN_SAFE_INTEGER);
   }
 
-  const price = receiveToken.price ? receiveToken.price : 1;
-  const receiveUsdValue = new BigNumber(
+  const receiveAmount = new BigNumber(
     getDexQuoteReceiveAmount(quote, receiveToken)
-  ).times(price);
+  );
 
-  if (inSufficient) {
-    return receiveUsdValue;
+  if (inSufficient || !receiveToken.price) {
+    return receiveAmount;
   }
 
-  return receiveUsdValue.minus(quote.preExecResult?.gasUsdValue || 0);
+  return receiveAmount
+    .times(receiveToken.price)
+    .minus(quote.preExecResult?.gasUsdValue || 0);
 };
 
 const useTokenInfo = ({
@@ -269,17 +267,41 @@ export const useTokenPair = (userAddress: string) => {
       return;
     }
 
+    if (quoteFetchingRef.current) {
+      setOriActiveProvider(p);
+      if (p && !depositFlowActiveRef.current) {
+        setQuoteRefreshCountdown((prev) => {
+          if (prev?.expired || prev?.frozen) {
+            return prev;
+          }
+          return { startedAt: 0, deadline: 0, frozen: true };
+        });
+      } else if (!p) {
+        setQuoteRefreshCountdown((prev) => (prev?.expired ? prev : null));
+      }
+      return;
+    }
+
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
     }
+    setQuoteRefreshCountdown(null);
 
     if (p && !depositFlowActiveRef.current) {
+      const startedAt = Date.now();
+      const delay = 1000 * 20;
+      setQuoteRefreshCountdown({ startedAt, deadline: startedAt + delay });
       expiredTimer.current = setTimeout(() => {
+        expiredTimer.current = undefined;
+        setQuoteRefreshCountdown((prev) =>
+          prev ? { ...prev, expired: true } : null
+        );
         if (!depositFlowActiveRef.current && !quoteRefreshLockedRef.current) {
+          setPending(true);
           setRefreshId((e) => e + 1);
         }
-      }, 1000 * 20);
+      }, delay);
     }
 
     setOriActiveProvider(p);
@@ -398,6 +420,13 @@ export const useTokenPair = (userAddress: string) => {
   >();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
+  const quoteFetchingRef = useRef(false);
+  const [quoteRefreshCountdown, setQuoteRefreshCountdown] = useState<{
+    startedAt: number;
+    deadline: number;
+    expired?: boolean;
+    frozen?: boolean;
+  } | null>(null);
   const depositFlowActiveRef = useRef(depositFlowActive);
   const previousDepositFlowActiveRef = useRef(depositFlowActive);
 
@@ -613,11 +642,6 @@ export const useTokenPair = (userAddress: string) => {
     return false;
   }, [payToken, receiveToken]);
 
-  const isFreeTokenPair = useMemo(
-    () => isSameTypeTokenPair(payToken, receiveToken),
-    [payToken, receiveToken]
-  );
-
   const autoSlippageValue = getSwapAutoSlippageValue(isStableCoin);
 
   const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
@@ -633,15 +657,16 @@ export const useTokenPair = (userAddress: string) => {
     return [false, ''];
   }, [payToken?.id, receiveToken?.id, chain]);
 
-  const feeRate = useMemo<FeeProps['fee']>(
+  const { feeRate, feeTier } = useMemo(
     () =>
-      getRabbyFeeRate({
+      getRabbyFeeInfo({
         payAmount: inputAmount,
         payTokenPrice: payToken?.price || 0,
-        isFreeTokenPair,
+        payToken,
+        receiveToken,
         isWrapToken,
       }),
-    [inputAmount, isFreeTokenPair, isWrapToken, payToken?.price]
+    [inputAmount, isWrapToken, payToken, receiveToken]
   );
 
   const inSufficient = useMemo(
@@ -742,6 +767,10 @@ export const useTokenPair = (userAddress: string) => {
     { loading: quoteLoading, error: quotesError },
     getQuotes,
   ] = useAsyncFn(async () => {
+    if (expiredTimer.current) {
+      clearTimeout(expiredTimer.current);
+      expiredTimer.current = undefined;
+    }
     if (depositFlowActiveRef.current || quoteRefreshLockedRef.current) {
       setPending(false);
       return;
@@ -780,6 +809,10 @@ export const useTokenPair = (userAddress: string) => {
         } catch (error) {
           console.log('suggest_slippage error', error);
         }
+      }
+
+      if (currentFetchId !== fetchIdRef.current) {
+        return;
       }
 
       return getAllQuotes({
@@ -821,6 +854,10 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     if (canRunQuoteRequest && !quoteRefreshLockedRef.current) {
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
       setPending(true);
     } else {
       setPending(false);
@@ -851,6 +888,7 @@ export const useTokenPair = (userAddress: string) => {
       fetchIdRef.current += 1;
       setPending(false);
       cancelQuoteDebounce();
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -859,8 +897,18 @@ export const useTokenPair = (userAddress: string) => {
     [cancelQuoteDebounce]
   );
 
+  const resumeQuoteRefresh = useCallback(() => {
+    setQuoteRefreshLocked(false);
+    if (canRunQuoteRequest && !depositFlowActiveRef.current) {
+      setQuoteRefreshCountdown({ startedAt: 0, deadline: 0, expired: true });
+      setPending(true);
+    }
+    setRefreshId((id) => id + 1);
+  }, [canRunQuoteRequest, setQuoteRefreshLocked, setRefreshId]);
+
   useEffect(() => {
     if (depositFlowActive) {
+      setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
         clearTimeout(expiredTimer.current);
         expiredTimer.current = undefined;
@@ -875,6 +923,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [cancelQuoteDebounce, depositFlowActive, setRefreshId]);
 
   const rawQuoteLoading = quoteLoading || pending;
+  quoteFetchingRef.current = rawQuoteLoading;
   const allQuotesLoaded = !rawQuoteLoading;
   const quoteListForDisplay = useMemo(() => {
     if (allQuotesLoaded || !payToken || !receiveToken) {
@@ -1033,6 +1082,7 @@ export const useTokenPair = (userAddress: string) => {
   }, []);
 
   useEffect(() => {
+    setQuoteRefreshCountdown(null);
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
@@ -1040,6 +1090,7 @@ export const useTokenPair = (userAddress: string) => {
   }, [payToken?.id, receiveToken?.id, chain, inputAmount]);
 
   useEffect(() => {
+    setQuoteRefreshCountdown(null);
     if (expiredTimer.current) {
       clearTimeout(expiredTimer.current);
       expiredTimer.current = undefined;
@@ -1209,12 +1260,14 @@ export const useTokenPair = (userAddress: string) => {
 
   useEffect(() => {
     return () => {
+      fetchIdRef.current += 1;
       clearExpiredTimer();
     };
   }, [clearExpiredTimer]);
 
   return {
     setQuoteRefreshLocked,
+    resumeQuoteRefresh,
     bestQuoteDex,
     gasLevel,
 
@@ -1238,16 +1291,17 @@ export const useTokenPair = (userAddress: string) => {
     inputAmount,
 
     isWrapToken,
-    isFreeTokenPair,
     wrapTokenSymbol,
     inSufficient,
     inSufficientCanGetQuote,
 
     feeRate,
+    feeTier,
 
     //quote
     openQuotesList,
     quoteLoading: displayQuoteLoading,
+    quoteRefreshCountdown,
     allQuotesLoaded,
     quoteRequestId,
     quoteList: quoteListForDisplay,

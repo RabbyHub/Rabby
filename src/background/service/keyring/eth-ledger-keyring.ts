@@ -123,6 +123,7 @@ type LedgerActionDiagnostics = {
   session_reused: boolean;
   clear_signing_context_errors?: number;
   clear_signing_type?: string;
+  last_required_user_interaction?: string;
 };
 
 type LedgerAttemptState = LedgerActionDiagnostics & {
@@ -282,6 +283,37 @@ const normalizeLedgerStatusWord = (value: unknown) => {
   return /^[0-9a-f]{1,4}$/u.test(normalized) ? normalized : '';
 };
 
+const LEDGER_STATUS_REASONS: Record<string, string> = {
+  '5515': 'device_locked',
+  '6982': 'security_status_not_satisfied',
+  '6985': 'condition_not_satisfied',
+  '6a80': 'invalid_data',
+  '6a84': 'insufficient_memory',
+  '6b00': 'invalid_parameter',
+  '6d00': 'invalid_instruction',
+  '6e00': 'invalid_class',
+  '6f00': 'technical_problem',
+};
+
+const LEDGER_ERROR_TAGS = new Set([
+  'EthAppCommandError',
+  'GlobalCommandError',
+  'InvalidStatusWordError',
+  'InvalidResponseFormatError',
+  'UnknownDeviceExchangeError',
+  'RefusedByUserDAError',
+  'DeviceLockedError',
+  'DeviceBusyError',
+  'UnknownDAError',
+  'DeviceNotOnboardedError',
+  'WebHidSendReportError',
+  'DeviceDisconnectedWhileSendingError',
+  'DisconnectedDeviceDuringOperation',
+  'ConnectionOpeningError',
+  'ActionRefusedError',
+  'DeviceInternalError',
+]);
+
 const getLedgerStatusWord = (err: unknown) => {
   const value = err as any;
   const code = normalizeLedgerStatusWord(
@@ -295,10 +327,38 @@ const getLedgerStatusWord = (err: unknown) => {
   return value?._tag === 'RefusedByUserDAError' ? '6985' : '';
 };
 
+const getLedgerStatusWordFromMessage = (err: unknown) => {
+  const message = (err as { message?: unknown })?.message;
+  return typeof message === 'string' &&
+    /Ledger: Device is locked 0x5515/iu.test(message)
+    ? '5515'
+    : '';
+};
+
+const getLedgerErrorTag = (err: unknown) => {
+  if (!err || typeof err !== 'object') return '';
+  const value = err as { _tag?: unknown; name?: unknown };
+  const tag = value._tag ?? value.name;
+  return typeof tag === 'string' && LEDGER_ERROR_TAGS.has(tag) ? tag : '';
+};
+
+const findLedgerErrorTag = (err: unknown, depth = 0): string => {
+  if (!err || depth > 6 || typeof err !== 'object') return '';
+  return (
+    getLedgerErrorTag(err) ||
+    findLedgerErrorTag((err as { cause?: unknown }).cause, depth + 1) ||
+    findLedgerErrorTag(
+      (err as { originalError?: unknown }).originalError,
+      depth + 1
+    )
+  );
+};
+
 const findLedgerStatusWord = (err: unknown, depth = 0): string => {
   if (!err || depth > 6) return '';
   return (
     getLedgerStatusWord(err) ||
+    getLedgerStatusWordFromMessage(err) ||
     findLedgerStatusWord((err as { cause?: unknown }).cause, depth + 1)
   );
 };
@@ -310,6 +370,38 @@ const isLedgerUserCancellation = (err: unknown, depth = 0): boolean => {
     isLedgerUserCancellation((err as { cause?: unknown }).cause, depth + 1)
   );
 };
+
+const findLedgerMessageReason = (err: unknown, depth = 0): string => {
+  if (!err || depth > 6 || typeof err !== 'object') return '';
+  const message = (err as { message?: unknown }).message;
+  if (typeof message === 'string') {
+    if (
+      /Ledger: (?:Device disconnected|No connected Ledger device found)/iu.test(
+        message
+      )
+    ) {
+      return 'device_disconnected';
+    }
+    if (/Ledger: Device is locked 0x5515/iu.test(message)) {
+      return 'device_locked';
+    }
+    if (/Ledger: Device busy/iu.test(message)) {
+      return 'device_busy';
+    }
+    if (/ConnectionOpeningError/iu.test(message)) {
+      return 'connection_opening';
+    }
+    if (/InvalidStatusWordError/iu.test(message)) {
+      return 'invalid_status_word';
+    }
+  }
+  return findLedgerMessageReason((err as { cause?: unknown }).cause, depth + 1);
+};
+
+const getLedgerErrorReason = (err: unknown, statusWord: string) =>
+  isLedgerUserCancellation(err)
+    ? 'user_rejected'
+    : LEDGER_STATUS_REASONS[statusWord] || findLedgerMessageReason(err);
 
 export const getLedgerErrorMessage = (err: unknown, fallback: string) =>
   [stringifyLedgerErrorValue(err) || fallback, findLedgerStatusWord(err)]
@@ -377,25 +469,35 @@ const runDeviceAction = async <Output>(
     return await firstValueFrom(
       observable.pipe(
         tap((state) => {
-          const step =
-            'intermediateValue' in state
-              ? state.intermediateValue?.step
-              : undefined;
-          if (step && step !== previousStep) {
-            const now = Date.now();
-            trace.slowestGapMs = Math.max(
-              trace.slowestGapMs,
-              now - trace.lastStepAt
-            );
-            trace.lastStepAt = now;
-            if (trace.steps.length < 16) {
-              trace.steps.push(String(step).slice(0, 64));
+          try {
+            const intermediateValue =
+              'intermediateValue' in state
+                ? state.intermediateValue
+                : undefined;
+            const step = intermediateValue?.step;
+            if (intermediateValue?.requiredUserInteraction) {
+              trace.last_required_user_interaction = String(
+                intermediateValue.requiredUserInteraction
+              ).slice(0, 64);
             }
-            console.debug('[Ledger DMK][stage]', {
-              step,
-              timestamp: Date.now(),
-            });
-            previousStep = step;
+            if (step && step !== previousStep) {
+              const now = Date.now();
+              trace.slowestGapMs = Math.max(
+                trace.slowestGapMs,
+                now - trace.lastStepAt
+              );
+              trace.lastStepAt = now;
+              if (trace.steps.length < 16) {
+                trace.steps.push(String(step).slice(0, 64));
+              }
+              console.debug('[Ledger DMK][stage]', {
+                step,
+                timestamp: Date.now(),
+              });
+              previousStep = step;
+            }
+          } catch {
+            // Optional diagnostics must never affect the device action.
           }
         }),
         filter((state) => {
@@ -769,6 +871,8 @@ class LedgerBridgeKeyring {
 
   getLedgerSigningDiagnostics(error: unknown, attempt?: SigningAttempt) {
     const statusWord = findLedgerStatusWord(error);
+    const providerErrorTag = findLedgerErrorTag(error);
+    const providerReason = getLedgerErrorReason(error, statusWord);
     const trace =
       (attempt ? ledgerAttemptBySigningAttempt.get(attempt) : undefined) ??
       (error && typeof error === 'object'
@@ -781,10 +885,14 @@ class LedgerBridgeKeyring {
       error_category:
         statusWord === '6985' && isLedgerUserCancellation(error)
           ? 'user_cancelled'
-          : statusWord === '5515'
+          : statusWord === '5515' || providerReason === 'device_locked'
           ? 'device_locked'
+          : providerReason === 'device_disconnected'
+          ? 'disconnected'
           : 'unknown',
       ...(statusWord ? { provider_code: `0x${statusWord}` } : {}),
+      ...(providerErrorTag ? { provider_error_tag: providerErrorTag } : {}),
+      ...(providerReason ? { provider_reason: providerReason } : {}),
       ...(trace
         ? {
             provider_stage: trace.steps[trace.steps.length - 1],
@@ -804,6 +912,15 @@ class LedgerBridgeKeyring {
               ...(trace.clear_signing_type
                 ? { clear_signing_type: trace.clear_signing_type }
                 : {}),
+              ...(trace.last_required_user_interaction
+                ? {
+                    last_required_user_interaction:
+                      trace.last_required_user_interaction,
+                  }
+                : {}),
+              used_fallback: trace.steps.includes(
+                'signer.eth.steps.blindSignTransactionFallback'
+              ),
             },
           }
         : { provider_metadata: this.hardwareSigningMetadata }),

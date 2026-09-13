@@ -31,7 +31,7 @@ import {
   CandlePeriod,
 } from '../constants';
 import clsx from 'clsx';
-import { MarketData } from '@/ui/models/perps';
+import { MarketData } from '@/ui/state/perps';
 import { useTranslation } from 'react-i18next';
 import dayjs from 'dayjs';
 import { splitNumberByStep } from '@/ui/utils';

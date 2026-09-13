@@ -1,6 +1,5 @@
 import { Account } from '@/background/service/preference';
 import { KEYRING_TYPE } from '@/constant';
-import { account } from '@/ui/models/account';
 import { useWallet } from '@/ui/utils';
 import { findChain } from '@/utils/chain';
 import { useRequest } from 'ahooks';
@@ -46,7 +45,7 @@ export const useGetCurrentSafeInfo = ({
       }
     },
     {
-      refreshDeps: [chainId, account],
+      refreshDeps: [chainId, currentAccount],
       onError(e) {
         Modal.error({
           className: 'modal-support-darkmode',

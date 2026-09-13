@@ -1,4 +1,4 @@
-import { AccountHistoryItem, PositionAndOpenOrder } from '@/ui/models/perps';
+import { AccountHistoryItem, PositionAndOpenOrder } from '@/ui/state/perps';
 import {
   UserHistoricalOrders,
   UserTwapSliceFill,

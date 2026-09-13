@@ -16,8 +16,8 @@ import { useAsync, useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import {
+  formatLargeTokenAmount,
   formatPrice,
-  formatTokenAmount,
   formatUsdValue,
 } from 'ui/utils/number';
 import { getTokenSymbol } from 'ui/utils/token';
@@ -132,6 +132,7 @@ const TokenSelector = ({
   showLpTokenSwitch,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
+  const tokenListRef = React.useRef<HTMLUListElement>(null);
   const [query, setQuery] = useState('');
   const [isInputActive, setIsInputActive] = useState(false);
   const history = useHistory();
@@ -170,6 +171,12 @@ const TokenSelector = ({
   };
 
   const { selectedTab, onTabChange } = useSwitchNetTab();
+
+  useEffect(() => {
+    if (visible) {
+      tokenListRef.current?.scrollTo({ top: 0 });
+    }
+  }, [visible, chainServerId, lpTokenMode, selectedTab]);
 
   const {
     testnetTokenList: customTestnetTokenList,
@@ -571,33 +578,21 @@ const TokenSelector = ({
           </div>
         )}
 
-        {selectedTab === 'mainnet' ? (
-          <ul className={clsx('token-list', { empty: isEmpty })}>
-            {isEmpty
-              ? NoDataUI
-              : displayList.map((token) => {
-                  return commonItemRender(
-                    token,
-                    type,
-                    undefined,
-                    disableItemCheck
-                  );
-                })}
-          </ul>
-        ) : (
-          <ul className={clsx('token-list', { empty: isEmpty })}>
-            {isEmpty
-              ? NoDataUI
-              : displayList.map((token) => {
-                  return commonItemRender(
-                    token,
-                    type,
-                    undefined,
-                    disableItemCheck
-                  );
-                })}
-          </ul>
-        )}
+        <ul
+          ref={tokenListRef}
+          className={clsx('token-list', { empty: isEmpty })}
+        >
+          {isEmpty
+            ? NoDataUI
+            : displayList.map((token) => {
+                return commonItemRender(
+                  token,
+                  type,
+                  undefined,
+                  disableItemCheck
+                );
+              })}
+        </ul>
       </Drawer>
       <TokenDetailPopup
         variant="add"
@@ -856,7 +851,7 @@ function CommonTokenItem(props: {
                 )
               ) : (
                 <span className="symbol text-13 font-normal text-r-neutral-foot mb-2">
-                  {formatTokenAmount(value?.amount || 0)}
+                  {formatLargeTokenAmount(value?.amount || 0)}
                 </span>
               )}
             </div>
@@ -893,7 +888,7 @@ function CommonTokenItem(props: {
               </>
             ) : (
               <div className={clsx('token_usd_value')}>
-                {formatTokenAmount(value?.amount || 0)}
+                {formatLargeTokenAmount(value?.amount || 0)}
               </div>
             )}
           </div>
