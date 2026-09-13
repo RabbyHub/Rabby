@@ -70,7 +70,7 @@ describe('SignTypedData security lifecycle', () => {
     destroySafeModal = jest.fn();
     showSafeModal = jest.fn(() => ({ destroy: destroySafeModal }));
     engine = jest.fn().mockResolvedValue([]);
-    approve = jest.fn();
+    approve = jest.fn().mockResolvedValue({ accepted: true });
     enterPassphrase = jest.fn().mockResolvedValue(undefined);
     wallet = {
       getConnectedSite: jest.fn().mockResolvedValue(null),
@@ -80,7 +80,8 @@ describe('SignTypedData security lifecycle', () => {
       },
       reportStats: jest.fn().mockResolvedValue(undefined),
       ruleEnableStatusChange: jest.fn().mockResolvedValue(undefined),
-      getApproval: jest.fn().mockResolvedValue({
+      isApprovalCurrent: jest.fn().mockResolvedValue(true),
+      getCurrentApproval: jest.fn().mockResolvedValue({
         id: 'approval',
         data: { approvalComponent: 'SignTypedData' },
       }),
@@ -153,9 +154,24 @@ describe('SignTypedData security lifecycle', () => {
       },
       'ui/utils': {
         getTimeSpan: noop,
-        useApproval: () => [noop, approve, noop],
         useCommonPopupView: () => ({ activeApprovalPopup: () => false }),
         useWallet: () => wallet,
+      },
+      '@/ui/approval/context': {
+        useApprovalScope: () => ({
+          approval: {
+            approvalId: props.approvalId,
+            component: 'SignTypedData',
+          },
+          account: props.account,
+        }),
+      },
+      '@/ui/approval/actions': {
+        useApprovalActions: () => ({
+          resolve: approve,
+          reject: noop,
+          isBound: () => wallet.isApprovalCurrent(props.approvalId),
+        }),
       },
       './map': { WaitingSignMessageComponent: {} },
       './FooterBar/FooterBar': {
@@ -420,7 +436,7 @@ describe('SignTypedData security lifecycle', () => {
       await act(async () => {
         await footer.onSubmit();
       });
-      expect(approve).toHaveBeenCalledWith({});
+      expect(approve).toHaveBeenCalledWith({}, { attempt: undefined });
     }
   );
 
@@ -448,7 +464,7 @@ describe('SignTypedData security lifecycle', () => {
       await act(async () => {
         await footer.onSubmit();
       });
-      expect(approve).toHaveBeenCalledWith({});
+      expect(approve).toHaveBeenCalledWith({}, { attempt: undefined });
     }
   );
 

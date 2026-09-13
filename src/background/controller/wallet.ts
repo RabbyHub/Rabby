@@ -12,6 +12,7 @@ import {
   groupBy,
   isEqual,
   last,
+  omit,
   pick,
   sortBy,
   truncate,
@@ -201,6 +202,7 @@ import {
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
+import { assertApprovalSigningBinding } from './walletUtils/approvalSigning';
 import { gasMarketV2 as loadGasMarketV2 } from '../service/gasMarket';
 import {
   cancelAllSignTxPreparations,
@@ -5189,6 +5191,12 @@ export class WalletController extends BaseController {
     context?: ApprovalSigningContext | DirectSigningId
   ) => {
     const assertCurrent = () => {
+      assertApprovalSigningBinding(notificationService.getCurrentApproval(), {
+        type,
+        from,
+        data,
+        options,
+      });
       if (typeof context === 'string') {
         directSigning.assertCurrent(context, {
           address: from,
@@ -5206,6 +5214,8 @@ export class WalletController extends BaseController {
       keyring,
       { from, data },
       options
+        ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+        : options
     );
     assertCurrent();
     return res;

@@ -65,6 +65,7 @@ jest.mock('@/utils/env', () => ({ isManifestV3: false }));
 const mockCaptureException = jest.fn();
 jest.mock('@sentry/browser', () => ({
   captureException: (...args: unknown[]) => mockCaptureException(...args),
+  addBreadcrumb: jest.fn(),
 }));
 
 import { directSigning } from '@/background/service/directSigning';
@@ -130,18 +131,24 @@ describe('notificationService approval identity', () => {
         component: 'SignTx' | 'SignTypedData'
       ) =>
         method === 'resolve'
-          ? notificationService.resolveApproval({}, false, id, component)
-          : notificationService.rejectApproval(
-              undefined,
-              true,
-              false,
-              id,
-              component
-            );
+          ? notificationService.resolveApprovalFor({
+              approval: toApprovalRef(id!, component),
+              data: {},
+            })
+          : notificationService.rejectApprovalFor({
+              approval: toApprovalRef(id!, component),
+              stay: true,
+            });
 
-      expect(await settle('stale', 'SignTx')).toBe(false);
-      expect(await settle('current', 'SignTypedData')).toBe(false);
-      expect(await settle(undefined, 'SignTx')).toBe(false);
+      expect(await settle('stale', 'SignTx')).toMatchObject({
+        accepted: false,
+      });
+      expect(await settle('current', 'SignTypedData')).toMatchObject({
+        accepted: false,
+      });
+      expect(await settle(undefined, 'SignTx')).toMatchObject({
+        accepted: false,
+      });
       expect(approval.resolve).not.toHaveBeenCalled();
       expect(approval.reject).not.toHaveBeenCalled();
       expect(notificationService.currentApproval).toBe(approval);
@@ -156,18 +163,19 @@ describe('notificationService approval identity', () => {
     notificationService.currentApproval = first;
 
     expect(
-      await notificationService.resolveApproval(
-        { signed: true },
-        false,
-        'first',
-        'SignTx'
-      )
-    ).toBe(true);
+      await notificationService.resolveApprovalFor({
+        approval: toApprovalRef('first', 'SignTx'),
+        data: { signed: true },
+      })
+    ).toMatchObject({ accepted: true });
     expect(first.resolve).toHaveBeenCalledWith({ signed: true });
     expect(notificationService.currentApproval).toBe(second);
     expect(
-      await notificationService.resolveApproval({}, false, 'first', 'SignTx')
-    ).toBe(false);
+      await notificationService.resolveApprovalFor({
+        approval: toApprovalRef('first', 'SignTx'),
+        data: {},
+      })
+    ).toMatchObject({ accepted: false });
     expect(second.resolve).not.toHaveBeenCalled();
   });
 
@@ -178,14 +186,11 @@ describe('notificationService approval identity', () => {
     notificationService.currentApproval = first;
 
     expect(
-      await notificationService.rejectApproval(
-        undefined,
-        true,
-        false,
-        'first',
-        'SignTypedData'
-      )
-    ).toBe(true);
+      await notificationService.rejectApprovalFor({
+        approval: toApprovalRef('first', 'SignTypedData'),
+        stay: true,
+      })
+    ).toMatchObject({ accepted: true });
     expect(first.reject).toHaveBeenCalledTimes(1);
     expect(second.reject).not.toHaveBeenCalled();
     expect(notificationService.currentApproval).toBe(second);

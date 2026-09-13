@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useHistory } from 'react-router-dom';
 import type { Account } from 'background/service/preference';
 import type {
@@ -28,6 +28,7 @@ type ApprovalActionDependencies = {
   approval: ResolveApprovalCommand['approval'];
   account: Account;
   isCurrent: () => Promise<boolean>;
+  canResolve?: () => boolean;
   deviceConnect: (data: any, account: Account) => Promise<boolean>;
   resolveApprovalFor: (
     command: ResolveApprovalCommand
@@ -48,6 +49,7 @@ export const createApprovalActions = ({
   approval,
   account,
   isCurrent,
+  canResolve,
   deviceConnect,
   resolveApprovalFor,
   rejectApprovalFor,
@@ -60,9 +62,12 @@ export const createApprovalActions = ({
       data?: any,
       options: ApprovalResolveOptions = {}
     ): Promise<ApprovalActionResult | undefined> => {
+      if (canResolve?.() === false) return;
       if (!(await isCurrent())) return staleApprovalResult;
+      if (canResolve?.() === false) return;
       if (!(await deviceConnect(data, account))) return;
       if (!(await isCurrent())) return staleApprovalResult;
+      if (canResolve?.() === false) return;
 
       const signingAttempt = options.attempt;
       const result = await resolveApprovalFor({
@@ -93,23 +98,49 @@ export const createApprovalActions = ({
   };
 };
 
-export const useApprovalActions = () => {
+export const useApprovalActions = (canResolve?: () => boolean) => {
   const approval = useApprovalScope();
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
   const deviceConnect = useDeviceConnect();
+  const mounted = useRef(true);
+  const latest = useRef({ approval: approval.approval, canResolve });
+  latest.current = { approval: approval.approval, canResolve };
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
 
   return useMemo(() => {
+    const matchesScope = () =>
+      mounted.current &&
+      approval.approval.approvalId === latest.current.approval.approvalId &&
+      approval.approval.component === latest.current.approval.component;
     const actions = createApprovalActions({
       approval: approval.approval,
       account: approval.account,
-      isCurrent: () => wallet.isApprovalCurrent(approval.approval.approvalId),
+      isCurrent: async () => {
+        if (!matchesScope()) return false;
+        const current = await wallet.getCurrentApproval();
+        return (
+          matchesScope() &&
+          current?.id === approval.approval.approvalId &&
+          current?.data.approvalComponent === approval.approval.component
+        );
+      },
+      canResolve: () =>
+        matchesScope() &&
+        canResolve?.() !== false &&
+        latest.current.canResolve?.() !== false,
       deviceConnect,
       resolveApprovalFor: (command) => wallet.resolveApprovalFor(command),
       rejectApprovalFor: (command) => wallet.rejectApprovalFor(command),
       onResolved: (data) => {
         setTimeout(() => {
+          if (!matchesScope()) return;
           if (data && enablePopup(data.type)) {
             showPopup();
           } else {
@@ -117,9 +148,19 @@ export const useApprovalActions = () => {
           }
         }, 0);
       },
-      onRejected: () => history.push('/'),
+      onRejected: () => {
+        if (matchesScope()) history.push('/');
+      },
     });
 
     return actions;
-  }, [approval, deviceConnect, enablePopup, history, showPopup, wallet]);
+  }, [
+    approval,
+    canResolve,
+    deviceConnect,
+    enablePopup,
+    history,
+    showPopup,
+    wallet,
+  ]);
 };
