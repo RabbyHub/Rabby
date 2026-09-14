@@ -24,6 +24,12 @@ export interface AddAddressNavigateHandler {
 interface WalletRouteParams {
   address: string;
   chainId: number;
+  // Set only when this "add address" flow was entered from a pending
+  // ImportAddress approval (see Approval/components/ImportAddress.tsx) — carried
+  // through same-window route state so the eventual /popup/import/success screen
+  // can complete that approval. Not set for a plain, user-initiated add-address
+  // flow, which must not settle any approval.
+  approvalId?: string;
 }
 
 export interface WalletBrandItem {
@@ -152,10 +158,11 @@ export const useAddAddressWalletOptions = ({
           openInternalPageInTab('import/hardware/onekey-connect');
         } else if (item.connectType === 'GnosisConnect') {
           if (isDesktop) {
-            onNavigate?.('gnosis');
+            onNavigate?.('gnosis', params);
           } else {
             currentHistory.push({
               pathname: '/import/gnosis',
+              state: params,
             });
           }
         } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
@@ -195,12 +202,16 @@ export const useAddAddressWalletOptions = ({
         ) {
           openInternalPageInTab('import/hardware/imkey-connect');
         } else if (isDesktop) {
-          onNavigate?.('wallet-connect', { brand: item });
+          onNavigate?.('wallet-connect', {
+            brand: item,
+            approvalId: params?.approvalId,
+          });
         } else {
           currentHistory.push({
             pathname: '/import/wallet-connect',
             state: {
               brand: item,
+              approvalId: params?.approvalId,
             },
           });
         }

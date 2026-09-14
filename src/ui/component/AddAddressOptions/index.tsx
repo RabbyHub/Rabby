@@ -85,7 +85,7 @@ const AddAddressOptions: React.FC<{
       return;
     }
 
-    const { type, address, chainId } = location.state as any;
+    const { type, address, chainId, approvalId } = location.state as any;
     const brandContentKey = Object.keys(WALLET_BRAND_CONTENT).find((key) => {
       const item = WALLET_BRAND_CONTENT[key] as IWalletBrandContent;
       return item.name === type;
@@ -95,6 +95,7 @@ const AddAddressOptions: React.FC<{
       connectRouter(WALLET_BRAND_CONTENT[brandContentKey], {
         address,
         chainId,
+        approvalId,
       });
       return;
     }
