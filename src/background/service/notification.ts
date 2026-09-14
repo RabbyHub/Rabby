@@ -22,6 +22,66 @@ import { isManifestV3 } from '@/utils/env';
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 
+// 'Unlock' is a real approval type the background creates (see rpcFlow.ts) but it is
+// not rendered through the Approval/components dispatch table, so it can't be derived
+// from IApprovalComponents. Keep this union, not the UI component barrel, as the
+// source of truth for "what approval types can exist" — the UI component name and the
+// background approval type are related but not the same concept.
+export type ApprovalKind = keyof IApprovalComponents | 'Unlock';
+
+// Runtime mirror of ApprovalKind for the identity validator below (type-only imports
+// erase at compile time, so this list can't be derived from IApprovalComponents at
+// runtime). Keep in sync with ui/views/Approval/components/index.ts's exports + 'Unlock'.
+const KNOWN_APPROVAL_KINDS = new Set<ApprovalKind>([
+  'Unlock',
+  'SignText',
+  'SignTx',
+  'SignTypedData',
+  'Connect',
+  'WatchAddressWaiting',
+  'CoinbaseWaiting',
+  'AddChain',
+  'SwitchChain',
+  'QRHardWareWaiting',
+  'LedgerHardwareWaiting',
+  'CommonWaiting',
+  'PrivatekeyWaiting',
+  'AddAsset',
+  'GetPublicKey',
+  'Decrypt',
+  'ETHSign',
+  'ImportAddress',
+  'ImKeyHardwareWaiting',
+]);
+
+// Identity a settlement call must present: which approval, and what type it expects
+// that approval to be. Both fields are required — there is no fallback to
+// "whatever is currently pending" anywhere in this module.
+export type ApprovalRef = Readonly<{
+  id: string;
+  component: ApprovalKind;
+}>;
+
+export type ApprovalSettleFailureReason =
+  | 'INVALID_APPROVAL_REF'
+  | 'NO_CURRENT_APPROVAL'
+  | 'APPROVAL_ID_MISMATCH'
+  | 'APPROVAL_COMPONENT_MISMATCH';
+
+export type ApprovalSettleResult =
+  | { accepted: true }
+  | { accepted: false; reason: ApprovalSettleFailureReason };
+
+function isValidApprovalRef(ref: unknown): ref is ApprovalRef {
+  if (!ref || typeof ref !== 'object') return false;
+  const { id, component } = ref as Partial<ApprovalRef>;
+  if (typeof id !== 'string' || id.length === 0) return false;
+  if (typeof component !== 'string' || !KNOWN_APPROVAL_KINDS.has(component)) {
+    return false;
+  }
+  return true;
+}
+
 export interface Approval {
   id: string;
   taskId: number | null;
@@ -30,7 +90,7 @@ export interface Approval {
     params?: import('react').ComponentProps<IApprovalComponent>['params'];
     account: Account;
     origin?: string;
-    approvalComponent: keyof IApprovalComponents;
+    approvalComponent: ApprovalKind;
     requestDefer?: Promise<any>;
     approvalType?: string;
   };
@@ -39,7 +99,7 @@ export interface Approval {
   reject?(err: EthereumProviderError<any>): void;
 }
 
-const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
+const QUEUE_APPROVAL_COMPONENTS_WHITELIST: ApprovalKind[] = [
   'Unlock',
   'SignTx',
   'SignText',
@@ -138,13 +198,23 @@ class NotificationService extends Events {
       }
 
       if (this.notifiWindowId !== null && winId !== this.notifiWindowId) {
+        const current = this.currentApproval;
         if (
-          this.currentApproval &&
+          current &&
           !QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(
-            this.currentApproval.data.approvalComponent
+            current.data.approvalComponent
           )
         ) {
-          this.rejectApproval();
+          // System-level cancel (window lost focus): capture the ref synchronously,
+          // in this same tick, and settle through the same strict path as any other
+          // caller — no unbound fallback even for internal callers.
+          this.rejectApprovalFor({
+            approval: {
+              id: current.id,
+              component: current.data.approvalComponent,
+            },
+            isInternal: false,
+          });
         }
       }
     });
@@ -187,83 +257,101 @@ class NotificationService extends Events {
 
   getApproval = () => this.currentApproval;
 
-  resolveApproval = async (
-    data?: any,
+  /**
+   * The only entry points that settle a single approval. Both require the caller's
+   * full identity (id + expected type) for the exact approval being displayed —
+   * there is no overload that falls back to "whatever is currentApproval now".
+   * Validation and the state transition that makes the approval unconsumable again
+   * happen in the same synchronous span (no `await` between them), so a concurrent
+   * resolve/reject/duplicate call can settle it at most once.
+   */
+  resolveApprovalFor = ({
+    approval,
+    data,
     forceReject = false,
-    approvalId?: string,
-    approvalComponent?: Approval['data']['approvalComponent']
-  ) => {
-    if (
-      !this.currentApproval ||
-      (approvalId && approvalId !== this.currentApproval.id) ||
-      (approvalComponent &&
-        (!approvalId ||
-          approvalComponent !== this.currentApproval.data.approvalComponent))
-    ) {
-      return false;
+  }: {
+    approval: ApprovalRef;
+    data?: any;
+    forceReject?: boolean;
+  }): ApprovalSettleResult => {
+    if (!isValidApprovalRef(approval)) {
+      return { accepted: false, reason: 'INVALID_APPROVAL_REF' };
     }
-    if (forceReject) {
-      this.currentApproval?.reject &&
-        this.currentApproval?.reject(
-          new EthereumProviderError(4001, 'User Cancel')
-        );
-    } else {
-      this.currentApproval?.resolve && this.currentApproval?.resolve(data);
+    const current = this.currentApproval;
+    if (!current) {
+      return { accepted: false, reason: 'NO_CURRENT_APPROVAL' };
+    }
+    if (current.id !== approval.id) {
+      return { accepted: false, reason: 'APPROVAL_ID_MISMATCH' };
+    }
+    if (current.data.approvalComponent !== approval.component) {
+      return { accepted: false, reason: 'APPROVAL_COMPONENT_MISMATCH' };
     }
 
-    const approval = this.currentApproval;
+    // --- validated: from here `current` can no longer be re-consumed ---
+    if (forceReject) {
+      current.reject?.(new EthereumProviderError(4001, 'User Cancel'));
+    } else {
+      current.resolve?.(data);
+    }
 
     this.clearLastRejectDapp();
-    this.deleteApproval(approval);
-
-    if (this.approvals.length > 0) {
-      this.currentApproval = this.approvals[0];
-    } else {
-      this.currentApproval = null;
-    }
+    this.deleteApproval(current);
+    this.currentApproval = this.approvals.length > 0 ? this.approvals[0] : null;
 
     this.emit('resolve', data);
-    return true;
+    return { accepted: true };
   };
 
-  rejectApproval = async (
-    err?: string,
+  rejectApprovalFor = async ({
+    approval,
+    error,
     stay = false,
     isInternal = false,
-    approvalId?: string,
-    approvalComponent?: Approval['data']['approvalComponent']
-  ) => {
-    if (
-      !this.currentApproval ||
-      (approvalId && approvalId !== this.currentApproval.id) ||
-      (approvalComponent &&
-        (!approvalId ||
-          approvalComponent !== this.currentApproval.data.approvalComponent))
-    ) {
-      return false;
+  }: {
+    approval: ApprovalRef;
+    error?: string;
+    stay?: boolean;
+    isInternal?: boolean;
+  }): Promise<ApprovalSettleResult> => {
+    if (!isValidApprovalRef(approval)) {
+      return { accepted: false, reason: 'INVALID_APPROVAL_REF' };
     }
+    const current = this.currentApproval;
+    if (!current) {
+      return { accepted: false, reason: 'NO_CURRENT_APPROVAL' };
+    }
+    if (current.id !== approval.id) {
+      return { accepted: false, reason: 'APPROVAL_ID_MISMATCH' };
+    }
+    if (current.data.approvalComponent !== approval.component) {
+      return { accepted: false, reason: 'APPROVAL_COMPONENT_MISMATCH' };
+    }
+
+    // --- validated: from here `current` can no longer be re-consumed ---
     this.addLastRejectDapp();
-    const approval = this.currentApproval;
-
     if (isInternal) {
-      approval?.reject && approval?.reject(ethErrors.rpc.internal(err));
+      current.reject?.(ethErrors.rpc.internal(error));
     } else {
-      approval?.reject &&
-        approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
+      current.reject?.(ethErrors.provider.userRejectedRequest<any>(error));
     }
 
-    if (approval?.signingTxId) {
-      transactionHistoryService.removeSigningTx(approval.signingTxId);
+    if (current.signingTxId) {
+      transactionHistoryService.removeSigningTx(current.signingTxId);
     }
 
-    if (approval && this.approvals.length > 1) {
-      this.deleteApproval(approval);
+    if (this.approvals.length > 1) {
+      this.deleteApproval(current);
       this.currentApproval = this.approvals[0];
-    } else {
-      await this.clear(stay);
+      this.emit('reject', error);
+      return { accepted: true };
     }
-    this.emit('reject', err);
-    return true;
+
+    // Only cleanup (closing the notification window) remains async; the approval
+    // itself was already consumed above, so this can't race a second settlement.
+    await this.clear(stay);
+    this.emit('reject', error);
+    return { accepted: true };
   };
 
   requestApproval = async (

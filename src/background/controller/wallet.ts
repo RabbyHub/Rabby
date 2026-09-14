@@ -555,22 +555,8 @@ export class WalletController extends BaseController {
   };
 
   getApproval = notificationService.getApproval;
-  resolveApproval = notificationService.resolveApproval;
-  rejectApproval = (
-    err?: string,
-    stay = false,
-    isInternal = false,
-    approvalId?: string,
-    approvalComponent?: Parameters<typeof notificationService.rejectApproval>[4]
-  ) => {
-    return notificationService.rejectApproval(
-      err,
-      stay,
-      isInternal,
-      approvalId,
-      approvalComponent
-    );
-  };
+  resolveApprovalFor = notificationService.resolveApprovalFor;
+  rejectApprovalFor = notificationService.rejectApprovalFor;
 
   rejectAllApprovals = () => {
     notificationService.rejectAllApprovals();
