@@ -102,20 +102,34 @@ const Unlock = () => {
   } | null>(null);
   const [getApproval, resolveApproval] = useApproval(pendingUnlockApproval);
   useEffect(() => {
+    // The background has no "a new approval was queued" broadcast this screen
+    // can listen for, so a plain popup/tab left open on the lock screen (no
+    // pending approval yet) needs to keep re-checking rather than only
+    // capturing once at mount — otherwise an Unlock approval created *after*
+    // this screen mounted but *before* the user finishes entering their
+    // password would never get bound, and would sit unresolved despite a
+    // correct unlock. Each check is still a fresh, point-in-time read used
+    // immediately to establish scope, not a fallback consulted at settlement.
+    if (pendingUnlockApproval) return;
     let cancelled = false;
-    getApproval().then((approval) => {
-      if (cancelled || !approval) return;
-      if (String(approval.data.approvalComponent) === 'Unlock') {
-        setPendingUnlockApproval({
-          approvalId: approval.id,
-          approvalComponent: 'Unlock',
-        });
-      }
-    });
+    const check = () => {
+      getApproval().then((approval) => {
+        if (cancelled || !approval) return;
+        if (String(approval.data.approvalComponent) === 'Unlock') {
+          setPendingUnlockApproval({
+            approvalId: approval.id,
+            approvalComponent: 'Unlock',
+          });
+        }
+      });
+    };
+    check();
+    const interval = window.setInterval(check, 500);
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
     };
-  }, []);
+  }, [pendingUnlockApproval]);
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
