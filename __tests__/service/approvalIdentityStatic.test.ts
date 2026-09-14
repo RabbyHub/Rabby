@@ -1,6 +1,58 @@
 import fs from 'fs';
 import path from 'path';
 
+// notification.ts instantiates a singleton at module load (constructor wires up
+// browser/webextension-polyfill listeners) — mock its dependencies the same way
+// notificationQueue.test.ts does so importing KNOWN_APPROVAL_KINDS doesn't throw.
+jest.mock('webextension-polyfill', () => ({
+  __esModule: true,
+  default: {
+    windows: { getAll: jest.fn().mockResolvedValue([]), update: jest.fn() },
+    action: { setBadgeText: jest.fn(), setBadgeBackgroundColor: jest.fn() },
+    browserAction: {
+      setBadgeText: jest.fn(),
+      setBadgeBackgroundColor: jest.fn(),
+    },
+  },
+}));
+jest.mock('consts', () => ({
+  KEYRING_CATEGORY_MAP: {},
+  IS_LINUX: false,
+  IS_VIVALDI: false,
+  IS_CHROME: false,
+  KEYRING_CATEGORY: {},
+  IS_WINDOWS: false,
+}));
+jest.mock('background/webapi', () => ({
+  winMgr: {
+    event: { on: jest.fn() },
+    openNotification: jest.fn(),
+    remove: jest.fn(),
+  },
+}));
+jest.mock('@/background/service/transactionHistory', () => ({
+  __esModule: true,
+  default: {
+    addSigningTx: jest.fn(),
+    getSigningTx: jest.fn(),
+    removeSigningTx: jest.fn(),
+    removeAllSigningTx: jest.fn(),
+  },
+}));
+jest.mock('@/background/service/preference', () => ({
+  __esModule: true,
+  default: { getCurrentAccount: jest.fn() },
+}));
+jest.mock('@/stats', () => ({
+  __esModule: true,
+  default: { report: jest.fn() },
+}));
+jest.mock('@/utils/chain', () => ({ findChain: jest.fn() }));
+jest.mock('@/utils/env', () => ({ isManifestV3: false }));
+jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
+
+import { KNOWN_APPROVAL_KINDS } from '@/background/service/notification';
+
 /**
  * Grep-based regression guard for the approval-identity migration. This is
  * deliberately auxiliary (per the migration's own rules: static text search
@@ -17,7 +69,10 @@ function listFiles(dir: string, out: string[] = []) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       listFiles(full, out);
-    } else if (/\.(ts|tsx)$/.test(entry.name) && !entry.name.endsWith('.d.ts')) {
+    } else if (
+      /\.(ts|tsx)$/.test(entry.name) &&
+      !entry.name.endsWith('.d.ts')
+    ) {
       out.push(full);
     }
   }
@@ -74,14 +129,54 @@ describe('approval identity static constraints', () => {
     for (const file of files) {
       if (allowedFiles.has(file)) continue;
       const content = read(file);
-      const hasInlineCurrentRef =
-        /(resolveApprovalFor|rejectApprovalFor)\s*\(\s*\{\s*approval:\s*\{\s*id:\s*(current|approval)\.id/.test(
-          content
-        );
+      const hasInlineCurrentRef = /(resolveApprovalFor|rejectApprovalFor)\s*\(\s*\{\s*approval:\s*\{\s*id:\s*(current|approval)\.id/.test(
+        content
+      );
       if (hasInlineCurrentRef) {
         offenders.push(path.relative(SRC_ROOT, file));
       }
     }
     expect(offenders).toEqual([]);
+  });
+
+  test('KNOWN_APPROVAL_KINDS stays in sync with the Approval/components barrel', () => {
+    // ApprovalKind is `keyof IApprovalComponents | 'Unlock'`, derived from this
+    // barrel's exports at compile time. KNOWN_APPROVAL_KINDS is its hand-kept
+    // runtime mirror (type-only imports erase at runtime, so it can't be derived
+    // automatically) — if someone adds/renames/removes a component export without
+    // updating the Set, a new approval type would fail closed (safe) but silently,
+    // and this test is what would actually catch the mismatch.
+    const barrelPath = path.join(
+      SRC_ROOT,
+      'ui/views/Approval/components/index.ts'
+    );
+    const barrelSource = read(barrelPath);
+    const exportedNames = new Set<string>();
+    const exportPattern = /export\s*\{\s*(?:default as )?(\w+)\s*\}\s*from/g;
+    let match: RegExpExecArray | null;
+    while ((match = exportPattern.exec(barrelSource))) {
+      exportedNames.add(match[1]);
+    }
+    // Sanity check the parser itself found a realistic number of exports, so a
+    // barrel refactor that changes export syntax fails loudly here instead of
+    // silently passing with an empty set.
+    expect(exportedNames.size).toBeGreaterThan(10);
+
+    const knownKinds = new Set(KNOWN_APPROVAL_KINDS);
+    // 'Unlock' is deliberately not part of the UI component barrel (see
+    // notification.ts's ApprovalKind comment) — it's the one expected addition.
+    knownKinds.delete('Unlock');
+
+    const missingFromKnownKinds = [...exportedNames].filter(
+      (name) => !knownKinds.has(name as any)
+    );
+    const extraInKnownKinds = [...knownKinds].filter(
+      (name) => !exportedNames.has(name)
+    );
+
+    expect({ missingFromKnownKinds, extraInKnownKinds }).toEqual({
+      missingFromKnownKinds: [],
+      extraInKnownKinds: [],
+    });
   });
 });

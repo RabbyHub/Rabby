@@ -31,8 +31,9 @@ export type ApprovalKind = keyof IApprovalComponents | 'Unlock';
 
 // Runtime mirror of ApprovalKind for the identity validator below (type-only imports
 // erase at compile time, so this list can't be derived from IApprovalComponents at
-// runtime). Keep in sync with ui/views/Approval/components/index.ts's exports + 'Unlock'.
-const KNOWN_APPROVAL_KINDS = new Set<ApprovalKind>([
+// runtime). Keep in sync with ui/views/Approval/components/index.ts's exports + 'Unlock'
+// — checked by __tests__/service/approvalIdentityStatic.test.ts.
+export const KNOWN_APPROVAL_KINDS = new Set<ApprovalKind>([
   'Unlock',
   'SignText',
   'SignTx',
