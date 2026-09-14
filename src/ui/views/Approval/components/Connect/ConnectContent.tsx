@@ -20,7 +20,12 @@ import styled from 'styled-components';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { ChainSelector, FallbackSiteLogo, Spin } from 'ui/component';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  bindApproval,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
@@ -225,7 +230,7 @@ export const ConnectContent = (
   const { showChainsModal = false } = state ?? {};
   const [showModal] = useState(showChainsModal);
   const [, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'Connect' } : null
+    bindApproval(approvalId, 'Connect')
   );
   const { t } = useTranslation();
   const wallet = useWallet();

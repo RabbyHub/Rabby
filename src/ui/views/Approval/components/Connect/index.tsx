@@ -5,7 +5,7 @@ import { CHAINS_ENUM } from 'consts';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { sleep, useApproval, useWallet } from 'ui/utils';
+import { sleep, bindApproval, useApproval, useWallet } from 'ui/utils';
 import { ConnectContent } from './ConnectContent';
 import { EIP6963ProviderInfo, SelectWallet } from './SelectWallet';
 import qs from 'qs';
@@ -27,9 +27,7 @@ const Connect = (props: ConnectProps) => {
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false } = state ?? {};
-  const [, , rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'Connect' } : null
-  );
+  const [, , rejectApproval] = useApproval(bindApproval(approvalId, 'Connect'));
   const { t } = useTranslation();
   const wallet = useWallet();
 

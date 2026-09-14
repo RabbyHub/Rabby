@@ -12,7 +12,12 @@ import {
   WALLET_BRAND_TYPES,
 } from 'consts';
 import eventBus from '@/eventBus';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  bindApproval,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
@@ -57,7 +62,7 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
   const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'QRHardWareWaiting' } : null
+    bindApproval(approvalId, 'QRHardWareWaiting')
   );
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);

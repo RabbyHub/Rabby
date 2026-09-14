@@ -34,6 +34,7 @@ import {
   isSameAddress,
   openInTab,
   splitNumberByStep,
+  bindApproval,
   useApproval,
   useWallet,
 } from 'ui/utils';
@@ -195,7 +196,7 @@ interface TokenHistoryItem extends TxHistoryItem {
 
 const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
   const [, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'AddAsset' } : null
+    bindApproval(approvalId, 'AddAsset')
   );
   const wallet = useWallet();
   const { t } = useTranslation();

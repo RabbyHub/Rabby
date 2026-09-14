@@ -6,7 +6,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
-import { getUiType, useApproval } from 'ui/utils';
+import { getUiType, bindApproval, useApproval } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import stats from '@/stats';
@@ -88,7 +88,7 @@ const ImportSuccess = ({
     importedLength = 0,
   } = state;
   const [, resolveApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'ImportAddress' } : null
+    bindApproval(approvalId, 'ImportAddress')
   );
   const safeAddresses = React.useMemo(
     () =>

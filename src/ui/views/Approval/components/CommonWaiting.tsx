@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   openInternalPageInTab,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -68,7 +69,7 @@ export const CommonWaiting = ({
     setPopupProps,
   } = useCommonPopupView();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'CommonWaiting' } : null
+    bindApproval(approvalId, 'CommonWaiting')
   );
   const { t } = useTranslation();
   const { type } = params;

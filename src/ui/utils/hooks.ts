@@ -19,6 +19,23 @@ export interface ApprovalBinding {
 }
 
 /**
+ * Builds a useApproval binding from a possibly-missing approvalId prop —
+ * `null` (never `undefined`) when there's nothing to bind to yet, so the hook
+ * fails closed instead of settling an unrelated approval. Centralizes the
+ * `approvalId ? {...} : null` shape repeated across every approval-dispatched
+ * component so a copy/paste typo can't silently bind the wrong
+ * approvalComponent.
+ */
+export const bindApproval = (
+  approvalId: string | undefined,
+  approvalComponent: ApprovalKind,
+  canResolve?: () => boolean
+): ApprovalBinding | null =>
+  approvalId
+    ? { approvalId, approvalComponent, ...(canResolve ? { canResolve } : {}) }
+    : null;
+
+/**
  * `binding` is the caller's entire identity claim and is required on every call —
  * pass `null` (never omit it) when the caller doesn't have a settleable approval yet
  * (e.g. still figuring out whether one exists). There is no code path here that

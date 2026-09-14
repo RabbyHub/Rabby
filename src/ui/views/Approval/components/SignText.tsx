@@ -28,6 +28,7 @@ import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   getTimeSpan,
   hex2Text,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -82,7 +83,7 @@ const SignText = ({
   const renderStartAt = useRef(0);
   const actionType = useRef('');
   const [, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'SignText' } : null
+    bindApproval(approvalId, 'SignText')
   );
   const wallet = useWallet();
   const { t } = useTranslation();

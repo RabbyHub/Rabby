@@ -6,7 +6,7 @@ import { useForm } from 'antd/lib/form/Form';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useWallet } from 'ui/utils';
+import { bindApproval, useApproval, useWallet } from 'ui/utils';
 import { AddEthereumChainParams } from './type';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 
@@ -28,7 +28,7 @@ const AddChain = ({
 }) => {
   const wallet = useWallet();
   const [, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'AddChain' } : null
+    bindApproval(approvalId, 'AddChain')
   );
   const { t } = useTranslation();
 

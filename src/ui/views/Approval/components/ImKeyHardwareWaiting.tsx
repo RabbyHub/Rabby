@@ -11,6 +11,7 @@ import {
   KEYRING_CATEGORY_MAP,
 } from 'consts';
 import {
+  bindApproval,
   useApproval,
   openInTab,
   openInternalPageInTab,
@@ -78,9 +79,7 @@ export const ImKeyHardwareWaiting = ({
     WALLETCONNECT_STATUS_MAP.WAITING
   );
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
-    approvalId
-      ? { approvalId, approvalComponent: 'ImKeyHardwareWaiting' }
-      : null
+    bindApproval(approvalId, 'ImKeyHardwareWaiting')
   );
   const chain = findChain({
     id: params.chainId || 1,

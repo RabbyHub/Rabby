@@ -10,7 +10,7 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useApproval, useWallet } from 'ui/utils';
+import { bindApproval, useApproval, useWallet } from 'ui/utils';
 import { SwitchEthereumChainParams } from './type';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -34,7 +34,7 @@ const SwitchChain = ({
 }) => {
   const wallet = useWallet();
   const [, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'SwitchChain' } : null
+    bindApproval(approvalId, 'SwitchChain')
   );
   const { t } = useTranslation();
 

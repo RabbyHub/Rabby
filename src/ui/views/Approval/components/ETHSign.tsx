@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import IconWarning from 'ui/assets/warning.svg';
-import { useApproval } from 'ui/utils';
+import { bindApproval, useApproval } from 'ui/utils';
 
 interface AddAssetProps {
   data: {
@@ -29,9 +29,7 @@ const ETHSign = ({
   params: AddAssetProps;
   approvalId?: string;
 }) => {
-  const [, , rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'ETHSign' } : null
-  );
+  const [, , rejectApproval] = useApproval(bindApproval(approvalId, 'ETHSign'));
   const { t } = useTranslation();
 
   return (

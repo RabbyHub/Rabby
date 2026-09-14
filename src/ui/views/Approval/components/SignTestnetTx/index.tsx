@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
 import {
   intToHex,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -641,7 +642,7 @@ export const SignTestnetTx = ({
   const { t } = useTranslation();
 
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'SignTx' } : null
+    bindApproval(approvalId, 'SignTx')
   );
 
   const checkCanProcess = async () => {

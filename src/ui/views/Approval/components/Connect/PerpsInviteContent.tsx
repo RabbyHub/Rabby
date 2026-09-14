@@ -21,7 +21,7 @@ import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import { FallbackSiteLogo } from 'ui/component';
-import { useApproval, useWallet } from 'ui/utils';
+import { bindApproval, useApproval, useWallet } from 'ui/utils';
 import { WaitingSignMessageComponent } from '../map';
 import eventBus from '@/eventBus';
 
@@ -84,7 +84,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const [, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'Connect' } : null
+    bindApproval(approvalId, 'Connect')
   );
   const { t } = useTranslation();
   const wallet = useWallet();

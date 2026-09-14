@@ -52,6 +52,7 @@ import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
+  bindApproval,
   useApproval,
   useWallet,
   useCommonPopupView,
@@ -536,13 +537,7 @@ const SignTx = ({
     renderSecurityVersion === evaluationSequence.current &&
     canResolveSecurityRef.current();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
-    approvalId
-      ? {
-          approvalId,
-          approvalComponent: 'SignTx',
-          canResolve: isCurrentSecurityEvaluation,
-        }
-      : null
+    bindApproval(approvalId, 'SignTx', isCurrentSecurityEvaluation)
   );
   const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();

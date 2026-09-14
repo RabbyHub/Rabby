@@ -5,7 +5,7 @@ import { AddressInput } from './AddressInput';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { Header } from './Header';
-import { getUiType, useApproval, useWallet } from '@/ui/utils';
+import { getUiType, bindApproval, useApproval, useWallet } from '@/ui/utils';
 import { isAddress } from 'viem';
 import { SelectAddressPopup } from './SelectAddressPopup';
 import { useHistory, useLocation } from 'react-router-dom';
@@ -104,9 +104,7 @@ export const ImportCoboArgus: React.FC<{
   // AddAddress/shared.tsx, the only navigator) — reject fails closed rather than
   // falling back to whatever approval happens to be current.
   const [, , rejectApproval] = useApproval(
-    state?.approvalId
-      ? { approvalId: state.approvalId, approvalComponent: 'ImportAddress' }
-      : null
+    bindApproval(state?.approvalId, 'ImportAddress')
   );
   const handleClose = React.useCallback(() => {
     rejectApproval();

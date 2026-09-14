@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import LedgerSVG from 'ui/assets/walletlogo/ledger.svg';
 import {
   openInternalPageInTab,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -75,9 +76,7 @@ const LedgerHardwareWaiting = ({
     WALLETCONNECT_STATUS_MAP.WAITING
   );
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
-    approvalId
-      ? { approvalId, approvalComponent: 'LedgerHardwareWaiting' }
-      : null
+    bindApproval(approvalId, 'LedgerHardwareWaiting')
   );
   const chain = findChain({
     id: params.chainId || 1,

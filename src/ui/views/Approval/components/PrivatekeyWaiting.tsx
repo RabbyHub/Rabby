@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   isSameAddress,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -73,7 +74,7 @@ export const PrivatekeyWaiting = ({
     setPopupProps,
   } = useCommonPopupView();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
-    approvalId ? { approvalId, approvalComponent: 'PrivatekeyWaiting' } : null
+    bindApproval(approvalId, 'PrivatekeyWaiting')
   );
   const { t } = useTranslation();
   const { type } = params;
