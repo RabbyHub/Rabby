@@ -24,12 +24,8 @@ export const useDeviceConnect = () => {
     async (
       data: any,
       currentAccount: Account,
-      // The approval this connect attempt is settling, if any (absent when a
-      // reconnect popup is triggered by the passive device-status watchers
-      // instead of an in-flight resolveApproval call — see useLedgerStatus.ts/
-      // useImKeyStatus.ts). Forwarded into commonPopupView.data so Ledger.tsx/
-      // ImKeyPermission.tsx can bind their own cancel button's rejectApproval
-      // to the exact pending approval instead of leaving it unbound.
+      // The approval this connect is settling, if any (absent for the passive
+      // device-status watchers) — forwarded so Ledger.tsx/ImKeyPermission.tsx can bind their cancel button to it.
       approvalRef?: { id: string; component: ApprovalKind }
     ) => {
       if (!data) {

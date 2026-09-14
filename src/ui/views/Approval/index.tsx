@@ -41,9 +41,7 @@ const Approval: React.FC<{
     document.title = 'Rabby Wallet Notification';
     const account = approval.data.account || (await wallet.getCurrentAccount());
     if (!account) {
-      // Trusted loading boundary: this is the one place allowed to bind directly
-      // off the just-fetched snapshot, since it's rejecting the exact approval it
-      // just read (not resolving whatever happens to be current later).
+      // Trusted loading boundary: rejects the exact approval just read, not whatever's current later.
       wallet.rejectApprovalFor({
         approval: {
           id: approval.id,

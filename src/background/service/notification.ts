@@ -22,17 +22,12 @@ import { isManifestV3 } from '@/utils/env';
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 
-// 'Unlock' is a real approval type the background creates (see rpcFlow.ts) but it is
-// not rendered through the Approval/components dispatch table, so it can't be derived
-// from IApprovalComponents. Keep this union, not the UI component barrel, as the
-// source of truth for "what approval types can exist" — the UI component name and the
-// background approval type are related but not the same concept.
+// 'Unlock' is a real approval type (see rpcFlow.ts) not rendered through the
+// Approval/components dispatch table, so it can't be derived from IApprovalComponents.
 export type ApprovalKind = keyof IApprovalComponents | 'Unlock';
 
-// Runtime mirror of ApprovalKind for the identity validator below (type-only imports
-// erase at compile time, so this list can't be derived from IApprovalComponents at
-// runtime). Keep in sync with ui/views/Approval/components/index.ts's exports + 'Unlock'
-// — checked by __tests__/service/approvalIdentityStatic.test.ts.
+// Runtime mirror of ApprovalKind (type-only, erased at compile time). Keep in sync
+// with the components barrel + 'Unlock' — checked by approvalIdentityStatic.test.ts.
 export const KNOWN_APPROVAL_KINDS = new Set<ApprovalKind>([
   'Unlock',
   'SignText',
@@ -55,9 +50,7 @@ export const KNOWN_APPROVAL_KINDS = new Set<ApprovalKind>([
   'ImKeyHardwareWaiting',
 ]);
 
-// Identity a settlement call must present: which approval, and what type it expects
-// that approval to be. Both fields are required — there is no fallback to
-// "whatever is currently pending" anywhere in this module.
+// Identity a settlement call must present — both required, no fallback to "whatever is currently pending".
 export type ApprovalRef = Readonly<{
   id: string;
   component: ApprovalKind;
@@ -206,9 +199,7 @@ class NotificationService extends Events {
             current.data.approvalComponent
           )
         ) {
-          // System-level cancel (window lost focus): capture the ref synchronously,
-          // in this same tick, and settle through the same strict path as any other
-          // caller — no unbound fallback even for internal callers.
+          // Window lost focus: capture the ref now and settle through the same strict path as any other caller.
           this.rejectApprovalFor({
             approval: {
               id: current.id,
@@ -259,12 +250,9 @@ class NotificationService extends Events {
   getApproval = () => this.currentApproval;
 
   /**
-   * The only entry points that settle a single approval. Both require the caller's
-   * full identity (id + expected type) for the exact approval being displayed —
-   * there is no overload that falls back to "whatever is currentApproval now".
-   * Validation and the state transition that makes the approval unconsumable again
-   * happen in the same synchronous span (no `await` between them), so a concurrent
-   * resolve/reject/duplicate call can settle it at most once.
+   * The only entry points that settle a single approval — no overload falls back to
+   * "whatever is currentApproval now". Validation and consumption happen in the same
+   * synchronous span, so a concurrent resolve/reject/duplicate call settles it at most once.
    */
   resolveApprovalFor = ({
     approval,
@@ -348,8 +336,7 @@ class NotificationService extends Events {
       return { accepted: true };
     }
 
-    // Only cleanup (closing the notification window) remains async; the approval
-    // itself was already consumed above, so this can't race a second settlement.
+    // Only cleanup (closing the window) remains async — the approval was already consumed above.
     await this.clear(stay);
     this.emit('reject', error);
     return { accepted: true };

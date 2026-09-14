@@ -1,9 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 
-// notification.ts instantiates a singleton at module load (constructor wires up
-// browser/webextension-polyfill listeners) — mock its dependencies the same way
-// notificationQueue.test.ts does so importing KNOWN_APPROVAL_KINDS doesn't throw.
+// notification.ts's singleton wires up browser listeners at import time; mock its deps like notificationQueue.test.ts does.
 jest.mock('webextension-polyfill', () => ({
   __esModule: true,
   default: {
@@ -53,13 +51,9 @@ jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 
 import { KNOWN_APPROVAL_KINDS } from '@/background/service/notification';
 
-/**
- * Grep-based regression guard for the approval-identity migration. This is
- * deliberately auxiliary (per the migration's own rules: static text search
- * can't prove "no unbound settlement exists", only catch textual reintroduction
- * of the specific deleted APIs / known-unsafe shapes) — real coverage is the
- * behavioral tests in notificationQueue.test.ts and useApprovalBinding.test.ts.
- */
+// Grep-based regression guard, auxiliary to the behavioral coverage in
+// notificationQueue.test.ts/useApprovalBinding.test.ts — catches textual
+// reintroduction of removed/unsafe shapes, not "no unbound settlement exists".
 
 const SRC_ROOT = path.join(__dirname, '../../src');
 
@@ -87,9 +81,7 @@ describe('approval identity static constraints', () => {
     const offenders: string[] = [];
     for (const file of files) {
       const content = read(file);
-      // These positional-arg APIs were removed in favor of resolveApprovalFor /
-      // rejectApprovalFor; their names deliberately don't exist anymore, so any
-      // reference is either a typo-survivor or a reintroduced compat shim.
+      // Removed in favor of resolveApprovalFor/rejectApprovalFor; any reference here is a reintroduced compat shim.
       if (
         /\bnotificationService\.resolveApproval\s*\(/.test(content) ||
         /\bnotificationService\.rejectApproval\s*\(/.test(content) ||
@@ -116,11 +108,9 @@ describe('approval identity static constraints', () => {
   });
 
   test('resolveApprovalFor/rejectApprovalFor call sites are not passed a bare currentApproval-derived ref inline', () => {
-    // Best-effort textual smell test for the specific forbidden pattern named in
-    // the migration spec: fetching `current`/`approval` and building
-    // `{ id: current.id, component: current.data.approvalComponent }` in the same
-    // statement as a resolveApprovalFor/rejectApprovalFor call, outside the two
-    // reviewed, explicitly-commented trusted-loading-boundary exceptions.
+    // Flags an inline `{ id: current.id, component: current.data.approvalComponent }`
+    // next to a resolveApprovalFor/rejectApprovalFor call, outside the two reviewed
+    // trusted-loading-boundary exceptions.
     const allowedFiles = new Set([
       path.join(SRC_ROOT, 'ui/views/Approval/index.tsx'),
       path.join(SRC_ROOT, 'background/service/notification.ts'),
@@ -140,12 +130,8 @@ describe('approval identity static constraints', () => {
   });
 
   test('KNOWN_APPROVAL_KINDS stays in sync with the Approval/components barrel', () => {
-    // ApprovalKind is `keyof IApprovalComponents | 'Unlock'`, derived from this
-    // barrel's exports at compile time. KNOWN_APPROVAL_KINDS is its hand-kept
-    // runtime mirror (type-only imports erase at runtime, so it can't be derived
-    // automatically) — if someone adds/renames/removes a component export without
-    // updating the Set, a new approval type would fail closed (safe) but silently,
-    // and this test is what would actually catch the mismatch.
+    // KNOWN_APPROVAL_KINDS is a hand-kept runtime mirror of ApprovalKind (a type,
+    // erased at runtime) — catches it drifting from the barrel.
     const barrelPath = path.join(
       SRC_ROOT,
       'ui/views/Approval/components/index.ts'
@@ -157,14 +143,11 @@ describe('approval identity static constraints', () => {
     while ((match = exportPattern.exec(barrelSource))) {
       exportedNames.add(match[1]);
     }
-    // Sanity check the parser itself found a realistic number of exports, so a
-    // barrel refactor that changes export syntax fails loudly here instead of
-    // silently passing with an empty set.
+    // Guards the parser itself: an export-syntax change should fail loudly here, not pass silently with an empty set.
     expect(exportedNames.size).toBeGreaterThan(10);
 
     const knownKinds = new Set(KNOWN_APPROVAL_KINDS);
-    // 'Unlock' is deliberately not part of the UI component barrel (see
-    // notification.ts's ApprovalKind comment) — it's the one expected addition.
+    // 'Unlock' isn't in the UI barrel (see notification.ts) — the one expected addition.
     knownKinds.delete('Unlock');
 
     const missingFromKnownKinds = [...exportedNames].filter(
@@ -181,18 +164,10 @@ describe('approval identity static constraints', () => {
   });
 
   test('each barrel-registered component binds the approvalComponent literal matching its own barrel key', () => {
-    // Every component's `bindApproval(approvalId, 'X')` call hardcodes its own
-    // expected type rather than deriving it dynamically (deriving it from
-    // currentApproval or a dispatch-table variable would make the background's
-    // mismatch check tautological — see the security-review discussion this test
-    // came out of). That hardcoding only stays meaningful if it actually matches
-    // where the component is registered in the dispatch barrel; this test is the
-    // thing that would catch a copy-paste/rename mistake (e.g. barrel exports
-    // SignTx from a file that internally still says 'SignText'). A mismatch here
-    // would only ever fail closed at runtime (the background's own
-    // APPROVAL_COMPONENT_MISMATCH check), never fail open — this test just makes
-    // that class of bug visible at test time instead of "button silently does
-    // nothing" in the field.
+    // Each component hardcodes its own expected type in bindApproval() rather than
+    // deriving it (deriving from currentApproval would make the background's
+    // mismatch check tautological). Catches a copy-paste/rename mismatch here
+    // instead of a silent no-op in the field.
     const componentsDir = path.join(SRC_ROOT, 'ui/views/Approval/components');
     const barrelSource = read(path.join(componentsDir, 'index.ts'));
     const entryPattern = /export\s*\{\s*(?:default as )?(\w+)\s*\}\s*from\s*'\.\/([^']+)'/g;
@@ -221,9 +196,7 @@ describe('approval identity static constraints', () => {
       return bindMatch ? bindMatch[1] : null;
     };
 
-    // A file that's a pure local re-export (`import X from './Y'; export
-    // default X;`, no bindApproval of its own — e.g. QRHardWareWaiting/index.tsx)
-    // forwards to the file that actually does the binding.
+    // Pure local re-exports (e.g. QRHardWareWaiting/index.tsx) forward to the file that actually binds.
     const localReexportTarget = (
       source: string,
       fileDir: string
@@ -255,9 +228,7 @@ describe('approval identity static constraints', () => {
         }
       }
       if (literal === null) {
-        // No bindApproval call reachable from this barrel entry at all — the
-        // component doesn't resolve/reject itself here (e.g. ImportAddress.tsx
-        // just redirects and never calls useApproval). Nothing to check.
+        // No reachable bindApproval (e.g. ImportAddress.tsx just redirects) — nothing to check.
         continue;
       }
       if (literal !== key) {
@@ -275,13 +246,9 @@ describe('approval identity static constraints', () => {
   });
 
   test('waiting-page components settle their bound approval before closing the CommonPopup', () => {
-    // These components render inside CommonPopup's `componentName === 'Approval'`
-    // branch: closePopup() unmounts them by clearing that state. resolveApproval's
-    // own isOwnedByThisView check runs *after* its async round-trip, gated on
-    // mounted.current — the only way to tell "unmounted because this view is
-    // finishing its own settlement" from "unmounted because a different approval
-    // replaced it" is call-site ordering. So closePopup() must only ever run
-    // inside resolveApproval's own .then(), never before/alongside it.
+    // closePopup() unmounts these (CommonPopup's Approval branch), flipping the
+    // mounted ref isOwnedByThisView checks post-await — it must only run inside
+    // resolveApproval's own .then(), never before it.
     const componentsDir = path.join(SRC_ROOT, 'ui/views/Approval/components');
     const waitingFiles = [
       'LedgerHardwareWaiting.tsx',
@@ -309,11 +276,8 @@ describe('approval identity static constraints', () => {
   });
 
   test('ConnectContent awaits resolveApproval before the callback that unmounts it', () => {
-    // Same race as the waiting pages above, different trigger: onPerpsInvite()
-    // flips the parent's isShowHyperliquidInvite state, which unmounts this
-    // component. It must fire only after resolveApproval's own async chain
-    // (getApproval/deviceConnect) has finished, or its post-await mounted check
-    // rejects a settlement that's still in progress on this same view.
+    // Same race as above: onPerpsInvite() unmounts this component, so it must
+    // fire only after resolveApproval's own async chain finishes.
     const source = read(
       path.join(
         SRC_ROOT,

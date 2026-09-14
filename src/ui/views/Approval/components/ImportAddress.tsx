@@ -28,9 +28,7 @@ export const ImportAddress = ({
   React.useEffect(() => {
     history.replace({
       pathname: '/add-address',
-      // Spread dApp-controlled addressParams first so our own approvalId (set
-      // last) can never be shadowed by an attacker-supplied field of the same
-      // name — identity must come from the wallet, never from request params.
+      // addressParams first so an attacker-supplied field of the same name can't shadow our own approvalId.
       state: { ...addressParams, approvalId },
     });
   }, []);

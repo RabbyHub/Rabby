@@ -27,8 +27,7 @@ export const OneKey: React.FC<{
 
   const handleClick = async () => {
     if (!isModalContent) {
-      // See Ledger.tsx: removed the dead unbound rejectApproval call rather
-      // than leave it as no-op code that reads as if it still cancels.
+      // Unlike Ledger.tsx, this component isn't wired into CommonPopup's dispatch (no `componentName === 'OneKey'` branch) — unreachable, nothing to bind.
       openInternalPageInTab('request-permission?type=ledger&from=approval');
     } else {
       openInternalPageInTab(

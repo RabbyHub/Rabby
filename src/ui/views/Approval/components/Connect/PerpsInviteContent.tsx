@@ -173,21 +173,12 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         });
 
         if (WaitingSignMessageComponent[selectedAccount.type]) {
-          // resolveApproval here would target the *Connect* approval this view
-          // is bound to, not the SignTypedData approval wallet.sendRequest just
-          // created above — it would silently no-op (component mismatch).
-          // Mirror the Trezor branch above: hand off to Approval/index.tsx,
-          // which re-fetches getApproval() and re-renders as the new approval's
-          // own properly-bound component (SignTypedData.tsx runs the same
-          // WaitingSignMessageComponent push itself, correctly bound).
-          //
-          // Known tradeoff: this surfaces SignTypedData.tsx's own raw-data
-          // confirm screen (one more manual "Sign" click) before the waiting
-          // page appears, instead of jumping straight there — same as the
-          // Trezor branch above already does today. A direct-resolve path that
-          // skips that extra click is possible (see PR discussion) but needs a
-          // new trusted-loading-boundary exception plus manually driving
-          // showPopup; left as a follow-up rather than done here.
+          // resolveApproval here would target the *Connect* approval this view is
+          // bound to, not the new SignTypedData approval above — silent no-op.
+          // Mirror the Trezor branch: RELOAD_APPROVAL hands off to Approval/index.tsx,
+          // which re-renders the new approval through its own properly-bound component.
+          // Tradeoff: surfaces one extra manual "Sign" click (SignTypedData.tsx's own
+          // confirm screen) before the waiting page, same as Trezor does today.
           eventBus.emit(EVENTS.RELOAD_APPROVAL);
         }
 

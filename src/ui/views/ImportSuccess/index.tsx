@@ -59,11 +59,7 @@ const ImportSuccess = ({
   }>();
 
   const state = _state || location.state || {};
-  // Threaded from the ImportAddress approval entry point through route state —
-  // never re-derived from currentApproval at this page. Missing/lost means this
-  // reach of ImportSuccess isn't completing an approval (either a plain
-  // independent import, or an intermediate hop dropped it) — fail closed, don't
-  // fall back to "whatever is current".
+  // Threaded through route state, never re-derived from currentApproval — missing means this reach doesn't complete an approval.
   const approvalId = state.approvalId;
   const safeAccount = state.accounts?.[0];
   const isSafeSuccess = useMemo(

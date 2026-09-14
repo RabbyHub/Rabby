@@ -15,10 +15,7 @@ export const Ledger: React.FC<{
   const { setTitle, setHeight, closePopup, data } = useCommonPopupView();
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
-  // `data` only carries {id, component} when this popup was opened from an
-  // in-flight resolveApproval call (see useDeviceConnect.ts); absent when
-  // opened from the passive device-status watcher, where there's no specific
-  // approval to cancel — bindApproval safely no-ops in that case.
+  // `data` only carries {id, component} when opened from an in-flight resolveApproval call (see useDeviceConnect.ts).
   const [, , rejectApproval] = useApproval(
     bindApproval(data?.id, data?.component)
   );

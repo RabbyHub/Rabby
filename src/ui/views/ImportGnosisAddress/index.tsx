@@ -26,10 +26,7 @@ const ImportGnosisAddress: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
-  // Set only when this flow was entered from a pending ImportAddress approval
-  // (see AddAddress/shared.tsx's connectRouter) — forwarded to the success
-  // screen so it can complete that approval; absent for a plain user-initiated
-  // Gnosis Safe import.
+  // Set when entered from a pending ImportAddress approval; forwarded to the success screen so it can complete it.
   const { approvalId } = (useLocation().state as { approvalId?: string }) || {};
 
   const [errorMessage, setErrorMessage] = useState('');

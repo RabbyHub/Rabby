@@ -18,14 +18,8 @@ export interface ApprovalBinding {
   canResolve?: () => boolean;
 }
 
-/**
- * Builds a useApproval binding from a possibly-missing approvalId prop —
- * `null` (never `undefined`) when there's nothing to bind to yet, so the hook
- * fails closed instead of settling an unrelated approval. Centralizes the
- * `approvalId ? {...} : null` shape repeated across every approval-dispatched
- * component so a copy/paste typo can't silently bind the wrong
- * approvalComponent.
- */
+// `null` (never `undefined`) when there's nothing to bind to yet, so useApproval
+// fails closed instead of settling an unrelated approval.
 export const bindApproval = (
   approvalId: string | undefined,
   approvalComponent: ApprovalKind,
@@ -35,15 +29,9 @@ export const bindApproval = (
     ? { approvalId, approvalComponent, ...(canResolve ? { canResolve } : {}) }
     : null;
 
-/**
- * `binding` is the caller's entire identity claim and is required on every call —
- * pass `null` (never omit it) when the caller doesn't have a settleable approval yet
- * (e.g. still figuring out whether one exists). There is no code path here that
- * falls back to "whatever `getApproval()` returns right now": resolve/reject only
- * ever settle `binding.approvalId`/`binding.approvalComponent`, and every check below
- * fails closed when that identity can't be confirmed as still owned by this hook
- * instance.
- */
+// `binding` is the caller's entire identity claim, required on every call. No path
+// here falls back to "whatever getApproval() returns right now" — resolve/reject only
+// ever settle binding.approvalId/approvalComponent.
 export const useApproval = (binding: ApprovalBinding | null) => {
   const wallet = useWallet();
   const history = useHistory();
@@ -62,10 +50,8 @@ export const useApproval = (binding: ApprovalBinding | null) => {
     };
   }, []);
 
-  // Ownership: is `approval` still the same request this hook instance was bound to,
-  // has this instance not been superseded by a rebind, and is the view still mounted.
-  // Gates both resolve and reject — a stale/unmounted/rebound closure can't settle
-  // anything, regardless of sign-readiness.
+  // Gates both resolve and reject: is `approval` still what this hook was bound to,
+  // not superseded by a rebind, and still mounted.
   const isOwnedByThisView = (approval?: Approval | null) => {
     if (!binding || !approval) return false;
     return (
@@ -77,9 +63,7 @@ export const useApproval = (binding: ApprovalBinding | null) => {
     );
   };
 
-  // Extra caller-supplied readiness gate (e.g. security-evaluation version). Only
-  // resolve is gated by this — a plain cancel must not be blocked by canSign/security
-  // checks, only by ownership.
+  // Extra caller-supplied readiness gate (e.g. security-evaluation version); only resolve is gated by this, not cancel.
   const canResolve = () =>
     !!binding &&
     mounted.current &&

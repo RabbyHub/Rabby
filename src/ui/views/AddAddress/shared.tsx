@@ -24,11 +24,7 @@ export interface AddAddressNavigateHandler {
 interface WalletRouteParams {
   address: string;
   chainId: number;
-  // Set only when this "add address" flow was entered from a pending
-  // ImportAddress approval (see Approval/components/ImportAddress.tsx) — carried
-  // through same-window route state so the eventual /popup/import/success screen
-  // can complete that approval. Not set for a plain, user-initiated add-address
-  // flow, which must not settle any approval.
+  // Only set when this flow started from a pending ImportAddress approval, so /popup/import/success can complete it.
   approvalId?: string;
 }
 
@@ -127,11 +123,7 @@ export const useAddAddressWalletOptions = ({
   params,
 }: {
   onNavigate?: AddAddressNavigateHandler;
-  // Ambient params (currently only approvalId matters here) for brandWallets'
-  // manual click handlers — the caller's own incoming route state, if any, so
-  // an approval bound at a screen further up the chain isn't lost when the
-  // user picks a wallet from this screen instead of hitting the automatic
-  // brand-match redirect.
+  // Forwarded into brandWallets' manual click handlers so a bound approvalId survives a manual pick, not just the auto redirect.
   params?: Pick<WalletRouteParams, 'approvalId'>;
 } = {}) => {
   const history = useHistory();
@@ -156,12 +148,9 @@ export const useAddAddressWalletOptions = ({
       params?: Partial<WalletRouteParams>
     ) =>
       handleRouter((currentHistory) => {
-        // Single place that actually forwards `params` (address/chainId/
-        // approvalId) into a same-window destination, for both the popup/tab
-        // (history.push) and desktop (onNavigate) transports — every branch
-        // below calls this instead of hand-building its own payload, so a new
-        // branch (or an existing one) can't silently drop params by omission
-        // the way the desktop Cobo Argus/Coinbase branches previously did.
+        // Single place that forwards `params` into history.push/onNavigate, so no
+        // branch can silently drop it building its own payload (desktop's own
+        // AddAddressModal still doesn't read this state for Cobo Argus/Gnosis/Coinbase — separate gap).
         const go = (
           type: string,
           pathname: string,

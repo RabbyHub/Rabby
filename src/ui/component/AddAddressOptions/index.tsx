@@ -72,13 +72,8 @@ const AddAddressOptions: React.FC<{
   const { t } = useTranslation();
   const { connectRouter } = useAddAddressWalletOptions({ onNavigate });
   const { seedPhraseList } = UseSeedPhrase();
-  // Present when this "add address" flow was entered from a pending
-  // ImportAddress approval (see Approval/components/ImportAddress.tsx). The
-  // dApp's requested `type` isn't guaranteed to exact-match a known brand name
-  // (the background's approval validator doesn't require it — see AGENT_TASK
-  // notes), so a mismatch lands here in the generic menu; forward it to the
-  // hardware/institutional-wallet sub-screens so a manual pick can still
-  // complete the approval instead of silently losing it.
+  // Set when entered from a pending ImportAddress approval whose requested type
+  // didn't match a known brand — forward it so a manual pick can still complete it.
   const approvalId = (location.state as any)?.approvalId;
 
   const { createNewSeedPhrase } = useCreateAddressActions({

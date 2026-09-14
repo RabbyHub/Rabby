@@ -20,10 +20,7 @@ export const Keystone: React.FC = () => {
   }, [hasConnected]);
 
   const handleClick = async () => {
-    // Unlike Ledger.tsx/ImKeyPermission.tsx, this popup is only ever opened
-    // from the passive useKeystoneStatus watcher, never from an in-flight
-    // resolveApproval call — there's no specific pending approval to bind to
-    // and cancel here.
+    // Unlike Ledger.tsx/ImKeyPermission.tsx, only opened from the passive useKeystoneStatus watcher, never an in-flight approval.
     openInternalPageInTab('request-permission?type=keystone&from=approval');
   };
 
