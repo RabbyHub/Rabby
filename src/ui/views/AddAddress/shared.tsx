@@ -156,6 +156,25 @@ export const useAddAddressWalletOptions = ({
       params?: Partial<WalletRouteParams>
     ) =>
       handleRouter((currentHistory) => {
+        // Single place that actually forwards `params` (address/chainId/
+        // approvalId) into a same-window destination, for both the popup/tab
+        // (history.push) and desktop (onNavigate) transports — every branch
+        // below calls this instead of hand-building its own payload, so a new
+        // branch (or an existing one) can't silently drop params by omission
+        // the way the desktop Cobo Argus/Coinbase branches previously did.
+        const go = (
+          type: string,
+          pathname: string,
+          extra?: Record<string, any>
+        ) => {
+          const state = { ...params, ...extra };
+          if (isDesktop) {
+            onNavigate?.(type, state);
+          } else {
+            currentHistory.push({ pathname, state });
+          }
+        };
+
         if (item.connectType === 'BitBox02Connect') {
           openInternalPageInTab('import/hardware?connectType=BITBOX02');
         } else if (item.connectType === 'GridPlusConnect') {
@@ -167,14 +186,7 @@ export const useAddAddressWalletOptions = ({
         } else if (item.connectType === 'OneKeyConnect') {
           openInternalPageInTab('import/hardware/onekey-connect');
         } else if (item.connectType === 'GnosisConnect') {
-          if (isDesktop) {
-            onNavigate?.('gnosis', params);
-          } else {
-            currentHistory.push({
-              pathname: '/import/gnosis',
-              state: params,
-            });
-          }
+          go('gnosis', '/import/gnosis');
         } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
           if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
             openInternalPageInTab('import/hardware/keystone');
@@ -188,42 +200,17 @@ export const useAddAddressWalletOptions = ({
         } else if (
           item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
         ) {
-          if (isDesktop) {
-            onNavigate?.('cobo-argus');
-          } else {
-            currentHistory.push({
-              pathname: '/import/cobo-argus',
-              state: params,
-            });
-          }
+          go('cobo-argus', '/import/cobo-argus');
         } else if (
           item.connectType === BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect
         ) {
-          if (isDesktop) {
-            onNavigate?.('coinbase');
-          } else {
-            currentHistory.push({
-              pathname: '/import/coinbase',
-              state: params,
-            });
-          }
+          go('coinbase', '/import/coinbase');
         } else if (
           item.connectType === BRAND_WALLET_CONNECT_TYPE.ImKeyConnect
         ) {
           openInternalPageInTab('import/hardware/imkey-connect');
-        } else if (isDesktop) {
-          onNavigate?.('wallet-connect', {
-            brand: item,
-            approvalId: params?.approvalId,
-          });
         } else {
-          currentHistory.push({
-            pathname: '/import/wallet-connect',
-            state: {
-              brand: item,
-              approvalId: params?.approvalId,
-            },
-          });
+          go('wallet-connect', '/import/wallet-connect', { brand: item });
         }
       }),
     [handleRouter, onNavigate]
