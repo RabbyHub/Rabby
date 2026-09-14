@@ -816,6 +816,12 @@ const SettingsInner = ({
   );
   const reloadForUpdate = useExtensionUpdateStore((s) => s.reloadForUpdate);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
+  const [
+    dismissedUpdateVersion,
+    setDismissedUpdateVersion,
+  ] = useState<string>();
+  const showExtensionUpdateCard =
+    hasNewVersion && dismissedUpdateVersion !== pendingVersion;
 
   const updateVersion = () => {
     if (hasNewVersion) {
@@ -1627,11 +1633,12 @@ const SettingsInner = ({
         <div className={clsx('content')}>
           {/* <ClaimRabbyBadge onClick={onOpenBadgeModal} /> */}
 
-          {hasNewVersion ? (
+          {showExtensionUpdateCard ? (
             <ExtensionUpdateCard
               version={pendingVersion}
               changelog={changelog}
               onUpdate={reloadForUpdate}
+              onClose={() => setDismissedUpdateVersion(pendingVersion)}
             />
           ) : (
             <RateModalTriggerOnSettings className="mb-[16px]" />
