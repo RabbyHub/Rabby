@@ -72,6 +72,13 @@ export const ImportCoboArgus: React.FC<{
     }
   }, [selectedChain, step, inputAddress]);
 
+  // Whether state.approvalId actually arrives here depends on the caller (see
+  // AddAddress/shared.tsx) — reject/resolve fail closed rather than falling
+  // back to whatever approval happens to be current when it doesn't.
+  const [, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(state?.approvalId, 'ImportAddress')
+  );
+
   const handleDone = React.useCallback(async () => {
     try {
       const accounts = await wallet.coboSafeImport({
@@ -79,6 +86,11 @@ export const ImportCoboArgus: React.FC<{
         networkId: CHAINS[selectedChain!].serverId,
         safeModuleAddress: inputAddress,
       });
+      // Completing the import is the same user action as completing an
+      // ImportAddress approval, if one is bound — do both, not just the
+      // navigation. resolveApproval no-ops when unbound (null binding),
+      // so this is safe for a plain, non-approval import too.
+      resolveApproval(undefined, true);
       openSuccessPage({
         addresses: accounts.map((item) => ({
           address: item.address,
@@ -98,14 +110,8 @@ export const ImportCoboArgus: React.FC<{
         message.error(e.message);
       }
     }
-  }, [selectedChain, safeAddress, inputAddress]);
+  }, [selectedChain, safeAddress, inputAddress, resolveApproval]);
 
-  // No traced caller currently threads approvalId into this route's state (see
-  // AddAddress/shared.tsx, the only navigator) — reject fails closed rather than
-  // falling back to whatever approval happens to be current.
-  const [, , rejectApproval] = useApproval(
-    bindApproval(state?.approvalId, 'ImportAddress')
-  );
   const handleClose = React.useCallback(() => {
     rejectApproval();
   }, [rejectApproval]);
