@@ -72,6 +72,14 @@ const AddAddressOptions: React.FC<{
   const { t } = useTranslation();
   const { connectRouter } = useAddAddressWalletOptions({ onNavigate });
   const { seedPhraseList } = UseSeedPhrase();
+  // Present when this "add address" flow was entered from a pending
+  // ImportAddress approval (see Approval/components/ImportAddress.tsx). The
+  // dApp's requested `type` isn't guaranteed to exact-match a known brand name
+  // (the background's approval validator doesn't require it — see AGENT_TASK
+  // notes), so a mismatch lands here in the generic menu; forward it to the
+  // hardware/institutional-wallet sub-screens so a manual pick can still
+  // complete the approval instead of silently losing it.
+  const approvalId = (location.state as any)?.approvalId;
 
   const { createNewSeedPhrase } = useCreateAddressActions({
     onNavigate,
@@ -171,9 +179,12 @@ const AddAddressOptions: React.FC<{
         icon: <RcAddAddressOptionHardwareIcon />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
-            onNavigate?.('hardware-wallets');
+            onNavigate?.('hardware-wallets', { approvalId });
           } else {
-            history.push('/add-address/hardware-wallets');
+            history.push({
+              pathname: '/add-address/hardware-wallets',
+              state: { approvalId },
+            });
           }
         },
       },
@@ -190,7 +201,14 @@ const AddAddressOptions: React.FC<{
         },
       },
     ],
-    [history, onNavigate, t, createNewSeedPhrase, seedPhraseList?.length]
+    [
+      history,
+      onNavigate,
+      t,
+      createNewSeedPhrase,
+      seedPhraseList?.length,
+      approvalId,
+    ]
   );
 
   if (preventMount) {
@@ -212,9 +230,12 @@ const AddAddressOptions: React.FC<{
         className="add-address-options__institutional-entry"
         onClick={() => {
           if (UI_TYPE.isDesktop) {
-            onNavigate?.('institutional-wallets');
+            onNavigate?.('institutional-wallets', { approvalId });
           } else {
-            history.push('/add-address/institutional-wallets');
+            history.push({
+              pathname: '/add-address/institutional-wallets',
+              state: { approvalId },
+            });
           }
         }}
       >

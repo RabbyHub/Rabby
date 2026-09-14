@@ -124,8 +124,15 @@ export const WalletBrandGrid = ({
 
 export const useAddAddressWalletOptions = ({
   onNavigate,
+  params,
 }: {
   onNavigate?: AddAddressNavigateHandler;
+  // Ambient params (currently only approvalId matters here) for brandWallets'
+  // manual click handlers — the caller's own incoming route state, if any, so
+  // an approval bound at a screen further up the chain isn't lost when the
+  // user picks a wallet from this screen instead of hitting the automatic
+  // brand-match redirect.
+  params?: Pick<WalletRouteParams, 'approvalId'>;
 } = {}) => {
   const history = useHistory();
   const wallet = useWallet();
@@ -144,7 +151,10 @@ export const useAddAddressWalletOptions = ({
   );
 
   const connectRouter = React.useCallback(
-    (item: ValueOf<typeof WALLET_BRAND_CONTENT>, params?: WalletRouteParams) =>
+    (
+      item: ValueOf<typeof WALLET_BRAND_CONTENT>,
+      params?: Partial<WalletRouteParams>
+    ) =>
       handleRouter((currentHistory) => {
         if (item.connectType === 'BitBox02Connect') {
           openInternalPageInTab('import/hardware?connectType=BITBOX02');
@@ -236,7 +246,7 @@ export const useAddAddressWalletOptions = ({
               if (item.preventClick) {
                 return;
               }
-              connectRouter(item);
+              connectRouter(item, params);
             },
             category: item.category,
             preventClick: item.preventClick,
@@ -246,7 +256,7 @@ export const useAddAddressWalletOptions = ({
         .filter(Boolean) as WalletBrandItem[]).sort(
         (a, b) => getSortNum(a.brand) - getSortNum(b.brand)
       ),
-    [connectRouter]
+    [connectRouter, params?.approvalId]
   );
 
   const groupedWallets = React.useMemo(
