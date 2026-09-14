@@ -5,6 +5,7 @@ import { useCommonPopupView, useWallet } from './WalletContext';
 import { useCurrentAccount } from '../hooks/backgroundState/useAccount';
 import { useImKeyStatus } from '../component/ConnectStatus/useImKeyStatus';
 import { Account } from '@/background/service/preference';
+import { ApprovalKind } from '@/background/service/notification';
 
 /**
  * some devices require a connection to the device to sign transactions
@@ -13,14 +14,24 @@ import { Account } from '@/background/service/preference';
 export const useDeviceConnect = () => {
   const ledgerStatus = useLedgerStatus();
   const imKeyStatus = useImKeyStatus();
-  const { activePopup, setAccount } = useCommonPopupView();
+  const { activePopup, setAccount, setData } = useCommonPopupView();
   const wallet = useWallet();
 
   /**
    * @returns {boolean} true if connected, false if not connected and popup is shown
    */
   const connect = React.useCallback(
-    async (data: any, currentAccount: Account) => {
+    async (
+      data: any,
+      currentAccount: Account,
+      // The approval this connect attempt is settling, if any (absent when a
+      // reconnect popup is triggered by the passive device-status watchers
+      // instead of an in-flight resolveApproval call — see useLedgerStatus.ts/
+      // useImKeyStatus.ts). Forwarded into commonPopupView.data so Ledger.tsx/
+      // ImKeyPermission.tsx can bind their own cancel button's rejectApproval
+      // to the exact pending approval instead of leaving it unbound.
+      approvalRef?: { id: string; component: ApprovalKind }
+    ) => {
       if (!data) {
         return true;
       }
@@ -28,6 +39,7 @@ export const useDeviceConnect = () => {
 
       if (type === KEYRING_CLASS.HARDWARE.LEDGER) {
         if (ledgerStatus.status === 'DISCONNECTED') {
+          setData(approvalRef);
           activePopup('Ledger');
           return false;
         }
@@ -50,6 +62,7 @@ export const useDeviceConnect = () => {
         }
       } else if (type === KEYRING_CLASS.HARDWARE.IMKEY) {
         if (imKeyStatus.status === 'DISCONNECTED') {
+          setData(approvalRef);
           activePopup('ImKeyPermission');
           return false;
         }

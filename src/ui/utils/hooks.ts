@@ -97,7 +97,12 @@ export const useApproval = (binding: ApprovalBinding | null) => {
     if (!isOwnedByThisView(approval) || !canResolve()) return false;
 
     // handle connect
-    if (!(await deviceConnect(data, approval?.data?.account))) {
+    if (
+      !(await deviceConnect(data, approval?.data?.account, {
+        id: binding.approvalId,
+        component: binding.approvalComponent,
+      }))
+    ) {
       return false;
     }
 

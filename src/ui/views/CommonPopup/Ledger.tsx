@@ -1,4 +1,9 @@
-import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
+import {
+  bindApproval,
+  openInternalPageInTab,
+  useApproval,
+  useCommonPopupView,
+} from '@/ui/utils';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { message } from 'antd';
 import React from 'react';
@@ -7,9 +12,16 @@ import { Trans, useTranslation } from 'react-i18next';
 export const Ledger: React.FC<{
   isModalContent?: boolean;
 }> = ({ isModalContent }) => {
-  const { setTitle, setHeight, closePopup } = useCommonPopupView();
+  const { setTitle, setHeight, closePopup, data } = useCommonPopupView();
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
+  // `data` only carries {id, component} when this popup was opened from an
+  // in-flight resolveApproval call (see useDeviceConnect.ts); absent when
+  // opened from the passive device-status watcher, where there's no specific
+  // approval to cancel — bindApproval safely no-ops in that case.
+  const [, , rejectApproval] = useApproval(
+    bindApproval(data?.id, data?.component)
+  );
 
   React.useEffect(() => {
     if (!isModalContent) {
@@ -27,13 +39,7 @@ export const Ledger: React.FC<{
 
   const handleClick = async () => {
     if (!isModalContent) {
-      // No reliable per-request identity is available at this layer (see the
-      // module-level note above) — this used to call an unbound rejectApproval
-      // here, which would have silently acted on whatever approval happened to
-      // be current. Removed rather than left as dead/no-op code; the owning
-      // waiting page's own bound cancel button is the real cancel path, and any
-      // approval still pending after this reconnect is left for the user to
-      // retry or cancel from there once permission is granted.
+      await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);
       openInternalPageInTab('request-permission?type=ledger&from=approval');
     } else {
       openInternalPageInTab(

@@ -1,12 +1,22 @@
-import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
+import {
+  bindApproval,
+  openInternalPageInTab,
+  useApproval,
+  useCommonPopupView,
+} from '@/ui/utils';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useImKeyDeviceConnected } from '@/ui/utils/imKey';
 
 export const ImKeyPermission: React.FC = () => {
-  const { setTitle, setHeight, closePopup } = useCommonPopupView();
+  const { setTitle, setHeight, closePopup, data } = useCommonPopupView();
   const hasConnectedImKey = useImKeyDeviceConnected();
   const { t } = useTranslation();
+  // See Ledger.tsx: `data` only carries {id, component} when opened from an
+  // in-flight resolveApproval call; bindApproval safely no-ops otherwise.
+  const [, , rejectApproval] = useApproval(
+    bindApproval(data?.id, data?.component)
+  );
 
   React.useEffect(() => {
     setTitle(t('page.dashboard.hd.howToConnectImKey'));
@@ -20,8 +30,7 @@ export const ImKeyPermission: React.FC = () => {
   }, [hasConnectedImKey]);
 
   const handleClick = async () => {
-    // See Ledger.tsx: removed the dead unbound rejectApproval call rather than
-    // leave it as no-op code that reads as if it still cancels.
+    await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);
     openInternalPageInTab('request-permission?type=imkey&from=approval');
   };
 

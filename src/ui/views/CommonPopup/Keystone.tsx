@@ -20,8 +20,10 @@ export const Keystone: React.FC = () => {
   }, [hasConnected]);
 
   const handleClick = async () => {
-    // See Ledger.tsx: removed the dead unbound rejectApproval call rather than
-    // leave it as no-op code that reads as if it still cancels.
+    // Unlike Ledger.tsx/ImKeyPermission.tsx, this popup is only ever opened
+    // from the passive useKeystoneStatus watcher, never from an in-flight
+    // resolveApproval call — there's no specific pending approval to bind to
+    // and cancel here.
     openInternalPageInTab('request-permission?type=keystone&from=approval');
   };
 
