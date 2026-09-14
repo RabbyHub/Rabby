@@ -614,7 +614,12 @@ export const ConnectContent = (
   const handleAllow = async () => {
     const stay = await checkSetPerpsReference().catch(() => false);
 
-    resolveApproval(
+    // Await settlement before onPerpsInvite: that callback flips the parent's
+    // isShowHyperliquidInvite state, unmounting this component. Firing it
+    // before resolveApproval's own async chain (getApproval/deviceConnect)
+    // finished made its mounted-check reject a settlement still in progress
+    // on this same view, not a stale one.
+    await resolveApproval(
       {
         defaultChain,
         defaultAccount: selectedAccount,

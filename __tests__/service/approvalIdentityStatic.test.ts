@@ -273,4 +273,56 @@ describe('approval identity static constraints', () => {
       uncheckable: [],
     });
   });
+
+  test('waiting-page components settle their bound approval before closing the CommonPopup', () => {
+    // These components render inside CommonPopup's `componentName === 'Approval'`
+    // branch: closePopup() unmounts them by clearing that state. resolveApproval's
+    // own isOwnedByThisView check runs *after* its async round-trip, gated on
+    // mounted.current — the only way to tell "unmounted because this view is
+    // finishing its own settlement" from "unmounted because a different approval
+    // replaced it" is call-site ordering. So closePopup() must only ever run
+    // inside resolveApproval's own .then(), never before/alongside it.
+    const componentsDir = path.join(SRC_ROOT, 'ui/views/Approval/components');
+    const waitingFiles = [
+      'LedgerHardwareWaiting.tsx',
+      'CommonWaiting.tsx',
+      'PrivatekeyWaiting.tsx',
+      'QRHardWareWaiting/QRHardWareWaiting.tsx',
+      'WatchAddressWaiting/index.tsx',
+      'CoinbaseWaiting/index.tsx',
+      'ImKeyHardwareWaiting.tsx',
+    ];
+    const offenders: string[] = [];
+    for (const relPath of waitingFiles) {
+      const source = read(path.join(componentsDir, relPath));
+      const settlesBeforeClose = /resolveApproval\([^)]*\)\.then\(\(\) => \{\s*closePopup\(\);/.test(
+        source
+      );
+      const closesBeforeSettle = /closePopup\(\);\s*\n\s*resolveApproval\(/.test(
+        source
+      );
+      if (!settlesBeforeClose || closesBeforeSettle) {
+        offenders.push(relPath);
+      }
+    }
+    expect(offenders).toEqual([]);
+  });
+
+  test('ConnectContent awaits resolveApproval before the callback that unmounts it', () => {
+    // Same race as the waiting pages above, different trigger: onPerpsInvite()
+    // flips the parent's isShowHyperliquidInvite state, which unmounts this
+    // component. It must fire only after resolveApproval's own async chain
+    // (getApproval/deviceConnect) has finished, or its post-await mounted check
+    // rejects a settlement that's still in progress on this same view.
+    const source = read(
+      path.join(
+        SRC_ROOT,
+        'ui/views/Approval/components/Connect/ConnectContent.tsx'
+      )
+    );
+    const awaitsBeforeInvite = /await resolveApproval\(\s*\{\s*defaultChain,\s*defaultAccount:\s*selectedAccount,\s*\},\s*stay\s*\);\s*\n\s*if \(stay\) \{\s*onPerpsInvite/.test(
+      source
+    );
+    expect(awaitsBeforeInvite).toBe(true);
+  });
 });

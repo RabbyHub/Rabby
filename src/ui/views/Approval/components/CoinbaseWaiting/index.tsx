@@ -219,8 +219,14 @@ const CoinbaseWaiting = ({
 
   useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(signFinishedData.data, false, false);
+      // Settle before closing: closePopup() unmounts this component (it's
+      // rendered through CommonPopup's componentName==='Approval' branch), so
+      // calling it first made resolveApproval's own mounted-check reject a
+      // settlement that was actually still in progress on the same view, not
+      // a stale one. Await the settlement first, then close.
+      resolveApproval(signFinishedData.data, false, false).then(() => {
+        closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 
