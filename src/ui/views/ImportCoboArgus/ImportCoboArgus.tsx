@@ -42,7 +42,8 @@ export const ImportCoboArgus: React.FC<{
   const history = useHistory();
   const [hasImportError, setHasImportError] = React.useState<boolean>(false);
   const { show, contextHolder } = useRepeatImportConfirm();
-  const isByImportAddressEvent = !!state;
+  // A manual pick also carries state.approvalId; only hide back when a prefill actually drove us here.
+  const isByImportAddressEvent = !!(state?.address && state?.chainId);
 
   const { openSuccessPage } = useCreateAddressActions({
     onNavigate,
@@ -72,9 +73,7 @@ export const ImportCoboArgus: React.FC<{
     }
   }, [selectedChain, step, inputAddress]);
 
-  // Whether state.approvalId actually arrives here depends on the caller (see
-  // AddAddress/shared.tsx) — reject/resolve fail closed rather than falling
-  // back to whatever approval happens to be current when it doesn't.
+  // bindApproval no-ops when state.approvalId is absent, rather than falling back to whatever's current.
   const [, resolveApproval, rejectApproval] = useApproval(
     bindApproval(state?.approvalId, 'ImportAddress')
   );
@@ -86,15 +85,9 @@ export const ImportCoboArgus: React.FC<{
         networkId: CHAINS[selectedChain!].serverId,
         safeModuleAddress: inputAddress,
       });
-      // Completing the import is the same user action as completing an
-      // ImportAddress approval, if one is bound — do both, not just the
-      // navigation. resolveApproval no-ops when unbound (null binding),
-      // so this is safe for a plain, non-approval import too.
-      //
-      // Result intentionally not checked: unlike a signing approval, success
-      // here doesn't depend on the approval settling. coboSafeImport() above
-      // already succeeded (accounts exist); the success screen is correct to
-      // show regardless of whether an optional bound approval also resolved.
+      // Also completes the bound ImportAddress approval, if any (no-op when unbound).
+      // Result not checked: coboSafeImport() above already succeeded, so the success
+      // screen is correct regardless of whether the optional approval also resolved.
       resolveApproval(undefined, true);
       openSuccessPage({
         addresses: accounts.map((item) => ({
