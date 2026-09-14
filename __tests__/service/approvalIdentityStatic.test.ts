@@ -179,4 +179,98 @@ describe('approval identity static constraints', () => {
       extraInKnownKinds: [],
     });
   });
+
+  test('each barrel-registered component binds the approvalComponent literal matching its own barrel key', () => {
+    // Every component's `bindApproval(approvalId, 'X')` call hardcodes its own
+    // expected type rather than deriving it dynamically (deriving it from
+    // currentApproval or a dispatch-table variable would make the background's
+    // mismatch check tautological — see the security-review discussion this test
+    // came out of). That hardcoding only stays meaningful if it actually matches
+    // where the component is registered in the dispatch barrel; this test is the
+    // thing that would catch a copy-paste/rename mistake (e.g. barrel exports
+    // SignTx from a file that internally still says 'SignText'). A mismatch here
+    // would only ever fail closed at runtime (the background's own
+    // APPROVAL_COMPONENT_MISMATCH check), never fail open — this test just makes
+    // that class of bug visible at test time instead of "button silently does
+    // nothing" in the field.
+    const componentsDir = path.join(SRC_ROOT, 'ui/views/Approval/components');
+    const barrelSource = read(path.join(componentsDir, 'index.ts'));
+    const entryPattern = /export\s*\{\s*(?:default as )?(\w+)\s*\}\s*from\s*'\.\/([^']+)'/g;
+    const entries: { key: string; importPath: string }[] = [];
+    let m: RegExpExecArray | null;
+    while ((m = entryPattern.exec(barrelSource))) {
+      entries.push({ key: m[1], importPath: m[2] });
+    }
+    expect(entries.length).toBeGreaterThan(10);
+
+    const resolveFile = (relativeImportPath: string): string | null => {
+      const base = path.join(componentsDir, relativeImportPath);
+      for (const candidate of [
+        `${base}.tsx`,
+        `${base}.ts`,
+        path.join(base, 'index.tsx'),
+        path.join(base, 'index.ts'),
+      ]) {
+        if (fs.existsSync(candidate)) return candidate;
+      }
+      return null;
+    };
+
+    const bindApprovalLiteral = (source: string): string | null => {
+      const bindMatch = /bindApproval\(\s*[^,]*,\s*'(\w+)'/.exec(source);
+      return bindMatch ? bindMatch[1] : null;
+    };
+
+    // A file that's a pure local re-export (`import X from './Y'; export
+    // default X;`, no bindApproval of its own — e.g. QRHardWareWaiting/index.tsx)
+    // forwards to the file that actually does the binding.
+    const localReexportTarget = (
+      source: string,
+      fileDir: string
+    ): string | null => {
+      const reexport = /import\s+\w+\s+from\s+'\.\/([^']+)'/.exec(source);
+      if (!reexport) return null;
+      return resolveFile(
+        path.join(path.relative(componentsDir, fileDir), reexport[1])
+      );
+    };
+
+    const mismatches: string[] = [];
+    const uncheckable: string[] = [];
+
+    for (const { key, importPath } of entries) {
+      let file = resolveFile(importPath);
+      if (!file) {
+        uncheckable.push(`${key}: could not resolve ./${importPath}`);
+        continue;
+      }
+      let source = read(file);
+      let literal = bindApprovalLiteral(source);
+      if (literal === null) {
+        const forwarded = localReexportTarget(source, path.dirname(file));
+        if (forwarded) {
+          file = forwarded;
+          source = read(file);
+          literal = bindApprovalLiteral(source);
+        }
+      }
+      if (literal === null) {
+        // No bindApproval call reachable from this barrel entry at all — the
+        // component doesn't resolve/reject itself here (e.g. ImportAddress.tsx
+        // just redirects and never calls useApproval). Nothing to check.
+        continue;
+      }
+      if (literal !== key) {
+        mismatches.push(
+          `barrel key '${key}' (./${importPath}) resolves to a component ` +
+            `binding as '${literal}' in ${path.relative(SRC_ROOT, file)}`
+        );
+      }
+    }
+
+    expect({ mismatches, uncheckable }).toEqual({
+      mismatches: [],
+      uncheckable: [],
+    });
+  });
 });
