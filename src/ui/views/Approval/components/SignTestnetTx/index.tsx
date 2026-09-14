@@ -203,12 +203,14 @@ interface SignTxProps<TData extends any[] = any[]> {
   };
   origin?: string;
   account: Account;
+  approvalId?: string;
 }
 
 export const SignTestnetTx = ({
   params,
   origin,
   account: $account,
+  approvalId,
 }: SignTxProps) => {
   const { isGnosis } = params;
   const currentAccount = params.isGnosis ? params.account! : $account;
@@ -638,7 +640,9 @@ export const SignTestnetTx = ({
 
   const { t } = useTranslation();
 
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'SignTx' } : null
+  );
 
   const checkCanProcess = async () => {
     const session = params.session;

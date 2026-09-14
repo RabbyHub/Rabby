@@ -53,9 +53,11 @@ interface ApprovalParams {
 export const CommonWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const wallet = useWallet();
   const {
@@ -65,7 +67,9 @@ export const CommonWaiting = ({
     closePopup,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'CommonWaiting' } : null
+  );
   const { t } = useTranslation();
   const { type } = params;
   const { brandName } = Object.keys(HARDWARE_KEYRING_TYPES)
@@ -261,12 +265,7 @@ export const CommonWaiting = ({
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, stay, false);
     }
   }, [signFinishedData, isClickDone]);
 

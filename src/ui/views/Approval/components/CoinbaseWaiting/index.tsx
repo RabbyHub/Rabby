@@ -42,9 +42,11 @@ interface ApprovalParams {
 const CoinbaseWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
@@ -56,7 +58,9 @@ const CoinbaseWaiting = ({
     message?: string;
   }>(null);
   const [result, setResult] = useState('');
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'CoinbaseWaiting' } : null
+  );
 
   const chain = findChain({
     id: params.chainId || 1,
@@ -211,12 +215,7 @@ const CoinbaseWaiting = ({
   useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        false,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, false, false);
     }
   }, [signFinishedData, isClickDone]);
 

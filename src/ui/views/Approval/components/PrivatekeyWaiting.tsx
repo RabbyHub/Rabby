@@ -58,9 +58,11 @@ interface ApprovalParams {
 export const PrivatekeyWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const wallet = useWallet();
   const {
@@ -70,7 +72,9 @@ export const PrivatekeyWaiting = ({
     setHeight,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'PrivatekeyWaiting' } : null
+  );
   const { t } = useTranslation();
   const { type } = params;
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -270,12 +274,7 @@ export const PrivatekeyWaiting = ({
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, stay, false);
     }
   }, [signFinishedData, isClickDone]);
 

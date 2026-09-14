@@ -22,8 +22,16 @@ interface AddAssetProps {
   };
 }
 
-const ETHSign = ({ params }: { params: AddAssetProps }) => {
-  const [, , rejectApproval] = useApproval();
+const ETHSign = ({
+  params,
+  approvalId,
+}: {
+  params: AddAssetProps;
+  approvalId?: string;
+}) => {
+  const [, , rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'ETHSign' } : null
+  );
   const { t } = useTranslation();
 
   return (

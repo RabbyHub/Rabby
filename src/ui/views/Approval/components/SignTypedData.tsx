@@ -157,14 +157,19 @@ const SignTypedData = ({
   });
   const submissionEvaluationRef = useRef<unknown>(null);
   const canSignCurrentRef = useRef<() => boolean>(() => false);
-  const [, resolveApproval, rejectApproval] = useApproval({
-    approvalId,
-    approvalComponent: 'SignTypedData',
-    canResolve: () =>
-      renderSecurityVersion === evaluationVersion.current &&
-      canSignCurrentRef.current() &&
-      submissionEvaluationRef.current === securityStateRef.current.evaluation,
-  });
+  const [, resolveApproval, rejectApproval] = useApproval(
+    approvalId
+      ? {
+          approvalId,
+          approvalComponent: 'SignTypedData',
+          canResolve: () =>
+            renderSecurityVersion === evaluationVersion.current &&
+            canSignCurrentRef.current() &&
+            submissionEvaluationRef.current ===
+              securityStateRef.current.evaluation,
+        }
+      : null
+  );
   const { t } = useTranslation();
   const wallet = useWallet();
   const scrollRef = useRef<HTMLDivElement>(null);

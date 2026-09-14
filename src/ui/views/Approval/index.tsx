@@ -18,7 +18,7 @@ const Approval: React.FC<{
   const history = useHistory();
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
-  const [getApproval, , rejectApproval] = useApproval();
+  const [getApproval] = useApproval(null);
   type IApproval = Exclude<
     IExtractFromPromise<ReturnType<typeof getApproval>>,
     void
@@ -41,13 +41,15 @@ const Approval: React.FC<{
     document.title = 'Rabby Wallet Notification';
     const account = approval.data.account || (await wallet.getCurrentAccount());
     if (!account) {
-      rejectApproval(
-        undefined,
-        false,
-        false,
-        approval.id,
-        approval.data.approvalComponent
-      );
+      // Trusted loading boundary: this is the one place allowed to bind directly
+      // off the just-fetched snapshot, since it's rejecting the exact approval it
+      // just read (not resolving whatever happens to be current later).
+      wallet.rejectApprovalFor({
+        approval: {
+          id: approval.id,
+          component: approval.data.approvalComponent,
+        },
+      });
       return;
     }
   };

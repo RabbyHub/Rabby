@@ -50,9 +50,11 @@ interface ApprovalParams {
 const LedgerHardwareWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const {
     height,
@@ -72,7 +74,11 @@ const LedgerHardwareWaiting = ({
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    approvalId
+      ? { approvalId, approvalComponent: 'LedgerHardwareWaiting' }
+      : null
+  );
   const chain = findChain({
     id: params.chainId || 1,
   });
@@ -275,12 +281,7 @@ const LedgerHardwareWaiting = ({
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, stay, false);
     }
   }, [signFinishedData, isClickDone]);
 

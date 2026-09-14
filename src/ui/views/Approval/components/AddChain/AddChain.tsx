@@ -19,9 +19,17 @@ interface AddChainProps {
   };
 }
 
-const AddChain = ({ params }: { params: AddChainProps }) => {
+const AddChain = ({
+  params,
+  approvalId,
+}: {
+  params: AddChainProps;
+  approvalId?: string;
+}) => {
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'AddChain' } : null
+  );
   const { t } = useTranslation();
 
   const { data, session } = params;

@@ -36,6 +36,7 @@ interface ConnectProps {
   params: any;
   onChainChange?(chain: CHAINS_ENUM): void;
   defaultChain?: CHAINS_ENUM;
+  approvalId?: string;
 }
 
 const ConnectWrapper = styled.div`
@@ -215,6 +216,7 @@ export const ConnectContent = (
   const {
     params: { icon, origin, name, $ctx },
     onPerpsInvite,
+    approvalId,
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { state } = useLocation<{
@@ -222,7 +224,9 @@ export const ConnectContent = (
   }>();
   const { showChainsModal = false } = state ?? {};
   const [showModal] = useState(showChainsModal);
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'Connect' } : null
+  );
   const { t } = useTranslation();
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);

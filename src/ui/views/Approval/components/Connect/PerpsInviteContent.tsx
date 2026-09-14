@@ -29,6 +29,7 @@ interface ConnectProps {
   params: any;
   onChainChange?(chain: CHAINS_ENUM): void;
   defaultChain?: CHAINS_ENUM;
+  approvalId?: string;
 }
 
 const Footer = styled.div`
@@ -79,9 +80,12 @@ const Footer = styled.div`
 export const PerpsInviteContent = (props: ConnectProps) => {
   const {
     params: { icon, origin, name, $ctx },
+    approvalId,
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'Connect' } : null
+  );
   const { t } = useTranslation();
   const wallet = useWallet();
 

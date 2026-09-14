@@ -25,9 +25,17 @@ interface SwitchChainProps {
   };
 }
 
-const SwitchChain = ({ params }: { params: SwitchChainProps }) => {
+const SwitchChain = ({
+  params,
+  approvalId,
+}: {
+  params: SwitchChainProps;
+  approvalId?: string;
+}) => {
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'SwitchChain' } : null
+  );
   const { t } = useTranslation();
 
   const { data, session } = params;

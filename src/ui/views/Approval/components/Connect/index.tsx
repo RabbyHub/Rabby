@@ -15,17 +15,21 @@ interface ConnectProps {
   params: any;
   onChainChange?(chain: CHAINS_ENUM): void;
   defaultChain?: CHAINS_ENUM;
+  approvalId?: string;
 }
 
 const Connect = (props: ConnectProps) => {
   const {
     params: { icon, origin, name, $ctx },
+    approvalId,
   } = props;
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false } = state ?? {};
-  const [, , rejectApproval] = useApproval();
+  const [, , rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'Connect' } : null
+  );
   const { t } = useTranslation();
   const wallet = useWallet();
 

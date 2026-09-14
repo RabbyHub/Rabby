@@ -43,7 +43,7 @@ export type RequestSignPayload = {
   };
 };
 
-const QRHardWareWaiting = ({ params, account: $account }) => {
+const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
   const account = params.isGnosis ? params.account : $account;
   const { setTitle, closePopup, setHeight } = useCommonPopupView();
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
@@ -56,7 +56,9 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   );
   const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'QRHardWareWaiting' } : null
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
   const { t } = useTranslation();
@@ -186,12 +188,7 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, stay, false);
     }
   }, [signFinishedData, isClickDone]);
 

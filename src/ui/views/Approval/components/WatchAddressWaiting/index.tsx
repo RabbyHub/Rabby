@@ -43,9 +43,11 @@ interface ApprovalParams {
 const WatchAddressWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
@@ -58,7 +60,9 @@ const WatchAddressWaiting = ({
   }>(null);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'WatchAddressWaiting' } : null
+  );
   const chain =
     findChain({
       id: params.chainId || 1,
@@ -318,12 +322,7 @@ const WatchAddressWaiting = ({
   useEffect(() => {
     if (signFinishedData && isClickDone) {
       closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      resolveApproval(signFinishedData.data, stay, false);
     }
   }, [signFinishedData, isClickDone]);
 

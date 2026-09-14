@@ -18,15 +18,22 @@ interface ConnectProps {
     };
   };
   account: Account;
+  approvalId?: string;
 }
 
-const GetEncryptionPublicKey = ({ params, account }: ConnectProps) => {
+const GetEncryptionPublicKey = ({
+  params,
+  account,
+  approvalId,
+}: ConnectProps) => {
   const { t } = useTranslation();
   const [canProcess, setCanProcess] = useState(true);
   const { icon, origin } = params.session;
 
   const wallet = useWallet();
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'GetPublicKey' } : null
+  );
   const handleCancel = useCallback(() => {
     rejectApproval('User rejected the request.');
   }, [rejectApproval]);
