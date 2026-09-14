@@ -12,7 +12,13 @@ export const Ledger: React.FC<{
   isModalContent?: boolean;
 }> = ({ isModalContent }) => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  const [_, __, rejectApproval] = useApproval();
+  // Shared across approval and non-approval flows (dashboard revoke/swap buttons
+  // reuse this popup) with no reliable per-request identity available at this
+  // layer without threading it through useDeviceConnect/useLedgerStatus (out of
+  // scope here, see PR notes) — reject is intentionally a no-op rather than an
+  // unbound fallback. The owning waiting page's own cancel button is the real,
+  // identity-bound cancel path.
+  const [_, __, rejectApproval] = useApproval(null);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
 

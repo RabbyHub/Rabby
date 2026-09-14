@@ -9,7 +9,9 @@ import { Trans, useTranslation } from 'react-i18next';
 
 export const Keystone: React.FC = () => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  const [_, __, rejectApproval] = useApproval();
+  // See Ledger.tsx: shared popup with no reliable per-request identity here;
+  // reject is a deliberate no-op, not an unbound fallback.
+  const [_, __, rejectApproval] = useApproval(null);
   const hasConnected = useKeystoneDeviceConnected();
   const { t } = useTranslation();
 

@@ -27,6 +27,7 @@ export const ImportCoboArgus: React.FC<{
   const { state } = useLocation<{
     address: string;
     chainId: number | string;
+    approvalId?: string;
   }>();
   const { t } = useTranslation();
   const [selectedChain, setSelectedChain] = React.useState<
@@ -99,7 +100,14 @@ export const ImportCoboArgus: React.FC<{
     }
   }, [selectedChain, safeAddress, inputAddress]);
 
-  const [, , rejectApproval] = useApproval();
+  // No traced caller currently threads approvalId into this route's state (see
+  // AddAddress/shared.tsx, the only navigator) — reject fails closed rather than
+  // falling back to whatever approval happens to be current.
+  const [, , rejectApproval] = useApproval(
+    state?.approvalId
+      ? { approvalId: state.approvalId, approvalComponent: 'ImportAddress' }
+      : null
+  );
   const handleClose = React.useCallback(() => {
     rejectApproval();
   }, [rejectApproval]);

@@ -91,7 +91,31 @@ const UnlockMethodSwitch = styled.button`
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
-  const [getApproval, resolveApproval] = useApproval();
+  // A plain popup/tab unlock is not consent to any pending sign/approval — it
+  // only ever completes an approval that is itself of type 'Unlock'. That ref is
+  // bound once at this trusted mount boundary (not re-derived from whatever is
+  // current at the moment the unlock broadcast fires), so a stale/superseded
+  // Unlock request can't be revived by a later, unrelated unlock.
+  const [pendingUnlockApproval, setPendingUnlockApproval] = useState<{
+    approvalId: string;
+    approvalComponent: 'Unlock';
+  } | null>(null);
+  const [getApproval, resolveApproval] = useApproval(pendingUnlockApproval);
+  useEffect(() => {
+    let cancelled = false;
+    getApproval().then((approval) => {
+      if (cancelled || !approval) return;
+      if (String(approval.data.approvalComponent) === 'Unlock') {
+        setPendingUnlockApproval({
+          approvalId: approval.id,
+          approvalComponent: 'Unlock',
+        });
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
@@ -187,14 +211,23 @@ const Unlock = () => {
       if (query.from === '/connect-approval') {
         history.replace('/approval?ignoreOtherWallet=1');
       } else {
+        // Fresh read purely to decide where to navigate — settlement identity
+        // always comes from pendingUnlockApproval (bound at mount), never from
+        // this read.
         const approval = await getApproval();
         if (!approval) {
           history.replace('/');
         } else if (String(approval.data.approvalComponent) === 'Unlock') {
-          // Only resolve the Unlock approval itself, bound by id. A pending
-          // SignText/SignTypedData/SignTx must never be resolved by a
-          // password entry — hand control back to its own approval screen.
-          resolveApproval(undefined, false, false, approval.id);
+          // Only resolve the Unlock approval itself, bound at mount time. A
+          // pending SignText/SignTypedData/SignTx must never be resolved by a
+          // password entry — hand control back to its own approval screen. If
+          // the bound ref is missing/stale (e.g. a different window's unlock
+          // already consumed it), resolveApproval fails closed and we fall
+          // back to showing whatever is actually pending now.
+          const resolved = await resolveApproval(undefined, false, false);
+          if (!resolved) {
+            history.replace('/approval');
+          }
         } else {
           history.replace('/approval');
         }

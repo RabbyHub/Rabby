@@ -55,9 +55,16 @@ const ImportSuccess = ({
     isMnemonics?: boolean;
     importedLength?: number;
     supportChainList?: Chain[];
+    approvalId?: string;
   }>();
 
   const state = _state || location.state || {};
+  // Threaded from the ImportAddress approval entry point through route state —
+  // never re-derived from currentApproval at this page. Missing/lost means this
+  // reach of ImportSuccess isn't completing an approval (either a plain
+  // independent import, or an intermediate hop dropped it) — fail closed, don't
+  // fall back to "whatever is current".
+  const approvalId = state.approvalId;
   const safeAccount = state.accounts?.[0];
   const isSafeSuccess = useMemo(
     () =>
@@ -80,7 +87,9 @@ const ImportSuccess = ({
     isMnemonics = false,
     importedLength = 0,
   } = state;
-  const [, resolveApproval] = useApproval();
+  const [, resolveApproval] = useApproval(
+    approvalId ? { approvalId, approvalComponent: 'ImportAddress' } : null
+  );
   const safeAddresses = React.useMemo(
     () =>
       safeAccount
