@@ -1,7 +1,7 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Approval } from 'background/service/notification';
+import { Approval, ApprovalKind } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
@@ -13,12 +13,21 @@ import { isValidAddress } from '@ethereumjs/util';
 import { useExchangeStore } from '../state/exchange';
 
 export interface ApprovalBinding {
-  approvalId?: string;
-  approvalComponent: Approval['data']['approvalComponent'];
+  approvalId: string;
+  approvalComponent: ApprovalKind;
   canResolve?: () => boolean;
 }
 
-export const useApproval = (binding?: ApprovalBinding) => {
+/**
+ * `binding` is the caller's entire identity claim and is required on every call —
+ * pass `null` (never omit it) when the caller doesn't have a settleable approval yet
+ * (e.g. still figuring out whether one exists). There is no code path here that
+ * falls back to "whatever `getApproval()` returns right now": resolve/reject only
+ * ever settle `binding.approvalId`/`binding.approvalComponent`, and every check below
+ * fails closed when that identity can't be confirmed as still owned by this hook
+ * instance.
+ */
+export const useApproval = (binding: ApprovalBinding | null) => {
   const wallet = useWallet();
   const history = useHistory();
   const { showPopup, enablePopup } = useApprovalPopup();
@@ -36,54 +45,61 @@ export const useApproval = (binding?: ApprovalBinding) => {
     };
   }, []);
 
-  const matchesBinding = (approval?: Approval, approvalId?: string) => {
-    if (!approval || (approvalId && approval.id !== approvalId)) return false;
-    if (!binding) return true;
+  // Ownership: is `approval` still the same request this hook instance was bound to,
+  // has this instance not been superseded by a rebind, and is the view still mounted.
+  // Gates both resolve and reject — a stale/unmounted/rebound closure can't settle
+  // anything, regardless of sign-readiness.
+  const isOwnedByThisView = (approval?: Approval | null) => {
+    if (!binding || !approval) return false;
     return (
       mounted.current &&
-      !!binding.approvalId &&
-      binding.approvalId === bindingRef.current?.approvalId &&
-      binding.approvalComponent === bindingRef.current?.approvalComponent &&
+      bindingRef.current?.approvalId === binding.approvalId &&
+      bindingRef.current?.approvalComponent === binding.approvalComponent &&
       approval.id === binding.approvalId &&
       approval.data.approvalComponent === binding.approvalComponent
     );
   };
 
+  // Extra caller-supplied readiness gate (e.g. security-evaluation version). Only
+  // resolve is gated by this — a plain cancel must not be blocked by canSign/security
+  // checks, only by ownership.
   const canResolve = () =>
-    !binding ||
-    (mounted.current &&
-      binding.canResolve?.() !== false &&
-      bindingRef.current?.canResolve?.() !== false);
+    !!binding &&
+    mounted.current &&
+    binding.canResolve?.() !== false &&
+    bindingRef.current?.canResolve?.() !== false;
 
   const resolveApproval = async (
     data?: any,
     stay = false,
-    forceReject = false,
-    approvalId?: string
+    forceReject = false
   ) => {
+    if (!binding) return false;
     if (!canResolve()) return false;
     const approval = await getApproval();
-    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
+    if (!isOwnedByThisView(approval) || !canResolve()) return false;
 
     // handle connect
     if (!(await deviceConnect(data, approval?.data?.account))) {
       return false;
     }
 
-    if (!matchesBinding(approval, approvalId) || !canResolve()) return false;
-    const resolved = await wallet.resolveApproval(
+    if (!isOwnedByThisView(approval) || !canResolve()) return false;
+    const result = await wallet.resolveApprovalFor({
+      approval: {
+        id: binding.approvalId,
+        component: binding.approvalComponent,
+      },
       data,
       forceReject,
-      approval.id,
-      approval.data.approvalComponent
-    );
-    if (!resolved) return false;
+    });
+    if (!result.accepted) return false;
 
     if (stay) {
       return true;
     }
     setTimeout(() => {
-      if (binding && !mounted.current) return;
+      if (!mounted.current) return;
       if (data && enablePopup(data.type)) {
         return showPopup();
       }
@@ -92,34 +108,26 @@ export const useApproval = (binding?: ApprovalBinding) => {
     return true;
   };
 
-  const rejectApproval = async (
-    err?,
-    stay = false,
-    isInternal = false,
-    approvalId?: string,
-    approvalComponent?: Approval['data']['approvalComponent']
-  ) => {
+  const rejectApproval = async (err?, stay = false, isInternal = false) => {
+    if (!binding) return false;
     const approval = await getApproval();
-    if (
-      !matchesBinding(approval, approvalId) ||
-      (approvalComponent &&
-        approval.data.approvalComponent !== approvalComponent)
-    ) {
-      return false;
-    }
+    if (!isOwnedByThisView(approval)) return false;
+
     if (approval?.data?.params?.data?.[0]?.isCoboSafe) {
       wallet.coboSafeResetCurrentAccount();
     }
 
-    const rejected = await wallet.rejectApproval(
-      err,
+    const result = await wallet.rejectApprovalFor({
+      approval: {
+        id: binding.approvalId,
+        component: binding.approvalComponent,
+      },
+      error: err,
       stay,
       isInternal,
-      approval.id,
-      approval.data.approvalComponent
-    );
-    if (!rejected) return false;
-    if (!stay && (!binding || mounted.current)) {
+    });
+    if (!result.accepted) return false;
+    if (!stay && mounted.current) {
       history.push('/');
     }
     return true;
