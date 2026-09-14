@@ -1,8 +1,4 @@
-import {
-  openInternalPageInTab,
-  useApproval,
-  useCommonPopupView,
-} from '@/ui/utils';
+import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { message } from 'antd';
 import React from 'react';
@@ -12,13 +8,6 @@ export const Ledger: React.FC<{
   isModalContent?: boolean;
 }> = ({ isModalContent }) => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  // Shared across approval and non-approval flows (dashboard revoke/swap buttons
-  // reuse this popup) with no reliable per-request identity available at this
-  // layer without threading it through useDeviceConnect/useLedgerStatus (out of
-  // scope here, see PR notes) — reject is intentionally a no-op rather than an
-  // unbound fallback. The owning waiting page's own cancel button is the real,
-  // identity-bound cancel path.
-  const [_, __, rejectApproval] = useApproval(null);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
 
@@ -38,7 +27,13 @@ export const Ledger: React.FC<{
 
   const handleClick = async () => {
     if (!isModalContent) {
-      await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);
+      // No reliable per-request identity is available at this layer (see the
+      // module-level note above) — this used to call an unbound rejectApproval
+      // here, which would have silently acted on whatever approval happened to
+      // be current. Removed rather than left as dead/no-op code; the owning
+      // waiting page's own bound cancel button is the real cancel path, and any
+      // approval still pending after this reconnect is left for the user to
+      // retry or cancel from there once permission is granted.
       openInternalPageInTab('request-permission?type=ledger&from=approval');
     } else {
       openInternalPageInTab(

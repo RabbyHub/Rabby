@@ -1,8 +1,4 @@
-import {
-  openInternalPageInTab,
-  useApproval,
-  useCommonPopupView,
-} from '@/ui/utils';
+import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { message } from 'antd';
 import React from 'react';
@@ -12,9 +8,6 @@ export const OneKey: React.FC<{
   isModalContent?: boolean;
 }> = ({ isModalContent }) => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  // See Ledger.tsx: shared popup with no reliable per-request identity here;
-  // reject is a deliberate no-op, not an unbound fallback.
-  const [_, __, rejectApproval] = useApproval(null);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
 
@@ -34,7 +27,8 @@ export const OneKey: React.FC<{
 
   const handleClick = async () => {
     if (!isModalContent) {
-      await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);
+      // See Ledger.tsx: removed the dead unbound rejectApproval call rather
+      // than leave it as no-op code that reads as if it still cancels.
       openInternalPageInTab('request-permission?type=ledger&from=approval');
     } else {
       openInternalPageInTab(

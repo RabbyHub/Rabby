@@ -90,6 +90,11 @@ export const ImportCoboArgus: React.FC<{
       // ImportAddress approval, if one is bound — do both, not just the
       // navigation. resolveApproval no-ops when unbound (null binding),
       // so this is safe for a plain, non-approval import too.
+      //
+      // Result intentionally not checked: unlike a signing approval, success
+      // here doesn't depend on the approval settling. coboSafeImport() above
+      // already succeeded (accounts exist); the success screen is correct to
+      // show regardless of whether an optional bound approval also resolved.
       resolveApproval(undefined, true);
       openSuccessPage({
         addresses: accounts.map((item) => ({

@@ -1,17 +1,10 @@
-import {
-  openInternalPageInTab,
-  useApproval,
-  useCommonPopupView,
-} from '@/ui/utils';
+import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
 import { useKeystoneDeviceConnected } from '@/ui/utils/keystone';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 export const Keystone: React.FC = () => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  // See Ledger.tsx: shared popup with no reliable per-request identity here;
-  // reject is a deliberate no-op, not an unbound fallback.
-  const [_, __, rejectApproval] = useApproval(null);
   const hasConnected = useKeystoneDeviceConnected();
   const { t } = useTranslation();
 
@@ -27,7 +20,8 @@ export const Keystone: React.FC = () => {
   }, [hasConnected]);
 
   const handleClick = async () => {
-    await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);
+    // See Ledger.tsx: removed the dead unbound rejectApproval call rather than
+    // leave it as no-op code that reads as if it still cancels.
     openInternalPageInTab('request-permission?type=keystone&from=approval');
   };
 
