@@ -26,6 +26,7 @@ import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
 import { useAppVersionStore } from '@/ui/state/appVersion';
 import {
   selectExtensionUpdateBanner,
+  selectExtensionUpdateLevel,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 import { ExtensionUpdateBanner } from './components/ExtensionUpdateBanner';
@@ -129,9 +130,7 @@ const Dashboard = () => {
   const showUpdateBanner = useExtensionUpdateStore((s) =>
     selectExtensionUpdateBanner(s, updateClock)
   );
-  const updateLevel = useExtensionUpdateStore(
-    (s) => s.versionInfo?.version.level
-  );
+  const updateLevel = useExtensionUpdateStore(selectExtensionUpdateLevel);
   const dismissedUntil = useExtensionUpdateStore((s) => s.dismissedUntil);
   const dismissBanner = useExtensionUpdateStore((s) => s.dismissBanner);
   const refreshVersionInfo = useExtensionUpdateStore(

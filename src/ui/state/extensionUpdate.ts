@@ -21,16 +21,26 @@ export const selectHasNewExtensionVersion = (
   state.version === state.versionInfo.latest_version.id &&
   compareExtensionVersions(state.currentVersion, state.version) < 0;
 
+export const selectExtensionUpdateLevel = ({
+  versionInfo,
+}: Pick<ExtensionUpdateStore, 'versionInfo'>) =>
+  versionInfo?.version.level === 4
+    ? versionInfo.version.level
+    : versionInfo?.latest_version.level ?? 0;
+
 export const selectExtensionUpdateBadge = (state: ExtensionUpdateStore) =>
-  selectHasNewExtensionVersion(state) && state.versionInfo!.version.level >= 2;
+  selectHasNewExtensionVersion(state) && selectExtensionUpdateLevel(state) >= 2;
 
 export const selectExtensionUpdateBanner = (
   state: ExtensionUpdateStore,
   now = Date.now()
-) =>
-  selectHasNewExtensionVersion(state) &&
-  (state.versionInfo!.version.level === 4 ||
-    (state.versionInfo!.version.level === 3 && now >= state.dismissedUntil));
+) => {
+  const level = selectExtensionUpdateLevel(state);
+  return (
+    selectHasNewExtensionVersion(state) &&
+    (level === 4 || (level === 3 && now >= state.dismissedUntil))
+  );
+};
 
 let refreshPromise: Promise<void> | undefined;
 
@@ -92,7 +102,7 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
       return refreshPromise;
     },
     dismissBanner() {
-      if (get().versionInfo?.version.level === 3)
+      if (selectExtensionUpdateLevel(get()) === 3)
         set({ dismissedUntil: Date.now() + UPDATE_BANNER_COOLDOWN });
     },
     async reloadForUpdate() {

@@ -1,6 +1,7 @@
 import { act, createElement } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { message } from 'antd';
+import { useExtensionUpdateStore } from '@/ui/state/extensionUpdate';
 import { ExtensionUpdateCard } from '@/ui/views/Dashboard/components/Settings/components/ExtensionUpdateCard';
 import { ExtensionUpdateDialog } from '@/ui/views/Dashboard/components/Settings/components/ExtensionUpdateDialog';
 
@@ -8,11 +9,23 @@ jest.mock('react-i18next', () => ({
   useTranslation: () => ({ t: (key: string) => key.split('.').pop() }),
 }));
 
+jest.mock('@/ui/wallet', () => ({
+  wallet: {
+    getStorageSnapshot: jest.fn().mockResolvedValue({
+      origin: 'background-1',
+      revision: 1,
+      state: { currentVersion: '1.0.0', version: '1.1.0' },
+    }),
+    setStorageItem: jest.fn(),
+  },
+  onWalletReconnect: jest.fn(() => () => undefined),
+}));
+
 jest.mock('antd', () => ({
   message: { error: jest.fn() },
   Modal: ({ visible, children }: any) => (visible ? children : null),
   Button: ({ loading, onClick, children, className }: any) =>
-    require('react').createElement(
+    jest.requireActual('react').createElement(
       'button',
       {
         onClick,
@@ -29,11 +42,13 @@ describe('extension update card', () => {
   const onUpdate = jest.fn();
   const previousActEnvironment = (globalThis as any).IS_REACT_ACT_ENVIRONMENT;
 
-  beforeAll(() => {
+  beforeAll(async () => {
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
+    await useExtensionUpdateStore.persist.hydrationPromise();
   });
   beforeEach(() => {
     jest.clearAllMocks();
+    useExtensionUpdateStore.setState({ versionInfo: null });
     onUpdate.mockResolvedValue(undefined);
     container = document.createElement('div');
     document.body.appendChild(container);
@@ -44,13 +59,15 @@ describe('extension update card', () => {
     container.remove();
   });
   afterAll(() => {
+    useExtensionUpdateStore.persist.destroy();
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
   });
-  const render = (version = '1.2.3.4') =>
+  const render = (version = '1.2.3.4', variant: 'card' | 'dialog' = 'card') =>
     act(() => {
       root.render(
         createElement(ExtensionUpdateCard, {
           version,
+          variant,
           changelog: '1. New feature\n2. Bug fix',
           onUpdate,
         })
@@ -67,6 +84,30 @@ describe('extension update card', () => {
     expect(notes.querySelector('li, img')).toBeNull();
     expect(onUpdate).not.toHaveBeenCalled();
   });
+
+  it.each([
+    [4, 1, 'card', true],
+    [1, 3, 'card', true],
+    [3, 1, 'card', false],
+    [1, 4, 'card', true],
+    [2, 2, 'card', true],
+    [4, 1, 'dialog', false],
+    [1, 4, 'dialog', false],
+  ] as const)(
+    'uses current level %s and latest level %s for the %s variant dot (%s)',
+    (currentLevel, latestLevel, variant, showDot) => {
+      useExtensionUpdateStore.setState({
+        versionInfo: {
+          version: { id: '1.0.0', level: currentLevel, changelog: '' },
+          latest_version: { id: '1.1.0', level: latestLevel, changelog: '' },
+        },
+      });
+      render('1.1.0', variant);
+      expect(
+        !!container.querySelector('.extension-update-card-version img')
+      ).toBe(showDot);
+    }
+  );
 
   it('opens the dialog without updating and only updates on confirmation', async () => {
     const onClose = jest.fn();

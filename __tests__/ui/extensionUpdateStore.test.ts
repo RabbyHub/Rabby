@@ -6,15 +6,20 @@ import {
   selectHasNewExtensionVersion,
   selectExtensionUpdateBadge,
   selectExtensionUpdateBanner,
+  selectExtensionUpdateLevel,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 import { wallet } from '@/ui/wallet';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 import { VersionInfo, UPDATE_BANNER_COOLDOWN } from '@/utils/extensionVersion';
 
-const makeInfo = (latest = '1.1.0', level: 1 | 2 | 3 | 4 = 2): VersionInfo => ({
+const makeInfo = (
+  latest = '1.1.0',
+  level: 1 | 2 | 3 | 4 = 2,
+  latestLevel: 1 | 2 | 3 | 4 = 1
+): VersionInfo => ({
   version: { id: '1.0.0', level, changelog: 'Current' },
-  latest_version: { id: latest, level: 1, changelog: 'Latest' },
+  latest_version: { id: latest, level: latestLevel, changelog: 'Latest' },
 });
 
 jest.mock('webextension-polyfill', () => ({
@@ -175,17 +180,35 @@ describe('extension update store', () => {
     ).toBe(false);
   });
 
-  it.each([1, 2, 3, 4] as const)(
-    'uses current version level %s for banner and badge',
-    (level) => {
+  it.each([
+    [1, 1, 1],
+    [1, 2, 2],
+    [1, 3, 3],
+    [1, 4, 4],
+    [2, 1, 1],
+    [2, 2, 2],
+    [2, 3, 3],
+    [2, 4, 4],
+    [3, 1, 1],
+    [3, 2, 2],
+    [3, 3, 3],
+    [3, 4, 4],
+    [4, 1, 4],
+    [4, 2, 4],
+    [4, 3, 4],
+    [4, 4, 4],
+  ] as const)(
+    'uses current level %s and latest level %s as level %s for banner and badge',
+    (currentLevel, latestLevel, level) => {
       const state = {
         ...useExtensionUpdateStore.getState(),
         currentVersion: '1.0.0',
         version: '1.1.0',
-        versionInfo: makeInfo('1.1.0', level),
+        versionInfo: makeInfo('1.1.0', currentLevel, latestLevel),
         dismissedUntil: 0,
       };
       expect(selectHasNewExtensionVersion(state)).toBe(true);
+      expect(selectExtensionUpdateLevel(state)).toBe(level);
       expect(selectExtensionUpdateBadge(state)).toBe(level >= 2);
       expect(selectExtensionUpdateBanner(state)).toBe(level >= 3);
       const cooling = {
@@ -199,6 +222,10 @@ describe('extension update store', () => {
       );
     }
   );
+
+  it('has no update level without version info', () => {
+    expect(selectExtensionUpdateLevel({ versionInfo: null })).toBe(0);
+  });
 
   it.each(['', '1.0.1', '1.2.0'])(
     'hides all update hints for unmatched pending %s',
@@ -258,8 +285,8 @@ describe('extension update store', () => {
     }
   );
 
-  it('persists only the cooldown when dismissed', async () => {
-    useExtensionUpdateStore.setState({ versionInfo: makeInfo('1.1.0', 3) });
+  it('persists only the cooldown when the latest version level is 3', async () => {
+    useExtensionUpdateStore.setState({ versionInfo: makeInfo('1.1.0', 2, 3) });
     const before = Date.now();
     useExtensionUpdateStore.getState().dismissBanner();
     await useExtensionUpdateStore.persist.flush();
@@ -273,12 +300,24 @@ describe('extension update store', () => {
     );
   });
 
-  it('does not allow mandatory updates to be dismissed', () => {
-    useExtensionUpdateStore.setState({ versionInfo: makeInfo('1.1.0', 4) });
-    const until = useExtensionUpdateStore.getState().dismissedUntil;
-    useExtensionUpdateStore.getState().dismissBanner();
-    expect(useExtensionUpdateStore.getState().dismissedUntil).toBe(until);
-  });
+  it.each([
+    [4, 1],
+    [4, 3],
+    [2, 4],
+    [3, 4],
+    [3, 1],
+    [3, 2],
+  ] as const)(
+    'does not dismiss when current level is %s and latest level is %s',
+    (currentLevel, latestLevel) => {
+      useExtensionUpdateStore.setState({
+        versionInfo: makeInfo('1.1.0', currentLevel, latestLevel),
+      });
+      const until = useExtensionUpdateStore.getState().dismissedUntil;
+      useExtensionUpdateStore.getState().dismissBanner();
+      expect(useExtensionUpdateStore.getState().dismissedUntil).toBe(until);
+    }
+  );
 
   it('clears stale hints on an invalid backend response', async () => {
     const log = jest

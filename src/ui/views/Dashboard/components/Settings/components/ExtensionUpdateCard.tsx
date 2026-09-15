@@ -1,7 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useExtensionUpdateStore } from '@/ui/state/extensionUpdate';
+import {
+  selectExtensionUpdateLevel,
+  useExtensionUpdateStore,
+} from '@/ui/state/extensionUpdate';
 import Logo from '@/ui/assets/settings/update/logo.svg';
 import Glow from '@/ui/assets/settings/update/glow.svg';
 import Close from '@/ui/assets/settings/update/close.svg';
@@ -21,9 +24,7 @@ export const ExtensionUpdateCard = ({
   onClose?: () => void;
 }) => {
   const { t } = useTranslation();
-  const level = useExtensionUpdateStore(
-    (s) => s.versionInfo?.version.level ?? 0
-  );
+  const level = useExtensionUpdateStore(selectExtensionUpdateLevel);
   const [dismissedVersion, setDismissedVersion] = useState<string>();
   const [updating, setUpdating] = useState(false);
   const pending = useRef(false);
