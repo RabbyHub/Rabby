@@ -136,7 +136,40 @@ describe('extension update card', () => {
     expect(onUpdate).toHaveBeenCalledTimes(1);
   });
 
-  it('closes the dialog without updating and can reopen it', () => {
+  it.each([
+    [4, 1, 'card', false],
+    [4, 3, 'card', false],
+    [1, 4, 'card', false],
+    [3, 1, 'card', true],
+    [1, 2, 'card', true],
+    [1, 3, 'card', true],
+    [4, 1, 'dialog', true],
+    [1, 4, 'dialog', true],
+  ] as const)(
+    'uses current level %s and latest level %s for the %s variant close button (%s)',
+    (currentLevel, latestLevel, variant, showClose) => {
+      useExtensionUpdateStore.setState({
+        versionInfo: {
+          version: { id: '1.0.0', level: currentLevel, changelog: '' },
+          latest_version: { id: '1.1.0', level: latestLevel, changelog: '' },
+        },
+      });
+      render('1.1.0', variant);
+      expect(!!container.querySelector('.extension-update-card-close')).toBe(
+        showClose
+      );
+      expect(container.querySelector('section')).not.toBeNull();
+      expect(onUpdate).not.toHaveBeenCalled();
+    }
+  );
+
+  it('closes and reopens the dialog without updating even for mandatory updates', () => {
+    useExtensionUpdateStore.setState({
+      versionInfo: {
+        version: { id: '1.0.0', level: 4, changelog: '' },
+        latest_version: { id: '1.2.3.4', level: 1, changelog: '' },
+      },
+    });
     const onClose = jest.fn();
     const renderDialog = (visible: boolean) =>
       act(() =>

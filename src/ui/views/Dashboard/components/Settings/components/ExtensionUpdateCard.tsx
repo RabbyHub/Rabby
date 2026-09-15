@@ -57,14 +57,16 @@ export const ExtensionUpdateCard = ({
       {variant === 'card' && (
         <img className="extension-update-card-logo" src={Logo} alt="" />
       )}
-      <button
-        type="button"
-        className="extension-update-card-close"
-        aria-label={t('page.dashboard.settings.updateCard.dismiss')}
-        onClick={() => (onClose ? onClose() : setDismissedVersion(version))}
-      >
-        <img src={Close} width={16} height={16} alt="" />
-      </button>
+      {(variant === 'dialog' || level !== 4) && (
+        <button
+          type="button"
+          className="extension-update-card-close"
+          aria-label={t('page.dashboard.settings.updateCard.dismiss')}
+          onClick={() => (onClose ? onClose() : setDismissedVersion(version))}
+        >
+          <img src={Close} width={16} height={16} alt="" />
+        </button>
+      )}
       <div className="extension-update-card-content">
         <div>
           <div className="extension-update-card-title">
