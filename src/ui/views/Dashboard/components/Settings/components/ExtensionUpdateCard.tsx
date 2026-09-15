@@ -74,9 +74,7 @@ export const ExtensionUpdateCard = ({
           </div>
           <div className="extension-update-card-version">
             <span>v{version}</span>
-            {variant === 'card' && level > 1 && (
-              <img src={Dot} width={5} height={5} alt="" />
-            )}
+            {level > 1 && <img src={Dot} width={5} height={5} alt="" />}
           </div>
         </div>
         <div className="extension-update-card-notes">{changelog}</div>
