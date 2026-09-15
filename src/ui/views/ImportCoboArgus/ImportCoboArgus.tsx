@@ -88,7 +88,8 @@ export const ImportCoboArgus: React.FC<{
       // Also completes the bound ImportAddress approval, if any (no-op when unbound).
       // Result not checked: coboSafeImport() above already succeeded, so the success
       // screen is correct regardless of whether the optional approval also resolved.
-      resolveApproval(undefined, true);
+      // Await before openSuccessPage, which navigates and would unmount this view mid-flight.
+      await resolveApproval(undefined, true);
       openSuccessPage({
         addresses: accounts.map((item) => ({
           address: item.address,
