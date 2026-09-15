@@ -4,10 +4,9 @@ import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel, TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import {
   DEX_ENUM,
-  DEX_ROUTER_WHITELIST,
-  DEX_SPENDER_WHITELIST,
-  UNI_NATIVE_TO_ADDRESSES,
-  WrapTokenAddressMap,
+  getRouter as getSwapRouter,
+  getSpender,
+  verifySdk,
 } from '@rabby-wallet/rabby-swap';
 import { QuoteResult, getQuote } from '@rabby-wallet/rabby-swap/dist/quote';
 import BigNumber from 'bignumber.js';
@@ -16,9 +15,14 @@ import pRetry from 'p-retry';
 import { useRabbySelector } from '@/ui/store';
 import { useSwapStore } from '@/ui/state/swap';
 import stats from '@/stats';
-import { verifySdk } from './verify';
 import { findChainByEnum } from '@/utils/chain';
+import * as Sentry from '@sentry/browser';
 import { ChainGas } from '@/background/service/preference';
+import {
+  getSwapChainId,
+  getSwapNativeTokenAddress,
+  isSwapWrapToken,
+} from '../utils';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -130,10 +134,15 @@ export const useQuoteMethods = () => {
         return [true, false];
       }
 
+      const spender = getSpender(dexId, chain);
+      if (!spender) {
+        return [true, false];
+      }
+
       const allowance = await walletController.getERC20Allowance(
         chainInfo.serverId,
         payToken.id,
-        getSpender(dexId, chain)
+        spender
       );
 
       const tokenApproved = new BigNumber(allowance).gte(
@@ -444,7 +453,13 @@ export const useQuoteMethods = () => {
 
         let preExecResult;
         if (data) {
-          const { isSdkDataPass } = verifySdk({
+          const {
+            isSdkDataPass,
+            routerPass,
+            spenderPass,
+            callDataPass,
+            receiverPass,
+          } = verifySdk({
             chain,
             dexId,
             slippage,
@@ -456,9 +471,33 @@ export const useQuoteMethods = () => {
                 .toFixed(0, 1),
               toToken: receiveToken?.id,
             },
-            payToken,
-            receiveToken,
+            payTokenId: payToken.id,
+            receiveTokenId: receiveToken.id,
+            userAddress,
+            nativeTokenAddress: getSwapNativeTokenAddress(chain),
+            chainId: getSwapChainId(chain),
           });
+
+          if (!isSdkDataPass) {
+            const failed = [
+              ...(!routerPass ? ['router'] : []),
+              ...(!spenderPass ? ['spender'] : []),
+              ...(!callDataPass ? ['calldata'] : []),
+              ...(!receiverPass ? ['receiver'] : []),
+            ];
+            const failedKey = failed.join(',') || 'unknown';
+
+            Sentry.captureException(new Error('swap isSdkDataPass false'), {
+              level: 'warning',
+              tags: {
+                swap_dex: dexId,
+                swap_chain: chain,
+                swap_verify_failed: failedKey,
+                swap_token_pair: `${payToken.id}/${receiveToken.id}`,
+              },
+              fingerprint: ['swap-verify-sdk', String(dexId), failedKey],
+            });
+          }
 
           if (inSufficient) {
             const quote: TDexQuoteData = {
@@ -738,32 +777,13 @@ interface getTokenParams {
   tokenId: string;
 }
 
+export { getSpender, isSwapWrapToken };
+
 export const getRouter = (
   dexId: DEX_ENUM,
   chain: CHAINS_ENUM,
   payTokenId: string
-) => {
-  const list = DEX_ROUTER_WHITELIST[dexId as keyof typeof DEX_ROUTER_WHITELIST];
-
-  const payTokenIsNativeToken =
-    findChainByEnum(chain)?.nativeTokenAddress === payTokenId;
-
-  if (dexId === DEX_ENUM.UNI && payTokenIsNativeToken) {
-    return UNI_NATIVE_TO_ADDRESSES[chain];
-  }
-
-  return list[chain as keyof typeof list];
-};
-
-export const getSpender = (dexId: DEX_ENUM, chain: CHAINS_ENUM) => {
-  if (dexId === DEX_ENUM.WRAPTOKEN) {
-    return '';
-  }
-
-  const list =
-    DEX_SPENDER_WHITELIST[dexId as keyof typeof DEX_SPENDER_WHITELIST];
-  return list[chain as keyof typeof list];
-};
+) => getSwapRouter(dexId, chain, payTokenId, getSwapNativeTokenAddress(chain));
 
 const INTERNAL_REQUEST_ORIGIN = window.location.origin;
 
@@ -803,24 +823,6 @@ export type TDexQuoteData = {
   loading?: boolean;
   isBest?: boolean;
 };
-
-export function isSwapWrapToken(
-  payTokenId: string,
-  receiveId: string,
-  chain: CHAINS_ENUM
-) {
-  const wrapTokens = [
-    WrapTokenAddressMap[chain as keyof typeof WrapTokenAddressMap],
-    findChainByEnum(chain)!.nativeTokenAddress,
-  ];
-  return (
-    !!payTokenId &&
-    !!receiveId &&
-    payTokenId !== receiveId &&
-    !!wrapTokens.find((token) => isSameAddress(payTokenId, token)) &&
-    !!wrapTokens.find((token) => isSameAddress(receiveId, token))
-  );
-}
 
 export type QuoteProvider = {
   name: string;
