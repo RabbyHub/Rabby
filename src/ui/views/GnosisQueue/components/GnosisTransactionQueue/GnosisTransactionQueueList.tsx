@@ -254,6 +254,9 @@ const TransactionExplain = ({
     } else if (explain?.action?.type === 'cancel_tx') {
       content = t('page.safeQueue.action.cancel');
     } else {
+      icon = contractProtocol?.logo_url ? (
+        <img className="icon icon-explain" src={contractProtocol?.logo_url} />
+      ) : null;
       content = getActionTypeTextByType(explain?.action?.type || '');
     }
   }
