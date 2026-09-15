@@ -45,6 +45,7 @@ import {
   GNOSIS_REPLACE_QUERY_KEY,
   serializeGnosisSendReplaceContext,
 } from '@/ui/utils/gnosisReplace';
+import { getActionTypeTextByType } from '@/ui/views/Approval/components/Actions/utils';
 
 interface TransactionConfirmationsProps {
   confirmations: SafeTransactionItem['confirmations'];
@@ -252,14 +253,8 @@ const TransactionExplain = ({
       )} ${getTokenSymbol(data.token)}`;
     } else if (explain?.action?.type === 'cancel_tx') {
       content = t('page.safeQueue.action.cancel');
-    } else if (explain?.contract_call) {
-      icon = (
-        <img
-          src={contractProtocol?.logo_url || IconUnknown}
-          className="icon icon-explain"
-        />
-      );
-      content = explain.contract_call.func;
+    } else {
+      content = getActionTypeTextByType(explain?.action?.type || '');
     }
   }
 
