@@ -35,6 +35,21 @@ const Approval: React.FC<{
       return null;
     }
 
+    // Fail closed: 'Unlock' (and any other ApprovalKind not in the UI dispatch
+    // barrel) can reach here as currentApproval via unrelated races (queue
+    // advancement, a cross-window unlock broadcast) — reject it by the exact
+    // ref just read rather than rendering <undefined/> below.
+    if (!ApprovalComponent[approval.data.approvalComponent]) {
+      await wallet.rejectApprovalFor({
+        approval: {
+          id: approval.id,
+          component: approval.data.approvalComponent,
+        },
+      });
+      history.replace('/');
+      return null;
+    }
+
     // "忽略所有" 只允许作用于当前审批, 不能在同窗口排队切换时残留到下一笔
     resetCurrentTx();
     setApproval(approval);
