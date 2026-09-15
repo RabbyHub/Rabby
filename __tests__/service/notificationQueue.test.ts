@@ -284,13 +284,17 @@ describe('notificationService SignTx queueing', () => {
     // preparation, the second must be queued behind it.
     const firstRequest = signTxRequest();
     const secondRequest = signTxRequest();
-    const firstOnCurrent = () => {
+    const firstOnCurrent = jest.fn(() => {
       Object.assign(firstRequest.params, { signTxPreparationId: 'prep-1' });
-    };
+    });
     const secondOnCurrent = jest.fn();
 
     void notificationService.requestApproval(firstRequest, undefined, {
       onCurrent: firstOnCurrent,
+    });
+    expect(firstOnCurrent).toHaveBeenCalledWith({
+      id: notificationService.getApproval()!.id,
+      component: 'SignTx',
     });
     expect(
       notificationService.currentApproval?.data?.params?.signTxPreparationId

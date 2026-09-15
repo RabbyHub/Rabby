@@ -1,5 +1,6 @@
 import { ConnectedSite } from '@/background/service/permission';
 import { Account } from '@/background/service/preference';
+import type { ApprovalRef } from '@/background/service/notification';
 import { RcIconSuccessCC } from '@/ui/assets/desktop/common';
 import IconRabbyWallet from '@/ui/assets/icon-rabby-circle.svg';
 import IconHyperliquid from '@/ui/assets/perps/icon-hyperliquid.svg';
@@ -8,6 +9,7 @@ import { AccountSelector } from '@/ui/component/AccountSelector';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
+import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { useRabbySelector } from '@/ui/store';
 import { PERPS_REFERENCE_CODE } from '@/ui/views/Perps/constants';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
@@ -15,7 +17,8 @@ import { useEventListener, useRequest } from 'ahooks';
 import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
@@ -79,15 +82,53 @@ const Footer = styled.div`
 
 export const PerpsInviteContent = (props: ConnectProps) => {
   const {
-    params: { icon, origin, name, $ctx },
-    approvalId,
+    params: { icon, origin },
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
+  const signingRequestId = useRef<string | null>(null);
+  const [signingApproval, setSigningApproval] = useState<{
+    requestId: string;
+    approval: ApprovalRef;
+  } | null>(null);
   const [, resolveApproval, rejectApproval] = useApproval(
-    bindApproval(approvalId, 'Connect')
+    bindApproval(
+      signingApproval?.approval.id,
+      'SignTypedData',
+      () => signingApproval?.requestId === signingRequestId.current
+    )
   );
   const { t } = useTranslation();
   const wallet = useWallet();
+
+  useEventBusListener(EVENTS.APPROVAL_CREATED, (data) => {
+    if (
+      signingRequestId.current &&
+      data?.requestId === signingRequestId.current &&
+      data?.approval?.component === 'SignTypedData'
+    ) {
+      setSigningApproval(data);
+    }
+  });
+
+  const handleSignApproval = () => {
+    if (!selectedAccount || !signingApproval) return;
+    return resolveApproval({
+      uiRequestComponent: WaitingSignMessageComponent[selectedAccount.type],
+      $account: selectedAccount,
+      type: selectedAccount.type,
+      address: selectedAccount.address,
+      // The waiting popup finishes over this invitation; its result belongs here.
+      stay: true,
+      extra: {
+        brandName: selectedAccount.brandName,
+        signTextMethod: 'eth_signTypedData_v4',
+      },
+    }).catch((error) => rejectApproval(error.message));
+  };
+
+  useEffect(() => {
+    handleSignApproval();
+  }, [signingApproval]);
 
   const [currentSite, setCurrentSite] = useState<ConnectedSite>();
   const isEnabledDappAccount = useRabbySelector((s) => {
@@ -113,11 +154,17 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     window.close();
   };
 
+  useEffect(() => {
+    return () => {
+      signingRequestId.current = null;
+    };
+  }, []);
+
   useEventListener('blur', () => {
     handleClose();
   });
 
-  const { runAsync: handleInvite, data: isSuccess } = useRequest(
+  const { run: handleInvite, data: isSuccess, loading } = useRequest(
     async () => {
       if (!selectedAccount) {
         throw new Error('Please select an account');
@@ -167,21 +214,20 @@ export const PerpsInviteContent = (props: ConnectProps) => {
         signature = res[0];
         typedDataSignatureStore.close();
       } else {
-        const promise = wallet.sendRequest<string>({
-          method: 'eth_signTypedData_v4',
-          params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
-        });
-
-        if (WaitingSignMessageComponent[selectedAccount.type]) {
-          // resolveApproval here would target the *Connect* approval this view is
-          // bound to, not the new SignTypedData approval above — silent no-op.
-          // Mirror the Trezor branch: RELOAD_APPROVAL hands off to Approval/index.tsx,
-          // which re-renders the new approval through its own properly-bound component.
-          // Tradeoff: surfaces one extra manual "Sign" click (SignTypedData.tsx's own
-          // confirm screen) before the waiting page, same as Trezor does today.
-          eventBus.emit(EVENTS.RELOAD_APPROVAL);
+        if (!WaitingSignMessageComponent[selectedAccount.type]) {
+          throw new Error('This account does not support signing');
         }
-
+        signingRequestId.current = uuidv4();
+        const promise = wallet.sendRequest<string>(
+          {
+            method: 'eth_signTypedData_v4',
+            params: [selectedAccount.address, JSON.stringify(resp?.typedData)],
+          },
+          {
+            account: selectedAccount,
+            approvalRequestId: signingRequestId.current,
+          }
+        );
         signature = await promise;
       }
       if (!signature) {
@@ -197,6 +243,10 @@ export const PerpsInviteContent = (props: ConnectProps) => {
     },
     {
       manual: true,
+      onFinally() {
+        signingRequestId.current = null;
+        setSigningApproval(null);
+      },
       onSuccess() {
         message.success(t('page.perps.invitePopup.activatedSuccess'));
         setTimeout(() => {
@@ -355,7 +405,14 @@ export const PerpsInviteContent = (props: ConnectProps) => {
               />
             </div>
             <div className="flex flex-col items-center gap-[16px]">
-              <Button type="primary" size="large" onClick={handleInvite}>
+              <Button
+                type="primary"
+                size="large"
+                loading={loading && !signingApproval}
+                onClick={() =>
+                  signingApproval ? handleSignApproval() : handleInvite()
+                }
+              >
                 {t('page.perps.invitePopup.activateNow')}
               </Button>
 

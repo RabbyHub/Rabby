@@ -537,9 +537,11 @@ export class WalletController extends BaseController {
       isBuild?: boolean;
       account?: Account;
       session?: typeof INTERNAL_REQUEST_SESSION;
+      approvalRequestId?: string;
     }
   ) => {
-    const { isBuild = false, account, session } = options || {};
+    const { isBuild = false, account, session, approvalRequestId } =
+      options || {};
     if (isBuild) {
       return Promise.resolve<T>(data as T);
     }
@@ -547,6 +549,13 @@ export class WalletController extends BaseController {
       data,
       session: session || INTERNAL_REQUEST_SESSION,
       account,
+      onApproval: approvalRequestId
+        ? (approval) =>
+            this.emitEvent(EVENTS.APPROVAL_CREATED, {
+              requestId: approvalRequestId,
+              approval,
+            })
+        : undefined,
     });
   };
 

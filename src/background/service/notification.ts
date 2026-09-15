@@ -345,7 +345,7 @@ class NotificationService extends Events {
   requestApproval = async (
     data,
     winProps?,
-    options?: { onCurrent?: () => void }
+    options?: { onCurrent?: (approval: ApprovalRef) => void }
   ): Promise<any> => {
     const origin = this.getOrigin(data);
     if (origin) {
@@ -455,7 +455,10 @@ class NotificationService extends Events {
       // starts for the approval that is current when requestApproval runs.
       if (this.currentApproval === approval) {
         try {
-          options?.onCurrent?.();
+          options?.onCurrent?.({
+            id: approval.id,
+            component: approval.data.approvalComponent,
+          });
         } catch (e) {
           Sentry.captureException(
             new Error('onCurrent failed: ' + JSON.stringify(e))
