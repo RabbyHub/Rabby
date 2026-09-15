@@ -91,36 +91,13 @@ const UnlockMethodSwitch = styled.button`
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
   const wallet = useWallet();
-  // A plain unlock is not consent to any pending sign/approval — only ever completes
-  // an approval that is itself type 'Unlock', bound once at this trusted mount boundary.
+  // A plain unlock is not consent to any pending sign/approval. Bind an Unlock
+  // approval only after its unlock event has been observed.
   const [pendingUnlockApproval, setPendingUnlockApproval] = useState<{
     approvalId: string;
     approvalComponent: 'Unlock';
   } | null>(null);
   const [getApproval, resolveApproval] = useApproval(pendingUnlockApproval);
-  useEffect(() => {
-    // Poll rather than bind once at mount: an Unlock approval can be created after this
-    // screen mounts but before the password is entered, and there's no broadcast to catch it.
-    if (pendingUnlockApproval) return;
-    let cancelled = false;
-    const check = () => {
-      getApproval().then((approval) => {
-        if (cancelled || !approval) return;
-        if (String(approval.data.approvalComponent) === 'Unlock') {
-          setPendingUnlockApproval({
-            approvalId: approval.id,
-            approvalComponent: 'Unlock',
-          });
-        }
-      });
-    };
-    check();
-    const interval = window.setInterval(check, 500);
-    return () => {
-      cancelled = true;
-      window.clearInterval(interval);
-    };
-  }, [pendingUnlockApproval]);
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
   const autoBiometricTriggeredRef = useRef(false);
@@ -197,6 +174,13 @@ const Unlock = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!pendingUnlockApproval) return;
+    void resolveApproval(undefined, false, false);
+    // Binding changes are the only settlement trigger. resolveApproval is recreated
+    // by useApproval on every render and must not retrigger this effect.
+  }, [pendingUnlockApproval]);
+
   const handleUnlockSuccess = useMemoizedFn(async () => {
     const unlockType = pendingUnlockTypeRef.current;
     pendingUnlockTypeRef.current = null;
@@ -216,18 +200,17 @@ const Unlock = () => {
       if (query.from === '/connect-approval') {
         history.replace('/approval?ignoreOtherWallet=1');
       } else {
-        // Fresh read only to decide where to navigate — settlement identity always
-        // comes from pendingUnlockApproval (bound at mount), never from this read.
+        // Read the approval after the unlock event, then bind its identity before
+        // resolving. The approval hook performs the authoritative re-check.
         const approval = await getApproval();
         if (!approval) {
           history.replace('/');
         } else if (String(approval.data.approvalComponent) === 'Unlock') {
-          // Resolves only the Unlock approval bound at mount; a pending sign approval
-          // must hand control back to its own screen, not get resolved by a password entry.
-          const resolved = await resolveApproval(undefined, false, false);
-          if (!resolved) {
-            history.replace('/approval');
-          }
+          setPendingUnlockApproval((current) =>
+            current?.approvalId === approval.id
+              ? current
+              : { approvalId: approval.id, approvalComponent: 'Unlock' }
+          );
         } else {
           history.replace('/approval');
         }
