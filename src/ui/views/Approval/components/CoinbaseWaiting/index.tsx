@@ -42,6 +42,7 @@ interface ApprovalParams {
     message: string;
     chainId: number;
   };
+  stay?: boolean;
 }
 
 const CoinbaseWaiting = ({
@@ -217,11 +218,12 @@ const CoinbaseWaiting = ({
     setHeight('fit-content');
   }, []);
 
+  const { stay = false } = params || {};
   useEffect(() => {
     if (signFinishedData && isClickDone) {
       // Settle before closing: closePopup() unmounts this component, which
       // would flip resolveApproval's mounted-check and reject a settlement still in progress.
-      resolveApproval(signFinishedData.data, false, false).then(() => {
+      resolveApproval(signFinishedData.data, stay, false).then(() => {
         closePopup();
       });
     }
