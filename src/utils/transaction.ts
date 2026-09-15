@@ -26,7 +26,12 @@ import { Account } from 'background/service/preference';
 import type { ChainGas } from 'background/service/preference';
 import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
 import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
-import { getTempoFeeTokenInfo, isTempoChain } from './tempo';
+import {
+  buildTempoTransaction,
+  getTempoFeeTokenInfo,
+  isTempoChain,
+  shouldUseTempoTransaction,
+} from './tempo';
 
 export interface ApprovalRes extends Tx {
   type?: string;
@@ -151,33 +156,43 @@ export const buildSignTx = ({
   gasLimit?: string | number;
   enable7702?: boolean;
   revokeAuthorization?: any;
-}) =>
-  omit(
+}) => {
+  const signTx: Tx & Record<string, any> = shouldUseTempoTransaction({
+    tx,
+    chainServerId: findChain({ id: chainId })?.serverId,
+  })
+    ? (buildTempoTransaction(tx as any, {
+        stripTopLevelData: true,
+      }) as Tx & Record<string, any>)
+    : tx;
+
+  return omit(
     {
       chainId,
-      data: tx.data || '0x', // can not execute with empty string, use 0x instead
-      from: tx.from,
+      data: signTx.data || '0x', // can not execute with empty string, use 0x instead
+      from: signTx.from,
       gas: enable7702
-        ? getEIP7702MiniGasLimit((tx.gas || gasLimit) as string | number)
-        : tx.gas || gasLimit,
-      gasPrice: getSignTxGasPrice(tx),
-      nonce: tx.nonce,
-      to: tx.to,
-      value: tx.value,
-      type: tx.type,
-      calls: tx.calls,
-      feeToken: tx.feeToken,
-      maxFeePerGas: tx.maxFeePerGas,
-      feePayer: tx.feePayer,
-      feePayerSignature: tx.feePayerSignature,
-      nonceKey: tx.nonceKey,
-      keyAuthorization: tx.keyAuthorization,
-      validBefore: tx.validBefore,
-      validAfter: tx.validAfter,
-      authorizationList: revokeAuthorization || tx.authorizationList,
+        ? getEIP7702MiniGasLimit((signTx.gas || gasLimit) as string | number)
+        : signTx.gas || gasLimit,
+      gasPrice: getSignTxGasPrice(signTx),
+      nonce: signTx.nonce,
+      to: signTx.to,
+      value: signTx.value,
+      type: signTx.type,
+      calls: signTx.calls,
+      feeToken: signTx.feeToken,
+      maxFeePerGas: signTx.maxFeePerGas,
+      feePayer: signTx.feePayer,
+      feePayerSignature: signTx.feePayerSignature,
+      nonceKey: signTx.nonceKey,
+      keyAuthorization: signTx.keyAuthorization,
+      validBefore: signTx.validBefore,
+      validAfter: signTx.validAfter,
+      authorizationList: revokeAuthorization || signTx.authorizationList,
     },
     !enable7702 ? ['authorizationList'] : []
   ) as Tx;
+};
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = findChain({
