@@ -1049,6 +1049,20 @@
         "ytd": "YTD",
         "all": "ALL"
       },
+      "PerpsCard": {
+        "portfolioValue": "Portfolio Value",
+        "available": "Available",
+        "unifiedAccount": "Unified Account",
+        "unifiedAccountDesc": "Your account uses a single balance for each collateral asset, shared across Spot and cross-margin Perps using the same collateral.",
+        "breakdownPerps": "Perps",
+        "breakdownOtherAssets": "Other Assets",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "All"
+        }
+      },
       "permissionTips": "Opening positions is not supported in your region",
       "newUserProcess": {
         "gotIt": "Got it",
