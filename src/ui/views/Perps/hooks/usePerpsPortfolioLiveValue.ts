@@ -20,4 +20,6 @@ import { computeLivePortfolioValue } from '../utils/accountPricing';
  * matter how the result is memoised.
  */
 export const usePerpsPortfolioLiveValue = (enabled = true): number | null =>
-  useRabbySelector((s) => (enabled ? computeLivePortfolioValue(s.perps) : null));
+  useRabbySelector((s) =>
+    enabled ? computeLivePortfolioValue(s.perps) : null
+  );
