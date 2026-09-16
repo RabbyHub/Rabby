@@ -17,10 +17,12 @@ export const selectHasNewExtensionVersion = (
 ) =>
   !!state.versionInfo &&
   state.versionInfo.version.id === browser.runtime.getManifest().version &&
-  state.currentVersion === browser.runtime.getManifest().version &&
-  !!state.version &&
-  state.version === state.versionInfo.latest_version.id &&
-  compareExtensionVersions(state.currentVersion, state.version) < 0;
+  !!state.pendingVersion &&
+  state.pendingVersion === state.versionInfo.latest_version.id &&
+  compareExtensionVersions(
+    browser.runtime.getManifest().version,
+    state.pendingVersion
+  ) < 0;
 
 export const selectExtensionUpdateLevel = ({
   versionInfo,
@@ -54,8 +56,8 @@ export const selectExtensionUpdateSettingsCard = (
   const dismissal = state.settingsCardDismissal;
   if (
     !dismissal ||
-    dismissal.currentVersion !== state.currentVersion ||
-    dismissal.version !== state.version
+    dismissal.currentVersion !== browser.runtime.getManifest().version ||
+    dismissal.pendingVersion !== state.pendingVersion
   )
     return true;
 
@@ -77,8 +79,7 @@ export type ExtensionUpdateStore = ExtensionUpdateServiceStore & {
 
 export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
   (set, get) => ({
-    currentVersion: '',
-    version: '',
+    pendingVersion: '',
     dismissedUntil: 0,
     settingsCardDismissal: null,
     versionInfo: null,
@@ -100,9 +101,7 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
           if (info.version.id !== installed)
             throw new Error('Version info does not match installed extension');
           set({ versionInfo: info });
-          const state = get();
-          const pending =
-            state.currentVersion === installed ? state.version : '';
+          const pending = get().pendingVersion;
           if (
             compareExtensionVersions(installed, info.latest_version.id) < 0 &&
             (!pending ||
@@ -140,8 +139,8 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
         return;
       set({
         settingsCardDismissal: {
-          currentVersion: state.currentVersion,
-          version: state.version,
+          currentVersion: browser.runtime.getManifest().version,
+          pendingVersion: state.pendingVersion,
           level,
           dismissedUntil:
             level === 3 ? Date.now() + UPDATE_SETTINGS_CARD_COOLDOWN : 0,

@@ -139,7 +139,7 @@ const Dashboard = () => {
   const refreshVersionInfo = useExtensionUpdateStore(
     (s) => s.refreshVersionInfo
   );
-  const pendingVersion = useExtensionUpdateStore((s) => s.version);
+  const pendingVersion = useExtensionUpdateStore((s) => s.pendingVersion);
   useEffect(() => {
     const refresh = () => {
       void refreshVersionInfo().catch(console.error);

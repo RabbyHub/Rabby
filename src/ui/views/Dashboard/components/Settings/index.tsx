@@ -811,7 +811,7 @@ const SettingsInner = ({
   };
 
   const hasNewVersion = useExtensionUpdateStore(selectHasNewExtensionVersion);
-  const pendingVersion = useExtensionUpdateStore((s) => s.version);
+  const pendingVersion = useExtensionUpdateStore((s) => s.pendingVersion);
   const changelog = useExtensionUpdateStore(
     (s) => s.versionInfo?.latest_version.changelog || ''
   );

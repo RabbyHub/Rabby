@@ -24,8 +24,7 @@ jest.mock('@/ui/wallet', () => ({
       origin: 'background-1',
       revision: 1,
       state: {
-        currentVersion: '1.0.0',
-        version: '1.1.0',
+        pendingVersion: '1.1.0',
         dismissedUntil: 0,
         settingsCardDismissal: null,
       },
@@ -70,7 +69,7 @@ const broadcast = (
 
 const SettingsCard = () => {
   const visible = useExtensionUpdateSettingsCard();
-  const version = useExtensionUpdateStore((s) => s.version);
+  const version = useExtensionUpdateStore((s) => s.pendingVersion);
   const onClose = useExtensionUpdateStore((s) => s.dismissSettingsCard);
   return visible
     ? createElement(ExtensionUpdateCard, {
@@ -103,8 +102,7 @@ describe('settings update card dismissal', () => {
       version: '1.0.0',
     });
     broadcast({
-      currentVersion: '1.0.0',
-      version: '1.1.0',
+      pendingVersion: '1.1.0',
       dismissedUntil: 0,
       settingsCardDismissal: null,
     });
@@ -153,7 +151,7 @@ describe('settings update card dismissal', () => {
         {
           settingsCardDismissal: {
             currentVersion: '1.0.0',
-            version: '1.1.0',
+            pendingVersion: '1.1.0',
             level,
             dismissedUntil: 0,
           },
@@ -185,7 +183,7 @@ describe('settings update card dismissal', () => {
         versionInfo: makeInfo(level, '1.2.0'),
       });
       expect(shown()).toBe(false);
-      broadcast({ version: '1.2.0' });
+      broadcast({ pendingVersion: '1.2.0' });
       expect(shown()).toBe(true);
     }
   );
@@ -196,7 +194,6 @@ describe('settings update card dismissal', () => {
     (browser.runtime.getManifest as jest.Mock).mockReturnValue({
       version: '1.0.1',
     });
-    broadcast({ currentVersion: '1.0.1' });
     const info = makeInfo(1);
     info.version.id = '1.0.1';
     useExtensionUpdateStore.setState({ versionInfo: info });
@@ -271,7 +268,7 @@ describe('settings update card dismissal', () => {
   });
 
   it('cannot show or dismiss a card until the pending version matches the latest release', async () => {
-    broadcast({ version: '1.0.1' });
+    broadcast({ pendingVersion: '1.0.1' });
     expect(shown()).toBe(false);
     state().dismissSettingsCard();
     state().revealSettingsCard();
@@ -334,7 +331,7 @@ describe('settings update card dismissal', () => {
       broadcast({
         settingsCardDismissal: {
           currentVersion: '1.0.0',
-          version: '1.1.0',
+          pendingVersion: '1.1.0',
           level: 3,
           dismissedUntil: Date.now() + UPDATE_SETTINGS_CARD_COOLDOWN,
         },
@@ -364,8 +361,7 @@ describe('settings update card dismissal', () => {
       origin,
       revision,
       state: {
-        currentVersion: '1.0.0',
-        version: '1.1.0',
+        pendingVersion: '1.1.0',
         dismissedUntil: 0,
         settingsCardDismissal: null,
       },
@@ -387,7 +383,7 @@ describe('settings update card dismissal', () => {
   it('restores persisted card dismissal after a background restart', async () => {
     const dismissal = {
       currentVersion: '1.0.0',
-      version: '1.1.0',
+      pendingVersion: '1.1.0',
       level: 2 as const,
       dismissedUntil: 0,
     };
@@ -397,8 +393,7 @@ describe('settings update card dismissal', () => {
       origin,
       revision,
       state: {
-        currentVersion: '1.0.0',
-        version: '1.1.0',
+        pendingVersion: '1.1.0',
         dismissedUntil: 0,
         settingsCardDismissal: dismissal,
       },

@@ -14,7 +14,7 @@ jest.mock('@/ui/wallet', () => ({
     getStorageSnapshot: jest.fn().mockResolvedValue({
       origin: 'background-1',
       revision: 1,
-      state: { currentVersion: '1.0.0', version: '1.1.0' },
+      state: { pendingVersion: '1.1.0' },
     }),
     setStorageItem: jest.fn(),
   },

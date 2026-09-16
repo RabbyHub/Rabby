@@ -1,6 +1,7 @@
 import browser from 'webextension-polyfill';
 import { ExtensionUpdateService } from '@/background/service/extensionUpdate';
 import { storage } from '@/background/webapi';
+import { syncStateToUI } from '@/background/utils/broadcastToUI';
 
 jest.mock('@/background/utils', () => {
   const { default: createPersistStore, patchPersistStore } = jest.requireActual(
@@ -39,7 +40,11 @@ describe('extension update service', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     getManifest.mockReturnValue({ version: '1.0.0' });
-    getStorage.mockResolvedValue({});
+    getStorage.mockResolvedValue({
+      pendingVersion: '',
+      dismissedUntil: 0,
+      settingsCardDismissal: null,
+    });
     setStorage.mockResolvedValue(undefined);
     (browser.tabs.create as jest.Mock).mockResolvedValue({ id: 1 });
     service = new ExtensionUpdateService();
@@ -63,8 +68,7 @@ describe('extension update service', () => {
 
     await expect(service.getPendingVersion()).resolves.toBe('1.0.0.1');
     expect(setStorage).toHaveBeenCalledWith('pendingExtensionUpdate', {
-      currentVersion: '1.0.0',
-      version: '1.0.0.1',
+      pendingVersion: '1.0.0.1',
       dismissedUntil: 0,
       settingsCardDismissal: null,
     });
@@ -80,20 +84,170 @@ describe('extension update service', () => {
     await expect(restartedService.getPendingVersion()).resolves.toBe('1.1.0');
   });
 
-  it.each(['1.1.0', '1.2.0'])(
-    'ignores the old notification after version %s is installed',
+  it.each(['1.1.0', '1.2.0', '1.1.0.0'])(
+    'clears and persists the old notification after version %s is installed',
     async (version) => {
-      getStorage.mockResolvedValue({
-        currentVersion: '1.0.0',
-        version: '1.1.0',
-      });
+      const saved = {
+        pendingVersion: '1.1.0',
+        dismissedUntil: 123,
+        settingsCardDismissal: {
+          currentVersion: '1.0.0',
+          pendingVersion: '1.1.0',
+          level: 3,
+          dismissedUntil: 456,
+        },
+      };
+      const marker = { fromVersion: '1.0.0', toVersion: version };
+      getStorage.mockImplementation(async (key) =>
+        key === 'manualExtensionUpdate' ? marker : saved
+      );
       getManifest.mockReturnValue({ version });
 
       await expect(service.getPendingVersion()).resolves.toBeNull();
+      expect(service.store).toEqual({ ...saved, pendingVersion: '' });
+      expect(setStorage).toHaveBeenCalledTimes(1);
+      expect(setStorage).toHaveBeenCalledWith('pendingExtensionUpdate', {
+        ...saved,
+        pendingVersion: '',
+      });
+      expect(syncStateToUI).toHaveBeenCalledTimes(1);
+      expect(syncStateToUI).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          bgStoreName: 'pendingExtensionUpdate',
+          changedKeys: ['pendingVersion'],
+          partials: { pendingVersion: '' },
+        })
+      );
+      await expect(service.shouldShowFirstNotice(true)).resolves.toBe(false);
+      expect(setStorage).not.toHaveBeenCalledWith(
+        'manualExtensionUpdate',
+        expect.anything()
+      );
+
+      const cleared = { ...service.store };
+      getStorage.mockResolvedValue(cleared);
+      setStorage.mockClear();
+      (syncStateToUI as jest.Mock).mockClear();
+      await expect(service.getPendingVersion()).resolves.toBeNull();
+      const restarted = new ExtensionUpdateService();
+      await expect(restarted.getPendingVersion()).resolves.toBeNull();
+      expect(restarted.store.pendingVersion).toBe('');
+      expect(setStorage).not.toHaveBeenCalled();
+      expect(syncStateToUI).not.toHaveBeenCalled();
     }
   );
 
+  it.each(['1.0.0', '0.9.0'])(
+    'keeps reads side-effect-free if an applied/older notification %s arrives after initialization',
+    async (version) => {
+      await service.init();
+      onUpdateAvailable({ version });
+      setStorage.mockClear();
+      await expect(service.getPendingVersion()).resolves.toBeNull();
+      expect(service.store.pendingVersion).toBe(version);
+      expect(setStorage).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each([
+    ['0.94.8', '0.94.10', '0.94.10'],
+    ['0.94.10', '0.94.8', null],
+    ['1.0.0', '1.0.0.0', null],
+    ['1.0.0', '1.0.0.1', '1.0.0.1'],
+    ['1.0.0.1', '1.0.0', null],
+    ['1.0.0', '', null],
+  ])(
+    'compares installed %s and pending %s numerically',
+    async (installed, pendingVersion, expected) => {
+      getManifest.mockReturnValue({ version: installed });
+      getStorage.mockResolvedValue({ pendingVersion });
+      await expect(service.getPendingVersion()).resolves.toBe(expected);
+    }
+  );
+
+  it('migrates legacy pending and dismissal fields without requiring the old installed version', async () => {
+    getManifest.mockReturnValue({ version: '1.0.1' });
+    const dismissal = {
+      currentVersion: '1.0.0',
+      version: '1.1.0',
+      level: 2,
+      dismissedUntil: 0,
+    };
+    getStorage.mockResolvedValue({
+      currentVersion: '1.0.0',
+      version: '1.1.0',
+      dismissedUntil: 123,
+      settingsCardDismissal: dismissal,
+    });
+
+    await expect(service.getPendingVersion()).resolves.toBe('1.1.0');
+    expect(service.store).toEqual({
+      pendingVersion: '1.1.0',
+      dismissedUntil: 123,
+      settingsCardDismissal: {
+        currentVersion: '1.0.0',
+        pendingVersion: '1.1.0',
+        level: 2,
+        dismissedUntil: 0,
+      },
+    });
+    expect(setStorage).toHaveBeenCalledTimes(1);
+    expect(setStorage).toHaveBeenCalledWith(
+      'pendingExtensionUpdate',
+      service.store
+    );
+    getStorage.mockResolvedValue({ ...service.store });
+    setStorage.mockClear();
+    const restarted = new ExtensionUpdateService();
+    await expect(restarted.getPendingVersion()).resolves.toBe('1.1.0');
+    expect(restarted.store).toEqual(service.store);
+    expect(setStorage).not.toHaveBeenCalled();
+  });
+
+  it.each(['', '1.2.0'])(
+    'preserves an explicit pendingVersion %j over legacy version',
+    async (pendingVersion) => {
+      getStorage.mockResolvedValue({
+        currentVersion: '1.0.0',
+        version: '1.1.0',
+        pendingVersion,
+      });
+      await service.init();
+      expect(service.store.pendingVersion).toBe(pendingVersion);
+      expect(service.store).not.toHaveProperty('version');
+      expect(service.store).not.toHaveProperty('currentVersion');
+    }
+  );
+
+  it('does not lose an event received while saving migrated storage', async () => {
+    getManifest.mockReturnValue({ version: '1.1.0' });
+    getStorage.mockResolvedValue({ version: '1.1.0' });
+    let notifyWrite!: () => void;
+    let finishWrite!: () => void;
+    const writeStarted = new Promise<void>((resolve) => {
+      notifyWrite = resolve;
+    });
+    const writeFinished = new Promise<void>((resolve) => {
+      finishWrite = resolve;
+    });
+    setStorage.mockImplementationOnce(() => {
+      notifyWrite();
+      return writeFinished;
+    });
+    const pendingRead = service.getPendingVersion();
+    await writeStarted;
+    onUpdateAvailable({ version: '1.2.0' });
+    finishWrite();
+    await expect(pendingRead).resolves.toBe('1.2.0');
+    expect(setStorage).toHaveBeenLastCalledWith(
+      'pendingExtensionUpdate',
+      expect.objectContaining({ pendingVersion: '1.2.0' })
+    );
+  });
+
   it('does not let a stale storage read overwrite a newer event', async () => {
+    getManifest.mockReturnValue({ version: '1.1.0' });
     let resolveRead!: (value: object) => void;
     getStorage.mockReturnValue(
       new Promise((resolve) => {
@@ -104,33 +258,33 @@ describe('extension update service', () => {
 
     onUpdateAvailable({ version: '1.2.0' });
     resolveRead({
-      currentVersion: '1.0.0',
-      version: '1.1.0',
+      pendingVersion: '1.1.0',
     });
 
     await expect(pendingRead).resolves.toBe('1.2.0');
     expect(setStorage).toHaveBeenLastCalledWith('pendingExtensionUpdate', {
-      currentVersion: '1.0.0',
-      version: '1.2.0',
+      pendingVersion: '1.2.0',
       dismissedUntil: 0,
       settingsCardDismissal: null,
     });
   });
 
-  it('repairs invalid persisted fields and accepts subsequent updates', async () => {
-    getStorage.mockResolvedValue({ currentVersion: null, version: 42 });
+  it.each([42, 'invalid', '1.0'])(
+    'repairs invalid pending version %j and accepts subsequent updates',
+    async (pendingVersion) => {
+      getStorage.mockResolvedValue({ pendingVersion });
 
-    await expect(service.getPendingVersion()).resolves.toBeNull();
-    expect(service.store).toEqual({
-      currentVersion: '',
-      version: '',
-      dismissedUntil: 0,
-      settingsCardDismissal: null,
-    });
+      await expect(service.getPendingVersion()).resolves.toBeNull();
+      expect(service.store).toEqual({
+        pendingVersion: '',
+        dismissedUntil: 0,
+        settingsCardDismissal: null,
+      });
 
-    onUpdateAvailable({ version: '1.1.0' });
-    await expect(service.getPendingVersion()).resolves.toBe('1.1.0');
-  });
+      onUpdateAvailable({ version: '1.1.0' });
+      await expect(service.getPendingVersion()).resolves.toBe('1.1.0');
+    }
+  );
 
   it('preserves the previous store when a patch fails schema validation', async () => {
     await service.init();
@@ -138,8 +292,9 @@ describe('extension update service', () => {
     setStorage.mockClear();
 
     expect(() =>
-      service.patchStore({ currentVersion: '2.0.0', version: null as any })
+      service.patchStore({ dismissedUntil: 123, pendingVersion: null as any })
     ).toThrow();
+    expect(service.store.dismissedUntil).toBe(0);
     expect(setStorage).not.toHaveBeenCalled();
     await expect(service.getPendingVersion()).resolves.toBe('1.1.0');
   });
@@ -216,7 +371,7 @@ describe('extension update service', () => {
     expect(service.store.settingsCardDismissal).toBeNull();
     const dismissal = {
       currentVersion: '1.0.0',
-      version: '1.1.0',
+      pendingVersion: '1.1.0',
       level: 3 as const,
       dismissedUntil: Date.now() + 24 * 60 * 60 * 1000,
     };
@@ -233,8 +388,7 @@ describe('extension update service', () => {
 
   it('repairs malformed saved card dismissals without losing pending updates', async () => {
     getStorage.mockResolvedValue({
-      currentVersion: '1.0.0',
-      version: '1.1.0',
+      pendingVersion: '1.1.0',
       settingsCardDismissal: { level: 4, dismissedUntil: -1 },
     });
     await service.init();
@@ -250,7 +404,7 @@ describe('extension update service', () => {
         dismissedUntil: 123,
         settingsCardDismissal: {
           currentVersion: '1.0.0',
-          version: '1.1.0',
+          pendingVersion: '1.1.0',
           level: 3,
           dismissedUntil: -1,
         },

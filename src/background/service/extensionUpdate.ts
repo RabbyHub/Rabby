@@ -1,6 +1,7 @@
 import { createPersistStore, patchPersistStore } from 'background/utils';
 import browser from 'webextension-polyfill';
 import { z } from 'zod';
+import { isEqual } from 'lodash';
 import { compareExtensionVersions } from '@/utils/extensionVersion';
 import { storage } from '@/background/webapi';
 
@@ -12,13 +13,14 @@ const manualUpdateSchema = z.object({
 });
 
 const extensionUpdateStoreSchema = z.object({
-  currentVersion: z.string().default(''),
-  version: z.string().default(''),
+  pendingVersion: z
+    .union([z.literal(''), z.string().regex(/^\d+(?:\.\d+){2,3}$/)])
+    .default(''),
   dismissedUntil: z.number().nonnegative().default(0),
   settingsCardDismissal: z
     .object({
       currentVersion: z.string(),
-      version: z.string(),
+      pendingVersion: z.string(),
       level: z.union([z.literal(1), z.literal(2), z.literal(3)]),
       dismissedUntil: z.number().nonnegative(),
     })
@@ -35,10 +37,7 @@ export class ExtensionUpdateService {
   store: ExtensionUpdateStore = createExtensionUpdateStoreTemplate();
   private initPromise?: Promise<void>;
   private initialized = false;
-  private pendingUpdate?: Pick<
-    ExtensionUpdateStore,
-    'version' | 'currentVersion'
-  >;
+  private pendingUpdate?: Pick<ExtensionUpdateStore, 'pendingVersion'>;
   private reloadPromise?: Promise<void>;
   private checkPromise?: Promise<void>;
   private lastCheckAt = 0;
@@ -49,11 +48,33 @@ export class ExtensionUpdateService {
 
     // Register before reading storage so MV3 startup cannot miss an update.
     browser.runtime.onUpdateAvailable.addListener(this.onUpdateAvailable);
-    this.initPromise = createPersistStore<ExtensionUpdateStore>({
-      name: STORAGE_KEY,
-      template: createExtensionUpdateStoreTemplate(),
-      schema: extensionUpdateStoreSchema,
-    }).then((store) => {
+    this.initPromise = (async () => {
+      const saved = await storage.get(STORAGE_KEY);
+      // Migrate legacy names before validation so pending updates and card
+      // dismissals survive the rename. The installed version comes from Chrome.
+      const template = {
+        ...createExtensionUpdateStoreTemplate(),
+        ...saved,
+        pendingVersion: saved?.pendingVersion ?? saved?.version ?? '',
+      };
+      delete template.currentVersion;
+      delete template.version;
+      if (template.settingsCardDismissal) {
+        const { version, ...dismissal } = template.settingsCardDismissal;
+        template.settingsCardDismissal = {
+          ...dismissal,
+          pendingVersion: dismissal.pendingVersion ?? version,
+        };
+      }
+      const store = await createPersistStore<ExtensionUpdateStore>({
+        name: STORAGE_KEY,
+        template,
+        schema: extensionUpdateStoreSchema,
+        fromStorage: false,
+      });
+      if (!isEqual(saved, store)) {
+        await storage.set(STORAGE_KEY, { ...store });
+      }
       this.store = store;
       this.initialized = true;
       // An update received during hydration takes precedence over storage.
@@ -61,7 +82,19 @@ export class ExtensionUpdateService {
         this.patchStore(this.pendingUpdate);
         this.pendingUpdate = undefined;
       }
-    });
+      // Clear applied/older updates only after handling events received during
+      // startup, so a newer pending release is preserved.
+      const { pendingVersion } = this.store;
+      if (
+        pendingVersion &&
+        compareExtensionVersions(
+          browser.runtime.getManifest().version,
+          pendingVersion
+        ) >= 0
+      ) {
+        this.patchStore({ pendingVersion: '' });
+      }
+    })();
 
     return this.initPromise;
   };
@@ -72,8 +105,7 @@ export class ExtensionUpdateService {
 
   private onUpdateAvailable = ({ version }: { version: string }) => {
     const update = {
-      currentVersion: browser.runtime.getManifest().version,
-      version,
+      pendingVersion: version,
     };
 
     if (!this.initialized) {
@@ -85,15 +117,14 @@ export class ExtensionUpdateService {
 
   getPendingVersion = async (): Promise<string | null> => {
     await this.init();
-    const update = this.store;
+    const { pendingVersion } = this.store;
     const currentVersion = browser.runtime.getManifest().version;
 
     if (
-      update.currentVersion === currentVersion &&
-      update.version &&
-      update.version !== currentVersion
+      pendingVersion &&
+      compareExtensionVersions(currentVersion, pendingVersion) < 0
     ) {
-      return update.version;
+      return pendingVersion;
     }
     return null;
   };

@@ -36,7 +36,7 @@ jest.mock('@/ui/wallet', () => ({
     getStorageSnapshot: jest.fn().mockResolvedValue({
       origin: 'background-1',
       revision: 1,
-      state: { currentVersion: '1.0.0', version: '1.1.0' },
+      state: { pendingVersion: '1.1.0' },
     }),
     setStorageItem: jest.fn(),
     reloadExtensionForUpdate: jest.fn().mockResolvedValue(undefined),
@@ -58,7 +58,7 @@ const UpdateButton = () => {
 
 let revision = 1;
 const broadcast = (
-  partials: { currentVersion?: string; version?: string },
+  partials: { pendingVersion?: string },
   nextRevision = ++revision,
   origin = 'background-1'
 ) => {
@@ -110,8 +110,7 @@ describe('extension update store', () => {
   it('automatically hydrates a pending update received while the UI was closed', async () => {
     expect(useExtensionUpdateStore.persist.hasHydrated()).toBe(true);
     expect(useExtensionUpdateStore.getState()).toMatchObject({
-      currentVersion: '1.0.0',
-      version: '1.1.0',
+      pendingVersion: '1.1.0',
     });
     await render();
     expect(container.textContent).toBe('Update available');
@@ -119,7 +118,7 @@ describe('extension update store', () => {
   });
 
   it('does not register a runtime listener, request an update check or reload without an update', async () => {
-    broadcast({ currentVersion: '', version: '' });
+    broadcast({ pendingVersion: '' });
     await render();
     act(() => container.querySelector('button')!.click());
     expect(container.textContent).toBe('No update');
@@ -132,7 +131,7 @@ describe('extension update store', () => {
   });
 
   it('updates every subscriber from a background broadcast without writeback and reloads only on click', async () => {
-    broadcast({ currentVersion: '', version: '' });
+    broadcast({ pendingVersion: '' });
     await act(async () => {
       root.render(
         createElement(
@@ -143,7 +142,7 @@ describe('extension update store', () => {
         )
       );
     });
-    act(() => broadcast({ currentVersion: '1.0.0', version: '1.1.0' }));
+    act(() => broadcast({ pendingVersion: '1.1.0' }));
     expect(container.textContent).toBe('Update availableUpdate available');
     expect(browser.runtime.reload).not.toHaveBeenCalled();
     await useExtensionUpdateStore.persist.flush();
@@ -155,15 +154,15 @@ describe('extension update store', () => {
   });
 
   it('ignores stale broadcasts', () => {
-    broadcast({ currentVersion: '1.0.0', version: '1.1.0' });
-    broadcast({ version: '' }, revision - 1);
-    expect(useExtensionUpdateStore.getState().version).toBe('1.1.0');
+    broadcast({ pendingVersion: '1.1.0' });
+    broadcast({ pendingVersion: '' }, revision - 1);
+    expect(useExtensionUpdateStore.getState().pendingVersion).toBe('1.1.0');
   });
 
   it.each(['1.1.0', '1.2.0'])(
     'does not show or reload an applied update on version %s',
     async (version) => {
-      broadcast({ currentVersion: '1.0.0', version: '1.1.0' });
+      broadcast({ pendingVersion: '1.1.0' });
       (browser.runtime.getManifest as jest.Mock).mockReturnValue({ version });
       await render();
       expect(container.textContent).toBe('No update');
@@ -174,11 +173,35 @@ describe('extension update store', () => {
   );
 
   it('does not treat the installed version itself as an update', () => {
-    broadcast({ currentVersion: '1.0.0', version: '1.0.0' });
+    broadcast({ pendingVersion: '1.0.0' });
     expect(
       selectHasNewExtensionVersion(useExtensionUpdateStore.getState())
     ).toBe(false);
   });
+
+  it.each([
+    ['0.94.8', '0.94.10', true],
+    ['0.94.10', '0.94.8', false],
+    ['1.0.0', '1.0.0.0', false],
+    ['1.0.0', '1.0.0.1', true],
+  ] as const)(
+    'derives availability from manifest %s and pending %s without a cached installed version',
+    (installed, pendingVersion, expected) => {
+      (browser.runtime.getManifest as jest.Mock).mockReturnValue({
+        version: installed,
+      });
+      const versionInfo = makeInfo(pendingVersion);
+      versionInfo.version.id = installed;
+      expect(
+        selectHasNewExtensionVersion({
+          pendingVersion,
+          dismissedUntil: 0,
+          settingsCardDismissal: null,
+          versionInfo,
+        })
+      ).toBe(expected);
+    }
+  );
 
   it.each([
     [1, 1, 1],
@@ -202,8 +225,7 @@ describe('extension update store', () => {
     (currentLevel, latestLevel, level) => {
       const state = {
         ...useExtensionUpdateStore.getState(),
-        currentVersion: '1.0.0',
-        version: '1.1.0',
+        pendingVersion: '1.1.0',
         versionInfo: makeInfo('1.1.0', currentLevel, latestLevel),
         dismissedUntil: 0,
       };
@@ -229,11 +251,10 @@ describe('extension update store', () => {
 
   it.each(['', '1.0.1', '1.2.0'])(
     'hides all update hints for unmatched pending %s',
-    (version) => {
+    (pendingVersion) => {
       const state = {
         ...useExtensionUpdateStore.getState(),
-        currentVersion: '1.0.0',
-        version,
+        pendingVersion,
         versionInfo: makeInfo('1.1.0', 4),
       };
       expect(selectHasNewExtensionVersion(state)).toBe(false);
@@ -248,7 +269,7 @@ describe('extension update store', () => {
     ['1.1.0', 0],
     ['1.2.0', 0],
   ])('checks pending %s against the backend', async (version, count) => {
-    broadcast({ currentVersion: '1.0.0', version: version as string });
+    broadcast({ pendingVersion: version as string });
     (wallet.openapi.getVersionInfo as jest.Mock).mockResolvedValue(makeInfo());
     await useExtensionUpdateStore.getState().refreshVersionInfo();
     expect(wallet.openapi.getVersionInfo).toHaveBeenCalledWith({
@@ -341,15 +362,16 @@ describe('extension update store', () => {
     (wallet.getStorageSnapshot as jest.Mock).mockResolvedValue({
       origin: 'background-2',
       revision: 0,
-      state: { currentVersion: '1.0.0', version: '1.2.0' },
+      state: { pendingVersion: '1.2.0' },
     });
-    await act(async () => broadcast({ version: '1.2.0' }, 0, 'background-2'));
+    await act(async () =>
+      broadcast({ pendingVersion: '1.2.0' }, 0, 'background-2')
+    );
     expect(wallet.getStorageSnapshot).toHaveBeenCalledWith(
       'pendingExtensionUpdate'
     );
     expect(useExtensionUpdateStore.getState()).toMatchObject({
-      currentVersion: '1.0.0',
-      version: '1.2.0',
+      pendingVersion: '1.2.0',
     });
     expect(wallet.setStorageItem).not.toHaveBeenCalled();
   });
