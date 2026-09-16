@@ -6,13 +6,14 @@ import {
   compute24hChange,
   toChartPoints,
   formatPortfolioTooltipTime,
-  type PortfolioData,
 } from '@/ui/views/Perps/utils/perpsPortfolio';
+import type { PortfolioData } from '@/ui/views/Perps/utils/perpsPortfolio';
 
-const series = (
-  av: [number, string][],
-  pnl: [number, string][] = []
-) => ({ accountValueHistory: av, pnlHistory: pnl, vlm: '0' });
+const series = (av: [number, string][], pnl: [number, string][] = []) => ({
+  accountValueHistory: av,
+  pnlHistory: pnl,
+  vlm: '0',
+});
 
 describe('parsePortfolioResponse', () => {
   it('keeps the 4 combined periods and drops perp-prefixed ones', () => {
@@ -24,9 +25,12 @@ describe('parsePortfolioResponse', () => {
       ['allTime', series([[1, '40']])],
     ];
     const data = parsePortfolioResponse(raw);
-    expect(Object.keys(data).sort()).toEqual(
-      ['allTime', 'day', 'month', 'week']
-    );
+    expect(Object.keys(data).sort()).toEqual([
+      'allTime',
+      'day',
+      'month',
+      'week',
+    ]);
   });
 
   it('returns empty data for a non-array body', () => {
@@ -34,8 +38,19 @@ describe('parsePortfolioResponse', () => {
   });
 
   it('skips points that are not [ts, value] pairs', () => {
-    const raw = [['day', { accountValueHistory: [[1, '10'], 'bad', [2]], pnlHistory: [], vlm: '0' }]];
-    expect(parsePortfolioResponse(raw).day!.accountValueHistory).toEqual([[1, '10']]);
+    const raw = [
+      [
+        'day',
+        {
+          accountValueHistory: [[1, '10'], 'bad', [2]],
+          pnlHistory: [],
+          vlm: '0',
+        },
+      ],
+    ];
+    expect(parsePortfolioResponse(raw).day!.accountValueHistory).toEqual([
+      [1, '10'],
+    ]);
   });
 });
 
@@ -47,19 +62,34 @@ describe('parsePortfolioResponseStrict', () => {
 
 describe('isPortfolioAllZero', () => {
   it('treats non-empty all-zero series as empty', () => {
-    const data: PortfolioData = { day: series([[1, '0.0'], [2, '0.0']]) };
+    const data: PortfolioData = {
+      day: series([
+        [1, '0.0'],
+        [2, '0.0'],
+      ]),
+    };
     expect(isPortfolioAllZero(data)).toBe(true);
   });
 
   it('is false when any point is non-zero', () => {
-    const data: PortfolioData = { day: series([[1, '0.0'], [2, '3']]) };
+    const data: PortfolioData = {
+      day: series([
+        [1, '0.0'],
+        [2, '3'],
+      ]),
+    };
     expect(isPortfolioAllZero(data)).toBe(false);
   });
 });
 
 describe('getLatestPortfolioValue', () => {
   it('takes the last point of the first non-empty period', () => {
-    const data: PortfolioData = { day: series([[1, '10'], [2, '12.5']]) };
+    const data: PortfolioData = {
+      day: series([
+        [1, '10'],
+        [2, '12.5'],
+      ]),
+    };
     expect(getLatestPortfolioValue(data)).toBe(12.5);
   });
 
@@ -78,8 +108,14 @@ describe('compute24hChange', () => {
     // A deposit moves accountValue 100 -> 1000 while real pnl is only +10.
     const data: PortfolioData = {
       day: series(
-        [[1, '100'], [2, '1000']],
-        [[1, '0'], [2, '10']]
+        [
+          [1, '100'],
+          [2, '1000'],
+        ],
+        [
+          [1, '0'],
+          [2, '10'],
+        ]
       ),
     };
     const { pnl, percent } = compute24hChange(data);
@@ -90,7 +126,16 @@ describe('compute24hChange', () => {
 
   it('returns percent null when the flow-adjusted denominator is not positive', () => {
     const data: PortfolioData = {
-      day: series([[1, '5'], [2, '5']], [[1, '0'], [2, '10']]),
+      day: series(
+        [
+          [1, '5'],
+          [2, '5'],
+        ],
+        [
+          [1, '0'],
+          [2, '10'],
+        ]
+      ),
     };
     expect(compute24hChange(data).percent).toBeNull();
   });
@@ -103,7 +148,14 @@ describe('compute24hChange', () => {
 
 describe('toChartPoints', () => {
   it('maps tuples to points without resampling', () => {
-    expect(toChartPoints(series([[1, '10'], [2, '20']]))).toEqual([
+    expect(
+      toChartPoints(
+        series([
+          [1, '10'],
+          [2, '20'],
+        ])
+      )
+    ).toEqual([
       { timestamp: 1, value: 10 },
       { timestamp: 2, value: 20 },
     ]);
@@ -159,8 +211,14 @@ describe('documented edge cases', () => {
     // Documented limit: a missing `day` reads as a real 0%, not as unknown.
     const { pnl, percent } = compute24hChange({
       week: {
-        accountValueHistory: [[1, '500'], [2, '1000']],
-        pnlHistory: [[1, '0'], [2, '50']],
+        accountValueHistory: [
+          [1, '500'],
+          [2, '1000'],
+        ],
+        pnlHistory: [
+          [1, '0'],
+          [2, '50'],
+        ],
         vlm: '0',
       },
     });
@@ -171,8 +229,14 @@ describe('documented edge cases', () => {
   it('compute24hChange returns null percent when the denominator is exactly 0', () => {
     const { percent } = compute24hChange({
       day: {
-        accountValueHistory: [[1, '10'], [2, '10']],
-        pnlHistory: [[1, '0'], [2, '10']],
+        accountValueHistory: [
+          [1, '10'],
+          [2, '10'],
+        ],
+        pnlHistory: [
+          [1, '0'],
+          [2, '10'],
+        ],
         vlm: '0',
       },
     });

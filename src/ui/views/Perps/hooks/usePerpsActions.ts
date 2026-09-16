@@ -128,7 +128,9 @@ export const usePerpsActions = () => {
         // already handled and skip patching state for an account that is no
         // longer selected.
         if (
-          usePerpsStore.getState().currentPerpsAccount?.address?.toLowerCase() !==
+          usePerpsStore
+            .getState()
+            .currentPerpsAccount?.address?.toLowerCase() !==
           targetAddress?.toLowerCase()
         ) {
           return true;

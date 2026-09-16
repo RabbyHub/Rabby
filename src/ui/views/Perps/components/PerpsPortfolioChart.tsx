@@ -20,9 +20,11 @@ import { formatUsdValue } from '@/ui/utils';
 import {
   toChartPoints,
   formatPortfolioTooltipTime,
-  type PortfolioData,
-  type PortfolioPeriodKey,
-  type PortfolioChartPoint,
+} from '../utils/perpsPortfolio';
+import type {
+  PortfolioData,
+  PortfolioPeriodKey,
+  PortfolioChartPoint,
 } from '../utils/perpsPortfolio';
 
 export const PERIOD_TABS: { key: PortfolioPeriodKey; i18nKey: string }[] = [
@@ -36,18 +38,30 @@ const SPARKLINE_W = 140;
 const SPARKLINE_H = 60;
 const EXPANDED_H = 100;
 
+// Draw-on reveal (left to right), mirroring mobile's PerpsPortfolioChart:
+// 600ms for the expanded chart, 1000ms for the sparkline. recharts' default
+// Area entrance is the same clip-rect sweep; a period switch remounts the
+// chart (key={period}) so the sweep replays instead of morphing the old path.
+const EXPANDED_REVEAL_MS = 600;
+const SPARKLINE_REVEAL_MS = 1000;
+
 // recharts cannot draw a path from a single point.
 const FLAT_ZERO: PortfolioChartPoint[] = [
   { timestamp: 0, value: 0 },
   { timestamp: 1, value: 0 },
 ];
 
-const ARROW_W = 12;
-const ARROW_H = 5.25;
+// Tooltip bubble geometry, mirroring mobile's TOOLTIP_TAIL_W / TAIL_H /
+// POINT_GAP. The tail overlaps the bubble by 1px so the two shapes read as
+// one — flush, an anti-aliased boundary shows a hairline seam.
+const TAIL_W = 12;
+const TAIL_H = 5;
+const TAIL_OVERLAP = 1;
 const GAP_ABOVE_POINT = 4;
 const BUBBLE_RADIUS = 8;
-// Keep the whole arrow base off the rounded corners.
-const ARROW_CLEARANCE = ARROW_W / 2 + BUBBLE_RADIUS;
+// Keep the whole tail base off the rounded corners.
+const TAIL_CLEARANCE = TAIL_W / 2 + BUBBLE_RADIUS;
+const BUBBLE_BG = 'rgba(19, 20, 22, 0.95)';
 
 export const PerpsPortfolioChart: React.FC<{
   data: PortfolioData | null;
@@ -78,8 +92,14 @@ export const PerpsPortfolioChart: React.FC<{
   const activeDotYRef = useRef<number | null>(null);
   const [hover, setHover] = useState<{
     x: number;
-    y: number;
     point: PortfolioChartPoint;
+  } | null>(null);
+  // Measured after the bubble renders for the current hover; the bubble stays
+  // invisible until then (mobile hides it until onLayout the same way).
+  const [bubbleLayout, setBubbleLayout] = useState<{
+    w: number;
+    y: number;
+    containerW: number;
   } | null>(null);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,22 +109,32 @@ export const PerpsPortfolioChart: React.FC<{
     const point = state?.activePayload?.[0]?.payload as
       | PortfolioChartPoint
       | undefined;
-    // coord.y here is the MOUSE y (recharts passes rangeObj.y through for
-    // horizontal layouts, not the point's position on the curve); the real
-    // curve y arrives separately via activeDotYRef, synced in the
-    // useLayoutEffect below before paint.
-    if (coord && point) setHover({ x: coord.x, y: coord.y, point });
+    // Only coord.x is usable: coord.y is the MOUSE y (recharts passes
+    // rangeObj.y through for horizontal layouts, not the point's position on
+    // the curve). The curve y arrives via activeDotYRef and is picked up by
+    // the layout effect below, before paint.
+    if (coord && point) setHover({ x: coord.x, point });
   };
   const handleMouseLeave = () => setHover(null);
 
-  // After recharts has rendered the active dot for this hover, replace the
-  // mouse y with the dot's cy before paint so the arrow points at the curve.
+  // recharts batches its own active-index state with our setHover (both run
+  // inside its mouse handler), so by the time this runs the activeDot for
+  // this hover has rendered and written its cy. Measure everything the bubble
+  // needs here, before paint, so the first painted frame is already right.
   useLayoutEffect(() => {
-    if (!hover) return;
-    const cy = activeDotYRef.current;
-    if (cy != null && cy !== hover.y) {
-      setHover((prev) => (prev ? { ...prev, y: cy } : prev));
+    if (!hover) {
+      setBubbleLayout(null);
+      return;
     }
+    const w = bubbleRef.current?.offsetWidth ?? 0;
+    const y = activeDotYRef.current;
+    const containerW = wrapperRef.current?.clientWidth ?? 0;
+    if (!w || y == null) return;
+    setBubbleLayout((prev) =>
+      prev && prev.w === w && prev.y === y && prev.containerW === containerW
+        ? prev
+        : { w, y, containerW }
+    );
   }, [hover]);
 
   // Collapsing unmounts the expanded chart (its mouseleave never fires), and
@@ -114,20 +144,22 @@ export const PerpsPortfolioChart: React.FC<{
   }, [expanded, period]);
 
   const bubblePos = useMemo(() => {
-    if (!hover) return null;
-    const containerW = wrapperRef.current?.clientWidth ?? 0;
-    const bubbleW = bubbleRef.current?.offsetWidth ?? 100; // first frame: estimate
-    let left = hover.x - bubbleW / 2;
+    if (!hover || !bubbleLayout) return null;
+    const { w, y, containerW } = bubbleLayout;
+    let left = hover.x - w / 2;
     if (containerW > 0) {
-      left = Math.min(Math.max(left, 0), Math.max(containerW - bubbleW, 0));
+      left = Math.min(Math.max(left, 0), Math.max(containerW - w, 0));
     }
-    // Arrow x inside the bubble, kept off the rounded corners.
-    const arrowLeft = Math.min(
-      Math.max(hover.x - left, ARROW_CLEARANCE),
-      Math.max(bubbleW - ARROW_CLEARANCE, ARROW_CLEARANCE)
+    // The tail keeps pointing at the hovered x even when the bubble is
+    // clamped at an edge, but never rides onto the rounded corners.
+    const tailLeft = Math.min(
+      Math.max(hover.x - left, TAIL_CLEARANCE),
+      Math.max(w - TAIL_CLEARANCE, TAIL_CLEARANCE)
     );
-    return { left, arrowLeft };
-  }, [hover]);
+    // Bubble bottom edge = point y − gap − the tail's visible height.
+    const top = y - GAP_ABOVE_POINT - (TAIL_H - TAIL_OVERLAP);
+    return { left, top, tailLeft };
+  }, [hover, bubbleLayout]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderActiveDot = (props: any) => {
@@ -157,7 +189,7 @@ export const PerpsPortfolioChart: React.FC<{
       />
       {showInteraction && (
         // Only here for the dashed cursor line; the bubble is drawn by the
-        // overlay below so it can sit centred above the point with an arrow,
+        // overlay below so it can sit centered above the point with a tail,
         // which recharts' cursor-relative tooltip cannot do.
         <Tooltip
           cursor={{ strokeDasharray: '2 2', strokeWidth: 1 }}
@@ -171,7 +203,8 @@ export const PerpsPortfolioChart: React.FC<{
         strokeWidth={2}
         fill="url(#perpsPortfolioCurve)"
         fillOpacity={0.8}
-        animationDuration={0}
+        animationDuration={expanded ? EXPANDED_REVEAL_MS : SPARKLINE_REVEAL_MS}
+        animationEasing="ease-in-out"
         dot={false}
         activeDot={showInteraction ? renderActiveDot : false}
       />
@@ -189,6 +222,7 @@ export const PerpsPortfolioChart: React.FC<{
       {expanded ? (
         <ResponsiveContainer width="100%" height={EXPANDED_H}>
           <AreaChart
+            key={period}
             data={points}
             margin={{ top: 2, right: 0, left: 0, bottom: 0 }}
             onMouseMove={handleMouseMove}
@@ -207,35 +241,40 @@ export const PerpsPortfolioChart: React.FC<{
           {chartChildren}
         </AreaChart>
       )}
-      {showInteraction && hover && bubblePos && (
+      {showInteraction && hover && (
         <div
           ref={bubbleRef}
           className="absolute pointer-events-none z-10"
           style={{
-            left: bubblePos.left,
-            top: hover.y - ARROW_H - GAP_ABOVE_POINT,
+            left: bubblePos?.left ?? 0,
+            top: bubblePos?.top ?? 0,
             transform: 'translateY(-100%)',
+            visibility: bubblePos ? 'visible' : 'hidden',
           }}
         >
           <div
             className={clsx(
               'rounded-[8px] px-[10px] py-[8px]',
-              'text-[12px] leading-[16px] text-white whitespace-nowrap'
+              'text-[12px] leading-[16px] whitespace-nowrap'
             )}
-            style={{ background: 'rgba(19,20,22,0.95)', backdropFilter: 'blur(2px)' }}
+            style={{ background: BUBBLE_BG }}
           >
-            <div>{formatPortfolioTooltipTime(hover.point.timestamp)}</div>
-            <div>{formatUsdValue(hover.point.value, BigNumber.ROUND_DOWN)}</div>
+            <div className="text-[#C5C5CF]">
+              {formatPortfolioTooltipTime(hover.point.timestamp)}
+            </div>
+            <div className="font-bold text-white">
+              {formatUsdValue(hover.point.value, BigNumber.ROUND_DOWN)}
+            </div>
           </div>
           <div
             className="absolute w-0 h-0"
             style={{
-              left: bubblePos.arrowLeft,
-              bottom: -ARROW_H,
+              left: bubblePos?.tailLeft ?? 0,
+              bottom: -(TAIL_H - TAIL_OVERLAP),
               transform: 'translateX(-50%)',
-              borderLeft: `${ARROW_W / 2}px solid transparent`,
-              borderRight: `${ARROW_W / 2}px solid transparent`,
-              borderTop: `${ARROW_H}px solid rgba(19,20,22,0.95)`,
+              borderLeft: `${TAIL_W / 2}px solid transparent`,
+              borderRight: `${TAIL_W / 2}px solid transparent`,
+              borderTop: `${TAIL_H}px solid ${BUBBLE_BG}`,
             }}
           />
         </div>

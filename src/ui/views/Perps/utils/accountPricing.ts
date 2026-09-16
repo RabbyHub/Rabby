@@ -202,3 +202,65 @@ export const computeAvailableBalance = (perps: {
 
   return Number(rawPerpsWithdrawable) || 0;
 };
+
+export type PerpsBreakdownMode = 'manual' | 'unified' | 'portfolioMargin';
+
+export type PerpsPortfolioBreakdownValues = {
+  perpsValue: number;
+  secondaryValue: number;
+  /** Manual mode only, null when the staking account is empty. */
+  stakingValue: number | null;
+};
+
+/**
+ * Amounts for the "Portfolio Value" breakdown popover (mirrors mobile's
+ * computePortfolioBreakdownValues).
+ *
+ * Perps row (all modes): `marginSummary.accountValue` — perps-side net equity
+ * including all unrealized pnl. Second row: manual "Spot" = USD value of all
+ * spot assets; unified / portfolio margin ("Other Assets" / "Net Other
+ * Assets") = Portfolio Value − Perps, so the rows always sum to the headline.
+ * Third row (manual only): "Staking" when non-zero, so Perps + Spot + Staking
+ * still sums to the PV. The spot-collateral modes fold it into the remainder.
+ */
+export const computePortfolioBreakdownValues = (
+  mode: PerpsBreakdownMode,
+  portfolioValue: number,
+  perps: {
+    clearinghouseState?: { marginSummary?: { accountValue?: string } } | null;
+    spotState?: { balances?: SpotBalance[] };
+    spotAssetCtxs?: SpotAssetCtxs;
+    spotMeta?: SpotMeta | null;
+    stakingSummary?: StakingSummaryAmounts | null;
+  }
+): PerpsPortfolioBreakdownValues => {
+  const perpsValue =
+    Number(perps.clearinghouseState?.marginSummary?.accountValue) || 0;
+
+  if (mode === 'manual') {
+    const ctxs = perps.spotAssetCtxs || {};
+    const stakingValue = computeStakingValue(
+      getStakedHypeAmount(perps.stakingSummary),
+      ctxs,
+      perps.spotMeta
+    );
+    return {
+      perpsValue,
+      secondaryValue:
+        Number(
+          computeSpotPortfolioValue(
+            perps.spotState?.balances || [],
+            ctxs,
+            perps.spotMeta
+          )
+        ) || 0,
+      stakingValue: stakingValue > 0 ? stakingValue : null,
+    };
+  }
+
+  return {
+    perpsValue,
+    secondaryValue: portfolioValue - perpsValue,
+    stakingValue: null,
+  };
+};

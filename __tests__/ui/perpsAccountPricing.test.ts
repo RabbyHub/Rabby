@@ -11,6 +11,7 @@ import {
   computePerpsPortfolioValue,
   computeLivePortfolioValue,
   computeAvailableBalance,
+  computePortfolioBreakdownValues,
 } from '@/ui/views/Perps/utils/accountPricing';
 
 const spotMeta: SpotMeta = {
@@ -28,6 +29,46 @@ const bal = (coin: string, token: number, total: string): SpotBalance => ({
   total,
   hold: '0',
   available: total,
+});
+
+describe('computePortfolioBreakdownValues', () => {
+  const perps = {
+    clearinghouseState: { marginSummary: { accountValue: '100' } },
+    spotState: { balances: [bal('HYPE', 150, '2')] }, // 2 × 40 = 80
+    spotAssetCtxs,
+    spotMeta,
+    stakingSummary: {
+      delegated: '1',
+      undelegated: '0',
+      totalPendingWithdrawal: '0',
+    }, // 1 × 40 = 40
+  };
+
+  it('manual: Perps + Spot + Staking, staking row only when non-zero', () => {
+    expect(computePortfolioBreakdownValues('manual', 220, perps)).toEqual({
+      perpsValue: 100,
+      secondaryValue: 80,
+      stakingValue: 40,
+    });
+    expect(
+      computePortfolioBreakdownValues('manual', 180, {
+        ...perps,
+        stakingSummary: null,
+      }).stakingValue
+    ).toBeNull();
+  });
+
+  it('unified / portfolio margin: second row is the headline remainder', () => {
+    expect(computePortfolioBreakdownValues('unified', 250, perps)).toEqual({
+      perpsValue: 100,
+      secondaryValue: 150,
+      stakingValue: null,
+    });
+    expect(
+      computePortfolioBreakdownValues('portfolioMargin', 250, perps)
+        .secondaryValue
+    ).toBe(150);
+  });
 });
 
 describe('getStakedHypeAmount', () => {

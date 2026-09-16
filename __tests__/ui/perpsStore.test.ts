@@ -313,9 +313,7 @@ describe('perps store', () => {
     // The effect only suspends at `await sdk.info.getPortfolio(...)` — by now
     // its synchronous portion already ran, and since data already existed it
     // must not have dispatched a loading state.
-    expect(usePerpsStore.getState().portfolioMap[key]?.status).toBe(
-      'success'
-    );
+    expect(usePerpsStore.getState().portfolioMap[key]?.status).toBe('success');
 
     resolveRaw([
       [
@@ -329,9 +327,7 @@ describe('perps store', () => {
     ]);
     await fetchPromise;
 
-    expect(usePerpsStore.getState().portfolioMap[key]?.status).toBe(
-      'success'
-    );
+    expect(usePerpsStore.getState().portfolioMap[key]?.status).toBe('success');
   });
 
   test('retries a failed portfolio fetch and succeeds on the 3rd attempt', async () => {

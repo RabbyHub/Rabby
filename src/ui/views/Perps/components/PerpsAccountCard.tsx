@@ -13,8 +13,9 @@ import {
   getLatestPortfolioValue,
   compute24hChange,
   isPortfolioAllZero,
-  type PortfolioPeriodKey,
 } from '../utils/perpsPortfolio';
+import type { PortfolioPeriodKey } from '../utils/perpsPortfolio';
+import type { PerpsBreakdownMode } from '../utils/accountPricing';
 import { PerpsQuoteAsset } from '../constants';
 import { PerpsPortfolioChart } from './PerpsPortfolioChart';
 import { PerpsPortfolioBreakdownTips } from './PerpsPortfolioBreakdownTips';
@@ -62,11 +63,6 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
     isUnifiedAccount,
     isPortfolioMargin,
   } = usePerpsAccount();
-  // Needed for the breakdown popover's Perps row.
-  const clearinghouseState = useRabbySelector(
-    (s) => s.perps.clearinghouseState
-  );
-
   const address = currentPerpsAccount?.address?.toLowerCase();
   const portfolioEntry = useRabbySelector((s) =>
     address ? s.perps.portfolioMap[address] : undefined
@@ -191,15 +187,23 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
   // failing, which would otherwise put a precise popover next to `--`.
   const headlineValue = viewState === 'data' ? displayValue ?? 0 : 0;
 
-  // manual mode and the empty/zero state never show the info icon (matches
-  // the Figma empty-state frame, which has no icon at all). isUserDataReady
-  // also guards the account-switch window where clearinghouseState still
-  // holds the previous account's numbers (see setCurrentPerpsAccount).
+  // No info icon in the empty/zero state (matches the Figma empty-state
+  // frame) or when there is nothing to break down — no spot asset at all
+  // (mobile's hasNonPerpsAssets). isUserDataReady also guards the
+  // account-switch window where clearinghouseState still holds the previous
+  // account's numbers (see setCurrentPerpsAccount).
   const isUserDataReady = useRabbySelector((s) => s.perps.isUserDataReady);
+  // A boolean that flips on balance changes, not on price ticks.
+  const hasNonPerpsAssets = useRabbySelector((s) =>
+    s.perps.spotState.balances.some((b) => Number(b.total) > 0)
+  );
+  const breakdownMode: PerpsBreakdownMode = isPortfolioMargin
+    ? 'portfolioMargin'
+    : isUnifiedAccount
+    ? 'unified'
+    : 'manual';
   const showBreakdown =
-    (isUnifiedAccount || isPortfolioMargin) &&
-    headlineValue > 0 &&
-    isUserDataReady;
+    hasNonPerpsAssets && headlineValue > 0 && isUserDataReady;
 
   const valueDisplay = useMemo(() => {
     if (viewState === 'loading') {
@@ -254,20 +258,21 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
   return (
     <>
       <div
-        // No overflow-hidden here: the breakdown tooltip renders inside this
+        // No overflow-hidden here: the breakdown popover renders inside this
         // node (TooltipWithMagnetArrow's getPopupContainer returns the
-        // trigger's parent), and a centered popover is wider than the card —
-        // clipping would chop its left edge. The bottom bar below carries its
-        // own rounded-b corner instead.
+        // trigger's parent) and must not be clipped. The bottom bar below
+        // carries its own rounded-b corner instead.
         className="bg-r-neutral-card1 rounded-[8px]"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
+        {/* The hover hot zone is this upper block only (headline + chart);
+            the Available / deposit bar below never expands the card. */}
         <div
           className={clsx(
             'flex flex-col',
             expanded ? 'pt-16 px-16 pb-12 gap-[10px]' : 'p-16'
           )}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
         >
           <div
             className={clsx(
@@ -282,14 +287,14 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
               <div className="flex items-center relative">
                 <TooltipWithMagnetArrow
                   overlayClassName="rectangle perps-portfolio-breakdown"
-                  placement="bottom"
+                  // Popover flush with the label's left edge (Figma); the
+                  // magnet arrow still points at the trigger's centre.
+                  placement="bottomLeft"
                   title={
                     showBreakdown ? (
                       <PerpsPortfolioBreakdownTips
+                        mode={breakdownMode}
                         portfolioValue={headlineValue}
-                        perpsValue={Number(
-                          clearinghouseState?.marginSummary?.accountValue || 0
-                        )}
                       />
                     ) : undefined
                   }
@@ -347,9 +352,10 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
             'bg-r-neutral-card3 px-16 py-8',
             'rounded-b-[8px]',
             'flex items-center justify-between',
-            // card1/card2/card3 are identical in dark mode, so the Figma
-            // lightness split disappears — keep a hairline to divide the rows.
-            'border-t border-solid border-rabby-neutral-line'
+            // Light mode splits the rows by card1 vs card3 alone (no line in
+            // the Figma). card1/card3 are the same color in dark mode, so a
+            // hairline stands in for the split there only.
+            'dark:border-t dark:border-solid dark:border-rabby-neutral-line'
           )}
         >
           <div className="flex flex-col gap-2">
@@ -379,20 +385,21 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
               {t('page.perps.addFunds')}
             </div>
           ) : (
+            // 16px frame holding the Figma 12.6px / 1.8 stroke glyph.
             <div className="flex items-center gap-8">
               <div
                 className="w-[36px] h-[36px] rounded-[8px] bg-r-blue-light1 text-r-blue-default
                           flex items-center justify-center cursor-pointer"
                 onClick={handleDeposit}
               >
-                <RcIconBalanceAdd className="w-[12.6px] h-[12.6px]" />
+                <RcIconBalanceAdd className="w-[16px] h-[16px]" />
               </div>
               <div
                 className="w-[36px] h-[36px] rounded-[8px] bg-r-blue-light1 text-r-blue-default
                           flex items-center justify-center cursor-pointer"
                 onClick={handleWithdraw}
               >
-                <RcIconBalanceMinus className="w-[12.6px] h-[12.6px]" />
+                <RcIconBalanceMinus className="w-[16px] h-[16px]" />
               </div>
             </div>
           )}
