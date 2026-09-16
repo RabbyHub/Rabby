@@ -135,8 +135,18 @@ export const toChartPoints = (
 const pad2 = (n: number) => String(n).padStart(2, '0');
 
 const MONTHS = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
 ];
 
 /**
@@ -149,7 +159,8 @@ export const formatPortfolioTooltipTime = (
   now: Date = new Date()
 ): string => {
   const d = new Date(ts);
-  const year = d.getFullYear() === now.getFullYear() ? '' : `${d.getFullYear()} `;
+  const year =
+    d.getFullYear() === now.getFullYear() ? '' : `${d.getFullYear()} `;
   return `${year}${MONTHS[d.getMonth()]} ${d.getDate()}, ${pad2(
     d.getHours()
   )}:${pad2(d.getMinutes())}`;
