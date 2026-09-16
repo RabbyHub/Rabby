@@ -31,7 +31,9 @@ export const ExtensionUpdateBanner = ({
 
   return (
     <section
-      className={clsx('extension-update-banner', { 'is-closing': closing })}
+      className={clsx('extension-update-banner dark:bg-r-neutral-bg-1', {
+        'is-closing': closing,
+      })}
       aria-label={t('page.dashboard.settings.updateCard.title')}
       aria-hidden={closing || undefined}
     >

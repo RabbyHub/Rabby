@@ -62,13 +62,17 @@ describe('extension update card', () => {
     useExtensionUpdateStore.persist.destroy();
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
   });
-  const render = (version = '1.2.3.4', variant: 'card' | 'dialog' = 'card') =>
+  const render = (
+    version = '1.2.3.4',
+    variant: 'card' | 'dialog' = 'card',
+    changelog = '1. New feature\n2. Bug fix'
+  ) =>
     act(() => {
       root.render(
         createElement(ExtensionUpdateCard, {
           version,
           variant,
-          changelog: '1. New feature\n2. Bug fix',
+          changelog,
           onUpdate,
         })
       );
@@ -76,13 +80,54 @@ describe('extension update card', () => {
 
   it('shows the pending version without initiating an update', () => {
     render();
-    expect(container.textContent).toContain('v1.2.3.4');
+    expect(container.textContent).toContain('V 1.2.3.4');
     expect(container.textContent).toContain('1. New feature');
     expect(container.textContent).toContain('2. Bug fix');
     const notes = container.querySelector('.extension-update-card-notes')!;
-    expect(notes.textContent).toBe('1. New feature\n2. Bug fix');
+    expect(Array.from(notes.children, (line) => line.textContent)).toEqual([
+      '1. New feature',
+      '2. Bug fix',
+    ]);
     expect(notes.querySelector('li, img')).toBeNull();
     expect(onUpdate).not.toHaveBeenCalled();
+  });
+
+  describe.each(['card', 'dialog'] as const)('%s changelog', (variant) => {
+    it.each(['', '   ', '\n\t\r\n'])(
+      'shows the default message as a list item for empty or whitespace-only content (%j)',
+      (changelog) => {
+        render('1.2.3.4', variant, changelog);
+        const notes = container.querySelector('.extension-update-card-notes')!;
+        expect(notes.textContent).toBe(
+          'Fixed some bugs and optimized user experience'
+        );
+        expect(notes.children).toHaveLength(1);
+        expect(
+          notes.querySelector('.extension-update-card-note-li')?.textContent
+        ).toBe('Fixed some bugs and optimized user experience');
+        expect(
+          notes.querySelector('.extension-update-card-note-line')
+        ).toBeNull();
+        expect(onUpdate).not.toHaveBeenCalled();
+      }
+    );
+
+    it('preserves non-empty content and its existing line formatting', () => {
+      render('1.2.3.4', variant, '# Updates\n- New feature\n  Details  ');
+      const notes = container.querySelector('.extension-update-card-notes')!;
+      expect(
+        notes.querySelector('.extension-update-card-note-title')?.textContent
+      ).toBe('Updates');
+      expect(
+        notes.querySelector('.extension-update-card-note-li')?.textContent
+      ).toBe('New feature');
+      expect(
+        notes.querySelector('.extension-update-card-note-line')?.textContent
+      ).toBe('  Details  ');
+      expect(notes.textContent).not.toContain(
+        'Fixed some bugs and optimized user experience'
+      );
+    });
   });
 
   it.each([
@@ -91,8 +136,9 @@ describe('extension update card', () => {
     [3, 1, 'card', false],
     [1, 4, 'card', true],
     [2, 2, 'card', true],
-    [4, 1, 'dialog', false],
-    [1, 4, 'dialog', false],
+    [4, 1, 'dialog', true],
+    [1, 4, 'dialog', true],
+    [3, 1, 'dialog', false],
   ] as const)(
     'uses current level %s and latest level %s for the %s variant dot (%s)',
     (currentLevel, latestLevel, variant, showDot) => {
@@ -122,7 +168,7 @@ describe('extension update card', () => {
         })
       )
     );
-    expect(container.textContent).toContain('v1.2.3.4');
+    expect(container.textContent).toContain('V 1.2.3.4');
     expect(
       container.querySelector('.extension-update-card-dialog')
     ).not.toBeNull();
@@ -194,7 +240,7 @@ describe('extension update card', () => {
     renderDialog(false);
     expect(container.querySelector('section')).toBeNull();
     renderDialog(true);
-    expect(container.textContent).toContain('v1.2.3.4');
+    expect(container.textContent).toContain('V 1.2.3.4');
   });
 
   it('dismisses only the current version and shows a newer one', () => {
@@ -208,7 +254,7 @@ describe('extension update card', () => {
     render();
     expect(container.querySelector('section')).toBeNull();
     render('1.2.4');
-    expect(container.textContent).toContain('v1.2.4');
+    expect(container.textContent).toContain('V 1.2.4');
     expect(onUpdate).not.toHaveBeenCalled();
   });
 

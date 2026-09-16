@@ -82,6 +82,7 @@ import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTrigge
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
 import { useCurrency } from '@/ui/hooks/useCurrency';
+import { useExtensionUpdateSettingsCard } from '@/ui/hooks/useExtensionUpdateSettingsCard';
 import {
   cleanupBiometricCredential,
   isBiometricUnlockSupported,
@@ -816,12 +817,10 @@ const SettingsInner = ({
   );
   const reloadForUpdate = useExtensionUpdateStore((s) => s.reloadForUpdate);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);
-  const [
-    dismissedUpdateVersion,
-    setDismissedUpdateVersion,
-  ] = useState<string>();
-  const showExtensionUpdateCard =
-    hasNewVersion && dismissedUpdateVersion !== pendingVersion;
+  const showExtensionUpdateCard = useExtensionUpdateSettingsCard();
+  const dismissSettingsCard = useExtensionUpdateStore(
+    (s) => s.dismissSettingsCard
+  );
 
   const updateVersion = () => {
     if (hasNewVersion) {
@@ -1638,7 +1637,7 @@ const SettingsInner = ({
               version={pendingVersion}
               changelog={changelog}
               onUpdate={reloadForUpdate}
-              onClose={() => setDismissedUpdateVersion(pendingVersion)}
+              onClose={dismissSettingsCard}
             />
           ) : (
             <RateModalTriggerOnSettings className="mb-[16px]" />

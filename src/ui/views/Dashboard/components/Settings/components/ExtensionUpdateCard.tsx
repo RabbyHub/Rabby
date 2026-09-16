@@ -28,6 +28,9 @@ export const ExtensionUpdateCard = ({
   const [dismissedVersion, setDismissedVersion] = useState<string>();
   const [updating, setUpdating] = useState(false);
   const pending = useRef(false);
+  const changelogContent = changelog?.trim()
+    ? changelog
+    : '- Fixed some bugs and optimized user experience';
 
   if (dismissedVersion === version) return null;
 
@@ -78,7 +81,7 @@ export const ExtensionUpdateCard = ({
           </div>
         </div>
         <div className="extension-update-card-notes">
-          {changelog?.split('\n').map((line, i) => {
+          {changelogContent.split('\n').map((line, i) => {
             if (line.startsWith('- ')) {
               return (
                 <div key={i} className="extension-update-card-note-li">

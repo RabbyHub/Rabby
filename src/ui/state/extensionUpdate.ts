@@ -9,6 +9,7 @@ import {
   versionInfoResponseSchema,
   VersionInfo,
   UPDATE_BANNER_COOLDOWN,
+  UPDATE_SETTINGS_CARD_COOLDOWN,
 } from '@/utils/extensionVersion';
 
 export const selectHasNewExtensionVersion = (
@@ -42,12 +43,35 @@ export const selectExtensionUpdateBanner = (
   );
 };
 
+export const selectExtensionUpdateSettingsCard = (
+  state: ExtensionUpdateStore,
+  now = Date.now()
+) => {
+  if (!selectHasNewExtensionVersion(state)) return false;
+  const level = selectExtensionUpdateLevel(state);
+  if (level === 4) return true;
+
+  const dismissal = state.settingsCardDismissal;
+  if (
+    !dismissal ||
+    dismissal.currentVersion !== state.currentVersion ||
+    dismissal.version !== state.version
+  )
+    return true;
+
+  // Low-priority dismissals survive level 1 <-> 2 changes, but not escalation.
+  if (dismissal.level <= 2) return level >= 3;
+  return now >= dismissal.dismissedUntil;
+};
+
 let refreshPromise: Promise<void> | undefined;
 
 export type ExtensionUpdateStore = ExtensionUpdateServiceStore & {
   versionInfo: VersionInfo | null;
   refreshVersionInfo: () => Promise<void>;
   dismissBanner: () => void;
+  dismissSettingsCard: () => void;
+  revealSettingsCard: () => void;
   reloadForUpdate: () => Promise<void>;
 };
 
@@ -56,6 +80,7 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
     currentVersion: '',
     version: '',
     dismissedUntil: 0,
+    settingsCardDismissal: null,
     versionInfo: null,
     refreshVersionInfo() {
       refreshPromise ||= (async () => {
@@ -105,6 +130,35 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
       if (selectExtensionUpdateLevel(get()) === 3)
         set({ dismissedUntil: Date.now() + UPDATE_BANNER_COOLDOWN });
     },
+    dismissSettingsCard() {
+      const state = get();
+      const level = selectExtensionUpdateLevel(state);
+      if (
+        !selectHasNewExtensionVersion(state) ||
+        (level !== 1 && level !== 2 && level !== 3)
+      )
+        return;
+      set({
+        settingsCardDismissal: {
+          currentVersion: state.currentVersion,
+          version: state.version,
+          level,
+          dismissedUntil:
+            level === 3 ? Date.now() + UPDATE_SETTINGS_CARD_COOLDOWN : 0,
+        },
+      });
+    },
+    revealSettingsCard() {
+      const state = get();
+      // The dashboard Check button can override only the level 3 card cooldown.
+      if (
+        selectHasNewExtensionVersion(state) &&
+        selectExtensionUpdateLevel(state) === 3 &&
+        state.settingsCardDismissal
+      ) {
+        set({ settingsCardDismissal: null });
+      }
+    },
     async reloadForUpdate() {
       if (selectHasNewExtensionVersion(get())) {
         await wallet.reloadExtensionForUpdate();
@@ -114,7 +168,10 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
   createExtensionStoreOptions<ExtensionUpdateStore, 'pendingExtensionUpdate'>({
     autoHydrate: true,
     storageKey: 'pendingExtensionUpdate',
-    partialize: (state) => ({ dismissedUntil: state.dismissedUntil }),
+    partialize: (state) => ({
+      dismissedUntil: state.dismissedUntil,
+      settingsCardDismissal: state.settingsCardDismissal,
+    }),
     onError(error) {
       console.error('[extensionUpdateStore]', error);
     },

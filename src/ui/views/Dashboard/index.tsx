@@ -133,6 +133,9 @@ const Dashboard = () => {
   const updateLevel = useExtensionUpdateStore(selectExtensionUpdateLevel);
   const dismissedUntil = useExtensionUpdateStore((s) => s.dismissedUntil);
   const dismissBanner = useExtensionUpdateStore((s) => s.dismissBanner);
+  const revealSettingsCard = useExtensionUpdateStore(
+    (s) => s.revealSettingsCard
+  );
   const refreshVersionInfo = useExtensionUpdateStore(
     (s) => s.refreshVersionInfo
   );
@@ -244,6 +247,7 @@ const Dashboard = () => {
           closable={updateLevel === 3}
           onDismiss={dismissBanner}
           onCheck={() => {
+            revealSettingsCard();
             setAutoScrollToBiometric(false);
             setSettingVisible(true);
           }}

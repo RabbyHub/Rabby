@@ -66,6 +66,7 @@ describe('extension update service', () => {
       currentVersion: '1.0.0',
       version: '1.0.0.1',
       dismissedUntil: 0,
+      settingsCardDismissal: null,
     });
     expect(browser.runtime.reload).not.toHaveBeenCalled();
   });
@@ -112,6 +113,7 @@ describe('extension update service', () => {
       currentVersion: '1.0.0',
       version: '1.2.0',
       dismissedUntil: 0,
+      settingsCardDismissal: null,
     });
   });
 
@@ -123,6 +125,7 @@ describe('extension update service', () => {
       currentVersion: '',
       version: '',
       dismissedUntil: 0,
+      settingsCardDismissal: null,
     });
 
     onUpdateAvailable({ version: '1.1.0' });
@@ -203,6 +206,61 @@ describe('extension update service', () => {
     expect(restarted.store.dismissedUntil).toBe(service.store.dismissedUntil);
   });
 
+  it('defaults settings card dismissal for old storage and preserves it across restarts', async () => {
+    getStorage.mockResolvedValue({
+      currentVersion: '1.0.0',
+      version: '1.1.0',
+      dismissedUntil: 123,
+    });
+    await service.init();
+    expect(service.store.settingsCardDismissal).toBeNull();
+    const dismissal = {
+      currentVersion: '1.0.0',
+      version: '1.1.0',
+      level: 3 as const,
+      dismissedUntil: Date.now() + 24 * 60 * 60 * 1000,
+    };
+    setStorage.mockClear();
+    service.patchStore({ settingsCardDismissal: dismissal });
+    expect(setStorage).toHaveBeenCalledTimes(1);
+    expect(service.store.dismissedUntil).toBe(123);
+    getStorage.mockResolvedValue({ ...service.store });
+    const restarted = new ExtensionUpdateService();
+    await restarted.init();
+    expect(restarted.store.settingsCardDismissal).toEqual(dismissal);
+    expect(await restarted.getPendingVersion()).toBe('1.1.0');
+  });
+
+  it('repairs malformed saved card dismissals without losing pending updates', async () => {
+    getStorage.mockResolvedValue({
+      currentVersion: '1.0.0',
+      version: '1.1.0',
+      settingsCardDismissal: { level: 4, dismissedUntil: -1 },
+    });
+    await service.init();
+    expect(service.store.settingsCardDismissal).toBeNull();
+    expect(await service.getPendingVersion()).toBe('1.1.0');
+  });
+
+  it('rejects invalid card dismissal patches atomically', async () => {
+    await service.init();
+    setStorage.mockClear();
+    expect(() =>
+      service.patchStore({
+        dismissedUntil: 123,
+        settingsCardDismissal: {
+          currentVersion: '1.0.0',
+          version: '1.1.0',
+          level: 3,
+          dismissedUntil: -1,
+        },
+      })
+    ).toThrow();
+    expect(service.store.dismissedUntil).toBe(0);
+    expect(service.store.settingsCardDismissal).toBeNull();
+    expect(setStorage).not.toHaveBeenCalled();
+  });
+
   it('does not open a tab or reload without a pending update', async () => {
     await service.reloadForUpdate();
     expect(browser.tabs.create).not.toHaveBeenCalled();
@@ -223,7 +281,8 @@ describe('extension update service', () => {
     await service.getPendingVersion();
     expect(browser.tabs.create).toHaveBeenCalledTimes(1);
     expect(browser.tabs.create).toHaveBeenCalledWith({
-      url: 'https://rabby.io/updating?version=1.1.0',
+      url:
+        'https://rabby-io-git-feat-auto-update-debanker.vercel.app//updating?version=1.0.0',
       active: true,
     });
     expect(browser.runtime.reload).not.toHaveBeenCalled();
@@ -231,6 +290,25 @@ describe('extension update service', () => {
     await reload;
     expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
   });
+
+  it.each([
+    ['0.94.7', '0.94.8'],
+    ['1.0.0.1', '1.0.0.2'],
+  ])(
+    'passes installed version %s instead of pending version %s to the updating page',
+    async (currentVersion, pendingVersion) => {
+      getManifest.mockReturnValue({ version: currentVersion });
+      await service.init();
+      onUpdateAvailable({ version: pendingVersion });
+
+      await service.reloadForUpdate();
+
+      const { url } = (browser.tabs.create as jest.Mock).mock.calls[0][0];
+      expect(new URL(url).searchParams.get('version')).toBe(currentVersion);
+      expect(await service.getPendingVersion()).toBe(pendingVersion);
+      expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
+    }
+  );
 
   it('does not reload if opening the tab fails and allows retry', async () => {
     await service.init();

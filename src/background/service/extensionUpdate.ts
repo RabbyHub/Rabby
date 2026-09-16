@@ -9,6 +9,15 @@ const extensionUpdateStoreSchema = z.object({
   currentVersion: z.string().default(''),
   version: z.string().default(''),
   dismissedUntil: z.number().nonnegative().default(0),
+  settingsCardDismissal: z
+    .object({
+      currentVersion: z.string(),
+      version: z.string(),
+      level: z.union([z.literal(1), z.literal(2), z.literal(3)]),
+      dismissedUntil: z.number().nonnegative(),
+    })
+    .nullable()
+    .default(null),
 });
 
 export type ExtensionUpdateStore = z.output<typeof extensionUpdateStoreSchema>;
@@ -112,14 +121,15 @@ export class ExtensionUpdateService {
 
   reloadForUpdate = (): Promise<void> => {
     this.reloadPromise ||= (async () => {
-      const version = await this.getPendingVersion();
-      if (!version) return;
+      const pendingVersion = await this.getPendingVersion();
+      if (!pendingVersion) return;
+      const currentVersion = browser.runtime.getManifest().version;
 
       // Opening an active tab closes the popup; finish the update in background.
       await browser.tabs.create({
-        // url: `https://rabby.io/updating?version=${encodeURIComponent(version)}`,
+        // url: `https://rabby.io/updating?version=${encodeURIComponent(currentVersion)}`,
         url: `https://rabby-io-git-feat-auto-update-debanker.vercel.app//updating?version=${encodeURIComponent(
-          version
+          currentVersion
         )}`,
         active: true,
       });

@@ -286,6 +286,7 @@ describe('extension update store', () => {
   );
 
   it('persists only the cooldown when the latest version level is 3', async () => {
+    expect(UPDATE_BANNER_COOLDOWN).toBe(60 * 1000);
     useExtensionUpdateStore.setState({ versionInfo: makeInfo('1.1.0', 2, 3) });
     const before = Date.now();
     useExtensionUpdateStore.getState().dismissBanner();
