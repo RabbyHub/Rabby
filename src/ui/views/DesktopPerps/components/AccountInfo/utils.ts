@@ -210,10 +210,11 @@ const pairMarkPx = (
  * fastAssetCtxs keys spot by `@index`; only the canonical PURR/USDC pair carries
  * a human name, so look up by `@index` and fall back to the universe name.
  */
-export const usdcMarkPx = (
+const usdcMarkPxInner = (
   tokenName: string,
   spotAssetCtxs: SpotAssetCtxs,
-  spotMeta: SpotMeta | null | undefined
+  spotMeta: SpotMeta | null | undefined,
+  visited: Set<string>
 ): number => {
   if (!tokenName) return 0;
   if (tokenName === 'USDC') return 1;
@@ -229,6 +230,11 @@ export const usdcMarkPx = (
   const tokenIndex = index.tokenIndexByName.get(tokenName);
   if (tokenIndex == null) return 0;
 
+  // Guard the quote-chaining recursion below: a 2-hop cycle (A quoted in B,
+  // B quoted in A) would otherwise recurse until the stack blows.
+  if (visited.has(tokenName)) return 0;
+  visited.add(tokenName);
+
   const usdcPair = index.usdcPairByBase.get(tokenIndex);
   if (usdcPair) {
     const px = pairMarkPx(usdcPair, spotAssetCtxs);
@@ -242,8 +248,17 @@ export const usdcMarkPx = (
   if (!pairPx) return 0;
   const quoteName = index.tokenNameByIndex.get(anyPair.tokens[1]);
   if (!quoteName || quoteName === tokenName) return 0;
-  return (Number(pairPx) || 0) * usdcMarkPx(quoteName, spotAssetCtxs, spotMeta);
+  return (
+    (Number(pairPx) || 0) *
+    usdcMarkPxInner(quoteName, spotAssetCtxs, spotMeta, visited)
+  );
 };
+
+export const usdcMarkPx = (
+  tokenName: string,
+  spotAssetCtxs: SpotAssetCtxs,
+  spotMeta: SpotMeta | null | undefined
+): number => usdcMarkPxInner(tokenName, spotAssetCtxs, spotMeta, new Set());
 
 /** Z3: total spot portfolio USD value = sum(balance.total * usdcMarkPx). */
 export const computeSpotPortfolioValue = (

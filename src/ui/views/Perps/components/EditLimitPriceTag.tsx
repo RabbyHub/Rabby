@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from 'antd';
 import clsx from 'clsx';
-import { useDebounce, useMemoizedFn } from 'ahooks';
+import { useMemoizedFn } from 'ahooks';
 import Popup from '@/ui/component/Popup';
 import { splitNumberByStep } from '@/ui/utils';
 import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
@@ -12,10 +12,7 @@ import { MarketData } from '@/ui/state/perps';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';
 import { computeLimitPriceDeviation } from '../limitOrderUtils';
-import {
-  PERPS_LIMIT_PRICE_BLOCK_PCT,
-  PERPS_LIMIT_PRICE_CONFIRM_PCT,
-} from '../constants';
+import { PERPS_LIMIT_PRICE_CONFIRM_PCT } from '../constants';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
 
 const QUICK_OPTIONS: { label: string; pct: number | 'mid' }[] = [
@@ -47,18 +44,9 @@ export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
   const { isDarkTheme } = useThemeMode();
   const [popupVisible, setPopupVisible] = useState(false);
   const [price, setPrice] = useState('');
-  // Don't flash the red error mid-typing — wait 300ms idle, then re-evaluate.
-  const debouncedPrice = useDebounce(price, { wait: 300 });
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  const debouncedDeviation = useMemo(
-    () => computeLimitPriceDeviation(debouncedPrice, markPrice),
-    [debouncedPrice, markPrice]
-  );
   const priceEmpty = !price || !Number(price);
-  const debouncedEmpty = !debouncedPrice || !Number(debouncedPrice);
-  const isBlocked =
-    !debouncedEmpty && debouncedDeviation >= PERPS_LIMIT_PRICE_BLOCK_PCT;
 
   const handlePriceChange = useMemoizedFn((raw: string) => {
     let value = raw.replace(',', '.');
@@ -95,10 +83,9 @@ export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
 
   const handleSet = useMemoizedFn(() => {
     if (priceEmpty) return;
-    // Re-validate against live price — Set may be clicked within the debounce window.
-    const liveDeviation = computeLimitPriceDeviation(price, markPrice);
-    if (liveDeviation >= PERPS_LIMIT_PRICE_BLOCK_PCT) return;
-    if (liveDeviation < PERPS_LIMIT_PRICE_CONFIRM_PCT) {
+    // Any deviation past the threshold only warns — the user can always confirm.
+    const deviation = computeLimitPriceDeviation(price, markPrice);
+    if (deviation < PERPS_LIMIT_PRICE_CONFIRM_PCT) {
       applyPrice();
       return;
     }
@@ -207,21 +194,12 @@ export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
               value={price ? `$${price}` : ''}
               onChange={(e) => handlePriceChange(e.target.value)}
               placeholder="$0"
-              className={clsx(
-                'text-[32px] leading-[38px] font-bold bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none',
-                isBlocked ? 'text-r-red-default' : 'text-r-neutral-title-1'
-              )}
+              className="text-[32px] leading-[38px] font-bold bg-transparent border-none p-0 text-center w-full outline-none focus:outline-none text-r-neutral-title-1"
               style={{
                 boxShadow: 'none',
                 backgroundColor: 'transparent',
               }}
             />
-            {/* Absolute-positioned so the error doesn't shift the chips/Set button. */}
-            {isBlocked && (
-              <div className="absolute left-0 right-0 bottom-4 mt-12 text-center text-r-red-default font-medium text-[12px] leading-[16px]">
-                {t('page.perpsDetail.PerpEditLimitPriceTag.blockError')}
-              </div>
-            )}
           </div>
           <div className="flex gap-8 mt-8 mb-24">
             {QUICK_OPTIONS.map((option) => (
@@ -244,7 +222,7 @@ export const EditLimitPriceTag: React.FC<EditLimitPriceTagProps> = ({
             type="primary"
             block
             size="large"
-            disabled={isBlocked || priceEmpty}
+            disabled={priceEmpty}
             className="h-[48px] text-15 font-medium rounded-[8px]"
             onClick={handleSet}
           >

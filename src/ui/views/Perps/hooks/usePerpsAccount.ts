@@ -1,10 +1,11 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import {
-  USDC_TOKEN_ID,
-  UserAbstractionResp,
-} from '@rabby-wallet/hyperliquid-sdk';
+import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
 import { useCallback, useEffect, useMemo } from 'react';
 import { getSpotBalanceKey, PerpsQuoteAsset } from '../constants';
+import {
+  computeAvailableBalance,
+  getPortfolioMarginUsdcAvailable,
+} from '../utils/accountPricing';
 
 type SpotBalance = {
   coin: string;
@@ -42,11 +43,13 @@ export const usePerpsAccount = () => {
 
   const {
     accountValue: spotAccountValue,
-    availableToTrade: spotAvailableToTrade,
     balances: spotBalances,
     balancesMap: spotBalancesMap,
     tokenToAvailableAfterMaintenance,
   } = useRabbySelector((store) => store.perps.spotState);
+
+  const isSpotStateReady = useRabbySelector((s) => s.perps.isSpotStateReady);
+  const isUserDataReady = useRabbySelector((s) => s.perps.isUserDataReady);
 
   const isUnifiedAccount = useMemo(() => {
     return userAbstraction === UserAbstractionResp.unifiedAccount;
@@ -63,7 +66,11 @@ export const usePerpsAccount = () => {
     return isUnifiedAccount || isPortfolioMargin;
   }, [isUnifiedAccount, isPortfolioMargin]);
 
-  const perpsWithdrawable = clearinghouseState?.withdrawable;
+  // Raw perps-side withdrawable in every mode: `perpsWithdrawable` when the
+  // unified overwrite has run (it preserves the pre-overwrite value there),
+  // `withdrawable` otherwise. See computeAvailableBalance.
+  const rawPerpsWithdrawable =
+    clearinghouseState?.perpsWithdrawable ?? clearinghouseState?.withdrawable;
 
   // Portfolio margin needs the server-computed net free margin in USDC —
   // simple stablecoin sums miss LTV-weighted collateral (HYPE/UBTC/...) and
@@ -73,10 +80,7 @@ export const usePerpsAccount = () => {
     if (!isPortfolioMargin) {
       return 0;
     }
-    const entry = tokenToAvailableAfterMaintenance?.find(
-      ([tokenId]) => tokenId === USDC_TOKEN_ID
-    );
-    return entry ? Number(entry[1]) || 0 : 0;
+    return getPortfolioMarginUsdcAvailable(tokenToAvailableAfterMaintenance);
   }, [isPortfolioMargin, tokenToAvailableAfterMaintenance]);
 
   const accountValue = useMemo<number>(() => {
@@ -94,22 +98,35 @@ export const usePerpsAccount = () => {
     clearinghouseState?.marginSummary?.accountValue,
   ]);
 
-  const availableBalance = useMemo<number>(() => {
-    if (isPortfolioMargin) {
-      return portfolioMarginAccountValue;
-    }
-    return Number(
-      isUnifiedAccount
-        ? spotAvailableToTrade
-        : clearinghouseState?.withdrawable || 0
-    );
-  }, [
-    isPortfolioMargin,
-    portfolioMarginAccountValue,
-    isUnifiedAccount,
-    spotAvailableToTrade,
-    clearinghouseState?.withdrawable,
-  ]);
+  // Formula lives in computeAvailableBalance (plain function, unit-tested);
+  // this just wraps it in a memo keyed on the individual slices it reads
+  // (not a whole-object `spotState` selector — see feedback_avoid_large_selector_for_trivial_lookup).
+  const availableBalance = useMemo<number>(
+    () =>
+      computeAvailableBalance({
+        userAbstraction,
+        spotState: {
+          balancesMap: spotBalancesMap,
+          tokenToAvailableAfterMaintenance,
+        },
+        clearinghouseState,
+      }),
+    [
+      userAbstraction,
+      spotBalancesMap,
+      tokenToAvailableAfterMaintenance,
+      clearinghouseState,
+    ]
+  );
+
+  // Which slices Available depends on differs by mode: spot-collateral modes
+  // read the spot side, manual reads only the perps side. Showing a value
+  // before the needed slice lands would flash a too-small balance.
+  const isAvailableBalanceReady = useMemo<boolean>(() => {
+    if (isPortfolioMargin) return isSpotStateReady;
+    if (isUnifiedAccount) return isSpotStateReady && isUserDataReady;
+    return isUserDataReady;
+  }, [isPortfolioMargin, isUnifiedAccount, isSpotStateReady, isUserDataReady]);
 
   const getSpotBalance = useCallback(
     (coin: PerpsQuoteAsset) => {
@@ -127,20 +144,21 @@ export const usePerpsAccount = () => {
       if (isSpotCollateralMode) {
         return getSpotBalance(coin);
       }
-      return coin === 'USDC' ? Number(perpsWithdrawable) || 0 : 0;
+      return coin === 'USDC' ? Number(rawPerpsWithdrawable) || 0 : 0;
     },
     [
       isPortfolioMargin,
       portfolioMarginAccountValue,
       isSpotCollateralMode,
       getSpotBalance,
-      perpsWithdrawable,
+      rawPerpsWithdrawable,
     ]
   );
 
   return {
     accountValue,
     availableBalance,
+    isAvailableBalanceReady,
     isUnifiedAccount,
     isPortfolioMargin,
     getSpotBalance,

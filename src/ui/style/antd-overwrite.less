@@ -427,6 +427,35 @@ textarea {
       display: block;
     }
   }
+  // Perps popup portfolio breakdown: a light card per the design, not the
+  // black default. Scoped to .rectangle so the radius beats .rectangle's own
+  // rule regardless of source order. Dark colours are set by the explicit
+  // `html.dark` override below, not by a specificity tie.
+  &.rectangle.perps-portfolio-breakdown {
+    .ant-tooltip-inner {
+      background-color: var(--r-neutral-bg-1);
+      color: inherit;
+      border: 1px solid var(--r-neutral-line);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 4px 6.5px rgba(0, 0, 0, 0.05),
+        0 13px 15px rgba(0, 0, 0, 0.05);
+    }
+    // Light popover on a light card: the arrow needs the body's hairline or
+    // it vanishes, and it drops 1px into the body so its fill covers the
+    // body's top border under the notch. The placement is bottomLeft
+    // (popover flush with the trigger's left edge), whose antd rule has no
+    // translateX — restore it so TooltipWithMagnetArrow's `left` still lands
+    // the tip on the trigger's center.
+    .ant-tooltip-arrow {
+      z-index: 2;
+      transform: translateY(calc(-100% + 1px)) translateX(-50%);
+    }
+    .ant-tooltip-arrow-content {
+      background-color: var(--r-neutral-bg-1);
+      border: 1px solid var(--r-neutral-line);
+    }
+  }
   &.hide-arrow {
     .ant-tooltip-arrow {
       display: none !important;
@@ -481,6 +510,21 @@ html.dark .ant-tooltip:not(.disable-ant-overwrite) {
     &::before {
       background: var(--rb-neutral-bg-4);
     }
+  }
+}
+
+// Dark mode for the same popover. Declared explicitly because the class
+// bump above (needed to beat .rectangle on radius) also outranks the
+// generic `html.dark` tooltip rule — a specificity tie can no longer
+// pick the dark colours for us. Tokens mirror that generic dark rule.
+html.dark
+  .ant-tooltip:not(.disable-ant-overwrite).rectangle.perps-portfolio-breakdown {
+  .ant-tooltip-inner {
+    background-color: var(--rb-neutral-bg-4);
+    color: var(--r-neutral-title-2);
+  }
+  .ant-tooltip-arrow-content {
+    background-color: var(--rb-neutral-bg-4);
   }
 }
 
