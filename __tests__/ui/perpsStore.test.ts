@@ -17,6 +17,7 @@ jest.mock('@/ui/utils', () => ({
 
 jest.mock('@/ui/views/Perps/sdkManager', () => ({
   getPerpsSDK: jest.fn(),
+  destroyPerpsSDK: jest.fn(),
 }));
 
 jest.mock('@/ui/views/Perps/utils', () => ({
