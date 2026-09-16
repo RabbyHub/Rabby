@@ -2,8 +2,14 @@ import { createPersistStore, patchPersistStore } from 'background/utils';
 import browser from 'webextension-polyfill';
 import { z } from 'zod';
 import { compareExtensionVersions } from '@/utils/extensionVersion';
+import { storage } from '@/background/webapi';
 
 const STORAGE_KEY = 'pendingExtensionUpdate';
+const MANUAL_UPDATE_STORAGE_KEY = 'manualExtensionUpdate';
+const manualUpdateSchema = z.object({
+  fromVersion: z.string().regex(/^\d+(?:\.\d+){2,3}$/),
+  toVersion: z.string().regex(/^\d+(?:\.\d+){2,3}$/),
+});
 
 const extensionUpdateStoreSchema = z.object({
   currentVersion: z.string().default(''),
@@ -119,6 +125,29 @@ export class ExtensionUpdateService {
     return this.checkPromise;
   };
 
+  shouldShowFirstNotice = async (firstOpen: boolean): Promise<boolean> => {
+    if (!firstOpen) return false;
+    try {
+      const manualUpdate = manualUpdateSchema.safeParse(
+        await storage.get(MANUAL_UPDATE_STORAGE_KEY)
+      );
+      const installed = browser.runtime.getManifest().version;
+      // Keep the marker version-scoped: a later automatic update must still
+      // show its release notes, and multiple UI windows must all skip this one.
+      return !(
+        manualUpdate.success &&
+        manualUpdate.data.toVersion === installed &&
+        compareExtensionVersions(manualUpdate.data.fromVersion, installed) < 0
+      );
+    } catch (error) {
+      console.error(
+        '[extensionUpdate] failed to read manual update marker',
+        error
+      );
+      return true;
+    }
+  };
+
   reloadForUpdate = (): Promise<void> => {
     this.reloadPromise ||= (async () => {
       const pendingVersion = await this.getPendingVersion();
@@ -133,7 +162,21 @@ export class ExtensionUpdateService {
         )}`,
         active: true,
       });
-      browser.runtime.reload();
+      const targetVersion = await this.getPendingVersion();
+      if (!targetVersion) return;
+      const previousMarker = await storage.get(MANUAL_UPDATE_STORAGE_KEY);
+      // This background-only marker needs an awaited write: the ordinary
+      // persisted-store setter is fire-and-forget and may not finish on reload.
+      await storage.set(MANUAL_UPDATE_STORAGE_KEY, {
+        fromVersion: currentVersion,
+        toVersion: targetVersion,
+      });
+      try {
+        browser.runtime.reload();
+      } catch (error) {
+        await storage.set(MANUAL_UPDATE_STORAGE_KEY, previousMarker ?? null);
+        throw error;
+      }
     })().finally(() => {
       this.reloadPromise = undefined;
     });

@@ -24,9 +24,13 @@ jest.mock('@/ui/wallet', () => ({
   },
 }));
 
-jest.mock('changeLogs/index', () => ({
-  getUpdateContent: jest.fn(),
-}), { virtual: true });
+jest.mock(
+  'changeLogs/index',
+  () => ({
+    getUpdateContent: jest.fn(),
+  }),
+  { virtual: true }
+);
 
 const mockedGetUpdateContent = getUpdateContent as jest.Mock;
 const mockedGetIsFirstOpen = wallet.getIsFirstOpen as jest.Mock;
@@ -94,5 +98,27 @@ describe('app version store', () => {
 
     expect(useAppVersionStore.getState().firstNotice).toBe(false);
     expect(mockedUpdateIsFirstOpen).toHaveBeenCalledTimes(1);
+  });
+
+  test('hides even a stale visible notice when the background suppresses a manual upgrade', async () => {
+    process.env.release = '9.9.9';
+    mockedGetIsFirstOpen.mockResolvedValue(false);
+    mockedGetIsNewUser.mockResolvedValue(false);
+    mockedGetUpdateContent.mockReturnValue('Release notes');
+    useAppVersionStore.setState({ firstNotice: true });
+    const consoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    try {
+      await useAppVersionStore.getState().checkIfFirstLoginAsync();
+      expect(useAppVersionStore.getState()).toMatchObject({
+        firstNotice: false,
+        updateContent: 'Release notes',
+        version: '9.9.9',
+      });
+      expect(mockedUpdateIsFirstOpen).not.toHaveBeenCalled();
+    } finally {
+      consoleError.mockRestore();
+    }
   });
 });

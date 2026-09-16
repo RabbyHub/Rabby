@@ -265,6 +265,10 @@ describe('extension update service', () => {
     await service.reloadForUpdate();
     expect(browser.tabs.create).not.toHaveBeenCalled();
     expect(browser.runtime.reload).not.toHaveBeenCalled();
+    expect(setStorage).not.toHaveBeenCalledWith(
+      'manualExtensionUpdate',
+      expect.anything()
+    );
   });
 
   it('waits for the updating tab before reloading and deduplicates concurrent requests', async () => {
@@ -318,7 +322,155 @@ describe('extension update service', () => {
 
     await expect(service.reloadForUpdate()).rejects.toThrow(error);
     expect(browser.runtime.reload).not.toHaveBeenCalled();
+    expect(setStorage).not.toHaveBeenCalledWith(
+      'manualExtensionUpdate',
+      expect.anything()
+    );
     await service.reloadForUpdate();
     expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
+  });
+
+  it('waits for the manual update marker to be saved before reloading', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    let finishWrite!: () => void;
+    let notifyWrite!: () => void;
+    const writeStarted = new Promise<void>((resolve) => {
+      notifyWrite = resolve;
+    });
+    const writeFinished = new Promise<void>((resolve) => {
+      finishWrite = resolve;
+    });
+    setStorage.mockImplementationOnce(() => {
+      notifyWrite();
+      return writeFinished;
+    });
+    const reload = service.reloadForUpdate();
+    expect(service.reloadForUpdate()).toBe(reload);
+    await writeStarted;
+    expect(setStorage).toHaveBeenLastCalledWith('manualExtensionUpdate', {
+      fromVersion: '1.0.0',
+      toVersion: '1.1.0',
+    });
+    expect(browser.runtime.reload).not.toHaveBeenCalled();
+    finishWrite();
+    await reload;
+    expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
+  });
+
+  it('skips the manually installed version across restarts and windows, but not a later automatic update', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    await service.reloadForUpdate();
+    const marker = setStorage.mock.calls.find(
+      ([key]) => key === 'manualExtensionUpdate'
+    )![1];
+    getStorage.mockResolvedValue(marker);
+    await expect(service.shouldShowFirstNotice(true)).resolves.toBe(true);
+    getManifest.mockReturnValue({ version: '1.1.0' });
+    const restarted = new ExtensionUpdateService();
+    await expect(restarted.shouldShowFirstNotice(true)).resolves.toBe(false);
+    await expect(restarted.shouldShowFirstNotice(true)).resolves.toBe(false);
+    await expect(
+      new ExtensionUpdateService().shouldShowFirstNotice(true)
+    ).resolves.toBe(false);
+    getManifest.mockReturnValue({ version: '1.2.0' });
+    await expect(restarted.shouldShowFirstNotice(true)).resolves.toBe(true);
+  });
+
+  it('does not mark automatic updates as manual', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    getManifest.mockReturnValue({ version: '1.1.0' });
+    await expect(service.shouldShowFirstNotice(true)).resolves.toBe(true);
+    expect(setStorage).not.toHaveBeenCalledWith(
+      'manualExtensionUpdate',
+      expect.anything()
+    );
+  });
+
+  it.each([
+    undefined,
+    null,
+    {},
+    { fromVersion: 'bad', toVersion: '1.0.0' },
+    { fromVersion: '1.0.0', toVersion: '1.0.0' },
+    { fromVersion: '1.1.0', toVersion: '1.0.0' },
+    { fromVersion: '0.8.0', toVersion: '0.9.0' },
+  ])(
+    'keeps the first notice for absent, invalid or unmatched markers (%j)',
+    async (marker) => {
+      getStorage.mockResolvedValue(marker);
+      await expect(service.shouldShowFirstNotice(true)).resolves.toBe(true);
+    }
+  );
+
+  it('never reopens an already acknowledged notice', async () => {
+    await expect(service.shouldShowFirstNotice(false)).resolves.toBe(false);
+    expect(getStorage).not.toHaveBeenCalled();
+  });
+
+  it('keeps the normal first-notice behavior if reading the marker fails', async () => {
+    const error = new Error('Storage unavailable');
+    getStorage.mockRejectedValueOnce(error);
+    const log = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    try {
+      await expect(service.shouldShowFirstNotice(true)).resolves.toBe(true);
+      expect(log).toHaveBeenCalled();
+    } finally {
+      log.mockRestore();
+    }
+  });
+
+  it('does not reload when saving the marker fails and allows retry', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    const error = new Error('Cannot save marker');
+    setStorage.mockRejectedValueOnce(error);
+    await expect(service.reloadForUpdate()).rejects.toThrow(error);
+    expect(browser.runtime.reload).not.toHaveBeenCalled();
+    await expect(service.shouldShowFirstNotice(true)).resolves.toBe(true);
+    await service.reloadForUpdate();
+    expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
+  });
+
+  it('restores the previous marker if runtime.reload throws', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    const previous = { fromVersion: '0.8.0', toVersion: '0.9.0' };
+    getStorage.mockResolvedValue(previous);
+    const error = new Error('Cannot reload');
+    (browser.runtime.reload as jest.Mock).mockImplementationOnce(() => {
+      throw error;
+    });
+    await expect(service.reloadForUpdate()).rejects.toThrow(error);
+    expect(setStorage).toHaveBeenLastCalledWith(
+      'manualExtensionUpdate',
+      previous
+    );
+    getManifest.mockReturnValue({ version: '1.1.0' });
+    await expect(service.shouldShowFirstNotice(true)).resolves.toBe(true);
+  });
+
+  it('marks the latest pending version if it changes while opening the tab', async () => {
+    await service.init();
+    onUpdateAvailable({ version: '1.1.0' });
+    let finishTab!: (tab: object) => void;
+    (browser.tabs.create as jest.Mock).mockReturnValueOnce(
+      new Promise((resolve) => {
+        finishTab = resolve;
+      })
+    );
+    const reload = service.reloadForUpdate();
+    await service.getPendingVersion();
+    onUpdateAvailable({ version: '1.2.0' });
+    finishTab({ id: 1 });
+    await reload;
+    expect(setStorage).toHaveBeenLastCalledWith('manualExtensionUpdate', {
+      fromVersion: '1.0.0',
+      toVersion: '1.2.0',
+    });
   });
 });

@@ -56,10 +56,7 @@ export const useAppVersionStore = create<AppVersionStore>()((set) => ({
       isNewUser,
       version,
       updateContent,
-      ...(firstOpen &&
-        updateContent && {
-          firstNotice: firstOpen,
-        }),
+      firstNotice: !!(firstOpen && updateContent),
     });
   },
 
