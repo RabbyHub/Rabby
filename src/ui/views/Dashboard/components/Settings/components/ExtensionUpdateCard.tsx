@@ -73,11 +73,33 @@ export const ExtensionUpdateCard = ({
             {t('page.dashboard.settings.updateCard.title')}
           </div>
           <div className="extension-update-card-version">
-            <span>v{version}</span>
+            <span>V {version}</span>
             {level > 1 && <img src={Dot} width={5} height={5} alt="" />}
           </div>
         </div>
-        <div className="extension-update-card-notes">{changelog}</div>
+        <div className="extension-update-card-notes">
+          {changelog?.split('\n').map((line, i) => {
+            if (line.startsWith('- ')) {
+              return (
+                <div key={i} className="extension-update-card-note-li">
+                  {line.slice(2)}
+                </div>
+              );
+            }
+            if (line.startsWith('# ')) {
+              return (
+                <div key={i} className="extension-update-card-note-title">
+                  {line.slice(2)}
+                </div>
+              );
+            }
+            return (
+              <div key={i} className="extension-update-card-note-line">
+                {line}
+              </div>
+            );
+          })}
+        </div>
         <Button
           type="primary"
           className="extension-update-card-button"
