@@ -1396,8 +1396,9 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
         // Same guard as the success path: a late failure for the previous
         // account must not mark the current account's staking as errored.
         if (
-          usePerpsStore.getState().currentPerpsAccount?.address?.toLowerCase() !==
-          key
+          usePerpsStore
+            .getState()
+            .currentPerpsAccount?.address?.toLowerCase() !== key
         ) {
           return;
         }
@@ -1624,8 +1625,7 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
       const perpsWithdrawable = new BigNumber(aggregated.withdrawable || 0);
       aggregated.perpsWithdrawable = perpsWithdrawable.toString();
       const usdcAvailable =
-        live.spotState.balancesMap?.[getSpotBalanceKey('USDC')]?.available ||
-        0;
+        live.spotState.balancesMap?.[getSpotBalanceKey('USDC')]?.available || 0;
       aggregated.withdrawable = perpsWithdrawable
         .plus(usdcAvailable)
         .toString();
