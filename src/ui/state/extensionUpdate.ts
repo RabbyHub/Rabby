@@ -31,9 +31,6 @@ export const selectExtensionUpdateLevel = ({
     ? versionInfo.version.level
     : versionInfo?.latest_version.level ?? 0;
 
-export const selectExtensionUpdateBadge = (state: ExtensionUpdateStore) =>
-  selectHasNewExtensionVersion(state) && selectExtensionUpdateLevel(state) >= 2;
-
 export const selectExtensionUpdateBanner = (
   state: ExtensionUpdateStore,
   now = Date.now()
@@ -65,6 +62,13 @@ export const selectExtensionUpdateSettingsCard = (
   if (dismissal.level <= 2) return level >= 3;
   return now >= dismissal.dismissedUntil;
 };
+
+export const selectExtensionUpdateBadge = (
+  state: ExtensionUpdateStore,
+  now = Date.now()
+) =>
+  selectExtensionUpdateLevel(state) >= 2 &&
+  selectExtensionUpdateSettingsCard(state, now);
 
 let refreshPromise: Promise<void> | undefined;
 

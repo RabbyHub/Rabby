@@ -1,4 +1,4 @@
-import { act, createElement } from 'react';
+import { act, createElement, Fragment } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import browser from 'webextension-polyfill';
 import eventBus from '@/eventBus';
@@ -6,9 +6,13 @@ import type { ExtensionUpdateStore as ServiceStore } from '@/background/service/
 import {
   selectExtensionUpdateSettingsCard,
   selectExtensionUpdateBanner,
+  selectExtensionUpdateBadge,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
-import { useExtensionUpdateSettingsCard } from '@/ui/hooks/useExtensionUpdateSettingsCard';
+import {
+  useExtensionUpdateSettingsCard,
+  useExtensionUpdateBadge,
+} from '@/ui/hooks/useExtensionUpdateSettingsCard';
 import { ExtensionUpdateCard } from '@/ui/views/Dashboard/components/Settings/components/ExtensionUpdateCard';
 import { ExtensionUpdateBanner } from '@/ui/views/Dashboard/components/ExtensionUpdateBanner';
 import { wallet } from '@/ui/wallet';
@@ -81,6 +85,13 @@ const SettingsCard = () => {
     : createElement('div', { className: 'rating' }, 'Rating');
 };
 
+const SettingsBadge = () => {
+  const visible = useExtensionUpdateBadge();
+  return visible
+    ? createElement('span', { className: 'settings-update-badge' })
+    : null;
+};
+
 describe('settings update card dismissal', () => {
   let root: Root;
   let container: HTMLDivElement;
@@ -121,7 +132,19 @@ describe('settings update card dismissal', () => {
     useExtensionUpdateStore.persist.destroy();
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
   });
-  const render = () => act(() => root.render(createElement(SettingsCard)));
+  const render = () =>
+    act(() =>
+      root.render(
+        createElement(
+          Fragment,
+          null,
+          createElement(SettingsBadge),
+          createElement(SettingsCard)
+        )
+      )
+    );
+  const badgeShown = () =>
+    container.querySelector('.settings-update-badge') !== null;
   const close = () =>
     act(() =>
       container
@@ -134,14 +157,17 @@ describe('settings update card dismissal', () => {
     async (level) => {
       useExtensionUpdateStore.setState({ versionInfo: makeInfo(level) });
       render();
+      expect(badgeShown()).toBe(level >= 2);
       close();
       expect(shown()).toBe(false);
+      expect(badgeShown()).toBe(false);
       expect(container.querySelector('.rating')).not.toBeNull();
       act(() => root.render(null));
       jest.advanceTimersByTime(30 * 24 * 60 * 60 * 1000);
       render();
       expect(container.querySelector('.extension-update-card')).toBeNull();
       expect(shown()).toBe(false);
+      expect(badgeShown()).toBe(false);
       useExtensionUpdateStore.getState().revealSettingsCard();
       expect(shown()).toBe(false);
       await useExtensionUpdateStore.persist.flush();
@@ -169,6 +195,7 @@ describe('settings update card dismissal', () => {
       for (const nextLevel of [1, 2, 3, 4] as const) {
         useExtensionUpdateStore.setState({ versionInfo: makeInfo(nextLevel) });
         expect(shown()).toBe(nextLevel >= 3);
+        expect(selectExtensionUpdateBadge(state())).toBe(nextLevel >= 3);
       }
     }
   );
@@ -179,12 +206,15 @@ describe('settings update card dismissal', () => {
       useExtensionUpdateStore.setState({ versionInfo: makeInfo(level) });
       state().dismissSettingsCard();
       expect(shown()).toBe(false);
+      expect(selectExtensionUpdateBadge(state())).toBe(false);
       useExtensionUpdateStore.setState({
         versionInfo: makeInfo(level, '1.2.0'),
       });
       expect(shown()).toBe(false);
+      expect(selectExtensionUpdateBadge(state())).toBe(false);
       broadcast({ pendingVersion: '1.2.0' });
       expect(shown()).toBe(true);
+      expect(selectExtensionUpdateBadge(state())).toBe(level >= 2);
     }
   );
 
@@ -203,15 +233,19 @@ describe('settings update card dismissal', () => {
   it('shows level 3 again after the 1-minute test cooldown, even while settings stays open', () => {
     expect(UPDATE_SETTINGS_CARD_COOLDOWN).toBe(60 * 1000);
     render();
+    expect(badgeShown()).toBe(true);
     close();
+    expect(badgeShown()).toBe(false);
     const deadline = Date.now() + UPDATE_SETTINGS_CARD_COOLDOWN;
     expect(state().settingsCardDismissal?.dismissedUntil).toBe(deadline);
     expect(state().dismissedUntil).toBe(0);
     expect(selectExtensionUpdateBanner(state())).toBe(true);
     act(() => jest.advanceTimersByTime(UPDATE_SETTINGS_CARD_COOLDOWN - 1));
     expect(container.querySelector('.extension-update-card')).toBeNull();
+    expect(badgeShown()).toBe(false);
     act(() => jest.advanceTimersByTime(1));
     expect(container.querySelector('.extension-update-card')).not.toBeNull();
+    expect(badgeShown()).toBe(true);
     expect(container.querySelector('.rating')).toBeNull();
   });
 
@@ -230,20 +264,24 @@ describe('settings update card dismissal', () => {
             onDismiss: state().dismissBanner,
             onCheck: state().revealSettingsCard,
           }),
+          createElement(SettingsBadge),
           createElement(SettingsCard)
         )
       )
     );
     expect(container.querySelector('.extension-update-card')).toBeNull();
+    expect(badgeShown()).toBe(false);
     act(() =>
       container
         .querySelector<HTMLButtonElement>('.extension-update-banner-check')!
         .click()
     );
     expect(container.querySelector('.extension-update-card')).not.toBeNull();
+    expect(badgeShown()).toBe(true);
     expect(state().settingsCardDismissal).toBeNull();
     expect(state().dismissedUntil).toBe(0);
     close();
+    expect(badgeShown()).toBe(false);
     expect(state().settingsCardDismissal!.dismissedUntil).toBe(
       firstDeadline + 1000
     );
@@ -267,6 +305,31 @@ describe('settings update card dismissal', () => {
     expect(container.querySelector('.extension-update-card')).not.toBeNull();
   });
 
+  it('restores the badge at the deadline even when the settings card is unmounted', async () => {
+    state().dismissSettingsCard();
+    await useExtensionUpdateStore.persist.flush();
+    jest.clearAllMocks();
+    act(() => root.render(createElement(SettingsBadge)));
+    expect(badgeShown()).toBe(false);
+    act(() => jest.advanceTimersByTime(UPDATE_SETTINGS_CARD_COOLDOWN - 1));
+    expect(badgeShown()).toBe(false);
+    act(() => jest.advanceTimersByTime(1));
+    expect(badgeShown()).toBe(true);
+    expect(container.querySelector('.extension-update-card')).toBeNull();
+    await useExtensionUpdateStore.persist.flush();
+    expect(wallet.setStorageItem).not.toHaveBeenCalled();
+    act(() => root.render(null));
+    expect(jest.getTimerCount()).toBe(0);
+  });
+
+  it('does not hide the settings badge when only the dashboard banner is dismissed', () => {
+    render();
+    act(() => state().dismissBanner());
+    expect(selectExtensionUpdateBanner(state())).toBe(false);
+    expect(shown()).toBe(true);
+    expect(badgeShown()).toBe(true);
+  });
+
   it('cannot show or dismiss a card until the pending version matches the latest release', async () => {
     broadcast({ pendingVersion: '1.0.1' });
     expect(shown()).toBe(false);
@@ -284,9 +347,11 @@ describe('settings update card dismissal', () => {
     useExtensionUpdateStore.setState({ versionInfo: makeInfo(4) });
     render();
     expect(container.querySelector('.extension-update-card')).not.toBeNull();
+    expect(badgeShown()).toBe(true);
     expect(container.querySelector('.extension-update-card-close')).toBeNull();
     state().dismissSettingsCard();
     expect(shown()).toBe(true);
+    expect(badgeShown()).toBe(true);
     await useExtensionUpdateStore.persist.flush();
     expect(wallet.setStorageItem).not.toHaveBeenCalled();
   });
@@ -300,6 +365,7 @@ describe('settings update card dismissal', () => {
       },
     });
     expect(shown()).toBe(true);
+    expect(selectExtensionUpdateBadge(state())).toBe(true);
     const previous = state().settingsCardDismissal;
     state().dismissSettingsCard();
     expect(state().settingsCardDismissal).toBe(previous);
@@ -311,6 +377,7 @@ describe('settings update card dismissal', () => {
     jest.setSystemTime(Date.now() + UPDATE_SETTINGS_CARD_COOLDOWN);
     act(() => window.dispatchEvent(new Event('focus')));
     expect(container.querySelector('.extension-update-card')).not.toBeNull();
+    expect(badgeShown()).toBe(true);
   });
 
   it('applies dismissal and Check broadcasts to all subscribers without writing back', async () => {
@@ -319,12 +386,17 @@ describe('settings update card dismissal', () => {
         createElement(
           'div',
           null,
+          createElement(SettingsBadge),
+          createElement(SettingsBadge),
           createElement(SettingsCard),
           createElement(SettingsCard)
         )
       )
     );
     expect(container.querySelectorAll('.extension-update-card')).toHaveLength(
+      2
+    );
+    expect(container.querySelectorAll('.settings-update-badge')).toHaveLength(
       2
     );
     act(() =>
@@ -340,12 +412,21 @@ describe('settings update card dismissal', () => {
     expect(container.querySelectorAll('.extension-update-card')).toHaveLength(
       0
     );
+    expect(container.querySelectorAll('.settings-update-badge')).toHaveLength(
+      0
+    );
     act(() => broadcast({ settingsCardDismissal: null }, revision - 1));
     expect(container.querySelectorAll('.extension-update-card')).toHaveLength(
       0
     );
+    expect(container.querySelectorAll('.settings-update-badge')).toHaveLength(
+      0
+    );
     act(() => broadcast({ settingsCardDismissal: null }));
     expect(container.querySelectorAll('.extension-update-card')).toHaveLength(
+      2
+    );
+    expect(container.querySelectorAll('.settings-update-badge')).toHaveLength(
       2
     );
     await useExtensionUpdateStore.persist.flush();
@@ -370,11 +451,13 @@ describe('settings update card dismissal', () => {
     try {
       state().dismissSettingsCard();
       expect(shown()).toBe(false);
+      expect(selectExtensionUpdateBadge(state())).toBe(false);
       await expect(useExtensionUpdateStore.persist.flush()).rejects.toThrow(
         error
       );
       expect(state().settingsCardDismissal).toBeNull();
       expect(shown()).toBe(true);
+      expect(selectExtensionUpdateBadge(state())).toBe(true);
     } finally {
       log.mockRestore();
     }
@@ -402,6 +485,7 @@ describe('settings update card dismissal', () => {
     await act(async () => broadcast({ settingsCardDismissal: dismissal }, 0));
     expect(state().settingsCardDismissal).toEqual(dismissal);
     expect(shown()).toBe(false);
+    expect(selectExtensionUpdateBadge(state())).toBe(false);
     expect(wallet.setStorageItem).not.toHaveBeenCalled();
   });
 });

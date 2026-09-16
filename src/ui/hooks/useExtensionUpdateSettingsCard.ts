@@ -1,10 +1,14 @@
 import { useEffect, useState } from 'react';
+import type { ExtensionUpdateStore } from '@/ui/state/extensionUpdate';
 import {
+  selectExtensionUpdateBadge,
   selectExtensionUpdateSettingsCard,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 
-export const useExtensionUpdateSettingsCard = () => {
+const useExtensionUpdateVisibility = (
+  selector: (state: ExtensionUpdateStore, now: number) => boolean
+) => {
   const dismissedUntil = useExtensionUpdateStore(
     (state) => state.settingsCardDismissal?.dismissedUntil ?? 0
   );
@@ -31,7 +35,11 @@ export const useExtensionUpdateSettingsCard = () => {
     };
   }, [dismissedUntil]);
 
-  return useExtensionUpdateStore((state) =>
-    selectExtensionUpdateSettingsCard(state, now)
-  );
+  return useExtensionUpdateStore((state) => selector(state, now));
 };
+
+export const useExtensionUpdateSettingsCard = () =>
+  useExtensionUpdateVisibility(selectExtensionUpdateSettingsCard);
+
+export const useExtensionUpdateBadge = () =>
+  useExtensionUpdateVisibility(selectExtensionUpdateBadge);
