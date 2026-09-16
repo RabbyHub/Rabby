@@ -6,6 +6,7 @@ import {
   usdcMarkPx,
 } from '@/ui/views/DesktopPerps/components/AccountInfo/utils';
 import {
+  hasNonPerpsPortfolioAssets,
   getStakedHypeAmount,
   computeStakingValue,
   computePerpsPortfolioValue,
@@ -243,6 +244,29 @@ describe('computeLivePortfolioValue gating', () => {
     clearinghouseState: { marginSummary: { accountValue: '50' } },
   };
 
+  it('keeps the fallback until staked HYPE has a finite positive quote', () => {
+    const state = {
+      ...ready,
+      stakingSummary: {
+        delegated: '5',
+        undelegated: '0',
+        totalPendingWithdrawal: '0',
+      },
+    };
+    for (const markPx of [undefined, '0', '-1', 'NaN', 'Infinity']) {
+      expect(
+        computeLivePortfolioValue({
+          ...state,
+          spotAssetCtxs: { '@107': { markPx } },
+        })
+      ).toBeNull();
+    }
+    expect(computeLivePortfolioValue(state)).toBe(300);
+    expect(computeLivePortfolioValue({ ...ready, spotAssetCtxs: {} })).toBe(
+      100
+    );
+  });
+
   it('returns null without spotMeta', () => {
     expect(computeLivePortfolioValue({ ...ready, spotMeta: null })).toBeNull();
   });
@@ -364,5 +388,32 @@ describe('computeAvailableBalance', () => {
         clearinghouseState: { withdrawable: '999' },
       })
     ).toBe(42);
+  });
+});
+
+describe('hasNonPerpsPortfolioAssets', () => {
+  it.each(['delegated', 'undelegated', 'totalPendingWithdrawal'] as const)(
+    'shows the breakdown for staking-only %s balances',
+    (field) => {
+      expect(
+        hasNonPerpsPortfolioAssets({
+          spotState: { balances: [] },
+          stakingSummary: {
+            delegated: '0',
+            undelegated: '0',
+            totalPendingWithdrawal: '0',
+            [field]: '2',
+          },
+        })
+      ).toBe(true);
+    }
+  );
+  it('hides the breakdown for an empty account and keeps spot balances eligible', () => {
+    expect(hasNonPerpsPortfolioAssets({ stakingSummary: null })).toBe(false);
+    expect(
+      hasNonPerpsPortfolioAssets({
+        spotState: { balances: [bal('USDC', 0, '1')] },
+      })
+    ).toBe(true);
   });
 });

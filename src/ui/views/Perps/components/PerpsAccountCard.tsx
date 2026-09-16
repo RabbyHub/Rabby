@@ -15,6 +15,7 @@ import {
   isPortfolioAllZero,
 } from '../utils/perpsPortfolio';
 import type { PortfolioPeriodKey } from '../utils/perpsPortfolio';
+import { hasNonPerpsPortfolioAssets } from '../utils/accountPricing';
 import type { PerpsBreakdownMode } from '../utils/accountPricing';
 import { PerpsQuoteAsset } from '../constants';
 import { PerpsPortfolioChart } from './PerpsPortfolioChart';
@@ -188,14 +189,14 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
   const headlineValue = viewState === 'data' ? displayValue ?? 0 : 0;
 
   // No info icon in the empty/zero state (matches the Figma empty-state
-  // frame) or when there is nothing to break down — no spot asset at all
+  // frame) or when there is nothing to break down — no spot or staking assets
   // (mobile's hasNonPerpsAssets). isUserDataReady also guards the
   // account-switch window where clearinghouseState still holds the previous
   // account's numbers (see setCurrentPerpsAccount).
   const isUserDataReady = useRabbySelector((s) => s.perps.isUserDataReady);
   // A boolean that flips on balance changes, not on price ticks.
   const hasNonPerpsAssets = useRabbySelector((s) =>
-    s.perps.spotState.balances.some((b) => Number(b.total) > 0)
+    hasNonPerpsPortfolioAssets(s.perps)
   );
   const breakdownMode: PerpsBreakdownMode = isPortfolioMargin
     ? 'portfolioMargin'

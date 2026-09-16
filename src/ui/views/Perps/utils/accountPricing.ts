@@ -120,13 +120,22 @@ export const computeLivePortfolioValue = (perps: {
     return null;
   }
 
+  const stakingHype = getStakedHypeAmount(perps.stakingSummary);
+  if (new BigNumber(stakingHype).gt(0)) {
+    const price = usdcMarkPx(
+      STAKING_TOKEN_NAME,
+      perps.spotAssetCtxs || {},
+      perps.spotMeta
+    );
+    if (!Number.isFinite(price) || price <= 0) return null;
+  }
   const total = computePerpsPortfolioValue({
     balances: perps.spotState?.balances || [],
     includePerpsAccountValue: !isSpotCollateral,
     perpsAccountValue: perps.clearinghouseState?.marginSummary?.accountValue,
     spotAssetCtxs: perps.spotAssetCtxs || {},
     spotMeta: perps.spotMeta,
-    stakingHype: getStakedHypeAmount(perps.stakingSummary),
+    stakingHype,
   });
   // Cent-round so price ticks only move the value when the display changes.
   return Math.round(total * 100) / 100;
@@ -264,3 +273,11 @@ export const computePortfolioBreakdownValues = (
     stakingValue: null,
   };
 };
+
+/** Balance-only selector: opening the breakdown does not depend on price ticks. */
+export const hasNonPerpsPortfolioAssets = (perps: {
+  spotState?: { balances?: Pick<SpotBalance, 'total'>[] };
+  stakingSummary?: StakingSummaryAmounts | null;
+}): boolean =>
+  !!perps.spotState?.balances?.some((balance) => Number(balance.total) > 0) ||
+  new BigNumber(getStakedHypeAmount(perps.stakingSummary)).gt(0);
