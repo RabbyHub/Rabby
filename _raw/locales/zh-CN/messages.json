@@ -4363,12 +4363,12 @@
       },
       "PerpsClosePositionPopup": {
         "title": "平仓 {{coin}}",
-        "receive": "接收",
+        "receive": "预计收到",
         "confirm": "确认",
         "amount": "数量",
         "total": "总计",
         "fee": "手续费",
-        "closedPnl": "已实现盈亏",
+        "closedPnl": "预计平仓盈亏",
         "minimumWarning": "最低平仓金额为 {{percent}}%"
       },
       "PerpsAutoCloseModal": {

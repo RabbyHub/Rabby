@@ -4315,14 +4315,14 @@
         "exceedMaxReduction": "最大ドローダウンを超えました"
       },
       "PerpsClosePositionPopup": {
-        "receive": "受け取る",
+        "receive": "予想受取額",
         "fee": "取引手数料",
         "total": "合計",
         "minimumWarning": "最小決済数量は {{percent}}%",
         "confirm": "確認",
         "amount": "数量",
         "title": "{{coin}} 建玉を決済する",
-        "closedPnl": "実現損益"
+        "closedPnl": "予想決済損益"
       },
       "PerpsAutoCloseModal": {
         "noPosition": "まず証拠金を入力してください。",

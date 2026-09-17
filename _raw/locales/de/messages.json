@@ -4317,12 +4317,12 @@
       "PerpsClosePositionPopup": {
         "confirm": "Bestätigen",
         "fee": "Gebühr",
-        "receive": "Empfangen",
+        "receive": "Geschätzter Erhalt",
         "title": "{{coin}}-Position schließen",
         "total": "Gesamt",
         "amount": "Betrag",
         "minimumWarning": "Der Mindestbetrag zum Schließen beträgt {{percent}} %.",
-        "closedPnl": "Realisiertes PnL"
+        "closedPnl": "Gesch. PnL bei Schließung"
       },
       "PerpsAutoCloseModal": {
         "currentPrice": "Aktueller Preis: ",

@@ -4318,8 +4318,8 @@
         "confirm": "확인",
         "fee": "수수료",
         "minimumWarning": "최소 청산 금액은 {{percent}}%",
-        "receive": "받기",
-        "closedPnl": "실현 손익"
+        "receive": "예상 수령액",
+        "closedPnl": "예상 실현 PNL"
       },
       "PerpsAutoCloseModal": {
         "stopLoss": "손절매",

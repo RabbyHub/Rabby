@@ -4313,12 +4313,12 @@
       },
       "PerpsClosePositionPopup": {
         "confirm": "Xác nhận",
-        "receive": "Nhận",
+        "receive": "Ước tính nhận được",
         "title": "Đóng vị thế {{coin}}",
         "fee": "Phí",
         "total": "Tổng",
         "minimumWarning": "Mức đóng vị thế tối thiểu là {{percent}}%",
-        "closedPnl": "PNL đã thực hiện",
+        "closedPnl": "PNL đóng lệnh ước tính",
         "amount": "Số lượng"
       },
       "PerpsAutoCloseModal": {

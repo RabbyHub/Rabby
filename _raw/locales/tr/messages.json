@@ -4322,10 +4322,10 @@
         "minimumWarning": "Kapanış için asgari tutar {{percent}}%",
         "total": "Toplam",
         "fee": "Ücret",
-        "receive": "Al",
+        "receive": "Tahmini alınacak",
         "amount": "Miktar",
         "title": "{{coin}} Pozisyonunu Kapat",
-        "closedPnl": "Kapatılan Kar/Zarar"
+        "closedPnl": "Tahmini kapanış PnL'si"
       },
       "PerpsAutoCloseModal": {
         "cancel": "İptal",

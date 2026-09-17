@@ -4330,11 +4330,11 @@
         "amount": "Сума",
         "title": "Закрити позицію {{coin}}",
         "confirm": "Підтвердити",
-        "receive": "Отримати",
+        "receive": "Орієнтовно до отримання",
         "minimumWarning": "Мінімальна сума для закриття позиції становить {{percent}}%.",
         "fee": "Комісія",
         "total": "Разом",
-        "closedPnl": "Реалізований PNL"
+        "closedPnl": "Орієнтовний PnL"
       },
       "PerpsAutoCloseModal": {
         "youLoss": "Ви програли",

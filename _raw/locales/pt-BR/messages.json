@@ -4321,10 +4321,10 @@
         "fee": "Taxa",
         "confirm": "Confirmar",
         "total": "Total",
-        "receive": "Receber",
+        "receive": "Recebimento estimado",
         "minimumWarning": "O valor mínimo de fechamento é {{percent}}%",
         "title": "Encerrar posição de {{coin}}",
-        "closedPnl": "P/L realizado"
+        "closedPnl": "PnL estimado"
       },
       "PerpsAutoCloseModal": {
         "confirm": "Confirmar",

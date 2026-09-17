@@ -4659,11 +4659,11 @@
       "PerpsClosePositionPopup": {
         "confirm": "Confirmer",
         "total": "Total",
-        "receive": "Recevoir",
+        "receive": "Réception estimée",
         "title": "Fermer la position {{coin}}",
         "fee": "Frais",
         "amount": "Montant",
-        "closedPnl": "PNL réalisé",
+        "closedPnl": "PnL de clôture estimé",
         "minimumWarning": "Le montant minimum de clôture de position est de {{percent}}%."
       },
       "PerpsAutoCloseModal": {

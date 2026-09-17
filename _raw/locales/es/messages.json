@@ -4316,12 +4316,12 @@
       },
       "PerpsClosePositionPopup": {
         "total": "Total",
-        "receive": "Recibir",
+        "receive": "Recepción estimada",
         "amount": "Cantidad",
         "minimumWarning": "El monto mínimo de cierre es {{percent}}%",
         "title": "Cerrar posición de {{coin}}",
         "confirm": "Confirmar",
-        "closedPnl": "PnL realizado",
+        "closedPnl": "PnL de cierre estimado",
         "fee": "Comisión"
       },
       "PerpsAutoCloseModal": {

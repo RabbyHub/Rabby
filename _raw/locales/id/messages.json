@@ -4312,12 +4312,12 @@
         "exceedMaxReduction": "Melampaui pengurangan maksimum"
       },
       "PerpsClosePositionPopup": {
-        "receive": "Terima",
+        "receive": "Estimasi Jumlah Diterima",
         "confirm": "Konfirmasi",
         "amount": "Jumlah",
         "total": "Total",
         "fee": "Biaya",
-        "closedPnl": "PNL terealisasi",
+        "closedPnl": "Estimasi PNL Penutupan",
         "title": "Tutup Posisi {{coin}}",
         "minimumWarning": "Jumlah penutupan minimum adalah {{percent}}%"
       },

@@ -4323,8 +4323,8 @@
         "fee": "Комиссия",
         "total": "Итого",
         "minimumWarning": "Минимальная сумма закрытия составляет {{percent}}%.",
-        "receive": "Получить",
-        "closedPnl": "Реализованный PNL"
+        "receive": "Расч. к получению",
+        "closedPnl": "Расч. PnL при закрытии"
       },
       "PerpsAutoCloseModal": {
         "confirm": "Подтвердить",

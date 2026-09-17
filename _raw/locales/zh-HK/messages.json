@@ -4364,8 +4364,8 @@
       "PerpsClosePositionPopup": {
         "title": "平倉 {{coin}}",
         "amount": "數量",
-        "receive": "接收",
-        "closedPnl": "已實現盈虧",
+        "receive": "預計收到",
+        "closedPnl": "預計平倉盈虧",
         "total": "總額",
         "fee": "費用",
         "minimumWarning": "最低平倉比例為 {{percent}}%",

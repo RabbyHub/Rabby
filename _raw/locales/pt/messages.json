@@ -4312,12 +4312,12 @@
         "exceedMaxReduction": "Ultrapassa a redução máxima"
       },
       "PerpsClosePositionPopup": {
-        "receive": "Receber",
+        "receive": "Receção estimada",
         "confirm": "Confirmar",
         "total": "Total",
         "fee": "Taxa",
         "amount": "Quantidade",
-        "closedPnl": "P/L realizado",
+        "closedPnl": "PnL de fecho estimado",
         "minimumWarning": "A percentagem mínima de fecho é {{percent}}%.",
         "title": "Fechar Posição {{coin}}"
       },
