@@ -432,6 +432,11 @@ textarea {
   // rule regardless of source order. Dark colours are set by the explicit
   // `html.dark` override below, not by a specificity tie.
   &.rectangle.perps-portfolio-breakdown {
+    // Figma: popover body 8px below the trigger with the arrow tip 2px
+    // below it. antd's bottom placements already offset the popup by 4px,
+    // so 4px of padding (which is where the arrow lives) makes up the rest;
+    // the default 14.31px reads as floating away from the label.
+    padding-top: 4px;
     .ant-tooltip-inner {
       background-color: var(--r-neutral-bg-1);
       color: inherit;

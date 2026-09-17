@@ -183,6 +183,8 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
       placement="bottom"
       height={478}
       isSupportDarkMode
+      // Drops the global 1.5px top border on .ant-drawer-content.
+      className="borderless"
       bodyStyle={{ padding: 0 }}
       destroyOnClose
       push={false}
@@ -201,7 +203,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
         {/* Bottom padding clears the fixed footer — limit mode overflows. */}
         <div className="flex-1 px-20 overflow-y-auto pb-[80px]">
           {/* Amount Section */}
-          <div className="bg-r-neutral-card1 border border-rabby-neutral-line rounded-[20px] py-16 px-20 mb-12">
+          <div className="bg-r-neutral-card1 rounded-[20px] py-16 px-20 mb-12">
             <div className="flex justify-between items-center mb-4">
               <div className="text-20 font-bold text-r-blue-default leading-[24px]">
                 {t('page.perpsDetail.PerpsClosePositionPopup.amount')}
@@ -324,7 +326,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
           </div>
 
-          <div className="fixed bottom-0 left-0 right-0 border-t-[0.5px] border-solid border-rabby-neutral-line px-20 py-16 flex flex-col">
+          <div className="fixed bottom-0 left-0 right-0 px-20 py-16 flex flex-col">
             <Button
               block
               size="large"

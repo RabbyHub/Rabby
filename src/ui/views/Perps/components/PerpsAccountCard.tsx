@@ -268,7 +268,12 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
         // node (TooltipWithMagnetArrow's getPopupContainer returns the
         // trigger's parent) and must not be clipped. The bottom bar below
         // carries its own rounded-b corner instead.
-        className="bg-r-neutral-card1 rounded-[8px]"
+        // 2px stroke per Figma: pure white in light; mobile's 8% white in
+        // dark, where a solid white ring would glare.
+        className={clsx(
+          'bg-r-neutral-card1 rounded-[8px]',
+          'border-2 border-solid border-white dark:border-[rgba(255,255,255,0.08)]'
+        )}
       >
         {/* Expanding is triggered only by hovering the small sparkline (see
             below); collapsing happens on leaving this whole upper block, so
@@ -357,7 +362,8 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
         <div
           className={clsx(
             'bg-r-neutral-card3 px-16 py-8',
-            'rounded-b-[8px]',
+            // Inner radius = card radius − 2px stroke.
+            'rounded-b-[6px]',
             'flex items-center justify-between',
             // Light mode splits the rows by card1 vs card3 alone (no line in
             // the Figma). card1/card3 are the same color in dark mode, so a
@@ -366,7 +372,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
           )}
         >
           <div className="flex flex-col gap-2">
-            <span className="text-[14px] font-medium leading-[18px] text-rb-neutral-secondary">
+            <span className="text-[14px] font-[450] leading-[18px] text-rb-neutral-secondary">
               {t('page.perps.PerpsCard.available')}
             </span>
             {isAvailableBalanceReady ? (
@@ -384,7 +390,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
           {hasNoBalance ? (
             <div
               className="h-[36px] rounded-[8px] bg-r-blue-light1 text-r-blue-default
-                        flex items-center justify-center gap-4 px-[9px] cursor-pointer
+                        flex items-center justify-center gap-4 px-[16px] cursor-pointer
                         text-[14px] font-medium"
               onClick={handleDeposit}
             >

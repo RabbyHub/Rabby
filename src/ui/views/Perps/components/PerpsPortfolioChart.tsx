@@ -48,8 +48,10 @@ const SPARKLINE_REVEAL_MS = 1000;
 // recharts activates the first/last point only when the mouse is past the
 // midpoint to its neighbour. A dense series (1D ≈ 288 points over ~324px)
 // leaves that band under 1px at the chart edges, so integer mouse columns
-// never land in it. Insetting the plot gives each edge point a real band;
-// anything between the edge and the point still snaps to it.
+// never land in it. Padding the x scale (NOT the chart margin: recharts'
+// inRange() rejects the margin zone, which would leave the band as thin as
+// before and drop the cursor there) keeps the plot edge-to-edge while the
+// edge points sit this far inside it, so the band is this wide.
 const EDGE_HIT_PAD = 6;
 
 // recharts cannot draw a path from a single point.
@@ -120,7 +122,13 @@ export const PerpsPortfolioChart: React.FC<{
     // rangeObj.y through for horizontal layouts, not the point's position on
     // the curve). The curve y arrives via activeDotYRef and is picked up by
     // the layout effect below, before paint.
+    //
+    // recharts also calls this with `isTooltipActive: false` (no coord, no
+    // payload) when the pointer is inside the SVG but outside the plot area.
+    // It hides its own cursor and active dot then, so drop the bubble too —
+    // otherwise it lingers at the previous point with a stale y.
     if (coord && point) setHover({ x: coord.x, point });
+    else setHover(null);
   };
   const handleMouseLeave = () => setHover(null);
 
@@ -189,6 +197,9 @@ export const PerpsPortfolioChart: React.FC<{
         hide
         type="number"
         domain={['dataMin', 'dataMax']}
+        padding={
+          expanded ? { left: EDGE_HIT_PAD, right: EDGE_HIT_PAD } : undefined
+        }
       />
       <YAxis
         hide
@@ -231,12 +242,7 @@ export const PerpsPortfolioChart: React.FC<{
           <AreaChart
             key={period}
             data={points}
-            margin={{
-              top: 2,
-              right: EDGE_HIT_PAD,
-              left: EDGE_HIT_PAD,
-              bottom: 0,
-            }}
+            margin={{ top: 2, right: 0, left: 0, bottom: 0 }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
