@@ -265,14 +265,15 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
         // carries its own rounded-b corner instead.
         className="bg-r-neutral-card1 rounded-[8px]"
       >
-        {/* The hover hot zone is this upper block only (headline + chart);
-            the Available / deposit bar below never expands the card. */}
+        {/* Expanding is triggered only by hovering the small sparkline (see
+            below); collapsing happens on leaving this whole upper block, so
+            the expanded chart and the headline stay usable. The Available /
+            deposit bar below never takes part. */}
         <div
           className={clsx(
             'flex flex-col',
             expanded ? 'pt-16 px-16 pb-12 gap-[10px]' : 'p-16'
           )}
-          onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           <div
@@ -341,7 +342,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
                   className="w-[140px] h-[60px] rounded-[4px]"
                 />
               ) : (
-                chart
+                <div onMouseEnter={() => setIsHovered(true)}>{chart}</div>
               ))}
           </div>
           {/* The chart supplies its own `gap-[6px] w-full relative` wrapper in
