@@ -182,11 +182,16 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
 
   const { isDarkTheme } = useThemeMode();
 
-  // Only the data state has a headline value. loading / error render a
-  // skeleton or `--`, and the info icon + breakdown must agree with that —
-  // liveValue can be a real figure while the portfolio fetch is still
-  // failing, which would otherwise put a precise popover next to `--`.
-  const headlineValue = viewState === 'data' ? displayValue ?? 0 : 0;
+  // loading / error render a skeleton or `--`, and the info icon + breakdown
+  // must agree with that — liveValue can be a real figure while the portfolio
+  // fetch is still failing, which would otherwise put a precise popover next
+  // to `--`. The zero state is the exception: HL's portfolio series lags a
+  // fresh deposit by up to a few minutes, so a first-time user would otherwise
+  // watch Available (WS) fill in while the headline sits at $0.00. Let the
+  // live value carry the headline there; the chart still treats the all-zero
+  // series as empty (no expand) until real history lands.
+  const liveHeadline = viewState === 'zero' ? liveValue ?? 0 : 0;
+  const headlineValue = viewState === 'data' ? displayValue ?? 0 : liveHeadline;
 
   // No info icon in the empty/zero state (matches the Figma empty-state
   // frame) or when there is nothing to break down — no spot or staking assets
@@ -213,7 +218,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
       );
     }
     if (viewState === 'error') return '--';
-    if (viewState === 'zero') return '$0.00';
+    if (viewState === 'zero' && !(headlineValue > 0)) return '$0.00';
     return formatUsdValue(headlineValue, BigNumber.ROUND_DOWN);
   }, [viewState, headlineValue]);
 
