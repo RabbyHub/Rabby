@@ -3742,6 +3742,27 @@
         "oneMonth": "1M",
         "oneWeek": "1 semaine"
       },
+      "PerpsCard": {
+        "portfolioValue": "Valeur du portefeuille",
+        "available": "Disponible",
+        "unifiedAccount": "Compte unifié",
+        "unifiedAccountDesc": "Votre compte utilise un solde unique pour chaque actif de collatéral, partagé entre le Spot et les Perps en marge croisée utilisant le même collatéral.",
+        "manualAccount": "Compte à soldes séparés",
+        "manualAccountDesc": "Vous gérez des soldes séparés entre le Spot et chaque DEX de Perps, avec une marge croisée indépendante par DEX.",
+        "portfolioMarginAccount": "Marge de portefeuille",
+        "portfolioMarginAccountDesc": "Votre compte combine les actifs Spot éligibles et les positions de Perps dans un même portefeuille pour une meilleure efficacité du capital.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Autres actifs",
+        "breakdownNetOtherAssets": "Autres actifs nets",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Tout"
+        }
+      },
       "newUserProcess": {
         "gotIt": "Compris.",
         "fourthDescription": "L'effet de levier vous permet de trader avec un capital supérieur à celui que vous avez investi. Cela peut augmenter à la fois vos gains et vos pertes.",
@@ -4639,7 +4660,7 @@
         "confirm": "Confirmer",
         "total": "Total",
         "receive": "Recevoir",
-        "title": "Fermer la position",
+        "title": "Fermer la position {{coin}}",
         "fee": "Frais",
         "amount": "Montant",
         "closedPnl": "PNL réalisé",

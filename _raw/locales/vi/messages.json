@@ -3397,6 +3397,27 @@
         "ytd": "Lũy kế từ đầu năm đến nay",
         "oneDay": "1D"
       },
+      "PerpsCard": {
+        "portfolioValue": "Giá trị danh mục",
+        "available": "Có sẵn",
+        "unifiedAccount": "Tài khoản hợp nhất",
+        "unifiedAccountDesc": "Tài khoản của bạn dùng một số dư duy nhất cho mỗi tài sản thế chấp, được chia sẻ giữa Spot và Perps ký quỹ chéo sử dụng cùng loại thế chấp.",
+        "manualAccount": "Tài khoản tiêu chuẩn",
+        "manualAccountDesc": "Bạn quản lý số dư riêng biệt giữa Spot và từng DEX Perps, với ký quỹ chéo độc lập cho mỗi DEX.",
+        "portfolioMarginAccount": "Ký quỹ danh mục",
+        "portfolioMarginAccountDesc": "Tài khoản của bạn kết hợp các tài sản Spot đủ điều kiện và các vị thế Perps vào một danh mục duy nhất để tăng hiệu quả sử dụng vốn.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Tài sản khác",
+        "breakdownNetOtherAssets": "Tài sản khác ròng",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Tất cả"
+        }
+      },
       "newUserProcess": {
         "next": "Tiếp theo",
         "gotIt": "Hiểu rồi",
@@ -4293,7 +4314,7 @@
       "PerpsClosePositionPopup": {
         "confirm": "Xác nhận",
         "receive": "Nhận",
-        "title": "Đóng vị thế",
+        "title": "Đóng vị thế {{coin}}",
         "fee": "Phí",
         "total": "Tổng",
         "minimumWarning": "Mức đóng vị thế tối thiểu là {{percent}}%",

@@ -3400,6 +3400,27 @@
         "oneMonth": "1M",
         "oneHour": "1H"
       },
+      "PerpsCard": {
+        "portfolioValue": "Portfoliowert",
+        "available": "Verfügbar",
+        "unifiedAccount": "Einheitliches Konto",
+        "unifiedAccountDesc": "Ihr Konto verwendet für jeden als Sicherheit hinterlegten Vermögenswert ein einziges Guthaben, das Spot und Cross-Margin-Perps mit derselben Sicherheit gemeinsam nutzen.",
+        "manualAccount": "Konto mit separaten Guthaben",
+        "manualAccountDesc": "Sie verwalten separate Guthaben für Spot und jede Perps-DEX, mit unabhängiger Cross-Margin pro DEX.",
+        "portfolioMarginAccount": "Portfolio-Margin",
+        "portfolioMarginAccountDesc": "Ihr Konto fasst zulässige Spot-Assets und Perps-Positionen für eine höhere Kapitaleffizienz in einem Portfolio zusammen.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Sonstige Assets",
+        "breakdownNetOtherAssets": "Sonstige Assets (netto)",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Alle"
+        }
+      },
       "newUserProcess": {
         "gotIt": "Verstanden.",
         "next": "Weiter",
@@ -4297,7 +4318,7 @@
         "confirm": "Bestätigen",
         "fee": "Gebühr",
         "receive": "Empfangen",
-        "title": "Position schließen",
+        "title": "{{coin}}-Position schließen",
         "total": "Gesamt",
         "amount": "Betrag",
         "minimumWarning": "Der Mindestbetrag zum Schließen beträgt {{percent}} %.",

@@ -3397,6 +3397,27 @@
         "oneHour": "1h",
         "oneWeek": "1 semana"
       },
+      "PerpsCard": {
+        "portfolioValue": "Valor do portefólio",
+        "available": "Disponível",
+        "unifiedAccount": "Conta unificada",
+        "unifiedAccountDesc": "A sua conta usa um único saldo para cada ativo de colateral, partilhado entre o Spot e os Perps de margem cruzada que usam o mesmo colateral.",
+        "manualAccount": "Conta com saldos separados",
+        "manualAccountDesc": "Gere saldos separados entre o Spot e cada DEX de Perps, com margem cruzada independente por DEX.",
+        "portfolioMarginAccount": "Margem de portefólio",
+        "portfolioMarginAccountDesc": "A sua conta combina ativos Spot elegíveis e posições de Perps num único portefólio para maior eficiência de capital.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Outros ativos",
+        "breakdownNetOtherAssets": "Outros ativos líquidos",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Tudo"
+        }
+      },
       "newUserProcess": {
         "secondDescription": "Quando espera que o preço suba, abre uma posição comprada. Se o preço subir, ganha; se cair, perde.",
         "fourthDescription": "A alavancagem permite negociar com mais capital do que o investido, aumentando tanto os potenciais ganhos como as potenciais perdas.",
@@ -4298,7 +4319,7 @@
         "amount": "Quantidade",
         "closedPnl": "P/L realizado",
         "minimumWarning": "A percentagem mínima de fecho é {{percent}}%.",
-        "title": "Fechar Posição Perpétua"
+        "title": "Fechar Posição {{coin}}"
       },
       "PerpsAutoCloseModal": {
         "confirm": "Confirmar",

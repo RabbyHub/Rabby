@@ -3397,6 +3397,27 @@
         "oneMonth": "1개월",
         "ytd": "올해 누적"
       },
+      "PerpsCard": {
+        "portfolioValue": "포트폴리오 가치",
+        "available": "사용 가능",
+        "unifiedAccount": "통합 계정",
+        "unifiedAccountDesc": "계정은 담보 자산별로 단일 잔액을 사용하며, 동일한 담보를 사용하는 현물과 교차 마진 무기한 선물이 이를 공유합니다.",
+        "manualAccount": "일반 계정",
+        "manualAccountDesc": "현물과 각 무기한 선물 DEX의 잔액을 별도로 관리하며, 교차 마진은 DEX별로 독립적으로 운영됩니다.",
+        "portfolioMarginAccount": "포트폴리오 마진",
+        "portfolioMarginAccountDesc": "계정은 적격 현물 자산과 무기한 선물 포지션을 하나의 포트폴리오로 통합하여 자본 효율성을 높입니다.",
+        "breakdownPerps": "무기한 선물",
+        "breakdownSpot": "현물",
+        "breakdownOtherAssets": "기타 자산",
+        "breakdownNetOtherAssets": "기타 자산 순액",
+        "breakdownStaking": "스테이킹",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "전체"
+        }
+      },
       "newUserProcess": {
         "fourthTitle": "레버리지 조정",
         "gotIt": "알겠습니다",
@@ -4291,7 +4312,7 @@
         "perpsBalance": "Perps 잔액"
       },
       "PerpsClosePositionPopup": {
-        "title": "포지션 청산",
+        "title": "{{coin}} 포지션 청산",
         "amount": "수량",
         "total": "합계",
         "confirm": "확인",
