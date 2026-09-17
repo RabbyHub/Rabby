@@ -194,7 +194,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
       {...rest}
     >
       <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
-        <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-20 leading-[24px]">
+        <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-16 leading-[24px]">
           {t('page.perpsDetail.PerpsClosePositionPopup.title', {
             coin: formatPerpsCoin(coin),
           })}
@@ -203,42 +203,35 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
         {/* Bottom padding clears the fixed footer — limit mode overflows. */}
         <div className="flex-1 px-20 overflow-y-auto pb-[80px]">
           {/* Amount Section */}
-          <div className="bg-r-neutral-card1 rounded-[20px] py-16 px-20 mb-12">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-20 font-bold text-r-blue-default leading-[24px]">
+          <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-12">
+            <div className="flex justify-between items-center mb-12">
+              <div className="text-[17px] font-bold text-r-neutral-title-1 leading-[20px]">
                 {t('page.perpsDetail.PerpsClosePositionPopup.amount')}
               </div>
             </div>
-            <div className="flex justify-between items-center h-[40px]">
-              <div className="flex items-center gap-4">
-                <span className="text-20 font-bold text-r-neutral-title-1 leading-[24px]">
+            <div className="flex justify-between items-center h-[33px]">
+              <div className="flex items-end gap-4">
+                <span className="text-20 font-semibold text-r-neutral-title-1 leading-[24px]">
                   ${splitNumberByStep(marginUsed.toFixed(2))}
                 </span>
-                <span className="text-15 font-medium text-r-neutral-foot leading-[22px]">
+                <span className="text-12 font-normal text-r-neutral-foot leading-[14px] py-[2px]">
                   {t('page.perpsDetail.PerpsClosePositionPopup.total')}
                 </span>
               </div>
-              <span
-                style={{ fontSize: '36px' }}
-                className="font-bold text-r-blue-default"
-              >
+              <span className="text-28 font-bold text-r-blue-default">
                 {closePercent}%
               </span>
             </div>
-            <div className="mb-8 h-[14px]">
-              {!isValidClosePercent && (
-                <span className="text-14 font-medium text-r-red-default">
-                  {t(
-                    'page.perpsDetail.PerpsClosePositionPopup.minimumWarning',
-                    {
-                      percent: minClosePercent,
-                    }
-                  )}{' '}
-                  (${PERPS_MINI_USD_VALUE})
-                </span>
-              )}
-            </div>
-            <div className="mt-16">
+            {/* Only takes vertical space once the warning actually shows. */}
+            {!isValidClosePercent && (
+              <div className="mt-8 text-14 font-medium text-r-red-default">
+                {t('page.perpsDetail.PerpsClosePositionPopup.minimumWarning', {
+                  percent: minClosePercent,
+                })}{' '}
+                (${PERPS_MINI_USD_VALUE})
+              </div>
+            )}
+            <div className="mt-12">
               <PerpsSlider
                 value={closePercent}
                 onValueChange={setClosePercent}
@@ -248,7 +241,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
           </div>
 
           {/* PNL Card */}
-          <div className="bg-r-neutral-card1 rounded-[16px] p-16 mb-12">
+          <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-12">
             <div className="flex flex-col gap-12">
               <div className="flex justify-between items-center">
                 <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
@@ -288,7 +281,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
                   {t('page.perpsDetail.PerpsClosePositionPopup.receive')}
                 </span>
-                <span className="text-17 font-bold text-r-neutral-title-1 leading-[22px]">
+                <span className="text-17 font-medium text-r-neutral-title-1 leading-[22px]">
                   +$
                   {splitNumberByStep(
                     ((marginUsed * closePercent) / 100).toFixed(2)
@@ -301,7 +294,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 </span>
                 <span
                   className={clsx(
-                    'text-17 font-bold leading-[22px]',
+                    'text-17 font-medium leading-[22px]',
                     closedPnl >= 0
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
@@ -321,7 +314,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 slippage={slippage}
                 depthInsufficient={depthInsufficient}
                 labelClassName="text-14 font-medium text-rb-neutral-body leading-[18px]"
-                valueClassName="text-17 font-bold leading-[22px]"
+                valueClassName="text-17 font-medium leading-[22px]"
               />
             </div>
           </div>
