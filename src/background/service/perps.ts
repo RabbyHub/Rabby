@@ -255,6 +255,12 @@ class PerpsService {
       if (this.store.agentVaults) {
         const vaultsMap = await this.safeDecryptAgentVaults();
 
+        // The wallet may have been locked while decrypting; drop the
+        // plaintext instead of populating the cache of a locked wallet.
+        if (!keyringService.isUnlocked()) {
+          return;
+        }
+
         // Format data for memory state
         for (const masterAddress in vaultsMap) {
           const privateKey = vaultsMap[masterAddress];
@@ -286,6 +292,10 @@ class PerpsService {
     this.memoryState.unlockPromise.finally(() => {
       this.memoryState.unlockPromise = null;
     });
+  };
+
+  lockAgentWallets = () => {
+    this.memoryState.agentWallets = {};
   };
 
   createAgentWallet = async (masterAddress: string) => {
@@ -344,6 +354,10 @@ class PerpsService {
   getAgentWallet = async (address: string) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
+    }
+    // Agent keys are session secrets: never serve them while locked.
+    if (!keyringService.isUnlocked()) {
+      return undefined;
     }
     if (this.memoryState.unlockPromise) {
       await this.memoryState.unlockPromise;

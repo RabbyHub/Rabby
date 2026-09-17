@@ -380,6 +380,7 @@ restoreAppState();
   });
 
   keyringService.on('lock', () => {
+    perpsService.lockAgentWallets();
     if (interval) {
       clearInterval(interval);
       interval = null;

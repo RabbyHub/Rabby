@@ -164,6 +164,24 @@ export const Perps: React.FC = () => {
   });
 
   const [withdrawVisible, setWithdrawVisible] = useState(false);
+
+  // The portfolio series' last point lags 0~4 min, so a refetch fired the
+  // instant a deposit/withdraw modal closes would just re-read the old value.
+  const fundingModalOpen = amountVisible || withdrawVisible;
+  const prevFundingModalOpen = useRef(fundingModalOpen);
+  useEffect(() => {
+    const justClosed = prevFundingModalOpen.current && !fundingModalOpen;
+    prevFundingModalOpen.current = fundingModalOpen;
+    if (!justClosed) return;
+    const address = currentPerpsAccount?.address;
+    if (!address) return;
+    const timer = setTimeout(() => {
+      dispatch.perps.fetchPerpsPortfolio({ address, force: true });
+      dispatch.perps.fetchStakingSummary(address);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [fundingModalOpen, currentPerpsAccount?.address, dispatch]);
+
   const [loginVisible, setLoginVisible] = useState(false);
   const [logoutVisible, setLogoutVisible] = useState(false);
   const [isPreparingSign, setIsPreparingSign] = useState(false);

@@ -1289,10 +1289,12 @@ export const PerpsSingleCoin = () => {
         marginUsed={positionData?.marginUsed || 0}
         markPrice={markPrice}
         entryPrice={positionData?.entryPrice || 0}
+        szDecimals={currentAssetCtx?.szDecimals || 0}
+        currentAssetCtx={currentAssetCtx}
         onConfirm={() => {
           setClosePositionVisible(false);
         }}
-        handleClosePosition={async (closePercent: number) => {
+        handleClosePosition={async ({ closePercent, orderType, limitPx }) => {
           let sizeStr = '0';
           if (closePercent < 100) {
             const size = (Number(positionData?.size || 0) * closePercent) / 100;
@@ -1306,13 +1308,18 @@ export const PerpsSingleCoin = () => {
             size: sizeStr,
             direction: positionData?.direction as 'Long' | 'Short',
             price: activeAssetCtx?.markPx || currentAssetCtx?.markPx || '0',
+            orderType,
+            limitPx,
           });
           if (res) {
             const isBuy = positionData?.direction === 'Long';
             stats.report('perpsTradeHistory', {
               created_at: new Date().getTime(),
               user_addr: currentPerpsAccount?.address || '',
-              trade_type: 'popup close position',
+              trade_type:
+                orderType === 'limit'
+                  ? 'popup close position limit'
+                  : 'popup close position',
               leverage: (positionData?.leverage || 1).toString(),
               trade_side: getStatsReportSide(!isBuy, true),
               margin_mode:
