@@ -15,6 +15,7 @@ import {
   isPortfolioAllZero,
 } from '../utils/perpsPortfolio';
 import type { PortfolioPeriodKey } from '../utils/perpsPortfolio';
+import { hasNonPerpsPortfolioAssets } from '../utils/accountPricing';
 import type { PerpsBreakdownMode } from '../utils/accountPricing';
 import { PerpsQuoteAsset } from '../constants';
 import { PerpsPortfolioChart } from './PerpsPortfolioChart';
@@ -181,21 +182,26 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
 
   const { isDarkTheme } = useThemeMode();
 
-  // Only the data state has a headline value. loading / error render a
-  // skeleton or `--`, and the info icon + breakdown must agree with that —
-  // liveValue can be a real figure while the portfolio fetch is still
-  // failing, which would otherwise put a precise popover next to `--`.
-  const headlineValue = viewState === 'data' ? displayValue ?? 0 : 0;
+  // loading / error render a skeleton or `--`, and the info icon + breakdown
+  // must agree with that — liveValue can be a real figure while the portfolio
+  // fetch is still failing, which would otherwise put a precise popover next
+  // to `--`. The zero state is the exception: HL's portfolio series lags a
+  // fresh deposit by up to a few minutes, so a first-time user would otherwise
+  // watch Available (WS) fill in while the headline sits at $0.00. Let the
+  // live value carry the headline there; the chart still treats the all-zero
+  // series as empty (no expand) until real history lands.
+  const liveHeadline = viewState === 'zero' ? liveValue ?? 0 : 0;
+  const headlineValue = viewState === 'data' ? displayValue ?? 0 : liveHeadline;
 
   // No info icon in the empty/zero state (matches the Figma empty-state
-  // frame) or when there is nothing to break down — no spot asset at all
+  // frame) or when there is nothing to break down — no spot or staking assets
   // (mobile's hasNonPerpsAssets). isUserDataReady also guards the
   // account-switch window where clearinghouseState still holds the previous
   // account's numbers (see setCurrentPerpsAccount).
   const isUserDataReady = useRabbySelector((s) => s.perps.isUserDataReady);
   // A boolean that flips on balance changes, not on price ticks.
   const hasNonPerpsAssets = useRabbySelector((s) =>
-    s.perps.spotState.balances.some((b) => Number(b.total) > 0)
+    hasNonPerpsPortfolioAssets(s.perps)
   );
   const breakdownMode: PerpsBreakdownMode = isPortfolioMargin
     ? 'portfolioMargin'
@@ -212,7 +218,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
       );
     }
     if (viewState === 'error') return '--';
-    if (viewState === 'zero') return '$0.00';
+    if (viewState === 'zero' && !(headlineValue > 0)) return '$0.00';
     return formatUsdValue(headlineValue, BigNumber.ROUND_DOWN);
   }, [viewState, headlineValue]);
 
@@ -264,14 +270,15 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
         // carries its own rounded-b corner instead.
         className="bg-r-neutral-card1 rounded-[8px]"
       >
-        {/* The hover hot zone is this upper block only (headline + chart);
-            the Available / deposit bar below never expands the card. */}
+        {/* Expanding is triggered only by hovering the small sparkline (see
+            below); collapsing happens on leaving this whole upper block, so
+            the expanded chart and the headline stay usable. The Available /
+            deposit bar below never takes part. */}
         <div
           className={clsx(
             'flex flex-col',
             expanded ? 'pt-16 px-16 pb-12 gap-[10px]' : 'p-16'
           )}
-          onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
           <div
@@ -340,7 +347,7 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
                   className="w-[140px] h-[60px] rounded-[4px]"
                 />
               ) : (
-                chart
+                <div onMouseEnter={() => setIsHovered(true)}>{chart}</div>
               ))}
           </div>
           {/* The chart supplies its own `gap-[6px] w-full relative` wrapper in

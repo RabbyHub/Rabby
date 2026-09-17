@@ -45,6 +45,13 @@ const EXPANDED_H = 100;
 const EXPANDED_REVEAL_MS = 600;
 const SPARKLINE_REVEAL_MS = 1000;
 
+// recharts activates the first/last point only when the mouse is past the
+// midpoint to its neighbour. A dense series (1D ≈ 288 points over ~324px)
+// leaves that band under 1px at the chart edges, so integer mouse columns
+// never land in it. Insetting the plot gives each edge point a real band;
+// anything between the edge and the point still snaps to it.
+const EDGE_HIT_PAD = 6;
+
 // recharts cannot draw a path from a single point.
 const FLAT_ZERO: PortfolioChartPoint[] = [
   { timestamp: 0, value: 0 },
@@ -224,7 +231,12 @@ export const PerpsPortfolioChart: React.FC<{
           <AreaChart
             key={period}
             data={points}
-            margin={{ top: 2, right: 0, left: 0, bottom: 0 }}
+            margin={{
+              top: 2,
+              right: EDGE_HIT_PAD,
+              left: EDGE_HIT_PAD,
+              bottom: 0,
+            }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
           >
