@@ -78,10 +78,10 @@ export const PerpsPortfolioBreakdownTips: React.FC<{
   return (
     <div className="flex flex-col gap-[12px]">
       <div className="flex flex-col gap-[4px]">
-        <div className="text-[14px] font-medium text-r-neutral-title-1">
+        <div className="text-[14px] font-medium leading-[17px] text-r-neutral-title-1">
           {t(copy.title)}
         </div>
-        <div className="text-[11px] font-normal text-r-neutral-foot w-[244px]">
+        <div className="text-[11px] font-normal leading-[13px] text-r-neutral-foot w-[244px]">
           {t(copy.desc)}
         </div>
       </div>

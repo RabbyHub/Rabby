@@ -3400,6 +3400,27 @@
         "oneDay": "1日",
         "oneHour": "1時間"
       },
+      "PerpsCard": {
+        "portfolioValue": "ポートフォリオ評価額",
+        "available": "利用可能額",
+        "unifiedAccount": "統合アカウント",
+        "unifiedAccountDesc": "アカウントは担保資産ごとに単一の残高を使用し、同じ担保を使用する現物とクロスマージンの無期限先物で共有されます。",
+        "manualAccount": "標準アカウント",
+        "manualAccountDesc": "現物と各無期限先物DEXの残高を個別に管理し、クロスマージンはDEXごとに独立しています。",
+        "portfolioMarginAccount": "ポートフォリオマージン",
+        "portfolioMarginAccountDesc": "アカウントは対象となる現物資産と無期限先物のポジションを1つのポートフォリオに統合し、資金効率を高めます。",
+        "breakdownPerps": "無期限先物",
+        "breakdownSpot": "現物",
+        "breakdownOtherAssets": "その他の資産",
+        "breakdownNetOtherAssets": "その他の資産（純額）",
+        "breakdownStaking": "ステーキング",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "全期間"
+        }
+      },
       "newUserProcess": {
         "next": "次へ",
         "fourthTitle": "レバレッジを調整中",
@@ -4294,14 +4315,14 @@
         "exceedMaxReduction": "最大ドローダウンを超えました"
       },
       "PerpsClosePositionPopup": {
-        "receive": "受け取る",
+        "receive": "予想受取額",
         "fee": "取引手数料",
         "total": "合計",
         "minimumWarning": "最小決済数量は {{percent}}%",
         "confirm": "確認",
         "amount": "数量",
-        "title": "建玉を決済する",
-        "closedPnl": "実現損益"
+        "title": "{{coin}} 建玉を決済する",
+        "closedPnl": "予想決済損益"
       },
       "PerpsAutoCloseModal": {
         "noPosition": "まず証拠金を入力してください。",

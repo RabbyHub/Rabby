@@ -3412,6 +3412,27 @@
         "oneDay": "1 д.",
         "oneMonth": "1 місяць"
       },
+      "PerpsCard": {
+        "portfolioValue": "Вартість портфеля",
+        "available": "Доступно",
+        "unifiedAccount": "Єдиний акаунт",
+        "unifiedAccountDesc": "У вашому акаунті для кожного заставного активу використовується єдиний баланс, спільний для спотової торгівлі та крос-маржинальних позицій Perps із тією самою заставою.",
+        "manualAccount": "Акаунт з окремими балансами",
+        "manualAccountDesc": "Ви окремо керуєте балансами споту та кожної Perps DEX; у кожної DEX своя крос-маржа.",
+        "portfolioMarginAccount": "Портфельна маржа",
+        "portfolioMarginAccountDesc": "Ваш акаунт об’єднує відповідні спотові активи та позиції Perps в єдиний портфель для більшої ефективності капіталу.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Спот",
+        "breakdownOtherAssets": "Інші активи",
+        "breakdownNetOtherAssets": "Інші активи (нетто)",
+        "breakdownStaking": "Стейкінг",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Усе"
+        }
+      },
       "newUserProcess": {
         "next": "Далі",
         "gotIt": "Зрозуміло",
@@ -4307,13 +4328,13 @@
       },
       "PerpsClosePositionPopup": {
         "amount": "Сума",
-        "title": "Закрити позицію",
+        "title": "Закрити позицію {{coin}}",
         "confirm": "Підтвердити",
-        "receive": "Отримати",
+        "receive": "Орієнтовно до отримання",
         "minimumWarning": "Мінімальна сума для закриття позиції становить {{percent}}%.",
         "fee": "Комісія",
         "total": "Разом",
-        "closedPnl": "Реалізований PNL"
+        "closedPnl": "Орієнтовний PnL"
       },
       "PerpsAutoCloseModal": {
         "youLoss": "Ви програли",
