@@ -440,7 +440,7 @@ describe('extension update service', () => {
     expect(browser.tabs.create).toHaveBeenCalledTimes(1);
     expect(browser.tabs.create).toHaveBeenCalledWith({
       url:
-        'https://rabby-io-git-feat-auto-update-debanker.vercel.app//updating?version=1.0.0',
+        'https://rabby-io-git-feat-auto-update-debanker.vercel.app//updating?version=1.0.0&lang=en',
       active: true,
     });
     expect(browser.runtime.reload).not.toHaveBeenCalled();
@@ -464,6 +464,21 @@ describe('extension update service', () => {
       const { url } = (browser.tabs.create as jest.Mock).mock.calls[0][0];
       expect(new URL(url).searchParams.get('version')).toBe(currentVersion);
       expect(await service.getPendingVersion()).toBe(pendingVersion);
+      expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it.each(['zh-CN', 'en', 'zh-HK', 'ja', 'zh-CN&version=9.9.9'])(
+    'passes language %s as one encoded query parameter',
+    async (language) => {
+      await service.init();
+      onUpdateAvailable({ version: '1.1.0' });
+      await service.reloadForUpdate(language);
+
+      const { url } = (browser.tabs.create as jest.Mock).mock.calls[0][0];
+      const params = new URL(url).searchParams;
+      expect(params.get('lang')).toBe(language);
+      expect(params.getAll('version')).toEqual(['1.0.0']);
       expect(browser.runtime.reload).toHaveBeenCalledTimes(1);
     }
   );

@@ -5,8 +5,13 @@ import { useExtensionUpdateStore } from '@/ui/state/extensionUpdate';
 import { ExtensionUpdateCard } from '@/ui/views/Dashboard/components/Settings/components/ExtensionUpdateCard';
 import { ExtensionUpdateDialog } from '@/ui/views/Dashboard/components/Settings/components/ExtensionUpdateDialog';
 
+let mockLanguage = 'en';
+
 jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key.split('.').pop() }),
+  useTranslation: () => ({
+    t: (key: string) => key.split('.').pop(),
+    i18n: { language: mockLanguage },
+  }),
 }));
 
 jest.mock('@/ui/wallet', () => ({
@@ -48,6 +53,7 @@ describe('extension update card', () => {
   });
   beforeEach(() => {
     jest.clearAllMocks();
+    mockLanguage = 'en';
     useExtensionUpdateStore.setState({ versionInfo: null });
     onUpdate.mockResolvedValue(undefined);
     container = document.createElement('div');
@@ -112,22 +118,54 @@ describe('extension update card', () => {
       }
     );
 
-    it('preserves non-empty content and its existing line formatting', () => {
-      render('1.2.3.4', variant, '# Updates\n- New feature\n  Details  ');
-      const notes = container.querySelector('.extension-update-card-notes')!;
-      expect(
-        notes.querySelector('.extension-update-card-note-title')?.textContent
-      ).toBe('Updates');
-      expect(
-        notes.querySelector('.extension-update-card-note-li')?.textContent
-      ).toBe('New feature');
-      expect(
-        notes.querySelector('.extension-update-card-note-line')?.textContent
-      ).toBe('  Details  ');
-      expect(notes.textContent).not.toContain(
+    it.each(['', '   ', '\n\t\r\n'])(
+      'shows the Chinese default message as a list item for empty content (%j)',
+      (changelog) => {
+        mockLanguage = 'zh-CN';
+        render('1.2.3.4', variant, changelog);
+        const notes = container.querySelector('.extension-update-card-notes')!;
+        expect(notes.textContent).toBe('修复了一些已知问题');
+        expect(notes.children).toHaveLength(1);
+        expect(
+          notes.querySelector('.extension-update-card-note-li')?.textContent
+        ).toBe('修复了一些已知问题');
+        expect(onUpdate).not.toHaveBeenCalled();
+      }
+    );
+
+    it('updates the fallback when the language changes', () => {
+      mockLanguage = 'zh-cn';
+      render('1.2.3.4', variant, '');
+      expect(container.textContent).toContain('修复了一些已知问题');
+      mockLanguage = 'ja';
+      render('1.2.3.4', variant, '');
+      expect(container.textContent).toContain(
         'Fixed some bugs and optimized user experience'
       );
+      expect(container.textContent).not.toContain('修复了一些已知问题');
     });
+
+    it.each(['en', 'zh-CN'])(
+      'preserves non-empty content and its existing line formatting in %s',
+      (language) => {
+        mockLanguage = language;
+        render('1.2.3.4', variant, '# Updates\n- New feature\n  Details  ');
+        const notes = container.querySelector('.extension-update-card-notes')!;
+        expect(
+          notes.querySelector('.extension-update-card-note-title')?.textContent
+        ).toBe('Updates');
+        expect(
+          notes.querySelector('.extension-update-card-note-li')?.textContent
+        ).toBe('New feature');
+        expect(
+          notes.querySelector('.extension-update-card-note-line')?.textContent
+        ).toBe('  Details  ');
+        expect(notes.textContent).not.toContain(
+          'Fixed some bugs and optimized user experience'
+        );
+        expect(notes.textContent).not.toContain('修复了一些已知问题');
+      }
+    );
   });
 
   it.each([

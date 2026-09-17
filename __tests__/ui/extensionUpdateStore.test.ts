@@ -1,12 +1,14 @@
 import { act, createElement } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import browser from 'webextension-polyfill';
+import i18n from 'i18next';
 import eventBus from '@/eventBus';
 import {
   selectHasNewExtensionVersion,
   selectExtensionUpdateBadge,
   selectExtensionUpdateBanner,
   selectExtensionUpdateLevel,
+  selectExtensionUpdateChangelog,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 import { wallet } from '@/ui/wallet';
@@ -84,6 +86,7 @@ describe('extension update store', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    i18n.language = 'en';
     (browser.runtime.getManifest as jest.Mock).mockReturnValue({
       version: '1.0.0',
     });
@@ -157,6 +160,51 @@ describe('extension update store', () => {
     broadcast({ pendingVersion: '1.1.0' });
     broadcast({ pendingVersion: '' }, revision - 1);
     expect(useExtensionUpdateStore.getState().pendingVersion).toBe('1.1.0');
+  });
+
+  it('passes the current UI language to background when updating', async () => {
+    broadcast({ pendingVersion: '1.1.0' });
+    i18n.language = 'zh-CN';
+    await useExtensionUpdateStore.getState().reloadForUpdate();
+    expect(wallet.reloadExtensionForUpdate).toHaveBeenLastCalledWith('zh-CN');
+    i18n.language = 'zh-HK';
+    await useExtensionUpdateStore.getState().reloadForUpdate();
+    expect(wallet.reloadExtensionForUpdate).toHaveBeenLastCalledWith('zh-HK');
+  });
+
+  it.each([
+    ['zh-CN', '最新中文说明'],
+    ['zh-cn', '最新中文说明'],
+    ['zh-HK', 'Latest'],
+    ['zh-TW', 'Latest'],
+    ['en', 'Latest'],
+    ['ja', 'Latest'],
+    ['', 'Latest'],
+  ])('selects latest release notes for %s', (language, expected) => {
+    const versionInfo = makeInfo();
+    versionInfo.version.changelog_cn = '当前版本中文说明';
+    versionInfo.latest_version.changelog_cn = '最新中文说明';
+    expect(selectExtensionUpdateChangelog({ versionInfo }, language)).toBe(
+      expected
+    );
+  });
+
+  it('keeps Chinese changelogs from the API through schema validation', async () => {
+    const versionInfo = makeInfo();
+    versionInfo.version.changelog_cn = '当前中文';
+    versionInfo.latest_version.changelog_cn = '最新中文';
+    (wallet.openapi.getVersionInfo as jest.Mock).mockResolvedValue(versionInfo);
+    await useExtensionUpdateStore.getState().refreshVersionInfo();
+    expect(useExtensionUpdateStore.getState().versionInfo).toEqual(versionInfo);
+  });
+
+  it('returns empty notes for missing Chinese content or version info', () => {
+    expect(
+      selectExtensionUpdateChangelog({ versionInfo: makeInfo() }, 'zh-CN')
+    ).toBe('');
+    expect(selectExtensionUpdateChangelog({ versionInfo: null }, 'en')).toBe(
+      ''
+    );
   });
 
   it.each(['1.1.0', '1.2.0'])(

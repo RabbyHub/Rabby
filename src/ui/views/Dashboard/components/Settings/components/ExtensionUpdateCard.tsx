@@ -23,14 +23,16 @@ export const ExtensionUpdateCard = ({
   variant?: 'card' | 'dialog';
   onClose?: () => void;
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const level = useExtensionUpdateStore(selectExtensionUpdateLevel);
   const [dismissedVersion, setDismissedVersion] = useState<string>();
   const [updating, setUpdating] = useState(false);
   const pending = useRef(false);
-  const changelogContent = changelog?.trim()
-    ? changelog
-    : '- Fixed some bugs and optimized user experience';
+  const defaultChangelog =
+    i18n.language.toLowerCase() === 'zh-cn'
+      ? '- 修复了一些已知问题'
+      : '- Fixed some bugs and optimized user experience';
+  const changelogContent = changelog?.trim() ? changelog : defaultChangelog;
 
   if (dismissedVersion === version) return null;
 

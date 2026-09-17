@@ -5,6 +5,7 @@ const versionEntry = z.object({
   id: versionId,
   level: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]),
   changelog: z.string(),
+  changelog_cn: z.string().optional(),
 });
 export const versionInfoSchema = z.object({
   version: versionEntry,

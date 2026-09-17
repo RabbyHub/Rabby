@@ -92,6 +92,7 @@ import { useOpenapiStore } from '@/ui/state/openapi';
 import { appIsDebugPkg, appIsDev } from '@/utils/env';
 import {
   selectHasNewExtensionVersion,
+  selectExtensionUpdateChangelog,
   useExtensionUpdateStore,
 } from '@/ui/state/extensionUpdate';
 
@@ -625,7 +626,7 @@ const SettingsInner = ({
 }) => {
   const wallet = useWallet();
   const history = useHistory();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
@@ -812,8 +813,8 @@ const SettingsInner = ({
 
   const hasNewVersion = useExtensionUpdateStore(selectHasNewExtensionVersion);
   const pendingVersion = useExtensionUpdateStore((s) => s.pendingVersion);
-  const changelog = useExtensionUpdateStore(
-    (s) => s.versionInfo?.latest_version.changelog || ''
+  const changelog = useExtensionUpdateStore((s) =>
+    selectExtensionUpdateChangelog(s, i18n.language)
   );
   const reloadForUpdate = useExtensionUpdateStore((s) => s.reloadForUpdate);
   const [updateDialogVisible, setUpdateDialogVisible] = useState(false);

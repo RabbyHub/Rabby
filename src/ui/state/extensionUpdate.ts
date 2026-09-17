@@ -1,5 +1,6 @@
 import type { ExtensionUpdateStore as ExtensionUpdateServiceStore } from '@/background/service/extensionUpdate';
 import browser from 'webextension-polyfill';
+import i18n from 'i18next';
 import { wallet } from '@/ui/wallet';
 import { createExtensionStoreOptions } from './createStore/createExtensionStoreOptions';
 import { createRabbyStore } from './createStore/createRabbyStore';
@@ -30,6 +31,14 @@ export const selectExtensionUpdateLevel = ({
   versionInfo?.version.level === 4
     ? versionInfo.version.level
     : versionInfo?.latest_version.level ?? 0;
+
+export const selectExtensionUpdateChangelog = (
+  { versionInfo }: Pick<ExtensionUpdateStore, 'versionInfo'>,
+  language: string
+) =>
+  (language.toLowerCase() === 'zh-cn'
+    ? versionInfo?.latest_version.changelog_cn
+    : versionInfo?.latest_version.changelog) || '';
 
 export const selectExtensionUpdateBanner = (
   state: ExtensionUpdateStore,
@@ -164,7 +173,7 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
     },
     async reloadForUpdate() {
       if (selectHasNewExtensionVersion(get())) {
-        await wallet.reloadExtensionForUpdate();
+        await wallet.reloadExtensionForUpdate(i18n.language);
       }
     },
   }),

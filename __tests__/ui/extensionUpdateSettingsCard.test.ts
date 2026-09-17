@@ -38,7 +38,10 @@ jest.mock('@/ui/wallet', () => ({
   onWalletReconnect: jest.fn(() => () => undefined),
 }));
 jest.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string) => key.split('.').pop() }),
+  useTranslation: () => ({
+    t: (key: string) => key.split('.').pop(),
+    i18n: { language: 'en' },
+  }),
 }));
 jest.mock('antd', () => ({
   message: { error: jest.fn() },

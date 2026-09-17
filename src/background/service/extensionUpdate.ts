@@ -179,7 +179,7 @@ export class ExtensionUpdateService {
     }
   };
 
-  reloadForUpdate = (): Promise<void> => {
+  reloadForUpdate = (language = 'en'): Promise<void> => {
     this.reloadPromise ||= (async () => {
       const pendingVersion = await this.getPendingVersion();
       if (!pendingVersion) return;
@@ -187,10 +187,10 @@ export class ExtensionUpdateService {
 
       // Opening an active tab closes the popup; finish the update in background.
       await browser.tabs.create({
-        // url: `https://rabby.io/updating?version=${encodeURIComponent(currentVersion)}`,
+        // url: `https://rabby.io/updating?version=${encodeURIComponent(currentVersion)}&lang=${encodeURIComponent(language)}`,
         url: `https://rabby-io-git-feat-auto-update-debanker.vercel.app//updating?version=${encodeURIComponent(
           currentVersion
-        )}`,
+        )}&lang=${encodeURIComponent(language)}`,
         active: true,
       });
       const targetVersion = await this.getPendingVersion();
