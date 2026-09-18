@@ -82,10 +82,10 @@ export const getActionTypeText = (data: ParsedTransactionActionData) => {
   return t('page.signTx.unknownAction');
 };
 
-export const getActionTypeTextByType = (type: string) => {
+const getActionTypeTextMap = () => {
   const t = i18n.t;
 
-  const dict = {
+  return {
     swap_token: t('page.signTx.swap.title'),
     cross_token: t('page.signTx.crossChain.title'),
     cross_swap_token: t('page.signTx.swapAndCross.title'),
@@ -106,10 +106,21 @@ export const getActionTypeTextByType = (type: string) => {
     contract_call: t('page.signTx.contractCall.title'),
     swap_order: t('page.signTx.assetOrder.title'),
     permit2_batch_revoke_token: t('page.signTx.batchRevokePermit2.title'),
-    transfer_owner: t('page.signTx.transferOwner.title'),
-    multiSwap: t('page.signTx.swap.title'),
-    swapLimitPay: t('page.signTx.swapLimitPay.title'),
+    transfer_ownership: t('page.signTx.transferOwner.title'),
+    multi_swap_token: t('page.signTx.swap.title'),
+    swap_token_limit_pay: t('page.signTx.swapLimitPay.title'),
+    add_liquidity: t('page.signTx.addLiquidity.title'),
   };
+};
 
-  return dict[type] || t('page.signTx.unknownAction');
+export const isKnownActionType = (type: string) =>
+  Object.prototype.hasOwnProperty.call(getActionTypeTextMap(), type);
+
+export const getActionTypeTextByType = (type: string) => {
+  const t = i18n.t;
+  const dict = getActionTypeTextMap();
+
+  return Object.prototype.hasOwnProperty.call(dict, type)
+    ? dict[type]
+    : t('page.signTx.unknownAction');
 };
