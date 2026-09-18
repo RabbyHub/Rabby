@@ -141,16 +141,7 @@ const Dashboard = () => {
   );
   const pendingVersion = useExtensionUpdateStore((s) => s.pendingVersion);
   useEffect(() => {
-    const refresh = () => {
-      void refreshVersionInfo().catch(console.error);
-    };
-    refresh();
-    const timer = setInterval(refresh, 60_000);
-    window.addEventListener('focus', refresh);
-    return () => {
-      clearInterval(timer);
-      window.removeEventListener('focus', refresh);
-    };
+    void refreshVersionInfo().catch(console.error);
   }, [refreshVersionInfo, pendingVersion]);
   useEffect(() => {
     setUpdateClock(Date.now());
