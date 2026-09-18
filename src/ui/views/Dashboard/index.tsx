@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
 import { useHistory, useLocation } from 'react-router-dom';
-import remarkGfm from 'remark-gfm';
 
-import { AuthenticationModal, Modal } from 'ui/component';
+import { AuthenticationModal } from 'ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import './style.less';
@@ -26,6 +24,14 @@ import {
 } from '@/ui/views/GasAccount/hooks';
 import { StablecoinSwapPopup } from './components/StablecoinSwapPopup';
 import { useAppVersionStore } from '@/ui/state/appVersion';
+import {
+  selectExtensionUpdateBanner,
+  selectExtensionUpdateLevel,
+  useExtensionUpdateStore,
+} from '@/ui/state/extensionUpdate';
+import { ExtensionUpdateBanner } from './components/ExtensionUpdateBanner';
+import { FirstNoticeDialog } from './components/FirstNoticeDialog';
+import { useExtensionVersionInfo } from '@/ui/hooks/useExtensionVersionInfo';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -121,6 +127,27 @@ const Dashboard = () => {
   );
 
   const [settingVisible, setSettingVisible] = useState(false);
+  const [updateClock, setUpdateClock] = useState(Date.now);
+  const showUpdateBanner = useExtensionUpdateStore((s) =>
+    selectExtensionUpdateBanner(s, updateClock)
+  );
+  const updateLevel = useExtensionUpdateStore(selectExtensionUpdateLevel);
+  const dismissedUntil = useExtensionUpdateStore((s) => s.dismissedUntil);
+  const dismissBanner = useExtensionUpdateStore((s) => s.dismissBanner);
+  const revealSettingsCard = useExtensionUpdateStore(
+    (s) => s.revealSettingsCard
+  );
+  const pendingVersion = useExtensionUpdateStore((s) => s.pendingVersion);
+  useExtensionVersionInfo();
+  useEffect(() => {
+    setUpdateClock(Date.now());
+    if (dismissedUntil <= Date.now()) return;
+    const timer = setTimeout(
+      () => setUpdateClock(Date.now()),
+      Math.min(dismissedUntil - Date.now(), 2147483647)
+    );
+    return () => clearTimeout(timer);
+  }, [dismissedUntil]);
   const [autoScrollToBiometric, setAutoScrollToBiometric] = useState(false);
   const toggleShowMoreSettings = useMemoizedFn(() => {
     setSettingVisible(!settingVisible);
@@ -201,21 +228,24 @@ const Dashboard = () => {
           </div>
         </div>
         <StablecoinSwapPopup />
+        <ExtensionUpdateBanner
+          key={`${pendingVersion}:${updateLevel}:${dismissedUntil}`}
+          visible={showUpdateBanner && !settingVisible}
+          closable={updateLevel === 3}
+          onDismiss={dismissBanner}
+          onCheck={() => {
+            revealSettingsCard();
+            setAutoScrollToBiometric(false);
+            setSettingVisible(true);
+          }}
+        />
       </div>
-      <Modal
-        visible={firstNotice && updateContent}
-        title={t('page.dashboard.home.whatsNew')}
-        className="first-notice"
-        onCancel={() => {
-          afterFirstLogin();
-        }}
-        maxHeight="420px"
-      >
-        <div>
-          <p className="mb-12">{version}</p>
-          <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
-        </div>
-      </Modal>
+      <FirstNoticeDialog
+        visible={!!(firstNotice && updateContent)}
+        version={version}
+        updateContent={updateContent}
+        onClose={afterFirstLogin}
+      />
 
       {pendingApprovalCount > 0 && (
         <PendingApproval
