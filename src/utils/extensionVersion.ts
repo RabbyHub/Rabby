@@ -28,7 +28,5 @@ export const compareExtensionVersions = (a: string, b: string) => {
   return 0;
 };
 
-// TEST ONLY: Both update-dismissal cooldowns use 1 minute.
-// Restore both to 24 * 60 * 60 * 1000 before release.
-export const UPDATE_BANNER_COOLDOWN = 60 * 1000;
-export const UPDATE_SETTINGS_CARD_COOLDOWN = 60 * 1000;
+export const UPDATE_BANNER_COOLDOWN = 24 * 60 * 60 * 1000;
+export const UPDATE_SETTINGS_CARD_COOLDOWN = 24 * 60 * 60 * 1000;

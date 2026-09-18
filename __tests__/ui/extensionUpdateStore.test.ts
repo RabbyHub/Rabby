@@ -354,8 +354,9 @@ describe('extension update store', () => {
     }
   );
 
-  it('persists only the cooldown when the latest version level is 3', async () => {
-    expect(UPDATE_BANNER_COOLDOWN).toBe(60 * 1000);
+  it('persists a 24-hour cooldown when the latest version level is 3', async () => {
+    expect(UPDATE_BANNER_COOLDOWN).toBe(24 * 60 * 60 * 1000);
+    broadcast({ pendingVersion: '1.1.0' });
     useExtensionUpdateStore.setState({ versionInfo: makeInfo('1.1.0', 2, 3) });
     const before = Date.now();
     useExtensionUpdateStore.getState().dismissBanner();
@@ -363,6 +364,12 @@ describe('extension update store', () => {
     expect(
       useExtensionUpdateStore.getState().dismissedUntil
     ).toBeGreaterThanOrEqual(before + UPDATE_BANNER_COOLDOWN);
+    const state = useExtensionUpdateStore.getState();
+    expect(selectExtensionUpdateBanner(state, before + 60 * 1000)).toBe(false);
+    expect(selectExtensionUpdateBanner(state, state.dismissedUntil - 1)).toBe(
+      false
+    );
+    expect(selectExtensionUpdateBanner(state, state.dismissedUntil)).toBe(true);
     expect(wallet.setStorageItem).toHaveBeenCalledWith(
       'pendingExtensionUpdate',
       { dismissedUntil: expect.any(Number) },

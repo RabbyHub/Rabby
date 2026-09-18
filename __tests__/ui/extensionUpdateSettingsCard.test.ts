@@ -233,8 +233,8 @@ describe('settings update card dismissal', () => {
     expect(shown()).toBe(true);
   });
 
-  it('shows level 3 again after the 1-minute test cooldown, even while settings stays open', () => {
-    expect(UPDATE_SETTINGS_CARD_COOLDOWN).toBe(60 * 1000);
+  it('shows level 3 again after the 24-hour cooldown, even while settings stays open', () => {
+    expect(UPDATE_SETTINGS_CARD_COOLDOWN).toBe(24 * 60 * 60 * 1000);
     render();
     expect(badgeShown()).toBe(true);
     close();
