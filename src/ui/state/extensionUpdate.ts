@@ -79,11 +79,11 @@ export const selectExtensionUpdateBadge = (
   selectExtensionUpdateLevel(state) >= 2 &&
   selectExtensionUpdateSettingsCard(state, now);
 
-let refreshPromise: Promise<void> | undefined;
+let versionInfoRequestId = 0;
 
 export type ExtensionUpdateStore = ExtensionUpdateServiceStore & {
   versionInfo: VersionInfo | null;
-  refreshVersionInfo: () => Promise<void>;
+  refreshVersionInfo: () => Promise<VersionInfo | null>;
   dismissBanner: () => void;
   dismissSettingsCard: () => void;
   revealSettingsCard: () => void;
@@ -96,47 +96,48 @@ export const useExtensionUpdateStore = createRabbyStore<ExtensionUpdateStore>(
     dismissedUntil: 0,
     settingsCardDismissal: null,
     versionInfo: null,
-    refreshVersionInfo() {
-      refreshPromise ||= (async () => {
+    async refreshVersionInfo() {
+      // Query deduplicates identical keys. A pending-version change can start
+      // another request; only the newest request may update the shared store.
+      const requestId = ++versionInfoRequestId;
+      try {
         await useExtensionUpdateStore.persist.hydrate();
         const installed = browser.runtime.getManifest().version;
-        try {
-          const response = versionInfoResponseSchema.parse(
-            await wallet.openapi.getVersionInfo({ version_id: installed })
-          );
-          // Test/gray releases may be absent, and an empty table has no latest version.
-          // Without a current-version policy, do not infer an update level.
-          if (!response.version || !response.latest_version) {
-            set({ versionInfo: null });
-            return;
-          }
-          const info = versionInfoSchema.parse(response);
-          if (info.version.id !== installed)
-            throw new Error('Version info does not match installed extension');
-          set({ versionInfo: info });
-          const pending = get().pendingVersion;
-          if (
-            compareExtensionVersions(installed, info.latest_version.id) < 0 &&
-            (!pending ||
-              compareExtensionVersions(pending, info.latest_version.id) < 0)
-          ) {
-            await wallet
-              .requestExtensionUpdateCheck(info.latest_version.id)
-              .catch((error) => {
-                console.error(
-                  '[extensionUpdateStore] Chrome update check failed',
-                  error
-                );
-              });
-          }
-        } catch (error) {
-          set({ versionInfo: null });
-          console.error('[extensionUpdateStore] version check failed', error);
+        const response = versionInfoResponseSchema.parse(
+          await wallet.openapi.getVersionInfo({ version_id: installed })
+        );
+        // Test/gray releases may be absent, and an empty table has no latest version.
+        // Without a current-version policy, do not infer an update level.
+        if (!response.version || !response.latest_version) {
+          if (requestId === versionInfoRequestId) set({ versionInfo: null });
+          return null;
         }
-      })().finally(() => {
-        refreshPromise = undefined;
-      });
-      return refreshPromise;
+        const info = versionInfoSchema.parse(response);
+        if (info.version.id !== installed)
+          throw new Error('Version info does not match installed extension');
+        if (requestId !== versionInfoRequestId) return info;
+        set({ versionInfo: info });
+        const pending = get().pendingVersion;
+        if (
+          compareExtensionVersions(installed, info.latest_version.id) < 0 &&
+          (!pending ||
+            compareExtensionVersions(pending, info.latest_version.id) < 0)
+        ) {
+          await wallet
+            .requestExtensionUpdateCheck(info.latest_version.id)
+            .catch((error) => {
+              console.error(
+                '[extensionUpdateStore] Chrome update check failed',
+                error
+              );
+            });
+        }
+        return info;
+      } catch (error) {
+        if (requestId === versionInfoRequestId) set({ versionInfo: null });
+        console.error('[extensionUpdateStore] version check failed', error);
+        throw error;
+      }
     },
     dismissBanner() {
       if (selectExtensionUpdateLevel(get()) === 3)

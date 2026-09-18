@@ -405,7 +405,9 @@ describe('extension update store', () => {
         ...makeInfo(),
         version: { id: '9.0.0', level: 4, changelog: '' },
       });
-      await useExtensionUpdateStore.getState().refreshVersionInfo();
+      await expect(
+        useExtensionUpdateStore.getState().refreshVersionInfo()
+      ).rejects.toThrow('Version info does not match installed extension');
       expect(useExtensionUpdateStore.getState().versionInfo).toBeNull();
       expect(wallet.requestExtensionUpdateCheck).not.toHaveBeenCalled();
     } finally {

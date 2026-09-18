@@ -31,6 +31,7 @@ import {
 } from '@/ui/state/extensionUpdate';
 import { ExtensionUpdateBanner } from './components/ExtensionUpdateBanner';
 import { FirstNoticeDialog } from './components/FirstNoticeDialog';
+import { useExtensionVersionInfo } from '@/ui/hooks/useExtensionVersionInfo';
 
 const Dashboard = () => {
   const history = useHistory();
@@ -136,13 +137,8 @@ const Dashboard = () => {
   const revealSettingsCard = useExtensionUpdateStore(
     (s) => s.revealSettingsCard
   );
-  const refreshVersionInfo = useExtensionUpdateStore(
-    (s) => s.refreshVersionInfo
-  );
   const pendingVersion = useExtensionUpdateStore((s) => s.pendingVersion);
-  useEffect(() => {
-    void refreshVersionInfo().catch(console.error);
-  }, [refreshVersionInfo, pendingVersion]);
+  useExtensionVersionInfo();
   useEffect(() => {
     setUpdateClock(Date.now());
     if (dismissedUntil <= Date.now()) return;
