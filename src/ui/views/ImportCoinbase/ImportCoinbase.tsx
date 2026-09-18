@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { message } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import IconBack from 'ui/assets/icon-back.svg';
@@ -24,6 +24,8 @@ export const ImportCoinbase: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
+  // See ImportGnosisAddress/index.tsx for why this is read/forwarded.
+  const { approvalId } = (useLocation().state as { approvalId?: string }) || {};
   const [result, setResult] = useState('');
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [showURL, setShowURL] = useState(false);
@@ -41,6 +43,7 @@ export const ImportCoinbase: React.FC<{
           editing: true,
           title: t('page.newAddress.walletConnect.connectedSuccessfully'),
           importedAccount: true,
+          approvalId,
         });
       } else {
         history.replace({
@@ -50,6 +53,7 @@ export const ImportCoinbase: React.FC<{
             editing: true,
             title: t('page.newAddress.walletConnect.connectedSuccessfully'),
             importedAccount: true,
+            approvalId,
           },
         });
       }

@@ -3416,6 +3416,27 @@
         "oneMonth": "1 ay",
         "ytd": "Yılın başından bu yana"
       },
+      "PerpsCard": {
+        "portfolioValue": "Portföy Değeri",
+        "available": "Mevcut",
+        "unifiedAccount": "Birleşik Hesap",
+        "unifiedAccountDesc": "Hesabınız her teminat varlığı için tek bir bakiye kullanır; bu bakiye, aynı teminatı kullanan Spot ile çapraz marjinli Perps arasında paylaşılır.",
+        "manualAccount": "Ayrı Bakiyeli Hesap",
+        "manualAccountDesc": "Spot ve her Perps DEX'i için ayrı bakiyeler yönetirsiniz; çapraz marjin her DEX için bağımsızdır.",
+        "portfolioMarginAccount": "Portföy Marjini",
+        "portfolioMarginAccountDesc": "Hesabınız, daha yüksek sermaye verimliliği için uygun Spot varlıklarını ve Perps pozisyonlarını tek bir portföyde birleştirir.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Diğer Varlıklar",
+        "breakdownNetOtherAssets": "Net Diğer Varlıklar",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Tümü"
+        }
+      },
       "newUserProcess": {
         "gotIt": "Anladım.",
         "thirdTitle": "Kısa Pozisyon Aç",
@@ -4314,10 +4335,10 @@
         "minimumWarning": "Kapanış için asgari tutar {{percent}}%",
         "total": "Toplam",
         "fee": "Ücret",
-        "receive": "Al",
+        "receive": "Tahmini alınacak",
         "amount": "Miktar",
-        "title": "Pozisyonu Kapat",
-        "closedPnl": "Kapatılan Kar/Zarar"
+        "title": "{{coin}} Pozisyonunu Kapat",
+        "closedPnl": "Tahmini kapanış PnL'si"
       },
       "PerpsAutoCloseModal": {
         "cancel": "İptal",

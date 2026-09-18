@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { WALLET_BRAND_TYPES } from 'consts';
 import { Item, PageHeader } from '@/ui/component';
@@ -13,7 +13,12 @@ export const InstitutionalWallets: React.FC<{
 }> = ({ isInModal, onBack, onNavigate }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const { institutionalWallets } = useAddAddressWalletOptions({ onNavigate });
+  // See AddAddressOptions/index.tsx for why this is read/forwarded.
+  const { approvalId } = (useLocation().state as { approvalId?: string }) || {};
+  const { institutionalWallets } = useAddAddressWalletOptions({
+    onNavigate,
+    params: { approvalId },
+  });
 
   const visibleWallets = React.useMemo(
     () =>

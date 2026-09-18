@@ -112,24 +112,74 @@ describe('notificationService approval identity', () => {
         component: 'SignTx' | 'SignTypedData'
       ) =>
         method === 'resolve'
-          ? notificationService.resolveApproval({}, false, id, component)
-          : notificationService.rejectApproval(
-              undefined,
-              true,
-              false,
-              id,
-              component
-            );
+          ? notificationService.resolveApprovalFor({
+              approval: { id: id as string, component },
+              data: {},
+            })
+          : notificationService.rejectApprovalFor({
+              approval: { id: id as string, component },
+              stay: true,
+            });
 
-      expect(await settle('stale', 'SignTx')).toBe(false);
-      expect(await settle('current', 'SignTypedData')).toBe(false);
-      expect(await settle(undefined, 'SignTx')).toBe(false);
+      expect(await settle('stale', 'SignTx')).toEqual({
+        accepted: false,
+        reason: 'APPROVAL_ID_MISMATCH',
+      });
+      expect(await settle('current', 'SignTypedData')).toEqual({
+        accepted: false,
+        reason: 'APPROVAL_COMPONENT_MISMATCH',
+      });
+      expect(await settle(undefined, 'SignTx')).toEqual({
+        accepted: false,
+        reason: 'INVALID_APPROVAL_REF',
+      });
       expect(approval.resolve).not.toHaveBeenCalled();
       expect(approval.reject).not.toHaveBeenCalled();
       expect(notificationService.currentApproval).toBe(approval);
       expect(notificationService.approvals).toEqual([approval]);
     }
   );
+
+  test.each([
+    undefined,
+    null,
+    {},
+    { id: '' },
+    { id: 'current' },
+    { id: 'current', component: '' },
+    { id: 'current', component: 'NotARealApprovalType' },
+    { id: 123, component: 'SignTx' },
+  ] as const)(
+    'rejects malformed/illegal refs as INVALID_APPROVAL_REF: %j',
+    async (badRef) => {
+      const approval = makeApproval('current');
+      notificationService.approvals = [approval];
+      notificationService.currentApproval = approval;
+
+      expect(
+        await notificationService.resolveApprovalFor({
+          approval: badRef as any,
+        })
+      ).toEqual({ accepted: false, reason: 'INVALID_APPROVAL_REF' });
+      expect(
+        await notificationService.rejectApprovalFor({
+          approval: badRef as any,
+        })
+      ).toEqual({ accepted: false, reason: 'INVALID_APPROVAL_REF' });
+      expect(approval.resolve).not.toHaveBeenCalled();
+      expect(approval.reject).not.toHaveBeenCalled();
+      expect(notificationService.currentApproval).toBe(approval);
+    }
+  );
+
+  test('resolveApprovalFor with no current approval reports NO_CURRENT_APPROVAL', async () => {
+    notificationService.currentApproval = null;
+    expect(
+      await notificationService.resolveApprovalFor({
+        approval: { id: 'anything', component: 'SignTx' },
+      })
+    ).toEqual({ accepted: false, reason: 'NO_CURRENT_APPROVAL' });
+  });
 
   test('resolves exactly the displayed request and rejects reuse against the next queued request', async () => {
     const first = makeApproval('first');
@@ -138,18 +188,21 @@ describe('notificationService approval identity', () => {
     notificationService.currentApproval = first;
 
     expect(
-      await notificationService.resolveApproval(
-        { signed: true },
-        false,
-        'first',
-        'SignTx'
-      )
-    ).toBe(true);
+      await notificationService.resolveApprovalFor({
+        approval: { id: 'first', component: 'SignTx' },
+        data: { signed: true },
+      })
+    ).toEqual({ accepted: true });
     expect(first.resolve).toHaveBeenCalledWith({ signed: true });
     expect(notificationService.currentApproval).toBe(second);
+
+    // Reusing the same (now-consumed) ref must not touch `second`.
     expect(
-      await notificationService.resolveApproval({}, false, 'first', 'SignTx')
-    ).toBe(false);
+      await notificationService.resolveApprovalFor({
+        approval: { id: 'first', component: 'SignTx' },
+        data: {},
+      })
+    ).toEqual({ accepted: false, reason: 'APPROVAL_ID_MISMATCH' });
     expect(second.resolve).not.toHaveBeenCalled();
   });
 
@@ -160,17 +213,58 @@ describe('notificationService approval identity', () => {
     notificationService.currentApproval = first;
 
     expect(
-      await notificationService.rejectApproval(
-        undefined,
-        true,
-        false,
-        'first',
-        'SignTypedData'
-      )
-    ).toBe(true);
+      await notificationService.rejectApprovalFor({
+        approval: { id: 'first', component: 'SignTypedData' },
+        stay: true,
+      })
+    ).toEqual({ accepted: true });
     expect(first.reject).toHaveBeenCalledTimes(1);
     expect(second.reject).not.toHaveBeenCalled();
     expect(notificationService.currentApproval).toBe(second);
+  });
+
+  test('duplicate resolve/reject race on the same ref settles exactly once', async () => {
+    const approval = makeApproval('current');
+    notificationService.approvals = [approval];
+    notificationService.currentApproval = approval;
+    const ref = { id: 'current', component: 'SignTx' } as const;
+
+    const [resolveResult, rejectResult] = await Promise.all([
+      notificationService.resolveApprovalFor({ approval: ref, data: {} }),
+      notificationService.rejectApprovalFor({ approval: ref }),
+    ]);
+
+    const results = [resolveResult, rejectResult];
+    const acceptedCount = results.filter((r) => r.accepted).length;
+    expect(acceptedCount).toBe(1);
+    // Whichever ran first wins the resolve/resolve(reject) call; the other sees
+    // the approval already consumed.
+    const calledResolve = (approval.resolve as jest.Mock).mock.calls.length;
+    const calledReject = (approval.reject as jest.Mock).mock.calls.length;
+    expect(calledResolve + calledReject).toBe(1);
+  });
+
+  test('forceReject is validated through the same ref check', async () => {
+    const approval = makeApproval('current');
+    notificationService.approvals = [approval];
+    notificationService.currentApproval = approval;
+
+    expect(
+      await notificationService.resolveApprovalFor({
+        approval: { id: 'wrong', component: 'SignTx' },
+        forceReject: true,
+      })
+    ).toEqual({ accepted: false, reason: 'APPROVAL_ID_MISMATCH' });
+    expect(approval.reject).not.toHaveBeenCalled();
+
+    expect(
+      await notificationService.resolveApprovalFor({
+        approval: { id: 'current', component: 'SignTx' },
+        forceReject: true,
+      })
+    ).toEqual({ accepted: true });
+    expect(approval.reject).toHaveBeenCalledTimes(1);
+    expect(approval.resolve).not.toHaveBeenCalled();
   });
 });
 
@@ -190,13 +284,17 @@ describe('notificationService SignTx queueing', () => {
     // preparation, the second must be queued behind it.
     const firstRequest = signTxRequest();
     const secondRequest = signTxRequest();
-    const firstOnCurrent = () => {
+    const firstOnCurrent = jest.fn(() => {
       Object.assign(firstRequest.params, { signTxPreparationId: 'prep-1' });
-    };
+    });
     const secondOnCurrent = jest.fn();
 
     void notificationService.requestApproval(firstRequest, undefined, {
       onCurrent: firstOnCurrent,
+    });
+    expect(firstOnCurrent).toHaveBeenCalledWith({
+      id: notificationService.getApproval()!.id,
+      component: 'SignTx',
     });
     expect(
       notificationService.currentApproval?.data?.params?.signTxPreparationId

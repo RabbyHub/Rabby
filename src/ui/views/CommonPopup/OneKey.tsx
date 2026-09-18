@@ -1,8 +1,4 @@
-import {
-  openInternalPageInTab,
-  useApproval,
-  useCommonPopupView,
-} from '@/ui/utils';
+import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
 import { message } from 'antd';
 import React from 'react';
@@ -12,7 +8,6 @@ export const OneKey: React.FC<{
   isModalContent?: boolean;
 }> = ({ isModalContent }) => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  const [_, __, rejectApproval] = useApproval();
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
 
@@ -32,7 +27,7 @@ export const OneKey: React.FC<{
 
   const handleClick = async () => {
     if (!isModalContent) {
-      await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);
+      // Unlike Ledger.tsx, this component isn't wired into CommonPopup's dispatch (no `componentName === 'OneKey'` branch) — unreachable, nothing to bind.
       openInternalPageInTab('request-permission?type=ledger&from=approval');
     } else {
       openInternalPageInTab(

@@ -301,7 +301,7 @@ export const SignMainnetSwapGasQuotePopup = ({
         ) : (
           <div className="flex flex-col items-center gap-2 text-12 text-r-neutral-foot">
             <span className="font-medium">{levelTitle}</span>
-            <span className="font-normal">{gwei} Gwei</span>
+            <span className="font-normal text-center">{gwei} Gwei</span>
           </div>
         )}
       </div>

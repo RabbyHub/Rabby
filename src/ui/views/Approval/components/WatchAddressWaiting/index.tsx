@@ -9,7 +9,12 @@ import {
   KEYRING_CATEGORY_MAP,
   CHAINS_ENUM,
 } from 'consts';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  bindApproval,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import eventBus from '@/eventBus';
 import Process from './Process';
 import Scan from './Scan';
@@ -43,9 +48,11 @@ interface ApprovalParams {
 const WatchAddressWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
@@ -58,7 +65,9 @@ const WatchAddressWaiting = ({
   }>(null);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'WatchAddressWaiting')
+  );
   const chain =
     findChain({
       id: params.chainId || 1,
@@ -317,13 +326,11 @@ const WatchAddressWaiting = ({
   const { stay = false } = params || {};
   useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      // Settle before closing: closePopup() unmounts this component, which
+      // would flip resolveApproval's mounted-check and reject a settlement still in progress.
+      resolveApproval(signFinishedData.data, stay, false).then(() => {
+        closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

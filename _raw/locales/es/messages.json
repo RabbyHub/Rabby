@@ -3413,6 +3413,27 @@
         "oneHour": "1 hora",
         "oneMonth": "1M"
       },
+      "PerpsCard": {
+        "portfolioValue": "Valor de la cartera",
+        "available": "Disponible",
+        "unifiedAccount": "Cuenta unificada",
+        "unifiedAccountDesc": "Tu cuenta usa un único saldo por cada activo de colateral, compartido entre Spot y los Perps con margen cruzado que usan el mismo colateral.",
+        "manualAccount": "Cuenta con saldos separados",
+        "manualAccountDesc": "Gestionas saldos separados entre Spot y cada DEX de Perps, con margen cruzado independiente por DEX.",
+        "portfolioMarginAccount": "Margen de cartera",
+        "portfolioMarginAccountDesc": "Tu cuenta combina los activos Spot elegibles y las posiciones de Perps en una sola cartera para lograr una mayor eficiencia del capital.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Otros activos",
+        "breakdownNetOtherAssets": "Otros activos netos",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Todo"
+        }
+      },
       "newUserProcess": {
         "gotIt": "Entendido",
         "next": "Siguiente",
@@ -4308,12 +4329,12 @@
       },
       "PerpsClosePositionPopup": {
         "total": "Total",
-        "receive": "Recibir",
+        "receive": "Recepción estimada",
         "amount": "Cantidad",
         "minimumWarning": "El monto mínimo de cierre es {{percent}}%",
-        "title": "Cerrar posición",
+        "title": "Cerrar posición de {{coin}}",
         "confirm": "Confirmar",
-        "closedPnl": "PnL realizado",
+        "closedPnl": "PnL de cierre estimado",
         "fee": "Comisión"
       },
       "PerpsAutoCloseModal": {

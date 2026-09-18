@@ -327,8 +327,8 @@ export const useDepositWithdraw = (
 
   const withdrawMaxBalance = useMemo(() => {
     // Arbitrum withdraw uses Hyperliquid `withdraw3`, which is USDC-only.
-    // Unified-account `availableBalance` is the cross-stablecoin sum, so picking
-    // the USDC-specific balance here prevents overstating the withdrawable amount.
+    // `availableBalance` is USDC-only too now, but read the USDC-specific
+    // balance explicitly so this stays correct if the basis changes again.
     // HyperEVM withdraw is per-asset and reads the selected token's balance.
     const baseBalance = (() => {
       if (type !== 'withdraw') return availableBalance;

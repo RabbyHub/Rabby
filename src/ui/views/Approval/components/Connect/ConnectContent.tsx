@@ -20,7 +20,12 @@ import styled from 'styled-components';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { ChainSelector, FallbackSiteLogo, Spin } from 'ui/component';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  bindApproval,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import RuleResult from './RuleResult';
@@ -36,6 +41,7 @@ interface ConnectProps {
   params: any;
   onChainChange?(chain: CHAINS_ENUM): void;
   defaultChain?: CHAINS_ENUM;
+  approvalId?: string;
 }
 
 const ConnectWrapper = styled.div`
@@ -215,6 +221,7 @@ export const ConnectContent = (
   const {
     params: { icon, origin, name, $ctx },
     onPerpsInvite,
+    approvalId,
   } = props;
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { state } = useLocation<{
@@ -222,7 +229,9 @@ export const ConnectContent = (
   }>();
   const { showChainsModal = false } = state ?? {};
   const [showModal] = useState(showChainsModal);
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'Connect')
+  );
   const { t } = useTranslation();
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
@@ -605,7 +614,9 @@ export const ConnectContent = (
   const handleAllow = async () => {
     const stay = await checkSetPerpsReference().catch(() => false);
 
-    resolveApproval(
+    // Await settlement before onPerpsInvite, which unmounts this component and would
+    // trip resolveApproval's own mounted-check mid-flight.
+    await resolveApproval(
       {
         defaultChain,
         defaultAccount: selectedAccount,

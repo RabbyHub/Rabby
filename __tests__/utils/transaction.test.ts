@@ -71,10 +71,14 @@ jest.mock('@/utils/chain', () => ({
   }),
 }));
 
-jest.mock('@/utils/tempo', () => ({
-  getTempoFeeTokenInfo: jest.fn(),
-  isTempoChain: (serverId?: string) => serverId === 'tempo',
-}));
+jest.mock('@/utils/tempo', () => {
+  const actual = jest.requireActual('@/utils/tempo');
+  return {
+    ...actual,
+    getTempoFeeTokenInfo: jest.fn(),
+    isTempoChain: (serverId?: string) => serverId === 'tempo',
+  };
+});
 
 const createCheckParams = (overrides = {}) => ({
   recommendGasLimitRatio: 1,
@@ -527,5 +531,33 @@ describe('buildSignTx', () => {
     expect(tx.chainId).toBe(1);
     expect(tx.gasPrice).toBe('0x3b9aca00');
     expect(tx.maxPriorityFeePerGas).toBeUndefined();
+  });
+
+  test('buildSignTx uses the Tempo signing semantics for display', () => {
+    const tx = buildSignTx({
+      tx: normalizeTxParams(
+        {
+          from: '0xfrom',
+          type: '0x76',
+          to: '0xpathusd',
+          data: '0xa9059cbbdead',
+          value: '0x0',
+          calls: [{}],
+        } as any,
+        true
+      ) as any,
+      chainId: 123,
+    }) as any;
+
+    expect(tx.calls).toStrictEqual([
+      {
+        to: '0xpathusd',
+        data: '0xa9059cbbdead',
+        value: '0x0',
+      },
+    ]);
+    expect(tx.to).toBeUndefined();
+    expect(tx.value).toBeUndefined();
+    expect(tx.data).toBe('0x');
   });
 });

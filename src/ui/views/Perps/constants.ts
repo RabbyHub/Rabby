@@ -299,6 +299,6 @@ export const STABLECOIN_SLIPPAGE = 0.01;
 
 export type PerpsOpenOrderType = 'market' | 'limit';
 
+/** Past this deviation the user gets a confirm dialog — never a hard block. */
 export const PERPS_LIMIT_PRICE_CONFIRM_PCT = 0.05;
-export const PERPS_LIMIT_PRICE_BLOCK_PCT = 0.1;
 export const PERPS_LIMIT_TIF_DEFAULT = 'Gtc' as const;

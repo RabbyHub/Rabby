@@ -1,15 +1,10 @@
-import {
-  openInternalPageInTab,
-  useApproval,
-  useCommonPopupView,
-} from '@/ui/utils';
+import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
 import { useKeystoneDeviceConnected } from '@/ui/utils/keystone';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 export const Keystone: React.FC = () => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  const [_, __, rejectApproval] = useApproval();
   const hasConnected = useKeystoneDeviceConnected();
   const { t } = useTranslation();
 
@@ -25,7 +20,7 @@ export const Keystone: React.FC = () => {
   }, [hasConnected]);
 
   const handleClick = async () => {
-    await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);
+    // Unlike Ledger.tsx/ImKeyPermission.tsx, only opened from the passive useKeystoneStatus watcher, never an in-flight approval.
     openInternalPageInTab('request-permission?type=keystone&from=approval');
   };
 

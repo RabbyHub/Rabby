@@ -36,6 +36,7 @@ import {
   HYPE_EVM_BRIDGE_ADDRESS_MAP,
   PerpsQuoteAsset,
   CANDLE_MENU_KEY_V2,
+  getSpotBalanceKey,
 } from '../views/Perps/constants';
 import type {
   ApproveSignatures,
@@ -50,7 +51,7 @@ import type {
 import { maxBy } from 'lodash';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import { isSameAddress } from '../utils';
+import { isSameAddress, sleep } from '../utils';
 import {
   formatAllDexsClearinghouseState,
   AggregatedClearinghouseState,
@@ -75,6 +76,11 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import {
+  parsePortfolioResponseStrict,
+  PortfolioData,
+} from '@/ui/views/Perps/utils/perpsPortfolio';
+import { StakingSummaryAmounts } from '@/ui/views/Perps/utils/accountPricing';
 
 export interface PositionAndOpenOrder extends AssetPosition {
   openOrders: OpenOrder[];
@@ -190,6 +196,12 @@ const getInitTradingState = () => ({
   bboPrices: { asks1: '', asks5: '', bids1: '', bids5: '' },
 });
 
+export type PortfolioEntry = {
+  data: PortfolioData | null;
+  status: 'idle' | 'loading' | 'success' | 'error';
+  updatedAt: number;
+};
+
 export interface PerpsState {
   // positionAndOpenOrders: PositionAndOpenOrder[];
   accountSummary: AccountSummary | null;
@@ -228,7 +240,7 @@ export interface PerpsState {
   // Aggregated state keyed by **account address** — populated for every known
   // perps account so the account selector can show their balances. Not the
   // same as `dexClearinghouseStates` below.
-  clearinghouseStateMap: Record<string, ClearinghouseState | null>;
+  clearinghouseStateMap: Record<string, AggregatedClearinghouseState | null>;
   // Raw per-dex cache for the **current account** keyed by dex name
   // ('' = hyper main). WS and HTTP both write here with time guards; the
   // aggregated `clearinghouseState` / `clearinghouseStateMap` are rebuilt
@@ -286,6 +298,17 @@ export interface PerpsState {
     bids1: string; // bids[0] — best bid
     bids5: string; // bids[4] — 5th bid
   };
+  /**
+   * Staking-account HYPE for the current account. REST only (no WS feed):
+   * staked HYPE sits outside spotState, yet the official portfolio series
+   * counts it — the live Portfolio Value needs it to match.
+   */
+  stakingSummary: StakingSummaryAmounts | null;
+  stakingStatus: 'idle' | 'loading' | 'success' | 'error';
+  /** First spotState frame has landed (spot balances are usable). */
+  isSpotStateReady: boolean;
+  /** Portfolio net-value series, keyed by lowercased address. */
+  portfolioMap: Record<string, PortfolioEntry>;
 }
 
 let topAssetsCache: PerpTopTokenV3[] = [];
@@ -324,6 +347,15 @@ const loadDefaultAssetCategorySafe = async (): Promise<
 let lastCtxsByDex: Record<string, AssetCtx[]> = {};
 
 let marketDataInFlight: Promise<void> | null = null;
+
+const stakingSummaryInFlight = new Map<string, Promise<void>>();
+const portfolioInFlight = new Map<string, Promise<void>>();
+
+// The `portfolio` info endpoint ignores any period parameter and always
+// returns all periods at once, so 1D/1W/1M/All is a client-side slice —
+// switching range must NOT refetch. This is the freshness window before a
+// re-fetch is allowed.
+const PORTFOLIO_FRESH_TTL_MS = 10_000;
 
 const buildCtxsByDex = (
   payload: [string, AssetCtx[]][]
@@ -451,6 +483,10 @@ export const getDefaultPerpsState = (): PerpsState =>
     sizeDisplayUnit: 'base',
     tradingOrderSide: OrderSide.BUY,
     selectedTokenDetail: null,
+    stakingSummary: null,
+    stakingStatus: 'idle',
+    isSpotStateReady: false,
+    portfolioMap: {},
     ...getInitTradingState(),
   } as PerpsState);
 
@@ -696,7 +732,7 @@ const perpsReducers = definePerpsReducers({
     state,
     payload: {
       address: string;
-      clearinghouseState: ClearinghouseState;
+      clearinghouseState: AggregatedClearinghouseState;
     }
   ) {
     if (!payload.address || !payload.clearinghouseState) {
@@ -719,7 +755,7 @@ const perpsReducers = definePerpsReducers({
     };
   },
 
-  patchClearinghouseState(state, payload: ClearinghouseState) {
+  patchClearinghouseState(state, payload: AggregatedClearinghouseState) {
     const currentStateTime = state.clearinghouseState?.time || 0;
     if (payload.time <= currentStateTime) {
       return state;
@@ -747,6 +783,22 @@ const perpsReducers = definePerpsReducers({
         ...state.dexClearinghouseStates,
         [payload.dex]: payload.state,
       },
+    };
+  },
+
+  patchPortfolioEntry(
+    state,
+    payload: { key: string } & Partial<PortfolioEntry>
+  ) {
+    const { key, ...rest } = payload;
+    const prev = state.portfolioMap[key] || {
+      data: null,
+      status: 'idle' as const,
+      updatedAt: 0,
+    };
+    return {
+      ...state,
+      portfolioMap: { ...state.portfolioMap, [key]: { ...prev, ...rest } },
     };
   },
 
@@ -906,10 +958,32 @@ const perpsReducers = definePerpsReducers({
   },
 
   setCurrentPerpsAccount(state, payload: Account | null) {
+    // Every switch path funnels through here. The per-account REST snapshot
+    // (staking), the spot readiness flag, and the perps user-data readiness
+    // flag all describe the OLD account until their next fetch / next frame
+    // lands — carrying them over would price one account's assets into
+    // another's card (e.g. manual mode gating on a stale isUserDataReady:true
+    // while clearinghouseState still holds the old account's equity).
+    const changed =
+      payload?.address?.toLowerCase() !==
+      state.currentPerpsAccount?.address?.toLowerCase();
     return {
       ...state,
       currentPerpsAccount: payload,
       isLogin: !!payload,
+      ...(changed
+        ? {
+            stakingSummary: null,
+            stakingStatus: 'idle' as const,
+            isSpotStateReady: false,
+            isUserDataReady: false,
+            // Per-dex frames are keyed by dex, not address; leftovers from
+            // the previous account would be re-aggregated into this one and
+            // their newer timestamps could make the WS path drop this
+            // account's first frame.
+            dexClearinghouseStates: {},
+          }
+        : {}),
     };
   },
 
@@ -957,6 +1031,12 @@ const perpsReducers = definePerpsReducers({
       hasPermission: true,
       accountNeedApproveAgent: false,
       accountNeedApproveBuilderFee: false,
+      stakingSummary: null,
+      stakingStatus: 'idle',
+      isSpotStateReady: false,
+      // Logout clears the whole cache; account-switch keeps it bucketed by
+      // address instead (see resetProAccountInfo).
+      portfolioMap: {},
     };
   },
 
@@ -977,6 +1057,12 @@ const perpsReducers = definePerpsReducers({
       twapHistory: [],
       twapSliceFills: [],
       localLoadingHistory: [],
+      stakingSummary: null,
+      stakingStatus: 'idle',
+      isSpotStateReady: false,
+      // portfolioMap is bucketed by address and intentionally kept: the next
+      // account reads its own bucket, and cached data avoids a flash on
+      // switching back.
     };
   },
 
@@ -1214,12 +1300,31 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
   },
 
   async fetchUserAbstraction(address: string) {
+    // '' is the SDK's "use the logged-in address" convention (two call sites
+    // rely on it: usePerpsProState.ts / usePerpsState.ts pass '' after
+    // agentSetAbstraction so the SDK falls back to `this.masterAddress`).
+    // Resolve it to the current account up front so the post-await guard has
+    // something real to compare against — comparing '' to a real address
+    // would never match and silently drop every empty-address call.
+    const target =
+      address || usePerpsStore.getState().currentPerpsAccount?.address || '';
+    if (!target) return;
+    const isStillCurrent = () =>
+      usePerpsStore.getState().currentPerpsAccount?.address?.toLowerCase() ===
+      target.toLowerCase();
     try {
       const sdk = getPerpsSDK();
-      const userAbstraction = await sdk.info.getUserAbstraction(address);
+      const userAbstraction = await sdk.info.getUserAbstraction(target);
+      // The user may have switched perps accounts while this was in flight;
+      // a response for the account switched away from must not overwrite the
+      // newly-selected account's userAbstraction.
+      if (!isStillCurrent()) return;
       dispatch.perps.patchState({ userAbstraction: userAbstraction });
     } catch (error) {
       console.error('Failed to fetch user abstraction:', error);
+      // Same guard: a late failure for the previous account must not reset
+      // the current account's mode.
+      if (!isStillCurrent()) return;
       dispatch.perps.patchState({
         userAbstraction: UserAbstractionResp.default,
       });
@@ -1236,6 +1341,140 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     } catch (error) {
       console.error('Failed to fetch spot meta:', error);
     }
+  },
+
+  // Staking has no WS feed, so this is a REST snapshot. Single-flight by
+  // address; the response is dropped if the account switched while it was in
+  // flight, and an error never downgrades a value we already have.
+  async fetchStakingSummary(address: string) {
+    const key = address?.toLowerCase();
+    if (!key) return;
+    const inFlight = stakingSummaryInFlight.get(key);
+    if (inFlight) return inFlight;
+
+    const task = (async () => {
+      try {
+        // `rootState` is a SNAPSHOT taken when the effect was dispatched
+        // (the wrapper injects `perps: get()`, and zustand replaces the
+        // state object on every `set`), so it never reflects an account
+        // switch that happens while this effect is running. Read live
+        // state for the loading gate too.
+        const current = usePerpsStore.getState().stakingStatus;
+        if (current !== 'success' && current !== 'loading') {
+          dispatch.perps.patchState({ stakingStatus: 'loading' });
+        }
+        const sdk = getPerpsSDK();
+        const raw = await sdk.info.getDelegatorSummary(address);
+        // Account may have switched while this was in flight. `rootState` is
+        // a SNAPSHOT taken when the effect was dispatched (the wrapper injects
+        // `perps: get()`, and zustand replaces the state object on every set),
+        // so it would still name the account we started with — re-read live
+        // state here.
+        const latest = usePerpsStore.getState();
+        if (latest.currentPerpsAccount?.address?.toLowerCase() !== key) {
+          return;
+        }
+        const next: StakingSummaryAmounts = {
+          delegated: String(raw?.delegated ?? '0'),
+          undelegated: String(raw?.undelegated ?? '0'),
+          totalPendingWithdrawal: String(raw?.totalPendingWithdrawal ?? '0'),
+        };
+        const prev = latest.stakingSummary;
+        // Keep the old object identity when nothing changed so subscribers
+        // don't re-render on every poll.
+        const same =
+          prev &&
+          prev.delegated === next.delegated &&
+          prev.undelegated === next.undelegated &&
+          prev.totalPendingWithdrawal === next.totalPendingWithdrawal;
+        dispatch.perps.patchState({
+          stakingSummary: same ? prev : next,
+          stakingStatus: 'success',
+        });
+      } catch (e) {
+        console.error('[perps] fetchStakingSummary failed', e);
+        // Same guard as the success path: a late failure for the previous
+        // account must not mark the current account's staking as errored.
+        if (
+          usePerpsStore
+            .getState()
+            .currentPerpsAccount?.address?.toLowerCase() !== key
+        ) {
+          return;
+        }
+        // Live read again — see the snapshot note above.
+        if (usePerpsStore.getState().stakingStatus !== 'success') {
+          dispatch.perps.patchState({ stakingStatus: 'error' });
+        }
+      } finally {
+        stakingSummaryInFlight.delete(key);
+      }
+    })();
+
+    stakingSummaryInFlight.set(key, task);
+    return task;
+  },
+
+  // The `portfolio` info endpoint ignores any period parameter and always
+  // returns all periods at once, so 1D/1W/1M/All is a client-side slice —
+  // switching range must NOT refetch.
+  async fetchPerpsPortfolio(
+    payload: { address: string; force?: boolean },
+    rootState: PerpsRootState
+  ) {
+    const key = payload.address?.toLowerCase();
+    if (!key) return;
+    const entry = rootState.perps.portfolioMap[key];
+    if (
+      !payload.force &&
+      entry?.status === 'success' &&
+      Date.now() - entry.updatedAt < PORTFOLIO_FRESH_TTL_MS
+    ) {
+      return;
+    }
+    const inFlight = portfolioInFlight.get(key);
+    if (inFlight) return inFlight;
+
+    const task = (async () => {
+      try {
+        // Only show a loading state when there is nothing to display yet;
+        // a background refresh must not blank an already-rendered card.
+        if (!entry?.data) {
+          dispatch.perps.patchPortfolioEntry({ key, status: 'loading' });
+        }
+        const sdk = getPerpsSDK();
+        // The popup often doesn't survive to the next 60s poll, so a first
+        // failure gets 2 retries here (spec 1.7) instead of leaving the card
+        // stuck on its skeleton until the interval happens to come back
+        // around while the popup is still open.
+        const MAX_ATTEMPTS = 3;
+        let lastError: unknown;
+        for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+          try {
+            const raw = await sdk.info.getPortfolio(payload.address);
+            const data = parsePortfolioResponseStrict(raw);
+            dispatch.perps.patchPortfolioEntry({
+              key,
+              data,
+              status: 'success',
+              updatedAt: Date.now(),
+            });
+            return;
+          } catch (e) {
+            lastError = e;
+            if (attempt < MAX_ATTEMPTS) await sleep(500);
+          }
+        }
+        console.error('[perps] fetchPerpsPortfolio failed', lastError);
+        // Keep prior data; only flag the status.
+        dispatch.perps.patchPortfolioEntry({ key, status: 'error' });
+      } finally {
+        portfolioInFlight.delete(key);
+      }
+    })();
+
+    portfolioInFlight.set(key, task);
+    return task;
   },
 
   async loginPerpsAccount(
@@ -1262,7 +1501,9 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
 
     // dispatch.perps.startPolling(undefined);
     dispatch.perps.fetchUserAbstraction(account.address);
-    isPro && dispatch.perps.fetchSpotMeta();
+    // Both popup and Pro need the spot pricing index: Portfolio Value prices
+    // every spot asset (and staked HYPE) through it.
+    dispatch.perps.fetchSpotMeta();
     dispatch.perps.fetchPerpPermission(account.address);
     setTimeout(() => {
       // avoid 429 error
@@ -1294,6 +1535,15 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     try {
       const dexState = await sdk.info.getClearingHouseState(address, dexParam);
       if (!dexState) return;
+      // A→B switch mid-flight: rebuild would drop this, but the per-dex map
+      // must not be repopulated with A's frames either — they would be
+      // re-aggregated into B and could out-timestamp B's first WS frame.
+      if (
+        usePerpsStore.getState().currentPerpsAccount?.address?.toLowerCase() !==
+        address.toLowerCase()
+      ) {
+        return;
+      }
       dispatch.perps.patchDexClearinghouseState({
         dex: payload.dex,
         state: dexState,
@@ -1312,6 +1562,15 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     if (!address) return;
     try {
       const allStates = await fetchAllDexsRaw(address);
+      // A→B switch mid-flight: rebuild would drop this, but the per-dex map
+      // must not be repopulated with A's frames either — they would be
+      // re-aggregated into B and could out-timestamp B's first WS frame.
+      if (
+        usePerpsStore.getState().currentPerpsAccount?.address?.toLowerCase() !==
+        address.toLowerCase()
+      ) {
+        return;
+      }
       // Bulk-replace the per-dex map in one dispatch (mirrors the WS path
       // and avoids N subscriber notifications). Skips per-key time guards,
       // which is fine: HTTP responses for all dexes come from the same
@@ -1331,7 +1590,24 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     payload: { address: string },
     rootState: PerpsRootState
   ) {
-    const dexMap = rootState.perps.dexClearinghouseStates || {};
+    if (!payload.address) return;
+    // `rootState` is a SNAPSHOT taken when the effect was dispatched (the
+    // wrapper injects `perps: get()`, and zustand replaces the state object
+    // on every `set`), so it can go stale while this effect runs. Read live
+    // state for the account guard and the unified-account overwrite — same
+    // pattern as fetchStakingSummary.
+    const live = usePerpsStore.getState();
+    // `payload.address` is the account the CALLER captured before its own
+    // await; the user may have switched since. (This effect itself has no
+    // await, so rootState cannot go stale within it — the guard is about the
+    // caller's request, not this function's snapshot.)
+    if (
+      live.currentPerpsAccount?.address?.toLowerCase() !==
+      payload.address?.toLowerCase()
+    ) {
+      return;
+    }
+    const dexMap = live.dexClearinghouseStates || {};
     // formatAllDexsClearinghouseState seeds marginSummary from entries[0],
     // so bail if hyper isn't cached yet (HTTP single-dex can race ahead of
     // the first WS frame).
@@ -1341,10 +1617,18 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     entries.sort((a, b) => (a[0] === '' ? -1 : b[0] === '' ? 1 : 0));
     const aggregated = formatAllDexsClearinghouseState(entries);
     if (!aggregated) return;
-    if (
-      rootState.perps.userAbstraction === UserAbstractionResp.unifiedAccount
-    ) {
-      aggregated.withdrawable = rootState.perps.spotState.availableToTrade.toString();
+    if (live.userAbstraction === UserAbstractionResp.unifiedAccount) {
+      // USDC-only (matches mobile): the cross-stablecoin sum used to live
+      // here, but Available now counts USDC alone. Preserve the perps-side
+      // withdrawable instead of discarding it, so this stays the single
+      // definition of the Available basis for every reader of `withdrawable`.
+      const perpsWithdrawable = new BigNumber(aggregated.withdrawable || 0);
+      aggregated.perpsWithdrawable = perpsWithdrawable.toString();
+      const usdcAvailable =
+        live.spotState.balancesMap?.[getSpotBalanceKey('USDC')]?.available || 0;
+      aggregated.withdrawable = perpsWithdrawable
+        .plus(usdcAvailable)
+        .toString();
     }
     dispatch.perps.patchClearinghouseState(aggregated);
     dispatch.perps.setClearinghouseStateMapBySingle({
@@ -1614,7 +1898,16 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
         return;
       }
       if (latestState.userAbstraction === UserAbstractionResp.unifiedAccount) {
-        clearinghouseState.withdrawable = latestState.spotState.availableToTrade.toString();
+        const perpsWithdrawable = new BigNumber(
+          clearinghouseState.withdrawable || 0
+        );
+        clearinghouseState.perpsWithdrawable = perpsWithdrawable.toString();
+        const usdcAvailable =
+          latestState.spotState.balancesMap?.[getSpotBalanceKey('USDC')]
+            ?.available || 0;
+        clearinghouseState.withdrawable = perpsWithdrawable
+          .plus(usdcAvailable)
+          .toString();
       }
       dispatch.perps.patchState({ dexClearinghouseStates: nextMap });
       dispatch.perps.patchClearinghouseState(clearinghouseState);
@@ -1632,7 +1925,10 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
           return;
         }
 
-        dispatch.perps.patchState({ spotState: formatSpotState(spotState) });
+        dispatch.perps.patchState({
+          spotState: formatSpotState(spotState),
+          isSpotStateReady: true,
+        });
       }
     );
     subscriptions.push(unsubscribeSpotState);
@@ -2146,6 +2442,7 @@ const effectsWithRootState = new Set<keyof PerpsEffectImplementations>([
   'updateShowPopularTradings',
   'initCandleInterval',
   'updateCandleInterval',
+  'fetchPerpsPortfolio',
 ]);
 
 export const usePerpsStore = create<PerpsStore>()((set, get) => {

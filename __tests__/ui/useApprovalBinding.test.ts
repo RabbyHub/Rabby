@@ -4,8 +4,8 @@ import { useApproval, ApprovalBinding } from '@/ui/utils/hooks';
 
 const mockWallet = {
   getApproval: jest.fn(),
-  resolveApproval: jest.fn(),
-  rejectApproval: jest.fn(),
+  resolveApprovalFor: jest.fn(),
+  rejectApprovalFor: jest.fn(),
   coboSafeResetCurrentAccount: jest.fn(),
 };
 const mockDeviceConnect = jest.fn();
@@ -33,11 +33,11 @@ describe('approval gesture binding', () => {
     id: 'displayed-request',
     data: { approvalComponent: 'SignTx', account: { address: '0xaccount' } },
   };
-  const Probe = ({ binding }: { binding?: ApprovalBinding }) => {
+  const Probe = ({ binding }: { binding: ApprovalBinding | null }) => {
     approvalHook = useApproval(binding);
     return null;
   };
-  const mount = (binding?: ApprovalBinding) => {
+  const mount = (binding: ApprovalBinding | null = null) => {
     act(() => root.render(React.createElement(Probe, { binding })));
   };
 
@@ -48,8 +48,8 @@ describe('approval gesture binding', () => {
     container = document.createElement('div');
     root = createRoot(container);
     mockWallet.getApproval.mockResolvedValue(approval);
-    mockWallet.resolveApproval.mockResolvedValue(true);
-    mockWallet.rejectApproval.mockResolvedValue(true);
+    mockWallet.resolveApprovalFor.mockResolvedValue({ accepted: true });
+    mockWallet.rejectApprovalFor.mockResolvedValue({ accepted: true });
     mockDeviceConnect.mockResolvedValue(true);
   });
 
@@ -60,7 +60,7 @@ describe('approval gesture binding', () => {
   });
 
   test.each([
-    { approvalId: undefined, approvalComponent: 'SignTx' as const },
+    null,
     { approvalId: 'old-request', approvalComponent: 'SignTx' as const },
     {
       approvalId: 'displayed-request',
@@ -71,8 +71,8 @@ describe('approval gesture binding', () => {
     expect(await approvalHook[1]({})).toBe(false);
     expect(await approvalHook[2]()).toBe(false);
     jest.runAllTimers();
-    expect(mockWallet.resolveApproval).not.toHaveBeenCalled();
-    expect(mockWallet.rejectApproval).not.toHaveBeenCalled();
+    expect(mockWallet.resolveApprovalFor).not.toHaveBeenCalled();
+    expect(mockWallet.rejectApprovalFor).not.toHaveBeenCalled();
     expect(mockDeviceConnect).not.toHaveBeenCalled();
     expect(mockHistory.replace).not.toHaveBeenCalled();
     expect(mockHistory.push).not.toHaveBeenCalled();
@@ -97,7 +97,7 @@ describe('approval gesture binding', () => {
     allowed = false;
     finishConnect(true);
     expect(await pending).toBe(false);
-    expect(mockWallet.resolveApproval).not.toHaveBeenCalled();
+    expect(mockWallet.resolveApprovalFor).not.toHaveBeenCalled();
   });
 
   test('does not resolve after its displayed request unmounts', async () => {
@@ -114,7 +114,7 @@ describe('approval gesture binding', () => {
     act(() => root.unmount());
     finishConnect(true);
     expect(await pending).toBe(false);
-    expect(mockWallet.resolveApproval).not.toHaveBeenCalled();
+    expect(mockWallet.resolveApprovalFor).not.toHaveBeenCalled();
   });
 
   test('a new valid evaluation cannot revive a submission from an obsolete evaluation', async () => {
@@ -141,39 +141,47 @@ describe('approval gesture binding', () => {
     });
     finishConnect(true);
     expect(await pending).toBe(false);
-    expect(mockWallet.resolveApproval).not.toHaveBeenCalled();
+    expect(mockWallet.resolveApprovalFor).not.toHaveBeenCalled();
   });
 
-  test('passes both captured id and component, and does not navigate when the backend refuses a stale gesture', async () => {
-    mockWallet.resolveApproval.mockResolvedValue(false);
+  test('passes the bound ref as an object, and does not navigate when the backend refuses a stale gesture', async () => {
+    mockWallet.resolveApprovalFor.mockResolvedValue({
+      accepted: false,
+      reason: 'APPROVAL_ID_MISMATCH',
+    });
     mount({ approvalId: approval.id, approvalComponent: 'SignTx' });
     expect(await approvalHook[1]({})).toBe(false);
-    expect(mockWallet.resolveApproval).toHaveBeenCalledWith(
-      {},
-      false,
-      approval.id,
-      'SignTx'
-    );
+    expect(mockWallet.resolveApprovalFor).toHaveBeenCalledWith({
+      approval: { id: approval.id, component: 'SignTx' },
+      data: {},
+      forceReject: false,
+    });
     jest.runAllTimers();
     expect(mockHistory.replace).not.toHaveBeenCalled();
   });
 
-  test('legacy callers also bind their captured request when resolving or rejecting', async () => {
-    mount();
-    expect(await approvalHook[1]({}, true)).toBe(true);
-    expect(mockWallet.resolveApproval).toHaveBeenCalledWith(
-      {},
-      false,
-      approval.id,
-      'SignTx'
-    );
-    expect(await approvalHook[2](undefined, true)).toBe(true);
-    expect(mockWallet.rejectApproval).toHaveBeenCalledWith(
-      undefined,
-      true,
-      false,
-      approval.id,
-      'SignTx'
-    );
+  test('a null binding (no scope/ref established) fails closed for both resolve and reject, never falling back to current', async () => {
+    mount(null);
+    expect(await approvalHook[1]({}, true)).toBe(false);
+    expect(await approvalHook[2](undefined, true)).toBe(false);
+    expect(mockWallet.resolveApprovalFor).not.toHaveBeenCalled();
+    expect(mockWallet.rejectApprovalFor).not.toHaveBeenCalled();
+    // getApproval() itself is a harmless read and remains available.
+    expect(mockWallet.getApproval).not.toHaveBeenCalled();
+  });
+
+  test('reject is not gated by the extra canResolve readiness check, only by ownership', async () => {
+    mount({
+      approvalId: approval.id,
+      approvalComponent: 'SignTx',
+      canResolve: () => false,
+    });
+    expect(await approvalHook[2]('user cancel')).toBe(true);
+    expect(mockWallet.rejectApprovalFor).toHaveBeenCalledWith({
+      approval: { id: approval.id, component: 'SignTx' },
+      error: 'user cancel',
+      stay: false,
+      isInternal: false,
+    });
   });
 });

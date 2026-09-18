@@ -3415,6 +3415,27 @@
         "oneWeek": "1 неделя",
         "oneDay": "1д"
       },
+      "PerpsCard": {
+        "portfolioValue": "Стоимость портфеля",
+        "available": "Доступно",
+        "unifiedAccount": "Единый аккаунт",
+        "unifiedAccountDesc": "В вашем аккаунте для каждого залогового актива используется единый баланс, общий для спотовой торговли и кросс-маржинальных позиций Perps с тем же залогом.",
+        "manualAccount": "Аккаунт с раздельными балансами",
+        "manualAccountDesc": "Вы отдельно управляете балансами спота и каждой Perps DEX; у каждой DEX своя кросс-маржа.",
+        "portfolioMarginAccount": "Портфельная маржа",
+        "portfolioMarginAccountDesc": "Ваш аккаунт объединяет подходящие спотовые активы и позиции Perps в единый портфель для большей эффективности капитала.",
+        "breakdownPerps": "Перпы",
+        "breakdownSpot": "Спот",
+        "breakdownOtherAssets": "Прочие активы",
+        "breakdownNetOtherAssets": "Прочие активы (нетто)",
+        "breakdownStaking": "Стейкинг",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Все"
+        }
+      },
       "newUserProcess": {
         "next": "Далее",
         "gotIt": "Понял.",
@@ -4309,14 +4330,14 @@
         "title": "Настроить маржу"
       },
       "PerpsClosePositionPopup": {
-        "title": "Закрыть позицию",
+        "title": "Закрыть позицию {{coin}}",
         "amount": "Объем",
         "confirm": "Подтвердить",
         "fee": "Комиссия",
         "total": "Итого",
         "minimumWarning": "Минимальная сумма закрытия составляет {{percent}}%.",
-        "receive": "Получить",
-        "closedPnl": "Реализованный PNL"
+        "receive": "Расч. к получению",
+        "closedPnl": "Расч. PnL при закрытии"
       },
       "PerpsAutoCloseModal": {
         "confirm": "Подтвердить",

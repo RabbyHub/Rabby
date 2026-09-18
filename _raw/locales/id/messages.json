@@ -3410,6 +3410,27 @@
         "oneDay": "1D",
         "oneWeek": "1 minggu"
       },
+      "PerpsCard": {
+        "portfolioValue": "Nilai Portofolio",
+        "available": "Tersedia",
+        "unifiedAccount": "Akun Terpadu",
+        "unifiedAccountDesc": "Akun Anda menggunakan satu saldo untuk setiap aset kolateral, dibagikan antara Spot dan Perps cross margin yang menggunakan kolateral yang sama.",
+        "manualAccount": "Akun Standar",
+        "manualAccountDesc": "Anda mengelola saldo terpisah antara Spot dan setiap DEX Perps, dengan cross margin independen di masing-masing DEX.",
+        "portfolioMarginAccount": "Margin Portofolio",
+        "portfolioMarginAccountDesc": "Akun Anda menggabungkan aset Spot yang memenuhi syarat dan posisi Perps ke dalam satu portofolio untuk efisiensi modal yang lebih tinggi.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Aset Lainnya",
+        "breakdownNetOtherAssets": "Aset Lainnya Bersih",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Semua"
+        }
+      },
       "newUserProcess": {
         "gotIt": "Mengerti",
         "next": "Berikutnya",
@@ -4304,13 +4325,13 @@
         "exceedMaxReduction": "Melampaui pengurangan maksimum"
       },
       "PerpsClosePositionPopup": {
-        "receive": "Terima",
+        "receive": "Estimasi Jumlah Diterima",
         "confirm": "Konfirmasi",
         "amount": "Jumlah",
         "total": "Total",
         "fee": "Biaya",
-        "closedPnl": "PNL terealisasi",
-        "title": "Tutup Posisi",
+        "closedPnl": "Estimasi PNL Penutupan",
+        "title": "Tutup Posisi {{coin}}",
         "minimumWarning": "Jumlah penutupan minimum adalah {{percent}}%"
       },
       "PerpsAutoCloseModal": {
@@ -4789,7 +4810,7 @@
     "DesktopNav": {
       "perps": "Perps",
       "portfolio": "Portofolio",
-      "comingSoon": "Segera Hadir"    
+      "comingSoon": "Segera Hadir"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "Tambah alamat",

@@ -3460,6 +3460,27 @@
         "ytd": "本年至今",
         "oneMonth": "1个月"
       },
+      "PerpsCard": {
+        "portfolioValue": "账户总价值",
+        "available": "可用",
+        "unifiedAccount": "统一账户",
+        "unifiedAccountDesc": "同一种抵押资产在账户中只有一份余额，由现货和使用该资产作为抵押品的全仓永续合约共享。",
+        "manualAccount": "标准账户",
+        "manualAccountDesc": "您需要分别管理现货和各永续 DEX 的余额；每个 DEX 也有独立的全仓保证金。",
+        "portfolioMarginAccount": "组合保证金账户",
+        "portfolioMarginAccountDesc": "您的账户将符合条件的现货资产与永续仓位合并为一个投资组合，以提升资金效率。",
+        "breakdownPerps": "永续合约",
+        "breakdownSpot": "现货",
+        "breakdownOtherAssets": "其他资产",
+        "breakdownNetOtherAssets": "其他资产净值",
+        "breakdownStaking": "质押",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "全部"
+        }
+      },
       "newUserProcess": {
         "next": "下一步",
         "thirdTitle": "做空",
@@ -4354,13 +4375,13 @@
         "upto": "最多"
       },
       "PerpsClosePositionPopup": {
-        "title": "平仓",
-        "receive": "接收",
+        "title": "平仓 {{coin}}",
+        "receive": "预计收到",
         "confirm": "确认",
         "amount": "数量",
         "total": "总计",
         "fee": "手续费",
-        "closedPnl": "已实现盈亏",
+        "closedPnl": "预计平仓盈亏",
         "minimumWarning": "最低平仓金额为 {{percent}}%"
       },
       "PerpsAutoCloseModal": {
@@ -4839,7 +4860,7 @@
     "DesktopNav": {
       "perps": "Perps",
       "comingSoon": "即将推出",
-      "portfolio": "投资组合"    
+      "portfolio": "投资组合"
     },
     "DesktopSelectAccountList": {
       "addAddresses": "添加地址",

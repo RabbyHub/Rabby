@@ -56,6 +56,9 @@ export const EIP7702_REVOKE_CHAIN_CANDIDATES = [
   'XLAYER' as CHAINS_ENUM,
   'ZIRCUIT' as CHAINS_ENUM,
   'ZORA' as CHAINS_ENUM,
+  'APE' as CHAINS_ENUM,
+  'ARC' as CHAINS_ENUM,
+  'MANTA' as CHAINS_ENUM,
 ] as CHAINS_ENUM[];
 
 export const getEIP7702RevokeSupportedChains = () =>
