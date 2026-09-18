@@ -1185,7 +1185,7 @@
         "whatsNew": "Was gibt's Neues",
         "firstNotice": {
           "title": "Neue Version bereit",
-          "gotIt": "Verstanden"
+          "gotIt": "OK"
         },
         "importType": "Importiert über {{type}}",
         "chainEnd": " Netzwerk",

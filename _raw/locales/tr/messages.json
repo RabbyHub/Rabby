@@ -1185,7 +1185,7 @@
         "whatsNew": "Yenilikler",
         "firstNotice": {
           "title": "Yeni Sürüm Hazır",
-          "gotIt": "Anladım"
+          "gotIt": "Tamam"
         },
         "importType": "{{type}} tarafından içe aktarıldı",
         "missingDataTooltip": "Bakiyen, {{text}} ile ilgili mevcut ağ sorunları nedeniyle güncellenmeyebilir.",
