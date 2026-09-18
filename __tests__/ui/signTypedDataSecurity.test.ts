@@ -153,6 +153,8 @@ describe('SignTypedData security lifecycle', () => {
       },
       'ui/utils': {
         getTimeSpan: noop,
+        bindApproval: (id: any, component: any) =>
+          id ? { approvalId: id, approvalComponent: component } : null,
         useApproval: () => [noop, approve, noop],
         useCommonPopupView: () => ({ activeApprovalPopup: () => false }),
         useWallet: () => wallet,

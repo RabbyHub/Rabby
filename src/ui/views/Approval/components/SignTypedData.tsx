@@ -19,6 +19,7 @@ import {
 } from 'consts';
 import {
   getTimeSpan,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -157,14 +158,16 @@ const SignTypedData = ({
   });
   const submissionEvaluationRef = useRef<unknown>(null);
   const canSignCurrentRef = useRef<() => boolean>(() => false);
-  const [, resolveApproval, rejectApproval] = useApproval({
-    approvalId,
-    approvalComponent: 'SignTypedData',
-    canResolve: () =>
-      renderSecurityVersion === evaluationVersion.current &&
-      canSignCurrentRef.current() &&
-      submissionEvaluationRef.current === securityStateRef.current.evaluation,
-  });
+  const [, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(
+      approvalId,
+      'SignTypedData',
+      () =>
+        renderSecurityVersion === evaluationVersion.current &&
+        canSignCurrentRef.current() &&
+        submissionEvaluationRef.current === securityStateRef.current.evaluation
+    )
+  );
   const { t } = useTranslation();
   const wallet = useWallet();
   const scrollRef = useRef<HTMLDivElement>(null);

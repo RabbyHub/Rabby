@@ -52,6 +52,7 @@ import { useScroll } from 'react-use';
 import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
+  bindApproval,
   useApproval,
   useWallet,
   useCommonPopupView,
@@ -535,11 +536,9 @@ const SignTx = ({
   const isCurrentSecurityEvaluation = () =>
     renderSecurityVersion === evaluationSequence.current &&
     canResolveSecurityRef.current();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval({
-    approvalId,
-    approvalComponent: 'SignTx',
-    canResolve: isCurrentSecurityEvaluation,
-  });
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'SignTx', isCurrentSecurityEvaluation)
+  );
   const securityEngine = useSecurityEngineStore();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain found');
@@ -682,11 +681,11 @@ const SignTx = ({
     (is7702 || params?.$ctx?.eip7702Revoke) &&
     origin !== INTERNAL_REQUEST_ORIGIN
   ) {
-    return <EIP7702Warning />;
+    return <EIP7702Warning approvalId={approvalId} />;
   }
 
   if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
-    return <EIP7702Warning />;
+    return <EIP7702Warning approvalId={approvalId} />;
   }
 
   const enable7702 = (is7702 && isSpeedUp) || params?.$ctx?.eip7702Revoke;

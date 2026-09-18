@@ -36,7 +36,9 @@ const WalletConnectTemplate: React.FC<{
 }> = ({ isInModal, onBack, onNavigate, state }) => {
   const { t } = useTranslation();
   const history = useHistory();
-  const location = useLocation<{ brand: any }>();
+  const location = useLocation<{ brand: any; approvalId?: string }>();
+  // See ImportGnosisAddress/index.tsx for why this is read/forwarded.
+  const approvalId = state?.approvalId || location.state?.approvalId;
   const wallet = useWallet();
   const [result, setResult] = useState('');
   const [walletconnectUri, setWalletconnectUri] = useState('');
@@ -72,6 +74,7 @@ const WalletConnectTemplate: React.FC<{
           editing: true,
           title: t('page.newAddress.walletConnect.connectedSuccessfully'),
           importedAccount: true,
+          approvalId,
         });
       } else {
         history.replace({
@@ -83,6 +86,7 @@ const WalletConnectTemplate: React.FC<{
             editing: true,
             title: t('page.newAddress.walletConnect.connectedSuccessfully'),
             importedAccount: true,
+            approvalId,
           },
         });
       }

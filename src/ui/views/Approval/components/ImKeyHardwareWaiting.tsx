@@ -11,6 +11,7 @@ import {
   KEYRING_CATEGORY_MAP,
 } from 'consts';
 import {
+  bindApproval,
   useApproval,
   openInTab,
   openInternalPageInTab,
@@ -54,9 +55,11 @@ interface ApprovalParams {
 export const ImKeyHardwareWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const {
     setHeight,
@@ -75,7 +78,9 @@ export const ImKeyHardwareWaiting = ({
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'ImKeyHardwareWaiting')
+  );
   const chain = findChain({
     id: params.chainId || 1,
   });
@@ -278,13 +283,11 @@ export const ImKeyHardwareWaiting = ({
   const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      // Settle before closing: closePopup() unmounts this component, which
+      // would flip resolveApproval's mounted-check and reject a settlement still in progress.
+      resolveApproval(signFinishedData.data, stay, false).then(() => {
+        closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

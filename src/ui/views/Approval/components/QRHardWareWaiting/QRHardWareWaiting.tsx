@@ -12,7 +12,12 @@ import {
   WALLET_BRAND_TYPES,
 } from 'consts';
 import eventBus from '@/eventBus';
-import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
+import {
+  bindApproval,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
@@ -43,7 +48,7 @@ export type RequestSignPayload = {
   };
 };
 
-const QRHardWareWaiting = ({ params, account: $account }) => {
+const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
   const account = params.isGnosis ? params.account : $account;
   const { setTitle, closePopup, setHeight } = useCommonPopupView();
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
@@ -56,7 +61,9 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   );
   const defalutSignMethodSetted = React.useRef(false);
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'QRHardWareWaiting')
+  );
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
   const { t } = useTranslation();
@@ -185,13 +192,11 @@ const QRHardWareWaiting = ({ params, account: $account }) => {
   const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      // Settle before closing: closePopup() unmounts this component, which
+      // would flip resolveApproval's mounted-check and reject a settlement still in progress.
+      resolveApproval(signFinishedData.data, stay, false).then(() => {
+        closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

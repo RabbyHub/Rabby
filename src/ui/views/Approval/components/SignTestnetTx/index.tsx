@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import { FooterBar } from '../FooterBar/FooterBar';
 import {
   intToHex,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -203,12 +204,14 @@ interface SignTxProps<TData extends any[] = any[]> {
   };
   origin?: string;
   account: Account;
+  approvalId?: string;
 }
 
 export const SignTestnetTx = ({
   params,
   origin,
   account: $account,
+  approvalId,
 }: SignTxProps) => {
   const { isGnosis } = params;
   const currentAccount = params.isGnosis ? params.account! : $account;
@@ -638,7 +641,9 @@ export const SignTestnetTx = ({
 
   const { t } = useTranslation();
 
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'SignTx')
+  );
 
   const checkCanProcess = async () => {
     const session = params.session;
