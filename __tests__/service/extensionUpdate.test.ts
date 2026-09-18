@@ -313,6 +313,33 @@ describe('extension update service', () => {
     expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(2);
   });
 
+  it('cools down for exactly ten minutes without extending it for suppressed checks', async () => {
+    const startedAt = Date.parse('2026-09-18T00:00:00Z');
+    const now = jest.spyOn(Date, 'now').mockReturnValue(startedAt);
+    (browser.runtime.requestUpdateCheck as jest.Mock).mockResolvedValue([
+      'no_update',
+    ]);
+
+    try {
+      await service.requestUpdateCheck('1.2.0');
+      expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(1);
+
+      now.mockReturnValue(startedAt + 5 * 60 * 1000);
+      await service.requestUpdateCheck('1.2.0');
+      expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(1);
+
+      now.mockReturnValue(startedAt + 10 * 60 * 1000 - 1);
+      await service.requestUpdateCheck('1.2.0');
+      expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(1);
+
+      now.mockReturnValue(startedAt + 10 * 60 * 1000);
+      await service.requestUpdateCheck('1.2.0');
+      expect(browser.runtime.requestUpdateCheck).toHaveBeenCalledTimes(2);
+    } finally {
+      now.mockRestore();
+    }
+  });
+
   it.each(['1.0.0', '0.9.0'])(
     'does not request an installed or older target %s',
     async (target) => {

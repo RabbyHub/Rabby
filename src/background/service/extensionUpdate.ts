@@ -141,7 +141,7 @@ export class ExtensionUpdateService {
         return;
       if (
         this.lastCheckTarget === latestVersion &&
-        Date.now() - this.lastCheckAt < 5 * 60 * 1000
+        Date.now() - this.lastCheckAt < 10 * 60 * 1000
       )
         return;
       if (!browser.runtime.requestUpdateCheck) return;
