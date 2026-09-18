@@ -1183,6 +1183,10 @@
           "count": "{{count}} 件 in"
         },
         "whatsNew": "新着情報",
+        "firstNotice": {
+          "title": "新しいバージョンの準備ができました",
+          "gotIt": "了解"
+        },
         "importType": "{{type}} によってインポート",
         "chainEnd": " チェーン",
         "chain": " チェーン， ",
@@ -1314,6 +1318,15 @@
         "disableWhitelistTip": "無効にすると、どのアドレスにでも資産を送信できます",
         "warning": "警告",
         "clearWatchAddressContent": "閲覧専用アドレスをすべて削除しますか？",
+        "updateCard": {
+          "check": "確認",
+          "title": "新しいバージョンがあります",
+          "update": "更新",
+          "dismiss": "更新通知を閉じる",
+          "error": "拡張機能の更新に失敗しました",
+          "perps": "無期限先物の取引体験を改善しました。",
+          "screenshots": "右クリックでスクリーンショットを撮り、簡単に不具合を報告できます。"
+        },
         "updateVersion": {
           "content": "新しいRabby Walletのアップデートが利用可能です。手動でアップデート方法を確認するにはクリックしてください。",
           "okText": "チュートリアルを見る",

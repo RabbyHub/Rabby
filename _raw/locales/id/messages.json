@@ -1269,6 +1269,10 @@
         "rabbyIsInUseAndMetamaskIsBanned": "Rabby sedang digunakan dan Metamask dilarang",
         "offline": "Jaringan terputus dan tidak ada data yang diperoleh",
         "whatsNew": "Apa yang baru",
+        "firstNotice": {
+          "title": "Versi Baru Siap",
+          "gotIt": "Mengerti"
+        },
         "chainEnd": " rantai",
         "chain": " rantai, ",
         "viewFirstOne": "Lihat yang pertama",
@@ -1382,6 +1386,15 @@
       "settings": {
         "lock": {
           "never": "Tidak Pernah"
+        },
+        "updateCard": {
+          "check": "Lihat",
+          "title": "Versi baru tersedia",
+          "update": "Perbarui",
+          "dismiss": "Tutup pemberitahuan pembaruan",
+          "error": "Gagal memperbarui ekstensi",
+          "perps": "Pengalaman trading perpetual telah ditingkatkan.",
+          "screenshots": "Klik kanan untuk mengambil tangkapan layar dan melaporkan bug dengan mudah."
         },
         "updateVersion": {
           "okText": "Lihat Tutorial",

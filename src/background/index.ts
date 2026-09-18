@@ -99,6 +99,12 @@ import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
 import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
+import extensionUpdateService from './service/extensionUpdate';
+
+// Register synchronously so update events can wake the MV3 service worker.
+void extensionUpdateService.init().catch((error) => {
+  console.error('[extensionUpdate] failed to initialize store', error);
+});
 
 BigNumber.config({ EXPONENTIAL_AT: [-20, 100] });
 
@@ -169,6 +175,7 @@ async function restoreAppState() {
   await permissionService.init();
   await preferenceService.init();
   await currencyService.init();
+  await extensionUpdateService.init();
   await transactionWatchService.init();
   await transactionBroadcastWatchService.init();
   await pageStateCacheService.init();

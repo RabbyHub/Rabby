@@ -1269,6 +1269,10 @@
         "soon": "Em breve",
         "comingSoon": "Em breve",
         "whatsNew": "O que há de novo",
+        "firstNotice": {
+          "title": "Nova versão pronta",
+          "gotIt": "Entendido"
+        },
         "refreshTheWebPageToTakeEffect": "Atualize a página da web para que tenha efeito.",
         "flip": "Virar",
         "pendingCountPlural": "{{countStr}} Pendentes",
@@ -1382,6 +1386,15 @@
       "settings": {
         "lock": {
           "never": "Nunca"
+        },
+        "updateCard": {
+          "check": "Ver",
+          "title": "Nova versão disponível",
+          "update": "Atualizar",
+          "dismiss": "Fechar aviso de atualização",
+          "error": "Não foi possível atualizar a extensão",
+          "perps": "Melhorámos a experiência de negociação de perpétuos.",
+          "screenshots": "Faça capturas com o botão direito para comunicar erros facilmente."
         },
         "updateVersion": {
           "okText": "Veja o Tutorial",

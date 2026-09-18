@@ -22,6 +22,7 @@ import { formatUsdValue, useWallet } from 'ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 
 import { RcIconSettingCC } from '@/ui/assets/dashboard';
+import { useExtensionUpdateBadge } from '@/ui/hooks/useExtensionUpdateSettingsCard';
 import { ReactComponent as RcIconGasFullCC } from '@/ui/assets/gas-full-cc.svg';
 import { ReactComponent as RcIconGasLowCC } from '@/ui/assets/gas-low-cc.svg';
 import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
@@ -68,6 +69,7 @@ const Container = styled.div`
 export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
   onSettingClick,
 }) => {
+  const showUpdateBadge = useExtensionUpdateBadge();
   const history = useHistory();
   const wallet = useWallet();
 
@@ -207,7 +209,12 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
               )}
               onClick={onSettingClick}
             >
-              <RcIconSettingCC />
+              <div className="relative">
+                <RcIconSettingCC />
+                {showUpdateBadge && (
+                  <span className="absolute right-[1px] top-0 h-[5px] w-[5px] rounded-full bg-r-red-default" />
+                )}
+              </div>
             </div>
           </div>
         </div>
