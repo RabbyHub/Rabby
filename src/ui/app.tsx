@@ -132,7 +132,35 @@ const main = async () => {
       </QueryClientProvider>
     </Sentry.ErrorBoundary>
   );
+  clearTimeout(bootstrapTimeoutTimer);
 };
+
+const BOOTSTRAP_TIMEOUT = 10_000;
+
+const BootstrapTimeoutFallback = () => {
+  return (
+    <div className="fixed inset-0 flex flex-col items-center justify-center gap-[16px] bg-rb-neutral-bg-2">
+      <div className="p-[20px] flex flex-col items-center gap-[16px] max-w-full text-center">
+        <h2 className="text-r-neutral-title-1">Rabby failed to start</h2>
+        <p className="text-r-neutral-body">
+          The extension background is not responding. Please reload the
+          extension and try again.
+        </p>
+        <Button type="primary" onClick={() => browser.runtime.reload()}>
+          Reload
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+// `sendMessage` can hang forever when the service worker is stuck, so neither
+// `.then` nor `.catch` fires and the retry chain stalls. Cleared once `main`
+// renders; if the app renders later anyway, it replaces this fallback.
+const bootstrapTimeoutTimer = setTimeout(() => {
+  Sentry.captureMessage('bootstrap timeout');
+  root?.render(<BootstrapTimeoutFallback />);
+}, BOOTSTRAP_TIMEOUT);
 
 const bootstrap = () => {
   if (!isManifestV3) {
