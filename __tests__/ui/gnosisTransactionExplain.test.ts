@@ -41,7 +41,8 @@ runInNewContext(compiled, {
   useTranslation: () => ({ t: (key: string) => key }),
   useWallet: () => ({}),
   useRequest,
-  isKnownActionType: (type: string) => type === 'swap_token',
+  isKnownActionType: (type: string) =>
+    type === 'swap_token' || type === 'contract_call',
   getActionTypeTextByType,
   IconUnknown: 'unknown.svg',
   Button: ({ children }: { children: React.ReactNode }) =>
@@ -81,7 +82,7 @@ describe('Safe queue transaction summary', () => {
     expect(getActionTypeTextByType).toHaveBeenCalledWith('swap_token');
   });
 
-  test.each(['new_action', undefined])(
+  test.each(['contract_call', 'new_action', undefined])(
     'shows the original contract method for action %j',
     (type) => {
       expect(render(type, 'execute', 'protocol.svg')).toEqual({

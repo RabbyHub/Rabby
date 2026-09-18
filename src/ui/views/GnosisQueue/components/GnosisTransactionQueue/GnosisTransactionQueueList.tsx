@@ -256,7 +256,10 @@ const TransactionExplain = ({
       )} ${getTokenSymbol(data.token)}`;
     } else if (explain?.action?.type === 'cancel_tx') {
       content = t('page.safeQueue.action.cancel');
-    } else if (isKnownActionType(explain?.action?.type || '')) {
+    } else if (
+      explain?.action?.type !== 'contract_call' &&
+      isKnownActionType(explain?.action?.type || '')
+    ) {
       icon = contractProtocol?.logo_url ? (
         <img className="icon icon-explain" src={contractProtocol?.logo_url} />
       ) : null;
