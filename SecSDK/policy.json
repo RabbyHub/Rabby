@@ -103054,8 +103054,7 @@
       "src/ui/views/Swap/hooks/context.tsx",
       "src/ui/views/Swap/hooks/fee.ts",
       "src/ui/views/Swap/hooks/quote.tsx",
-      "src/ui/views/Swap/hooks/token.tsx",
-      "src/ui/views/Swap/hooks/verify.tsx"
+      "src/ui/views/Swap/hooks/token.tsx"
     ]
   },
   "src/ui/views/Swap/hooks/quote.tsx": {
@@ -103064,6 +103063,7 @@
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/p-retry/index.js",
       "node_modules/react/index.js",
@@ -103071,7 +103071,7 @@
       "src/stats.ts",
       "src/ui/state/swap.ts",
       "src/ui/utils/index.ts",
-      "src/ui/views/Swap/hooks/verify.tsx",
+      "src/ui/views/Swap/utils.ts",
       "src/utils/chain.ts"
     ]
   },
@@ -103115,14 +103115,11 @@
       "src/eventBus.ts"
     ]
   },
-  "src/ui/views/Swap/hooks/verify.tsx": {
+  "src/ui/views/Swap/utils.ts": {
     "enable": true,
     "require": [
+      "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
-      "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
-      "node_modules/bignumber.js/bignumber.js",
-      "src/background/utils/index.ts",
-      "src/ui/views/Swap/hooks/quote.tsx",
       "src/utils/chain.ts"
     ]
   },
