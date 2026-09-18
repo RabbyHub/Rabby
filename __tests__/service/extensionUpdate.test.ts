@@ -439,8 +439,7 @@ describe('extension update service', () => {
     await service.getPendingVersion();
     expect(browser.tabs.create).toHaveBeenCalledTimes(1);
     expect(browser.tabs.create).toHaveBeenCalledWith({
-      url:
-        'https://rabby-io-git-feat-auto-update-debanker.vercel.app//updating?version=1.0.0&lang=en',
+      url: 'https://rabby.io/updating?version=1.0.0&lang=en',
       active: true,
     });
     expect(browser.runtime.reload).not.toHaveBeenCalled();
