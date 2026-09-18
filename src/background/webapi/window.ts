@@ -79,8 +79,6 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
           focused: true,
           url,
           type: 'popup',
-          top: 0,
-          left: 0,
           ...WINDOW_SIZE,
           ...rest,
           height: finalHeight,
