@@ -12,7 +12,6 @@ import { formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { SelectedBridgeQuote, useSetQuoteVisible } from '../hooks';
 import { Tooltip } from 'antd';
-import { useRabbySelector } from '@/ui/store';
 import styled from 'styled-components';
 import { bridgeQuoteEstimatedValueBn } from '../utils/bridgeQuote';
 
@@ -73,16 +72,20 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
 
   const openSwapQuote = useSetQuoteVisible();
 
-  const aggregatorsList = useRabbySelector(
-    (s) => s.bridge.aggregatorsList || []
-  );
-  const selectedAggregators = useRabbySelector(
-    (s) => s.bridge.selectedAggregators || []
-  );
-
   const showMinDuration = useMemo(() => {
     return Math.max(Math.round(props.duration / 60), 1);
   }, [props.duration]);
+
+  const durationText = useMemo(() => {
+    if (props.duration < 60) {
+      return t('page.bridge.duration-sec', {
+        duration: Math.max(Math.round(props.duration), 1),
+      });
+    }
+    return t('page.bridge.duration', {
+      duration: showMinDuration,
+    });
+  }, [props.duration, showMinDuration, t]);
 
   const durationColor = useMemo(() => {
     if (showMinDuration > 10) {
@@ -188,7 +191,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
               title={t('page.bridge.via-bridge', {
                 bridge: props.bridge.name,
               })}
-              className="rectangle w-[max-content]"
+              className="rectangle w-max"
               arrowPointAtCenter
               visible={props.onlyShow ? undefined : false}
             >
@@ -270,11 +273,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
                 durationColor
               )}
             />
-            <span className={durationColor}>
-              {t('page.bridge.duration', {
-                duration: showMinDuration,
-              })}
-            </span>
+            <span className={durationColor}>{durationText}</span>
           </div>
           <div
             className={clsx(

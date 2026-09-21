@@ -206,6 +206,17 @@ export const BridgeShowMore = ({
     return Math.max(Math.round((duration || 0) / 60), 1);
   }, [duration]);
 
+  const durationText = useMemo(() => {
+    if ((duration || 0) < 60) {
+      return t('page.bridge.duration-sec', {
+        duration: Math.max(Math.round(duration || 0), 1),
+      });
+    }
+    return t('page.bridge.duration', {
+      duration: showMinDuration,
+    });
+  }, [duration, showMinDuration, t]);
+
   const durationColor = useMemo(() => {
     if (showMinDuration > 10) {
       return 'text-r-red-default';
@@ -273,11 +284,7 @@ export const BridgeShowMore = ({
                   )}
                 >
                   {' · '}
-                  {sourceLogo || sourceName
-                    ? t('page.bridge.duration', {
-                        duration: showMinDuration,
-                      })
-                    : '-'}
+                  {sourceLogo || sourceName ? durationText : '-'}
                 </span>
                 {Boolean(sourceLogo || sourceName) && (
                   <RcInfoRowArrowRight className="h-14 w-14 text-r-neutral-foot" />
