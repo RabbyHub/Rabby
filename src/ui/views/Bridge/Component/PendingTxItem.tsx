@@ -1,12 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useImperativeHandle,
-  useMemo,
-  useState,
-  forwardRef,
-  useRef,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import clsx from 'clsx';
@@ -19,34 +11,17 @@ import IconUnknown from '@/ui/assets/token-default.svg';
 import { ReactComponent as RcIconQueuedCC } from '@/ui/assets/bridge/IconQueuedCC.svg';
 import { ReactComponent as RcIconFailedCC } from '@/ui/assets/bridge/IconFailedCC.svg';
 import { useHistory, useLocation } from 'react-router-dom';
-import { transactionHistoryService } from '@/background/service';
 import { useRabbySelector } from '@/ui/store';
-import {
-  SvgPendingSpin,
-  SvgIcPending,
-  SvgIcSuccess,
-  SvgIcWarning,
-  SvgIconCross,
-} from 'ui/assets';
+import { SvgIcPending, SvgIconCross } from 'ui/assets';
 import { ReactComponent as RcIconSelectCC } from '@/ui/assets/bridge/IconSelectCC.svg';
-import type {
-  SwapTxHistoryItem,
-  SendTxHistoryItem,
-  BridgeTxHistoryItem,
-  SendNftTxHistoryItem,
-  ApproveTokenTxHistoryItem,
-} from '@/background/service/transactionHistory';
+import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { Image } from 'antd';
-import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import { getUiType } from '@/ui/utils';
-import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
-import { UI_TYPE } from '@/constant/ui';
 import { DrawerProps } from 'antd';
-import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Popup } from '@/ui/component';
 import { ReactComponent as RcImgArrowCC } from '@/ui/assets/bridge/ImgArrowCC.svg';
-import { getChain } from '@/utils';
 import eventBus from '@/eventBus';
 import { ONE_DAY_MS, ONE_HOUR_MS, ONE_MINUTE_MS } from '../constants';
 import { EVENTS } from '@/constant';
@@ -149,7 +124,7 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
       />
       <TooltipWithMagnetArrow
         title={chainItem?.name}
-        className="rectangle w-[max-content]"
+        className="rectangle w-max"
       >
         <img
           className="w-12 h-12 absolute right-[-4px] bottom-[-4px] rounded-full"
@@ -278,7 +253,7 @@ const PendingStatusDetail = ({
               </div>
               <div
                 style={{ height: 26 }}
-                className="px-10 flex items-center justify-center rounded-[4px] text-12 font-medium bg-r-blue-light-1 text-13 font-medium text-r-blue-default cursor-pointer"
+                className="px-10 flex items-center justify-center rounded-[4px] text-12 bg-r-blue-light-1 text-13 font-medium text-r-blue-default cursor-pointer"
                 onClick={() => {
                   if (isDesktop) {
                     history.push(
@@ -567,10 +542,8 @@ export const BridgePendingTxItem = ({
   onDisplayChange?: (visible: boolean) => void;
 }) => {
   const type = 'bridge';
-  const { t } = useTranslation();
   const wallet = useWallet();
   const [detailVisible, setDetailVisible] = useState(false);
-  const history = useHistory();
   const [data, setData] = useState<PendingTxData | null>(null);
   const { userAddress } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
