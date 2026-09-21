@@ -14,6 +14,10 @@ import { SelectedBridgeQuote, useSetQuoteVisible } from '../hooks';
 import { Tooltip } from 'antd';
 import styled from 'styled-components';
 import { bridgeQuoteEstimatedValueBn } from '../utils/bridgeQuote';
+import {
+  formatBridgeDuration,
+  getBridgeDurationColor,
+} from '../utils/duration';
 
 const ItemWrapper = styled.div`
   --quote-border-width: 1px;
@@ -72,31 +76,14 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
 
   const openSwapQuote = useSetQuoteVisible();
 
-  const showMinDuration = useMemo(() => {
-    return Math.max(Math.round(props.duration / 60), 1);
-  }, [props.duration]);
+  const durationText = useMemo(() => formatBridgeDuration(props.duration, t), [
+    props.duration,
+    t,
+  ]);
 
-  const durationText = useMemo(() => {
-    if (props.duration < 60) {
-      return t('page.bridge.duration-sec', {
-        duration: Math.max(Math.round(props.duration), 1),
-      });
-    }
-    return t('page.bridge.duration', {
-      duration: showMinDuration,
-    });
-  }, [props.duration, showMinDuration, t]);
-
-  const durationColor = useMemo(() => {
-    if (showMinDuration > 10) {
-      return 'text-r-red-default';
-    }
-
-    if (showMinDuration > 3) {
-      return 'text-r-orange-default';
-    }
-    return 'text-r-neutral-foot';
-  }, [showMinDuration]);
+  const durationColor = useMemo(() => getBridgeDurationColor(props.duration), [
+    props.duration,
+  ]);
 
   const { isTopAmount, diffPercent } = React.useMemo(() => {
     if (props.onlyShow) {

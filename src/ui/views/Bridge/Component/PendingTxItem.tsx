@@ -23,8 +23,13 @@ import { DrawerProps } from 'antd';
 import { Popup } from '@/ui/component';
 import { ReactComponent as RcImgArrowCC } from '@/ui/assets/bridge/ImgArrowCC.svg';
 import eventBus from '@/eventBus';
-import { ONE_DAY_MS, ONE_HOUR_MS, ONE_MINUTE_MS } from '../constants';
+import { ONE_MINUTE_MS } from '../constants';
 import { EVENTS } from '@/constant';
+import {
+  BRIDGE_PENDING_HISTORY_QUERY,
+  isBridgePendingExpired,
+  resolveBridgePendingFromHistoryList,
+} from '../utils/pendingStatus';
 
 const isDesktop = getUiType().isDesktop;
 type PendingTxData = BridgeTxHistoryItem;
@@ -554,6 +559,34 @@ export const BridgePendingTxItem = ({
     return () => onDisplayChange?.(false);
   }, [!!data, onDisplayChange]);
 
+  const applyHistoryList = useMemoizedFn(
+    (
+      local: BridgeTxHistoryItem,
+      list: BridgeHistory[] | undefined,
+      updateHash = local.hash
+    ) => {
+      const resolution = resolveBridgePendingFromHistoryList(local, list);
+      if (resolution.kind === 'hide-failed') {
+        wallet.completeBridgeTxHistory(
+          updateHash,
+          resolution.fromChainId,
+          'failed'
+        );
+        setData(null);
+        return;
+      }
+      if (resolution.kind === 'complete') {
+        setData(resolution.local);
+        wallet.completeBridgeTxHistory(
+          updateHash,
+          resolution.fromChainId,
+          resolution.status,
+          resolution.item
+        );
+      }
+    }
+  );
+
   const fetchHistory = useCallback(async () => {
     if (!userAddress) return;
     const historyData = (await wallet.getRecentPendingTxHistory(
@@ -562,10 +595,7 @@ export const BridgePendingTxItem = ({
     )) as BridgeTxHistoryItem;
 
     // tx create time is more than one day, set this tx failed and no show in loading pendingTxItem
-    if (
-      historyData?.createdAt &&
-      Date.now() - historyData.createdAt > ONE_DAY_MS
-    ) {
+    if (isBridgePendingExpired(historyData?.createdAt)) {
       wallet.completeBridgeTxHistory(
         historyData.hash,
         historyData.fromChainId!,
@@ -582,50 +612,10 @@ export const BridgePendingTxItem = ({
     ) {
       const res = await wallet.openapi.getBridgeHistoryList({
         user_addr: userAddress,
-        start: 0,
-        limit: 10,
-        is_all: true,
+        ...BRIDGE_PENDING_HISTORY_QUERY,
       });
-      const bridgeHistoryList = res.history_list;
-      if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
-        const hash = historyData.acceleratedHash || historyData.hash;
-        const findTx = bridgeHistoryList.find(
-          (item) => item.from_tx?.tx_id === hash
-        );
-        if (!findTx) {
-          const currentTime = Date.now();
-          const txCreateTime = historyData.createdAt;
-          if (currentTime - txCreateTime > ONE_HOUR_MS) {
-            // tx create time is more than 60 minutes, set this tx failed
-            wallet.completeBridgeTxHistory(
-              historyData.hash,
-              historyData.fromChainId!,
-              'failed'
-            );
-            setData(null);
-          }
-        } else {
-          if (findTx.status === 'completed' || findTx.status === 'failed') {
-            const status =
-              findTx.status === 'completed' ? 'allSuccess' : 'failed';
-            const updateData = {
-              ...historyData,
-              status,
-              actualToToken: findTx.to_actual_token,
-              actualToAmount: findTx.actual.receive_token_amount,
-              completedAt: Date.now(),
-            };
-            setData(updateData as BridgeTxHistoryItem);
-            wallet.completeBridgeTxHistory(
-              historyData.hash,
-              historyData.fromChainId!,
-              status,
-              findTx
-            );
-          } else {
-            setData(historyData);
-          }
-        }
+      if (res.history_list && res.history_list?.length > 0) {
+        applyHistoryList(historyData, res.history_list);
       }
     }
   }, [type, userAddress]);
@@ -664,46 +654,11 @@ export const BridgePendingTxItem = ({
         return;
       }
 
-      const recentlyTxHash = data?.acceleratedHash || data?.hash;
-      const findTx = bridgeHistoryList.find(
-        (item) => item.from_tx?.tx_id === recentlyTxHash
+      applyHistoryList(
+        data,
+        bridgeHistoryList,
+        data.acceleratedHash || data.hash
       );
-
-      if (!findTx) {
-        const currentTime = Date.now();
-        const txCreateTime = data?.createdAt;
-        if (currentTime - txCreateTime > ONE_HOUR_MS) {
-          // tx create time is more than 60 minutes, set this tx failed
-          wallet.completeBridgeTxHistory(
-            recentlyTxHash,
-            data?.fromChainId,
-            'failed'
-          );
-          setData(null);
-          return;
-        }
-      }
-
-      if (
-        findTx &&
-        (findTx.status === 'completed' || findTx.status === 'failed')
-      ) {
-        const status = findTx.status === 'completed' ? 'allSuccess' : 'failed';
-        const updateData = {
-          ...data,
-          status,
-          actualToToken: findTx.to_actual_token,
-          actualToAmount: findTx.actual.receive_token_amount,
-          completedAt: Date.now(),
-        };
-        setData(updateData as BridgeTxHistoryItem);
-        wallet.completeBridgeTxHistory(
-          recentlyTxHash,
-          data.fromChainId,
-          status,
-          findTx
-        );
-      }
     }
   );
 
@@ -725,13 +680,10 @@ export const BridgePendingTxItem = ({
     ) {
       const res = await wallet.openapi.getBridgeHistoryList({
         user_addr: userAddress,
-        start: 0,
-        limit: 10,
-        is_all: true,
+        ...BRIDGE_PENDING_HISTORY_QUERY,
       });
-      const bridgeHistoryList = res.history_list;
-      if (bridgeHistoryList && bridgeHistoryList?.length > 0) {
-        handleBridgeHistoryUpdate(bridgeHistoryList);
+      if (res.history_list?.length) {
+        handleBridgeHistoryUpdate(res.history_list);
       }
     }
   }, 3 * 1000);
