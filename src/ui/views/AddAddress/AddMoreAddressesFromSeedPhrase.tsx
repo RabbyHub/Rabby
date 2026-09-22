@@ -5,6 +5,11 @@ import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
 import { KEYRING_CLASS } from '@/constant';
+import {
+  KEYRING_IMPORT_EXPIRED,
+  KEYRING_IMPORT_EXPIRED_MESSAGE,
+} from '@/constant/message';
+import { useMountedState } from 'react-use';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbyDispatch } from '@/ui/store';
@@ -309,6 +314,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
   state?: Record<string, any>;
 }> = ({ isInModal, onNavigate, state: outerState }) => {
   const history = useHistory();
+  const isMounted = useMountedState();
   const location = useLocation<AddMoreAddressesState>();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
@@ -455,6 +461,14 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         return nextSelected;
       });
     } catch (error) {
+      if (error?.code === KEYRING_IMPORT_EXPIRED) {
+        if (isMounted()) {
+          message.error(KEYRING_IMPORT_EXPIRED_MESSAGE);
+          if (onNavigate) onNavigate('');
+          else history.replace('/add-address');
+        }
+        return;
+      }
       message.error(
         error instanceof Error ? error.message : 'Failed to load addresses'
       );

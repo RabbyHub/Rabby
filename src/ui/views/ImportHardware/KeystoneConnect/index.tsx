@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
@@ -21,6 +21,10 @@ import PillsSwitch from '@/ui/component/PillsSwitch';
 import { Button } from 'antd';
 import { query2obj } from '@/ui/utils/url';
 import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
+import {
+  KEYRING_IMPORT_EXPIRED,
+  KEYRING_IMPORT_EXPIRED_MESSAGE,
+} from '@/constant/message';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
@@ -150,12 +154,14 @@ export const KeystoneConnect = () => {
     if (connectType !== ConnectType.QRCode) {
       return;
     }
+    let disposed = false;
 
     wallet
       .initQRHardware(WALLET_BRAND_TYPES.KEYSTONE)
       .then((stashKeyringId) => {
+        if (disposed) return;
         stashKeyringIdRef.current = stashKeyringId;
-        wallet
+        return wallet
           .requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId)
           .then(async (res) => {
             if (res) {
@@ -167,14 +173,22 @@ export const KeystoneConnect = () => {
               const { allowed } = await wallet.checkQRHardwareAllowImport(
                 WALLET_BRAND_TYPES.KEYSTONE
               );
-              if (qrcodeAccounts.length > 0 && allowed) {
+              if (!disposed && qrcodeAccounts.length > 0 && allowed) {
                 goToSelectAddress(stashKeyringId);
               }
             }
-            setScan(true);
+            if (!disposed) setScan(true);
           });
+      })
+      .catch((error) => {
+        if (error?.code !== KEYRING_IMPORT_EXPIRED) throw error;
+        if (!disposed) {
+          message.error(KEYRING_IMPORT_EXPIRED_MESSAGE);
+          history.replace('/add-address');
+        }
       });
     return () => {
+      disposed = true;
       wallet.clearPageStateCache();
     };
   }, [connectType]);

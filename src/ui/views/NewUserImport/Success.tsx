@@ -9,7 +9,7 @@ import { Card } from '@/ui/component/NewUserImport';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
-import { Button, Input, InputRef } from 'antd';
+import { Button, Input, InputRef, message } from 'antd';
 import clsx from 'clsx';
 import { ReactComponent as RcIconChecked } from '@/ui/assets/new-user-import/check.svg';
 import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/external-cc.svg';
@@ -21,6 +21,10 @@ import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
+import {
+  KEYRING_IMPORT_EXPIRED,
+  KEYRING_IMPORT_EXPIRED_MESSAGE,
+} from '@/constant/message';
 import { useDocumentVisibility, useMemoizedFn, useRequest } from 'ahooks';
 import { GnosisChainList } from './GnosisChainList';
 import {
@@ -151,16 +155,22 @@ export const ImportOrCreatedSuccess = () => {
   );
   const hasMnemonicImportContext = Boolean(finalMnemonics || stashKeyringId);
 
-  const { value: accounts } = useAsync(async () => {
+  const { value: accounts, error } = useAsync(async () => {
     if (documentVisibility === 'visible') {
       const accounts = await wallet.getAllVisibleAccountsArray();
       if (hd !== KEYRING_CLASS.MNEMONIC) {
         return accounts;
       }
+      const id = Number(keyringId);
+      if (!Number.isSafeInteger(id) || id <= 0) {
+        throw Object.assign(new Error(KEYRING_IMPORT_EXPIRED_MESSAGE), {
+          code: KEYRING_IMPORT_EXPIRED,
+        });
+      }
       const addresses = await wallet.requestKeyring(
         KEYRING_TYPE.HdKeyring,
         'getAccounts',
-        Number(keyringId) ?? null
+        id
       );
       if (!addresses.length) {
         return accounts;
@@ -170,7 +180,16 @@ export const ImportOrCreatedSuccess = () => {
       );
     }
     return [];
-  }, [documentVisibility, keyringId]);
+  }, [documentVisibility, hd, keyringId]);
+
+  const importExpired =
+    (error as { code?: string } | undefined)?.code === KEYRING_IMPORT_EXPIRED;
+  useEffect(() => {
+    if (importExpired) {
+      message.error(KEYRING_IMPORT_EXPIRED_MESSAGE);
+      history.replace('/add-address');
+    }
+  }, [importExpired, history]);
 
   // const { value: allAccounts } = useAsync(
   //   wallet.getAllVisibleAccountsArray,
@@ -236,20 +255,19 @@ export const ImportOrCreatedSuccess = () => {
     );
   });
 
-  const closeConnect = React.useCallback(() => {
-    if (store.clearKeyringId) {
-      wallet.requestKeyring(hd, 'cleanUp', store.clearKeyringId, true);
-    }
-  }, []);
-
   useEffect(() => {
-    window.addEventListener('beforeunload', () => {
-      closeConnect();
-    });
+    const id = store.clearKeyringId;
+    const closeConnect = () => {
+      if (id) {
+        wallet.requestKeyring(hd, 'cleanUp', id, true).catch(console.error);
+      }
+    };
+    window.addEventListener('beforeunload', closeConnect);
     return () => {
+      window.removeEventListener('beforeunload', closeConnect);
       closeConnect();
     };
-  }, []);
+  }, [hd, store.clearKeyringId, wallet]);
 
   useEffect(() => {
     const account = accounts?.[0];
@@ -314,6 +332,8 @@ export const ImportOrCreatedSuccess = () => {
   );
 
   const addMore = !!accounts && accounts?.filter((e) => e.address).length > 1;
+
+  if (importExpired) return null;
 
   return (
     <>

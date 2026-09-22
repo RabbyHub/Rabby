@@ -145,20 +145,21 @@ export const GridPlusManager: React.FC = () => {
       title: t('page.newAddress.hd.gridplus.switch.title'),
       content: t('page.newAddress.hd.gridplus.switch.content'),
       okText: t('global.confirm'),
-      onOk: async () => {
-        const accounts = await wallet.requestKeyring(
-          GRIDPLUS_TYPE,
-          'getAccounts',
-          keyringId
-        );
-        await Promise.all(
-          accounts.map(async (account) =>
-            wallet.removeAddress(account, GRIDPLUS_TYPE, undefined, true)
-          )
-        );
-        await wallet.requestKeyring(GRIDPLUS_TYPE, 'forgetDevice', keyringId);
-        window.location.reload();
-      },
+      onOk: () =>
+        createTask(async () => {
+          const accounts = await wallet.requestKeyring(
+            GRIDPLUS_TYPE,
+            'getAccounts',
+            keyringId
+          );
+          await Promise.all(
+            accounts.map(async (account) =>
+              wallet.removeAddress(account, GRIDPLUS_TYPE, undefined, true)
+            )
+          );
+          await wallet.requestKeyring(GRIDPLUS_TYPE, 'forgetDevice', keyringId);
+          window.location.reload();
+        }),
       okCancel: false,
       centered: true,
       closable: true,

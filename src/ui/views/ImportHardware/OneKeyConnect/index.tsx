@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Form, Modal } from 'antd';
+import { Form, Modal, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
@@ -23,6 +23,10 @@ import { StrayPageWithButton } from 'ui/component';
 import { ImageCarousel } from './ImageCarousel';
 import { OneKeyBanner } from './OnekeyBanner';
 import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
+import {
+  KEYRING_IMPORT_EXPIRED,
+  KEYRING_IMPORT_EXPIRED_MESSAGE,
+} from '@/constant/message';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 const BRAND_TYPES = WALLET_BRAND_TYPES.ONEKEY;
@@ -169,29 +173,41 @@ const OneKeyConnect = () => {
     if (connectType !== ConnectType.QRCode) {
       return;
     }
+    let disposed = false;
 
-    wallet.initQRHardware(BRAND_TYPES).then((stashKeyringId) => {
-      stashKeyringIdRef.current = stashKeyringId;
-      wallet
-        .requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId)
-        .then(async (res) => {
-          if (res) {
-            const qrcodeAccounts = await wallet.requestKeyring(
-              HARDWARE_KEYRING_TYPES.Keystone.type,
-              'getAccounts',
-              stashKeyringId
-            );
-            const { allowed } = await wallet.checkQRHardwareAllowImport(
-              BRAND_TYPES
-            );
-            if (qrcodeAccounts.length > 0 && allowed) {
-              goToSelectAddress(stashKeyringId);
+    wallet
+      .initQRHardware(BRAND_TYPES)
+      .then((stashKeyringId) => {
+        if (disposed) return;
+        stashKeyringIdRef.current = stashKeyringId;
+        return wallet
+          .requestKeyring(KEYSTONE_TYPE, 'isReady', stashKeyringId)
+          .then(async (res) => {
+            if (res) {
+              const qrcodeAccounts = await wallet.requestKeyring(
+                HARDWARE_KEYRING_TYPES.Keystone.type,
+                'getAccounts',
+                stashKeyringId
+              );
+              const { allowed } = await wallet.checkQRHardwareAllowImport(
+                BRAND_TYPES
+              );
+              if (!disposed && qrcodeAccounts.length > 0 && allowed) {
+                goToSelectAddress(stashKeyringId);
+              }
             }
-          }
-          setScan(true);
-        });
-    });
+            if (!disposed) setScan(true);
+          });
+      })
+      .catch((error) => {
+        if (error?.code !== KEYRING_IMPORT_EXPIRED) throw error;
+        if (!disposed) {
+          message.error(KEYRING_IMPORT_EXPIRED_MESSAGE);
+          history.replace('/add-address');
+        }
+      });
     return () => {
+      disposed = true;
       wallet.clearPageStateCache();
     };
   }, [connectType]);

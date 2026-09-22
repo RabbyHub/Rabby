@@ -44,6 +44,10 @@ import {
   IMPORT_ADDRESS_SUCCESS_RETURN_TO_QUERY_KEY,
 } from '../AddAddress/useCreateAddress';
 import browser from 'webextension-polyfill';
+import {
+  KEYRING_IMPORT_EXPIRED,
+  KEYRING_IMPORT_EXPIRED_MESSAGE,
+} from '@/constant/message';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
@@ -100,9 +104,6 @@ export const HDManager: React.FC<StateProviderProps> = ({
   const [initialed, setInitialed] = React.useState(false);
   const idRef = React.useRef<number | null>(null);
   const { t } = useTranslation();
-  const closeConnect = React.useCallback(() => {
-    wallet.requestKeyring(keyring, 'cleanUp', idRef.current, true);
-  }, []);
 
   const LOGO_NAME_MAP = {
     [HARDWARE_KEYRING_TYPES.Ledger.type]: t(
@@ -132,44 +133,69 @@ export const HDManager: React.FC<StateProviderProps> = ({
   };
 
   React.useEffect(() => {
-    if (
-      keyring === KEYRING_CLASS.MNEMONIC ||
-      keyring === KEYRING_CLASS.HARDWARE.KEYSTONE
-    ) {
-      idRef.current = keyringId;
-      setInitialed(true);
-    } else {
-      wallet
-        .connectHardware({
-          type: keyring,
-          isWebHID: true,
-          needUnlock: keyring === KEYRING_CLASS.HARDWARE.GRIDPLUS,
-        })
-        .then((id) => {
-          idRef.current = id;
-          setInitialed(true);
-        })
-        .catch((e) => {
-          console.error(e);
-          setInitialed(false);
-          message.error({
-            content: t('page.newAddress.hd.tooltip.connectError'),
-            key: 'ledger-error',
-          });
+    let disposed = false;
+    let connectedId = keyringId;
+    const closeConnect = () => {
+      if (connectedId != null) {
+        wallet
+          .requestKeyring(keyring, 'cleanUp', connectedId, true)
+          .catch(console.error);
+      }
+    };
+    const init = async () => {
+      try {
+        if (
+          keyringId != null &&
+          (keyring === KEYRING_CLASS.MNEMONIC ||
+            keyring === KEYRING_CLASS.HARDWARE.KEYSTONE)
+        ) {
+          await wallet.requestKeyring(keyring, 'getAccounts', keyringId);
+        }
+        if (disposed) return;
+        const id =
+          keyring === KEYRING_CLASS.MNEMONIC ||
+          keyring === KEYRING_CLASS.HARDWARE.KEYSTONE
+            ? keyringId
+            : await wallet.connectHardware({
+                type: keyring,
+                keyringId,
+                isWebHID: true,
+                needUnlock: keyring === KEYRING_CLASS.HARDWARE.GRIDPLUS,
+              });
+        connectedId = id;
+        if (disposed) {
+          return;
+        }
+        idRef.current = id;
+        setInitialed(true);
+      } catch (e) {
+        if (disposed) return;
+        if (e?.code === KEYRING_IMPORT_EXPIRED) {
+          message.error(KEYRING_IMPORT_EXPIRED_MESSAGE);
+          history.replace('/add-address');
+          return;
+        }
+        console.error(e);
+        setInitialed(false);
+        message.error({
+          content: t('page.newAddress.hd.tooltip.connectError'),
+          key: 'ledger-error',
         });
-    }
+      }
+    };
+    init();
     if (!isNewUserImport) {
-      window.addEventListener('beforeunload', () => {
-        closeConnect();
-      });
+      window.addEventListener('beforeunload', closeConnect);
     }
 
     return () => {
+      disposed = true;
+      window.removeEventListener('beforeunload', closeConnect);
       if (!isNewUserImport) {
         closeConnect();
       }
     };
-  }, []);
+  }, [keyring, keyringId, isNewUserImport]);
 
   const handleCloseWin = useMemoizedFn(async () => {
     if (onDone) {
@@ -187,7 +213,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
         finalBrand = hardwareKeyring.brandName;
       }
       history.push(
-        `/new-user/success?hd=${keyring}&keyringId=${keyringId}&brand=${finalBrand}`
+        `/new-user/success?hd=${keyring}&keyringId=${idRef.current}&brand=${finalBrand}`
       );
       return;
     }
