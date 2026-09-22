@@ -97,9 +97,10 @@ export interface BridgeTxHistoryItem {
   status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   hash: string;
   acceleratedHash?: string;
-  estimatedDuration: number; // ms from server
+  estimatedDuration: number; // seconds from the quote
   createdAt: number;
   fromTxCompleteTs?: number;
+  toTxId?: string;
   actualToToken?: TokenItem; // actual token, may be not toToken
   actualToAmount?: number; // actual amount
   completedAt?: number;
@@ -462,6 +463,12 @@ class TxHistory {
       .slice(0, 200);
   }
 
+  getBridgeTxHistory(address: string) {
+    return this.store.bridgeTxHistory.filter((item) =>
+      isSameAddress(item.address, address)
+    );
+  }
+
   getRecentPendingTxHistory(address: string, type: keyof InnerTxHistoryMap) {
     const recentItem = this.store[`${type}TxHistory`]
       .filter((item) => {
@@ -600,6 +607,7 @@ class TxHistory {
           status,
           actualToToken: bridgeTx?.to_actual_token,
           actualToAmount: bridgeTx?.actual.receive_token_amount,
+          toTxId: bridgeTx?.to_tx?.tx_id || item.toTxId,
           completedAt: Date.now(),
         };
       }

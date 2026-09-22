@@ -64,6 +64,7 @@ export const resolveBridgePendingFromHistoryList = (
         status,
         actualToToken: findTx.to_actual_token,
         actualToAmount: findTx.actual.receive_token_amount,
+        toTxId: findTx.to_tx?.tx_id,
         completedAt: now,
       },
     };

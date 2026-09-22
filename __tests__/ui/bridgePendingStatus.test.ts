@@ -117,8 +117,11 @@ describe('resolveBridgePendingFromHistoryList', () => {
     ).toEqual({ kind: 'pending' });
   });
 
-  it('marks a failed server item as failed', () => {
-    const item = historyItem({ status: 'failed' });
+  it('marks a failed server item as failed and keeps the destination tx id', () => {
+    const item = historyItem({
+      status: 'failed',
+      to_tx: { tx_id: '0xdest' },
+    });
     expect(
       resolveBridgePendingFromHistoryList(localItem(), [item], now)
     ).toMatchObject({
@@ -126,6 +129,9 @@ describe('resolveBridgePendingFromHistoryList', () => {
       status: 'failed',
       hash: '0xlocal',
       item,
+      local: {
+        toTxId: '0xdest',
+      },
     });
   });
 });
