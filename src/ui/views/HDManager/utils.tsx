@@ -6,6 +6,10 @@ import { useHistory } from 'react-router-dom';
 import { Account } from './AccountList';
 import * as Sentry from '@sentry/browser';
 import { KEYRING_CLASS } from '@/constant';
+import {
+  KEYRING_IMPORT_EXPIRED,
+  KEYRING_IMPORT_EXPIRED_MESSAGE,
+} from '@/constant/message';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useTranslation } from 'react-i18next';
 import { isFunction } from 'lodash';
@@ -210,6 +214,11 @@ const useTaskQueue = ({ keyring }) => {
     disposedRef.current = false;
     const handleError = (e) => {
       if (disposedRef.current) {
+        return;
+      }
+      if (e?.code === KEYRING_IMPORT_EXPIRED) {
+        message.error(KEYRING_IMPORT_EXPIRED_MESSAGE);
+        history.replace('/add-address');
         return;
       }
       console.error(e);
