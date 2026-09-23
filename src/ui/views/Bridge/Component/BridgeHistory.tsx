@@ -10,23 +10,24 @@ import {
   useWallet,
 } from '@/ui/utils';
 import IconUnknown from 'ui/assets/token-default.svg';
-import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { ReactComponent as RcIconRouteArrow } from 'ui/assets/bridge/IconRouteArrowCC.svg';
 import { ReactComponent as RcIconHistoryChainArrow } from 'ui/assets/bridge/IconHistoryChainArrow.svg';
-import { ReactComponent as RcIconHistoryBack } from 'ui/assets/bridge/IconHistoryBackCC.svg';
+import { ReactComponent as RcIconCopyCC } from 'ui/assets/icon-copy-cc.svg';
 import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import { ellipsis } from '@/ui/utils/address';
+import { DrawerProps, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import { BridgeHistory } from '@/background/service/openapi';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
-import { DrawerProps } from 'antd';
 import dayjs from 'dayjs';
 import { useRabbySelector } from '@/ui/store';
-import { getBridgeRefundHref } from '../utils/refundLink';
-import { BridgeHistoryStatus } from './BridgeHistoryStatus';
+import { copyTextToClipboard } from '@/ui/utils/clipboard';
+import {
+  BridgeHistoryStatus,
+  BridgeHistoryTokenSymbol,
+} from './BridgeHistoryStatus';
 
 const isTab = getUiType().isTab;
 
@@ -52,13 +53,41 @@ const HistoryToken = ({ token }: { token?: TokenItem }) => {
   );
 };
 
-const HistoryChevron = () => (
-  <span className="inline-flex h-[14px] w-[14px] shrink-0 items-center justify-center text-r-neutral-foot">
-    <span className="inline-flex rotate-180">
-      <RcIconHistoryBack className="block h-[14px] w-[14px] rotate-90" />
-    </span>
-  </span>
-);
+const shortTxId = (txId: string) =>
+  txId.length > 12 ? `${txId.slice(0, 6)}…${txId.slice(-4)}` : txId;
+
+const TxHashActions = ({
+  txId,
+  onOpen,
+}: {
+  txId: string;
+  onOpen: () => void;
+}) => {
+  const { t } = useTranslation();
+  if (!txId) return null;
+  return (
+    <>
+      <button
+        type="button"
+        className="shrink-0 bg-transparent p-0 text-[12px] leading-[normal] text-r-neutral-body underline"
+        onClick={onOpen}
+      >
+        {shortTxId(txId)}
+      </button>
+      <button
+        type="button"
+        className="inline-flex shrink-0 items-center justify-center bg-transparent p-0 text-r-neutral-foot"
+        onClick={(event) => {
+          event.stopPropagation();
+          copyTextToClipboard(txId);
+          message.success(t('global.copied'));
+        }}
+      >
+        <RcIconCopyCC className="block [&_path]:stroke-[0.875]" />
+      </button>
+    </>
+  );
+};
 
 const MiniTokenAmount = ({
   token,
@@ -95,7 +124,7 @@ const MiniTokenAmount = ({
       >
         <span>{sign}</span>
         <span>{formatAmount(amount || 0)}</span>
-        <span className="underline">{getTokenSymbol(token)}</span>
+        <BridgeHistoryTokenSymbol token={token} />
       </div>
     </div>
   );
@@ -124,7 +153,7 @@ const GeneralHistoryBody = ({
   return (
     <div className="flex flex-col gap-[16px] px-[12px] pb-[16px] pt-[12px] leading-[normal]">
       <div className="flex items-center justify-between gap-[8px]">
-        <span className="shrink-0 text-[13px] font-medium leading-[normal] text-r-neutral-foot">
+        <span className="shrink-0 text-12 font-normal text-r-neutral-foot">
           {timeLabel}
         </span>
         <div className="flex min-w-0 items-center gap-[4px]">
@@ -135,13 +164,7 @@ const GeneralHistoryBody = ({
             </span>
             <span className="whitespace-nowrap">{toChain?.name}</span>
           </div>
-          <button
-            type="button"
-            className="shrink-0 bg-transparent p-0 text-[12px] text-r-neutral-body underline"
-            onClick={onOpen}
-          >
-            {txId ? ellipsis(txId) : ''}
-          </button>
+          <TxHashActions txId={txId} onOpen={onOpen} />
         </div>
       </div>
       <div className="flex items-center justify-between gap-[8px]">
@@ -190,7 +213,6 @@ const DetailHistoryBody = ({
   receiveToken,
   isSuccess,
   isFailed,
-  hasRefund,
   isSourcePending,
   onOpen,
 }: {
@@ -202,7 +224,6 @@ const DetailHistoryBody = ({
   receiveToken?: TokenItem;
   isSuccess: boolean;
   isFailed: boolean;
-  hasRefund: boolean;
   isSourcePending: boolean;
   onOpen: () => void;
 }) => {
@@ -210,22 +231,12 @@ const DetailHistoryBody = ({
   return (
     <div className="flex flex-col gap-[20px] p-[12px]">
       <div className="flex items-center justify-between">
-        <span className="text-[13px] text-r-neutral-title-1">{timeLabel}</span>
-        <button
-          type="button"
-          className="inline-flex items-center gap-[4px] bg-transparent p-0"
-          onClick={onOpen}
-        >
-          <span
-            className={clsx(
-              'text-[12px] underline',
-              isSuccess ? 'text-r-neutral-body' : 'text-r-neutral-foot'
-            )}
-          >
-            {txId ? ellipsis(txId) : ''}
-          </span>
-          {isFailed && !hasRefund && <HistoryChevron />}
-        </button>
+        <span className="text-[13px] leading-[normal] text-r-neutral-title-1">
+          {timeLabel}
+        </span>
+        <div className="flex items-center gap-[4px]">
+          <TxHashActions txId={txId} onOpen={onOpen} />
+        </div>
       </div>
 
       <div
@@ -281,17 +292,6 @@ interface TransactionProps {
 const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
   ({ data, local, variant = 'detail' }, ref) => {
     const isFailed = data.status === 'failed';
-    const refundHref = getBridgeRefundHref(
-      data.to_tx?.tx_id,
-      data.to_actual_token?.chain
-    );
-    const hasRefund =
-      isFailed &&
-      !!refundHref &&
-      !!data.to_actual_token?.id &&
-      (data.to_actual_token.id !== data.to_token?.id ||
-        data.to_actual_token.chain !== data.to_token?.chain ||
-        Number(data.actual?.receive_token_amount) > 0);
     const isSourcePending =
       data.status === 'pending' && local?.status === 'pending';
     const isSuccess = data.status === 'completed';
@@ -343,7 +343,6 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             receiveToken={receiveToken}
             isSuccess={isSuccess}
             isFailed={isFailed}
-            hasRefund={hasRefund}
             isSourcePending={isSourcePending}
             onOpen={gotoScan}
           />
@@ -381,7 +380,7 @@ const HistorySide = ({
       <div className="flex items-center gap-[2px] whitespace-nowrap text-[14px] font-medium text-r-neutral-title-1">
         {approx && <span>≈</span>}
         <span>{formatAmount(amount || 0)}</span>
-        <span>{getTokenSymbol(token)}</span>
+        <BridgeHistoryTokenSymbol token={token} underline={false} />
       </div>
       <span className="whitespace-nowrap text-[12px] text-r-neutral-foot">
         {label}

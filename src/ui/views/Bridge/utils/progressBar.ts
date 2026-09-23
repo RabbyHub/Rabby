@@ -162,12 +162,18 @@ export const getBridgePopupState = (
   if (item.status === 'failed') {
     const refund = refundDetails(item);
     if (refund) {
+      const original =
+        !!item.actualToToken?.id &&
+        !!item.fromToken?.id &&
+        item.actualToToken.chain === item.fromToken.chain &&
+        item.actualToToken.id.toLowerCase() === item.fromToken.id.toLowerCase();
       return {
         title: 'refunded',
         step1: 'completed',
         step2: 'failed',
         step3: 'refund',
-        caption: { kind: 'refunded' },
+        // 原币退回不显示 Refunded in {symbol}，异链或异币才显示。
+        caption: original ? { kind: 'none' } : { kind: 'refunded' },
         button: 'refund',
         refund,
       };

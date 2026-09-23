@@ -71,7 +71,28 @@ const StepMark = ({
 };
 
 const linkClass =
-  'inline cursor-pointer bg-transparent p-0 align-baseline text-12 text-r-blue-default underline';
+  'inline cursor-pointer bg-transparent p-0 align-baseline text-12 leading-[14px] text-r-blue-default underline';
+
+const TextAndLink = ({
+  text,
+  link,
+  onClick,
+}: {
+  text: React.ReactNode;
+  link: React.ReactNode;
+  onClick: () => void;
+}) => (
+  <>
+    <div>{text}</div>
+    <button
+      type="button"
+      className={linkClass}
+      onClick={(event) => stopAnd(event, onClick)}
+    >
+      {link}
+    </button>
+  </>
+);
 
 const ProgressFooter = ({
   footer,
@@ -103,18 +124,15 @@ const ProgressFooter = ({
     content = t('page.bridge.pendingItem.stillBridging');
   } else if (footer.kind === 'delayed') {
     content = (
-      <Trans
-        t={t}
-        i18nKey="page.bridge.pendingItem.bridgeDelayed"
-        components={{
-          support: (
-            <button
-              type="button"
-              className={linkClass}
-              onClick={(event) => stopAnd(event, openBridgeSupport)}
-            />
-          ),
-        }}
+      <TextAndLink
+        text={
+          <>
+            {t('page.bridge.pendingItem.popupBridgeDelayed')}
+            {','}
+          </>
+        }
+        link={t('page.bridge.pendingItem.contactSupport')}
+        onClick={openBridgeSupport}
       />
     );
   } else if (footer.kind === 'sourceFailed') {
@@ -122,48 +140,55 @@ const ProgressFooter = ({
       token: getTokenSymbol(data.fromToken),
     });
   } else if (footer.kind === 'refund' && refundHref) {
-    content = (
-      <Trans
-        t={t}
-        i18nKey={
-          footer.isOriginalToken
-            ? 'page.bridge.pendingItem.refundedOriginalToken'
-            : 'page.bridge.pendingItem.refunded'
+    const openRefund = () => openInTab(refundHref, !getUiType().isTab);
+    content = footer.isOriginalToken ? (
+      <TextAndLink
+        text={
+          <>
+            {t('page.bridge.pendingItem.refundedLead', {
+              defaultValue: 'Refunded',
+            })}
+            {', '}
+            {t('page.bridge.view')}
+          </>
         }
-        values={{ token: getTokenSymbol(data.actualToToken) }}
-        components={{
-          link: (
-            <button
-              type="button"
-              className={linkClass}
-              onClick={(event) =>
-                stopAnd(event, () => openInTab(refundHref, !getUiType().isTab))
-              }
-            />
-          ),
-        }}
+        link={t('page.bridge.details')}
+        onClick={openRefund}
+      />
+    ) : (
+      <TextAndLink
+        text={
+          <>
+            {t('page.bridge.pendingItem.popupRefundedIn', {
+              token: getTokenSymbol(data.actualToToken),
+            })}
+            {', '}
+            {t('page.bridge.view')}
+          </>
+        }
+        link={t('page.bridge.pendingItem.refundedDetails', {
+          defaultValue: 'Refunded Details',
+        })}
+        onClick={openRefund}
       />
     );
   } else {
     content = (
-      <Trans
-        t={t}
-        i18nKey="page.bridge.pendingItem.bridgeFailedSupport"
-        components={{
-          support: (
-            <button
-              type="button"
-              className={linkClass}
-              onClick={(event) => stopAnd(event, openBridgeSupport)}
-            />
-          ),
-        }}
+      <TextAndLink
+        text={
+          <>
+            {t('page.bridge.pendingItem.popupBridgeFailed')}
+            {','}
+          </>
+        }
+        link={t('page.bridge.pendingItem.contactSupport')}
+        onClick={openBridgeSupport}
       />
     );
   }
 
   return (
-    <div className="flex items-center justify-center bg-r-neutral-bg-3 py-[8px] text-center text-12 text-r-neutral-foot">
+    <div className="flex items-center justify-center gap-[4px] bg-r-neutral-bg-3 py-[8px] text-center text-12 leading-[14px] text-r-neutral-foot">
       {content}
     </div>
   );

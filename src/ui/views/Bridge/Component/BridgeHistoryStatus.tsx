@@ -2,17 +2,22 @@ import { openBridgeSupport } from '../utils/support';
 import React, { useState } from 'react';
 import { useInterval } from 'ahooks';
 import clsx from 'clsx';
-import type { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
+import type {
+  BridgeHistory,
+  TokenItem,
+} from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
-import { ReactComponent as RcIconFailedCC } from '@/ui/assets/bridge/IconFailedCC.svg';
 import { ReactComponent as RcIconHistoryBack } from '@/ui/assets/bridge/IconHistoryBackCC.svg';
+import { ReactComponent as RcIconHistoryQueued } from '@/ui/assets/bridge/IconHistoryQueued.svg';
+import { ReactComponent as RcIconHistoryStepDone } from '@/ui/assets/bridge/IconHistoryStepDone.svg';
+import { ReactComponent as RcIconHistoryStepFailed } from '@/ui/assets/bridge/IconHistoryStepFailed.svg';
 import { ReactComponent as RcIconHistoryWarning } from '@/ui/assets/bridge/IconHistoryWarningCC.svg';
 import { ReactComponent as RcIconSelectCC } from '@/ui/assets/bridge/IconSelectCC.svg';
 import { ReactComponent as RcIconUndoCC } from '@/ui/assets/bridge/IconUndoCC.svg';
 import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
 import { SvgIcPending } from 'ui/assets';
+import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { formatAmount, getUiType, openInTab } from '@/ui/utils';
-import { ellipsis } from '@/ui/utils/address';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
@@ -79,14 +84,10 @@ const StepMark = ({
   index: number;
 }) => {
   if (step.mark === 'success') {
-    return (
-      <RcIconSelectCC className="block h-[20px] w-[20px] text-r-green-default" />
-    );
+    return <RcIconHistoryStepDone className="block shrink-0" />;
   }
   if (step.mark === 'failed') {
-    return (
-      <RcIconFailedCC className="block h-[20px] w-[20px] text-r-red-default" />
-    );
+    return <RcIconHistoryStepFailed className="block shrink-0" />;
   }
   return (
     <span
@@ -102,6 +103,39 @@ const StepMark = ({
   );
 };
 
+/** 点击打开代币详情。通用历史卡片的 symbol 始终有下划线；Bridge 弹窗上半部分没有。 */
+export const BridgeHistoryTokenSymbol = ({
+  token,
+  className,
+  underline = true,
+}: {
+  token?: TokenItem;
+  className?: string;
+  underline?: boolean;
+}) => {
+  const [visible, setVisible] = useState(false);
+  if (!token) return null;
+  return (
+    <>
+      <span
+        className={clsx('cursor-pointer', underline && 'underline', className)}
+        onClick={(event) => {
+          event.stopPropagation();
+          setVisible(true);
+        }}
+      >
+        {getTokenSymbol(token)}
+      </span>
+      <TokenDetailPopup
+        variant="add"
+        visible={visible}
+        onClose={() => setVisible(false)}
+        token={token}
+      />
+    </>
+  );
+};
+
 const TxLink = ({
   txId,
   chainServerId,
@@ -114,13 +148,15 @@ const TxLink = ({
   return (
     <button
       type="button"
-      className="inline-flex items-center gap-[4px] bg-transparent p-0 text-[12px] text-r-neutral-foot"
+      className="inline-flex h-[14px] items-center gap-[4px] bg-transparent p-0 text-[12px] leading-[14px] text-r-neutral-foot"
       onClick={(event) => {
         event.stopPropagation();
         if (href) openInTab(href, !isTab);
       }}
     >
-      <span className="underline">{ellipsis(txId)}</span>
+      <span className="underline">
+        {txId.length > 12 ? `${txId.slice(0, 6)}…${txId.slice(-4)}` : txId}
+      </span>
       <RcIconJumpBoldCC width={12} height={12} className="block" />
     </button>
   );
@@ -141,7 +177,11 @@ const StepDetail = ({ step }: { step: BridgeHistoryDetailStep }) => {
       token: getTokenSymbol(step.token),
     }),
   }[step.detail.kind];
-  return <span className="text-[12px] text-r-neutral-foot">{text}</span>;
+  return (
+    <span className="h-[14px] whitespace-nowrap text-[12px] leading-[14px] text-r-neutral-foot">
+      {text}
+    </span>
+  );
 };
 
 const statusTone = {
@@ -164,15 +204,12 @@ const StepStatus = ({ step }: { step: BridgeHistoryDetailStep }) => {
   return (
     <span
       className={clsx(
-        'inline-flex items-center gap-[4px] text-[12px]',
+        'inline-flex h-[14px] items-center gap-[4px] text-[12px] leading-[14px]',
         statusTone[step.status]
       )}
     >
       {step.status === 'queued' && (
-        <SvgIcPending
-          className="block h-[14px] w-[14px] animate-spin text-r-neutral-foot [&_path]:stroke-current"
-          style={SPIN_STYLE}
-        />
+        <RcIconHistoryQueued className="block shrink-0" />
       )}
       {label}
     </span>
@@ -200,27 +237,27 @@ const HistoryStep = ({
     { chain: chainName }
   );
   return (
-    <div className="flex items-stretch justify-between gap-[8px]">
-      <div className="flex min-w-0 gap-[8px]">
-        <div className="flex w-[20px] shrink-0 flex-col items-center">
-          <div className="py-[6px]">
-            <StepMark step={step} index={index} />
-          </div>
-          {!isLast && <div className="w-px flex-1 bg-r-neutral-line" />}
+    <div className="flex items-center justify-between gap-[8px]">
+      <div className="flex min-w-0 items-center gap-[8px]">
+        <div className="relative flex w-[20px] shrink-0 items-center justify-center self-stretch">
+          <StepMark step={step} index={index} />
+          {!isLast && (
+            <div className="absolute left-1/2 top-full h-[22px] w-px -translate-x-1/2 bg-r-neutral-line" />
+          )}
         </div>
-        <div className="flex min-w-0 flex-col gap-[4px] py-[6px]">
-          <span className="whitespace-nowrap text-[13px] text-r-neutral-title-1">
+        <div className="flex min-w-0 flex-col gap-[4px]">
+          <span className="h-[16px] whitespace-nowrap text-[13px] leading-[16px] text-r-neutral-title-1">
             {title}
           </span>
           <StepDetail step={step} />
         </div>
       </div>
-      <div className="flex shrink-0 flex-col items-end gap-[4px] py-[6px]">
-        <span className="whitespace-nowrap text-[13px] text-r-neutral-title-1">
+      <div className="flex shrink-0 flex-col items-end gap-[4px]">
+        <span className="h-[16px] whitespace-nowrap text-[13px] leading-[16px] text-r-neutral-title-1">
           {step.sign}
           {step.approx ? '≈' : ''}
           {formatAmount(step.amount || 0)}{' '}
-          <span className="underline">{getTokenSymbol(step.token)}</span>
+          <BridgeHistoryTokenSymbol token={step.token} />
         </span>
         <StepStatus step={step} />
       </div>
@@ -233,26 +270,26 @@ const HeaderAction = ({ detail }: { detail: BridgeHistoryDetail }) => {
   const { action } = detail;
   if (action.kind === 'countdown') {
     return (
-      <span className="text-[13px] text-r-neutral-body">
+      <span className="h-[16px] text-[13px] leading-[16px] text-r-neutral-body">
         {t('page.bridge.timeLeft', { time: action.time })}
       </span>
     );
   }
   if (action.kind === 'stillBridging') {
     return (
-      <span className="text-[12px] text-r-neutral-body">
+      <span className="h-[14px] text-[12px] leading-[14px] text-r-neutral-body">
         {t('page.bridge.pendingItem.stillBridging')}
       </span>
     );
   }
   if (action.kind === 'delayed') {
     return (
-      <span className="text-[12px] text-r-neutral-body">
+      <span className="inline-flex h-[14px] items-center text-[12px] leading-[14px] text-r-neutral-body">
         {t('page.bridge.pendingItem.popupBridgeDelayed')}
         {', '}
         <button
           type="button"
-          className="inline bg-transparent p-0 text-[12px] text-r-blue-default underline"
+          className="inline bg-transparent p-0 text-[12px] leading-[14px] text-r-blue-default underline"
           onClick={(event) => {
             event.stopPropagation();
             openBridgeSupport();
@@ -267,7 +304,7 @@ const HeaderAction = ({ detail }: { detail: BridgeHistoryDetail }) => {
     return (
       <button
         type="button"
-        className="bg-transparent p-0 text-[12px] text-r-blue-default underline"
+        className="h-[14px] bg-transparent p-0 text-[12px] leading-[14px] text-r-blue-default underline"
         onClick={(event) => {
           event.stopPropagation();
           openBridgeSupport();
@@ -282,7 +319,7 @@ const HeaderAction = ({ detail }: { detail: BridgeHistoryDetail }) => {
     return (
       <button
         type="button"
-        className="bg-transparent p-0 text-[12px]"
+        className="inline-flex h-[14px] items-center bg-transparent p-0 text-[12px] leading-[14px]"
         onClick={(event) => {
           event.stopPropagation();
           if (href) openInTab(href, !isTab);
@@ -358,7 +395,9 @@ export const BridgeHistoryStatus = ({
           )}
         >
           <HeaderIcon header={detail.header} />
-          <span className="text-[13px] font-510">{headerLabel(detail, t)}</span>
+          <span className="h-[16px] text-[13px] font-510 leading-[16px]">
+            {headerLabel(detail, t)}
+          </span>
         </div>
         <div className="flex shrink-0 items-center gap-[4px]">
           <HeaderAction detail={detail} />
@@ -366,7 +405,7 @@ export const BridgeHistoryStatus = ({
         </div>
       </div>
       {expanded && (
-        <div className="flex flex-col gap-[2px] px-[16px] pb-[16px] pt-[12px]">
+        <div className="flex flex-col gap-[22px] px-[16px] pb-[16px] pt-[12px]">
           {detail.steps.map((step, index) => (
             <HistoryStep
               key={`${step.direction}-${step.status}-${index}`}

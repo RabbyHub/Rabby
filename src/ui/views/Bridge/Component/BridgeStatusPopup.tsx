@@ -99,14 +99,7 @@ const StepBadge = ({ status }: { status: BridgePopupStep }) => {
       )}
     >
       {icon}
-      <span
-        className={clsx(
-          'text-13',
-          status === 'refund' ? 'font-medium' : 'font-[590]'
-        )}
-      >
-        {label}
-      </span>
+      <span className="text-13 font-medium leading-[16px]">{label}</span>
     </div>
   );
 };
@@ -151,7 +144,7 @@ const StepCard = ({
     <div className="flex w-full flex-col overflow-hidden rounded-[8px] bg-r-neutral-card-1">
       <div className="flex h-[44px] items-center justify-between border-b-[0.5px] border-solid border-rabby-neutral-line pl-[12px] pr-[10px]">
         <div className={clsx('flex items-center gap-[6px]', headerTone)}>
-          <span className="text-24 font-[860] leading-[28px]">{index}</span>
+          <span className="text-20 font-bold leading-[24px]">{index}</span>
           <span className="text-15 font-bold">{title}</span>
         </div>
         <StepBadge status={status} />
@@ -167,14 +160,19 @@ const StepCard = ({
           <TokenWithChain token={token?.logo_url} chain={token?.chain} />
           <span
             className={clsx(
-              'text-13 font-bold text-r-neutral-title-1',
+              'text-13 font-bold leading-[16px] text-r-neutral-title-1',
               amountTone
             )}
           >
             {sign} {formatTokenAmount(amount || 0)} {getTokenSymbol(token)}
           </span>
         </div>
-        <span className={clsx('text-13 text-r-neutral-title-1', amountTone)}>
+        <span
+          className={clsx(
+            'text-13 leading-[16px] text-r-neutral-title-1',
+            amountTone
+          )}
+        >
           {sign}
           {approx ? '≈' : ''}
           {formatUsdValue(usd || 0)}
@@ -254,7 +252,7 @@ export const BridgeStatusPopup = ({
   }[popup.title];
 
   const receiveFade =
-    popup.step2 === 'queued'
+    popup.step2 === 'queued' || popup.step2 === 'pending'
       ? '40'
       : popup.step2 === 'failed'
       ? '50'

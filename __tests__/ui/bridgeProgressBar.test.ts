@@ -243,6 +243,20 @@ describe('getBridgePopupState', () => {
     });
   });
 
+  it('hides the refund token caption when the refund is the original token', () => {
+    expect(
+      getBridgePopupState(
+        item({
+          status: 'failed',
+          fromToken: { id: 'eth', chain: 'eth', symbol: 'ETH' },
+          toTxId: '0xrefund',
+          actualToToken: { id: 'eth', chain: 'eth', symbol: 'ETH' },
+        }),
+        now
+      ).caption
+    ).toEqual({ kind: 'none' });
+  });
+
   it('adds a refund step when the destination chain fails with a token', () => {
     expect(
       getBridgePopupState(
