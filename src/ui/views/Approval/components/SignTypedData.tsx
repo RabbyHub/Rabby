@@ -369,7 +369,7 @@ const SignTypedData = ({
           enum: site.chain,
         })?.id;
       }
-    } else if (params.$ctx.chainId) {
+    } else if (params.$ctx?.chainId) {
       return params.$ctx.chainId;
     } else {
       return chain?.id;
