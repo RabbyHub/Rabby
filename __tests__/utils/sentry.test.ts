@@ -9,6 +9,23 @@ describe('Sentry ignored errors', () => {
     expect(shouldIgnoreSentryError(message)).toBe(true);
   });
 
+  // A broken local IndexedDB surfaces as the bare message; only the
+  // disk/backing-store flavour is environmental noise.
+  test.each([
+    'UnknownError: Internal error.',
+    'DatabaseClosedError: UnknownError Internal error.',
+  ])('keeps the generic IndexedDB failure reportable: %s', (message) => {
+    expect(shouldIgnoreSentryError(message)).toBe(false);
+  });
+
+  test('still ignores the disk-backed IndexedDB failure', () => {
+    expect(
+      shouldIgnoreSentryError(
+        'UnknownError: Internal error. IO error: .../000041.log: FILE_ERROR_FAILED (ChromeMethodBFE: 3::WritableFileAppend::1)'
+      )
+    ).toBe(true);
+  });
+
   test('keeps the bounds issue reportable', () => {
     expect(
       shouldIgnoreSentryError(
