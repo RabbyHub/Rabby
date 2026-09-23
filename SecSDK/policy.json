@@ -40615,7 +40615,8 @@
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
-      "node_modules/@rabby-wallet/rabby-swap/dist/list.js"
+      "node_modules/@rabby-wallet/rabby-swap/dist/list.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
     ]
   },
   "node_modules/@rabby-wallet/rabby-swap/dist/verify/calldata.js": {
@@ -95461,6 +95462,7 @@
   "src/db/index.ts": {
     "enable": true,
     "require": [
+      "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/dexie/import-wrapper-prod.mjs",
       "src/db/schema/index.ts",
       "src/utils/history.ts"
