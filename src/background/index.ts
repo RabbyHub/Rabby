@@ -315,7 +315,14 @@ async function restoreAppState() {
   uninstalledService.setUninstalled();
 }
 
-restoreAppState();
+restoreAppState().catch((e) => {
+  // A throw here leaves `appStoreLoaded` false and `getBackgroundReady`
+  // unregistered, so every UI page waits until its bootstrap timeout.
+  console.error('[restoreAppState] failed', e);
+  Sentry.captureException(e, {
+    tags: { bootstrap_stage: 'restoreAppState' },
+  });
+});
 {
   let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {

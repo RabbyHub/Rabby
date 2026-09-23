@@ -42,6 +42,8 @@ describe('SignTypedData security lifecycle', () => {
   let enterPassphrase: jest.Mock;
   let store: any;
   let requiredData: jest.Mock;
+  let formatContext: jest.Mock;
+  let safeInfoArgs: any;
   let isTestnet: boolean;
   let buttons: Map<string, any>;
   let safeMessageSuccess: (result: any) => void;
@@ -65,6 +67,9 @@ describe('SignTypedData security lifecycle', () => {
     footer = undefined;
     actions = undefined;
     requiredData = jest.fn().mockResolvedValue({});
+    formatContext = jest.fn(async ({ actionData }: any) => ({
+      id: actionData.id,
+    }));
     isTestnet = false;
     buttons = new Map();
     destroySafeModal = jest.fn();
@@ -217,7 +222,8 @@ describe('SignTypedData security lifecycle', () => {
       },
       '@/utils/chain': {
         isTestnetChainId: () => isTestnet,
-        findChain: () => undefined,
+        findChain: ({ id }: { id?: number }) =>
+          id ? { id, serverId: id === 1 ? 'eth' : 'matic' } : undefined,
       },
       '@/ui/views/Dashboard/components/TokenDetailPopup': {
         TokenDetailPopup: empty,
@@ -233,12 +239,15 @@ describe('SignTypedData security lifecycle', () => {
       '@/stats': { __esModule: true, default: { report: noop } },
       '@rabby-wallet/rabby-action': {
         parseAction: ({ data }: any) => ({ ...data }),
-        formatSecurityEngineContext: async ({ actionData }: any) => ({
-          id: actionData.id,
-        }),
+        formatSecurityEngineContext: formatContext,
         fetchActionRequiredData: requiredData,
       },
-      '../hooks/useGetCurrentSafeInfo': { useGetCurrentSafeInfo: () => ({}) },
+      '../hooks/useGetCurrentSafeInfo': {
+        useGetCurrentSafeInfo: (args: any) => {
+          safeInfoArgs = args;
+          return {};
+        },
+      },
       '../hooks/useGetCurrentMessageHash': { useGetMessageHash: () => ({}) },
       '../hooks/useCheckCurrentSafeMessage': {
         useCheckCurrentSafeMessage: (_args: any, options: any) => {
@@ -290,6 +299,47 @@ describe('SignTypedData security lifecycle', () => {
   afterEach(() => {
     act(() => root.unmount());
     delete reactActEnvironment.IS_REACT_ACT_ENVIRONMENT;
+  });
+
+  test.each([
+    [undefined, 1],
+    [null, 1],
+    [{}, 1],
+    [{ chainId: 137 }, 137],
+  ])('internal request context %p resolves chain %p', async ($ctx, chainId) => {
+    props.params.session.origin = 'internal';
+    props.params.$ctx = $ctx;
+    act(render);
+    await flush();
+    expect(safeInfoArgs.chainId).toBe(chainId);
+    expect(wallet.getConnectedSite).not.toHaveBeenCalled();
+    expect(footer.securityBlocked).toBe(false);
+  });
+
+  test('rule updates wait for required action data before formatting security context', async () => {
+    const pending = defer<any>();
+    const required = {
+      isEOA: false,
+      riskExposure: 0,
+      bornAt: 1,
+      isDanger: false,
+    };
+    wallet.openapi.parseCommon.mockResolvedValue(response(['permit2']));
+    requiredData.mockReturnValue(pending.promise);
+    act(render);
+    await flush();
+    rules = [{ id: 'loaded' }];
+    act(render);
+    await flush();
+    expect(formatContext).not.toHaveBeenCalled();
+    expect(engine).not.toHaveBeenCalled();
+    expect(footer.securityBlocked).toBe(true);
+    await act(async () => pending.resolve(required));
+    await flush();
+    expect(formatContext).toHaveBeenCalledWith(
+      expect.objectContaining({ requireData: required })
+    );
+    expect(footer.securityBlocked).toBe(false);
   });
 
   test('waits for every action and never lets another action SAFE erase a risk', async () => {

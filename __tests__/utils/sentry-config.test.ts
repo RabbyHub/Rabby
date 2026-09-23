@@ -45,9 +45,14 @@ const attachHardwareSigningContext = (
     originalError: context.originalError,
   });
 
+// A client without a DSN drops every event before the transport runs, so
+// these tests would pass vacuously wherever RABBY_SENTRY_DSN is unset.
+const TEST_DSN = 'https://examplePublicKey@o0.ingest.sentry.io/0';
+
 const createRecordingClient = (events: any[]) => {
   const client = new Sentry.BrowserClient({
     ...getSentryConfig(),
+    dsn: getSentryConfig().dsn || TEST_DSN,
     integrations: [Sentry.eventFiltersIntegration()],
     stackParser: Sentry.defaultStackParser,
     sendClientReports: false,
@@ -264,7 +269,12 @@ describe('Sentry configuration', () => {
     });
     scope.captureEvent({
       exception: {
-        values: [{ type: 'UnknownError', value: 'Internal error.' }],
+        values: [
+          {
+            type: 'UnknownError',
+            value: 'Internal error opening backing store for indexedDB.open.',
+          },
+        ],
       },
     });
     await client.flush(2000);
@@ -328,6 +338,25 @@ describe('Sentry configuration', () => {
         (event) => event.message ?? event.exception?.values?.[0]?.value
       )
     ).toEqual([]);
+    await client.close(2000);
+  });
+
+  // A broken local IndexedDB reaches Sentry as this bare message. It was
+  // dropped between 2026-08-07 and 2026-09-23, which hid every IndexedDB
+  // fault in the field, so the pipeline has to keep it.
+  test('reports the generic IndexedDB failure through the real pipeline', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.captureException(new Error('UnknownError: Internal error.'));
+    scope.captureEvent({
+      exception: {
+        values: [{ type: 'UnknownError', value: 'Internal error.' }],
+      },
+    });
+    await client.flush(2000);
+
+    expect(events).toHaveLength(2);
     await client.close(2000);
   });
 });

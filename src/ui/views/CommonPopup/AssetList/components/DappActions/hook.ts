@@ -24,10 +24,14 @@ const rpcQueue = new PQueue({
   intervalCap: 10,
 });
 
-export const isBlacklistMethod = (method: string) => {
-  return BLACKLIST_METHODS.map((item) => item.toLowerCase()).includes(
-    method.toLowerCase()
-  );
+const BLACKLIST_METHOD_SET = new Set(
+  BLACKLIST_METHODS.map((name) => name.toLowerCase())
+);
+
+// Name parsed for encodeFunctionData. That name is what tx.data's selector is built from.
+// Any parameter overload of these names is blocked.
+export const isBlacklistMethodName = (name: string) => {
+  return BLACKLIST_METHOD_SET.has(name.toLowerCase());
 };
 
 export const isWhitelistAddress = (address: string) => {
@@ -89,6 +93,17 @@ export const getMethodDesc = (fncName: string) => {
   return `function ${normalizedName.split(')(')[0] + ')'}`;
 };
 
+export const buildActionCalldata = (func: string, strParams?: string[]) => {
+  const normalizedFunc = getMethodDesc(func);
+  const abi = parseAbiItem(normalizedFunc) as AbiFunction;
+  const calldata = encodeFunctionData({
+    abi: [abi],
+    functionName: abi.name,
+    args: strParams as any[],
+  });
+  return { abi, calldata };
+};
+
 export const useDappAction = (
   data: WithdrawAction | undefined,
   chain?: string,
@@ -106,13 +121,15 @@ export const useDappAction = (
   }, [chain]);
 
   useEffect(() => {
-    if (!data || !chain) return;
+    if (!data || !chain) {
+      setValid(false);
+      return;
+    }
 
     let isMounted = true;
 
     try {
-      const normalizedFunc = getMethodDesc(data.func);
-      const abi = parseAbiItem(normalizedFunc) as AbiFunction;
+      const { abi } = buildActionCalldata(data.func, data.str_params);
       const isAddressArray = abi.inputs.map((item) => item.type === 'address');
       const addresses = data.str_params
         ? data.str_params
@@ -143,8 +160,7 @@ export const useDappAction = (
           }
           return;
         }
-        const isValidMethod = !isBlacklistMethod(data.func);
-        if (!isValidMethod) {
+        if (isBlacklistMethodName(abi.name)) {
           if (isMounted) {
             setValid(false);
           }
@@ -274,17 +290,13 @@ export const useDappAction = (
     }
 
     let calldata: `0x${string}`;
+    let methodName = '';
     let expectedParamCount: number | undefined;
     try {
-      const normalizedFunc = getMethodDesc(data.func);
-      const abi = parseAbiItem(normalizedFunc) as AbiFunction;
-      expectedParamCount = abi.inputs.length;
-      const params = data.str_params;
-      calldata = encodeFunctionData({
-        abi: [abi],
-        functionName: abi.name,
-        args: params as any[],
-      });
+      const built = buildActionCalldata(data.func, data.str_params);
+      expectedParamCount = built.abi.inputs.length;
+      methodName = built.abi.name;
+      calldata = built.calldata;
     } catch (error) {
       const errorName =
         error instanceof Error && error.name ? error.name : 'UnknownError';
@@ -312,8 +324,6 @@ export const useDappAction = (
       return [];
     }
 
-    const approve_txs = await buildApproveTxs();
-
     const tx = {
       chainId: chainInfo.id,
       from: currentAccount.address,
@@ -321,6 +331,12 @@ export const useDappAction = (
       value: '0x0',
       data: calldata,
     } as any;
+
+    if (isBlacklistMethodName(methodName)) {
+      return [];
+    }
+
+    const approve_txs = await buildApproveTxs();
 
     return [...approve_txs, tx];
   }, [
@@ -357,7 +373,12 @@ export const useGetDappActions = ({
         ) {
           return;
         }
-        if (isBlacklistMethod(action.func)) {
+        try {
+          const { abi } = buildActionCalldata(action.func, action.str_params);
+          if (isBlacklistMethodName(abi.name)) {
+            return;
+          }
+        } catch (error) {
           return;
         }
         if (
