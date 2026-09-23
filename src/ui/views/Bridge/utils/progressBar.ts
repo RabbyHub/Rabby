@@ -129,18 +129,23 @@ const sourceDoneProgress = (
 const sourceElapsedMs = (item: BridgeTxHistoryItem, now: number) =>
   item.fromTxCompleteTs ? Math.max(0, now - item.fromTxCompleteTs) : 0;
 
-/** Popup always shows the estimate. It does not hide a quote of 5 seconds or less. */
+/** 弹窗仅在源链成功后倒计时，短于 5 秒的预估也正常展示。 */
 export const getBridgePopupState = (
   item: BridgeTxHistoryItem,
   now = Date.now()
 ): BridgePopupState => {
   if (item.status === 'fromFailed') {
     return {
-      title: 'failed',
+      title: 'refunded',
       step1: 'failed',
-      step2: 'queued',
+      step2: 'refund',
       caption: { kind: 'sourceFailed' },
-      button: 'back',
+      button: 'refund',
+      // 源链失败时资产未发出；没有独立退款交易则查看源链失败交易。
+      refund: refundDetails(item) || {
+        txId: item.acceleratedHash || item.hash,
+        chainServerId: item.fromToken.chain,
+      },
     };
   }
 
@@ -209,14 +214,13 @@ export const getBridgePopupState = (
     };
   }
 
+  const sourceDelayed =
+    !!item.createdAt && now - item.createdAt >= BRIDGE_PROGRESS_DELAY_MS;
   return {
     title: 'processing',
-    step1: 'processing',
+    step1: sourceDelayed ? 'pending' : 'processing',
     step2: 'queued',
-    caption: {
-      kind: 'estimate',
-      time: formatEta(item.estimatedDuration || 0),
-    },
+    caption: { kind: 'none' },
     button: 'back',
   };
 };

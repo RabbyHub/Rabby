@@ -209,7 +209,9 @@ export const BridgeStatusPopup = ({
   const [now, setNow] = useState(() => Date.now());
   useInterval(
     () => setNow(Date.now()),
-    data.status === 'fromSuccess' ? 1000 : undefined
+    data.status === 'pending' || data.status === 'fromSuccess'
+      ? 1000
+      : undefined
   );
   const popupState = getBridgePopupState(data, now);
   const refundHref = refundLink(popupState);
@@ -218,19 +220,23 @@ export const BridgeStatusPopup = ({
     popupState.button === 'refund' && !refundHref
       ? {
           title: 'failed' as const,
-          step1: 'completed' as const,
-          step2: 'failed' as const,
-          caption: { kind: 'failed' as const },
+          step1: popupState.step1,
+          step2: popupState.step2,
+          caption: popupState.caption,
           button: 'failedSupport' as const,
         }
       : popupState;
   // 成功后展示实际到账信息；未返回实际数据时才回退报价，实际数量为 0 也保留。
   const receiveToken =
-    data.status === 'allSuccess'
+    data.status === 'fromFailed'
+      ? data.fromToken
+      : data.status === 'allSuccess'
       ? data.actualToToken ?? data.toToken
       : data.toToken;
   const receiveAmount =
-    data.status === 'allSuccess'
+    data.status === 'fromFailed'
+      ? data.fromAmount
+      : data.status === 'allSuccess'
       ? data.actualToAmount ?? data.toAmount
       : data.toAmount;
   const fromChain = findChain({ serverId: data.fromToken?.chain });
@@ -269,11 +275,12 @@ export const BridgeStatusPopup = ({
         amount={data.fromAmount}
         usd={usdOf(data.fromAmount, data.fromToken?.price)}
         sign="-"
+        amountFade={popup.step1 === 'failed' ? '50' : undefined}
         dimCompleted={
           popup.step1 === 'completed' && popup.step2 !== 'completed'
         }
       />
-      <StepArrow compact={!!popup.step3} />
+      <StepArrow compact={!!popup.step3 || popup.step2 === 'refund'} />
       <StepCard
         index={2}
         title={t('page.bridge.pendingItem.receivingTo', {
