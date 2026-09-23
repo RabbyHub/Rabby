@@ -55,9 +55,18 @@ export const getPerpsSDK = () => {
 };
 
 export const destroyPerpsSDK = () => {
+  sdkInstance?.setExternalSign(undefined);
+  sdkInstance?.exchange?.initAccount('');
   sdkInstance?.ws.disconnect();
   sdkInstance = null;
   currentMasterAddress = null;
+};
+
+// Async work must retain the SDK it started with across lock/logout.
+export const assertPerpsSDK = (sdk: HyperliquidSDK) => {
+  if (sdk !== sdkInstance) {
+    throw new DOMException('Perps session expired', 'AbortError');
+  }
 };
 
 // Separate SDK instance for BBO L2Book subscription
@@ -86,12 +95,13 @@ export const isSelfSignPerpsAccount = (type?: string) =>
 // self-sign session first — it outranks the agent key and would otherwise sign
 // with the old account's key.
 export const initPerpsAgentAccount = (
+  sdk: HyperliquidSDK,
   masterAddress: string,
   vault: string | undefined,
   agentAddress: string,
   agentName: string = PERPS_AGENT_NAME
 ) => {
-  const sdk = getPerpsSDK();
+  assertPerpsSDK(sdk);
   sdk.setExternalSign(undefined);
   sdk.initAccount(masterAddress, vault, agentAddress, agentName);
 };
@@ -128,6 +138,6 @@ export const applyPerpsSigner = async (
     agentAddress,
     isCreate,
   } = await wallet.getOrCreatePerpsAgentWallet(account.address);
-  initPerpsAgentAccount(account.address, vault, agentAddress);
+  initPerpsAgentAccount(sdk, account.address, vault, agentAddress);
   return { agentAddress, isSelfSign: false, isCreate };
 };

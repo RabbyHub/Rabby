@@ -28,7 +28,11 @@ import {
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { wallet } from '@/ui/wallet';
-import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import {
+  assertPerpsSDK,
+  destroyPerpsSDK,
+  getPerpsSDK,
+} from '@/ui/views/Perps/sdkManager';
 import { formatMarkData, getPxDecimals } from '../views/Perps/utils';
 import {
   loadDefaultTopAsset,
@@ -1485,7 +1489,9 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     rootState: PerpsRootState
   ) {
     const { account, isPro } = payload;
+    const sdk = getPerpsSDK();
     await rootState.app.wallet.setPerpsCurrentAccount(account);
+    assertPerpsSDK(sdk);
     rootState.app.wallet.switchDesktopPerpsAccount(account);
     // await dispatch.perps.refreshData();
     if (!isPro) {
@@ -2108,10 +2114,15 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     dispatch.perps.patchState({ wsSubscriptions: [] });
   },
 
-  logout() {
+  resetSession() {
     dispatch.perps.stopPolling(undefined);
     dispatch.perps.unsubscribeAll(undefined);
     destroyPerpsSDK();
+    dispatch.perps.setInitialized(false);
+  },
+
+  logout() {
+    dispatch.perps.resetSession();
     dispatch.perps.resetState();
   },
 
@@ -2119,8 +2130,9 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     eventBus.addEventListener(EVENTS.PERPS.LOG_OUT, () => {
       dispatch.perps.logout();
     });
-    eventBus.addEventListener(EVENTS.LOCK_WALLET, destroyPerpsSDK);
-    eventBus.addEventListener(EVENTS.WALLET_STATUS_CHANGED, destroyPerpsSDK);
+    [EVENTS.LOCK_WALLET, EVENTS.WALLET_STATUS_CHANGED].forEach((event) => {
+      eventBus.addEventListener(event, () => dispatch.perps.resetSession());
+    });
   },
 
   // Desktop Pro effects

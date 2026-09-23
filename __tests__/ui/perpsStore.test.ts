@@ -26,6 +26,7 @@ jest.mock('@/ui/utils', () => ({
 }));
 
 jest.mock('@/ui/views/Perps/sdkManager', () => ({
+  assertPerpsSDK: jest.fn(),
   getPerpsSDK: jest.fn(),
   destroyPerpsSDK: jest.fn(),
 }));
@@ -76,17 +77,49 @@ describe('perps store', () => {
     usePerpsStore.setState(getDefaultPerpsState());
   });
 
-  test('clears the SDK on lock and password reset', () => {
-    usePerpsStore.getState().initEventBus();
+  test.each([EVENTS.LOCK_WALLET, EVENTS.WALLET_STATUS_CHANGED])(
+    'resets the session for reinitialization on %s',
+    (event) => {
+      const unsubscribe = jest.fn();
+      const account = { address: '0xaccount' } as any;
+      usePerpsStore.setState({
+        isInitialized: true,
+        isLogin: true,
+        currentPerpsAccount: account,
+        wsSubscriptions: [unsubscribe],
+      });
+      usePerpsStore.getState().initEventBus();
 
-    for (const event of [EVENTS.LOCK_WALLET, EVENTS.WALLET_STATUS_CHANGED]) {
       const listener = (eventBus.addEventListener as jest.Mock).mock.calls.find(
         ([name]) => name === event
       )?.[1];
       expect(listener).toBeDefined();
       listener();
+      expect(destroyPerpsSDK).toHaveBeenCalledTimes(1);
+      expect(unsubscribe).toHaveBeenCalledTimes(1);
+      expect(usePerpsStore.getState()).toMatchObject({
+        isInitialized: false,
+        currentPerpsAccount: account,
+        wsSubscriptions: [],
+      });
     }
-    expect(destroyPerpsSDK).toHaveBeenCalledTimes(2);
+  );
+
+  test('also clears the selected account on logout', () => {
+    usePerpsStore.setState({
+      isInitialized: true,
+      isLogin: true,
+      currentPerpsAccount: { address: '0xaccount' } as any,
+    });
+
+    usePerpsStore.getState().logout();
+
+    expect(destroyPerpsSDK).toHaveBeenCalledTimes(1);
+    expect(usePerpsStore.getState()).toMatchObject({
+      isInitialized: false,
+      isLogin: false,
+      currentPerpsAccount: null,
+    });
   });
 
   test('keeps realtime and trading state in a non-persisted UI store', () => {

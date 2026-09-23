@@ -17,11 +17,25 @@ export const usePerpsDefaultAccount = ({
     (state) => state.accountToDisplay.accountsList
   );
   const isInitialized = useRabbySelector((state) => state.perps.isInitialized);
+  const currentPerpsAccount = useRabbySelector(
+    (state) => state.perps.currentPerpsAccount
+  );
   const sdk = getPerpsSDK();
 
   return useRequest(
     async () => {
       if (isInitialized) {
+        return;
+      }
+      if (currentPerpsAccount) {
+        if (!isPro) {
+          // Restore dashboard data without clearing a signer already restored by login.
+          if (!sdk.exchange) sdk.initAccount(currentPerpsAccount.address);
+          dispatch.perps.subscribeToUserData({
+            ...currentPerpsAccount,
+            isPro,
+          });
+        }
         return;
       }
       try {

@@ -5,6 +5,7 @@ import { sleep, useWallet } from '@/ui/utils';
 import {
   destroyPerpsSDK,
   getPerpsSDK,
+  assertPerpsSDK,
   applyPerpsSigner,
   isSelfSignPerpsAccount,
   initPerpsAgentAccount,
@@ -208,6 +209,7 @@ export const usePerpsState = ({
       }
       const sdk = getPerpsSDK();
       const extraAgents = await sdk.info.extraAgents(account.address);
+      assertPerpsSDK(sdk);
       const item = extraAgents.find((agent) =>
         isSameAddress(agent.address, agentAddress)
       );
@@ -221,6 +223,7 @@ export const usePerpsState = ({
             const deleteItem = minBy(extraAgents, (agent) => agent.validUntil);
             if (deleteItem) {
               initPerpsAgentAccount(
+                sdk,
                 account.address,
                 DELETE_AGENT_EMPTY_ADDRESS,
                 DELETE_AGENT_EMPTY_ADDRESS,
@@ -468,6 +471,7 @@ export const usePerpsState = ({
           checkExtraAgent(account, agentAddress),
           sdk.info.getMaxBuilderFee(PERPS_BUILD_FEE_RECEIVE_ADDRESS),
         ]);
+        assertPerpsSDK(sdk);
         if (checkResult.needDelete) {
           // 需要删除agent，且重新approve agent和builder fee
           dispatch.perps.setAccountNeedApproveAgent(true);
@@ -480,7 +484,7 @@ export const usePerpsState = ({
             agentAddress: newAgentAddress,
             vault,
           } = await wallet.createPerpsAgentWallet(account.address);
-          sdk.initOrUpdateAgent(vault, newAgentAddress, PERPS_AGENT_NAME);
+          initPerpsAgentAccount(sdk, account.address, vault, newAgentAddress);
           signActions.push({
             action: sdk.exchange?.prepareApproveAgent(),
             type: 'approveAgent',
@@ -538,6 +542,7 @@ export const usePerpsState = ({
         }
       } catch (e) {
         // showToast(String(e), 'error');
+        if (e?.name === 'AbortError') return;
         dispatch.perps.setAccountNeedApproveAgent(true);
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
         capturePerpsError('ensure login approve sign failed', e, {
@@ -631,13 +636,14 @@ export const usePerpsState = ({
   );
 
   const handleLoginWithSignApprove = useMemoizedFn(async (account: Account) => {
+    const sdk = getPerpsSDK();
     const { agentAddress, vault } = await wallet.createPerpsAgentWallet(
       account.address
     );
-    const sdk = getPerpsSDK();
-    initPerpsAgentAccount(account.address, vault, agentAddress);
+    initPerpsAgentAccount(sdk, account.address, vault, agentAddress);
 
     const signActions = await prepareSignActions();
+    assertPerpsSDK(sdk);
 
     if (
       account.type === KEYRING_CLASS.PRIVATE_KEY ||
@@ -674,6 +680,7 @@ export const usePerpsState = ({
       dispatch.perps.setAccountNeedApproveBuilderFee(needApproveBuilderFee);
     }
 
+    assertPerpsSDK(sdk);
     dispatch.perps.setCurrentPerpsAccount(account);
     await dispatch.perps.loginPerpsAccount({
       account,
@@ -728,6 +735,7 @@ export const usePerpsState = ({
         account,
         agentAddress
       );
+      assertPerpsSDK(sdk);
 
       if (needDelete) {
         // 先不登录，防止hl服务状态不同步 return
@@ -738,6 +746,7 @@ export const usePerpsState = ({
         // 如果存在 agent wallet, 则检查是否过期
         if (!isExpired) {
           initPerpsAgentAccount(
+            sdk,
             account.address,
             res.vault,
             res.preference.agentAddress
@@ -765,6 +774,7 @@ export const usePerpsState = ({
       dispatch.perps.clearLocalLoadingHistory();
       return true;
     } catch (error: any) {
+      if (error?.name === 'AbortError') return;
       console.error('Failed to login Perps account:', error);
       message.error({
         // className: 'toast-message-2025-center',
@@ -902,6 +912,7 @@ export const usePerpsState = ({
     }
 
     const initIsLogin = async () => {
+      const sdk = getPerpsSDK();
       try {
         const initAccount = perpsState.currentPerpsAccount;
         console.log('initIsLogin', initAccount);
@@ -916,11 +927,13 @@ export const usePerpsState = ({
             account: initAccount,
             isPro: false,
           });
+          assertPerpsSDK(sdk);
           checkSelfSignBuilderFee();
           await Promise.all([
             dispatch.perps.fetchMarketData(undefined),
             waitForInitialWsData(),
           ]);
+          assertPerpsSDK(sdk);
           dispatch.perps.setInitialized(true);
           return true;
         }
@@ -929,11 +942,12 @@ export const usePerpsState = ({
           agentAddress,
         } = await wallet.getOrCreatePerpsAgentWallet(initAccount.address);
         // 开始恢复登录态
-        initPerpsAgentAccount(initAccount.address, vault, agentAddress);
+        initPerpsAgentAccount(sdk, initAccount.address, vault, agentAddress);
         await dispatch.perps.loginPerpsAccount({
           account: initAccount,
           isPro: false,
         });
+        assertPerpsSDK(sdk);
         // checkIsNeedAutoLoginOut(initAccount.address, agentAddress);
         ensureLoginApproveSign(initAccount, agentAddress);
 
@@ -946,9 +960,11 @@ export const usePerpsState = ({
           waitForInitialWsData(),
         ]);
 
+        assertPerpsSDK(sdk);
         dispatch.perps.setInitialized(true);
         return true;
       } catch (error) {
+        if (error?.name === 'AbortError') return;
         console.error('Failed to init Perps state:', error);
       }
     };

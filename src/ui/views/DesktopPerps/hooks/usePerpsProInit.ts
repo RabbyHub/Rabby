@@ -3,6 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { usePerpsDefaultAccount } from '../../Perps/hooks/usePerpsDefaultAccount';
 import {
   getPerpsSDK,
+  assertPerpsSDK,
   applyPerpsSigner,
   isSelfSignPerpsAccount,
   initPerpsAgentAccount,
@@ -135,6 +136,7 @@ export const usePerpsProInit = (isActive = true) => {
     }
 
     const initIsLogin = async () => {
+      const sdk = getPerpsSDK();
       try {
         const initAccount = currentPerpsAccount;
         if (!initAccount) {
@@ -148,8 +150,10 @@ export const usePerpsProInit = (isActive = true) => {
             account: initAccount,
             isPro: true,
           });
+          assertPerpsSDK(sdk);
           checkSelfSignBuilderFee();
           await dispatch.perps.fetchMarketData(undefined);
+          assertPerpsSDK(sdk);
           dispatch.perps.setInitialized(true);
           return true;
         }
@@ -158,18 +162,21 @@ export const usePerpsProInit = (isActive = true) => {
           agentAddress,
         } = await wallet.getOrCreatePerpsAgentWallet(initAccount.address);
         // 开始恢复登录态
-        initPerpsAgentAccount(initAccount.address, vault, agentAddress);
+        initPerpsAgentAccount(sdk, initAccount.address, vault, agentAddress);
         await dispatch.perps.loginPerpsAccount({
           account: initAccount,
           isPro: true,
         });
+        assertPerpsSDK(sdk);
         ensureLoginApproveSign(initAccount, agentAddress);
 
         await dispatch.perps.fetchMarketData(undefined);
 
+        assertPerpsSDK(sdk);
         dispatch.perps.setInitialized(true);
         return true;
       } catch (error) {
+        if (error?.name === 'AbortError') return;
         console.error('Failed to init Perps state:', error);
       }
     };
