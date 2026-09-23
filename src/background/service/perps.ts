@@ -86,6 +86,7 @@ export interface PerpsServiceMemoryState {
 
 class PerpsService {
   private store?: PerpsServiceStore;
+  private lockGeneration = 0;
   private memoryState: PerpsServiceMemoryState = {
     agentWallets: {},
     unlockPromise: null,
@@ -247,6 +248,7 @@ class PerpsService {
   };
 
   unlockAgentWallets = async () => {
+    const lockGeneration = this.lockGeneration;
     const unlock = async () => {
       if (!this.store) {
         throw new Error('PerpsService not initialized');
@@ -254,6 +256,15 @@ class PerpsService {
       // Decrypt and load agent vaults
       if (this.store.agentVaults) {
         const vaultsMap = await this.safeDecryptAgentVaults();
+
+        // The wallet may have been locked while decrypting; drop the
+        // plaintext instead of populating the cache of a locked wallet.
+        if (
+          !keyringService.isUnlocked() ||
+          lockGeneration !== this.lockGeneration
+        ) {
+          return;
+        }
 
         // Format data for memory state
         for (const masterAddress in vaultsMap) {
@@ -278,26 +289,47 @@ class PerpsService {
         }
       }
     };
-    this.memoryState.unlockPromise = unlock();
+    const unlockPromise = unlock();
+    this.memoryState.unlockPromise = unlockPromise;
     /**
      *  unlock 是一个耗时比较长的任务，所以如果在解锁时立即尝试获取 agentWallet 可能会碰到解锁没有完成的情况
      *  所以这里把 promise 放到内存里，如果有立即读取的需求需要先读一下 promise 的状态
      * */
-    this.memoryState.unlockPromise.finally(() => {
-      this.memoryState.unlockPromise = null;
-    });
+    const clearUnlockPromise = () => {
+      if (this.memoryState.unlockPromise === unlockPromise) {
+        this.memoryState.unlockPromise = null;
+      }
+    };
+    unlockPromise.then(clearUnlockPromise, clearUnlockPromise);
+  };
+
+  lockAgentWallets = () => {
+    this.lockGeneration++;
+    this.memoryState.agentWallets = {};
+  };
+
+  private assertUnlocked = (lockGeneration: number) => {
+    if (
+      !keyringService.isUnlocked() ||
+      lockGeneration !== this.lockGeneration
+    ) {
+      throw new Error('Wallet is locked');
+    }
   };
 
   createAgentWallet = async (masterAddress: string) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
+    const lockGeneration = this.lockGeneration;
+    this.assertUnlocked(lockGeneration);
     const vault = bytesToHex(getRandomBytesSync(32));
     const agentAddress = this.deriveAgentAddress(vault);
     await this.addAgentWallet(masterAddress, vault, {
       agentAddress,
       approveSignatures: [],
     });
+    this.assertUnlocked(lockGeneration);
     return { agentAddress, vault };
   };
 
@@ -309,18 +341,13 @@ class PerpsService {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
+    const lockGeneration = this.lockGeneration;
+    this.assertUnlocked(lockGeneration);
 
     const normalizedAddress = masterAddress.toLowerCase();
-
-    this.memoryState.agentWallets = {
-      ...this.memoryState.agentWallets,
-      [normalizedAddress]: {
-        vault,
-        preference,
-      },
-    };
-
+    this.memoryState.agentWallets[normalizedAddress] = { vault, preference };
     const vaultsMap = await this.safeDecryptAgentVaults();
+    this.assertUnlocked(lockGeneration);
 
     vaultsMap[normalizedAddress] = vault;
 
@@ -329,6 +356,7 @@ class PerpsService {
       true,
       'perps'
     );
+    this.assertUnlocked(lockGeneration);
 
     // Update store
     this.store.agentVaults = encryptedVaults;
@@ -345,9 +373,12 @@ class PerpsService {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
     }
+    const lockGeneration = this.lockGeneration;
+    this.assertUnlocked(lockGeneration);
     if (this.memoryState.unlockPromise) {
       await this.memoryState.unlockPromise;
     }
+    this.assertUnlocked(lockGeneration);
 
     const normalizedAddress = address.toLowerCase();
 

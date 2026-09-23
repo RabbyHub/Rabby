@@ -2,7 +2,7 @@ import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { getDefaultPerpsState, usePerpsStore } from '@/ui/state/perps';
 import { wallet } from '@/ui/wallet';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import {
   fetchAllDexsRaw,
   formatAllDexsClearinghouseState,
@@ -27,6 +27,7 @@ jest.mock('@/ui/utils', () => ({
 
 jest.mock('@/ui/views/Perps/sdkManager', () => ({
   getPerpsSDK: jest.fn(),
+  destroyPerpsSDK: jest.fn(),
 }));
 
 jest.mock('@/ui/views/Perps/utils', () => ({
@@ -73,6 +74,19 @@ describe('perps store', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     usePerpsStore.setState(getDefaultPerpsState());
+  });
+
+  test('clears the SDK on lock and password reset', () => {
+    usePerpsStore.getState().initEventBus();
+
+    for (const event of [EVENTS.LOCK_WALLET, EVENTS.WALLET_STATUS_CHANGED]) {
+      const listener = (eventBus.addEventListener as jest.Mock).mock.calls.find(
+        ([name]) => name === event
+      )?.[1];
+      expect(listener).toBeDefined();
+      listener();
+    }
+    expect(destroyPerpsSDK).toHaveBeenCalledTimes(2);
   });
 
   test('keeps realtime and trading state in a non-persisted UI store', () => {
