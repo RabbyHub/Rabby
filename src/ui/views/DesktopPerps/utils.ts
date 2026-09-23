@@ -25,6 +25,7 @@ import {
   HYPE_USDC_TOKEN_ITEM,
   HYPE_USDC_TOKEN_SERVER_CHAIN,
   COLLATERAL_TOKEN_TO_QUOTE,
+  getSpotBalanceKey,
 } from '../Perps/constants';
 
 export interface SpotBalance {
@@ -373,17 +374,25 @@ export const getCustomClearinghouseState = async (address: string) => {
     return null;
   }
 
-  // Unified-account fallback: when no perp withdrawable, fall back to spot
-  // availableToTrade so the selector shows a meaningful balance.
+  // Unified-account fallback: when no perp withdrawable, fall back to the
+  // spot USDC balance (Available is USDC-only).
   if (Number(aggregated.withdrawable) < 1) {
     const userAbstraction = await sdk.info.getUserAbstraction(address);
     if (userAbstraction === UserAbstractionResp.unifiedAccount) {
       const spotState = await sdk.info.getSpotClearingHouseState(address);
-      aggregated.withdrawable = formatSpotState(spotState).availableToTrade;
+      // Keep the invariant from formatAllDexsClearinghouseState's overwrite
+      // sites: perpsWithdrawable absent means withdrawable is raw. This
+      // fallback overwrites withdrawable too, so record the pre-overwrite
+      // value here as well, even though nothing reads it from this call site
+      // today (it only feeds the account list).
+      aggregated.perpsWithdrawable = aggregated.withdrawable;
+      aggregated.withdrawable =
+        formatSpotState(spotState).balancesMap?.[getSpotBalanceKey('USDC')]
+          ?.available || '0';
     }
   }
 
-  return aggregated as ClearinghouseState;
+  return aggregated as AggregatedClearinghouseState;
 };
 
 export const sortTokenList = (
@@ -450,6 +459,13 @@ const calcCrossAccountValueByAllDexs = (
  */
 export type AggregatedClearinghouseState = ClearinghouseState & {
   crossMaintByDex?: Record<string, string>;
+  /**
+   * The perps-side withdrawable BEFORE the unified-account overwrite folded
+   * spot USDC into `withdrawable`. Set only when that overwrite ran; readers
+   * fall back to `withdrawable` when absent (frame arrived before
+   * userAbstraction was known, so `withdrawable` is still the raw value).
+   */
+  perpsWithdrawable?: string;
 };
 
 export const formatAllDexsClearinghouseState = (
@@ -553,9 +569,11 @@ export const formatSpotState = (spotState: SpotClearinghouseState) => {
     };
   });
 
-  // accountValue / availableToTrade stay the SETTLEMENT-stablecoin sums (1:1 USD)
-  // for backward-compat with unified-account consumers. Full portfolio /
-  // collateral USD values are computed separately from fastAssetCtxs prices.
+  // accountValue / availableToTrade stay the SETTLEMENT-stablecoin sums (1:1
+  // USD). availableToTrade no longer drives Available (USDC-only since
+  // 2026-09-15) and currently has no readers; kept for the state shape.
+  // Full portfolio / collateral USD values are computed separately from
+  // fastAssetCtxs prices.
   const STABLECOIN_TOKEN_IDS = new Set(
     Object.keys(COLLATERAL_TOKEN_TO_QUOTE).map(Number)
   );

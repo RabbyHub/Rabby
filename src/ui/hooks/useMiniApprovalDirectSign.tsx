@@ -117,7 +117,7 @@ export const useGetTxFailedResultInWaiting = ({
   showOriginDesc?: () => string | undefined;
 }) => {
   const wallet = useWallet();
-  const [getApproval] = useApproval();
+  const [getApproval] = useApproval(null);
 
   return useAsync<() => Promise<[string, RetryUpdateType]>>(async () => {
     const originDesc = showOriginDesc?.();

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { capturePerpsError } from '../sentry';
 import { UserAbstraction } from '@rabby-wallet/hyperliquid-sdk';
 import { getPerpsSDK } from '../sdkManager';
+import { usePerpsStore } from '@/ui/state/perps';
 import { formatSpotState } from '../../DesktopPerps/utils';
 import { perpsToast } from '../../DesktopPerps/components/PerpsToast';
 import { useWallet } from '@/ui/utils';
@@ -99,6 +100,10 @@ export const usePerpsActions = () => {
           abstraction,
         });
 
+        // Captured before the signing/fetch awaits below, which can take
+        // tens of seconds on a hardware wallet.
+        const targetAddress = currentPerpsAccount.address;
+
         const [signature] = await executeSignTypedData(
           [action],
           currentPerpsAccount
@@ -114,6 +119,23 @@ export const usePerpsActions = () => {
           sdk.info.getUserAbstraction(currentPerpsAccount.address),
           sdk.info.getSpotClearingHouseState(currentPerpsAccount.address),
         ]);
+
+        // If the user switched perps accounts while any of the above was in
+        // flight, this response belongs to the OLD account — writing its
+        // abstraction and spot balances as the new account's would flip the
+        // new account's isSpotCollateralMode and fold the old account's USDC
+        // into the new account's withdraw limit. Treat the request as
+        // already handled and skip patching state for an account that is no
+        // longer selected.
+        if (
+          usePerpsStore
+            .getState()
+            .currentPerpsAccount?.address?.toLowerCase() !==
+          targetAddress?.toLowerCase()
+        ) {
+          return true;
+        }
+
         if (userAbsRes.status === 'fulfilled') {
           dispatch.perps.patchState({ userAbstraction: userAbsRes.value });
         } else {
@@ -125,6 +147,7 @@ export const usePerpsActions = () => {
         if (spotRes.status === 'fulfilled') {
           dispatch.perps.patchState({
             spotState: formatSpotState(spotRes.value),
+            isSpotStateReady: true,
           });
         } else {
           console.error('fetch spotState after enable failed', spotRes.reason);

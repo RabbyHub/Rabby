@@ -14,7 +14,6 @@ export const SENTRY_IGNORED_SAMPLES = [
   'DatabaseClosedError: UnknownError Internal error opening backing store for indexedDB.open.\n UnknownError: Internal error opening backing store for indexedDB.open.',
   'DatabaseClosedError: QuotaExceededError Encountered full disk while opening backing store for indexedDB.open.\n QuotaExceededError: Encountered full disk while opening backing store for indexedDB.open.',
   'Could not find an active browser window.',
-  'UnknownError: Internal error.',
   'Non-Error promise rejection captured with keys: message',
   'Error: NotAllowedError: Permission denied.',
   "NotAllowedError: Failed to execute 'writeText' on 'Clipboard': Document is not focused.",

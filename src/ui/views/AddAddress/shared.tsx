@@ -24,6 +24,8 @@ export interface AddAddressNavigateHandler {
 interface WalletRouteParams {
   address: string;
   chainId: number;
+  // Only set when this flow started from a pending ImportAddress approval, so /popup/import/success can complete it.
+  approvalId?: string;
 }
 
 export interface WalletBrandItem {
@@ -118,8 +120,11 @@ export const WalletBrandGrid = ({
 
 export const useAddAddressWalletOptions = ({
   onNavigate,
+  params,
 }: {
   onNavigate?: AddAddressNavigateHandler;
+  // Forwarded into brandWallets' manual click handlers so a bound approvalId survives a manual pick, not just the auto redirect.
+  params?: Pick<WalletRouteParams, 'approvalId'>;
 } = {}) => {
   const history = useHistory();
   const wallet = useWallet();
@@ -138,8 +143,27 @@ export const useAddAddressWalletOptions = ({
   );
 
   const connectRouter = React.useCallback(
-    (item: ValueOf<typeof WALLET_BRAND_CONTENT>, params?: WalletRouteParams) =>
+    (
+      item: ValueOf<typeof WALLET_BRAND_CONTENT>,
+      params?: Partial<WalletRouteParams>
+    ) =>
       handleRouter((currentHistory) => {
+        // Single place that forwards `params` into history.push/onNavigate, so no
+        // branch can silently drop it building its own payload (desktop's own
+        // AddAddressModal still doesn't read this state for Cobo Argus/Gnosis/Coinbase — separate gap).
+        const go = (
+          type: string,
+          pathname: string,
+          extra?: Record<string, any>
+        ) => {
+          const state = { ...params, ...extra };
+          if (isDesktop) {
+            onNavigate?.(type, state);
+          } else {
+            currentHistory.push({ pathname, state });
+          }
+        };
+
         if (item.connectType === 'BitBox02Connect') {
           openInternalPageInTab('import/hardware?connectType=BITBOX02');
         } else if (item.connectType === 'GridPlusConnect') {
@@ -151,13 +175,7 @@ export const useAddAddressWalletOptions = ({
         } else if (item.connectType === 'OneKeyConnect') {
           openInternalPageInTab('import/hardware/onekey-connect');
         } else if (item.connectType === 'GnosisConnect') {
-          if (isDesktop) {
-            onNavigate?.('gnosis');
-          } else {
-            currentHistory.push({
-              pathname: '/import/gnosis',
-            });
-          }
+          go('gnosis', '/import/gnosis');
         } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
           if (item.brand === WALLET_BRAND_TYPES.KEYSTONE) {
             openInternalPageInTab('import/hardware/keystone');
@@ -171,38 +189,17 @@ export const useAddAddressWalletOptions = ({
         } else if (
           item.connectType === BRAND_WALLET_CONNECT_TYPE.CoboArgusConnect
         ) {
-          if (isDesktop) {
-            onNavigate?.('cobo-argus');
-          } else {
-            currentHistory.push({
-              pathname: '/import/cobo-argus',
-              state: params,
-            });
-          }
+          go('cobo-argus', '/import/cobo-argus');
         } else if (
           item.connectType === BRAND_WALLET_CONNECT_TYPE.CoinbaseConnect
         ) {
-          if (isDesktop) {
-            onNavigate?.('coinbase');
-          } else {
-            currentHistory.push({
-              pathname: '/import/coinbase',
-              state: params,
-            });
-          }
+          go('coinbase', '/import/coinbase');
         } else if (
           item.connectType === BRAND_WALLET_CONNECT_TYPE.ImKeyConnect
         ) {
           openInternalPageInTab('import/hardware/imkey-connect');
-        } else if (isDesktop) {
-          onNavigate?.('wallet-connect', { brand: item });
         } else {
-          currentHistory.push({
-            pathname: '/import/wallet-connect',
-            state: {
-              brand: item,
-            },
-          });
+          go('wallet-connect', '/import/wallet-connect', { brand: item });
         }
       }),
     [handleRouter, onNavigate]
@@ -225,7 +222,7 @@ export const useAddAddressWalletOptions = ({
               if (item.preventClick) {
                 return;
               }
-              connectRouter(item);
+              connectRouter(item, params);
             },
             category: item.category,
             preventClick: item.preventClick,
@@ -235,7 +232,7 @@ export const useAddAddressWalletOptions = ({
         .filter(Boolean) as WalletBrandItem[]).sort(
         (a, b) => getSortNum(a.brand) - getSortNum(b.brand)
       ),
-    [connectRouter]
+    [connectRouter, params?.approvalId]
   );
 
   const groupedWallets = React.useMemo(

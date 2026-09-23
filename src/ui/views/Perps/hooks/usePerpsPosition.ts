@@ -273,22 +273,51 @@ export const usePerpsPosition = ({
       size: string;
       price: string;
       direction: 'Long' | 'Short';
+      orderType?: PerpsOpenOrderType;
+      limitPx?: string;
     }) => {
       try {
         const sdk = getPerpsSDK();
-        const { coin, dex, direction, price, size } = params;
-        const res = await sdk.exchange?.marketOrderClose({
+        const {
           coin,
-          isBuy: direction === 'Short',
+          dex,
+          direction,
+          price,
           size,
-          midPx: price,
-          builder: PERPS_BUILDER_INFO,
-        });
+          orderType,
+          limitPx,
+        } = params;
+        // Closing trades opposite the position: long -> sell, short -> buy.
+        const isBuy = direction === 'Short';
+        const isLimit = orderType === 'limit' && !!limitPx;
+        const res = isLimit
+          ? await sdk.exchange?.limitOrderOpen({
+              coin,
+              isBuy,
+              size,
+              limitPx: limitPx as string,
+              tif: PERPS_LIMIT_TIF_DEFAULT,
+              // Never let a close order flip the position open the other way.
+              reduceOnly: true,
+              builder: PERPS_BUILDER_INFO,
+            })
+          : await sdk.exchange?.marketOrderClose({
+              coin,
+              isBuy,
+              size,
+              midPx: price,
+              builder: PERPS_BUILDER_INFO,
+            });
 
         const filled = res?.response?.data?.statuses[0]?.filled;
+        const resting = res?.response?.data?.statuses[0]?.resting;
         if (filled) {
           dispatch.perps.fetchClearinghouseState({ dex });
           dispatch.perps.fetchUserHistoricalOrders();
+          // A partially filled limit close leaves a resting remainder.
+          if (resting) {
+            dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
+          }
           const { totalSz, avgPx } = filled;
           message.success({
             // className: 'toast-message-2025-center',
@@ -308,6 +337,24 @@ export const usePerpsPosition = ({
             totalSz: string;
             avgPx: string;
             oid: number;
+          };
+        } else if (isLimit && resting) {
+          // Resting (not filled) — the position is still open, so leave its
+          // TP/SL alone and just refresh the open-orders list.
+          dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
+          message.success({
+            duration: 1.5,
+            content: t('page.perps.toast.limitOrderPlaced', {
+              direction,
+              coin,
+              size,
+              price: limitPx,
+            }),
+          });
+          return {
+            totalSz: size,
+            avgPx: limitPx || '0',
+            oid: resting.oid,
           };
         } else {
           const msg = res?.response?.data?.statuses[0]?.error;

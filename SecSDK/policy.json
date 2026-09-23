@@ -39259,6 +39259,7 @@
     "require": [
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/http-client.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/symbolConversion.js",
+      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/errors.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/types/constants.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/utils/number.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/utils/signer.js",
@@ -39329,6 +39330,7 @@
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/http-client.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/websocket-client.js",
+      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/errors.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/hyperliquid-sdk.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/types/constants.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/types/index.js"
@@ -40557,7 +40559,8 @@
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/uni.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/list.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
-      "node_modules/@rabby-wallet/rabby-swap/dist/tokenPools.js"
+      "node_modules/@rabby-wallet/rabby-swap/dist/tokenPools.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/index.js"
     ]
   },
   "node_modules/@rabby-wallet/rabby-swap/dist/list.js": {
@@ -40612,8 +40615,68 @@
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
-      "node_modules/@rabby-wallet/rabby-swap/dist/list.js"
+      "node_modules/@rabby-wallet/rabby-swap/dist/list.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
     ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/verify/calldata.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/verify/contracts.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/dexs/uni.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/list.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/wrap.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/verify/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/calldata.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/contracts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/receiver.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/sdk.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/wrap.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/verify/receiver.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/verify/sdk.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/calldata.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/contracts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/receiver.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/verify/wrap.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/verify/wrap.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/list.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs": {
+    "enable": true,
+    "global": {
+      "crypto": "r"
+    }
   },
   "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/lib/index.js": {
     "enable": true,
@@ -95399,6 +95462,7 @@
   "src/db/index.ts": {
     "enable": true,
     "require": [
+      "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/dexie/import-wrapper-prod.mjs",
       "src/db/schema/index.ts",
       "src/utils/history.ts"
@@ -96049,6 +96113,12 @@
     ]
   },
   "src/ui/assets/send-token/risk-alert.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/settings/update/glow.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -98164,6 +98234,7 @@
       "node_modules/dayjs/plugin/weekday.js",
       "node_modules/dayjs/plugin/weekOfYear.js",
       "node_modules/dayjs/plugin/weekYear.js",
+      "node_modules/i18next/dist/esm/i18next.js",
       "node_modules/lodash/lodash.js",
       "node_modules/lottie-react/build/index.umd.js",
       "node_modules/process/browser.js",
@@ -98177,7 +98248,6 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react-use/esm/useAsyncFn.js",
-      "node_modules/react-use/esm/useCss.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react-use/esm/useInterval.js",
       "node_modules/react-use/esm/useMount.js",
@@ -98188,10 +98258,10 @@
       "node_modules/recharts/es6/chart/AreaChart.js",
       "node_modules/recharts/es6/component/Tooltip.js",
       "node_modules/remark-gfm/index.js",
-      "node_modules/semver-compare/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "node_modules/zod/v4/classic/schemas.js",
       "node_modules/zustand/esm/react.mjs",
       "src/constant/dex-swap.ts",
       "src/constant/gas-account.ts",
@@ -98216,6 +98286,7 @@
       "src/ui/assets/logo-rabby-large.svg",
       "src/ui/assets/metamask-mode-circle.svg",
       "src/ui/assets/search.svg",
+      "src/ui/assets/settings/update/glow.svg",
       "src/ui/assets/success.svg",
       "src/ui/assets/tips-cc.svg",
       "src/ui/assets/token-default.svg",
@@ -98427,6 +98498,7 @@
     "enable": true,
     "require": [
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
+      "node_modules/bignumber.js/bignumber.js",
       "node_modules/zustand/esm/react.mjs",
       "src/constant/index.ts",
       "src/constant/perps.ts",
@@ -98437,6 +98509,7 @@
       "src/ui/views/Perps/constants.ts",
       "src/ui/views/Perps/sdkManager.ts",
       "src/ui/views/Perps/utils.ts",
+      "src/ui/views/Perps/utils/perpsPortfolio.ts",
       "src/ui/wallet/index.ts"
     ]
   },
@@ -99546,6 +99619,7 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/uuid/dist/esm-browser/v4.js",
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/i18n.ts",
@@ -99562,6 +99636,7 @@
       "src/ui/component/index.tsx",
       "src/ui/component/MiniSignV2/index.ts",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/store.ts",
       "src/ui/utils/index.ts",
@@ -101110,7 +101185,17 @@
       "src/ui/assets/dashboard/debank-white.svg",
       "src/ui/assets/dashboard/debank.svg",
       "src/ui/assets/dashboard/scan-white.svg",
-      "src/ui/assets/dashboard/scan.svg"
+      "src/ui/assets/dashboard/scan.svg",
+      "src/ui/assets/settings/update/glow.svg"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/AccountInfo/utils.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "src/ui/views/Perps/constants.ts",
+      "src/utils/perps/quoteAsset.ts"
     ]
   },
   "src/ui/views/DesktopPerps/components/ChartArea/components/HorizontalScrollContainer.tsx": {
@@ -101478,6 +101563,7 @@
       "src/ui/views/Dashboard/components/BalanceView/useHomeBalanceView.ts",
       "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
       "src/ui/views/Dashboard/components/TokenDetailPopup/utils.ts",
+      "src/ui/views/DesktopPerps/components/AccountInfo/utils.ts",
       "src/ui/views/DesktopPerps/components/ChartArea/components/HorizontalScrollContainer.tsx",
       "src/ui/views/DesktopPerps/components/PerpsToast/index.tsx",
       "src/ui/views/DesktopPerps/components/UserInfoHistory/FloatingWidgetToggle.less",
@@ -101537,7 +101623,6 @@
       "src/utils/ga4.ts",
       "src/utils/index.ts",
       "src/utils/matomo-request.ts",
-      "src/utils/perps/quoteAsset.ts",
       "src/utils/string.ts"
     ]
   },
@@ -101755,6 +101840,7 @@
       "src/ui/utils/index.ts",
       "src/ui/utils/number.ts",
       "src/ui/utils/token.ts",
+      "src/ui/views/Approval/components/Actions/utils.tsx",
       "src/ui/views/Approval/components/TextActions/utils.ts",
       "src/ui/views/Approval/components/TypedDataActions/utils.ts",
       "src/ui/views/GnosisQueue/style.less",
@@ -102140,6 +102226,7 @@
       "node_modules/react-window/dist/index.esm.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/cartesian/Area.js",
+      "node_modules/recharts/es6/cartesian/XAxis.js",
       "node_modules/recharts/es6/cartesian/YAxis.js",
       "node_modules/recharts/es6/chart/AreaChart.js",
       "node_modules/recharts/es6/component/ResponsiveContainer.js",
@@ -102390,6 +102477,8 @@
       "src/ui/views/Perps/sdkManager.ts",
       "src/ui/views/Perps/sentry.ts",
       "src/ui/views/Perps/utils.ts",
+      "src/ui/views/Perps/utils/accountPricing.ts",
+      "src/ui/views/Perps/utils/perpsPortfolio.ts",
       "src/ui/views/Receive/index.tsx",
       "src/ui/views/RequestPermission/style.less",
       "src/ui/views/SelectAddress/style.less",
@@ -102571,7 +102660,8 @@
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
       "node_modules/react/index.js",
       "src/ui/store.ts",
-      "src/ui/views/Perps/constants.ts"
+      "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Perps/utils/accountPricing.ts"
     ]
   },
   "src/ui/views/Perps/hooks/usePerpsActions.ts": {
@@ -102585,6 +102675,7 @@
       "src/constant/ui.ts",
       "src/ui/component/MiniSignV2/index.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/state/perps.ts",
       "src/ui/store.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/DesktopPerps/components/PerpsToast/index.tsx",
@@ -102653,6 +102744,15 @@
       "src/ui/views/Perps/constants.ts",
       "src/ui/views/Perps/sdkManager.ts",
       "src/utils/perps/quoteAsset.ts"
+    ]
+  },
+  "src/ui/views/Perps/utils/accountPricing.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "src/ui/views/DesktopPerps/components/AccountInfo/utils.ts",
+      "src/ui/views/Perps/constants.ts"
     ]
   },
   "src/ui/views/Receive/index.tsx": {
@@ -103054,8 +103154,7 @@
       "src/ui/views/Swap/hooks/context.tsx",
       "src/ui/views/Swap/hooks/fee.ts",
       "src/ui/views/Swap/hooks/quote.tsx",
-      "src/ui/views/Swap/hooks/token.tsx",
-      "src/ui/views/Swap/hooks/verify.tsx"
+      "src/ui/views/Swap/hooks/token.tsx"
     ]
   },
   "src/ui/views/Swap/hooks/quote.tsx": {
@@ -103064,6 +103163,7 @@
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/p-retry/index.js",
       "node_modules/react/index.js",
@@ -103071,7 +103171,6 @@
       "src/stats.ts",
       "src/ui/state/swap.ts",
       "src/ui/utils/index.ts",
-      "src/ui/views/Swap/hooks/verify.tsx",
       "src/utils/chain.ts"
     ]
   },
@@ -103113,17 +103212,6 @@
       "node_modules/react/index.js",
       "src/constant/index.ts",
       "src/eventBus.ts"
-    ]
-  },
-  "src/ui/views/Swap/hooks/verify.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
-      "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
-      "node_modules/bignumber.js/bignumber.js",
-      "src/background/utils/index.ts",
-      "src/ui/views/Swap/hooks/quote.tsx",
-      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/Swap/index.tsx": {

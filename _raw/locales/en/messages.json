@@ -1049,6 +1049,27 @@
         "ytd": "YTD",
         "all": "ALL"
       },
+      "PerpsCard": {
+        "portfolioValue": "Portfolio Value",
+        "available": "Available",
+        "unifiedAccount": "Unified Account",
+        "unifiedAccountDesc": "Your account uses a single balance for each collateral asset, shared across Spot and cross-margin Perps using the same collateral.",
+        "manualAccount": "Manual Account",
+        "manualAccountDesc": "You manage separate balances across Spot and each Perps DEX, with independent cross margin per DEX.",
+        "portfolioMarginAccount": "Portfolio Margin",
+        "portfolioMarginAccountDesc": "Your account combines eligible Spot assets and Perps positions into a single portfolio for greater capital efficiency.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Other Assets",
+        "breakdownNetOtherAssets": "Net Other Assets",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "All"
+        }
+      },
       "permissionTips": "Opening positions is not supported in your region",
       "newUserProcess": {
         "gotIt": "Got it",
@@ -1912,7 +1933,6 @@
         "setLimitSellPrice": "Set Limit Sell Price",
         "mid": "Mid",
         "set": "Set",
-        "blockError": "Order price exceeds the 10% price protection limit.",
         "warning": "Limit price is 5%+ away from the market price",
         "confirmTitle": "Review Limit Price",
         "confirmMessage": "Limit price is 5%+ away from market price"
@@ -1939,12 +1959,12 @@
         "liqDistance": "Liq. Distance"
       },
       "PerpsClosePositionPopup": {
-        "title": "Close Position",
+        "title": "Close {{coin}} Position",
         "amount": "Amount",
         "total": "Total",
         "minimumWarning": "Minimum close amount is {{percent}}%",
-        "receive": "Receive",
-        "closedPnl": "Closed PNL",
+        "receive": "Est. Receive",
+        "closedPnl": "Est. PNL",
         "fee": "Fee",
         "confirm": "Confirm"
       },
@@ -2547,6 +2567,10 @@
           "count": "{{count}} in"
         },
         "whatsNew": "What's new",
+        "firstNotice": {
+          "title": "New Version Ready",
+          "gotIt": "OK"
+        },
         "importType": "Imported by {{type}}",
         "missingDataTooltip": "Balance may not be updated due to current network issues with {{text}}.",
         "chain": " chain, ",
@@ -2678,6 +2702,15 @@
         "disableWhitelistTip": "You can send assets to any address once disabled",
         "warning": "Warning",
         "clearWatchAddressContent": "Do you make sure to delete all Watch Mode address?",
+        "updateCard": {
+          "check": "Check",
+          "title": "New Version available",
+          "update": "Update",
+          "dismiss": "Dismiss update notice",
+          "error": "Failed to update extension",
+          "perps": "Enhanced the Perps trading experience.",
+          "screenshots": "Right-click screenshots to easily submit bug reports."
+        },
         "updateVersion": {
           "content": "A new update for Rabby Wallet is available. Click to check how to update manually.",
           "okText": "See Tutorial",

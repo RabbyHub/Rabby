@@ -6,7 +6,7 @@ import { KEYRING_CLASS, KEYRING_TYPE, WALLET_BRAND_CATEGORY } from 'consts';
 import { isValidAddress } from '@ethereumjs/util';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import IconBack from 'ui/assets/icon-back.svg';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { useWallet } from 'ui/utils';
@@ -26,6 +26,8 @@ const ImportGnosisAddress: React.FC<{
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
+  // Set when entered from a pending ImportAddress approval; forwarded to the success screen so it can complete it.
+  const { approvalId } = (useLocation().state as { approvalId?: string }) || {};
 
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -73,6 +75,7 @@ const ImportGnosisAddress: React.FC<{
             await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
           )?.[0]?.accounts?.length,
           supportChainList: chainList,
+          approvalId,
         });
       } else {
         history.replace({
@@ -86,6 +89,7 @@ const ImportGnosisAddress: React.FC<{
               await wallet.getTypedAccounts(KEYRING_TYPE.GnosisKeyring)
             )?.[0]?.accounts?.length,
             supportChainList: chainList,
+            approvalId,
           },
         });
       }

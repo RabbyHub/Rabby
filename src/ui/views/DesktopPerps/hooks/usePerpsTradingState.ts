@@ -16,7 +16,6 @@ import { useMemoizedFn } from 'ahooks';
 import BigNumber from 'bignumber.js';
 import { DEFAULT_TPSL_CONFIG } from '@/ui/state/perps';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { usePerpsAccount } from '../../Perps/hooks/usePerpsAccount';
 import { calcAmountFromPercentage } from '../components/TradingPanel/utils';
 import { useTranslation } from 'react-i18next';
 
@@ -140,8 +139,6 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
   const maxLeverage = currentMarketData?.maxLeverage || 25;
   const leverage = wsActiveAssetData?.leverage.value || maxLeverage;
   const leverageType = wsActiveAssetData?.leverage.type || 'isolated';
-
-  const { availableBalance: withdrawableBalance } = usePerpsAccount();
 
   // Scoped to the selected market's DEX and collateral token. Summing every
   // DEX's `crossMarginSummary` instead collapses a unified account down to the

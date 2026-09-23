@@ -18,14 +18,18 @@ interface ConnectProps {
   };
 }
 
-export const ImportAddress = ({ params }: ConnectProps) => {
+export const ImportAddress = ({
+  params,
+  approvalId,
+}: ConnectProps & { approvalId?: string }) => {
   const history = useHistory();
   const addressParams = params.data[0];
 
   React.useEffect(() => {
     history.replace({
       pathname: '/add-address',
-      state: addressParams,
+      // addressParams first so an attacker-supplied field of the same name can't shadow our own approvalId.
+      state: { ...addressParams, approvalId },
     });
   }, []);
 

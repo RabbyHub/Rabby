@@ -154,6 +154,10 @@
           "count": "{{count}} 筆"
         },
         "whatsNew": "更新內容",
+        "firstNotice": {
+          "title": "新版本已就緒",
+          "gotIt": "好的"
+        },
         "importType": "由 {{type}} 匯入",
         "missingDataTooltip": "由於 {{text}} 目前存在網絡問題，地址結餘可能無法更新。",
         "chain": " 鏈、",
@@ -291,6 +295,15 @@
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "有可用更新",
+        "updateCard": {
+          "check": "查看",
+          "title": "有新版本可用",
+          "update": "更新",
+          "dismiss": "關閉更新提示",
+          "error": "更新擴充功能失敗",
+          "perps": "優化了永續合約交易體驗。",
+          "screenshots": "右鍵截圖，輕鬆提交問題回報。"
+        },
         "updateVersion": {
           "content": "檢測到 Rabby Wallet 更新版本\n點擊查看如何手動更新",
           "okText": "查看教學",
@@ -3447,6 +3460,27 @@
         "oneWeek": "1週",
         "oneDay": "1日線"
       },
+      "PerpsCard": {
+        "portfolioValue": "帳戶總價值",
+        "available": "可用",
+        "unifiedAccount": "統一帳戶",
+        "unifiedAccountDesc": "同一種抵押資產在帳戶中只有一份餘額，由現貨和使用該資產作為抵押品的全倉永續合約共享。",
+        "manualAccount": "標準帳戶",
+        "manualAccountDesc": "您需要分別管理現貨和各永續 DEX 的餘額；每個 DEX 也有獨立的全倉保證金。",
+        "portfolioMarginAccount": "組合保證金帳戶",
+        "portfolioMarginAccountDesc": "您的帳戶將符合條件的現貨資產與永續倉位合併為一個投資組合，以提升資金效率。",
+        "breakdownPerps": "永續合約",
+        "breakdownSpot": "現貨",
+        "breakdownOtherAssets": "其他資產",
+        "breakdownNetOtherAssets": "其他資產淨值",
+        "breakdownStaking": "質押",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "全部"
+        }
+      },
       "newUserProcess": {
         "thirdDescription": "當你預期價格會下跌時，你會開倉做空。如果價格下跌，你便會獲利。如果價格上升，你則會虧損。",
         "next": "下一步",
@@ -4341,10 +4375,10 @@
         "amountToAdd": "需追加的金額"
       },
       "PerpsClosePositionPopup": {
-        "title": "平倉",
+        "title": "平倉 {{coin}}",
         "amount": "數量",
-        "receive": "接收",
-        "closedPnl": "已實現盈虧",
+        "receive": "預計收到",
+        "closedPnl": "預計平倉盈虧",
         "total": "總額",
         "fee": "費用",
         "minimumWarning": "最低平倉比例為 {{percent}}%",

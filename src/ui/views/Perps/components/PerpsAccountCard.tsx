@@ -2,23 +2,29 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
+import { Skeleton } from 'antd';
 import { Account } from '@/background/service/preference';
 import { formatUsdValue, useWallet } from '@/ui/utils';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { usePerpsAccount } from '../hooks/usePerpsAccount';
+import { usePerpsPortfolioLiveValue } from '../hooks/usePerpsPortfolioLiveValue';
 import {
-  ALL_PERPS_QUOTE_ASSETS,
-  PerpsQuoteAsset,
-  PERPS_LOW_BALANCE_THRESHOLD,
-  getSpotBalanceKey,
-} from '../constants';
-import { QUOTE_ASSET_ICON_MAP } from './quoteAssetIcons';
+  getLatestPortfolioValue,
+  compute24hChange,
+  isPortfolioAllZero,
+} from '../utils/perpsPortfolio';
+import type { PortfolioPeriodKey } from '../utils/perpsPortfolio';
+import { hasNonPerpsPortfolioAssets } from '../utils/accountPricing';
+import type { PerpsBreakdownMode } from '../utils/accountPricing';
+import { PerpsQuoteAsset } from '../constants';
+import { PerpsPortfolioChart } from './PerpsPortfolioChart';
+import { PerpsPortfolioBreakdownTips } from './PerpsPortfolioBreakdownTips';
+import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { ReactComponent as RcIconBalanceAdd } from '@/ui/assets/perps/IconBalanceAdd.svg';
 import { ReactComponent as RcIconBalanceMinus } from '@/ui/assets/perps/IconBalanceMinus.svg';
 import { ReactComponent as RcIconAddFunds } from '@/ui/assets/perps/IconAddFunds.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
-import { ReactComponent as RcIconArrowDownCC } from '@/ui/assets/perps/IconArrowDownCC.svg';
-import { ReactComponent as RcIconArrowDownDark } from '@/ui/assets/perps/IconArrowDownDark.svg';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconPerpsGuideLogo } from '@/ui/assets/perps/IconPerpsGuideLogo.svg';
 import { ReactComponent as RcIconPerpsGuideLogoDark } from '@/ui/assets/perps/IconPerpsGuideLogoDark.svg';
@@ -39,41 +45,98 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
   onDeposit,
   onWithdraw,
   onLearnMore,
+  // The chips row (and its Swap entry) was removed from this card (Task 9).
+  // Kept in the signature so home.tsx's existing call site doesn't need to
+  // change.
   onSwap,
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
+
+  const [isHovered, setIsHovered] = useState(false);
+  const [period, setPeriod] = useState<PortfolioPeriodKey>('day');
+
   const {
     accountValue,
     availableBalance,
+    isAvailableBalanceReady,
     isUnifiedAccount,
-    spotBalancesMap,
+    isPortfolioMargin,
   } = usePerpsAccount();
+  const address = currentPerpsAccount?.address?.toLowerCase();
+  const portfolioEntry = useRabbySelector((s) =>
+    address ? s.perps.portfolioMap[address] : undefined
+  );
+  const portfolioData = portfolioEntry?.data ?? null;
+  const liveValue = usePerpsPortfolioLiveValue();
 
-  const visibleStableBalances = useMemo(() => {
-    if (!isUnifiedAccount) return [];
-    return ALL_PERPS_QUOTE_ASSETS.map((coin) => {
-      const item = spotBalancesMap[getSpotBalanceKey(coin)];
-      return { coin, available: Number(item?.available || 0) };
-    })
-      .filter((b) => b.available >= PERPS_LOW_BALANCE_THRESHOLD)
-      .sort((a, b) => b.available - a.available);
-  }, [isUnifiedAccount, spotBalancesMap]);
+  const portfolioValue = useMemo(
+    () => (portfolioData ? getLatestPortfolioValue(portfolioData) : null),
+    [portfolioData]
+  );
+  const displayValue = liveValue ?? portfolioValue;
 
-  const [isBalanceExpanded, setIsBalanceExpanded] = useState(false);
-  const showChips =
-    isUnifiedAccount && visibleStableBalances.length > 0 && isBalanceExpanded;
-  const canExpand = isUnifiedAccount;
+  const change24h = useMemo(
+    () => (portfolioData ? compute24hChange(portfolioData) : null),
+    [portfolioData]
+  );
 
-  const hasNoBalance = useMemo(() => !Number(availableBalance || 0), [
-    availableBalance,
-  ]);
+  const isPortfolioEmpty = useMemo(
+    () => !!portfolioData && isPortfolioAllZero(portfolioData),
+    [portfolioData]
+  );
 
-  const isNewUser = useMemo(() => hasNoBalance && !Number(accountValue || 0), [
-    hasNoBalance,
-    accountValue,
-  ]);
+  // 'zero': no account, or an account whose history is all zeros.
+  // 'loading': logged in but no data yet — skeletons, never a fake $0.
+  // 'error': the fetch (with its retries) exhausted and there is still no
+  // cached data to fall back on — distinct from 'zero' so the headline
+  // doesn't lie about the balance being $0.
+  const portfolioFailed = portfolioEntry?.status === 'error';
+  const viewState: 'zero' | 'loading' | 'error' | 'data' = !address
+    ? 'zero'
+    : portfolioData == null
+    ? portfolioFailed
+      ? 'error'
+      : 'loading'
+    : isPortfolioEmpty
+    ? 'zero'
+    : 'data';
+
+  // Only a fully-loaded, non-empty portfolio can expand into the chart
+  // (matches spec's canExpandChart = !!portfolioData && !isPortfolioEmpty).
+  const expanded = isHovered && viewState === 'data';
+
+  // No period memory: every expand starts back at 1D.
+  useEffect(() => {
+    if (expanded) setPeriod('day');
+  }, [expanded]);
+
+  useEffect(() => {
+    if (!address) return;
+    dispatch.perps.fetchPerpsPortfolio({ address });
+    dispatch.perps.fetchStakingSummary(address);
+    const timer = setInterval(() => {
+      // popup unmounts when closed; this mainly guards a backgrounded tab.
+      if (document.visibilityState !== 'visible') return;
+      dispatch.perps.fetchPerpsPortfolio({ address, force: true });
+      dispatch.perps.fetchStakingSummary(address);
+    }, 60_000);
+    return () => clearInterval(timer);
+  }, [address, dispatch]);
+
+  // Gated on isAvailableBalanceReady so the deposit CTA doesn't flash before
+  // the slices Available depends on land, then flip back to the two-button
+  // state once a real (non-zero) balance arrives.
+  const hasNoBalance =
+    isAvailableBalanceReady && !Number(availableBalance || 0);
+
+  // A user who already holds spot/staked value that hasn't rolled into
+  // accountValue/displayValue yet must not see the new-user guide again.
+  const isNewUser = useMemo(
+    () => hasNoBalance && !Number(accountValue || 0) && !(displayValue ?? 0),
+    [hasNoBalance, accountValue, displayValue]
+  );
 
   const [newUserGuideDismissed, setNewUserGuideDismissed] = useState(true);
 
@@ -119,135 +182,241 @@ export const PerpsAccountCard: React.FC<PerpsAccountCardProps> = ({
 
   const { isDarkTheme } = useThemeMode();
 
-  const balanceDisplay = useMemo(() => {
-    const value = Number(availableBalance || 0);
-    if (!value) {
-      return <span className="text-[28px] leading-[33px]">$0</span>;
+  // loading / error render a skeleton or `--`, and the info icon + breakdown
+  // must agree with that — liveValue can be a real figure while the portfolio
+  // fetch is still failing, which would otherwise put a precise popover next
+  // to `--`. The zero state is the exception: HL's portfolio series lags a
+  // fresh deposit by up to a few minutes, so a first-time user would otherwise
+  // watch Available (WS) fill in while the headline sits at $0.00. Let the
+  // live value carry the headline there; the chart still treats the all-zero
+  // series as empty (no expand) until real history lands.
+  const liveHeadline = viewState === 'zero' ? liveValue ?? 0 : 0;
+  const headlineValue = viewState === 'data' ? displayValue ?? 0 : liveHeadline;
+
+  // No info icon in the empty/zero state (matches the Figma empty-state
+  // frame) or when there is nothing to break down — no spot or staking assets
+  // (mobile's hasNonPerpsAssets). isUserDataReady also guards the
+  // account-switch window where clearinghouseState still holds the previous
+  // account's numbers (see setCurrentPerpsAccount).
+  const isUserDataReady = useRabbySelector((s) => s.perps.isUserDataReady);
+  // A boolean that flips on balance changes, not on price ticks.
+  const hasNonPerpsAssets = useRabbySelector((s) =>
+    hasNonPerpsPortfolioAssets(s.perps)
+  );
+  const breakdownMode: PerpsBreakdownMode = isPortfolioMargin
+    ? 'portfolioMargin'
+    : isUnifiedAccount
+    ? 'unified'
+    : 'manual';
+  const showBreakdown =
+    hasNonPerpsAssets && headlineValue > 0 && isUserDataReady;
+
+  const valueDisplay = useMemo(() => {
+    if (viewState === 'loading') {
+      return (
+        <Skeleton.Input active className="w-[132px] h-[28px] rounded-[4px]" />
+      );
     }
-    const formatted = formatUsdValue(value, BigNumber.ROUND_DOWN);
-    const dotIndex = formatted.indexOf('.');
-    if (dotIndex === -1) {
-      return <span className="text-[28px] leading-[33px]">{formatted}</span>;
-    }
-    return (
-      <>
-        <span className="text-[28px] leading-[33px]">
-          {formatted.slice(0, dotIndex)}
-        </span>
-        <span className="text-[20px] font-semibold leading-[33px]">
-          {formatted.slice(dotIndex)}
-        </span>
-      </>
-    );
-  }, [availableBalance]);
+    if (viewState === 'error') return '--';
+    if (viewState === 'zero' && !(headlineValue > 0)) return '$0.00';
+    return formatUsdValue(headlineValue, BigNumber.ROUND_DOWN);
+  }, [viewState, headlineValue]);
+
+  const change24hText = useMemo(() => {
+    if (viewState === 'zero') return '+0%(+$0.00)';
+    if (!change24h) return '';
+    const sign = change24h.pnl < 0 ? '-' : '+';
+    const amount = `${sign}${formatUsdValue(
+      Math.abs(change24h.pnl),
+      BigNumber.ROUND_DOWN
+    )}`;
+    if (change24h.percent == null) return amount;
+    const percent = `${sign}${Math.abs(change24h.percent * 100).toFixed(2)}%`;
+    return `${percent}(${amount})`;
+  }, [viewState, change24h]);
+
+  // The change row reads real history, so it only makes sense once there is
+  // a committed value to compare against — hidden while loading/error. In
+  // the data state it also needs a non-empty change24hText, otherwise a
+  // fully-missing day series would render an orphan row with just "24H".
+  const showChangeRow =
+    viewState === 'zero' || (viewState === 'data' && !!change24hText);
+
+  // Zero and positive both read as a gain (matches mobile).
+  const isLoss = (change24h?.pnl ?? 0) < 0;
+
+  // Memoized so a quote-price tick (which re-renders the whole Perps state
+  // tree via usePerpsState's `state.perps` selector) doesn't force recharts
+  // to redraw every frame — only real inputs to the chart do.
+  const chart = useMemo(
+    () => (
+      <PerpsPortfolioChart
+        data={portfolioData}
+        expanded={expanded}
+        isEmpty={viewState !== 'data'}
+        period={expanded ? period : 'day'}
+        onPeriodChange={setPeriod}
+      />
+    ),
+    [portfolioData, expanded, viewState, period]
+  );
 
   return (
     <>
-      <div className="bg-r-neutral-card1 rounded-[8px] p-[16px]">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            <div className="font-bold text-r-neutral-title-1">
-              {balanceDisplay}
-            </div>
-            <div
-              className={clsx(
-                'flex items-center gap-2 text-[13px] leading-[16px] text-r-neutral-foot mt-[4px]',
-                canExpand && 'cursor-pointer'
+      <div
+        // No overflow-hidden here: the breakdown popover renders inside this
+        // node (TooltipWithMagnetArrow's getPopupContainer returns the
+        // trigger's parent) and must not be clipped. The bottom bar below
+        // carries its own rounded-b corner instead.
+        // 2px stroke per Figma: pure white in light; mobile's 8% white in
+        // dark, where a solid white ring would glare.
+        className={clsx(
+          'bg-r-neutral-card1 rounded-[8px]',
+          'border-2 border-solid border-white dark:border-[rgba(255,255,255,0.08)]'
+        )}
+      >
+        {/* Expanding is triggered only by hovering the small sparkline (see
+            below); collapsing happens on leaving this whole upper block, so
+            the expanded chart and the headline stay usable. The Available /
+            deposit bar below never takes part. */}
+        <div
+          className={clsx(
+            'flex flex-col',
+            expanded ? 'pt-16 px-16 pb-12 gap-[10px]' : 'p-16'
+          )}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div
+            className={clsx(
+              'flex',
+              expanded ? 'flex-col' : 'items-center justify-between'
+            )}
+          >
+            <div className="flex flex-col gap-8">
+              {/* 标题行。TooltipWithMagnetArrow 要求触发元素的父级 position: relative；
+                  Figma 的触发区是「文字 + info 图标」整体，hover 时整体变 r-blue-default，
+                  所以两者包在同一个 span 里作为触发元素，色类放在 span 上让 -cc 图标继承。 */}
+              <div className="flex items-center relative">
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle perps-portfolio-breakdown"
+                  // Popover flush with the label's left edge (Figma); the
+                  // magnet arrow still points at the trigger's centre.
+                  placement="bottomLeft"
+                  title={
+                    showBreakdown ? (
+                      <PerpsPortfolioBreakdownTips
+                        mode={breakdownMode}
+                        portfolioValue={headlineValue}
+                      />
+                    ) : undefined
+                  }
+                >
+                  <span
+                    className={clsx(
+                      'inline-flex items-center gap-4',
+                      'text-[14px] font-medium leading-[18px] text-r-neutral-foot',
+                      showBreakdown &&
+                        'cursor-pointer hover:text-r-blue-default'
+                    )}
+                  >
+                    {t('page.perps.PerpsCard.portfolioValue')}
+                    {showBreakdown && (
+                      <RcIconInfoCC className="w-[14px] h-[14px]" />
+                    )}
+                  </span>
+                </TooltipWithMagnetArrow>
+              </div>
+              {/* 金额 */}
+              <div className="text-[24px] font-bold leading-[28px] text-r-neutral-title-1">
+                {valueDisplay}
+              </div>
+              {/* 涨跌行 — hidden while loading/error: there's no committed
+                  value yet to compare against. */}
+              {showChangeRow && (
+                <div className="flex items-center gap-4 text-[12px] leading-[16px]">
+                  <span
+                    className={
+                      isLoss ? 'text-r-red-default' : 'text-r-green-default'
+                    }
+                  >
+                    {change24hText}
+                  </span>
+                  <span className="text-r-neutral-foot">24H</span>
+                </div>
               )}
-              onClick={() => {
-                if (canExpand) setIsBalanceExpanded((v) => !v);
-              }}
-            >
-              {t('page.perpsDetail.PerpsOpenPositionPopup.available')}
-              {canExpand &&
-                (isDarkTheme ? (
-                  <RcIconArrowDownDark
-                    className={clsx(
-                      'transition-transform',
-                      isBalanceExpanded && '-rotate-180'
-                    )}
-                  />
-                ) : (
-                  <RcIconArrowDownCC
-                    className={clsx(
-                      'text-r-neutral-foot transition-transform',
-                      isBalanceExpanded && '-rotate-180'
-                    )}
-                  />
-                ))}
             </div>
+            {!expanded &&
+              (viewState === 'loading' ? (
+                <Skeleton.Input
+                  active
+                  className="w-[140px] h-[60px] rounded-[4px]"
+                />
+              ) : (
+                <div onMouseEnter={() => setIsHovered(true)}>{chart}</div>
+              ))}
+          </div>
+          {/* The chart supplies its own `gap-[6px] w-full relative` wrapper in
+              expanded mode (Task 7 revision), so no extra container here. */}
+          {expanded && chart}
+        </div>
+        <div
+          className={clsx(
+            'bg-r-neutral-card3 px-16 py-8',
+            // Inner radius = card radius − 2px stroke.
+            'rounded-b-[6px]',
+            'flex items-center justify-between',
+            // Light mode splits the rows by card1 vs card3 alone (no line in
+            // the Figma). card1/card3 are the same color in dark mode, so a
+            // hairline stands in for the split there only.
+            'dark:border-t dark:border-solid dark:border-rabby-neutral-line'
+          )}
+        >
+          <div className="flex flex-col gap-2">
+            <span className="text-[14px] font-[450] leading-[18px] text-rb-neutral-secondary">
+              {t('page.perps.PerpsCard.available')}
+            </span>
+            {isAvailableBalanceReady ? (
+              <span className="text-[16px] font-bold leading-[20px] text-r-neutral-title-1">
+                {formatUsdValue(availableBalance, BigNumber.ROUND_DOWN)}
+              </span>
+            ) : (
+              // Never render a fake $0 before the slices Available depends on land.
+              <Skeleton.Input
+                active
+                className="w-[84px] h-[20px] rounded-[4px]"
+              />
+            )}
           </div>
           {hasNoBalance ? (
             <div
-              className={clsx(
-                'h-[40px] rounded-[8px] flex items-center justify-center gap-4 px-12',
-                'bg-r-blue-light1 hover:border-rabby-blue-default',
-                'text-r-blue-default text-[13px] font-medium',
-                'border-[1px] border-solid border-transparent cursor-pointer'
-              )}
+              className="h-[36px] rounded-[8px] bg-r-blue-light1 text-r-blue-default
+                        flex items-center justify-center gap-4 px-[16px] cursor-pointer
+                        text-[14px] font-medium"
               onClick={handleDeposit}
             >
-              <RcIconAddFunds className="w-[15px] h-[15px]" />
+              <RcIconAddFunds className="w-[14px] h-[14px]" />
               {t('page.perps.addFunds')}
             </div>
           ) : (
-            <div className="flex items-center gap-12">
+            // 16px frame holding the Figma 12.6px / 1.8 stroke glyph.
+            <div className="flex items-center gap-8">
               <div
-                className={clsx(
-                  'w-[46px] h-[40px] rounded-[6px] flex items-center justify-center',
-                  'bg-r-blue-light1 hover:border-rabby-blue-default',
-                  'text-r-blue-default',
-                  'border-[1px] border-solid border-transparent cursor-pointer'
-                )}
+                className="w-[36px] h-[36px] rounded-[8px] bg-r-blue-light1 text-r-blue-default
+                          flex items-center justify-center cursor-pointer"
                 onClick={handleDeposit}
               >
-                <RcIconBalanceAdd className="w-[20px] h-[20px]" />
+                <RcIconBalanceAdd className="w-[16px] h-[16px]" />
               </div>
               <div
-                className={clsx(
-                  'w-[46px] h-[40px] rounded-[6px] flex items-center justify-center',
-                  'bg-r-blue-light1 hover:border-rabby-blue-default',
-                  'text-r-blue-default',
-                  'border-[1px] border-solid border-transparent cursor-pointer'
-                )}
+                className="w-[36px] h-[36px] rounded-[8px] bg-r-blue-light1 text-r-blue-default
+                          flex items-center justify-center cursor-pointer"
                 onClick={handleWithdraw}
               >
-                <RcIconBalanceMinus className="w-[20px] h-[20px]" />
+                <RcIconBalanceMinus className="w-[16px] h-[16px]" />
               </div>
             </div>
           )}
         </div>
-        {showChips && (
-          <div
-            className={clsx(
-              'mt-12 flex items-center justify-between gap-8',
-              'bg-r-neutral-bg2 rounded-[8px] px-12 py-8 min-h-[36px]'
-            )}
-          >
-            <div className="flex flex-wrap items-center gap-x-12 gap-y-6 min-w-0 flex-1">
-              {visibleStableBalances.map((b) => {
-                const Icon = QUOTE_ASSET_ICON_MAP[b.coin];
-                return (
-                  <div
-                    key={b.coin}
-                    className="inline-flex items-center gap-4 text-12 font-medium text-r-neutral-title-1"
-                  >
-                    <Icon className="w-20 h-20" />
-                    <span>
-                      {formatUsdValue(b.available, BigNumber.ROUND_DOWN)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-            <div
-              className="text-12 font-medium text-r-blue-default cursor-pointer shrink-0 flex items-center gap-2 leading-[20px]"
-              onClick={() => onSwap?.()}
-            >
-              {t('page.perps.PerpsSpotSwap.toSwapEntry')}
-            </div>
-          </div>
-        )}
       </div>
       {showNewUserGuide && (
         <div

@@ -1183,6 +1183,10 @@
           "count": "{{count}} in der"
         },
         "whatsNew": "Was gibt's Neues",
+        "firstNotice": {
+          "title": "Neue Version bereit",
+          "gotIt": "OK"
+        },
         "importType": "Importiert über {{type}}",
         "chainEnd": " Netzwerk",
         "chain": " Netzwerk, ",
@@ -1314,6 +1318,15 @@
         "disableWhitelistTip": "Sobald die Whitelist deaktiviert ist, können Sie Vermögenswerte an jede Adresse senden",
         "warning": "Warnung",
         "clearWatchAddressContent": "Möchten Sie wirklich alle Nur-Lese-Adressen löschen?",
+        "updateCard": {
+          "check": "Ansehen",
+          "title": "Neue Version verfügbar",
+          "update": "Aktualisieren",
+          "dismiss": "Update-Hinweis schließen",
+          "error": "Erweiterung konnte nicht aktualisiert werden",
+          "perps": "Das Perps-Trading-Erlebnis wurde verbessert.",
+          "screenshots": "Per Rechtsklick Screenshots erstellen und Fehler einfach melden."
+        },
         "updateVersion": {
           "content": "Ein neues Update für Rabby Wallet ist verfügbar. Klicken Sie hier, um zu erfahren, wie Sie manuell aktualisieren können.",
           "okText": "Tutorial ansehen",
@@ -3400,6 +3413,27 @@
         "oneMonth": "1M",
         "oneHour": "1H"
       },
+      "PerpsCard": {
+        "portfolioValue": "Portfoliowert",
+        "available": "Verfügbar",
+        "unifiedAccount": "Einheitliches Konto",
+        "unifiedAccountDesc": "Ihr Konto verwendet für jeden als Sicherheit hinterlegten Vermögenswert ein einziges Guthaben, das Spot und Cross-Margin-Perps mit derselben Sicherheit gemeinsam nutzen.",
+        "manualAccount": "Konto mit separaten Guthaben",
+        "manualAccountDesc": "Sie verwalten separate Guthaben für Spot und jede Perps-DEX, mit unabhängiger Cross-Margin pro DEX.",
+        "portfolioMarginAccount": "Portfolio-Margin",
+        "portfolioMarginAccountDesc": "Ihr Konto fasst zulässige Spot-Assets und Perps-Positionen für eine höhere Kapitaleffizienz in einem Portfolio zusammen.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Sonstige Assets",
+        "breakdownNetOtherAssets": "Sonstige Assets (netto)",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Alle"
+        }
+      },
       "newUserProcess": {
         "gotIt": "Verstanden.",
         "next": "Weiter",
@@ -4296,12 +4330,12 @@
       "PerpsClosePositionPopup": {
         "confirm": "Bestätigen",
         "fee": "Gebühr",
-        "receive": "Empfangen",
-        "title": "Position schließen",
+        "receive": "Geschätzter Erhalt",
+        "title": "{{coin}}-Position schließen",
         "total": "Gesamt",
         "amount": "Betrag",
         "minimumWarning": "Der Mindestbetrag zum Schließen beträgt {{percent}} %.",
-        "closedPnl": "Realisiertes PnL"
+        "closedPnl": "Gesch. PnL bei Schließung"
       },
       "PerpsAutoCloseModal": {
         "currentPrice": "Aktueller Preis: ",

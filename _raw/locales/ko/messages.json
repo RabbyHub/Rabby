@@ -1276,6 +1276,10 @@
         "pendingCountPlural": "{{countStr}} 대기 중",
         "metamaskIsInUseAndRabbyIsBanned": "MetaMask가 사용 중이며 Rabby는 금지되었습니다.",
         "whatsNew": "새로운 내용",
+        "firstNotice": {
+          "title": "새 버전 준비 완료",
+          "gotIt": "확인"
+        },
         "chainEnd": " 체인",
         "chain": " 체인, ",
         "missingDataTooltip": "현재 {{text}}의 네트워크 문제로 인해 잔액이 업데이트되지 않을 수 있습니다.",
@@ -1382,6 +1386,15 @@
       "settings": {
         "lock": {
           "never": "절대"
+        },
+        "updateCard": {
+          "check": "확인",
+          "title": "새 버전을 사용할 수 있습니다",
+          "update": "업데이트",
+          "dismiss": "업데이트 알림 닫기",
+          "error": "확장 프로그램 업데이트 실패",
+          "perps": "무기한 선물 거래 경험을 개선했습니다.",
+          "screenshots": "마우스 오른쪽 버튼으로 스크린샷을 찍어 버그를 간편하게 신고하세요."
         },
         "updateVersion": {
           "okText": "튜토리얼 보기",
@@ -3397,6 +3410,27 @@
         "oneMonth": "1개월",
         "ytd": "올해 누적"
       },
+      "PerpsCard": {
+        "portfolioValue": "포트폴리오 가치",
+        "available": "사용 가능",
+        "unifiedAccount": "통합 계정",
+        "unifiedAccountDesc": "계정은 담보 자산별로 단일 잔액을 사용하며, 동일한 담보를 사용하는 현물과 교차 마진 무기한 선물이 이를 공유합니다.",
+        "manualAccount": "일반 계정",
+        "manualAccountDesc": "현물과 각 무기한 선물 DEX의 잔액을 별도로 관리하며, 교차 마진은 DEX별로 독립적으로 운영됩니다.",
+        "portfolioMarginAccount": "포트폴리오 마진",
+        "portfolioMarginAccountDesc": "계정은 적격 현물 자산과 무기한 선물 포지션을 하나의 포트폴리오로 통합하여 자본 효율성을 높입니다.",
+        "breakdownPerps": "무기한 선물",
+        "breakdownSpot": "현물",
+        "breakdownOtherAssets": "기타 자산",
+        "breakdownNetOtherAssets": "기타 자산 순액",
+        "breakdownStaking": "스테이킹",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "전체"
+        }
+      },
       "newUserProcess": {
         "fourthTitle": "레버리지 조정",
         "gotIt": "알겠습니다",
@@ -4291,14 +4325,14 @@
         "perpsBalance": "Perps 잔액"
       },
       "PerpsClosePositionPopup": {
-        "title": "포지션 청산",
+        "title": "{{coin}} 포지션 청산",
         "amount": "수량",
         "total": "합계",
         "confirm": "확인",
         "fee": "수수료",
         "minimumWarning": "최소 청산 금액은 {{percent}}%",
-        "receive": "받기",
-        "closedPnl": "실현 손익"
+        "receive": "예상 수령액",
+        "closedPnl": "예상 실현 PNL"
       },
       "PerpsAutoCloseModal": {
         "stopLoss": "손절매",

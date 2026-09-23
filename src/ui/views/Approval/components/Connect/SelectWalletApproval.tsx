@@ -15,7 +15,7 @@ export const ConnectApproval: React.FC<{
   const history = useHistory();
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
-  const [getApproval, , rejectApproval] = useApproval();
+  const [getApproval] = useApproval(null);
   type IApproval = Exclude<
     IExtractFromPromise<ReturnType<typeof getApproval>>,
     void
@@ -44,7 +44,7 @@ export const ConnectApproval: React.FC<{
     <div className={clsx('approval', className)}>
       {approval && (
         <ApprovalUtilsProvider>
-          <Connect params={params} />
+          <Connect params={params} approvalId={approval.id} />
         </ApprovalUtilsProvider>
       )}
     </div>

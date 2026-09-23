@@ -28,6 +28,7 @@ import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   getTimeSpan,
   hex2Text,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -72,14 +73,18 @@ interface SignTextProps {
 const SignText = ({
   params,
   account,
+  approvalId,
 }: {
   params: SignTextProps;
   account: Account;
+  approvalId?: string;
 }) => {
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'SignText')
+  );
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
@@ -560,6 +565,8 @@ const SignText = ({
         {
           brandName: account.brandName,
           version: 'V4',
+          sourceApprovalId: approvalId,
+          approvalComponent: WaitingSignMessageComponent[account.type],
         }
       );
 
@@ -569,6 +576,7 @@ const SignText = ({
         address: account.address,
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
+        sourceApprovalId: approvalId,
         account: account,
         $account: account,
         safeMessage: {

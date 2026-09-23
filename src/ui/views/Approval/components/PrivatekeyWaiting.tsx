@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   isSameAddress,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -58,9 +59,11 @@ interface ApprovalParams {
 export const PrivatekeyWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const wallet = useWallet();
   const {
@@ -70,7 +73,9 @@ export const PrivatekeyWaiting = ({
     setHeight,
     setPopupProps,
   } = useCommonPopupView();
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'PrivatekeyWaiting')
+  );
   const { t } = useTranslation();
   const { type } = params;
   const [errorMessage, setErrorMessage] = React.useState('');
@@ -269,13 +274,11 @@ export const PrivatekeyWaiting = ({
   const { stay = false } = params || {};
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      // Settle before closing: closePopup() unmounts this component, which
+      // would flip resolveApproval's mounted-check and reject a settlement still in progress.
+      resolveApproval(signFinishedData.data, stay, false).then(() => {
+        closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

@@ -1183,6 +1183,10 @@
           "count": "{{count}} na"
         },
         "whatsNew": "O que há de novo",
+        "firstNotice": {
+          "title": "Nova versão pronta",
+          "gotIt": "OK"
+        },
         "importType": "Importado por {{type}}",
         "chainEnd": "rede",
         "chain": "cadeia,",
@@ -1314,6 +1318,15 @@
         "disableWhitelistTip": "Você pode enviar ativos para qualquer endereço uma vez desativada",
         "warning": "Aviso",
         "clearWatchAddressContent": "Você tem certeza de que deseja excluir todos os endereços do modo de observação?",
+        "updateCard": {
+          "check": "Ver",
+          "title": "Nova versão disponível",
+          "update": "Atualizar",
+          "dismiss": "Fechar aviso de atualização",
+          "error": "Não foi possível atualizar a extensão",
+          "perps": "Melhoramos a experiência de negociação de perpétuos.",
+          "screenshots": "Faça capturas com o botão direito para relatar erros facilmente."
+        },
         "updateVersion": {
           "content": "Uma nova atualização para a Rabby Wallet está disponível. Clique para verificar como atualizar manualmente.",
           "okText": "Ver Tutorial",
@@ -3402,6 +3415,27 @@
         "all": "TODOS",
         "oneWeek": "1 semana"
       },
+      "PerpsCard": {
+        "portfolioValue": "Valor do portfólio",
+        "available": "Disponível",
+        "unifiedAccount": "Conta unificada",
+        "unifiedAccountDesc": "Sua conta usa um único saldo para cada ativo de colateral, compartilhado entre o Spot e os Perps de margem cruzada que usam o mesmo colateral.",
+        "manualAccount": "Conta com saldos separados",
+        "manualAccountDesc": "Você gerencia saldos separados entre o Spot e cada DEX de Perps, com margem cruzada independente por DEX.",
+        "portfolioMarginAccount": "Margem de portfólio",
+        "portfolioMarginAccountDesc": "Sua conta combina ativos Spot elegíveis e posições de Perps em um único portfólio para maior eficiência de capital.",
+        "breakdownPerps": "Perps",
+        "breakdownSpot": "Spot",
+        "breakdownOtherAssets": "Outros ativos",
+        "breakdownNetOtherAssets": "Outros ativos líquidos",
+        "breakdownStaking": "Staking",
+        "period": {
+          "day": "1D",
+          "week": "1W",
+          "month": "1M",
+          "all": "Tudo"
+        }
+      },
       "newUserProcess": {
         "next": "Próximo",
         "gotIt": "Entendi",
@@ -4300,10 +4334,10 @@
         "fee": "Taxa",
         "confirm": "Confirmar",
         "total": "Total",
-        "receive": "Receber",
+        "receive": "Recebimento estimado",
         "minimumWarning": "O valor mínimo de fechamento é {{percent}}%",
-        "title": "Encerrar posição",
-        "closedPnl": "P/L realizado"
+        "title": "Encerrar posição de {{coin}}",
+        "closedPnl": "PnL estimado"
       },
       "PerpsAutoCloseModal": {
         "confirm": "Confirmar",

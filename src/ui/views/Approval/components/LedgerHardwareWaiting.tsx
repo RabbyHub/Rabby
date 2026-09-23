@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import LedgerSVG from 'ui/assets/walletlogo/ledger.svg';
 import {
   openInternalPageInTab,
+  bindApproval,
   useApproval,
   useCommonPopupView,
   useWallet,
@@ -50,9 +51,11 @@ interface ApprovalParams {
 const LedgerHardwareWaiting = ({
   params,
   account: $account,
+  approvalId,
 }: {
   params: ApprovalParams;
   account: Account;
+  approvalId?: string;
 }) => {
   const {
     height,
@@ -72,7 +75,9 @@ const LedgerHardwareWaiting = ({
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
-  const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'LedgerHardwareWaiting')
+  );
   const chain = findChain({
     id: params.chainId || 1,
   });
@@ -274,13 +279,11 @@ const LedgerHardwareWaiting = ({
 
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
-      closePopup();
-      resolveApproval(
-        signFinishedData.data,
-        stay,
-        false,
-        signFinishedData.approvalId
-      );
+      // Settle before closing: closePopup() unmounts this component, which
+      // would flip resolveApproval's mounted-check and reject a settlement still in progress.
+      resolveApproval(signFinishedData.data, stay, false).then(() => {
+        closePopup();
+      });
     }
   }, [signFinishedData, isClickDone]);
 

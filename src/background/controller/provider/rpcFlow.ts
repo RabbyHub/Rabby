@@ -109,6 +109,9 @@ const flowContext = flow
         return next();
       }
       if (!isUnlock) {
+        if (ctx.request.onApproval) {
+          throw ethErrors.provider.userRejectedRequest('Wallet is locked.');
+        }
         if (lockedOrigins.has(origin)) {
           throw ethErrors.rpc.resourceNotFound(
             'Already processing unlock. Please wait.'
@@ -319,6 +322,16 @@ const flowContext = flow
         signTxPreparationId = uuidv4();
       }
       try {
+        // Inline confirmation belongs to the initiating view. Do not queue it
+        // behind another view or carry its consent across an unlock.
+        if (
+          ctx.request.onApproval &&
+          (notificationService.getApproval() || !keyringService.isUnlocked())
+        ) {
+          throw ethErrors.provider.userRejectedRequest(
+            'please request after current approval resolve'
+          );
+        }
         const approvalData = {
           approvalComponent: approvalType,
           params: {
@@ -334,7 +347,8 @@ const flowContext = flow
           approvalData,
           { height: windowHeight },
           {
-            onCurrent: () => {
+            onCurrent: (approval) => {
+              ctx.request.onApproval?.(approval);
               if (
                 !signTxPreparationId ||
                 !signTx ||

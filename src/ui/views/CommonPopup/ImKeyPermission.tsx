@@ -1,4 +1,5 @@
 import {
+  bindApproval,
   openInternalPageInTab,
   useApproval,
   useCommonPopupView,
@@ -8,10 +9,14 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useImKeyDeviceConnected } from '@/ui/utils/imKey';
 
 export const ImKeyPermission: React.FC = () => {
-  const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  const [_, __, rejectApproval] = useApproval();
+  const { setTitle, setHeight, closePopup, data } = useCommonPopupView();
   const hasConnectedImKey = useImKeyDeviceConnected();
   const { t } = useTranslation();
+  // See Ledger.tsx: `data` only carries {id, component} when opened from an
+  // in-flight resolveApproval call; bindApproval safely no-ops otherwise.
+  const [, , rejectApproval] = useApproval(
+    bindApproval(data?.id, data?.component)
+  );
 
   React.useEffect(() => {
     setTitle(t('page.dashboard.hd.howToConnectImKey'));

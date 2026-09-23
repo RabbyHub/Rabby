@@ -10,7 +10,7 @@ const SortHat = () => {
   const wallet = useWallet();
   const [to, setTo] = useState('');
   // eslint-disable-next-line prefer-const
-  let [getApproval] = useApproval();
+  let [getApproval] = useApproval(null);
   const UIType = getUiType();
 
   const loadView = async () => {

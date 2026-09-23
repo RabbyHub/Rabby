@@ -72,6 +72,9 @@ const AddAddressOptions: React.FC<{
   const { t } = useTranslation();
   const { connectRouter } = useAddAddressWalletOptions({ onNavigate });
   const { seedPhraseList } = UseSeedPhrase();
+  // Set when entered from a pending ImportAddress approval whose requested type
+  // didn't match a known brand — forward it so a manual pick can still complete it.
+  const approvalId = (location.state as any)?.approvalId;
 
   const { createNewSeedPhrase } = useCreateAddressActions({
     onNavigate,
@@ -85,7 +88,7 @@ const AddAddressOptions: React.FC<{
       return;
     }
 
-    const { type, address, chainId } = location.state as any;
+    const { type, address, chainId, approvalId } = location.state as any;
     const brandContentKey = Object.keys(WALLET_BRAND_CONTENT).find((key) => {
       const item = WALLET_BRAND_CONTENT[key] as IWalletBrandContent;
       return item.name === type;
@@ -95,6 +98,7 @@ const AddAddressOptions: React.FC<{
       connectRouter(WALLET_BRAND_CONTENT[brandContentKey], {
         address,
         chainId,
+        approvalId,
       });
       return;
     }
@@ -170,9 +174,12 @@ const AddAddressOptions: React.FC<{
         icon: <RcAddAddressOptionHardwareIcon />,
         onClick: () => {
           if (UI_TYPE.isDesktop) {
-            onNavigate?.('hardware-wallets');
+            onNavigate?.('hardware-wallets', { approvalId });
           } else {
-            history.push('/add-address/hardware-wallets');
+            history.push({
+              pathname: '/add-address/hardware-wallets',
+              state: { approvalId },
+            });
           }
         },
       },
@@ -189,7 +196,14 @@ const AddAddressOptions: React.FC<{
         },
       },
     ],
-    [history, onNavigate, t, createNewSeedPhrase, seedPhraseList?.length]
+    [
+      history,
+      onNavigate,
+      t,
+      createNewSeedPhrase,
+      seedPhraseList?.length,
+      approvalId,
+    ]
   );
 
   if (preventMount) {
@@ -211,9 +225,12 @@ const AddAddressOptions: React.FC<{
         className="add-address-options__institutional-entry"
         onClick={() => {
           if (UI_TYPE.isDesktop) {
-            onNavigate?.('institutional-wallets');
+            onNavigate?.('institutional-wallets', { approvalId });
           } else {
-            history.push('/add-address/institutional-wallets');
+            history.push({
+              pathname: '/add-address/institutional-wallets',
+              state: { approvalId },
+            });
           }
         }}
       >

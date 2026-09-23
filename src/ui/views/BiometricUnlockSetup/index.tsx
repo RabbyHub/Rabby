@@ -20,7 +20,7 @@ const Container = styled.div`
   position: relative;
   box-sizing: border-box;
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   flex-direction: column;
 `;
 
@@ -84,8 +84,6 @@ const ErrorText = styled.div`
 
 const Footer = styled.footer`
   width: 100%;
-  position: absolute;
-  bottom: 0;
   flex-shrink: 0;
   padding: 18px 20px;
   border-top: 0.5px solid var(--r-neutral-line, #e0e5ec);
@@ -188,7 +186,10 @@ export const BiometricUnlockSetup = () => {
 
   return (
     <Container className="page-has-ant-input">
-      <BackgroundSVG className="absolute inset-0 z-[-1]" />
+      <BackgroundSVG
+        className="absolute inset-0 z-[-1] w-full h-full"
+        preserveAspectRatio="none"
+      />
       <Body>
         <BiometricsSVG className="w-[100]" />
 

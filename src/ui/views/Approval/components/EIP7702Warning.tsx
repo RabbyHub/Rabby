@@ -3,11 +3,13 @@ import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconWarning from 'ui/assets/warning.svg';
-import { useApproval } from 'ui/utils';
+import { bindApproval, useApproval } from 'ui/utils';
 import Browser from 'webextension-polyfill';
 
-export const EIP7702Warning = () => {
-  const [, , rejectApproval] = useApproval();
+export const EIP7702Warning = ({ approvalId }: { approvalId?: string }) => {
+  // Rendered as an alternate view of a pending SignTx approval (see SignTx.tsx) —
+  // it settles that same SignTx approval, not a distinct approval type.
+  const [, , rejectApproval] = useApproval(bindApproval(approvalId, 'SignTx'));
   const { t } = useTranslation();
 
   useEffect(() => {

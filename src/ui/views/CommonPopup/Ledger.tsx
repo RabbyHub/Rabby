@@ -1,4 +1,5 @@
 import {
+  bindApproval,
   openInternalPageInTab,
   useApproval,
   useCommonPopupView,
@@ -11,10 +12,13 @@ import { Trans, useTranslation } from 'react-i18next';
 export const Ledger: React.FC<{
   isModalContent?: boolean;
 }> = ({ isModalContent }) => {
-  const { setTitle, setHeight, closePopup } = useCommonPopupView();
-  const [_, __, rejectApproval] = useApproval();
+  const { setTitle, setHeight, closePopup, data } = useCommonPopupView();
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
+  // `data` only carries {id, component} when opened from an in-flight resolveApproval call (see useDeviceConnect.ts).
+  const [, , rejectApproval] = useApproval(
+    bindApproval(data?.id, data?.component)
+  );
 
   React.useEffect(() => {
     if (!isModalContent) {

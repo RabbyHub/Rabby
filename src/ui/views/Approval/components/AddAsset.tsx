@@ -34,6 +34,7 @@ import {
   isSameAddress,
   openInTab,
   splitNumberByStep,
+  bindApproval,
   useApproval,
   useWallet,
 } from 'ui/utils';
@@ -60,6 +61,7 @@ interface AddAssetProps {
     };
   };
   account: Account;
+  approvalId?: string;
 }
 
 const AddAssetWrapper = styled.div`
@@ -192,8 +194,10 @@ interface TokenHistoryItem extends TxHistoryItem {
   tokenDict: TxHistoryResult['token_dict'];
 }
 
-const AddAsset = ({ params, account }: AddAssetProps) => {
-  const [, resolveApproval, rejectApproval] = useApproval();
+const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
+  const [, resolveApproval, rejectApproval] = useApproval(
+    bindApproval(approvalId, 'AddAsset')
+  );
   const wallet = useWallet();
   const { t } = useTranslation();
   const [tokens, setTokens] = useState<TokenItem[]>([]);

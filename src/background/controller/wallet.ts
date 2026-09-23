@@ -48,6 +48,7 @@ import {
   feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
+import extensionUpdateService from 'background/service/extensionUpdate';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -537,9 +538,11 @@ export class WalletController extends BaseController {
       isBuild?: boolean;
       account?: Account;
       session?: typeof INTERNAL_REQUEST_SESSION;
+      approvalRequestId?: string;
     }
   ) => {
-    const { isBuild = false, account, session } = options || {};
+    const { isBuild = false, account, session, approvalRequestId } =
+      options || {};
     if (isBuild) {
       return Promise.resolve<T>(data as T);
     }
@@ -547,6 +550,13 @@ export class WalletController extends BaseController {
       data,
       session: session || INTERNAL_REQUEST_SESSION,
       account,
+      onApproval: approvalRequestId
+        ? (approval) =>
+            this.emitEvent(EVENTS.APPROVAL_CREATED, {
+              requestId: approvalRequestId,
+              approval,
+            })
+        : undefined,
     });
   };
 
@@ -555,22 +565,8 @@ export class WalletController extends BaseController {
   };
 
   getApproval = notificationService.getApproval;
-  resolveApproval = notificationService.resolveApproval;
-  rejectApproval = (
-    err?: string,
-    stay = false,
-    isInternal = false,
-    approvalId?: string,
-    approvalComponent?: Parameters<typeof notificationService.rejectApproval>[4]
-  ) => {
-    return notificationService.rejectApproval(
-      err,
-      stay,
-      isInternal,
-      approvalId,
-      approvalComponent
-    );
-  };
+  resolveApprovalFor = notificationService.resolveApprovalFor;
+  rejectApprovalFor = notificationService.rejectApprovalFor;
 
   rejectAllApprovals = () => {
     notificationService.rejectAllApprovals();
@@ -2703,6 +2699,8 @@ export class WalletController extends BaseController {
         return contactBookService.getContactsByMap() as PersistedStoreMap[Key];
       case 'currency':
         return currencyService.getStore() as PersistedStoreMap[Key];
+      case 'pendingExtensionUpdate':
+        return extensionUpdateService.store as PersistedStoreMap[Key];
       case 'openapi':
         return getOpenapiStore() as PersistedStoreMap[Key];
       case 'rpc':
@@ -2755,6 +2753,11 @@ export class WalletController extends BaseController {
         return;
       case 'currency':
         currencyService.patchStore(patch as PersistedStorePatch<'currency'>);
+        return;
+      case 'pendingExtensionUpdate':
+        extensionUpdateService.patchStore(
+          patch as PersistedStorePatch<'pendingExtensionUpdate'>
+        );
         return;
       case 'openapi':
         return patchOpenapiStore(patch as PersistedStorePatch<'openapi'>);
@@ -5617,7 +5620,9 @@ export class WalletController extends BaseController {
     return preferenceService.updateLastTimeGasSelection(chainId, gas);
   };
   getIsFirstOpen = () => {
-    return preferenceService.getIsFirstOpen();
+    return extensionUpdateService.shouldShowFirstNotice(
+      preferenceService.getIsFirstOpen()
+    );
   };
   getIsNewUser = () => {
     return preferenceService.getIsNewUser();
@@ -7103,6 +7108,10 @@ export class WalletController extends BaseController {
 
   setReportGasLevel = miscService.setCurrentGasLevel;
   getReportGasLevel = miscService.getCurrentGasLevel;
+
+  getPendingExtensionVersion = extensionUpdateService.getPendingVersion;
+  requestExtensionUpdateCheck = extensionUpdateService.requestUpdateCheck;
+  reloadExtensionForUpdate = extensionUpdateService.reloadForUpdate;
 
   getScreenshotFeedbacks = feedbackService.getScreenshotFeedbacks;
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
