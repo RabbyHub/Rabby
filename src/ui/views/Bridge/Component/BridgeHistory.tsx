@@ -28,6 +28,7 @@ import {
   BridgeHistoryStatus,
   BridgeHistoryTokenSymbol,
 } from './BridgeHistoryStatus';
+import { findLocalBridgeTx } from '../utils/historyRefresh';
 
 const isTab = getUiType().isTab;
 
@@ -446,11 +447,7 @@ const HistoryList = () => {
             ref={txList?.list.length - 1 === idx ? ref : undefined}
             key={`${swap.detail_url}-${idx}`}
             data={swap}
-            local={locals.find(
-              (item) =>
-                item.hash === swap.from_tx?.tx_id ||
-                item.acceleratedHash === swap.from_tx?.tx_id
-            )}
+            local={findLocalBridgeTx(locals, swap.from_tx?.tx_id)}
           />
         ))}
       {((loading && !txList) || loadingMore) && (
