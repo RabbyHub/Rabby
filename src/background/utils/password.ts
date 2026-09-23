@@ -11,6 +11,10 @@ import Browser from 'webextension-polyfill';
 
 export type PersistType = 'perps' | 'keyring';
 
+// Lock invalidates in-flight crypto and waits for session writes before removal.
+let sessionKeyGeneration = 0;
+const pendingSessionWrites = new Set<Promise<void>>();
+
 /**
  * Get session storage keys for a persist type
  */
@@ -36,17 +40,30 @@ const getSessionKeys = async (persistType: PersistType = 'keyring') => {
 const setSessionKeys = async (
   exportedKeyString: string,
   salt: string,
-  persistType: PersistType = 'keyring'
+  persistType: PersistType,
+  generation: number
 ) => {
-  if (persistType === 'perps') {
-    await Browser.storage.session.set({
-      perpsVault: {
-        exportedKey: exportedKeyString,
-        salt,
-      },
-    });
-  } else {
-    await Browser.storage.session.set({ exportedKey: exportedKeyString, salt });
+  if (generation !== sessionKeyGeneration) {
+    throw new Error('Wallet is locked');
+  }
+  const write = Browser.storage.session.set(
+    persistType === 'perps'
+      ? {
+          perpsVault: {
+            exportedKey: exportedKeyString,
+            salt,
+          },
+        }
+      : { exportedKey: exportedKeyString, salt }
+  );
+  pendingSessionWrites.add(write);
+  try {
+    await write;
+    if (generation !== sessionKeyGeneration) {
+      throw new Error('Wallet is locked');
+    }
+  } finally {
+    pendingSessionWrites.delete(write);
   }
 };
 
@@ -68,6 +85,7 @@ export const passwordEncrypt = async ({
   persisted?: boolean;
   persistType?: PersistType;
 }) => {
+  const generation = sessionKeyGeneration;
   if (!isNil(password)) {
     const { vault, exportedKeyString } = await encryptWithDetail(
       password,
@@ -78,7 +96,7 @@ export const passwordEncrypt = async ({
     >;
 
     if (isManifestV3 && persisted) {
-      await setSessionKeys(exportedKeyString, salt, persistType);
+      await setSessionKeys(exportedKeyString, salt, persistType, generation);
     }
 
     return vault;
@@ -115,6 +133,7 @@ export const passwordDecrypt = async ({
   persisted?: boolean;
   persistType?: PersistType;
 }) => {
+  const generation = sessionKeyGeneration;
   if (!isNil(password)) {
     const { vault, exportedKeyString, salt } = await decryptWithDetail(
       password,
@@ -122,7 +141,7 @@ export const passwordDecrypt = async ({
     );
 
     if (isManifestV3 && persisted) {
-      await setSessionKeys(exportedKeyString, salt, persistType);
+      await setSessionKeys(exportedKeyString, salt, persistType, generation);
     }
 
     return vault as any;
@@ -145,9 +164,12 @@ export const passwordDecrypt = async ({
 };
 
 export const passwordClearKey = async (persistType?: PersistType) => {
+  sessionKeyGeneration++;
   if (!isManifestV3) {
     return;
   }
+
+  await Promise.allSettled([...pendingSessionWrites]);
 
   if (persistType) {
     // Clear specific persist type keys

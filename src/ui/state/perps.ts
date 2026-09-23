@@ -28,7 +28,7 @@ import {
 } from '@rabby-wallet/hyperliquid-sdk';
 import { Account } from '@/background/service/preference';
 import { wallet } from '@/ui/wallet';
-import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { destroyPerpsSDK, getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { formatMarkData, getPxDecimals } from '../views/Perps/utils';
 import {
   loadDefaultTopAsset,
@@ -2111,6 +2111,7 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
   logout() {
     dispatch.perps.stopPolling(undefined);
     dispatch.perps.unsubscribeAll(undefined);
+    destroyPerpsSDK();
     dispatch.perps.resetState();
   },
 
@@ -2118,6 +2119,8 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     eventBus.addEventListener(EVENTS.PERPS.LOG_OUT, () => {
       dispatch.perps.logout();
     });
+    eventBus.addEventListener(EVENTS.LOCK_WALLET, destroyPerpsSDK);
+    eventBus.addEventListener(EVENTS.WALLET_STATUS_CHANGED, destroyPerpsSDK);
   },
 
   // Desktop Pro effects

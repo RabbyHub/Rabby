@@ -505,12 +505,13 @@ export class KeyringService extends EventEmitter {
       }
     });
     this.password = null;
-    passwordClearKey();
+    const clearPasswordKey = passwordClearKey();
     this.memStore.updateState({ isUnlocked: false });
     // remove keyrings
     this.keyrings = [];
     await this._updateMemStoreKeyrings();
     this.emit('lock');
+    await clearPasswordKey;
     return this.fullUpdate();
   }
 
@@ -1625,7 +1626,7 @@ export class KeyringService extends EventEmitter {
 
     this.emit('resetPassword');
     // lock wallet
-    this.setLocked();
+    await this.setLocked();
   }
 
   async resetBooted() {
