@@ -86,7 +86,7 @@ type HintRule = {
 
 const hintRules: HintRule[] = [
   {
-    keywords: ['insufficient funds for gas'],
+    keywords: ['insufficient funds for gas', 'insufficient funds for l1fee'],
     messageKey: 'page.signTx.errorRetry.insufficient',
     retryType: false,
   },
