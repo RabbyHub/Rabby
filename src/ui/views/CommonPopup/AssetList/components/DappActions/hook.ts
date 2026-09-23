@@ -106,7 +106,10 @@ export const useDappAction = (
   }, [chain]);
 
   useEffect(() => {
-    if (!data || !chain) return;
+    if (!data || !chain) {
+      setValid(false);
+      return;
+    }
 
     let isMounted = true;
 
