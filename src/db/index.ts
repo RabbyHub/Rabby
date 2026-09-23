@@ -55,8 +55,11 @@ const DB_OPEN_TIMEOUT = 15_000;
 const DB_OPEN_SLOW = 5_000;
 
 let dbOpenBlocked = false;
+let dbOpenBlockedReported = false;
 let dbOpenIssueReported = false;
 
+// Guards the outcome of the single db.open() below, so timeout and slow stay
+// mutually exclusive. The promise settles once, so each path is one-shot.
 const reportDbOpenIssue = (
   message: string,
   level: 'warning' | 'error',
@@ -75,10 +78,23 @@ const reportDbOpenIssue = (
 
 // Fires when another context still holds an older version open. Dexie's own
 // handler only warns to the console, and the upgrade waits here indefinitely.
+//
+// Deliberately separate from reportDbOpenIssue: this is the cause, and
+// the timeout is the outcome. A block that clears and one that never does are
+// different failures, so sharing a guard would let the cause suppress the
+// outcome — the signal this instrumentation exists to capture. It needs its
+// own guard because Dexie registers req.onblocked on every open attempt and
+// its default versionchange handler closes with auto-open still enabled, so
+// unlike the one-shot paths below this one can fire repeatedly.
 db.on('blocked', (event) => {
   dbOpenBlocked = true;
+  if (dbOpenBlockedReported) {
+    return;
+  }
+  dbOpenBlockedReported = true;
   Sentry.captureMessage('indexeddb open blocked', {
     level: 'warning',
+    tags: { db_blocked: true },
     extra: {
       oldVersion: event?.oldVersion,
       newVersion: event?.newVersion,
