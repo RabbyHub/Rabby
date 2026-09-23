@@ -1,8 +1,14 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { useQueryDbHistory } from '@/db/hooks/history';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
+import { BridgeHistoryCard } from '@/ui/views/Bridge/Component/BridgeHistory';
+import { useBridgeHistoryByTxIds } from '@/ui/views/History/hooks/useBridgeHistoryByTxIds';
+import { mergeHistoryWithBridge } from '@/ui/views/History/utils/mergeBridgeHistory';
+import { isSupportDBAccount } from '@/utils/account';
+import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+import { useWallet } from '@/ui/utils';
 import { Virtuoso } from 'react-virtuoso';
 import { Empty, Modal } from 'ui/component';
 import { HistoryItem, HistoryItemActionContext } from './HistoryItem';
@@ -16,11 +22,40 @@ export const HistoryList = ({
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement | null>(null);
   const currentAccount = useCurrentAccount();
+  const wallet = useWallet();
+  const hasLocalHistory = isSupportDBAccount(currentAccount);
+  const address = currentAccount?.address || '';
 
   const { data, loading, loadingMore, loadMore, noMore } = useQueryDbHistory({
     account: currentAccount,
     isFilterScam,
   });
+  const { bridges, onRangeChanged } = useBridgeHistoryByTxIds({
+    enabled: hasLocalHistory,
+    address,
+    items: data || [],
+  });
+  const rows = useMemo(
+    () =>
+      hasLocalHistory
+        ? mergeHistoryWithBridge(data || [], bridges)
+        : (data || []).map((item) => ({
+            kind: 'tx' as const,
+            key: item._id,
+            item,
+          })),
+    [bridges, data, hasLocalHistory]
+  );
+  const rowsRef = useRef(rows);
+  rowsRef.current = rows;
+  const [locals, setLocals] = useState<BridgeTxHistoryItem[]>([]);
+
+  useEffect(() => {
+    if (!hasLocalHistory || !address) return;
+    wallet.getBridgeTxHistory(address).then((list) => {
+      setLocals(list || []);
+    });
+  }, [address, hasLocalHistory, wallet]);
 
   const isEmpty = !data || data.length === 0;
 
@@ -82,12 +117,39 @@ export const HistoryList = ({
               style={{
                 height: '100%',
               }}
-              data={data}
-              itemContent={(_, item) => {
+              data={rows}
+              rangeChanged={
+                hasLocalHistory
+                  ? (range) =>
+                      onRangeChanged(
+                        range.startIndex,
+                        range.endIndex,
+                        rowsRef.current
+                      )
+                  : undefined
+              }
+              itemContent={(_, row) => {
+                if (row.kind === 'bridge') {
+                  const fromId = row.item.from_tx?.tx_id?.toLowerCase();
+                  const local = locals.find(
+                    (item) =>
+                      item.hash?.toLowerCase() === fromId ||
+                      item.acceleratedHash?.toLowerCase() === fromId
+                  );
+                  return (
+                    <div className="mb-12">
+                      <BridgeHistoryCard
+                        data={row.item}
+                        local={local}
+                        variant="general"
+                      />
+                    </div>
+                  );
+                }
                 return (
                   <HistoryItem
-                    data={item}
-                    key={item._id}
+                    data={row.item}
+                    key={row.key}
                     onViewInputData={setFocusingHistoryItem}
                   />
                 );

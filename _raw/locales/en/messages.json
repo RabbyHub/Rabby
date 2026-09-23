@@ -2408,6 +2408,7 @@
       "approve-and-bridge": "Approve and Bridge",
       "need-to-approve-token-before-bridge": "Need to approve token before bridge",
       "via-bridge": "via {{bridge}}",
+      "bridge": "Bridge",
       "sent": "Sent",
       "received": "received",
       "estReceive": "Est.receive",

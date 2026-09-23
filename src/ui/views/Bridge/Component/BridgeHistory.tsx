@@ -11,9 +11,11 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { SvgIcPending } from 'ui/assets';
+import IconUnknown from 'ui/assets/token-default.svg';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { ReactComponent as RcIconRouteArrow } from 'ui/assets/bridge/IconRouteArrowCC.svg';
+import { ReactComponent as RcIconHistoryChainArrow } from 'ui/assets/bridge/IconHistoryChainArrow.svg';
 import { ReactComponent as RcIconHistoryBack } from 'ui/assets/bridge/IconHistoryBackCC.svg';
 import { ReactComponent as RcIconHistoryWarning } from 'ui/assets/bridge/IconHistoryWarningCC.svg';
 import { ReactComponent as RcIconUndoCC } from 'ui/assets/bridge/IconUndoCC.svg';
@@ -73,12 +75,226 @@ const HistoryChevron = () => (
 
 const formatTimeLeft = (seconds: number) => formatEstimateClock(seconds, true);
 
+const MiniTokenAmount = ({
+  token,
+  amount,
+  sign,
+  tone,
+}: {
+  token?: TokenItem;
+  amount?: number;
+  sign: '+' | '-';
+  tone: string;
+}) => {
+  const chain = findChain({ serverId: token?.chain });
+  return (
+    <div className="flex items-center gap-[8px]">
+      <div className="relative h-[16px] w-[16px] shrink-0 leading-[0]">
+        <img
+          className="block h-[16px] w-[16px] rounded-full object-cover"
+          src={token?.logo_url || IconUnknown}
+          width={16}
+          height={16}
+          alt=""
+        />
+        <img
+          className="absolute bottom-[-2px] right-[-2px] block h-[8px] w-[8px] rounded-full object-cover"
+          src={chain?.logo}
+          width={8}
+          height={8}
+          alt=""
+        />
+      </div>
+      <div
+        className={clsx('flex gap-[2px] whitespace-nowrap text-[12px]', tone)}
+      >
+        <span>{sign}</span>
+        <span>{formatAmount(amount || 0)}</span>
+        <span className="underline">{getTokenSymbol(token)}</span>
+      </div>
+    </div>
+  );
+};
+
+const GeneralHistoryBody = ({
+  data,
+  timeLabel,
+  txId,
+  payAmount,
+  receiveAmount,
+  receiveToken,
+  onOpen,
+}: {
+  data: BridgeHistory;
+  timeLabel: string;
+  txId: string;
+  payAmount?: number;
+  receiveAmount?: number;
+  receiveToken?: TokenItem;
+  onOpen: () => void;
+}) => {
+  const { t } = useTranslation();
+  const fromChain = findChain({ serverId: data.from_token?.chain });
+  const toChain = findChain({ serverId: data.to_token?.chain });
+  return (
+    <div className="flex flex-col gap-[16px] px-[12px] pb-[16px] pt-[12px] leading-[normal]">
+      <div className="flex items-center justify-between gap-[8px]">
+        <span className="shrink-0 text-[13px] font-medium leading-[normal] text-r-neutral-foot">
+          {timeLabel}
+        </span>
+        <div className="flex min-w-0 items-center gap-[4px]">
+          <div className="flex items-center gap-[4px] text-[12px] font-normal leading-[normal] tracking-[0.036px] text-r-neutral-body">
+            <span className="whitespace-nowrap">{fromChain?.name}</span>
+            <span className="inline-flex h-[12px] w-[12px] shrink-0 items-center justify-center text-r-neutral-foot">
+              <RcIconHistoryChainArrow className="block shrink-0" />
+            </span>
+            <span className="whitespace-nowrap">{toChain?.name}</span>
+          </div>
+          <button
+            type="button"
+            className="shrink-0 bg-transparent p-0 text-[12px] text-r-neutral-body underline"
+            onClick={onOpen}
+          >
+            {txId ? ellipsis(txId) : ''}
+          </button>
+        </div>
+      </div>
+      <div className="flex items-center justify-between gap-[8px]">
+        <div className="flex min-w-0 items-center gap-[8px]">
+          <img
+            className="h-[36px] w-[36px] shrink-0 rounded-[10px] object-cover"
+            src={data.aggregator?.logo_url || IconUnknown}
+            width={36}
+            height={36}
+            alt=""
+          />
+          <div className="flex min-w-0 flex-col gap-[4px]">
+            <span className="text-15 font-medium text-r-neutral-title-1">
+              {t('page.bridge.bridge')}
+            </span>
+            <span className="truncate text-[12px] text-r-neutral-foot">
+              {data.aggregator?.name}
+            </span>
+          </div>
+        </div>
+        <div className="flex shrink-0 flex-col items-end gap-[8px]">
+          <MiniTokenAmount
+            token={data.from_token}
+            amount={payAmount}
+            sign="-"
+            tone="text-r-neutral-title-1"
+          />
+          <MiniTokenAmount
+            token={receiveToken}
+            amount={receiveAmount}
+            sign="+"
+            tone="text-r-green-default"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DetailHistoryBody = ({
+  data,
+  timeLabel,
+  txId,
+  payAmount,
+  receiveAmount,
+  receiveToken,
+  isSuccess,
+  isFailed,
+  hasRefund,
+  isSourcePending,
+  onOpen,
+}: {
+  data: BridgeHistory;
+  timeLabel: string;
+  txId: string;
+  payAmount?: number;
+  receiveAmount?: number;
+  receiveToken?: TokenItem;
+  isSuccess: boolean;
+  isFailed: boolean;
+  hasRefund: boolean;
+  isSourcePending: boolean;
+  onOpen: () => void;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <div className="flex flex-col gap-[20px] p-[12px]">
+      <div className="flex items-center justify-between">
+        <span className="text-[13px] text-r-neutral-title-1">{timeLabel}</span>
+        <button
+          type="button"
+          className="inline-flex items-center gap-[4px] bg-transparent p-0"
+          onClick={onOpen}
+        >
+          <span
+            className={clsx(
+              'text-[12px] underline',
+              isSuccess ? 'text-r-neutral-body' : 'text-r-neutral-foot'
+            )}
+          >
+            {txId ? ellipsis(txId) : ''}
+          </span>
+          {isFailed && !hasRefund && <HistoryChevron />}
+        </button>
+      </div>
+
+      <div
+        className={clsx(
+          'flex items-center justify-between',
+          isFailed && 'opacity-50'
+        )}
+      >
+        <HistorySide
+          token={data.from_token}
+          amount={payAmount}
+          label={t('page.bridge.sent')}
+        />
+        <span className="inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center overflow-hidden text-r-neutral-foot">
+          <RcIconRouteArrow className="block shrink-0" />
+        </span>
+        <HistorySide
+          token={receiveToken}
+          amount={receiveAmount}
+          label={
+            isSuccess || isSourcePending
+              ? t('page.bridge.received')
+              : t('page.bridge.estReceive')
+          }
+          approx
+          align="end"
+        />
+      </div>
+
+      <div
+        className={clsx(
+          'flex items-end gap-[4px] text-r-neutral-foot',
+          isFailed && 'opacity-50'
+        )}
+      >
+        <span className="text-[12px]">{t('page.bridge.by')}</span>
+        <span className="text-[13px] font-medium">{data.aggregator?.name}</span>
+        <span className="text-[12px]">
+          {t('page.bridge.via-bridge', {
+            bridge: data.bridge?.name || '',
+          })}
+        </span>
+      </div>
+    </div>
+  );
+};
+
 interface TransactionProps {
   data: BridgeHistory;
   local?: BridgeTxHistoryItem;
+  variant?: 'detail' | 'general';
 }
 const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
-  ({ data, local }, ref) => {
+  ({ data, local, variant = 'detail' }, ref) => {
     const { t } = useTranslation();
     const [now, setNow] = useState(() => Date.now());
     const isFailed = data.status === 'failed';
@@ -97,7 +313,6 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
       data.status === 'pending' && local?.status === 'pending';
     const isDestPending = data.status === 'pending' && !isSourcePending;
     const isSuccess = data.status === 'completed';
-    const dimRoute = isFailed;
 
     useInterval(
       () => setNow(Date.now()),
@@ -138,72 +353,31 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         className="relative overflow-hidden rounded-[8px] border-2 border-solid border-white bg-r-neutral-bg1 text-r-neutral-body dark:border-transparent dark:bg-r-neutral-card-1 dark:shadow-none"
         ref={ref}
       >
-        <div className="flex flex-col gap-[20px] p-[12px]">
-          <div className="flex items-center justify-between">
-            <span className="text-[13px] text-r-neutral-title-1">
-              {timeLabel}
-            </span>
-            <button
-              type="button"
-              className="inline-flex items-center gap-[4px] bg-transparent p-0"
-              onClick={gotoScan}
-            >
-              <span
-                className={clsx(
-                  'text-[12px] underline',
-                  isSuccess ? 'text-r-neutral-body' : 'text-r-neutral-foot'
-                )}
-              >
-                {txId ? ellipsis(txId) : ''}
-              </span>
-              {isFailed && !hasRefund && <HistoryChevron />}
-            </button>
-          </div>
-
-          <div
-            className={clsx(
-              'flex items-center justify-between',
-              dimRoute && 'opacity-50'
-            )}
-          >
-            <HistorySide
-              token={data.from_token}
-              amount={payAmount}
-              label={t('page.bridge.sent')}
-            />
-            <span className="inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center overflow-hidden text-r-neutral-foot">
-              <RcIconRouteArrow className="block shrink-0" />
-            </span>
-            <HistorySide
-              token={receiveToken}
-              amount={receiveAmount}
-              label={
-                isSuccess || isSourcePending
-                  ? t('page.bridge.received')
-                  : t('page.bridge.estReceive')
-              }
-              approx
-              align="end"
-            />
-          </div>
-
-          <div
-            className={clsx(
-              'flex items-end gap-[4px] text-r-neutral-foot',
-              dimRoute && 'opacity-50'
-            )}
-          >
-            <span className="text-[12px]">{t('page.bridge.by')}</span>
-            <span className="text-[13px] font-medium">
-              {data.aggregator?.name}
-            </span>
-            <span className="text-[12px]">
-              {t('page.bridge.via-bridge', {
-                bridge: data.bridge?.name || '',
-              })}
-            </span>
-          </div>
-        </div>
+        {variant === 'general' ? (
+          <GeneralHistoryBody
+            data={data}
+            timeLabel={sinceTime(data.create_at)}
+            txId={txId}
+            payAmount={payAmount}
+            receiveAmount={receiveAmount}
+            receiveToken={receiveToken}
+            onOpen={gotoScan}
+          />
+        ) : (
+          <DetailHistoryBody
+            data={data}
+            timeLabel={timeLabel}
+            txId={txId}
+            payAmount={payAmount}
+            receiveAmount={receiveAmount}
+            receiveToken={receiveToken}
+            isSuccess={isSuccess}
+            isFailed={isFailed}
+            hasRefund={hasRefund}
+            isSourcePending={isSourcePending}
+            onOpen={gotoScan}
+          />
+        )}
 
         {isSourcePending && (
           <HistoryBar tone="processing">
@@ -299,6 +473,8 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     );
   }
 );
+
+export const BridgeHistoryCard = Transaction;
 
 const HistorySide = ({
   token,
