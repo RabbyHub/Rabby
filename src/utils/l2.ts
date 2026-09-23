@@ -1,7 +1,11 @@
 import { ethers, Contract } from 'ethers';
 import { getContractFactory, predeploys } from '@eth-optimism/contracts';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
-import { CHAINS_ENUM, OP_STACK_ENUMS } from 'consts';
+import {
+  CHAINS_ENUM,
+  OP_STACK_ENUMS,
+  SCROLL_STYLE_L1_GAS_ORACLE,
+} from 'consts';
 import BigNumber from 'bignumber.js';
 import { findChain } from './chain';
 
@@ -26,11 +30,12 @@ const ensureL1FeeTxParamsChainId = (txParams: any, chain: CHAINS_ENUM) => {
 // https://docs.scroll.io/en/developers/transaction-fees-on-scroll/#calculating-the-l1-data-fee-with-gas-oracle
 export const scrollL1FeeEstimate = async (
   provider: ethers.providers.Web3Provider,
-  txParams: any
+  txParams: any,
+  chain: CHAINS_ENUM = CHAINS_ENUM.SCRL
 ) => {
   const signer = provider.getSigner();
   const oracleContract = new Contract(
-    '0x5300000000000000000000000000000000000002',
+    SCROLL_STYLE_L1_GAS_ORACLE[chain],
     [
       {
         type: 'constructor',
@@ -120,8 +125,8 @@ export const estimateL1Fee = ({
   }
   if (OP_STACK_ENUMS.includes(chain)) {
     return opStackL1FeeEstimate(provider, normalizedTxParams);
-  } else if (chain === CHAINS_ENUM.SCRL) {
-    return scrollL1FeeEstimate(provider, normalizedTxParams);
+  } else if (SCROLL_STYLE_L1_GAS_ORACLE[chain]) {
+    return scrollL1FeeEstimate(provider, normalizedTxParams, chain);
   }
   return Promise.resolve('0x0');
 };
