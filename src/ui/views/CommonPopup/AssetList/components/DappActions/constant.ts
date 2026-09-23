@@ -6,7 +6,9 @@ export const BLACKLIST_METHODS = [
   'transferOwnership',
   'transferOwner',
   'signalTransfer',
-  'setApproveToAll',
+  'setApprovalForAll',
+  'transferFrom',
+  'safeTransferFrom',
 ];
 
 export const WHITELIST_ADDRESS = [
