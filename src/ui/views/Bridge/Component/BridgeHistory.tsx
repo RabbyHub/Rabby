@@ -312,10 +312,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
       ? data.to_actual_token || data.to_token
       : data.to_token;
     const receiveAmount = isSuccess
-      ? data.actual?.receive_token_amount || data.quote?.receive_token_amount
+      ? data.actual?.receive_token_amount ?? data.quote?.receive_token_amount
       : data.quote?.receive_token_amount;
     const payAmount = isSuccess
-      ? data.actual?.pay_token_amount || data.quote?.pay_token_amount
+      ? data.actual?.pay_token_amount ?? data.quote?.pay_token_amount
       : data.quote?.pay_token_amount;
 
     return (
@@ -399,11 +399,19 @@ const HistoryList = () => {
   const [locals, setLocals] = useState<BridgeTxHistoryItem[]>([]);
 
   useEffect(() => {
-    if (!address) return;
+    let disposed = false;
+    if (!address) {
+      setLocals([]);
+      return;
+    }
+    // 接口 pending 期间，RPC 可能已更新本地源链状态；每次列表刷新都重新读取，不能只看条数。
     wallet.getBridgeTxHistory(address).then((list) => {
-      setLocals(list || []);
+      if (!disposed) setLocals(list || []);
     });
-  }, [address, txList?.list?.length, wallet]);
+    return () => {
+      disposed = true;
+    };
+  }, [address, txList?.list, wallet]);
 
   if (!loading && (!txList || !txList?.list?.length)) {
     return (

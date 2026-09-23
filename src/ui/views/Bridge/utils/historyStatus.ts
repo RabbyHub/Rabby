@@ -82,7 +82,7 @@ const tokenSymbol = (token?: TokenItem | null) =>
   token?.display_symbol || token?.symbol || token?.optimized_symbol || '';
 
 const amountOrFallback = (actual?: number, fallback?: number) =>
-  actual || fallback || 0;
+  actual ?? fallback ?? 0;
 
 const payAmountOf = (data: BridgeHistory) =>
   amountOrFallback(data.actual?.pay_token_amount, data.quote?.pay_token_amount);
@@ -194,21 +194,20 @@ const destWaitingScene = (
 
 /**
  * 把接口状态和本地状态收成一个场景。
- * 本地 fromFailed 优先于接口，避免源链失败被画成目标链失败。
- * 成功优先于失败。接口仍是 pending、且本地不是 pending 时，视为目标链还在等待。
+ * 成功、失败以接口为准，避免本地旧状态或超时失败覆盖接口当前状态。
+ * 接口失败时用本地信息区分源链失败；接口 pending 时仅用本地信息区分等待阶段。
  */
 export const resolveBridgeHistoryScene = (
   data: BridgeHistory,
   local?: BridgeTxHistoryItem,
   now = Date.now()
 ): BridgeHistoryScene => {
-  if (local?.status === 'fromFailed') return 'sourceFailed';
-
-  if (data.status === 'completed' || local?.status === 'allSuccess') {
+  if (data.status === 'completed') {
     return 'succeeded';
   }
 
-  if (data.status === 'failed' || local?.status === 'failed') {
+  if (data.status === 'failed') {
+    if (local?.status === 'fromFailed') return 'sourceFailed';
     const token = refundTokenOf(data, local);
     const txId = refundTxIdOf(data, local);
     if (!token?.id || !txId) return 'failedNoRefund';
@@ -261,7 +260,10 @@ const refundDetail = (
       receiveSuccessStep(
         token,
         txId,
-        data.actual?.receive_token_amount || local?.actualToAmount || 0
+        amountOrFallback(
+          data.actual?.receive_token_amount,
+          local?.actualToAmount
+        )
       ),
     ],
   };

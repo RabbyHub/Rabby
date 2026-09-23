@@ -601,7 +601,11 @@ class TxHistory {
     bridgeTx?: BridgeHistory
   ) {
     this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
-      if (item.fromChainId === chainId && item.hash === from_tx_id) {
+      // 加速后调用方可能传入新 hash，两种 hash 都应更新同一条本地记录。
+      if (
+        item.fromChainId === chainId &&
+        (item.hash === from_tx_id || item.acceleratedHash === from_tx_id)
+      ) {
         return {
           ...item,
           status,

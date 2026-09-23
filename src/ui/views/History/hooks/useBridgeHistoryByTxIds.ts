@@ -24,6 +24,9 @@ export const useBridgeHistoryByTxIds = (options: {
   const { enabled, address = '', items } = options;
   const wallet = useWallet();
   const [bridges, setBridges] = useState<BridgeHistory[]>([]);
+  const hasPendingBridge = bridges.some((item) => item.status === 'pending');
+  const bridgesRef = useRef(bridges);
+  bridgesRef.current = bridges;
   const requestedRef = useRef(new Set<string>());
   const queuedRef = useRef(new Set<string>());
   const queueRef = useRef<string[]>([]);
@@ -104,8 +107,31 @@ export const useBridgeHistoryByTxIds = (options: {
     queueRef.current = [];
     inFlightRef.current = false;
     bootstrappedRef.current = '';
+    bridgesRef.current = [];
     setBridges([]);
-  }, [address]);
+    return () => {
+      // 切换地址、停用或卸载后，忽略尚未返回的旧请求。
+      generationRef.current += 1;
+      queueRef.current = [];
+      queuedRef.current.clear();
+    };
+  }, [address, enabled]);
+
+  useEffect(() => {
+    // enabled 与 DB 历史使用相同的地址条件，非 core 地址不启动轮询。
+    if (!enabled || !address || !hasPendingBridge) return;
+    const timer = setInterval(() => {
+      // 复用串行分批队列；上一轮未结束时跳过，避免请求堆积。
+      if (inFlightRef.current || queueRef.current.length) return;
+      const pendingIds = bridgesRef.current
+        .filter((item) => item.status === 'pending')
+        .map((item) => item.from_tx?.tx_id)
+        .filter((id): id is string => !!id);
+      pendingIds.forEach((id) => requestedRef.current.delete(id.toLowerCase()));
+      enqueueIds(pendingIds);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [address, enabled, enqueueIds, hasPendingBridge]);
 
   useEffect(() => {
     if (!enabled || !address || !items.length) return;

@@ -51,11 +51,18 @@ export const HistoryList = ({
   const [locals, setLocals] = useState<BridgeTxHistoryItem[]>([]);
 
   useEffect(() => {
-    if (!hasLocalHistory || !address) return;
+    let disposed = false;
+    if (!hasLocalHistory || !address) {
+      setLocals([]);
+      return;
+    }
     wallet.getBridgeTxHistory(address).then((list) => {
-      setLocals(list || []);
+      if (!disposed) setLocals(list || []);
     });
-  }, [address, hasLocalHistory, wallet]);
+    return () => {
+      disposed = true;
+    };
+  }, [address, hasLocalHistory, wallet, bridges]);
 
   const isEmpty = !data || data.length === 0;
 
