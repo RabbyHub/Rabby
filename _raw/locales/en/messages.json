@@ -2494,7 +2494,13 @@
         "refund": "Refund",
         "goBack": "Go back",
         "viewRefundedDetails": "View Refunded Details",
-        "contactSupport": "Contact Support"
+        "contactSupport": "Contact Support",
+        "succeeded": "Succeeded",
+        "sendFrom": "Send from {{chain}}",
+        "receiveOn": "Receive on {{chain}}",
+        "waitingDestination": "waiting for destination transaction",
+        "sendFailed": "Send failed",
+        "tokenNotSent": "Your {{token}} not sent"
       },
       "tokenPairDrawer": {
         "title": "Select from supported token pair",

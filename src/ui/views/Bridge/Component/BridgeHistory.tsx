@@ -1,4 +1,3 @@
-import { openBridgeSupport } from '../utils/support';
 import { Popup } from '@/ui/component';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { useBridgeHistory } from '../hooks';
@@ -10,15 +9,12 @@ import {
   sinceTime,
   useWallet,
 } from '@/ui/utils';
-import { SvgIcPending } from 'ui/assets';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { ReactComponent as RcIconRouteArrow } from 'ui/assets/bridge/IconRouteArrowCC.svg';
 import { ReactComponent as RcIconHistoryChainArrow } from 'ui/assets/bridge/IconHistoryChainArrow.svg';
 import { ReactComponent as RcIconHistoryBack } from 'ui/assets/bridge/IconHistoryBackCC.svg';
-import { ReactComponent as RcIconHistoryWarning } from 'ui/assets/bridge/IconHistoryWarningCC.svg';
-import { ReactComponent as RcIconUndoCC } from 'ui/assets/bridge/IconUndoCC.svg';
 import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ellipsis } from '@/ui/utils/address';
@@ -27,15 +23,12 @@ import { findChain } from '@/utils/chain';
 import { BridgeHistory } from '@/background/service/openapi';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { DrawerProps } from 'antd';
-import { useInterval } from 'ahooks';
 import dayjs from 'dayjs';
 import { useRabbySelector } from '@/ui/store';
-import { formatEstimateClock } from '../utils/duration';
-import { BRIDGE_PROGRESS_DELAY_MS } from '../utils/progressBar';
 import { getBridgeRefundHref } from '../utils/refundLink';
+import { BridgeHistoryStatus } from './BridgeHistoryStatus';
 
 const isTab = getUiType().isTab;
-const SPIN_STYLE = { animation: 'spin 1.5s linear infinite' };
 
 const HistoryToken = ({ token }: { token?: TokenItem }) => {
   const chain = findChain({ serverId: token?.chain });
@@ -59,12 +52,6 @@ const HistoryToken = ({ token }: { token?: TokenItem }) => {
   );
 };
 
-const Icon16 = ({ children }: { children: React.ReactNode }) => (
-  <span className="inline-flex h-[16px] w-[16px] shrink-0 items-center justify-center">
-    {children}
-  </span>
-);
-
 const HistoryChevron = () => (
   <span className="inline-flex h-[14px] w-[14px] shrink-0 items-center justify-center text-r-neutral-foot">
     <span className="inline-flex rotate-180">
@@ -72,8 +59,6 @@ const HistoryChevron = () => (
     </span>
   </span>
 );
-
-const formatTimeLeft = (seconds: number) => formatEstimateClock(seconds, true);
 
 const MiniTokenAmount = ({
   token,
@@ -295,8 +280,6 @@ interface TransactionProps {
 }
 const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
   ({ data, local, variant = 'detail' }, ref) => {
-    const { t } = useTranslation();
-    const [now, setNow] = useState(() => Date.now());
     const isFailed = data.status === 'failed';
     const refundHref = getBridgeRefundHref(
       data.to_tx?.tx_id,
@@ -311,13 +294,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         Number(data.actual?.receive_token_amount) > 0);
     const isSourcePending =
       data.status === 'pending' && local?.status === 'pending';
-    const isDestPending = data.status === 'pending' && !isSourcePending;
     const isSuccess = data.status === 'completed';
-
-    useInterval(
-      () => setNow(Date.now()),
-      isSourcePending || isDestPending ? 1000 : undefined
-    );
 
     const txId =
       data.from_tx?.tx_id || data?.detail_url?.split('/').pop() || '';
@@ -340,13 +317,6 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     const payAmount = isSuccess
       ? data.actual?.pay_token_amount || data.quote?.pay_token_amount
       : data.quote?.pay_token_amount;
-
-    const startedAt = isDestPending
-      ? local?.fromTxCompleteTs || (data.create_at || 0) * 1000
-      : local?.createdAt;
-    const elapsedMs = startedAt ? Math.max(0, now - startedAt) : 0;
-    const remainingSeconds = (local?.estimatedDuration || 0) - elapsedMs / 1000;
-    const isDelayed = isDestPending && elapsedMs >= BRIDGE_PROGRESS_DELAY_MS;
 
     return (
       <div
@@ -379,96 +349,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
           />
         )}
 
-        {isSourcePending && (
-          <HistoryBar tone="processing">
-            {!!local?.estimatedDuration && (
-              <>
-                <span className="text-[13px] text-r-neutral-body">
-                  {t('page.bridge.timeLeft', {
-                    time: formatTimeLeft(remainingSeconds),
-                  })}
-                </span>
-                <HistoryChevron />
-              </>
-            )}
-          </HistoryBar>
-        )}
-        {isDestPending && (
-          <HistoryBar tone="pending">
-            {isDelayed ? (
-              <span className="text-[12px] text-r-neutral-foot">
-                {t('page.bridge.pendingItem.popupBridgeDelayed')}
-                {', '}
-                <button
-                  type="button"
-                  className="inline bg-transparent p-0 text-[12px] text-r-blue-default underline"
-                  onClick={() => openBridgeSupport()}
-                >
-                  {t('page.bridge.pendingItem.contactSupport')}
-                </button>
-              </span>
-            ) : local?.estimatedDuration && remainingSeconds > 0 ? (
-              <span className="text-[13px] text-r-neutral-body">
-                {t('page.bridge.timeLeft', {
-                  time: formatTimeLeft(remainingSeconds),
-                })}
-              </span>
-            ) : (
-              <span className="text-[12px] text-r-neutral-foot">
-                {t('page.bridge.pendingItem.stillBridging')}
-              </span>
-            )}
-          </HistoryBar>
-        )}
-        {hasRefund && (
-          <div className="flex w-full items-center gap-[10px] bg-r-neutral-bg2 p-[8px] dark:bg-r-neutral-line">
-            <div className="flex min-w-0 flex-1 items-center gap-[4px] text-r-neutral-body">
-              <Icon16>
-                <RcIconUndoCC className="block h-[16px] w-[16px] -scale-y-100 rotate-180" />
-              </Icon16>
-              <span className="text-[13px] font-medium">
-                {data.to_actual_token
-                  ? t('page.bridge.refundIn', {
-                      token: getTokenSymbol(data.to_actual_token),
-                    })
-                  : t('page.bridge.pendingItem.refund')}
-              </span>
-            </div>
-            <div className="flex shrink-0 items-center gap-[4px]">
-              <button
-                type="button"
-                className="inline-flex items-center bg-transparent p-0 text-[12px] gap-2"
-                onClick={() => openInTab(refundHref, !isTab)}
-              >
-                <span className="text-r-neutral-body">
-                  {t('page.bridge.view')}{' '}
-                </span>
-                <span className="text-r-blue-default underline">
-                  {t('page.bridge.details')}
-                </span>
-              </button>
-            </div>
-          </div>
-        )}
-        {isFailed && !hasRefund && (
-          <div className="flex items-center gap-[10px] bg-r-red-light p-[8px]">
-            <div className="flex min-w-0 flex-1 items-center gap-[4px] text-r-red-default">
-              <Icon16>
-                <RcIconHistoryWarning className="block h-[16px] w-[16px]" />
-              </Icon16>
-              <span className="text-[13px] font-medium">
-                {t('page.bridge.pendingItem.failed')}
-              </span>
-            </div>
-            <button
-              type="button"
-              className="inline-flex items-center bg-transparent p-0 text-[12px] text-r-blue-default underline"
-              onClick={openBridgeSupport}
-            >
-              {t('page.bridge.pendingItem.contactSupport')}
-            </button>
-          </div>
-        )}
+        <BridgeHistoryStatus data={data} local={local} />
       </div>
     );
   }
@@ -508,45 +389,6 @@ const HistorySide = ({
     </div>
   </div>
 );
-
-const HistoryBar = ({
-  tone,
-  children,
-}: {
-  tone: 'processing' | 'pending';
-  children: React.ReactNode;
-}) => (
-  <div
-    className={clsx(
-      'flex items-center gap-[10px] p-[8px]',
-      tone === 'processing'
-        ? 'bg-r-blue-light-1 text-r-blue-default'
-        : 'bg-r-orange-light text-r-orange-default'
-    )}
-  >
-    <div className="flex min-w-0 flex-1 items-center gap-[4px]">
-      <Icon16>
-        <SvgIcPending
-          className="block h-[16px] w-[16px] animate-spin [&_path]:stroke-current"
-          style={SPIN_STYLE}
-        />
-      </Icon16>
-      <span className="text-[13px] font-medium">
-        {tone === 'processing' ? <ProcessingLabel /> : <PendingLabel />}
-      </span>
-    </div>
-    <div className="flex shrink-0 items-center gap-[4px]">{children}</div>
-  </div>
-);
-
-const ProcessingLabel = () => {
-  const { t } = useTranslation();
-  return <>{t('page.bridge.pendingItem.processing')}</>;
-};
-const PendingLabel = () => {
-  const { t } = useTranslation();
-  return <>{t('page.bridge.pendingItem.pending')}</>;
-};
 
 const HistoryList = () => {
   const { txList, loading, loadingMore, ref } = useBridgeHistory();
