@@ -22,6 +22,7 @@ export type BridgeProgressFooter =
   | { kind: 'sourceFailed' }
   | {
       kind: 'refund';
+      isOriginalToken: boolean;
       txId?: string;
       chainServerId?: string;
     }
@@ -245,9 +246,13 @@ export const getBridgeProgressBar = (
     if (refund) {
       return {
         step1: 'success',
-        step2: 'destFailed',
+        step2: 'undo',
         footer: {
           kind: 'refund',
+          isOriginalToken:
+            item.actualToToken?.chain === item.fromToken.chain &&
+            item.actualToToken?.id.toLowerCase() ===
+              item.fromToken.id.toLowerCase(),
           txId: refund.txId,
           chainServerId: refund.chainServerId,
         },

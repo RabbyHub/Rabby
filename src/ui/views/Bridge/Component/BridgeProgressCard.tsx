@@ -125,7 +125,11 @@ const ProgressFooter = ({
     content = (
       <Trans
         t={t}
-        i18nKey="page.bridge.pendingItem.refunded"
+        i18nKey={
+          footer.isOriginalToken
+            ? 'page.bridge.pendingItem.refundedOriginalToken'
+            : 'page.bridge.pendingItem.refunded'
+        }
         values={{ token: getTokenSymbol(data.actualToToken) }}
         components={{
           link: (
