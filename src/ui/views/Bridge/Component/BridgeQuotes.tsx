@@ -9,6 +9,7 @@ import { BridgeQuoteItem } from './BridgeQuoteItem';
 import {
   bridgeQuoteEstimatedValueBn,
   bridgeQuoteScore,
+  getBridgeQuoteKey,
 } from '../utils/bridgeQuote';
 import { ReactComponent as RCIconCCEmpty } from 'ui/assets/bridge/empty-cc.svg';
 import { DrawerProps } from 'antd';
@@ -82,9 +83,9 @@ export const Quotes = ({
         {sortedList?.map((item, idx) => {
           return (
             <BridgeQuoteItem
-              key={item.aggregator.id + item.bridge_id}
+              key={getBridgeQuoteKey(item)}
               {...item}
-              active={activeName === `${item.aggregator.id}-${item.bridge_id}`}
+              active={activeName === getBridgeQuoteKey(item)}
               isBestQuote={idx === bestIndex}
               isTopAmount={idx === 0}
               bestQuoteUsd={bestAmountUsd}

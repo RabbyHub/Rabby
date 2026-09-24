@@ -20,6 +20,11 @@ import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcInfoRowArrowRight } from '@/ui/assets/swap/info-row-arrow-right.svg';
 import { BridgeSlippage, SlippageValidationResult } from './BridgeSlippage';
 import { tokenPriceImpact } from '../hooks';
+import {
+  BRIDGE_DURATION_FAST_COLOR,
+  formatBridgeDuration,
+  getBridgeDurationColor,
+} from '../utils/duration';
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
 import { RabbyFeeTag } from '../../Swap/Component/RabbyFeeTag';
 import type { RabbyFeeTier } from '../../Swap/hooks/fee';
@@ -202,20 +207,15 @@ export const BridgeShowMore = ({
 
   const showSourceFallback = insufficient || !fromToken || !supportDirectSign;
 
-  const showMinDuration = useMemo(() => {
-    return Math.max(Math.round((duration || 0) / 60), 1);
-  }, [duration]);
+  const durationText = useMemo(() => formatBridgeDuration(duration, t), [
+    duration,
+    t,
+  ]);
 
-  const durationColor = useMemo(() => {
-    if (showMinDuration > 10) {
-      return 'text-r-red-default';
-    }
-
-    if (showMinDuration > 3) {
-      return 'text-r-orange-default';
-    }
-    return 'text-r-neutral-title-1';
-  }, [showMinDuration]);
+  const durationColor = useMemo(
+    () => getBridgeDurationColor(duration, BRIDGE_DURATION_FAST_COLOR.detail),
+    [duration]
+  );
 
   const sourceSelectorRender = useMemoizedFn((clickable = true) => {
     return (
@@ -273,11 +273,7 @@ export const BridgeShowMore = ({
                   )}
                 >
                   {' · '}
-                  {sourceLogo || sourceName
-                    ? t('page.bridge.duration', {
-                        duration: showMinDuration,
-                      })
-                    : '-'}
+                  {sourceLogo || sourceName ? durationText : '-'}
                 </span>
                 {Boolean(sourceLogo || sourceName) && (
                   <RcInfoRowArrowRight className="h-14 w-14 text-r-neutral-foot" />
