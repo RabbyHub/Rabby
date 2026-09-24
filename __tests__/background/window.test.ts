@@ -45,4 +45,21 @@ describe('background window manager', () => {
     await expect(winMgr.openNotification()).resolves.toBeUndefined();
     expect(mockUpdateWindow).not.toHaveBeenCalled();
   });
+
+  it('retries invalid bounds without a position', async () => {
+    mockGetLastFocused
+      .mockResolvedValueOnce({ top: 0, left: 0, width: 1200, height: 800 })
+      .mockResolvedValueOnce({ state: 'normal' });
+    mockCreateWindow
+      .mockRejectedValueOnce(
+        new Error(
+          'Invalid value for bounds. Bounds must be at least 50% within visible screen space.'
+        )
+      )
+      .mockResolvedValueOnce({ id: 42, left: 0 });
+
+    await expect(winMgr.openNotification()).resolves.toBe(42);
+    expect(mockCreateWindow.mock.calls[1][0]).not.toHaveProperty('top');
+    expect(mockCreateWindow.mock.calls[1][0]).not.toHaveProperty('left');
+  });
 });
