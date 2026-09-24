@@ -4,24 +4,31 @@ import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import PQueue from 'p-queue';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  BRIDGE_HISTORY_INIT_SCAN_LIMIT,
   BRIDGE_HISTORY_TX_BATCH,
   HistoryListRow,
-  collectOutgoingTxIds,
+  collectInitialBridgeTxIds,
   collectViewportOutgoingTxIds,
   historyTxKey,
-  logBridgeLookup,
 } from '../utils/mergeBridgeHistory';
 
 type LookupItem = {
   id: string;
   cate_id?: string | null;
   is_scam?: boolean;
+  sends?: unknown[] | null;
   token_approve?: unknown;
   chain: string;
   owner_addr?: string;
   tx?: { from_addr?: string } | null;
 };
 
+/**
+ * 三个入口只负责挑出要查的哈希，真正发请求都交给 enqueueIds。
+ * - 初始化：从最新记录向后找，凑满 20 条候选、扫满 100 条，或数据库结束。
+ * - 滚动：只查当前可见窗口所在的 20 条批次，不向窗口外补。
+ * - 轮询：只刷新已经识别、且仍是 pending 的跨链。
+ */
 export const useBridgeHistoryByTxIds = (options: {
   enabled: boolean;
   address?: string;
@@ -40,12 +47,13 @@ export const useBridgeHistoryByTxIds = (options: {
   const itemsRef = useRef(items);
   const addressRef = useRef(address);
   const enabledRef = useRef(enabled);
-  const bootstrappedRef = useRef('');
+  const initScanRef = useRef({ address: '', scanned: 0, matched: 0 });
   const generationRef = useRef(0);
   itemsRef.current = items;
   addressRef.current = address;
   enabledRef.current = enabled;
 
+  /** 去重、按每秒最多 2 批发出 history_list_by_tx_ids。不决定查哪些交易。 */
   const enqueueIds = useCallback(
     (ids: string[]) => {
       const fresh: string[] = [];
@@ -75,12 +83,25 @@ export const useBridgeHistoryByTxIds = (options: {
             const excludedIds = new Set(
               [...pendings, ...completeds].flatMap((group) => {
                 const ga = group.$ctx?.ga;
-                // Bridge 自身可能包含兑换，不能按链上解析出的 swap 动作排除。
+                // 源链失败、退款、等待的跨链记录 source 仍是 bridge，不能排除。
+                // 跨链本身可能带 swap 动作，只按 Rabby 发起时写入的 source 判断。
+                const nonBridgeSources = [
+                  'sendToken',
+                  'swap',
+                  'sendNFT',
+                  'tokenApproval',
+                  'nftApproval',
+                  'Perps',
+                  'Staking',
+                  'cancel',
+                  'speedUp',
+                ];
                 const isNonBridgeFlow =
-                  ga?.category === 'Send' ||
-                  ga?.source === 'sendToken' ||
-                  ga?.category === 'Swap' ||
-                  ga?.source === 'swap';
+                  ga?.source === 'bridge'
+                    ? false
+                    : ga?.category === 'Send' ||
+                      ga?.category === 'Swap' ||
+                      nonBridgeSources.includes(ga?.source);
                 return group.txs
                   .filter(
                     (tx) =>
@@ -94,38 +115,12 @@ export const useBridgeHistoryByTxIds = (options: {
             const candidates = batch.filter(
               (id) => !excludedIds.has(id.toLowerCase())
             );
-            batch.forEach((id) => {
-              const matches = [...pendings, ...completeds].flatMap((group) =>
-                group.txs
-                  .filter((tx) => tx.hash?.toLowerCase() === id.toLowerCase())
-                  .map((tx) => ({
-                    chainId: group.chainId,
-                    category: group.$ctx?.ga?.category,
-                    source: group.$ctx?.ga?.source,
-                    origin: tx.site?.origin,
-                    internalOrigin: INTERNAL_REQUEST_ORIGIN,
-                  }))
-              );
-              logBridgeLookup(id, 'local-filter', {
-                matches,
-                excluded: excludedIds.has(id.toLowerCase()),
-              });
-            });
             if (!candidates.length) return;
             const res = await wallet.openapi.getBridgeHistoryListByTxIds({
               from_tx_ids: candidates,
             });
             if (generation !== generationRef.current) return;
             const list = res?.history_list || [];
-            batch.forEach((id) =>
-              logBridgeLookup(id, 'response', {
-                returned: !!res,
-                match: list.find(
-                  (item) =>
-                    item.from_tx?.tx_id?.toLowerCase() === id.toLowerCase()
-                ),
-              })
-            );
             if (!list.length) return;
             setBridges((prev) => {
               const next = new Map(
@@ -154,11 +149,12 @@ export const useBridgeHistoryByTxIds = (options: {
     [wallet]
   );
 
+  /** 换地址或停用时清空队列和已查记录，避免把上一个地址的结果写进来。 */
   useEffect(() => {
     generationRef.current += 1;
     requestQueueRef.current.clear();
     requestedRef.current = new Set();
-    bootstrappedRef.current = '';
+    initScanRef.current = { address: '', scanned: 0, matched: 0 };
     bridgesRef.current = [];
     setBridges([]);
     return () => {
@@ -168,37 +164,61 @@ export const useBridgeHistoryByTxIds = (options: {
     };
   }, [address, enabled]);
 
-  useEffect(() => {
-    // enabled 与 DB 历史使用相同的地址条件，非 core 地址不启动轮询。
-    if (!enabled || !address || !hasPendingBridge) return;
-    const timer = setInterval(() => {
-      // 队列里还有未完成的查询时不追加轮询，避免请求堆积。
-      if (requestQueueRef.current.size || requestQueueRef.current.pending) {
-        return;
-      }
-      const pendingIds = bridgesRef.current
-        .filter((item) => item.status === 'pending')
-        .map((item) => item.from_tx?.tx_id)
-        .filter((id): id is string => !!id);
-      pendingIds.forEach((id) => requestedRef.current.delete(id.toLowerCase()));
-      enqueueIds(pendingIds);
-    }, 3000);
-    return () => clearInterval(timer);
-  }, [address, enabled, enqueueIds, hasPendingBridge]);
-
-  useEffect(() => {
+  /** 初始化：只扫本地历史前部，凑满一批候选或达到扫描上限就停。 */
+  const scanInitialHistory = useCallback(() => {
     if (!enabled || !address || !items.length) return;
     const bootKey = address.toLowerCase();
     const belongsToAddress = items.some(
       (item) => item.owner_addr?.toLowerCase() === bootKey
     );
-    if (!belongsToAddress || bootstrappedRef.current === bootKey) return;
-    bootstrappedRef.current = bootKey;
-    enqueueIds(
-      collectOutgoingTxIds(items, address, new Set(requestedRef.current))
+    if (!belongsToAddress) return;
+    if (initScanRef.current.address !== bootKey) {
+      initScanRef.current = { address: bootKey, scanned: 0, matched: 0 };
+    }
+    const state = initScanRef.current;
+    if (
+      state.matched >= BRIDGE_HISTORY_TX_BATCH ||
+      state.scanned >= BRIDGE_HISTORY_INIT_SCAN_LIMIT
+    ) {
+      return;
+    }
+    const end = Math.min(items.length, BRIDGE_HISTORY_INIT_SCAN_LIMIT);
+    if (state.scanned >= end) return;
+    const { ids, scanned } = collectInitialBridgeTxIds(
+      items,
+      address,
+      new Set(requestedRef.current),
+      state.scanned
     );
+    state.scanned = scanned;
+    state.matched += ids.length;
+    if (ids.length) enqueueIds(ids);
   }, [address, enabled, enqueueIds, items]);
 
+  useEffect(() => {
+    scanInitialHistory();
+  }, [scanInitialHistory]);
+
+  /** 轮询：不扫描历史列表，只重复查询当前仍在 pending 的跨链。 */
+  const pollPendingBridges = useCallback(() => {
+    if (requestQueueRef.current.size || requestQueueRef.current.pending) {
+      return;
+    }
+    const pendingIds = bridgesRef.current
+      .filter((item) => item.status === 'pending')
+      .map((item) => item.from_tx?.tx_id)
+      .filter((id): id is string => !!id);
+    pendingIds.forEach((id) => requestedRef.current.delete(id.toLowerCase()));
+    enqueueIds(pendingIds);
+  }, [enqueueIds]);
+
+  useEffect(() => {
+    if (!enabled || !address || !hasPendingBridge) return;
+    const timer = setInterval(pollPendingBridges, 3000);
+    return () => clearInterval(timer);
+  }, [address, enabled, hasPendingBridge, pollPendingBridges]);
+
+  /** 滚动：把可见行映射回原始历史下标，只取所在的 20 条窗口。 */
   const onRangeChanged = useCallback(
     (
       startIndex: number,

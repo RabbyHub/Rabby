@@ -1,5 +1,6 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import {
+  collectInitialBridgeTxIds,
   collectOutgoingTxIds,
   collectViewportOutgoingTxIds,
   mergeHistoryWithBridge,
@@ -16,11 +17,13 @@ const tx = (
   id: string;
   chain: string;
   tx: { from_addr: string };
+  sends?: unknown[] | null;
 } => ({
   _id: `${chain}-${id}`,
   id,
   chain,
   tx: { from_addr: from },
+  sends: [{}],
 });
 
 const bridge = (
@@ -49,12 +52,69 @@ describe('collectOutgoingTxIds', () => {
     expect(skip.has('0x3')).toBe(true);
   });
 
-  it('does not query scam transactions', () => {
+  it('does not query cancel transactions', () => {
     const items = [
-      { ...tx('0xscam', 'eth'), is_scam: true },
+      { ...tx('0xcancel', 'eth'), cate_id: 'cancel' },
       tx('0xok', 'eth'),
     ];
     expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
+  });
+
+  it('does not query scam transactions', () => {
+    const items = [
+      { ...tx('0xscam', 'eth'), is_scam: true, sends: [{}] },
+      { ...tx('0xok', 'eth'), sends: [{}] },
+    ];
+    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
+  });
+
+  it('does not query transactions with empty sends', () => {
+    const items = [
+      { ...tx('0xempty', 'eth'), sends: [] },
+      { ...tx('0xmissing', 'eth'), sends: undefined },
+      { ...tx('0xok', 'eth'), sends: [{}] },
+    ];
+    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
+  });
+
+  it('keeps scanning until 20 matches, 100 inspected, or the list ends', () => {
+    const skipped = Array.from({ length: 30 }, (_, index) =>
+      tx(`0xskip${index}`, 'eth', '0xother')
+    );
+    const matched = Array.from({ length: 25 }, (_, index) =>
+      tx(`0xok${index}`, 'eth')
+    );
+    const { ids, scanned } = collectInitialBridgeTxIds(
+      [...skipped, ...matched],
+      user,
+      new Set()
+    );
+    expect(ids).toHaveLength(20);
+    expect(ids[0]).toBe('0xok0');
+    expect(scanned).toBe(50);
+
+    const short = collectInitialBridgeTxIds(
+      skipped.slice(0, 10),
+      user,
+      new Set()
+    );
+    expect(short.ids).toEqual([]);
+    expect(short.scanned).toBe(10);
+
+    const capped = collectInitialBridgeTxIds(
+      Array.from({ length: 150 }, (_, index) =>
+        index < 90
+          ? tx(`0xskip${index}`, 'eth', '0xother')
+          : tx(`0xok${index}`, 'eth')
+      ),
+      user,
+      new Set(),
+      0,
+      20,
+      100
+    );
+    expect(capped.ids).toHaveLength(10);
+    expect(capped.scanned).toBe(100);
   });
 
   it('fills the rest of a 20-id batch past the viewport', () => {

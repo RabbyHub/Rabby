@@ -1,16 +1,7 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 
 export const BRIDGE_HISTORY_TX_BATCH = 20;
-
-// 临时定向排查，只输出这笔交易的分类和过滤原因。
-export const logBridgeLookup = (id: string, stage: string, detail: unknown) => {
-  if (
-    id.toLowerCase() ===
-    '0x5cf7c88eaebd3358288247bb320a141fe8ebfb6b189987feac8a12bd9a0c6488'
-  ) {
-    console.log('[BridgeLookup]', stage, id, detail);
-  }
-};
+export const BRIDGE_HISTORY_INIT_SCAN_LIMIT = 100;
 
 export const historyTxKey = (chain?: string, id?: string) =>
   `${(chain || '').toLowerCase()}:${(id || '').toLowerCase()}`;
@@ -19,37 +10,34 @@ type OutgoingHistoryTx = {
   id: string;
   cate_id?: string | null;
   is_scam?: boolean;
+  sends?: unknown[] | null;
   token_approve?: unknown;
   tx?: { from_addr?: string } | null;
 };
 
-export const isOutgoingUserTx = (item: OutgoingHistoryTx, address: string) =>
-  !!item.tx?.from_addr &&
-  !!address &&
-  item.tx.from_addr.toLowerCase() === address.toLowerCase();
+const bridgeSkipReasons = (item: OutgoingHistoryTx, address: string) => {
+  const reasons: string[] = [];
+  if (!item.tx?.from_addr) reasons.push('缺少 tx.from_addr');
+  else if (item.tx.from_addr.toLowerCase() !== address.toLowerCase()) {
+    reasons.push('不是当前地址发出');
+  }
+  if (item.is_scam) reasons.push('scam 交易');
+  if (!item.sends?.length) reasons.push('sends 为空');
+  if (['send', 'receive', 'approve', 'cancel'].includes(item.cate_id || '')) {
+    reasons.push(`分类是 ${item.cate_id}`);
+  }
+  return reasons;
+};
 
 // 明确的转账、收款和授权不是内部跨链；分类未知的保留查询兜底。
 const isBridgeCandidate = (item: OutgoingHistoryTx, address: string) => {
-  const outgoing = isOutgoingUserTx(item, address);
-  const excludedCategory = ['send', 'receive', 'approve'].includes(
-    item.cate_id || ''
-  );
-  logBridgeLookup(item.id, 'classification', {
-    cate_id: item.cate_id,
-    is_scam: !!item.is_scam,
-    from_addr: item.tx?.from_addr,
-    address,
-    outgoing,
-    excludedCategory,
-    hasTokenApprove: !!item.token_approve,
-    eligible: outgoing && !excludedCategory && !item.is_scam,
-  });
   // 跨链记录也可能带 token_approve，不能据此认定为纯授权交易。
-  return outgoing && !excludedCategory && !item.is_scam;
+  return bridgeSkipReasons(item, address).length === 0;
 };
 
 const txIdKey = (id: string) => id.toLowerCase();
 
+/** 滚动窗口内收集候选。只看这一段原始记录，被滤掉的不从窗口外补。 */
 export const collectOutgoingTxIds = (
   items: OutgoingHistoryTx[],
   address: string,
@@ -72,6 +60,30 @@ export const collectOutgoingTxIds = (
   return ids;
 };
 
+/** 初始化专用。向后找，直到凑满 matchLimit、扫过 scanLimit，或列表结束。 */
+export const collectInitialBridgeTxIds = (
+  items: OutgoingHistoryTx[],
+  address: string,
+  skip: Set<string>,
+  startIndex = 0,
+  matchLimit = BRIDGE_HISTORY_TX_BATCH,
+  scanLimit = BRIDGE_HISTORY_INIT_SCAN_LIMIT
+) => {
+  const ids: string[] = [];
+  let index = Math.max(0, startIndex);
+  const end = Math.min(items.length, scanLimit);
+  for (; index < end && ids.length < matchLimit; index += 1) {
+    const item = items[index];
+    if (!item?.id || !isBridgeCandidate(item, address)) continue;
+    const key = txIdKey(item.id);
+    if (skip.has(key)) continue;
+    skip.add(key);
+    ids.push(item.id);
+  }
+  return { ids, scanned: index };
+};
+
+/** 滚动专用。可见下标落到 0–19、20–39 这类窗口后，只收集这些窗口。 */
 export const collectViewportOutgoingTxIds = (
   items: OutgoingHistoryTx[],
   address: string,
