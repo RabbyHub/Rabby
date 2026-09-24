@@ -11,7 +11,12 @@ export interface SyncItemRow {
   updatedAt: number;
   _id: string;
   isSyncing?: boolean;
+  // Which history API wrote the pending cursor; rows written before this
+  // field existed only came from the all-history API.
+  pendingApi?: 'all' | 'realtime';
   pendingStartTime?: number;
+  // Seconds for the all-history API, milliseconds for the realtime API,
+  // matching each API's own latestTime parameter.
   pendingLatestTime?: number;
 }
 
