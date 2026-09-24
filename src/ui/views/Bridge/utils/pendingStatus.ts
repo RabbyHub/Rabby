@@ -32,7 +32,7 @@ export type BridgePendingListResolution =
       local: BridgeTxHistoryItem;
     }
   | {
-      /** 整体仍 pending，但远程 from_tx 已推进到源链成功 / 失败。只更新 UI 本地态。 */
+      /** 整体 pending 时同步远程源链状态，仅更新 UI。 */
       kind: 'sync';
       local: BridgeTxHistoryItem;
     };

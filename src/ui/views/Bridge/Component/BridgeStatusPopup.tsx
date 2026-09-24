@@ -213,7 +213,7 @@ export const BridgeStatusPopup = ({
   );
   const popupState = getBridgePopupState(data, now);
   const refundHref = refundLink(popupState);
-  // 极端场景：如果没有退款链接，即使退款了也当做失败
+  // 无退款链接时按失败展示。
   const popup =
     popupState.button === 'refund' && !refundHref
       ? {
@@ -224,7 +224,7 @@ export const BridgeStatusPopup = ({
           button: 'failedSupport' as const,
         }
       : popupState;
-  // 成功后展示实际到账信息；未返回实际数据时才回退报价，实际数量为 0 也保留。
+  // 优先实际到账，缺失时用报价，保留零值。
   const receiveToken =
     data.status === 'fromFailed'
       ? data.fromToken
