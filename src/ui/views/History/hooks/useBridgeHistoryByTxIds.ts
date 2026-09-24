@@ -2,7 +2,7 @@ import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import { useWallet } from '@/ui/utils';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import PQueue from 'p-queue';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BRIDGE_HISTORY_INIT_SCAN_LIMIT,
   BRIDGE_HISTORY_TX_BATCH,
@@ -24,12 +24,36 @@ type LookupItem = {
   tx?: { from_addr?: string } | null;
 };
 
-/**
- * 三个入口只负责挑出要查的哈希，真正发请求都交给 enqueueIds。
- * - 初始化：从最新记录向后找，凑满 20 条候选、扫满 100 条，或数据库结束。
- * - 滚动：只查当前可见窗口所在的 20 条批次，不向窗口外补。
- * - 轮询：只刷新已经识别、且仍是 pending、创建未满 2h 的跨链。
- */
+// 会话缓存，切页保留，关闭插件页面释放。
+// 缓存空结果，仅 pending 定时刷新。
+type LookupSession = {
+  requested: Set<string>;
+  scheduled: Set<string>;
+  running: Set<string>;
+  results: Map<string, BridgeHistory>;
+  listeners: Set<() => void>;
+  queue: PQueue;
+  lastPoll: number;
+};
+const sessions = new Map<string, LookupSession>();
+const getSession = (address: string): LookupSession => {
+  const key = address.toLowerCase();
+  let session = sessions.get(key);
+  if (!session) {
+    session = {
+      requested: new Set(),
+      scheduled: new Set(),
+      running: new Set(),
+      results: new Map(),
+      listeners: new Set(),
+      queue: new PQueue({ interval: 1000, intervalCap: 2, concurrency: 2 }),
+      lastPoll: 0,
+    };
+    sessions.set(key, session);
+  }
+  return session;
+};
+
 export const useBridgeHistoryByTxIds = (options: {
   enabled: boolean;
   address?: string;
@@ -38,32 +62,45 @@ export const useBridgeHistoryByTxIds = (options: {
   const { enabled, address = '', items } = options;
   const wallet = useWallet();
   const [bridges, setBridges] = useState<BridgeHistory[]>([]);
-  const hasPendingBridge = bridges.some((item) =>
-    shouldPollPendingBridge(item)
-  );
-  const bridgesRef = useRef(bridges);
-  bridgesRef.current = bridges;
-  const requestedRef = useRef(new Set<string>());
-  const requestQueueRef = useRef(
-    new PQueue({ interval: 1000, intervalCap: 2, concurrency: 2 })
-  );
+  const session = useMemo(() => getSession(address), [address]);
   const itemsRef = useRef(items);
-  const addressRef = useRef(address);
-  const enabledRef = useRef(enabled);
-  const initScanRef = useRef({ address: '', scanned: 0, matched: 0 });
-  const generationRef = useRef(0);
   itemsRef.current = items;
-  addressRef.current = address;
-  enabledRef.current = enabled;
 
-  /** 去重、按每秒最多 2 批发出 history_list_by_tx_ids。不决定查哪些交易。 */
+  useEffect(() => {
+    if (!enabled || !address) {
+      setBridges([]);
+      return;
+    }
+    const refresh = () => setBridges(Array.from(session.results.values()));
+    session.listeners.add(refresh);
+    refresh();
+    return () => {
+      session.listeners.delete(refresh);
+      if (!session.listeners.size) {
+        // 取消排队任务；在途请求回填原地址缓存。
+        session.queue.clear();
+        session.scheduled.forEach((id) => {
+          if (!session.running.has(id)) session.scheduled.delete(id);
+        });
+      }
+    };
+  }, [address, enabled, session]);
+
+  /** 请求去重，每秒最多 2 批。 */
   const enqueueIds = useCallback(
-    (ids: string[]) => {
+    (ids: string[], polling = false) => {
+      if (!enabled || !address) return;
       const fresh: string[] = [];
       ids.forEach((id) => {
         const key = id.toLowerCase();
-        if (!key || requestedRef.current.has(key)) return;
-        requestedRef.current.add(key);
+        if (
+          !key ||
+          session.scheduled.has(key) ||
+          (!polling && session.requested.has(key))
+        ) {
+          return;
+        }
+        session.scheduled.add(key);
         fresh.push(id);
       });
       for (
@@ -72,22 +109,21 @@ export const useBridgeHistoryByTxIds = (options: {
         index += BRIDGE_HISTORY_TX_BATCH
       ) {
         const batch = fresh.slice(index, index + BRIDGE_HISTORY_TX_BATCH);
-        const generation = generationRef.current;
-        requestQueueRef.current.add(async () => {
-          if (generation !== generationRef.current || !enabledRef.current) {
-            return;
-          }
+        session.queue.add(async () => {
+          const keys = batch.map((id) => id.toLowerCase());
+          keys.forEach((id) => session.running.add(id));
           try {
-            // 只用已有本地来源排除明确的 Send、Swap 和外部 dApp 交易，不新增标记。
+            // 按本地来源排除非 Bridge 交易。
             const { pendings, completeds } = await wallet.getTransactionHistory(
-              addressRef.current
+              address
             );
-            if (generation !== generationRef.current) return;
+            // 页面关闭后不再发起新请求。
+            if (!session.listeners.size) return;
             const excludedIds = new Set(
               [...pendings, ...completeds].flatMap((group) => {
                 const ga = group.$ctx?.ga;
-                // 源链失败、退款、等待的跨链记录 source 仍是 bridge，不能排除。
-                // 跨链本身可能带 swap 动作，只按 Rabby 发起时写入的 source 判断。
+                // 保留 bridge 来源的各状态记录。
+                // 跨链可含 swap，只按发起来源判断。
                 const nonBridgeSources = [
                   'sendToken',
                   'swap',
@@ -118,118 +154,91 @@ export const useBridgeHistoryByTxIds = (options: {
             const candidates = batch.filter(
               (id) => !excludedIds.has(id.toLowerCase())
             );
-            if (!candidates.length) return;
-            const res = await wallet.openapi.getBridgeHistoryListByTxIds({
-              from_tx_ids: candidates,
-            });
-            if (generation !== generationRef.current) return;
-            const list = res?.history_list || [];
-            if (!list.length) return;
-            setBridges((prev) => {
-              const next = new Map(
-                prev.map((item) => [
-                  historyTxKey(item.from_token?.chain, item.from_tx?.tx_id),
-                  item,
-                ])
+            const res = candidates.length
+              ? await wallet.openapi.getBridgeHistoryListByTxIds({
+                  from_tx_ids: candidates,
+                })
+              : undefined;
+            keys.forEach((id) => session.requested.add(id));
+            (res?.history_list || []).forEach((item) => {
+              session.results.set(
+                historyTxKey(item.from_token?.chain, item.from_tx?.tx_id),
+                item
               );
-              list.forEach((item) => {
-                next.set(
-                  historyTxKey(item.from_token?.chain, item.from_tx?.tx_id),
-                  item
-                );
-              });
-              return Array.from(next.values());
             });
+            session.listeners.forEach((notify) => notify());
           } catch {
-            if (generation !== generationRef.current) return;
-            batch.forEach((id) =>
-              requestedRef.current.delete(id.toLowerCase())
-            );
+            // 请求失败不缓存，允许重试。
+          } finally {
+            keys.forEach((id) => {
+              session.running.delete(id);
+              session.scheduled.delete(id);
+            });
           }
         });
       }
     },
-    [wallet]
+    [address, enabled, session, wallet]
   );
 
-  /** 换地址或停用时清空队列和已查记录，避免把上一个地址的结果写进来。 */
   useEffect(() => {
-    generationRef.current += 1;
-    requestQueueRef.current.clear();
-    requestedRef.current = new Set();
-    initScanRef.current = { address: '', scanned: 0, matched: 0 };
-    bridgesRef.current = [];
-    setBridges([]);
-    return () => {
-      // 切换地址、停用或卸载后，丢掉还没开始的请求，进行中的结果也不再写入。
-      generationRef.current += 1;
-      requestQueueRef.current.clear();
-    };
-  }, [address, enabled]);
-
-  /** 初始化：只扫本地历史前部，凑满一批候选或达到扫描上限就停。 */
-  const scanInitialHistory = useCallback(() => {
     if (!enabled || !address || !items.length) return;
-    const bootKey = address.toLowerCase();
-    const belongsToAddress = items.some(
-      (item) => item.owner_addr?.toLowerCase() === bootKey
-    );
-    if (!belongsToAddress) return;
-    if (initScanRef.current.address !== bootKey) {
-      initScanRef.current = { address: bootKey, scanned: 0, matched: 0 };
-    }
-    const state = initScanRef.current;
     if (
-      state.matched >= BRIDGE_HISTORY_TX_BATCH ||
-      state.scanned >= BRIDGE_HISTORY_INIT_SCAN_LIMIT
+      !items.some(
+        (item) => item.owner_addr?.toLowerCase() === address.toLowerCase()
+      )
     ) {
       return;
     }
-    const end = Math.min(items.length, BRIDGE_HISTORY_INIT_SCAN_LIMIT);
-    if (state.scanned >= end) return;
-    const { ids, scanned } = collectInitialBridgeTxIds(
+    // DB 更新后重扫前 100 条。
+    // 每轮最多 20 个新候选，缓存去重。
+    const { ids } = collectInitialBridgeTxIds(
       items,
       address,
-      new Set(requestedRef.current),
-      state.scanned
+      new Set([...session.requested, ...session.scheduled]),
+      0,
+      BRIDGE_HISTORY_TX_BATCH,
+      BRIDGE_HISTORY_INIT_SCAN_LIMIT
     );
-    state.scanned = scanned;
-    state.matched += ids.length;
-    if (ids.length) enqueueIds(ids);
-  }, [address, enabled, enqueueIds, items]);
+    enqueueIds(ids);
+  }, [address, enabled, enqueueIds, items, session]);
 
   useEffect(() => {
-    scanInitialHistory();
-  }, [scanInitialHistory]);
-
-  /** 轮询：不扫描历史列表，只重复查询当前仍在 pending 且创建未满 2h 的跨链。 */
-  const pollPendingBridges = useCallback(() => {
-    if (requestQueueRef.current.size || requestQueueRef.current.pending) {
-      return;
-    }
-    const now = Date.now();
-    const pendingIds = bridgesRef.current
-      .filter((item) => shouldPollPendingBridge(item, now))
-      .map((item) => item.from_tx?.tx_id)
-      .filter((id): id is string => !!id);
-    pendingIds.forEach((id) => requestedRef.current.delete(id.toLowerCase()));
-    enqueueIds(pendingIds);
-  }, [enqueueIds]);
-
-  useEffect(() => {
-    if (!enabled || !address || !hasPendingBridge) return;
-    const timer = setInterval(pollPendingBridges, 3000);
+    if (!enabled || !address) return;
+    const pendingIds = () =>
+      Array.from(session.results.values())
+        .filter((item) => shouldPollPendingBridge(item))
+        .map((item) => item.from_tx?.tx_id)
+        .filter((id): id is string => !!id);
+    if (!pendingIds().length) return;
+    const timer = setInterval(() => {
+      const ids = pendingIds();
+      // 无有效 pending 时停止，新 pending 到来时重启。
+      if (!ids.length) {
+        clearInterval(timer);
+        return;
+      }
+      if (
+        session.queue.size ||
+        session.queue.pending ||
+        Date.now() - session.lastPoll < 3000
+      ) {
+        return;
+      }
+      session.lastPoll = Date.now();
+      enqueueIds(ids, true);
+    }, 3000);
     return () => clearInterval(timer);
-  }, [address, enabled, hasPendingBridge, pollPendingBridges]);
+  }, [address, enabled, enqueueIds, bridges, session]);
 
-  /** 滚动：把可见行映射回原始历史下标，只取所在的 20 条窗口。 */
+  /** 滚动时只查可见行所在的 20 条批次。 */
   const onRangeChanged = useCallback(
     (
       startIndex: number,
       endIndex: number,
       rows: HistoryListRow<{ chain: string; id: string }>[]
     ) => {
-      if (!enabledRef.current || !addressRef.current) return;
+      if (!enabled || !address) return;
       const items = itemsRef.current;
       const indexByKey = new Map(
         items.map((item, index) => [historyTxKey(item.chain, item.id), index])
@@ -248,18 +257,12 @@ export const useBridgeHistoryByTxIds = (options: {
         end = Math.max(end, originalIndex);
       }
       if (end < 0) return;
-      const skip = new Set(requestedRef.current);
+      const skip = new Set([...session.requested, ...session.scheduled]);
       enqueueIds(
-        collectViewportOutgoingTxIds(
-          items,
-          addressRef.current,
-          skip,
-          start,
-          end
-        )
+        collectViewportOutgoingTxIds(items, address, skip, start, end)
       );
     },
-    [enqueueIds]
+    [address, enabled, enqueueIds, session]
   );
 
   return { bridges, onRangeChanged };

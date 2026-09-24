@@ -29,7 +29,7 @@ import {
   getBridgeHistoryDetail,
 } from '../utils/historyStatus';
 
-/** 只渲染 historyStatus 给出的场景，这里不再判断超时或退款种类。 */
+/** 仅渲染 historyStatus 的判定结果。 */
 const isTab = getUiType().isTab;
 const SPIN_STYLE = { animation: 'spin 1.5s linear infinite' };
 

@@ -16,29 +16,35 @@ type OutgoingHistoryTx = {
   tx?: { from_addr?: string } | null;
 };
 
+type BridgeSkipReason =
+  | 'missing_from_address'
+  | 'not_outgoing_user_tx'
+  | 'scam_tx'
+  | 'excluded_category';
+
 const bridgeSkipReasons = (item: OutgoingHistoryTx, address: string) => {
-  const reasons: string[] = [];
-  if (!item.tx?.from_addr) reasons.push('缺少 tx.from_addr');
+  const reasons: BridgeSkipReason[] = [];
+  if (!item.tx?.from_addr) reasons.push('missing_from_address');
   else if (item.tx.from_addr.toLowerCase() !== address.toLowerCase()) {
-    reasons.push('不是当前地址发出');
+    reasons.push('not_outgoing_user_tx');
   }
-  if (item.is_scam) reasons.push('scam 交易');
-  if (!item.sends?.length) reasons.push('sends 为空');
+  if (item.is_scam) reasons.push('scam_tx');
+  // 源链失败可无 sends，不据此过滤。
   if (['send', 'receive', 'approve', 'cancel'].includes(item.cate_id || '')) {
-    reasons.push(`分类是 ${item.cate_id}`);
+    reasons.push('excluded_category');
   }
   return reasons;
 };
 
-// 明确的转账、收款和授权不是内部跨链；分类未知的保留查询兜底。
+// 排除明确分类，未知分类保留。
 const isBridgeCandidate = (item: OutgoingHistoryTx, address: string) => {
-  // 跨链记录也可能带 token_approve，不能据此认定为纯授权交易。
+  // 跨链也可带 token_approve，不据此过滤。
   return bridgeSkipReasons(item, address).length === 0;
 };
 
 const txIdKey = (id: string) => id.toLowerCase();
 
-/** 滚动窗口内收集候选。只看这一段原始记录，被滤掉的不从窗口外补。 */
+/** 收集窗口内候选，不向外补齐。 */
 export const collectOutgoingTxIds = (
   items: OutgoingHistoryTx[],
   address: string,
@@ -48,7 +54,7 @@ export const collectOutgoingTxIds = (
 ) => {
   const ids: string[] = [];
   const start = Math.max(0, startIndex);
-  // 按原始历史条数限定批次，过滤掉的记录不从下一批补齐。
+  // 按原始条数分批，不跨批补齐。
   const end = Math.min(items.length, start + limit);
   for (let index = start; index < end; index += 1) {
     const item = items[index];
@@ -61,7 +67,7 @@ export const collectOutgoingTxIds = (
   return ids;
 };
 
-/** 初始化专用。向后找，直到凑满 matchLimit、扫过 scanLimit，或列表结束。 */
+/** 初始化：达到候选数、扫描上限或列表末尾即停止。 */
 export const collectInitialBridgeTxIds = (
   items: OutgoingHistoryTx[],
   address: string,
@@ -84,7 +90,7 @@ export const collectInitialBridgeTxIds = (
   return { ids, scanned: index };
 };
 
-/** 滚动专用。可见下标落到 0–19、20–39 这类窗口后，只收集这些窗口。 */
+/** 收集可见范围所在批次的候选。 */
 export const collectViewportOutgoingTxIds = (
   items: OutgoingHistoryTx[],
   address: string,
@@ -95,7 +101,7 @@ export const collectViewportOutgoingTxIds = (
 ) => {
   if (limit <= 0) return [];
   const ids: string[] = [];
-  // 只查询可见记录所在的批次：0–19、20–39……，不向更早历史补候选。
+  // 批次按 0–19、20–39 对齐。
   const start = Math.floor(Math.max(0, startIndex) / limit) * limit;
   const end = Math.min(items.length - 1, endIndex);
   for (let index = start; index <= end; index += limit) {

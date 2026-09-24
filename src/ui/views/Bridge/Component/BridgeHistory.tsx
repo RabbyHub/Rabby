@@ -408,7 +408,7 @@ const HistoryList = () => {
       setLocals([]);
       return;
     }
-    // 接口 pending 期间，RPC 可能已更新本地源链状态；每次列表刷新都重新读取，不能只看条数。
+    // 列表刷新时同步本地源链状态。
     wallet.getBridgeTxHistory(address).then((list) => {
       if (!disposed) setLocals(list || []);
     });
