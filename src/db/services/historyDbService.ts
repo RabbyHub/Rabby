@@ -11,7 +11,7 @@ const USE_REALTIME_API_DURATION = 24 * 5 * 60 * 60 * 1000; // use async history 
 
 export type HistoryOpenapi = Pick<
   OpenApiService,
-  'hasNewTxFrom' | 'getAllTxHistory' | 'listTxHisotry'
+  'hasNewTxFrom' | 'getAllTxHistory' | 'listTxHistory'
 >;
 
 export const getHistoryRetentionStart = () =>
@@ -368,7 +368,7 @@ class HistoryDbService {
     await savePendingCursor(nextStartTime);
 
     while (!isEnd) {
-      const res = await openapi.listTxHisotry({
+      const res = await openapi.listTxHistory({
         id: address,
         start_time: nextStartTime,
         page_count: PAGE_COUNT,

@@ -58,7 +58,7 @@ const createOpenapi = (hasNew: boolean) => {
       has_new_tx: hasNew,
     }),
     getAllTxHistory: jest.fn(),
-    listTxHisotry: jest.fn(),
+    listTxHistory: jest.fn(),
   };
 
   return (openapi as unknown) as jest.Mocked<HistoryOpenapi>;
@@ -205,7 +205,7 @@ describe('historyDbService realtime sync resume', () => {
       .mockResolvedValue(localLatestTime);
 
     const openapi = createOpenapi(true);
-    openapi.listTxHisotry
+    openapi.listTxHistory
       .mockResolvedValueOnce(createHistoryPage(firstPageTimes) as any)
       .mockRejectedValueOnce(new Error('popup closed'));
 
@@ -225,13 +225,13 @@ describe('historyDbService realtime sync resume', () => {
     // reveals the missing range; only the saved cursor does.
     getLatestItemTime.mockResolvedValue(firstPageTimes[0]);
     openapi.hasNewTxFrom.mockResolvedValue({ has_new_tx: false });
-    openapi.listTxHisotry.mockResolvedValueOnce(
+    openapi.listTxHistory.mockResolvedValueOnce(
       createHistoryPage(secondPageTimes) as any
     );
 
     await historyDbService.sync({ openapi, address: ADDRESS });
 
-    expect(openapi.listTxHisotry).toHaveBeenLastCalledWith({
+    expect(openapi.listTxHistory).toHaveBeenLastCalledWith({
       id: ADDRESS,
       start_time: firstPageLastTime,
       page_count: 20,
@@ -267,7 +267,7 @@ describe('historyDbService realtime sync resume', () => {
     });
 
     const openapi = createOpenapi(true);
-    openapi.listTxHisotry.mockResolvedValueOnce(
+    openapi.listTxHistory.mockResolvedValueOnce(
       createHistoryPage([nowInSeconds() - 60]) as any
     );
 
@@ -280,7 +280,7 @@ describe('historyDbService realtime sync resume', () => {
   test('stops when a full realtime page cannot move the time cursor', async () => {
     const stuckTime = nowInSeconds() - 60;
     const openapi = createOpenapi(true);
-    openapi.listTxHisotry.mockResolvedValue(
+    openapi.listTxHistory.mockResolvedValue(
       createHistoryPage(Array(20).fill(stuckTime)) as any
     );
     jest.spyOn(historyDbService, 'fillEntity').mockResolvedValue(undefined);
@@ -292,7 +292,7 @@ describe('historyDbService realtime sync resume', () => {
       latestTime: (nowInSeconds() - 24 * 60 * 60) * 1000,
     });
 
-    expect(openapi.listTxHisotry).toHaveBeenCalledTimes(1);
+    expect(openapi.listTxHistory).toHaveBeenCalledTimes(1);
     expect(syncState).toMatchObject({ isSyncing: false });
   });
 

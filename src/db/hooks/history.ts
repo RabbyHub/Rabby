@@ -120,7 +120,7 @@ export const useQueryDbHistory = (options: {
 
       const startTime =
         currentData?.queryKey === apiQueryKey ? currentData.last || 0 : 0;
-      const res = await wallet.openapi.listTxHisotry({
+      const res = await wallet.openapi.listTxHistory({
         id: address,
         start_time: startTime,
         page_count: PAGE_COUNT,
