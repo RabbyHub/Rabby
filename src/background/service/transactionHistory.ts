@@ -17,6 +17,7 @@ import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
 import { makeTransactionId } from '@/utils/transaction';
+import { getGasDepositTxKey } from '@/utils/history';
 import { sortBy, groupBy } from 'lodash';
 import {
   checkIsPendingTxGroup,
@@ -877,12 +878,7 @@ class TxHistory {
     );
   };
 
-  checkIsGasDepositTxs = (
-    txs: Array<{
-      chainId?: number;
-      hash: string;
-    }>
-  ) => {
+  getGasDepositTxKeys = () => {
     const gasDepositTxKeys = new Set<string>();
 
     Object.values(this.store?.transactions || {}).forEach((addressTxMap) => {
@@ -892,17 +888,28 @@ class TxHistory {
             return;
           }
 
-          gasDepositTxKeys.add(`${txGroup.chainId}:${tx.hash.toLowerCase()}`);
+          gasDepositTxKeys.add(getGasDepositTxKey(txGroup.chainId, tx.hash));
         });
       });
     });
+
+    return Array.from(gasDepositTxKeys);
+  };
+
+  checkIsGasDepositTxs = (
+    txs: Array<{
+      chainId?: number;
+      hash: string;
+    }>
+  ) => {
+    const gasDepositTxKeys = new Set(this.getGasDepositTxKeys());
 
     return txs.map((tx) => {
       if (!tx.chainId || !tx.hash) {
         return false;
       }
 
-      return gasDepositTxKeys.has(`${tx.chainId}:${tx.hash.toLowerCase()}`);
+      return gasDepositTxKeys.has(getGasDepositTxKey(tx.chainId, tx.hash));
     });
   };
 

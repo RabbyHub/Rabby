@@ -5,6 +5,7 @@ import { last } from 'lodash';
 import Dexie from 'dexie';
 import { transformToHistory } from '@/utils/history';
 import { syncDbService } from './syncDbService';
+import { HISTORY_RETENTION_SECONDS } from '../constants';
 
 const USE_REALTIME_API_DURATION = 24 * 5 * 60 * 60 * 1000; // use async history api if user not opened app in 5 days
 
@@ -12,6 +13,38 @@ export type HistoryOpenapi = Pick<
   OpenApiService,
   'hasNewTxFrom' | 'getAllTxHistory' | 'listTxHisotry'
 >;
+
+export const getHistoryRetentionStart = () =>
+  Date.now() / 1000 - HISTORY_RETENTION_SECONDS;
+
+const localSyncLocks = new Map<string, Promise<unknown>>();
+
+// Popup, desktop and notification pages share one IndexedDB, so a sync in one
+// page can otherwise resume the same pending range as another, or read its
+// half-written pages as the latest synced time. Web Locks serialize across
+// pages and are released when a page closes; the in-memory chain only covers
+// environments without them.
+const withHistorySyncLock = <T>(
+  address: string,
+  task: () => Promise<T>
+): Promise<T> => {
+  const name = `rabby-history-sync:${address.toLowerCase()}`;
+  const locks = typeof navigator !== 'undefined' ? navigator.locks : undefined;
+  if (locks?.request) {
+    return locks.request(name, task) as Promise<T>;
+  }
+
+  const previous = localSyncLocks.get(name) || Promise.resolve();
+  const current = previous.then(task);
+  const settled = current.catch(() => undefined);
+  localSyncLocks.set(name, settled);
+  settled.then(() => {
+    if (localSyncLocks.get(name) === settled) {
+      localSyncLocks.delete(name);
+    }
+  });
+  return current;
+};
 
 class HistoryDbService {
   async fillEntity({
@@ -45,24 +78,69 @@ class HistoryDbService {
     return lastItem?.time_at;
   }
 
-  async sync({
+  sync(params: { openapi: HistoryOpenapi; address: string }) {
+    return withHistorySyncLock(params.address, async () => {
+      await this.syncWithinLock(params);
+      await this.deleteExpired(params.address);
+    });
+  }
+
+  queryRecent({
+    address,
+    isFilterScam,
+    serverChainId,
+    limit,
+  }: {
+    address: string;
+    isFilterScam?: boolean;
+    serverChainId?: string;
+    limit?: number;
+  }) {
+    const owner = address.toLowerCase();
+    const collection = db.history
+      .where('[owner_addr+time_at]')
+      .between([owner, getHistoryRetentionStart()], [owner, Dexie.maxKey])
+      .reverse()
+      .and((item) => {
+        if (isFilterScam && (item.is_scam || item.is_small_tx)) {
+          return false;
+        }
+        return !serverChainId || item.chain === serverChainId;
+      });
+    // The index already yields newest first, so a limit reads only the rows
+    // shown; limit() counts rows that pass the filter above.
+    return (limit ? collection.limit(limit) : collection).toArray();
+  }
+
+  async deleteExpired(address: string) {
+    const owner = address.toLowerCase();
+    const latestTime = await this.getLatestItemTime(owner);
+    if (latestTime === undefined) {
+      return 0;
+    }
+    // Keep the newest second even when it has expired: it is the sync
+    // watermark, and without it every open would sync the address as new.
+    const cutoff = Math.min(getHistoryRetentionStart(), latestTime);
+    return db.history
+      .where('[owner_addr+time_at]')
+      .between([owner, Dexie.minKey], [owner, cutoff])
+      .delete();
+  }
+
+  private async syncWithinLock({
     openapi,
     address,
-    startTime,
-    latestTime: _latestTime,
-    forceUseRealTimeApi: _forceUseRealTimeApi,
   }: {
     openapi: HistoryOpenapi;
     address: string;
-    startTime?: number;
-    latestTime?: number;
-    forceUseRealTimeApi?: boolean;
   }) {
     const syncState = await syncDbService.getSyncState({
       address,
       scene: 'history',
     });
 
+    // Holding the lock, isSyncing can only be left over from a sync that was
+    // interrupted, so finish its range before trusting the latest stored item.
     const hasPendingHistorySync =
       syncState?.isSyncing &&
       syncState.pendingStartTime !== undefined &&
@@ -72,23 +150,29 @@ class HistoryDbService {
       const pendingStartTime = syncState.pendingStartTime!;
       const pendingLatestTime = syncState.pendingLatestTime!;
 
-      await this.syncWithAllHistoryApi({
-        openapi,
-        address,
-        startTime: pendingStartTime,
-        latestTime: pendingLatestTime,
-      });
+      if (syncState.pendingApi === 'realtime') {
+        await this.syncWithRealTimeApi({
+          openapi,
+          address,
+          startTime: pendingStartTime,
+          latestTime: pendingLatestTime,
+        });
+      } else {
+        await this.syncWithAllHistoryApi({
+          openapi,
+          address,
+          startTime: pendingStartTime,
+          latestTime: pendingLatestTime,
+        });
+      }
     }
 
-    const latestTime =
-      _latestTime ?? (await this.getLatestItemTime(address)) ?? 0;
+    const latestTime = (await this.getLatestItemTime(address)) ?? 0;
 
     const updatedAt =
       (await syncDbService.getUpdatedAt({ address, scene: 'history' })) || 0;
 
-    const forceUseRealTimeApi =
-      _forceUseRealTimeApi ??
-      updatedAt > Date.now() - USE_REALTIME_API_DURATION;
+    const useRealTimeApi = updatedAt > Date.now() - USE_REALTIME_API_DURATION;
 
     let hasNew = true;
 
@@ -108,11 +192,11 @@ class HistoryDbService {
       return;
     }
 
-    if (forceUseRealTimeApi) {
+    if (useRealTimeApi) {
       await this.syncWithRealTimeApi({
         openapi,
         address,
-        startTime: startTime || 0,
+        startTime: 0,
         latestTime: latestTime * 1000,
       });
 
@@ -127,7 +211,7 @@ class HistoryDbService {
     await this.syncWithAllHistoryApi({
       openapi,
       address,
-      startTime: startTime || 0,
+      startTime: 0,
       latestTime,
     });
 
@@ -155,92 +239,76 @@ class HistoryDbService {
     const isAddUpdate = latestTime > isExpiredTimeAgo / 1000;
 
     let startTime = _startTime;
-    let isEnd = false;
 
     await syncDbService.updateSyncState({
       address,
       scene: 'history',
       patch: {
         isSyncing: true,
+        pendingApi: 'all',
         pendingStartTime: startTime,
         pendingLatestTime: latestTime,
       },
     });
 
+    const pageCount = isAddUpdate ? 500 : 2000;
+    const ninetyDaysAgo = getHistoryRetentionStart();
+
+    // Keep paging until the range meets what is already stored. Stopping
+    // earlier would leave a hole below the pages just written that no later
+    // sync can see, since they only fetch items newer than the latest one.
+    let isEnd = false;
     while (!isEnd) {
       const res = await openapi.getAllTxHistory({
         id: address,
         start_time: startTime || 0,
-        page_count: isAddUpdate ? 500 : 2000,
+        page_count: pageCount,
       });
 
-      const ninetyDaysAgo = new Date().getTime() / 1000 - 90 * 24 * 60 * 60; // 90 days ago
-      // res.history_list = res.history_list.filter(
-      //   (i) => i.time_at > ninetyDaysAgo
-      // );
-      const isNinetyDaysAgo = res.history_list.some(
-        (i) => i.time_at < ninetyDaysAgo
+      console.debug(
+        '🔍syncUserAllHistory CUSTOM_LOGGER:=>: page',
+        address,
+        'startTime:',
+        startTime,
+        'length:',
+        res.history_list.length
       );
-      if (isNinetyDaysAgo) {
-        isEnd = true;
-      }
-
-      console.debug('getAllTxHistory length:', res.history_list.length);
       if (!res.history_list.length) {
-        isEnd = true;
         break;
       }
 
-      const lastItemTime =
-        res.history_list[res.history_list.length - 1].time_at;
-      if (lastItemTime < latestTime || !isAddUpdate) {
-        // update done or not all update  to interup loop
-        isEnd = true;
+      const pageLength = res.history_list.length;
+      const lastItemTime = last(res.history_list)!.time_at;
+      const reachedLatest = lastItemTime < latestTime;
+      if (reachedLatest) {
+        // Keep the latest stored second: other txs from the same block may
+        // not have been indexed when it was stored. Rewriting the stored
+        // ones is harmless since rows are keyed by id.
         res.history_list = res.history_list.filter(
-          (i) => i.time_at > latestTime
+          (i) => i.time_at >= latestTime
         );
-
-        console.debug(
-          '🔍syncUserAllHistory CUSTOM_LOGGER:=>: update',
-          address,
-          'add length:',
-          res.history_list.length
-        );
-        if (res.history_list.length) {
-          await this.fillEntity({
-            address,
-            data: res,
-          });
-        }
-        console.debug(
-          '🔍syncUserAllHistory CUSTOM_LOGGER:=>: No more history',
-          address
-        );
-      } else {
-        // need more history, exec loop
-        console.debug(
-          '🔍syncUserAllHistory CUSTOM_LOGGER:=>: fetch more history',
-          address,
-          'lastItemTime:',
-          lastItemTime
-        );
-        console.debug(
-          '🔍syncUserAllHistory CUSTOM_LOGGER:=>: loop update',
-          address,
-          'add length:',
-          res.history_list.length
-        );
-
+      }
+      if (res.history_list.length) {
         await this.fillEntity({
           address,
           data: res,
         });
+      }
+
+      const reachedNinetyDays = lastItemTime < ninetyDaysAgo;
+      const isLastPage = pageLength < pageCount;
+      // Paging is by timestamp, so a full page within one second would
+      // request the same page again forever.
+      const isStuck = !!startTime && lastItemTime >= startTime;
+      isEnd = reachedLatest || reachedNinetyDays || isLastPage || isStuck;
+      if (!isEnd) {
         startTime = lastItemTime;
         await syncDbService.updateSyncState({
           address,
           scene: 'history',
           patch: {
             isSyncing: true,
+            pendingApi: 'all',
             pendingStartTime: startTime,
             pendingLatestTime: latestTime,
           },
@@ -253,6 +321,7 @@ class HistoryDbService {
       scene: 'history',
       patch: {
         isSyncing: false,
+        pendingApi: undefined,
         pendingStartTime: undefined,
         pendingLatestTime: undefined,
       },
@@ -276,17 +345,27 @@ class HistoryDbService {
 
     const PAGE_COUNT = 20;
 
-    console.log(
-      'synHistoryInRealTimeApi CUSTOM_LOGGER:=>: start',
-      address,
-      'latestTime:',
-      latestTime,
-      'startTime:',
-      startTime
-    );
     let nextStartTime = startTime;
     let isEnd = false;
-    const ninetyDaysAgo = new Date().getTime() / 1000 - 90 * 24 * 60 * 60; // 90 days ago
+    const ninetyDaysAgo = getHistoryRetentionStart();
+
+    // Pages are written newest first, so the first page already moves the
+    // latest stored item past the older pages still to fetch. Persist the
+    // cursor before each write so an interrupted sync resumes here instead
+    // of treating the gap as synced.
+    const savePendingCursor = (pendingStartTime: number) =>
+      syncDbService.updateSyncState({
+        address,
+        scene: 'history',
+        patch: {
+          isSyncing: true,
+          pendingApi: 'realtime',
+          pendingStartTime,
+          pendingLatestTime: latestTime,
+        },
+      });
+
+    await savePendingCursor(nextStartTime);
 
     while (!isEnd) {
       const res = await openapi.listTxHisotry({
@@ -304,17 +383,33 @@ class HistoryDbService {
       if (
         !lastItem ||
         lastItem.time_at * 1000 < latestTime ||
-        res.history_list.length < PAGE_COUNT
+        res.history_list.length < PAGE_COUNT ||
+        // Paging is by timestamp, so a full page within one second would
+        // request the same page again forever.
+        (!!nextStartTime && lastItem.time_at >= nextStartTime)
       ) {
         isEnd = true;
-      } else {
-        nextStartTime = lastItem.time_at;
       }
       await this.fillEntity({
         address,
         data: res,
       });
+      if (!isEnd) {
+        nextStartTime = lastItem!.time_at;
+        await savePendingCursor(nextStartTime);
+      }
     }
+
+    await syncDbService.updateSyncState({
+      address,
+      scene: 'history',
+      patch: {
+        isSyncing: false,
+        pendingApi: undefined,
+        pendingStartTime: undefined,
+        pendingLatestTime: undefined,
+      },
+    });
   }
 
   deleteForAddress(address: string) {
