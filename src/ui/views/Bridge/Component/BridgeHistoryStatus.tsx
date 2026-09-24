@@ -25,7 +25,7 @@ import { getBridgeRefundHref } from '../utils/refundLink';
 import {
   BridgeHistoryDetail,
   BridgeHistoryDetailStep,
-  bridgeHistoryDetailIsLive,
+  getBridgeHistoryDetailRefreshMs,
   getBridgeHistoryDetail,
 } from '../utils/historyStatus';
 
@@ -366,7 +366,7 @@ export const BridgeHistoryStatus = ({
 
   useInterval(
     () => setNow(Date.now()),
-    bridgeHistoryDetailIsLive(detail.scene) ? 1000 : undefined
+    getBridgeHistoryDetailRefreshMs(detail.scene)
   );
 
   return (

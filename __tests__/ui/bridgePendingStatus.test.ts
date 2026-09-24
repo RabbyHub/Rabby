@@ -158,6 +158,28 @@ describe('resolveBridgePendingFromHistoryList', () => {
     });
   });
 
+  it('persists fromFailed when from_tx failed while the bridge is still pending', () => {
+    const item = historyItem({
+      status: 'pending',
+      from_tx: {
+        tx_id: '0xlocal',
+        chain_id: 'eth',
+        status: 'failed',
+        time_at: Math.floor(now / 1000),
+      },
+    });
+    expect(
+      resolveBridgePendingFromHistoryList(localItem(), [item], now)
+    ).toMatchObject({
+      kind: 'complete',
+      hash: '0xlocal',
+      fromChainId: 1,
+      status: 'fromFailed',
+      item,
+      local: { status: 'fromFailed', completedAt: now },
+    });
+  });
+
   it('marks a failed server item as failed and keeps the destination tx id', () => {
     const item = historyItem({
       status: 'failed',

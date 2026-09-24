@@ -28,7 +28,10 @@ import {
   BridgeHistoryStatus,
   BridgeHistoryTokenSymbol,
 } from './BridgeHistoryStatus';
-import { findLocalBridgeTx } from '../utils/historyRefresh';
+import {
+  bridgeHistoryStatusKey,
+  findLocalBridgeTx,
+} from '../utils/historyRefresh';
 
 const isTab = getUiType().isTab;
 
@@ -297,7 +300,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
       data.status === 'pending' &&
       (data.from_tx?.status
         ? data.from_tx.status === 'pending'
-        : local?.status === 'pending');
+        : !local || local.status === 'pending');
     const isSuccess = data.status === 'completed';
 
     const txId =
@@ -401,6 +404,7 @@ const HistoryList = () => {
     (state) => state.account.currentAccount?.address || ''
   );
   const [locals, setLocals] = useState<BridgeTxHistoryItem[]>([]);
+  const statusKey = bridgeHistoryStatusKey(txList?.list);
 
   useEffect(() => {
     let disposed = false;
@@ -415,7 +419,7 @@ const HistoryList = () => {
     return () => {
       disposed = true;
     };
-  }, [address, txList?.list, wallet]);
+  }, [address, statusKey, wallet]);
 
   if (!loading && (!txList || !txList?.list?.length)) {
     return (

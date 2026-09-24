@@ -4,6 +4,7 @@ import {
   collectOutgoingTxIds,
   collectViewportOutgoingTxIds,
   mergeHistoryWithBridge,
+  shouldCacheEmptyBridgeResult,
 } from '@/ui/views/History/utils/mergeBridgeHistory';
 
 const user = '0xuser';
@@ -68,13 +69,17 @@ describe('collectOutgoingTxIds', () => {
     expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
   });
 
-  it('does not query transactions with empty sends', () => {
+  it('still queries transactions with empty sends (failed source txs have none)', () => {
     const items = [
       { ...tx('0xempty', 'eth'), sends: [] },
       { ...tx('0xmissing', 'eth'), sends: undefined },
       { ...tx('0xok', 'eth'), sends: [{}] },
     ];
-    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
+    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual([
+      '0xempty',
+      '0xmissing',
+      '0xok',
+    ]);
   });
 
   it('keeps scanning until 20 matches, 100 inspected, or the list ends', () => {
@@ -130,6 +135,24 @@ describe('collectOutgoingTxIds', () => {
       5
     );
     expect(ids).toEqual(['0x2', '0x3', '0x4']);
+  });
+});
+
+describe('shouldCacheEmptyBridgeResult', () => {
+  const now = 1_700_000_000_000;
+  const seconds = (ms: number) => Math.floor(ms / 1000);
+
+  it('does not cache empty results for txs mined within 5 minutes', () => {
+    expect(shouldCacheEmptyBridgeResult(seconds(now - 60 * 1000), now)).toBe(
+      false
+    );
+  });
+
+  it('caches empty results for older txs or txs without time', () => {
+    expect(
+      shouldCacheEmptyBridgeResult(seconds(now - 5 * 60 * 1000), now)
+    ).toBe(true);
+    expect(shouldCacheEmptyBridgeResult(undefined, now)).toBe(true);
   });
 });
 

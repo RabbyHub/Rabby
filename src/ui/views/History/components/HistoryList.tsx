@@ -6,6 +6,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { BridgeHistoryCard } from '@/ui/views/Bridge/Component/BridgeHistory';
 import { useBridgeHistoryByTxIds } from '@/ui/views/History/hooks/useBridgeHistoryByTxIds';
 import { mergeHistoryWithBridge } from '@/ui/views/History/utils/mergeBridgeHistory';
+import { bridgeHistoryStatusKey } from '@/ui/views/Bridge/utils/historyRefresh';
 import { isSupportDBAccount } from '@/utils/account';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { useWallet } from '@/ui/utils';
@@ -49,6 +50,7 @@ export const HistoryList = ({
   const rowsRef = useRef(rows);
   rowsRef.current = rows;
   const [locals, setLocals] = useState<BridgeTxHistoryItem[]>([]);
+  const statusKey = useMemo(() => bridgeHistoryStatusKey(bridges), [bridges]);
 
   useEffect(() => {
     let disposed = false;
@@ -62,7 +64,7 @@ export const HistoryList = ({
     return () => {
       disposed = true;
     };
-  }, [address, hasLocalHistory, wallet, bridges]);
+  }, [address, hasLocalHistory, wallet, statusKey]);
 
   const isEmpty = !data || data.length === 0;
 
@@ -125,6 +127,7 @@ export const HistoryList = ({
                 height: '100%',
               }}
               data={rows}
+              computeItemKey={(_, row) => row.key}
               rangeChanged={
                 hasLocalHistory
                   ? (range) =>

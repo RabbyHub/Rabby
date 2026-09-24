@@ -1,6 +1,8 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
+import type { TransactionGroup } from '@/background/service/transactionHistory';
 import { useWallet } from '@/ui/utils';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { isEqual } from 'lodash';
 import PQueue from 'p-queue';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -10,6 +12,7 @@ import {
   collectInitialBridgeTxIds,
   collectViewportOutgoingTxIds,
   historyTxKey,
+  shouldCacheEmptyBridgeResult,
   shouldPollPendingBridge,
 } from '../utils/mergeBridgeHistory';
 
@@ -21,16 +24,24 @@ type LookupItem = {
   token_approve?: unknown;
   chain: string;
   owner_addr?: string;
+  time_at?: number;
   tx?: { from_addr?: string } | null;
 };
 
+const POLL_INTERVAL_MS = 3000;
+// 缓存过期只会多查几条，不会漏查。
+const EXCLUDED_TX_IDS_TTL_MS = 60 * 1000;
+
 // 会话缓存，切页保留，关闭插件页面释放。
 // 缓存空结果，仅 pending 定时刷新。
+// 上链未满 5 分钟的空结果记入 deferred：本次打开内不再查，页面全部关闭后清空，下次打开重查。
 type LookupSession = {
   requested: Set<string>;
+  deferred: Set<string>;
   scheduled: Set<string>;
   running: Set<string>;
   results: Map<string, BridgeHistory>;
+  excluded?: { at: number; ids: Promise<Set<string>> };
   listeners: Set<() => void>;
   queue: PQueue;
   lastPoll: number;
@@ -42,6 +53,7 @@ const getSession = (address: string): LookupSession => {
   if (!session) {
     session = {
       requested: new Set(),
+      deferred: new Set(),
       scheduled: new Set(),
       running: new Set(),
       results: new Map(),
@@ -52,6 +64,60 @@ const getSession = (address: string): LookupSession => {
     sessions.set(key, session);
   }
   return session;
+};
+
+const lookupSkipSet = (session: LookupSession) =>
+  new Set([...session.requested, ...session.deferred, ...session.scheduled]);
+
+const NON_BRIDGE_SOURCES = [
+  'sendToken',
+  'swap',
+  'sendNFT',
+  'tokenApproval',
+  'nftApproval',
+  'Perps',
+  'Staking',
+  'cancel',
+  'speedUp',
+];
+
+/** 按本地来源排除非 Bridge 交易。 */
+const collectNonBridgeTxIds = (groups: TransactionGroup[]) =>
+  new Set<string>(
+    groups.flatMap((group) => {
+      const ga = group.$ctx?.ga;
+      // 保留 bridge 来源的各状态记录。
+      // 跨链可含 swap，只按发起来源判断。
+      const isNonBridgeFlow =
+        ga?.source === 'bridge'
+          ? false
+          : ga?.category === 'Send' ||
+            ga?.category === 'Swap' ||
+            NON_BRIDGE_SOURCES.includes(ga?.source);
+      return group.txs
+        .filter(
+          (tx) =>
+            isNonBridgeFlow ||
+            (tx.site?.origin && tx.site.origin !== INTERNAL_REQUEST_ORIGIN)
+        )
+        .flatMap((tx) => (tx.hash ? [tx.hash.toLowerCase()] : []));
+    })
+  );
+
+const getExcludedTxIds = (
+  session: LookupSession,
+  load: () => Promise<Set<string>>
+) => {
+  const cached = session.excluded;
+  if (cached && Date.now() - cached.at < EXCLUDED_TX_IDS_TTL_MS) {
+    return cached.ids;
+  }
+  const entry = { at: Date.now(), ids: load() };
+  session.excluded = entry;
+  entry.ids.catch(() => {
+    if (session.excluded === entry) session.excluded = undefined;
+  });
+  return entry.ids;
 };
 
 export const useBridgeHistoryByTxIds = (options: {
@@ -79,6 +145,7 @@ export const useBridgeHistoryByTxIds = (options: {
       if (!session.listeners.size) {
         // 取消排队任务；在途请求回填原地址缓存。
         session.queue.clear();
+        session.deferred.clear();
         session.scheduled.forEach((id) => {
           if (!session.running.has(id)) session.scheduled.delete(id);
         });
@@ -86,7 +153,7 @@ export const useBridgeHistoryByTxIds = (options: {
     };
   }, [address, enabled, session]);
 
-  /** 请求去重，每秒最多 2 批。 */
+  /** 请求去重，每秒最多 2 批。轮询的 id 已确认是 Bridge，跳过本地排除。 */
   const enqueueIds = useCallback(
     (ids: string[], polling = false) => {
       if (!enabled || !address) return;
@@ -96,7 +163,8 @@ export const useBridgeHistoryByTxIds = (options: {
         if (
           !key ||
           session.scheduled.has(key) ||
-          (!polling && session.requested.has(key))
+          (!polling &&
+            (session.requested.has(key) || session.deferred.has(key)))
         ) {
           return;
         }
@@ -113,60 +181,63 @@ export const useBridgeHistoryByTxIds = (options: {
           const keys = batch.map((id) => id.toLowerCase());
           keys.forEach((id) => session.running.add(id));
           try {
-            // 按本地来源排除非 Bridge 交易。
-            const { pendings, completeds } = await wallet.getTransactionHistory(
-              address
-            );
+            let candidates = batch;
+            if (!polling) {
+              const excludedIds = await getExcludedTxIds(session, () =>
+                wallet
+                  .getTransactionHistory(address)
+                  .then(({ pendings, completeds }) =>
+                    collectNonBridgeTxIds([...pendings, ...completeds])
+                  )
+              );
+              candidates = batch.filter(
+                (id) => !excludedIds.has(id.toLowerCase())
+              );
+            }
             // 页面关闭后不再发起新请求。
             if (!session.listeners.size) return;
-            const excludedIds = new Set(
-              [...pendings, ...completeds].flatMap((group) => {
-                const ga = group.$ctx?.ga;
-                // 保留 bridge 来源的各状态记录。
-                // 跨链可含 swap，只按发起来源判断。
-                const nonBridgeSources = [
-                  'sendToken',
-                  'swap',
-                  'sendNFT',
-                  'tokenApproval',
-                  'nftApproval',
-                  'Perps',
-                  'Staking',
-                  'cancel',
-                  'speedUp',
-                ];
-                const isNonBridgeFlow =
-                  ga?.source === 'bridge'
-                    ? false
-                    : ga?.category === 'Send' ||
-                      ga?.category === 'Swap' ||
-                      nonBridgeSources.includes(ga?.source);
-                return group.txs
-                  .filter(
-                    (tx) =>
-                      isNonBridgeFlow ||
-                      (tx.site?.origin &&
-                        tx.site.origin !== INTERNAL_REQUEST_ORIGIN)
-                  )
-                  .map((tx) => tx.hash?.toLowerCase());
-              })
-            );
-            const candidates = batch.filter(
-              (id) => !excludedIds.has(id.toLowerCase())
-            );
             const res = candidates.length
               ? await wallet.openapi.getBridgeHistoryListByTxIds({
                   from_tx_ids: candidates,
                 })
               : undefined;
-            keys.forEach((id) => session.requested.add(id));
-            (res?.history_list || []).forEach((item) => {
-              session.results.set(
-                historyTxKey(item.from_token?.chain, item.from_tx?.tx_id),
-                item
+            const list = res?.history_list || [];
+            let changed = false;
+            list.forEach((item) => {
+              const key = historyTxKey(
+                item.from_token?.chain,
+                item.from_tx?.tx_id
               );
+              if (!isEqual(session.results.get(key), item)) {
+                session.results.set(key, item);
+                changed = true;
+              }
             });
-            session.listeners.forEach((notify) => notify());
+            const found = new Set(
+              list.map((item) => item.from_tx?.tx_id?.toLowerCase())
+            );
+            const timeById = new Map(
+              itemsRef.current.map((item) => [
+                item.id.toLowerCase(),
+                item.time_at,
+              ])
+            );
+            const candidateKeys = new Set(
+              candidates.map((id) => id.toLowerCase())
+            );
+            keys.forEach((key) => {
+              if (
+                candidateKeys.has(key) &&
+                !found.has(key) &&
+                !shouldCacheEmptyBridgeResult(timeById.get(key))
+              ) {
+                session.deferred.add(key);
+                return;
+              }
+              session.deferred.delete(key);
+              session.requested.add(key);
+            });
+            if (changed) session.listeners.forEach((notify) => notify());
           } catch {
             // 请求失败不缓存，允许重试。
           } finally {
@@ -195,7 +266,7 @@ export const useBridgeHistoryByTxIds = (options: {
     const { ids } = collectInitialBridgeTxIds(
       items,
       address,
-      new Set([...session.requested, ...session.scheduled]),
+      lookupSkipSet(session),
       0,
       BRIDGE_HISTORY_TX_BATCH,
       BRIDGE_HISTORY_INIT_SCAN_LIMIT
@@ -221,13 +292,13 @@ export const useBridgeHistoryByTxIds = (options: {
       if (
         session.queue.size ||
         session.queue.pending ||
-        Date.now() - session.lastPoll < 3000
+        Date.now() - session.lastPoll < POLL_INTERVAL_MS
       ) {
         return;
       }
       session.lastPoll = Date.now();
       enqueueIds(ids, true);
-    }, 3000);
+    }, POLL_INTERVAL_MS);
     return () => clearInterval(timer);
   }, [address, enabled, enqueueIds, bridges, session]);
 
@@ -257,9 +328,14 @@ export const useBridgeHistoryByTxIds = (options: {
         end = Math.max(end, originalIndex);
       }
       if (end < 0) return;
-      const skip = new Set([...session.requested, ...session.scheduled]);
       enqueueIds(
-        collectViewportOutgoingTxIds(items, address, skip, start, end)
+        collectViewportOutgoingTxIds(
+          items,
+          address,
+          lookupSkipSet(session),
+          start,
+          end
+        )
       );
     },
     [address, enabled, enqueueIds, session]

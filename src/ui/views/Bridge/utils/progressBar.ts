@@ -4,6 +4,10 @@ import { formatEstimateClock } from './duration';
 export const BRIDGE_PROGRESS_COUNTDOWN_MIN_SECONDS = 5;
 export const BRIDGE_PROGRESS_DELAY_MS = 30 * 60 * 1000;
 
+/** 倒计时按秒刷新；只剩跨过延迟阈值时放慢；状态不再随时间变化时不刷新。 */
+export const BRIDGE_STATUS_TICK_MS = 1000;
+export const BRIDGE_STATUS_SLOW_TICK_MS = 30 * 1000;
+
 export type BridgeProgressStep =
   | 'sourceLoading'
   | 'queued'
@@ -284,4 +288,30 @@ export const getBridgeProgressBar = (
     step2: 'queued',
     footer: { kind: 'none' },
   };
+};
+
+export const getBridgeProgressRefreshMs = (
+  item: BridgeTxHistoryItem,
+  progress: BridgeProgressBar
+) => {
+  if (item.status !== 'fromSuccess') return undefined;
+  if (progress.footer.kind === 'delayed') return undefined;
+  if (progress.footer.kind === 'stillBridging') {
+    return BRIDGE_STATUS_SLOW_TICK_MS;
+  }
+  // 倒计时，或源链完成后前 5 秒的空白期。
+  return BRIDGE_STATUS_TICK_MS;
+};
+
+export const getBridgePopupRefreshMs = (
+  item: BridgeTxHistoryItem,
+  popup: BridgePopupState
+) => {
+  if (item.status === 'pending') {
+    return popup.step1 === 'pending' ? undefined : BRIDGE_STATUS_SLOW_TICK_MS;
+  }
+  if (item.status !== 'fromSuccess') return undefined;
+  if (popup.caption.kind === 'estimate') return BRIDGE_STATUS_TICK_MS;
+  if (popup.caption.kind === 'stillBridging') return BRIDGE_STATUS_SLOW_TICK_MS;
+  return undefined;
 };

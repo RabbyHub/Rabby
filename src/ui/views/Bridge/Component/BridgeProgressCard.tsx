@@ -16,6 +16,7 @@ import {
   BridgeProgressFooter,
   BridgeProgressStep,
   getBridgeProgressBar,
+  getBridgeProgressRefreshMs,
 } from '../utils/progressBar';
 import { getBridgeRefundHref } from '../utils/refundLink';
 
@@ -145,9 +146,7 @@ const ProgressFooter = ({
       <TextAndLink
         text={
           <>
-            {t('page.bridge.pendingItem.refundedLead', {
-              defaultValue: 'Refunded',
-            })}
+            {t('page.bridge.pendingItem.refundedLead')}
             {', '}
             {t('page.bridge.view')}
           </>
@@ -166,9 +165,7 @@ const ProgressFooter = ({
             {t('page.bridge.view')}
           </>
         }
-        link={t('page.bridge.pendingItem.refundedDetails', {
-          defaultValue: 'Refunded Details',
-        })}
+        link={t('page.bridge.pendingItem.refundedDetails')}
         onClick={openRefund}
       />
     );
@@ -204,11 +201,11 @@ export const BridgeProgressCard = ({
   children: React.ReactNode;
 }) => {
   const [now, setNow] = useState(() => Date.now());
+  const progress = getBridgeProgressBar(data, now);
   useInterval(
     () => setNow(Date.now()),
-    data.status === 'fromSuccess' ? 1000 : undefined
+    getBridgeProgressRefreshMs(data, progress)
   );
-  const progress = getBridgeProgressBar(data, now);
 
   return (
     <div

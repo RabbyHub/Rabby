@@ -4,7 +4,11 @@ import type {
 } from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { formatEstimateClock } from './duration';
-import { BRIDGE_PROGRESS_DELAY_MS } from './progressBar';
+import {
+  BRIDGE_PROGRESS_DELAY_MS,
+  BRIDGE_STATUS_SLOW_TICK_MS,
+  BRIDGE_STATUS_TICK_MS,
+} from './progressBar';
 import {
   bridgeRemoteFromTxStatus,
   bridgeRemoteSourceCompleteTs,
@@ -253,8 +257,8 @@ export const resolveBridgeHistoryScene = (
     if (fromTxStatus === 'success') {
       return destWaitingScene(data, local, now);
     }
-    // 旧接口：没有 from_tx.status 时，仅用本地区分等待阶段。
-    if (local?.status !== 'pending') {
+    // 旧接口：没有 from_tx.status 时，仅用本地区分等待阶段；无本地记录按源链进行中处理。
+    if (local && local.status !== 'pending') {
       return destWaitingScene(data, local, now);
     }
   }
@@ -443,11 +447,12 @@ const buildHistoryDetail = (
   }
 };
 
-/** 倒计时、Still Bridging 和延迟会随时间变化，需要刷新。源链进行中不刷新成 Pending。 */
-export const bridgeHistoryDetailIsLive = (scene: BridgeHistoryScene) =>
-  scene === 'destCountdown' ||
-  scene === 'destStillBridging' ||
-  scene === 'destDelayed';
+/** 倒计时按秒刷新；Still Bridging 只需等进入延迟；延迟后与源链进行中不随时间变化。 */
+export const getBridgeHistoryDetailRefreshMs = (scene: BridgeHistoryScene) => {
+  if (scene === 'destCountdown') return BRIDGE_STATUS_TICK_MS;
+  if (scene === 'destStillBridging') return BRIDGE_STATUS_SLOW_TICK_MS;
+  return undefined;
+};
 
 export const getBridgeHistoryDetail = (
   data: BridgeHistory,

@@ -92,7 +92,11 @@ export const resolveBridgePendingFromHistoryList = (
     };
   }
 
-  if (findTx.status === 'failed') {
+  // 远程 from_tx.failed 即源链失败，整体仍 pending 也直接落库，否则轮询停止后本地会一直停在 pending。
+  if (
+    findTx.status === 'failed' ||
+    (findTx.status === 'pending' && fromTxStatus === 'failed')
+  ) {
     // 远程 from_tx.failed → 源链失败；否则视为目标链失败。
     const status = fromTxStatus === 'failed' ? 'fromFailed' : 'failed';
     return {
@@ -113,15 +117,6 @@ export const resolveBridgePendingFromHistoryList = (
   }
 
   if (findTx.status === 'pending') {
-    if (fromTxStatus === 'failed') {
-      return {
-        kind: 'sync',
-        local: {
-          ...local,
-          status: 'fromFailed',
-        },
-      };
-    }
     if (fromTxStatus === 'success') {
       const remoteTs = bridgeRemoteSourceCompleteTs(findTx);
       return {

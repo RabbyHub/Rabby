@@ -22,6 +22,7 @@ import { getBridgeRefundHref } from '../utils/refundLink';
 import {
   BridgePopupState,
   BridgePopupStep,
+  getBridgePopupRefreshMs,
   getBridgePopupState,
 } from '../utils/progressBar';
 
@@ -205,13 +206,11 @@ export const BridgeStatusPopup = ({
 }) => {
   const { t } = useTranslation();
   const [now, setNow] = useState(() => Date.now());
+  const popupState = getBridgePopupState(data, now);
   useInterval(
     () => setNow(Date.now()),
-    data.status === 'pending' || data.status === 'fromSuccess'
-      ? 1000
-      : undefined
+    getBridgePopupRefreshMs(data, popupState)
   );
-  const popupState = getBridgePopupState(data, now);
   const refundHref = refundLink(popupState);
   // 无退款链接时按失败展示。
   const popup =

@@ -1,12 +1,22 @@
 import type { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
-import { getBridgeHistoryDetail } from '@/ui/views/Bridge/utils/historyStatus';
+import {
+  getBridgeHistoryDetail,
+  getBridgeHistoryDetailRefreshMs,
+} from '@/ui/views/Bridge/utils/historyStatus';
 import {
   BRIDGE_PROGRESS_DELAY_MS,
+  BRIDGE_STATUS_SLOW_TICK_MS,
+  BRIDGE_STATUS_TICK_MS,
+  getBridgePopupRefreshMs,
   getBridgePopupState,
   getBridgeProgressBar,
+  getBridgeProgressRefreshMs,
 } from '@/ui/views/Bridge/utils/progressBar';
-import { BRIDGE_HISTORY_CREATE_AT_DELAY_MS, BRIDGE_HISTORY_POLL_MAX_AGE_MS } from '@/ui/views/Bridge/constants';
+import {
+  BRIDGE_HISTORY_CREATE_AT_DELAY_MS,
+  BRIDGE_HISTORY_POLL_MAX_AGE_MS,
+} from '@/ui/views/Bridge/constants';
 import { shouldPollPendingBridge } from '@/ui/views/History/utils/mergeBridgeHistory';
 
 const now = 1_700_000_000_000;
@@ -407,6 +417,7 @@ describe('getBridgeHistoryDetail', () => {
     expect(
       getBridgeHistoryDetail(
         history({
+          from_tx: { tx_id: '0xsource', status: 'success', time_at: 0 },
           create_at: Math.floor((now - BRIDGE_PROGRESS_DELAY_MS - 1) / 1000),
         }),
         undefined,
@@ -416,6 +427,22 @@ describe('getBridgeHistoryDetail', () => {
       scene: 'destStillBridging',
       header: 'processing',
       action: { kind: 'stillBridging' },
+    });
+  });
+
+  it('keeps source pending without from_tx.status or a local record', () => {
+    expect(
+      getBridgeHistoryDetail(
+        history({
+          create_at: Math.floor((now - BRIDGE_PROGRESS_DELAY_MS - 1) / 1000),
+        }),
+        undefined,
+        now
+      )
+    ).toMatchObject({
+      scene: 'sourcePending',
+      header: 'processing',
+      action: { kind: 'none' },
     });
   });
 
@@ -733,9 +760,7 @@ describe('shouldPollPendingBridge', () => {
       shouldPollPendingBridge(
         history({
           status: 'pending',
-          create_at: Math.floor(
-            (now - BRIDGE_HISTORY_POLL_MAX_AGE_MS) / 1000
-          ),
+          create_at: Math.floor((now - BRIDGE_HISTORY_POLL_MAX_AGE_MS) / 1000),
         }),
         now
       )
@@ -750,5 +775,108 @@ describe('shouldPollPendingBridge', () => {
         now
       )
     ).toBe(false);
+  });
+
+  it('does not poll a pending bridge without create_at', () => {
+    expect(
+      shouldPollPendingBridge(history({ status: 'pending', create_at: 0 }), now)
+    ).toBe(false);
+  });
+});
+
+describe('history detail without a local record', () => {
+  it('skips the countdown and shows Still Bridging after the source completes', () => {
+    expect(
+      getBridgeHistoryDetail(
+        history({
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'success',
+            time_at: Math.floor((now - 10_000) / 1000),
+          },
+        }),
+        undefined,
+        now
+      )
+    ).toMatchObject({
+      scene: 'destStillBridging',
+      action: { kind: 'stillBridging' },
+    });
+  });
+});
+
+describe('status refresh intervals', () => {
+  it('ticks the history card per second only while counting down', () => {
+    expect(getBridgeHistoryDetailRefreshMs('destCountdown')).toBe(
+      BRIDGE_STATUS_TICK_MS
+    );
+    expect(getBridgeHistoryDetailRefreshMs('destStillBridging')).toBe(
+      BRIDGE_STATUS_SLOW_TICK_MS
+    );
+    expect(getBridgeHistoryDetailRefreshMs('destDelayed')).toBeUndefined();
+    expect(getBridgeHistoryDetailRefreshMs('sourcePending')).toBeUndefined();
+    expect(getBridgeHistoryDetailRefreshMs('succeeded')).toBeUndefined();
+  });
+
+  it('refreshes the progress card by footer state', () => {
+    const at = (overrides: Record<string, unknown>) => {
+      const data = item(overrides);
+      return getBridgeProgressRefreshMs(data, getBridgeProgressBar(data, now));
+    };
+    expect(
+      at({
+        status: 'fromSuccess',
+        estimatedDuration: 60,
+        fromTxCompleteTs: now,
+      })
+    ).toBe(BRIDGE_STATUS_TICK_MS);
+    expect(
+      at({
+        status: 'fromSuccess',
+        estimatedDuration: 5,
+        fromTxCompleteTs: now - 6_000,
+      })
+    ).toBe(BRIDGE_STATUS_SLOW_TICK_MS);
+    expect(
+      at({
+        status: 'fromSuccess',
+        fromTxCompleteTs: now - BRIDGE_PROGRESS_DELAY_MS,
+      })
+    ).toBeUndefined();
+    expect(at({ status: 'pending', createdAt: now })).toBeUndefined();
+  });
+
+  it('refreshes the popup slowly while only a delay threshold remains', () => {
+    const at = (overrides: Record<string, unknown>) => {
+      const data = item(overrides);
+      return getBridgePopupRefreshMs(data, getBridgePopupState(data, now));
+    };
+    expect(at({ status: 'pending', createdAt: now })).toBe(
+      BRIDGE_STATUS_SLOW_TICK_MS
+    );
+    expect(
+      at({ status: 'pending', createdAt: now - BRIDGE_PROGRESS_DELAY_MS })
+    ).toBeUndefined();
+    expect(
+      at({
+        status: 'fromSuccess',
+        estimatedDuration: 60,
+        fromTxCompleteTs: now,
+      })
+    ).toBe(BRIDGE_STATUS_TICK_MS);
+    expect(
+      at({
+        status: 'fromSuccess',
+        estimatedDuration: 5,
+        fromTxCompleteTs: now - 6_000,
+      })
+    ).toBe(BRIDGE_STATUS_SLOW_TICK_MS);
+    expect(
+      at({
+        status: 'fromSuccess',
+        fromTxCompleteTs: now - BRIDGE_PROGRESS_DELAY_MS,
+      })
+    ).toBeUndefined();
+    expect(at({ status: 'allSuccess' })).toBeUndefined();
   });
 });
