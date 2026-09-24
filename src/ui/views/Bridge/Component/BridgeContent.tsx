@@ -6,14 +6,12 @@ import React, {
   useState,
 } from 'react';
 import { useRabbySelector } from '@/ui/store';
-import { tokenPriceImpact, useBridge } from '../hooks/token';
+import { useBridge } from '../hooks/token';
 import { Alert, Button, message, Modal } from 'antd';
-import BigNumber from 'bignumber.js';
-import { getUiType, openInternalPageInTab, useWallet } from '@/ui/utils';
+import { getUiType, useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { QuoteList } from './BridgeQuotes';
 import {
-  usePollBridgePendingNumber,
   useQuoteVisible,
   useSetQuoteVisible,
   useSetRefreshId,
@@ -21,13 +19,10 @@ import {
 } from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss } from 'react-use';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
-import pRetry, { AbortError } from 'p-retry';
-import stats from '@/stats';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { buildTx as buildBridgeTx } from '@rabby-wallet/rabby-bridge';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { CHAINS_ENUM, DBK_CHAIN_ID } from '@/constant';
 import { useHistory } from 'react-router-dom';
@@ -60,6 +55,12 @@ import {
 } from '@/ui/utils/form';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
+import { getBridgeQuoteKey, isSameBridgeQuote } from '../utils/bridgeQuote';
+import {
+  buildBridgeTokenSideParams,
+  reportBridgeQuoteResult,
+  requestBridgeQuoteTx,
+} from '../utils/submit';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -132,6 +133,7 @@ export const BridgeContent = () => {
     maxNativeTokenGasPrice,
     setMaxNativeTokenGasPrice,
     inSufficientCanGetQuote,
+    showLoss,
   } = useBridge();
 
   const [historyVisible, setHistoryVisible] = useState(false);
@@ -180,11 +182,6 @@ export const BridgeContent = () => {
   const wallet = useWallet();
   const rbiSource = useRbiSource();
 
-  // const {
-  //   pendingNumber,
-  //   historyList,
-  // } = usePollBridgePendingNumber();
-
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
   const history = useHistory();
 
@@ -197,84 +194,34 @@ export const BridgeContent = () => {
     ) {
       try {
         setFetchingBridgeQuote(true);
-        const tx = await pRetry(
-          () =>
-            buildBridgeTx(
-              selectedBridgeQuote.aggregator.id,
-              {
-                bridgeId: selectedBridgeQuote.bridge_id,
-                userAddress,
-                fromChainId: fromToken.chain,
-                fromTokenId: fromToken.id,
-                fromTokenRawAmount: new BigNumber(amount)
-                  .times(10 ** fromToken.decimals)
-                  .toFixed(0, 1)
-                  .toString(),
-                toChainId: toToken.chain,
-                toTokenId: toToken.id,
-                slippage: new BigNumber(slippageState).div(100).toString(10),
-                quoteKey: selectedBridgeQuote.quote_key || {},
-              },
-              wallet.openapi
-            ).catch((e) => {
-              throw new AbortError(e?.message || String(e));
-            }),
-          { retries: 1 }
-        );
-        stats.report('bridgeQuoteResult', {
-          aggregatorIds: selectedBridgeQuote.aggregator.id,
-          bridgeId: selectedBridgeQuote.bridge_id,
-          fromChainId: fromToken.chain,
-          fromTokenId: fromToken.id,
-          toTokenId: toToken.id,
-          toChainId: toToken.chain,
-          status: tx ? 'success' : 'fail',
+        const tx = await requestBridgeQuoteTx({
+          userAddress,
+          fromToken,
+          toToken,
+          amount,
+          slippage,
+          quote: selectedBridgeQuote,
+          openapi: wallet.openapi,
         });
+        reportBridgeQuoteResult(
+          selectedBridgeQuote,
+          fromToken,
+          toToken,
+          tx ? 'success' : 'fail'
+        );
         const promise = wallet.bridgeToken(
           {
-            approveId: selectedBridgeQuote.approve_contract_id,
-            to: tx.to,
-            value: tx.value,
-            data: tx.data,
-            payTokenRawAmount: new BigNumber(amount)
-              .times(10 ** fromToken.decimals)
-              .toFixed(0, 1)
-              .toString(),
-            chainId: tx.chainId,
-            shouldApprove: !!selectedBridgeQuote.shouldApproveToken,
-            shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
-            payTokenId: fromToken.id,
-            payTokenChainServerId: fromToken.chain,
-            gasPrice: maxNativeTokenGasPrice,
-            info: {
-              aggregator_id: selectedBridgeQuote.aggregator.id,
-              bridge_id: selectedBridgeQuote.bridge_id,
-              from_chain_id: fromToken.chain,
-              from_token_id: fromToken.id,
-              from_token_amount: amount,
-              to_chain_id: toToken.chain,
-              to_token_id: toToken.id,
-              to_token_amount: selectedBridgeQuote.to_token_amount,
-              tx: tx,
-              rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
-              fee_rate: Number(feeRate),
-              duration: selectedBridgeQuote.duration,
-              slippage: new BigNumber(slippage).div(100).toNumber(),
-            },
-            addHistoryData: {
-              address: userAddress,
-              fromChainId: findChain({ serverId: fromToken.chain })?.id || 0,
-              toChainId: findChain({ serverId: toToken.chain })?.id || 0,
-              fromToken: fromToken,
-              estimatedDuration: selectedBridgeQuote.duration,
-              toToken: toToken,
-              fromAmount: Number(amount),
-              toAmount: Number(selectedBridgeQuote.to_token_amount),
-              slippage: new BigNumber(slippage).div(100).toNumber(),
-              dexId: selectedBridgeQuote.aggregator.id,
-              status: 'pending',
-              createdAt: Date.now(),
-            },
+            ...buildBridgeTokenSideParams({
+              userAddress,
+              fromToken,
+              toToken,
+              amount,
+              feeRate,
+              slippage,
+              quote: selectedBridgeQuote,
+              tx,
+              gasPrice: maxNativeTokenGasPrice,
+            }),
           },
           {
             ga: {
@@ -293,23 +240,14 @@ export const BridgeContent = () => {
       } catch (error) {
         message.error(error?.message || String(error));
         setQuotesList((pre) =>
-          pre?.filter(
-            (item) =>
-              !(
-                item?.aggregator?.id === selectedBridgeQuote?.aggregator?.id &&
-                item?.bridge_id === selectedBridgeQuote?.bridge_id
-              )
-          )
+          pre?.filter((item) => !isSameBridgeQuote(item, selectedBridgeQuote))
         );
-        stats.report('bridgeQuoteResult', {
-          aggregatorIds: selectedBridgeQuote.aggregator.id,
-          bridgeId: selectedBridgeQuote.bridge_id,
-          fromChainId: fromToken.chain,
-          fromTokenId: fromToken.id,
-          toTokenId: toToken.id,
-          toChainId: toToken.chain,
-          status: 'fail',
-        });
+        reportBridgeQuoteResult(
+          selectedBridgeQuote,
+          fromToken,
+          toToken,
+          'fail'
+        );
         console.error(error);
       } finally {
         setFetchingBridgeQuote(false);
@@ -331,6 +269,7 @@ export const BridgeContent = () => {
     feeRate,
     rbiSource,
     slippageState,
+    slippage,
     maxNativeTokenGasPrice,
   ]);
 
@@ -347,8 +286,7 @@ export const BridgeContent = () => {
       amount,
       feeRate,
       slippageState,
-      selectedBridgeQuote.aggregator.id,
-      selectedBridgeQuote.bridge_id,
+      getBridgeQuoteKey(selectedBridgeQuote),
       selectedBridgeQuote.shouldApproveToken ? '1' : '0',
       selectedBridgeQuote.shouldTwoStepApprove ? '1' : '0',
       selectedBridgeQuote.to_token_amount,
@@ -392,39 +330,21 @@ export const BridgeContent = () => {
 
       try {
         // setFetchingBridgeQuote(true);
-        const tx = await pRetry(
-          () =>
-            buildBridgeTx(
-              selectedBridgeQuote.aggregator.id,
-              {
-                bridgeId: selectedBridgeQuote.bridge_id,
-                userAddress,
-                fromChainId: fromToken.chain,
-                fromTokenId: fromToken.id,
-                fromTokenRawAmount: new BigNumber(amount)
-                  .times(10 ** fromToken.decimals)
-                  .toFixed(0, 1)
-                  .toString(),
-                toChainId: toToken.chain,
-                toTokenId: toToken.id,
-                slippage: new BigNumber(slippageState).div(100).toString(10),
-                quoteKey: selectedBridgeQuote.quote_key || {},
-              },
-              wallet.openapi
-            ).catch((e) => {
-              throw new AbortError(e?.message || String(e));
-            }),
-          { retries: 1 }
-        );
-        stats.report('bridgeQuoteResult', {
-          aggregatorIds: selectedBridgeQuote.aggregator.id,
-          bridgeId: selectedBridgeQuote.bridge_id,
-          fromChainId: fromToken.chain,
-          fromTokenId: fromToken.id,
-          toTokenId: toToken.id,
-          toChainId: toToken.chain,
-          status: tx ? 'success' : 'fail',
+        const tx = await requestBridgeQuoteTx({
+          userAddress,
+          fromToken,
+          toToken,
+          amount,
+          slippage,
+          quote: selectedBridgeQuote,
+          openapi: wallet.openapi,
         });
+        reportBridgeQuoteResult(
+          selectedBridgeQuote,
+          fromToken,
+          toToken,
+          tx ? 'success' : 'fail'
+        );
 
         if (
           expectedBuildKey &&
@@ -435,49 +355,17 @@ export const BridgeContent = () => {
 
         const result = await wallet.buildBridgeToken(
           {
-            approveId: selectedBridgeQuote.approve_contract_id,
-            to: tx.to,
-            value: tx.value,
-            data: tx.data,
-            payTokenRawAmount: new BigNumber(amount)
-              .times(10 ** fromToken.decimals)
-              .toFixed(0, 1)
-              .toString(),
-            chainId: tx.chainId,
-            shouldApprove: !!selectedBridgeQuote.shouldApproveToken,
-            shouldTwoStepApprove: !!selectedBridgeQuote.shouldTwoStepApprove,
-            payTokenId: fromToken.id,
-            payTokenChainServerId: fromToken.chain,
-            gasPrice: maxNativeTokenGasPrice,
-            info: {
-              aggregator_id: selectedBridgeQuote.aggregator.id,
-              bridge_id: selectedBridgeQuote.bridge_id,
-              from_chain_id: fromToken.chain,
-              from_token_id: fromToken.id,
-              from_token_amount: amount,
-              to_chain_id: toToken.chain,
-              to_token_id: toToken.id,
-              to_token_amount: selectedBridgeQuote.to_token_amount,
-              tx: tx,
-              rabby_fee: selectedBridgeQuote.rabby_fee.usd_value,
-              fee_rate: Number(feeRate),
-              duration: selectedBridgeQuote.duration,
-              slippage: new BigNumber(slippage).div(100).toNumber(),
-            },
-            addHistoryData: {
-              address: userAddress,
-              fromChainId: findChain({ serverId: fromToken.chain })?.id || 0,
-              toChainId: findChain({ serverId: toToken.chain })?.id || 0,
-              fromToken: fromToken,
-              toToken: toToken,
-              estimatedDuration: selectedBridgeQuote.duration,
-              fromAmount: Number(amount),
-              toAmount: Number(selectedBridgeQuote.to_token_amount),
-              slippage: new BigNumber(slippage).div(100).toNumber(),
-              dexId: selectedBridgeQuote.aggregator.id,
-              status: 'pending',
-              createdAt: Date.now(),
-            },
+            ...buildBridgeTokenSideParams({
+              userAddress,
+              fromToken,
+              toToken,
+              amount,
+              feeRate,
+              slippage,
+              quote: selectedBridgeQuote,
+              tx,
+              gasPrice: maxNativeTokenGasPrice,
+            }),
           },
           {
             ga: {
@@ -497,24 +385,15 @@ export const BridgeContent = () => {
         return result;
       } catch (error) {
         setQuotesList((pre) =>
-          pre?.filter(
-            (item) =>
-              !(
-                item?.aggregator?.id === selectedBridgeQuote?.aggregator?.id &&
-                item?.bridge_id === selectedBridgeQuote?.bridge_id
-              )
-          )
+          pre?.filter((item) => !isSameBridgeQuote(item, selectedBridgeQuote))
         );
         // message.error(error?.message || String(error));
-        stats.report('bridgeQuoteResult', {
-          aggregatorIds: selectedBridgeQuote.aggregator.id,
-          bridgeId: selectedBridgeQuote.bridge_id,
-          fromChainId: fromToken.chain,
-          fromTokenId: fromToken.id,
-          toTokenId: toToken.id,
-          toChainId: toToken.chain,
-          status: 'fail',
-        });
+        reportBridgeQuoteResult(
+          selectedBridgeQuote,
+          fromToken,
+          toToken,
+          'fail'
+        );
         console.error(error);
       } finally {
         // setFetchingBridgeQuote(false);
@@ -534,16 +413,6 @@ export const BridgeContent = () => {
   const runBuildBridgeTxsKeyRef = useRef('');
 
   const currentAccount = useCurrentAccount();
-
-  const showLoss = useMemo(() => {
-    const impact = tokenPriceImpact(
-      fromToken,
-      toToken,
-      amount,
-      selectedBridgeQuote?.to_token_amount
-    );
-    return !!impact?.showLoss;
-  }, [fromToken, amount, selectedBridgeQuote?.to_token_amount, toToken]);
 
   const selectedBridgeQuoteIsBestQuote =
     !!bestQuoteId &&
@@ -1403,7 +1272,7 @@ export const BridgeContent = () => {
             list={quoteList}
             activeName={
               selectedBridgeQuote
-                ? `${selectedBridgeQuote.aggregator.id}-${selectedBridgeQuote.bridge_id}`
+                ? getBridgeQuoteKey(selectedBridgeQuote)
                 : undefined
             }
             loading={quoteLoading}
