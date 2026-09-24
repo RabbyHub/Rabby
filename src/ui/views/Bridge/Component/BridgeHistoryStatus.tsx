@@ -319,7 +319,7 @@ const HeaderAction = ({ detail }: { detail: BridgeHistoryDetail }) => {
     return (
       <button
         type="button"
-        className="inline-flex h-[14px] items-center bg-transparent p-0 text-[12px] leading-[14px]"
+        className="inline-flex h-[14px] items-center bg-transparent p-0 text-[12px] leading-[14px] gap-2"
         onClick={(event) => {
           event.stopPropagation();
           if (href) openInTab(href, !isTab);
