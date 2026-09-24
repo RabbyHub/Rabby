@@ -1,4 +1,5 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
+import { BRIDGE_HISTORY_POLL_MAX_AGE_MS } from '@/ui/views/Bridge/constants';
 
 export const BRIDGE_HISTORY_TX_BATCH = 20;
 export const BRIDGE_HISTORY_INIT_SCAN_LIMIT = 100;
@@ -152,4 +153,15 @@ export const mergeHistoryWithBridge = <
     rows.push({ kind: 'tx', key: item._id, item });
   });
   return rows;
+};
+
+/** create_at 起算未满 2h 的 pending 才继续轮询。 */
+export const shouldPollPendingBridge = (
+  item: BridgeHistory,
+  now = Date.now()
+) => {
+  if (item.status !== 'pending') return false;
+  const createdAt = item.create_at ? item.create_at * 1000 : 0;
+  if (!createdAt) return true;
+  return now - createdAt < BRIDGE_HISTORY_POLL_MAX_AGE_MS;
 };

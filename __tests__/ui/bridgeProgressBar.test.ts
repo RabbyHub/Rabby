@@ -6,6 +6,8 @@ import {
   getBridgePopupState,
   getBridgeProgressBar,
 } from '@/ui/views/Bridge/utils/progressBar';
+import { BRIDGE_HISTORY_CREATE_AT_DELAY_MS, BRIDGE_HISTORY_POLL_MAX_AGE_MS } from '@/ui/views/Bridge/constants';
+import { shouldPollPendingBridge } from '@/ui/views/History/utils/mergeBridgeHistory';
 
 const now = 1_700_000_000_000;
 
@@ -75,8 +77,8 @@ describe('getBridgeProgressBar', () => {
       getBridgeProgressBar(
         item({
           status: 'fromSuccess',
-          estimatedDuration: 20,
-          fromTxCompleteTs: now - 16_000,
+          estimatedDuration: 8,
+          fromTxCompleteTs: now - 4_000,
         }),
         now
       )
@@ -87,13 +89,13 @@ describe('getBridgeProgressBar', () => {
     });
   });
 
-  it('shows Still Bridging once the estimate has passed and before 30 minutes', () => {
+  it('shows Still Bridging once the estimate has passed and before the delay window', () => {
     expect(
       getBridgeProgressBar(
         item({
           status: 'fromSuccess',
-          estimatedDuration: 20,
-          fromTxCompleteTs: now - 20_000,
+          estimatedDuration: 5,
+          fromTxCompleteTs: now - 6_000,
         }),
         now
       ).footer
@@ -362,14 +364,14 @@ describe('getBridgeHistoryDetail', () => {
     });
   });
 
-  it('shows Still Bridging after the estimate and before 30 minutes', () => {
+  it('shows Still Bridging after the estimate and before the delay window', () => {
     expect(
       getBridgeHistoryDetail(
         history(),
         item({
           status: 'fromSuccess',
-          estimatedDuration: 20,
-          fromTxCompleteTs: now - 20_000,
+          estimatedDuration: 5,
+          fromTxCompleteTs: now - 6_000,
         }),
         now
       )
@@ -401,7 +403,7 @@ describe('getBridgeHistoryDetail', () => {
     });
   });
 
-  it('does not treat an old create time as a destination delay without a source complete time', () => {
+  it('does not treat a short old create time as destination delay without source complete time', () => {
     expect(
       getBridgeHistoryDetail(
         history({
@@ -414,6 +416,29 @@ describe('getBridgeHistoryDetail', () => {
       scene: 'destStillBridging',
       header: 'processing',
       action: { kind: 'stillBridging' },
+    });
+  });
+
+  it('uses create_at for delayed when from_tx.time_at is missing and create_at is over 2h', () => {
+    expect(
+      getBridgeHistoryDetail(
+        history({
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'success',
+            time_at: 0,
+          },
+          create_at: Math.floor(
+            (now - BRIDGE_HISTORY_CREATE_AT_DELAY_MS) / 1000
+          ),
+        }),
+        undefined,
+        now
+      )
+    ).toMatchObject({
+      scene: 'destDelayed',
+      header: 'pending',
+      action: { kind: 'delayed' },
     });
   });
 
@@ -454,7 +479,14 @@ describe('getBridgeHistoryDetail', () => {
   it('uses a two-step refund when the source transaction fails', () => {
     expect(
       getBridgeHistoryDetail(
-        history(),
+        history({
+          status: 'failed',
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'failed',
+            time_at: Math.floor(now / 1000),
+          },
+        }),
         item({ status: 'fromFailed', hash: '0xsource' }),
         now
       )
@@ -483,6 +515,84 @@ describe('getBridgeHistoryDetail', () => {
         },
       ],
     });
+  });
+
+  it('prefers remote from_tx.failed over a local fromSuccess', () => {
+    expect(
+      getBridgeHistoryDetail(
+        history({
+          status: 'failed',
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'failed',
+            time_at: Math.floor(now / 1000),
+          },
+        }),
+        item({ status: 'fromSuccess', hash: '0xsource' }),
+        now
+      ).scene
+    ).toBe('sourceFailed');
+  });
+
+  it('treats failed bridges with from_tx.success as destination failures', () => {
+    expect(
+      getBridgeHistoryDetail(
+        history({
+          status: 'failed',
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'success',
+            time_at: Math.floor(now / 1000),
+          },
+          to_actual_token: { id: 'usdc', chain: 'arb', symbol: 'USDC' },
+        }),
+        undefined,
+        now
+      ).scene
+    ).toBe('failedNoRefund');
+  });
+
+  it('uses remote from_tx.time_at for destination delay', () => {
+    expect(
+      getBridgeHistoryDetail(
+        history({
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'success',
+            time_at: Math.floor((now - BRIDGE_PROGRESS_DELAY_MS) / 1000),
+          },
+        }),
+        item({
+          status: 'pending',
+          estimatedDuration: 60,
+          fromTxCompleteTs: now,
+        }),
+        now
+      )
+    ).toMatchObject({
+      scene: 'destDelayed',
+      header: 'pending',
+      action: { kind: 'delayed' },
+    });
+  });
+
+  it('keeps source pending when remote from_tx is still pending', () => {
+    expect(
+      getBridgeHistoryDetail(
+        history({
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'pending',
+            time_at: Math.floor(now / 1000),
+          },
+        }),
+        item({
+          status: 'fromSuccess',
+          fromTxCompleteTs: now - BRIDGE_PROGRESS_DELAY_MS,
+        }),
+        now
+      ).scene
+    ).toBe('sourcePending');
   });
 
   it('uses a plain Refund title when the refund is the original token', () => {
@@ -566,10 +676,17 @@ describe('getBridgeHistoryDetail', () => {
     ).toBe('succeeded');
   });
 
-  it('uses a local failure while the api is still pending', () => {
+  it('ignores a local destination failure while the api is still pending', () => {
     expect(
       getBridgeHistoryDetail(
-        history({ status: 'pending' }),
+        history({
+          status: 'pending',
+          from_tx: {
+            tx_id: '0xsource',
+            status: 'pending',
+            time_at: Math.floor(now / 1000),
+          },
+        }),
         item({
           status: 'failed',
           toTxId: '0xrefund',
@@ -578,7 +695,7 @@ describe('getBridgeHistoryDetail', () => {
         }),
         now
       ).scene
-    ).toBe('refundOther');
+    ).toBe('sourcePending');
   });
 
   it('asks for support when a failed bridge has no refund transaction', () => {
@@ -597,5 +714,41 @@ describe('getBridgeHistoryDetail', () => {
       action: { kind: 'support' },
       steps: [{ status: 'completed' }, { status: 'failed' }],
     });
+  });
+});
+
+describe('shouldPollPendingBridge', () => {
+  it('polls recent pending bridges and skips ones older than 2h', () => {
+    expect(
+      shouldPollPendingBridge(
+        history({
+          status: 'pending',
+          create_at: Math.floor(now / 1000),
+        }),
+        now
+      )
+    ).toBe(true);
+
+    expect(
+      shouldPollPendingBridge(
+        history({
+          status: 'pending',
+          create_at: Math.floor(
+            (now - BRIDGE_HISTORY_POLL_MAX_AGE_MS) / 1000
+          ),
+        }),
+        now
+      )
+    ).toBe(false);
+
+    expect(
+      shouldPollPendingBridge(
+        history({
+          status: 'completed',
+          create_at: Math.floor(now / 1000),
+        }),
+        now
+      )
+    ).toBe(false);
   });
 });

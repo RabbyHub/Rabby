@@ -96,6 +96,10 @@ export const BridgePendingTxItem = ({
           resolution.status,
           resolution.item
         );
+        return;
+      }
+      if (resolution.kind === 'sync') {
+        setData(resolution.local);
       }
     }
   );

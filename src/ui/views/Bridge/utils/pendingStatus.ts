@@ -1,6 +1,10 @@
 import type { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { ONE_DAY_MS, ONE_HOUR_MS } from '../constants';
+import {
+  bridgeRemoteFromTxStatus,
+  bridgeRemoteSourceCompleteTs,
+} from './remoteFromTx';
 
 export const BRIDGE_PENDING_HISTORY_QUERY = {
   start: 0,
@@ -23,10 +27,27 @@ export type BridgePendingListResolution =
       kind: 'complete';
       hash: string;
       fromChainId: number;
-      status: 'allSuccess' | 'failed';
+      status: 'allSuccess' | 'failed' | 'fromFailed';
       item: BridgeHistory;
       local: BridgeTxHistoryItem;
+    }
+  | {
+      /** 整体仍 pending，但远程 from_tx 已推进到源链成功 / 失败。只更新 UI 本地态。 */
+      kind: 'sync';
+      local: BridgeTxHistoryItem;
     };
+
+const withRemoteSourceComplete = (
+  local: BridgeTxHistoryItem,
+  item: BridgeHistory
+): BridgeTxHistoryItem => {
+  const remoteTs = bridgeRemoteSourceCompleteTs(item);
+  if (!remoteTs) return local;
+  return {
+    ...local,
+    fromTxCompleteTs: remoteTs,
+  };
+};
 
 export const resolveBridgePendingFromHistoryList = (
   local: BridgeTxHistoryItem,
@@ -51,8 +72,29 @@ export const resolveBridgePendingFromHistoryList = (
     return { kind: 'keep' };
   }
 
-  if (findTx.status === 'completed' || findTx.status === 'failed') {
-    const status = findTx.status === 'completed' ? 'allSuccess' : 'failed';
+  const fromTxStatus = bridgeRemoteFromTxStatus(findTx);
+
+  if (findTx.status === 'completed') {
+    return {
+      kind: 'complete',
+      hash: local.hash,
+      fromChainId: local.fromChainId,
+      status: 'allSuccess',
+      item: findTx,
+      local: {
+        ...withRemoteSourceComplete(local, findTx),
+        status: 'allSuccess',
+        actualToToken: findTx.to_actual_token,
+        actualToAmount: findTx.actual.receive_token_amount,
+        toTxId: findTx.to_tx?.tx_id,
+        completedAt: now,
+      },
+    };
+  }
+
+  if (findTx.status === 'failed') {
+    // 远程 from_tx.failed → 源链失败；否则视为目标链失败。
+    const status = fromTxStatus === 'failed' ? 'fromFailed' : 'failed';
     return {
       kind: 'complete',
       hash: local.hash,
@@ -60,7 +102,7 @@ export const resolveBridgePendingFromHistoryList = (
       status,
       item: findTx,
       local: {
-        ...local,
+        ...withRemoteSourceComplete(local, findTx),
         status,
         actualToToken: findTx.to_actual_token,
         actualToAmount: findTx.actual.receive_token_amount,
@@ -71,6 +113,26 @@ export const resolveBridgePendingFromHistoryList = (
   }
 
   if (findTx.status === 'pending') {
+    if (fromTxStatus === 'failed') {
+      return {
+        kind: 'sync',
+        local: {
+          ...local,
+          status: 'fromFailed',
+        },
+      };
+    }
+    if (fromTxStatus === 'success') {
+      const remoteTs = bridgeRemoteSourceCompleteTs(findTx);
+      return {
+        kind: 'sync',
+        local: {
+          ...local,
+          status: 'fromSuccess',
+          fromTxCompleteTs: remoteTs || local.fromTxCompleteTs || now,
+        },
+      };
+    }
     return { kind: 'pending' };
   }
 

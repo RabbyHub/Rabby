@@ -213,7 +213,7 @@ export const BridgeProgressCard = ({
   return (
     <div
       className={clsx(
-        'cursor-pointer overflow-hidden rounded-[8px] border-2 border-solid border-white bg-r-neutral-card-1 shadow-[0px_4px_20px_rgba(55,56,63,0.06)] dark:border-transparent dark:shadow-none',
+        'cursor-pointer overflow-hidden rounded-[8px] border border-solid border-transparent bg-r-neutral-card-1 shadow-[0px_4px_20px_rgba(55,56,63,0.06)] dark:shadow-none',
         'hover:border-rabby-blue-default hover:bg-blue-light/10'
       )}
       onClick={onOpen}

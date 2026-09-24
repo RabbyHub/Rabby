@@ -294,7 +294,10 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
   ({ data, local, variant = 'detail' }, ref) => {
     const isFailed = data.status === 'failed';
     const isSourcePending =
-      data.status === 'pending' && local?.status === 'pending';
+      data.status === 'pending' &&
+      (data.from_tx?.status
+        ? data.from_tx.status === 'pending'
+        : local?.status === 'pending');
     const isSuccess = data.status === 'completed';
 
     const txId =

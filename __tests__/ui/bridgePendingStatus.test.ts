@@ -117,9 +117,56 @@ describe('resolveBridgePendingFromHistoryList', () => {
     ).toEqual({ kind: 'pending' });
   });
 
+  it('syncs fromSuccess from remote from_tx while the bridge is still pending', () => {
+    const item = historyItem({
+      status: 'pending',
+      from_tx: {
+        tx_id: '0xlocal',
+        chain_id: 'eth',
+        status: 'success',
+        time_at: Math.floor((now - 5_000) / 1000),
+      },
+    });
+    expect(
+      resolveBridgePendingFromHistoryList(localItem(), [item], now)
+    ).toMatchObject({
+      kind: 'sync',
+      local: {
+        status: 'fromSuccess',
+        fromTxCompleteTs: now - 5_000,
+      },
+    });
+  });
+
+  it('marks a failed server item as fromFailed when from_tx failed', () => {
+    const item = historyItem({
+      status: 'failed',
+      from_tx: {
+        tx_id: '0xlocal',
+        chain_id: 'eth',
+        status: 'failed',
+        time_at: Math.floor(now / 1000),
+      },
+      to_tx: { tx_id: '0xdest' },
+    });
+    expect(
+      resolveBridgePendingFromHistoryList(localItem(), [item], now)
+    ).toMatchObject({
+      kind: 'complete',
+      status: 'fromFailed',
+      local: { status: 'fromFailed' },
+    });
+  });
+
   it('marks a failed server item as failed and keeps the destination tx id', () => {
     const item = historyItem({
       status: 'failed',
+      from_tx: {
+        tx_id: '0xlocal',
+        chain_id: 'eth',
+        status: 'success',
+        time_at: Math.floor(now / 1000),
+      },
       to_tx: { tx_id: '0xdest' },
     });
     expect(

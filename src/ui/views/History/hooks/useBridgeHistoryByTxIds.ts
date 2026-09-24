@@ -10,6 +10,7 @@ import {
   collectInitialBridgeTxIds,
   collectViewportOutgoingTxIds,
   historyTxKey,
+  shouldPollPendingBridge,
 } from '../utils/mergeBridgeHistory';
 
 type LookupItem = {
@@ -27,7 +28,7 @@ type LookupItem = {
  * 三个入口只负责挑出要查的哈希，真正发请求都交给 enqueueIds。
  * - 初始化：从最新记录向后找，凑满 20 条候选、扫满 100 条，或数据库结束。
  * - 滚动：只查当前可见窗口所在的 20 条批次，不向窗口外补。
- * - 轮询：只刷新已经识别、且仍是 pending 的跨链。
+ * - 轮询：只刷新已经识别、且仍是 pending、创建未满 2h 的跨链。
  */
 export const useBridgeHistoryByTxIds = (options: {
   enabled: boolean;
@@ -37,7 +38,9 @@ export const useBridgeHistoryByTxIds = (options: {
   const { enabled, address = '', items } = options;
   const wallet = useWallet();
   const [bridges, setBridges] = useState<BridgeHistory[]>([]);
-  const hasPendingBridge = bridges.some((item) => item.status === 'pending');
+  const hasPendingBridge = bridges.some((item) =>
+    shouldPollPendingBridge(item)
+  );
   const bridgesRef = useRef(bridges);
   bridgesRef.current = bridges;
   const requestedRef = useRef(new Set<string>());
@@ -199,13 +202,14 @@ export const useBridgeHistoryByTxIds = (options: {
     scanInitialHistory();
   }, [scanInitialHistory]);
 
-  /** 轮询：不扫描历史列表，只重复查询当前仍在 pending 的跨链。 */
+  /** 轮询：不扫描历史列表，只重复查询当前仍在 pending 且创建未满 2h 的跨链。 */
   const pollPendingBridges = useCallback(() => {
     if (requestQueueRef.current.size || requestQueueRef.current.pending) {
       return;
     }
+    const now = Date.now();
     const pendingIds = bridgesRef.current
-      .filter((item) => item.status === 'pending')
+      .filter((item) => shouldPollPendingBridge(item, now))
       .map((item) => item.from_tx?.tx_id)
       .filter((id): id is string => !!id);
     pendingIds.forEach((id) => requestedRef.current.delete(id.toLowerCase()));

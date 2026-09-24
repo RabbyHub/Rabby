@@ -5,18 +5,23 @@ import type {
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { formatEstimateClock } from './duration';
 import { BRIDGE_PROGRESS_DELAY_MS } from './progressBar';
+import {
+  bridgeRemoteFromTxStatus,
+  bridgeRemoteSourceCompleteTs,
+} from './remoteFromTx';
+import { BRIDGE_HISTORY_CREATE_AT_DELAY_MS } from '../constants';
 
 /**
  * 交易历史展开后的业务场景。
  * 先由 resolveBridgeHistoryScene 判定场景，再由 buildHistoryDetail 转成界面数据。
  * 组件只渲染结果，不再自己判断超时或退款种类。
  *
- * 判定顺序：
- * 1. 源链失败
- * 2. 目标链成功
+ * 判定顺序（有远程 from_tx 时以远程为准）：
+ * 1. 目标链成功
+ * 2. 源链失败（from_tx.failed）
  * 3. 目标链失败（有退款 / 无退款）
- * 4. 源链已成功，目标链等待（倒计时 / Still Bridging / 延迟）
- * 5. 源链进行中
+ * 4. 源链进行中（from_tx.pending）
+ * 5. 源链已成功，目标链等待（倒计时 / Still Bridging / 延迟；完成时间优先 from_tx.time_at）
  */
 export type BridgeHistoryScene =
   | 'sourcePending'
@@ -109,6 +114,10 @@ const isOriginalRefundToken = (
   from.chain === actual.chain &&
   from.id.toLowerCase() === actual.id.toLowerCase();
 
+/** 源链完成时间：远程 from_tx.time_at 优先，否则本地 fromTxCompleteTs。 */
+const sourceCompleteTsOf = (data: BridgeHistory, local?: BridgeTxHistoryItem) =>
+  bridgeRemoteSourceCompleteTs(data) || local?.fromTxCompleteTs || 0;
+
 /** 源链已完成：绿勾、支付金额、来源交易。 */
 const sendCompletedStep = (
   data: BridgeHistory,
@@ -171,16 +180,26 @@ const receiveSuccessStep = (
 
 /**
  * 目标链等待的三种标题。
- * 延迟只从源链完成时间起算；没有完成时间时，倒计时改用交易创建时间，且不会变成 Pending。
- * 剩余时间大于 0 就倒计时，包含不超过 5 秒的预估。
+ * 延迟优先从源链完成时间起算（远程 from_tx.time_at / 本地 fromTxCompleteTs）。
+ * 没有完成时间时，用 create_at 满 2 小时进 Delayed / Contact Support。
+ * 否则倒计时可用创建时间。
  */
 const destWaitingScene = (
   data: BridgeHistory,
   local: BridgeTxHistoryItem | undefined,
   now: number
 ): DestWaitingScene => {
-  const completeTs = local?.fromTxCompleteTs;
+  const completeTs = sourceCompleteTsOf(data, local);
   if (completeTs && now - completeTs >= BRIDGE_PROGRESS_DELAY_MS) {
+    return 'destDelayed';
+  }
+
+  // 没有源链完成时间时，create_at 满 2h 也进 Delayed / Contact Support。
+  if (
+    !completeTs &&
+    data.create_at &&
+    now - data.create_at * 1000 >= BRIDGE_HISTORY_CREATE_AT_DELAY_MS
+  ) {
     return 'destDelayed';
   }
 
@@ -192,10 +211,17 @@ const destWaitingScene = (
   return 'destStillBridging';
 };
 
+const isSourceFailed = (data: BridgeHistory, local?: BridgeTxHistoryItem) => {
+  const fromTxStatus = bridgeRemoteFromTxStatus(data);
+  if (fromTxStatus === 'failed') return true;
+  // 旧接口没有 from_tx.status 时，仍用本地 fromFailed 兜底。
+  if (!fromTxStatus && local?.status === 'fromFailed') return true;
+  return false;
+};
+
 /**
  * 把接口状态和本地状态收成一个场景。
- * 成功、失败以接口为准，避免本地旧状态或超时失败覆盖接口当前状态。
- * 接口失败时用本地信息区分源链失败；接口 pending 时仅用本地信息区分等待阶段。
+ * 有远程 from_tx.status / time_at 时以远程为准；否则回退本地。
  */
 export const resolveBridgeHistoryScene = (
   data: BridgeHistory,
@@ -206,8 +232,11 @@ export const resolveBridgeHistoryScene = (
     return 'succeeded';
   }
 
+  if (isSourceFailed(data, local)) {
+    return 'sourceFailed';
+  }
+
   if (data.status === 'failed') {
-    if (local?.status === 'fromFailed') return 'sourceFailed';
     const token = refundTokenOf(data, local);
     const txId = refundTxIdOf(data, local);
     if (!token?.id || !txId) return 'failedNoRefund';
@@ -216,8 +245,18 @@ export const resolveBridgeHistoryScene = (
       : 'refundOther';
   }
 
-  if (data.status === 'pending' && local?.status !== 'pending') {
-    return destWaitingScene(data, local, now);
+  if (data.status === 'pending') {
+    const fromTxStatus = bridgeRemoteFromTxStatus(data);
+    if (fromTxStatus === 'pending') {
+      return 'sourcePending';
+    }
+    if (fromTxStatus === 'success') {
+      return destWaitingScene(data, local, now);
+    }
+    // 旧接口：没有 from_tx.status 时，仅用本地区分等待阶段。
+    if (local?.status !== 'pending') {
+      return destWaitingScene(data, local, now);
+    }
   }
 
   // 源链进行中不看创建时间，超过 30 分钟也不改成 Pending。
@@ -230,7 +269,8 @@ const countdownTime = (
   now: number
 ) => {
   const countdownStart =
-    local?.fromTxCompleteTs || (data.create_at ? data.create_at * 1000 : 0);
+    sourceCompleteTsOf(data, local) ||
+    (data.create_at ? data.create_at * 1000 : 0);
   const elapsedMs = countdownStart ? Math.max(0, now - countdownStart) : 0;
   const remainingSeconds = (local?.estimatedDuration || 0) - elapsedMs / 1000;
   return formatEstimateClock(remainingSeconds, true);
