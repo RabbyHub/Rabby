@@ -11,6 +11,7 @@ const mockHistoryCollection = {
   limit: jest.fn(),
   toArray: jest.fn(),
   delete: jest.fn(),
+  count: jest.fn(),
 };
 const mockHistoryWhereClause = {
   between: jest.fn(),
@@ -35,7 +36,12 @@ jest.mock('@/utils/history', () => ({
 
 import { historyDbService } from '@/db/services/historyDbService';
 import type { HistoryOpenapi } from '@/db/services/historyDbService';
-import { HISTORY_RETENTION_SECONDS } from '@/db/constants';
+import {
+  HISTORY_RETENTION_SECONDS,
+  HISTORY_TX_COUNT_CHECK_INTERVAL,
+  HISTORY_TX_COUNT_SYNC_SCENE,
+  HISTORY_TX_COUNT_WINDOW_SECONDS,
+} from '@/db/constants';
 import Dexie from 'dexie';
 import { last } from 'lodash';
 
@@ -47,6 +53,7 @@ beforeEach(() => {
   mockHistoryCollection.limit.mockReturnValue(mockHistoryCollection);
   mockHistoryCollection.toArray.mockResolvedValue([]);
   mockHistoryCollection.delete.mockResolvedValue(0);
+  mockHistoryCollection.count.mockResolvedValue(0);
 });
 
 const ADDRESS = '0x0000000000000000000000000000000000000001';
@@ -58,6 +65,7 @@ const createOpenapi = (hasNew: boolean) => {
       has_new_tx: hasNew,
     }),
     getAllTxHistory: jest.fn(),
+    getTxCount: jest.fn().mockResolvedValue({ tx_count: 0, has_more: false }),
     listTxHistory: jest.fn(),
   };
 
@@ -743,5 +751,114 @@ describe('historyDbService 90-day retention', () => {
 
     await historyDbService.sync({ openapi, address: ADDRESS });
     expect(deleteExpired).toHaveBeenCalledWith(ADDRESS);
+  });
+});
+
+describe('historyDbService daily tx count check', () => {
+  const NOW = 1_800_000_000_000;
+  const TO_TS = NOW / 1000;
+  const FROM_TS = TO_TS - HISTORY_TX_COUNT_WINDOW_SECONDS;
+  let updatedAtByScene: Record<string, number>;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(Date, 'now').mockReturnValue(NOW);
+    updatedAtByScene = { history: NOW };
+    mockSyncDbService.getSyncState.mockResolvedValue(undefined);
+    mockSyncDbService.getUpdatedAt.mockImplementation(
+      async ({ scene }: { scene: string }) => updatedAtByScene[scene]
+    );
+    mockSyncDbService.setUpdatedAt.mockImplementation(
+      async ({ scene, updatedAt }: { scene: string; updatedAt: number }) => {
+        updatedAtByScene[scene] = updatedAt;
+      }
+    );
+    jest
+      .spyOn(historyDbService, 'getLatestItemTime')
+      .mockResolvedValue(LATEST_TIME);
+    jest.spyOn(historyDbService, 'deleteExpired').mockResolvedValue(0);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  test('skips the check within 24 hours of the last one', async () => {
+    updatedAtByScene[HISTORY_TX_COUNT_SYNC_SCENE] =
+      NOW - HISTORY_TX_COUNT_CHECK_INTERVAL + 1;
+    const openapi = createOpenapi(false);
+
+    await historyDbService.sync({ openapi, address: ADDRESS });
+
+    expect(openapi.getTxCount).not.toHaveBeenCalled();
+  });
+
+  test('counts the last 24 hours locally and stops when nothing is missing', async () => {
+    const openapi = createOpenapi(false);
+    openapi.getTxCount.mockResolvedValue({ tx_count: 3, has_more: false });
+    mockHistoryCollection.count.mockResolvedValue(3);
+    const syncWithRealTimeApi = jest.spyOn(
+      historyDbService,
+      'syncWithRealTimeApi'
+    );
+
+    await historyDbService.sync({ openapi, address: ADDRESS });
+
+    expect(openapi.getTxCount).toHaveBeenCalledWith({
+      id: ADDRESS,
+      from_ts: FROM_TS,
+      to_ts: TO_TS,
+    });
+    expect(mockHistoryWhereClause.between).toHaveBeenCalledWith(
+      [ADDRESS.toLowerCase(), FROM_TS],
+      [ADDRESS.toLowerCase(), TO_TS],
+      true,
+      true
+    );
+    expect(syncWithRealTimeApi).not.toHaveBeenCalled();
+    expect(updatedAtByScene[HISTORY_TX_COUNT_SYNC_SCENE]).toBe(NOW);
+  });
+
+  test('refetches the last 24 hours when local history has fewer txs', async () => {
+    const openapi = createOpenapi(false);
+    openapi.getTxCount.mockResolvedValue({ tx_count: 5, has_more: false });
+    mockHistoryCollection.count.mockResolvedValue(4);
+    const syncWithRealTimeApi = jest
+      .spyOn(historyDbService, 'syncWithRealTimeApi')
+      .mockResolvedValue(undefined);
+
+    await historyDbService.sync({ openapi, address: ADDRESS });
+
+    expect(syncWithRealTimeApi).toHaveBeenCalledWith({
+      openapi,
+      address: ADDRESS,
+      startTime: 0,
+      latestTime: FROM_TS * 1000,
+    });
+  });
+
+  test('runs after the regular sync and expiry cleanup', async () => {
+    const openapi = createOpenapi(false);
+
+    await historyDbService.sync({ openapi, address: ADDRESS });
+
+    expect(openapi.hasNewTxFrom.mock.invocationCallOrder[0]).toBeLessThan(
+      openapi.getTxCount.mock.invocationCallOrder[0]
+    );
+    expect(
+      (historyDbService.deleteExpired as jest.Mock).mock.invocationCallOrder[0]
+    ).toBeLessThan(openapi.getTxCount.mock.invocationCallOrder[0]);
+  });
+
+  test('does not retry a failed check until the next day', async () => {
+    const openapi = createOpenapi(false);
+    openapi.getTxCount.mockRejectedValueOnce(new Error('not found'));
+
+    await expect(
+      historyDbService.sync({ openapi, address: ADDRESS })
+    ).rejects.toThrow('not found');
+    await historyDbService.sync({ openapi, address: ADDRESS });
+
+    expect(openapi.getTxCount).toHaveBeenCalledTimes(1);
   });
 });

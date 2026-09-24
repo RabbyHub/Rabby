@@ -5,13 +5,18 @@ import { last } from 'lodash';
 import Dexie from 'dexie';
 import { transformToHistory } from '@/utils/history';
 import { syncDbService } from './syncDbService';
-import { HISTORY_RETENTION_SECONDS } from '../constants';
+import {
+  HISTORY_RETENTION_SECONDS,
+  HISTORY_TX_COUNT_CHECK_INTERVAL,
+  HISTORY_TX_COUNT_SYNC_SCENE,
+  HISTORY_TX_COUNT_WINDOW_SECONDS,
+} from '../constants';
 
 const USE_REALTIME_API_DURATION = 24 * 5 * 60 * 60 * 1000; // use async history api if user not opened app in 5 days
 
 export type HistoryOpenapi = Pick<
   OpenApiService,
-  'hasNewTxFrom' | 'getAllTxHistory' | 'listTxHistory'
+  'hasNewTxFrom' | 'getAllTxHistory' | 'listTxHistory' | 'getTxCount'
 >;
 
 export const getHistoryRetentionStart = () =>
@@ -82,6 +87,61 @@ class HistoryDbService {
     return withHistorySyncLock(params.address, async () => {
       await this.syncWithinLock(params);
       await this.deleteExpired(params.address);
+      await this.reconcileRecentTxCount(params);
+    });
+  }
+
+  countInTimeRange(address: string, fromTs: number, toTs: number) {
+    const owner = address.toLowerCase();
+    return db.history
+      .where('[owner_addr+time_at]')
+      .between([owner, fromTs], [owner, toTs], true, true)
+      .count();
+  }
+
+  // Incremental sync only looks past the newest stored item, so a tx indexed
+  // late, or behind a newer one, is never fetched. A daily count check over
+  // the last day catches those and refetches the day.
+  async reconcileRecentTxCount({
+    openapi,
+    address,
+  }: {
+    openapi: HistoryOpenapi;
+    address: string;
+  }) {
+    const lastCheckedAt =
+      (await syncDbService.getUpdatedAt({
+        address,
+        scene: HISTORY_TX_COUNT_SYNC_SCENE,
+      })) || 0;
+    if (Date.now() - lastCheckedAt < HISTORY_TX_COUNT_CHECK_INTERVAL) {
+      return;
+    }
+    // Record the attempt before calling, so a failing endpoint costs one
+    // request a day instead of one on every open.
+    await syncDbService.setUpdatedAt({
+      address,
+      scene: HISTORY_TX_COUNT_SYNC_SCENE,
+      updatedAt: Date.now(),
+    });
+
+    const toTs = Math.floor(Date.now() / 1000);
+    const fromTs = toTs - HISTORY_TX_COUNT_WINDOW_SECONDS;
+    const { tx_count } = await openapi.getTxCount({
+      id: address,
+      from_ts: fromTs,
+      to_ts: toTs,
+    });
+    const localCount = await this.countInTimeRange(address, fromTs, toTs);
+    if (localCount >= tx_count) {
+      return;
+    }
+
+    await this.syncWithRealTimeApi({
+      openapi,
+      address,
+      startTime: 0,
+      latestTime: fromTs * 1000,
     });
   }
 
