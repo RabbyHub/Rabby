@@ -49,6 +49,14 @@ describe('collectOutgoingTxIds', () => {
     expect(skip.has('0x3')).toBe(true);
   });
 
+  it('does not query scam transactions', () => {
+    const items = [
+      { ...tx('0xscam', 'eth'), is_scam: true },
+      tx('0xok', 'eth'),
+    ];
+    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
+  });
+
   it('fills the rest of a 20-id batch past the viewport', () => {
     const items = Array.from({ length: 25 }, (_, index) =>
       tx(`0x${index}`, 'eth')
@@ -61,7 +69,7 @@ describe('collectOutgoingTxIds', () => {
       2,
       5
     );
-    expect(ids).toEqual(['0x2', '0x3', '0x4', '0x5', '0x6']);
+    expect(ids).toEqual(['0x2', '0x3', '0x4']);
   });
 });
 
