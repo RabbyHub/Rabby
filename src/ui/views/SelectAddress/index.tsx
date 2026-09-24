@@ -1,12 +1,13 @@
 import React, { useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
-import { getUiType } from 'ui/utils';
 import { KEYRING_CLASS } from 'consts';
 import './style.less';
 import { HDManager } from '../HDManager/HDManager';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
+import { message } from 'antd';
+import { KEYRING_IMPORT_EXPIRED_MESSAGE } from '@/constant/message';
 
 type State = {
   keyring: string;
@@ -20,7 +21,7 @@ type State = {
 
 const SelectAddress = () => {
   const history = useHistory();
-  const { state = {} as State, search } = useLocation<{
+  const { state: locationState, search } = useLocation<{
     keyring: string;
     isMnemonics?: boolean;
     isWebHID?: boolean;
@@ -29,44 +30,47 @@ const SelectAddress = () => {
     ledgerLive?: boolean;
     brand?: string;
   }>();
-  const query = new URLSearchParams(search);
+  const state = { ...locationState };
+  const query = React.useMemo(() => new URLSearchParams(search), [search]);
   const hasReportedRef = useRef(false);
 
   state.keyring = state?.keyring || (query.get('hd') as string);
   state.brand = state?.brand || (query.get('brand') as string);
-  if (query.get('keyringId') && !state.keyringId) {
-    state.keyringId = Number(query.get('keyringId') as string);
+  const queryKeyringId = query.get('keyringId');
+  if (state.keyringId == null && queryKeyringId && queryKeyringId !== 'null') {
+    state.keyringId = Number(queryKeyringId);
   }
+  const { keyring, brand } = state;
+  const keyringId = state.keyringId ?? null;
+  const isMnemonic = keyring === KEYRING_CLASS.MNEMONIC;
+  const invalidImport =
+    !keyring ||
+    ((isMnemonic || keyringId !== null) &&
+      (!Number.isSafeInteger(keyringId) || keyringId! <= 0));
 
-  if (!state) {
-    if (getUiType().isTab) {
-      if (history.length) {
-        history.goBack();
-      } else {
-        window.close();
-      }
-    } else {
-      history.replace('/dashboard');
-    }
-    return null;
-  }
-
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [initializedKeyringId, setInitializedKeyringId] = React.useState<
+    number | null
+  >();
   const initMnemonics = async () => {
+    if (invalidImport) {
+      message.error(KEYRING_IMPORT_EXPIRED_MESSAGE);
+      history.replace('/add-address');
+      return;
+    }
     if (isMnemonic) {
       useImportMnemonicsStore.getState().switchKeyring({
-        stashKeyringId: keyringId.current as number,
+        stashKeyringId: keyringId as number,
       });
     }
 
-    setIsMounted(true);
+    setInitializedKeyringId(keyringId);
   };
   React.useEffect(() => {
     initMnemonics();
-  }, [query]);
+  }, [keyring, keyringId, invalidImport]);
 
   React.useEffect(() => {
-    if (hasReportedRef.current) {
+    if (invalidImport || hasReportedRef.current) {
       return;
     }
     if (!state.keyring) {
@@ -83,19 +87,17 @@ const SelectAddress = () => {
     ga4.fireEvent(`Import_${state.keyring}${mnemonicSuffix}`, {
       event_category: 'Import Address',
     });
-  }, [state.keyring]);
+  }, [state.keyring, invalidImport]);
 
-  const { keyring, brand } = state;
-  const keyringId = useRef<number | null | undefined>(state.keyringId);
-  const isMnemonic = keyring === KEYRING_CLASS.MNEMONIC;
-
+  if (invalidImport) return null;
   if (isMnemonic) {
-    if (!isMounted) return null;
+    if (initializedKeyringId !== keyringId) return null;
   }
 
   return (
     <HDManager
-      keyringId={keyringId.current ?? null}
+      key={`${keyring}:${keyringId}`}
+      keyringId={keyringId}
       keyring={keyring}
       brand={brand}
     />

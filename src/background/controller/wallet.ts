@@ -5,6 +5,10 @@ import {
   toChecksumAddress,
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
+import {
+  KEYRING_IMPORT_EXPIRED,
+  KEYRING_IMPORT_EXPIRED_MESSAGE,
+} from '@/constant/message';
 import { ethers, Contract } from 'ethers';
 import {
   capitalize,
@@ -4628,7 +4632,13 @@ export class WalletController extends BaseController {
   };
 
   addKeyringToStash = (keyring) => {
-    const stashId = Object.values(stashKeyrings).length + 1;
+    let stashId: number;
+    do {
+      const words = crypto.getRandomValues(new Uint32Array(2));
+      // ponytail: 53-bit random IDs keep numeric callers; use opaque session
+      // IDs if strict cross-restart uniqueness becomes necessary.
+      stashId = (words[0] & 0x1fffff) * 2 ** 32 + words[1];
+    } while (!stashId || stashKeyrings[stashId]);
     stashKeyrings[stashId] = keyring;
 
     return stashId;
@@ -4805,11 +4815,13 @@ export class WalletController extends BaseController {
 
   connectHardware = async ({
     type,
+    keyringId,
     hdPath,
     needUnlock = false,
     isWebHID = false,
   }: {
     type: string;
+    keyringId?: number | null;
     hdPath?: string;
     needUnlock?: boolean;
     isWebHID?: boolean;
@@ -4817,33 +4829,33 @@ export class WalletController extends BaseController {
     let keyring;
     let stashKeyringId: number | null = null;
     let isNew = false;
-    try {
-      keyring = this.#getKeyringByType(type);
-    } catch {
-      const Keyring = keyringService.getKeyringClassForType(type);
-      keyring = new Keyring(
-        (await hasBridge(type))
-          ? {
-              bridge: await getKeyringBridge(type),
-            }
-          : undefined
-      );
-      isNew = true;
+    if (keyringId != null) {
+      keyring = this.#getStashedKeyring(type, keyringId);
+      isNew = !keyringService.keyrings.includes(keyring);
+    } else {
+      try {
+        keyring = this.#getKeyringByType(type);
+      } catch {
+        const Keyring = keyringService.getKeyringClassForType(type);
+        keyring = new Keyring(
+          (await hasBridge(type))
+            ? {
+                bridge: await getKeyringBridge(type),
+              }
+            : undefined
+        );
+        isNew = true;
+      }
     }
 
     Object.keys(stashKeyrings).forEach((key) => {
       const kr = stashKeyrings[key];
-      if (kr.type === keyring.type) {
+      if (kr === keyring) {
         stashKeyringId = Number(key);
       }
     });
     if (!stashKeyringId) {
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
-      stashKeyrings[stashKeyringId] = keyring;
-    } else {
-      if (isNew) {
-        stashKeyrings[stashKeyringId] = keyring;
-      }
+      stashKeyringId = this.addKeyringToStash(keyring);
     }
 
     if (hdPath && keyring.setHdPath) {
@@ -4899,8 +4911,7 @@ export class WalletController extends BaseController {
         keyring = new keystoneKeyring({
           bridge: await getKeyringBridge(keyringType),
         });
-        stashKeyringId = Object.values(stashKeyrings).length + 1;
-        stashKeyrings[stashKeyringId] = keyring;
+        stashKeyringId = this.addKeyringToStash(keyring);
       }
     }
 
@@ -4928,8 +4939,7 @@ export class WalletController extends BaseController {
         keyring = new keystoneKeyring({
           bridge: await getKeyringBridge(keyringType),
         });
-        stashKeyringId = Object.values(stashKeyrings).length + 1;
-        stashKeyrings[stashKeyringId] = keyring;
+        stashKeyringId = this.addKeyringToStash(keyring);
       }
     }
     keyring.readKeyring();
@@ -5088,6 +5098,19 @@ export class WalletController extends BaseController {
     return keyring.getEncryptionPublicKey(address, options);
   };
 
+  #getStashedKeyring = (type: string, keyringId: number) => {
+    const keyring =
+      Number.isSafeInteger(keyringId) && keyringId > 0
+        ? stashKeyrings[keyringId]
+        : undefined;
+    if (!keyring || keyring.type !== type) {
+      throw Object.assign(new Error(KEYRING_IMPORT_EXPIRED_MESSAGE), {
+        code: KEYRING_IMPORT_EXPIRED,
+      });
+    }
+    return keyring;
+  };
+
   requestKeyring = async (
     type: string,
     methodName: string,
@@ -5104,7 +5127,14 @@ export class WalletController extends BaseController {
     }
     let keyring: any;
     if (keyringId !== null && keyringId !== undefined) {
-      keyring = stashKeyrings[keyringId];
+      if (
+        methodName === 'cleanUp' &&
+        Number.isSafeInteger(keyringId) &&
+        keyringId > 0 &&
+        !stashKeyrings[keyringId]
+      )
+        return;
+      keyring = this.#getStashedKeyring(type, keyringId);
     } else {
       try {
         keyring = this.#getKeyringByType(type);
@@ -5191,14 +5221,22 @@ export class WalletController extends BaseController {
 
   unlockHardwareAccount = async (keyring, indexes, keyringId, brand?) => {
     let keyringInstance: any = null;
-    try {
-      keyringInstance = this.#getKeyringByType(keyring);
-    } catch (e) {
-      // NOTHING
-    }
-    if (!keyringInstance && keyringId !== null && keyringId !== undefined) {
-      await keyringService.addKeyring(stashKeyrings[keyringId]);
-      keyringInstance = stashKeyrings[keyringId];
+    if (keyringId !== null && keyringId !== undefined) {
+      keyringInstance = this.#getStashedKeyring(keyring, keyringId);
+      if (!keyringService.keyrings.includes(keyringInstance)) {
+        if (keyringService.keyrings.some((item) => item.type === keyring)) {
+          throw Object.assign(new Error(KEYRING_IMPORT_EXPIRED_MESSAGE), {
+            code: KEYRING_IMPORT_EXPIRED,
+          });
+        }
+        await keyringService.addKeyring(keyringInstance);
+      }
+    } else {
+      try {
+        keyringInstance = this.#getKeyringByType(keyring);
+      } catch (e) {
+        // NOTHING
+      }
     }
     if (brand && keyringInstance?.setCurrentBrand) {
       keyringInstance.setCurrentBrand(brand);
