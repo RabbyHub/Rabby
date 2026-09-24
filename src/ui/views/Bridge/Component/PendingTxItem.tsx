@@ -251,17 +251,14 @@ export const BridgePendingTxItem = ({
         onClose={() => setDetailVisible(false)}
         closable={true}
         contentWrapperStyle={{
-          maxHeight: '640px',
-          minHeight: '360px',
-          height: 'auto',
+          height: '440px',
         }}
         destroyOnClose
         bodyStyle={{
           padding: 0,
-          minHeight: '360px',
+          height: '440px',
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'space-between',
           alignItems: 'center',
           background: 'var(--r-neutral-bg2, #F2F4F7)',
           borderTopLeftRadius: '16px',

@@ -251,65 +251,68 @@ export const BridgeStatusPopup = ({
     completed: t('page.bridge.pendingItem.popupCompleted'),
   }[popup.title];
 
+  // 第二步仍在 pending（倒计时含≤5s / Still Bridging / 目标链延迟）时金额行不淡化；
+  // 仅源链未完成、第二步还是 queued 时用半透明。
   const receiveFade =
-    popup.step2 === 'queued' || popup.step2 === 'pending'
+    popup.step2 === 'queued'
       ? '40'
       : popup.step2 === 'failed'
       ? '50'
       : undefined;
 
   return (
-    <div className="flex min-h-[440px] w-full shrink-0 flex-col px-[20px] pb-[20px]">
-      <div className="flex h-[52px] items-center justify-center text-center text-20 font-medium text-r-neutral-title-1">
+    <div className="flex h-[440px] w-full shrink-0 flex-col px-[20px] pb-[20px]">
+      <div className="flex h-[52px] shrink-0 items-center justify-center text-center text-20 font-medium text-r-neutral-title-1">
         {title}
       </div>
-      <StepCard
-        index={1}
-        title={t('page.bridge.pendingItem.sendingFrom', {
-          chain: fromChain?.name || '',
-        })}
-        status={popup.step1}
-        token={data.fromToken}
-        amount={data.fromAmount}
-        usd={usdOf(data.fromAmount, data.fromToken?.price)}
-        sign="-"
-        amountFade={popup.step1 === 'failed' ? '50' : undefined}
-        dimCompleted={
-          popup.step1 === 'completed' && popup.step2 !== 'completed'
-        }
-      />
-      <StepArrow compact={!!popup.step3 || popup.step2 === 'refund'} />
-      <StepCard
-        index={2}
-        title={t('page.bridge.pendingItem.receivingTo', {
-          chain: toChain?.name || '',
-        })}
-        status={popup.step2}
-        token={receiveToken}
-        amount={receiveAmount}
-        usd={usdOf(receiveAmount, receiveToken?.price)}
-        sign="+"
-        amountFade={receiveFade}
-        approx={popup.step2 === 'queued' || popup.step2 === 'pending'}
-      />
-      {popup.step3 && (
-        <>
-          <StepArrow compact />
-          <StepCard
-            index={3}
-            title={t('page.bridge.pendingItem.receivingTo', {
-              chain: refundChain?.name || '',
-            })}
-            status="refund"
-            token={data.actualToToken}
-            amount={data.actualToAmount}
-            usd={usdOf(data.actualToAmount, data.actualToToken?.price)}
-            sign="+"
-          />
-        </>
-      )}
-      {/* 两步弹窗保留底部留白；退款增加第三步时自然撑高，避免裁切步骤。 */}
-      <div className="mt-auto">
+      <div className="min-h-0 flex-1 overflow-y-auto pb-[16px]">
+        <StepCard
+          index={1}
+          title={t('page.bridge.pendingItem.sendingFrom', {
+            chain: fromChain?.name || '',
+          })}
+          status={popup.step1}
+          token={data.fromToken}
+          amount={data.fromAmount}
+          usd={usdOf(data.fromAmount, data.fromToken?.price)}
+          sign="-"
+          amountFade={popup.step1 === 'failed' ? '50' : undefined}
+          dimCompleted={
+            popup.step1 === 'completed' && popup.step2 !== 'completed'
+          }
+        />
+        <StepArrow compact={!!popup.step3 || popup.step2 === 'refund'} />
+        <StepCard
+          index={2}
+          title={t('page.bridge.pendingItem.receivingTo', {
+            chain: toChain?.name || '',
+          })}
+          status={popup.step2}
+          token={receiveToken}
+          amount={receiveAmount}
+          usd={usdOf(receiveAmount, receiveToken?.price)}
+          sign="+"
+          amountFade={receiveFade}
+          approx={popup.step2 === 'queued' || popup.step2 === 'pending'}
+        />
+        {popup.step3 && (
+          <>
+            <StepArrow compact />
+            <StepCard
+              index={3}
+              title={t('page.bridge.pendingItem.receivingTo', {
+                chain: refundChain?.name || '',
+              })}
+              status="refund"
+              token={data.actualToToken}
+              amount={data.actualToAmount}
+              usd={usdOf(data.actualToAmount, data.actualToToken?.price)}
+              sign="+"
+            />
+          </>
+        )}
+      </div>
+      <div className="shrink-0">
         <PopupCaption popup={popup} data={data} />
         <PopupButton popup={popup} href={refundHref} onClose={onClose} />
       </div>
