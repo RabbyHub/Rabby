@@ -184,47 +184,22 @@ const normalizeSerializedTxHex = (serializedTx?: string) => {
   return normalized as `0x${string}`;
 };
 
-const normalizeTempoCalls = (params: {
-  approvalRes: TxWithTempoExtras<ApprovalRes>;
-  txParams: Record<string, any>;
-}): TempoTxCall[] => {
-  const { approvalRes, txParams } = params;
-  const typedApprovalRes = approvalRes as any;
-
+const normalizeTempoCalls = (
+  approvalRes: TxWithTempoExtras<ApprovalRes>
+): TempoTxCall[] => {
   const rawCalls =
-    Array.isArray(typedApprovalRes.calls) && typedApprovalRes.calls.length
-      ? typedApprovalRes.calls
-      : [
-          {
-            to: approvalRes.to ?? txParams.to,
-            data:
-              typeof approvalRes.data !== 'undefined'
-                ? approvalRes.data
-                : txParams.data,
-            value:
-              typeof approvalRes.value !== 'undefined'
-                ? approvalRes.value
-                : txParams.value,
-          },
-        ];
+    Array.isArray(approvalRes.calls) && approvalRes.calls.length
+      ? approvalRes.calls
+      : [approvalRes];
 
-  return rawCalls.map((call: any) =>
-    omitUndefined({
-      to: call?.to ?? approvalRes.to ?? txParams.to,
-      data:
-        typeof call?.data !== 'undefined'
-          ? call.data
-          : typeof approvalRes.data !== 'undefined'
-          ? approvalRes.data
-          : txParams.data,
-      value: normalizeHexValue(
-        typeof call?.value !== 'undefined'
-          ? call.value
-          : typeof approvalRes.value !== 'undefined'
-          ? approvalRes.value
-          : txParams.value
-      ),
-    })
+  // Missing call fields must stay missing after approval.
+  return rawCalls.map(
+    (call) =>
+      omitUndefined({
+        to: call?.to,
+        data: call?.data,
+        value: normalizeHexValue(call?.value),
+      }) as TempoTxCall
   );
 };
 
@@ -898,12 +873,7 @@ class ProviderController extends BaseController {
         : 'Integrated Network',
       reported: false,
     };
-    const tempoCalls = isTempoTx
-      ? normalizeTempoCalls({
-          approvalRes,
-          txParams: txParams as Record<string, any>,
-        })
-      : undefined;
+    const tempoCalls = isTempoTx ? normalizeTempoCalls(approvalRes) : undefined;
     const shouldUseKeyringTempoSign =
       isTempoTx && isSimpleOrHdKeyringType(currentAccount.type);
 
@@ -920,7 +890,6 @@ class ProviderController extends BaseController {
         const normalizedFeePayerSignature = normalizeTempoSecp256k1Signature(
           typedApprovalRes.feePayerSignature
         );
-        const normalizedTxValue = normalizeHexValue(approvalRes.value);
         const normalizedTempoGas = approvalRes.gas || approvalRes.gasLimit;
         const has1559FeeFields =
           typeof approvalRes.maxFeePerGas !== 'undefined' ||
@@ -929,12 +898,6 @@ class ProviderController extends BaseController {
           chainId: Number(approvalRes.chainId),
           type: '0x76',
           from: txParams.from,
-          to: approvalRes.to ?? (txParams as any).to,
-          data:
-            typeof approvalRes.data !== 'undefined'
-              ? approvalRes.data
-              : (txParams as any).data,
-          value: normalizedTxValue,
           calls: tempoCalls,
           gas: normalizedTempoGas,
           gasPrice: has1559FeeFields ? undefined : approvalRes.gasPrice,
