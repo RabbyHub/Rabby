@@ -8,6 +8,7 @@ import {
 } from '@/utils/transaction';
 import { buildTempoTransaction, TempoTxCall } from '@/utils/tempo';
 import providerController from '@/background/controller/provider/controller';
+import { keyringService } from 'background/service';
 
 const from = '0x7e5f4552091a69125d5dfcb7b8c2659029395bdf';
 const to = '0x20c0000000000000000000000000000000000000';
@@ -84,17 +85,20 @@ const approve = (
   };
 };
 
+const submit = (txParams: any, approvalRes: any) =>
+  providerController.ethSendTransaction({
+    data: { params: [txParams] },
+    session: { origin: 'https://example.test', name: '', icon: '' },
+    approvalRes,
+    account: { address: from, type: 'Simple Key Pair', brandName: '' },
+    pushed: false,
+    result: undefined,
+  });
+
 const sign = async (txParams: any, approvalRes: any) => {
-  await expect(
-    providerController.ethSendTransaction({
-      data: { params: [txParams] },
-      session: { origin: 'https://example.test', name: '', icon: '' },
-      approvalRes,
-      account: { address: from, type: 'Simple Key Pair', brandName: '' },
-      pushed: false,
-      result: undefined,
-    })
-  ).rejects.toMatchObject({ message: stopAfterSigning.message });
+  await expect(submit(txParams, approvalRes)).rejects.toMatchObject({
+    message: stopAfterSigning.message,
+  });
   const signed = Transaction.deserialize(serializedTransaction);
   // The decoder omits empty calldata and zero value.
   return {
@@ -111,6 +115,7 @@ describe.each([false, true])(
   'Tempo signing (gas account: %s)',
   (isGasAccount) => {
     beforeEach(() => {
+      jest.clearAllMocks();
       jest.spyOn(console, 'error').mockImplementation(() => undefined);
     });
 
@@ -167,13 +172,45 @@ describe.each([false, true])(
       expect(signed.calls).toEqual([{ to, data: '0x6000', value: 1n }]);
     });
 
-    test('does not restore original calls when approval has none', async () => {
-      const txParams = request({ calls: [{ to, data, value: '0x1' }] });
-      const approvalRes = approve(txParams, isGasAccount);
-      delete approvalRes.calls;
-      const signed = await sign(txParams, approvalRes);
+    test.each([undefined, null, ''])(
+      'rejects missing approved calls with empty top-level fields (%s)',
+      async (empty) => {
+        const txParams = request({ calls: [{ to, data, value: '0x1' }] });
+        for (const calls of [undefined, null, []]) {
+          const approvalRes = {
+            ...approve(txParams, isGasAccount),
+            calls,
+            to: empty,
+            data: empty,
+            value: empty,
+          };
+          await expect(submit(txParams, approvalRes)).rejects.toThrow(
+            'tempo transaction has no approved calls'
+          );
+          expect(keyringService.signTransaction).not.toHaveBeenCalled();
+        }
+      }
+    );
 
-      expect(signed.calls).toEqual([{ to: undefined, data: '0x', value: 0n }]);
+    test.each([
+      ['deployment', { data: '0x6000' }],
+      ['empty calldata', { data: '0x' }],
+      ['zero value', { value: '0x0' }],
+    ])('preserves an explicitly approved top-level %s', async (_name, call) => {
+      const txParams = request({ calls: [{ to, data, value: '0x1' }] });
+      const approvalRes = {
+        ...approve(txParams, isGasAccount),
+        calls: [],
+        ...call,
+      };
+      const signed = await sign(txParams, approvalRes);
+      expect(signed.calls).toEqual([
+        {
+          to: undefined,
+          data: approvalRes.data || '0x',
+          value: BigInt(approvalRes.value || 0),
+        },
+      ]);
     });
   }
 );
