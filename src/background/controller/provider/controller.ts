@@ -187,10 +187,18 @@ const normalizeSerializedTxHex = (serializedTx?: string) => {
 const normalizeTempoCalls = (
   approvalRes: TxWithTempoExtras<ApprovalRes>
 ): TempoTxCall[] => {
-  const rawCalls =
-    Array.isArray(approvalRes.calls) && approvalRes.calls.length
-      ? approvalRes.calls
-      : [approvalRes];
+  let rawCalls = approvalRes.calls;
+  if (!Array.isArray(rawCalls) || !rawCalls.length) {
+    const hasTopLevelCall = [
+      approvalRes.to,
+      approvalRes.data,
+      approvalRes.value,
+    ].some((value) => value != null && value !== '');
+    if (!hasTopLevelCall) {
+      throw new Error('tempo transaction has no approved calls');
+    }
+    rawCalls = [approvalRes];
+  }
 
   // Missing call fields must stay missing after approval.
   return rawCalls.map(
