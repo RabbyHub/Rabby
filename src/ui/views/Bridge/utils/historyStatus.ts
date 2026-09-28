@@ -3,6 +3,7 @@ import type {
   TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+import { isSameAddress } from '@/ui/utils';
 import { formatEstimateClock } from './duration';
 import {
   BRIDGE_PROGRESS_DELAY_MS,
@@ -116,7 +117,7 @@ const isOriginalRefundToken = (
   !!from?.id &&
   !!actual?.id &&
   from.chain === actual.chain &&
-  from.id.toLowerCase() === actual.id.toLowerCase();
+  isSameAddress(from.id, actual.id);
 
 /** 源链完成时间：远程 from_tx.time_at 优先，否则本地 fromTxCompleteTs。 */
 const sourceCompleteTsOf = (data: BridgeHistory, local?: BridgeTxHistoryItem) =>

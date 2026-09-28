@@ -1,5 +1,5 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BRIDGE_HISTORY_INIT_SCAN_LIMIT,
@@ -61,11 +61,7 @@ export const useBridgeHistoryByTxIds = (options: {
 
   useEffect(() => {
     if (!enabled || !address || !items.length) return;
-    if (
-      !items.some(
-        (item) => item.owner_addr?.toLowerCase() === address.toLowerCase()
-      )
-    ) {
+    if (!items.some((item) => isSameAddress(item.owner_addr || '', address))) {
       return;
     }
     // DB 更新后重扫前 100 条。
