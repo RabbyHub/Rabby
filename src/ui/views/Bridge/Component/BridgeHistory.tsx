@@ -98,15 +98,19 @@ const MiniTokenAmount = ({
   amount,
   sign,
   tone,
+  dimmed = false,
 }: {
   token?: TokenItem;
   amount?: number;
   sign: '+' | '-';
   tone: string;
+  dimmed?: boolean;
 }) => {
   const chain = findChain({ serverId: token?.chain });
   return (
-    <div className="flex items-center gap-[8px]">
+    <div
+      className={clsx('flex items-center gap-[8px]', dimmed && 'opacity-50')}
+    >
       <div className="relative h-[16px] w-[16px] shrink-0 leading-[0]">
         <img
           className="block h-[16px] w-[16px] rounded-full object-cover"
@@ -144,6 +148,8 @@ const GeneralHistoryBody = ({
   payAmount,
   receiveAmount,
   receiveToken,
+  received,
+  sourceFailed,
   onOpen,
 }: {
   data: BridgeHistory;
@@ -152,6 +158,8 @@ const GeneralHistoryBody = ({
   payAmount?: number;
   receiveAmount?: number;
   receiveToken?: TokenItem;
+  received: boolean;
+  sourceFailed: boolean;
   onOpen: () => void;
 }) => {
   const { t } = useTranslation();
@@ -208,12 +216,14 @@ const GeneralHistoryBody = ({
             amount={payAmount}
             sign="-"
             tone="text-r-neutral-title-1"
+            dimmed={sourceFailed}
           />
           <MiniTokenAmount
             token={receiveToken}
             amount={receiveAmount}
             sign="+"
             tone="text-r-green-default"
+            dimmed={!received}
           />
         </div>
       </div>
@@ -318,6 +328,9 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         ? data.from_tx.status === 'pending'
         : !local || local.status === 'pending');
     const isSuccess = data.status === 'completed';
+    const isSourceFailed = data.from_tx?.status
+      ? data.from_tx.status === 'failed'
+      : local?.status === 'fromFailed';
 
     const txId =
       data.from_tx?.tx_id || data?.detail_url?.split('/').pop() || '';
@@ -354,6 +367,8 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             payAmount={payAmount}
             receiveAmount={receiveAmount}
             receiveToken={receiveToken}
+            received={isSuccess}
+            sourceFailed={isSourceFailed}
             onOpen={gotoScan}
           />
         ) : (
