@@ -499,6 +499,11 @@ export const useQuoteMethods = () => {
             });
           }
 
+          const effectiveSdkPass =
+            dexId === DEX_ENUM.UNI || dexId === DEX_ENUM.MAGPIE
+              ? routerPass && spenderPass
+              : isSdkDataPass;
+
           if (inSufficient) {
             const quote: TDexQuoteData = {
               data,
@@ -509,7 +514,7 @@ export const useQuoteMethods = () => {
                 gasPrice: 0,
                 gasUsed: 0,
                 gasUsdValue: '0',
-                isSdkPass: isSdkDataPass,
+                isSdkPass: effectiveSdkPass,
                 shouldApproveToken: false,
                 shouldTwoStepApprove: false,
               },
@@ -581,7 +586,7 @@ export const useQuoteMethods = () => {
               }
             );
 
-            preExecResult.isSdkPass = isSdkDataPass;
+            preExecResult.isSdkPass = effectiveSdkPass;
           } catch (error) {
             const quote: TDexQuoteData = {
               data,
