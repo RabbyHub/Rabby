@@ -1,8 +1,5 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
-import {
-  BRIDGE_HISTORY_EMPTY_NO_CACHE_MS,
-  BRIDGE_HISTORY_POLL_MAX_AGE_MS,
-} from '@/ui/views/Bridge/constants';
+import { BRIDGE_HISTORY_POLL_MAX_AGE_MS } from '@/ui/views/Bridge/constants';
 
 export const BRIDGE_HISTORY_TX_BATCH = 20;
 export const BRIDGE_HISTORY_INIT_SCAN_LIMIT = 100;
@@ -163,12 +160,6 @@ export const mergeHistoryWithBridge = <
   });
   return rows;
 };
-
-/** 上链未满 3 分钟时接口可能尚未收录，空结果不缓存；无时间时照常缓存。 */
-export const shouldCacheEmptyBridgeResult = (
-  timeAt: number | undefined,
-  now = Date.now()
-) => !timeAt || now - timeAt * 1000 >= BRIDGE_HISTORY_EMPTY_NO_CACHE_MS;
 
 /** create_at 起算未满 2h 的 pending 才继续轮询；缺少 create_at 无法判断时长，不轮询。 */
 export const shouldPollPendingBridge = (

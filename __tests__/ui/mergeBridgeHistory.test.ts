@@ -4,7 +4,6 @@ import {
   collectOutgoingTxIds,
   collectViewportOutgoingTxIds,
   mergeHistoryWithBridge,
-  shouldCacheEmptyBridgeResult,
 } from '@/ui/views/History/utils/mergeBridgeHistory';
 
 const user = '0xuser';
@@ -42,7 +41,7 @@ const bridge = (
   } as unknown) as BridgeHistory);
 
 describe('collectOutgoingTxIds', () => {
-  it('fills a batch with outgoing txs and skips ones already queued', () => {
+  it('collects outgoing candidates and skips known ids', () => {
     const items = [
       tx('0x1', 'eth'),
       tx('0x2', 'eth', '0xother'),
@@ -122,7 +121,24 @@ describe('collectOutgoingTxIds', () => {
     expect(capped.scanned).toBe(100);
   });
 
-  it('fills the rest of a 20-id batch past the viewport', () => {
+  it('rescans prepended records without querying known hashes again', () => {
+    const original = [tx('0xold', 'eth')];
+    const first = collectInitialBridgeTxIds(original, user, new Set());
+    const known = new Set(first.ids);
+    const updated = [tx('0xnew', 'eth'), ...original];
+    expect(collectInitialBridgeTxIds(updated, user, known).ids).toEqual(['0xnew']);
+    expect(collectInitialBridgeTxIds(updated, user, known).ids).toEqual([]);
+  });
+
+  it('does not fill a filtered viewport batch from the next batch', () => {
+    const items = Array.from({ length: 21 }, (_, index) =>
+      tx(`0x${index}`, 'eth', index < 20 ? '0xother' : user)
+    );
+    expect(collectViewportOutgoingTxIds(items, user, new Set(), 0, 5)).toEqual([]);
+    expect(collectViewportOutgoingTxIds(items, user, new Set(), 20, 20)).toEqual(['0x20']);
+  });
+
+  it('only scans the batch containing the viewport', () => {
     const items = Array.from({ length: 25 }, (_, index) =>
       tx(`0x${index}`, 'eth')
     );
@@ -135,24 +151,6 @@ describe('collectOutgoingTxIds', () => {
       5
     );
     expect(ids).toEqual(['0x2', '0x3', '0x4']);
-  });
-});
-
-describe('shouldCacheEmptyBridgeResult', () => {
-  const now = 1_700_000_000_000;
-  const seconds = (ms: number) => Math.floor(ms / 1000);
-
-  it('does not cache empty results for txs mined within 5 minutes', () => {
-    expect(shouldCacheEmptyBridgeResult(seconds(now - 60 * 1000), now)).toBe(
-      false
-    );
-  });
-
-  it('caches empty results for older txs or txs without time', () => {
-    expect(
-      shouldCacheEmptyBridgeResult(seconds(now - 5 * 60 * 1000), now)
-    ).toBe(true);
-    expect(shouldCacheEmptyBridgeResult(undefined, now)).toBe(true);
   });
 });
 
