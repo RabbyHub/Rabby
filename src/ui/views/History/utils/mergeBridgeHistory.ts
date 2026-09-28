@@ -1,5 +1,6 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import { BRIDGE_HISTORY_POLL_MAX_AGE_MS } from '@/ui/views/Bridge/constants';
+import { isSameAddress } from '@/ui/utils';
 
 export const BRIDGE_HISTORY_TX_BATCH = 20;
 export const BRIDGE_HISTORY_INIT_SCAN_LIMIT = 100;
@@ -16,31 +17,11 @@ type OutgoingHistoryTx = {
   tx?: { from_addr?: string } | null;
 };
 
-type BridgeSkipReason =
-  | 'missing_from_address'
-  | 'not_outgoing_user_tx'
-  | 'scam_tx'
-  | 'excluded_category';
-
-const bridgeSkipReasons = (item: OutgoingHistoryTx, address: string) => {
-  const reasons: BridgeSkipReason[] = [];
-  if (!item.tx?.from_addr) reasons.push('missing_from_address');
-  else if (item.tx.from_addr.toLowerCase() !== address.toLowerCase()) {
-    reasons.push('not_outgoing_user_tx');
-  }
-  if (item.is_scam) reasons.push('scam_tx');
-  // 源链失败可无 sends，不据此过滤。
-  if (['send', 'receive', 'approve', 'cancel'].includes(item.cate_id || '')) {
-    reasons.push('excluded_category');
-  }
-  return reasons;
-};
-
-// 排除明确分类，未知分类保留。
-const isBridgeCandidate = (item: OutgoingHistoryTx, address: string) => {
-  // 跨链也可带 token_approve，不据此过滤。
-  return bridgeSkipReasons(item, address).length === 0;
-};
+const isBridgeCandidate = (item: OutgoingHistoryTx, address: string) =>
+  !!item.tx?.from_addr &&
+  isSameAddress(item.tx.from_addr, address) &&
+  !item.is_scam &&
+  !['send', 'receive', 'approve', 'cancel'].includes(item.cate_id || '');
 
 const txIdKey = (id: string) => id.toLowerCase();
 
@@ -161,7 +142,7 @@ export const mergeHistoryWithBridge = <
   return rows;
 };
 
-/** create_at 起算未满 2h 的 pending 才继续轮询；缺少 create_at 无法判断时长，不轮询。 */
+/** 认为失败，轮询没意义：create_at 起算未满 2h 的 pending 才继续轮询；缺少 create_at 无法判断时长，不轮询。 */
 export const shouldPollPendingBridge = (
   item: BridgeHistory,
   now = Date.now()
