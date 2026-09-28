@@ -5,6 +5,7 @@ import {
   toChecksumAddress,
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
+import { KEYRING_IMPORT_EXPIRED } from '@/constant/message';
 import { ethers, Contract } from 'ethers';
 import {
   capitalize,
@@ -5105,6 +5106,12 @@ export class WalletController extends BaseController {
     let keyring: any;
     if (keyringId !== null && keyringId !== undefined) {
       keyring = stashKeyrings[keyringId];
+      if (!keyring) {
+        throw Object.assign(
+          new Error('Wallet import session expired. Please try again.'),
+          { code: KEYRING_IMPORT_EXPIRED }
+        );
+      }
     } else {
       try {
         keyring = this.#getKeyringByType(type);
