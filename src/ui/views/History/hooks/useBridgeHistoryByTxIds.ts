@@ -2,6 +2,7 @@ import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import type { TransactionGroup } from '@/background/service/transactionHistory';
 import { useWallet } from '@/ui/utils';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
+import { BRIDGE_HISTORY_EMPTY_NO_CACHE_MS } from '@/ui/views/Bridge/constants';
 import { isEqual } from 'lodash';
 import PQueue from 'p-queue';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -33,11 +34,11 @@ const POLL_INTERVAL_MS = 3000;
 const EXCLUDED_TX_IDS_TTL_MS = 60 * 1000;
 
 // 会话缓存，切页保留，关闭插件页面释放。
-// 缓存空结果，仅 pending 定时刷新。
-// 上链未满 5 分钟的空结果记入 deferred：本次打开内不再查，页面全部关闭后清空，下次打开重查。
+// 缓存稳定空结果，pending 定时刷新。
+// 新交易空结果延迟到上链满 3 分钟后补查。
 type LookupSession = {
   requested: Set<string>;
-  deferred: Set<string>;
+  deferred: Map<string, number>;
   scheduled: Set<string>;
   running: Set<string>;
   results: Map<string, BridgeHistory>;
@@ -53,7 +54,7 @@ const getSession = (address: string): LookupSession => {
   if (!session) {
     session = {
       requested: new Set(),
-      deferred: new Set(),
+      deferred: new Map(),
       scheduled: new Set(),
       running: new Set(),
       results: new Map(),
@@ -67,7 +68,11 @@ const getSession = (address: string): LookupSession => {
 };
 
 const lookupSkipSet = (session: LookupSession) =>
-  new Set([...session.requested, ...session.deferred, ...session.scheduled]);
+  new Set([
+    ...session.requested,
+    ...session.deferred.keys(),
+    ...session.scheduled,
+  ]);
 
 const NON_BRIDGE_SOURCES = [
   'sendToken',
@@ -155,8 +160,9 @@ export const useBridgeHistoryByTxIds = (options: {
 
   /** 请求去重，每秒最多 2 批。轮询的 id 已确认是 Bridge，跳过本地排除。 */
   const enqueueIds = useCallback(
-    (ids: string[], polling = false) => {
+    (ids: string[], mode: 'lookup' | 'poll' | 'retry' = 'lookup') => {
       if (!enabled || !address) return;
+      const polling = mode === 'poll';
       const fresh: string[] = [];
       ids.forEach((id) => {
         const key = id.toLowerCase();
@@ -164,7 +170,8 @@ export const useBridgeHistoryByTxIds = (options: {
           !key ||
           session.scheduled.has(key) ||
           (!polling &&
-            (session.requested.has(key) || session.deferred.has(key)))
+            (session.requested.has(key) ||
+              (mode !== 'retry' && session.deferred.has(key))))
         ) {
           return;
         }
@@ -177,6 +184,9 @@ export const useBridgeHistoryByTxIds = (options: {
         index += BRIDGE_HISTORY_TX_BATCH
       ) {
         const batch = fresh.slice(index, index + BRIDGE_HISTORY_TX_BATCH);
+        const timeById = new Map(
+          itemsRef.current.map((item) => [item.id.toLowerCase(), item.time_at])
+        );
         session.queue.add(async () => {
           const keys = batch.map((id) => id.toLowerCase());
           keys.forEach((id) => session.running.add(id));
@@ -216,12 +226,6 @@ export const useBridgeHistoryByTxIds = (options: {
             const found = new Set(
               list.map((item) => item.from_tx?.tx_id?.toLowerCase())
             );
-            const timeById = new Map(
-              itemsRef.current.map((item) => [
-                item.id.toLowerCase(),
-                item.time_at,
-              ])
-            );
             const candidateKeys = new Set(
               candidates.map((id) => id.toLowerCase())
             );
@@ -231,10 +235,15 @@ export const useBridgeHistoryByTxIds = (options: {
                 !found.has(key) &&
                 !shouldCacheEmptyBridgeResult(timeById.get(key))
               ) {
-                session.deferred.add(key);
+                const retryAt =
+                  timeById.get(key)! * 1000 + BRIDGE_HISTORY_EMPTY_NO_CACHE_MS;
+                if (session.deferred.get(key) !== retryAt) {
+                  session.deferred.set(key, retryAt);
+                  changed = true;
+                }
                 return;
               }
-              session.deferred.delete(key);
+              if (session.deferred.delete(key)) changed = true;
               session.requested.add(key);
             });
             if (changed) session.listeners.forEach((notify) => notify());
@@ -281,11 +290,11 @@ export const useBridgeHistoryByTxIds = (options: {
         .filter((item) => shouldPollPendingBridge(item))
         .map((item) => item.from_tx?.tx_id)
         .filter((id): id is string => !!id);
-    if (!pendingIds().length) return;
+    if (!pendingIds().length && !session.deferred.size) return;
     const timer = setInterval(() => {
       const ids = pendingIds();
-      // 无有效 pending 时停止，新 pending 到来时重启。
-      if (!ids.length) {
+      // 无 pending 且无待补查记录时停止。
+      if (!ids.length && !session.deferred.size) {
         clearInterval(timer);
         return;
       }
@@ -297,7 +306,11 @@ export const useBridgeHistoryByTxIds = (options: {
         return;
       }
       session.lastPoll = Date.now();
-      enqueueIds(ids, true);
+      const retryIds = Array.from(session.deferred.entries())
+        .filter(([, retryAt]) => retryAt <= Date.now())
+        .map(([id]) => id);
+      enqueueIds(ids, 'poll');
+      enqueueIds(retryIds, 'retry');
     }, POLL_INTERVAL_MS);
     return () => clearInterval(timer);
   }, [address, enabled, enqueueIds, bridges, session]);
