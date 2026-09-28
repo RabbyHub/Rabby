@@ -1,4 +1,5 @@
 import type { SigningContext } from '@/background/service/keyring/signing-diagnostics';
+import { KEYRING_IMPORT_EXPIRED } from '@/constant/message';
 
 export type SentryIgnorePattern = string | RegExp;
 
@@ -213,6 +214,10 @@ export const shouldIgnoreSentryError = (
   }
 
   if (matchesAny(RABBY_SENTRY_IGNORE_ERRORS, candidates)) {
+    return true;
+  }
+
+  if ((error as { code?: unknown } | null)?.code === KEYRING_IMPORT_EXPIRED) {
     return true;
   }
 
