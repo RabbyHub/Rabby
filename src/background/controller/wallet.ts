@@ -5266,6 +5266,8 @@ export class WalletController extends BaseController {
   checkIsGasDepositTxs: typeof transactionHistoryService.checkIsGasDepositTxs = (
     params
   ) => transactionHistoryService.checkIsGasDepositTxs(params);
+  getGasDepositTxKeys: typeof transactionHistoryService.getGasDepositTxKeys = () =>
+    transactionHistoryService.getGasDepositTxKeys();
   completeBridgeTxHistory = (
     from_tx_id: string,
     chainId: number,
