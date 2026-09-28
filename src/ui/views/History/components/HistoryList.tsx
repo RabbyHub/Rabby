@@ -32,21 +32,15 @@ export const HistoryList = ({
     isFilterScam,
   });
   const { bridges, onRangeChanged } = useBridgeHistoryByTxIds({
-    enabled: hasLocalHistory,
+    enabled: !!address,
+    pollingEnabled: hasLocalHistory,
     address,
     items: data || [],
   });
-  const rows = useMemo(
-    () =>
-      hasLocalHistory
-        ? mergeHistoryWithBridge(data || [], bridges)
-        : (data || []).map((item) => ({
-            kind: 'tx' as const,
-            key: item._id,
-            item,
-          })),
-    [bridges, data, hasLocalHistory]
-  );
+  const rows = useMemo(() => mergeHistoryWithBridge(data || [], bridges), [
+    bridges,
+    data,
+  ]);
   const rowsRef = useRef(rows);
   rowsRef.current = rows;
   const [locals, setLocals] = useState<BridgeTxHistoryItem[]>([]);
@@ -128,15 +122,12 @@ export const HistoryList = ({
               }}
               data={rows}
               computeItemKey={(_, row) => row.key}
-              rangeChanged={
-                hasLocalHistory
-                  ? (range) =>
-                      onRangeChanged(
-                        range.startIndex,
-                        range.endIndex,
-                        rowsRef.current
-                      )
-                  : undefined
+              rangeChanged={(range) =>
+                onRangeChanged(
+                  range.startIndex,
+                  range.endIndex,
+                  rowsRef.current
+                )
               }
               itemContent={(_, row) => {
                 if (row.kind === 'bridge') {

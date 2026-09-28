@@ -32,10 +32,11 @@ const POLL_INTERVAL_MS = 3000;
 
 export const useBridgeHistoryByTxIds = (options: {
   enabled: boolean;
+  pollingEnabled: boolean;
   address?: string;
   items: LookupItem[];
 }) => {
-  const { enabled, address = '', items } = options;
+  const { enabled, pollingEnabled, address = '', items } = options;
   const wallet = useWallet();
   const [bridges, setBridges] = useState<BridgeHistory[]>([]);
   const session = useMemo(() => getBridgeLookupSession(address), [address]);
@@ -64,7 +65,7 @@ export const useBridgeHistoryByTxIds = (options: {
     if (!items.some((item) => isSameAddress(item.owner_addr || '', address))) {
       return;
     }
-    // DB 更新后重扫前 100 条。
+    // 历史更新后重扫前 100 条。
     // 每轮最多 20 个新候选，缓存去重。
     const { ids } = collectInitialBridgeTxIds(
       items,
@@ -78,7 +79,8 @@ export const useBridgeHistoryByTxIds = (options: {
   }, [address, enabled, enqueueIds, items, session]);
 
   useEffect(() => {
-    if (!enabled || !address) return;
+    // 非 DB 账户仅查询和替换，不轮询。
+    if (!enabled || !pollingEnabled || !address) return;
     const pendingIds = () =>
       Array.from(session.results.values())
         .filter((item) => shouldPollPendingBridge(item))
@@ -103,7 +105,7 @@ export const useBridgeHistoryByTxIds = (options: {
       enqueueIds(ids, true);
     }, POLL_INTERVAL_MS);
     return () => clearInterval(timer);
-  }, [address, enabled, enqueueIds, bridges, session]);
+  }, [address, enabled, pollingEnabled, enqueueIds, bridges, session]);
 
   /** 滚动时只查可见行所在的 20 条批次。 */
   const onRangeChanged = useCallback(
