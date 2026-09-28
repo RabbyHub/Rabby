@@ -80,7 +80,7 @@ const TxHashActions = ({
       </button>
       <button
         type="button"
-        className="inline-flex shrink-0 items-center justify-center bg-transparent p-0 text-r-neutral-foot"
+        className="inline-flex h-14 w-14 shrink-0 items-center justify-center bg-transparent p-0 text-r-neutral-foot"
         onClick={(event) => {
           event.stopPropagation();
           copyTextToClipboard(txId);
@@ -98,15 +98,19 @@ const MiniTokenAmount = ({
   amount,
   sign,
   tone,
+  dimmed = false,
 }: {
   token?: TokenItem;
   amount?: number;
   sign: '+' | '-';
   tone: string;
+  dimmed?: boolean;
 }) => {
   const chain = findChain({ serverId: token?.chain });
   return (
-    <div className="flex items-center gap-[8px]">
+    <div
+      className={clsx('flex items-center gap-[8px]', dimmed && 'opacity-50')}
+    >
       <div className="relative h-[16px] w-[16px] shrink-0 leading-[0]">
         <img
           className="block h-[16px] w-[16px] rounded-full object-cover"
@@ -124,7 +128,10 @@ const MiniTokenAmount = ({
         />
       </div>
       <div
-        className={clsx('flex gap-[2px] whitespace-nowrap text-[12px]', tone)}
+        className={clsx(
+          'flex gap-[2px] whitespace-nowrap text-[12px] font-normal leading-[normal] items-center',
+          tone
+        )}
       >
         <span>{sign}</span>
         <span>{formatAmount(amount || 0)}</span>
@@ -141,6 +148,8 @@ const GeneralHistoryBody = ({
   payAmount,
   receiveAmount,
   receiveToken,
+  received,
+  sourceFailed,
   onOpen,
 }: {
   data: BridgeHistory;
@@ -149,6 +158,8 @@ const GeneralHistoryBody = ({
   payAmount?: number;
   receiveAmount?: number;
   receiveToken?: TokenItem;
+  received: boolean;
+  sourceFailed: boolean;
   onOpen: () => void;
 }) => {
   const { t } = useTranslation();
@@ -161,12 +172,22 @@ const GeneralHistoryBody = ({
           {timeLabel}
         </span>
         <div className="flex min-w-0 items-center gap-[4px]">
-          <div className="flex items-center gap-[4px] text-[12px] font-normal leading-[normal] tracking-[0.036px] text-r-neutral-body">
-            <span className="whitespace-nowrap">{fromChain?.name}</span>
+          <div className="flex w-max min-w-0 max-w-full items-center gap-[4px] text-[12px] font-normal leading-[normal] tracking-[0.036px] text-r-neutral-body">
+            <span
+              title={fromChain?.name}
+              className="min-w-0 max-w-max flex-1 truncate"
+            >
+              {fromChain?.name}
+            </span>
             <span className="inline-flex h-[12px] w-[12px] shrink-0 items-center justify-center text-r-neutral-foot">
               <RcIconHistoryChainArrow className="block shrink-0" />
             </span>
-            <span className="whitespace-nowrap">{toChain?.name}</span>
+            <span
+              title={toChain?.name}
+              className="min-w-0 max-w-max flex-1 truncate"
+            >
+              {toChain?.name}
+            </span>
           </div>
           <TxHashActions txId={txId} onOpen={onOpen} />
         </div>
@@ -174,14 +195,14 @@ const GeneralHistoryBody = ({
       <div className="flex items-center justify-between gap-[8px]">
         <div className="flex min-w-0 items-center gap-[8px]">
           <img
-            className="h-[36px] w-[36px] shrink-0 rounded-[10px] object-cover"
+            className="h-[32px] w-[32px] shrink-0 rounded-[9px] object-cover"
             src={data.aggregator?.logo_url || IconUnknown}
-            width={36}
-            height={36}
+            width={32}
+            height={32}
             alt=""
           />
           <div className="flex min-w-0 flex-col gap-[4px]">
-            <span className="text-15 font-medium text-r-neutral-title-1">
+            <span className="text-[12px] font-medium leading-[18px] text-r-neutral-title-1">
               {t('page.bridge.bridge')}
             </span>
             <span className="truncate text-[12px] text-r-neutral-foot">
@@ -195,12 +216,14 @@ const GeneralHistoryBody = ({
             amount={payAmount}
             sign="-"
             tone="text-r-neutral-title-1"
+            dimmed={sourceFailed}
           />
           <MiniTokenAmount
             token={receiveToken}
             amount={receiveAmount}
             sign="+"
             tone="text-r-green-default"
+            dimmed={!received}
           />
         </div>
       </div>
@@ -305,6 +328,9 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         ? data.from_tx.status === 'pending'
         : !local || local.status === 'pending');
     const isSuccess = data.status === 'completed';
+    const isSourceFailed = data.from_tx?.status
+      ? data.from_tx.status === 'failed'
+      : local?.status === 'fromFailed';
 
     const txId =
       data.from_tx?.tx_id || data?.detail_url?.split('/').pop() || '';
@@ -341,6 +367,8 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             payAmount={payAmount}
             receiveAmount={receiveAmount}
             receiveToken={receiveToken}
+            received={isSuccess}
+            sourceFailed={isSourceFailed}
             onOpen={gotoScan}
           />
         ) : (
