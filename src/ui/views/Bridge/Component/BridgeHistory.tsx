@@ -265,24 +265,27 @@ const DetailHistoryBody = ({
               ? t('page.bridge.received')
               : t('page.bridge.estReceive')
           }
-          approx
+          approx={data.status === 'pending'}
           align="end"
         />
       </div>
 
       <div
         className={clsx(
-          'flex items-end gap-[4px] text-r-neutral-foot',
+          'flex items-center gap-[4px] text-r-neutral-foot',
           isFailed && 'opacity-50'
         )}
       >
         <span className="text-[12px]">{t('page.bridge.by')}</span>
         <span className="text-[13px] font-medium">{data.aggregator?.name}</span>
-        <span className="text-[12px]">
-          {t('page.bridge.via-bridge', {
-            bridge: data.bridge?.name || '',
-          })}
-        </span>
+        {data.aggregator?.name?.toLowerCase() !==
+          data.bridge?.name?.toLowerCase() && (
+          <span className="text-[12px]">
+            {t('page.bridge.via-bridge', {
+              bridge: data.bridge?.name || '',
+            })}
+          </span>
+        )}
       </div>
     </div>
   );

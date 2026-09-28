@@ -319,16 +319,13 @@ const HeaderAction = ({ detail }: { detail: BridgeHistoryDetail }) => {
     return (
       <button
         type="button"
-        className="inline-flex h-[14px] items-center bg-transparent p-0 text-[12px] leading-[14px] gap-2"
+        className="inline-flex h-[14px] items-center bg-transparent p-0 text-[12px] leading-[14px] text-r-blue-default underline"
         onClick={(event) => {
           event.stopPropagation();
           if (href) openInTab(href, !isTab);
         }}
       >
-        <span className="text-r-neutral-body">{t('page.bridge.view')} </span>
-        <span className="text-r-blue-default underline">
-          {t('page.bridge.details')}
-        </span>
+        {t('page.bridge.viewDetails')}
       </button>
     );
   }
