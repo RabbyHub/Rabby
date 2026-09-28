@@ -1,0 +1,317 @@
+import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+import { formatEstimateClock } from './duration';
+
+export const BRIDGE_PROGRESS_COUNTDOWN_MIN_SECONDS = 5;
+export const BRIDGE_PROGRESS_DELAY_MS = 30 * 60 * 1000;
+
+/** 倒计时按秒刷新；只剩跨过延迟阈值时放慢；状态不再随时间变化时不刷新。 */
+export const BRIDGE_STATUS_TICK_MS = 1000;
+export const BRIDGE_STATUS_SLOW_TICK_MS = 30 * 1000;
+
+export type BridgeProgressStep =
+  | 'sourceLoading'
+  | 'queued'
+  | 'destLoading'
+  | 'destDelayed'
+  | 'success'
+  | 'destFailed'
+  | 'sourceFailed'
+  | 'undo';
+
+export type BridgeProgressFooter =
+  | { kind: 'none' }
+  | { kind: 'countdown'; time: string }
+  | { kind: 'stillBridging' }
+  | { kind: 'delayed' }
+  | { kind: 'sourceFailed' }
+  | {
+      kind: 'refund';
+      isOriginalToken: boolean;
+      txId?: string;
+      chainServerId?: string;
+    }
+  | { kind: 'failedNoRefund' };
+
+export type BridgeProgressBar = {
+  step1: BridgeProgressStep;
+  step2: BridgeProgressStep;
+  footer: BridgeProgressFooter;
+};
+
+export type BridgePopupCaption =
+  | { kind: 'estimate'; time: string }
+  | { kind: 'stillBridging' }
+  | { kind: 'delayed' }
+  | { kind: 'sourceFailed' }
+  | { kind: 'failed' }
+  | { kind: 'refunded' }
+  | { kind: 'none' };
+
+export type BridgePopupButton =
+  | 'back'
+  | 'delayedSupport'
+  | 'failedSupport'
+  | 'refund';
+
+export type BridgePopupStep =
+  | 'processing'
+  | 'queued'
+  | 'pending'
+  | 'completed'
+  | 'failed'
+  | 'refund';
+
+export type BridgePopupState = {
+  title: 'processing' | 'pending' | 'failed' | 'refunded' | 'completed';
+  step1: BridgePopupStep;
+  step2: BridgePopupStep;
+  step3?: 'refund';
+  caption: BridgePopupCaption;
+  button: BridgePopupButton;
+  refund?: {
+    txId?: string;
+    chainServerId?: string;
+  };
+};
+
+const formatEta = (remainingSeconds: number) =>
+  formatEstimateClock(remainingSeconds);
+
+const refundDetails = (item: BridgeTxHistoryItem) => {
+  const txId = item.toTxId;
+  const chainServerId = item.actualToToken?.chain;
+  if (!item.actualToToken?.id || !txId) return null;
+  return { txId, chainServerId };
+};
+
+const sourceDoneProgress = (
+  item: BridgeTxHistoryItem,
+  now: number
+): BridgeProgressBar => {
+  const elapsedMs = item.fromTxCompleteTs
+    ? Math.max(0, now - item.fromTxCompleteTs)
+    : 0;
+
+  if (item.fromTxCompleteTs && elapsedMs >= BRIDGE_PROGRESS_DELAY_MS) {
+    return {
+      step1: 'success',
+      step2: 'destDelayed',
+      footer: { kind: 'delayed' },
+    };
+  }
+
+  const estimateSeconds = item.estimatedDuration || 0;
+  const remainingSeconds = estimateSeconds - elapsedMs / 1000;
+  if (
+    estimateSeconds > BRIDGE_PROGRESS_COUNTDOWN_MIN_SECONDS &&
+    remainingSeconds > 0
+  ) {
+    return {
+      step1: 'success',
+      step2: 'destLoading',
+      footer: { kind: 'countdown', time: formatEta(remainingSeconds) },
+    };
+  }
+
+  // A quote of 5s or less never shows a countdown. Hold the footer until 5s
+  // after the source chain completes so "Still Bridging" does not flash.
+  if (elapsedMs < BRIDGE_PROGRESS_COUNTDOWN_MIN_SECONDS * 1000) {
+    return {
+      step1: 'success',
+      step2: 'destLoading',
+      footer: { kind: 'none' },
+    };
+  }
+
+  return {
+    step1: 'success',
+    step2: 'destLoading',
+    footer: { kind: 'stillBridging' },
+  };
+};
+
+const sourceElapsedMs = (item: BridgeTxHistoryItem, now: number) =>
+  item.fromTxCompleteTs ? Math.max(0, now - item.fromTxCompleteTs) : 0;
+
+/** 弹窗仅在源链成功后倒计时，短于 5 秒的预估也正常展示。 */
+export const getBridgePopupState = (
+  item: BridgeTxHistoryItem,
+  now = Date.now()
+): BridgePopupState => {
+  if (item.status === 'fromFailed') {
+    return {
+      title: 'refunded',
+      step1: 'failed',
+      step2: 'refund',
+      caption: { kind: 'sourceFailed' },
+      button: 'refund',
+      // 源链失败时资产未发出；没有独立退款交易则查看源链失败交易。
+      refund: refundDetails(item) || {
+        txId: item.acceleratedHash || item.hash,
+        chainServerId: item.fromToken.chain,
+      },
+    };
+  }
+
+  if (item.status === 'allSuccess') {
+    return {
+      title: 'completed',
+      step1: 'completed',
+      step2: 'completed',
+      caption: { kind: 'none' },
+      button: 'back',
+    };
+  }
+
+  if (item.status === 'failed') {
+    const refund = refundDetails(item);
+    if (refund) {
+      const original =
+        !!item.actualToToken?.id &&
+        !!item.fromToken?.id &&
+        item.actualToToken.chain === item.fromToken.chain &&
+        item.actualToToken.id.toLowerCase() === item.fromToken.id.toLowerCase();
+      return {
+        title: 'refunded',
+        step1: 'completed',
+        step2: 'failed',
+        step3: 'refund',
+        // 原币退回不显示 Refunded in {symbol}，异链或异币才显示。
+        caption: original ? { kind: 'none' } : { kind: 'refunded' },
+        button: 'refund',
+        refund,
+      };
+    }
+    return {
+      title: 'failed',
+      step1: 'completed',
+      step2: 'failed',
+      caption: { kind: 'failed' },
+      button: 'failedSupport',
+    };
+  }
+
+  if (item.status === 'fromSuccess') {
+    const elapsedMs = sourceElapsedMs(item, now);
+    if (item.fromTxCompleteTs && elapsedMs >= BRIDGE_PROGRESS_DELAY_MS) {
+      return {
+        title: 'pending',
+        step1: 'completed',
+        step2: 'pending',
+        caption: { kind: 'delayed' },
+        button: 'delayedSupport',
+      };
+    }
+
+    const estimateSeconds = item.estimatedDuration || 0;
+    const remainingSeconds = estimateSeconds - elapsedMs / 1000;
+    if (remainingSeconds > 0) {
+      return {
+        title: 'pending',
+        step1: 'completed',
+        step2: 'pending',
+        caption: { kind: 'estimate', time: formatEta(remainingSeconds) },
+        button: 'back',
+      };
+    }
+
+    return {
+      title: 'pending',
+      step1: 'completed',
+      step2: 'pending',
+      caption: { kind: 'stillBridging' },
+      button: 'back',
+    };
+  }
+
+  const sourceDelayed =
+    !!item.createdAt && now - item.createdAt >= BRIDGE_PROGRESS_DELAY_MS;
+  return {
+    title: 'processing',
+    step1: sourceDelayed ? 'pending' : 'processing',
+    step2: 'queued',
+    caption: { kind: 'none' },
+    button: 'back',
+  };
+};
+
+export const getBridgeProgressBar = (
+  item: BridgeTxHistoryItem,
+  now = Date.now()
+): BridgeProgressBar => {
+  if (item.status === 'fromFailed') {
+    return {
+      step1: 'sourceFailed',
+      step2: 'undo',
+      footer: { kind: 'sourceFailed' },
+    };
+  }
+
+  if (item.status === 'allSuccess') {
+    return {
+      step1: 'success',
+      step2: 'success',
+      footer: { kind: 'none' },
+    };
+  }
+
+  if (item.status === 'failed') {
+    const refund = refundDetails(item);
+    if (refund) {
+      return {
+        step1: 'success',
+        step2: 'undo',
+        footer: {
+          kind: 'refund',
+          isOriginalToken:
+            item.actualToToken?.chain === item.fromToken.chain &&
+            item.actualToToken?.id.toLowerCase() ===
+              item.fromToken.id.toLowerCase(),
+          txId: refund.txId,
+          chainServerId: refund.chainServerId,
+        },
+      };
+    }
+    return {
+      step1: 'success',
+      step2: 'destFailed',
+      footer: { kind: 'failedNoRefund' },
+    };
+  }
+
+  if (item.status === 'fromSuccess') {
+    return sourceDoneProgress(item, now);
+  }
+
+  return {
+    step1: 'sourceLoading',
+    step2: 'queued',
+    footer: { kind: 'none' },
+  };
+};
+
+export const getBridgeProgressRefreshMs = (
+  item: BridgeTxHistoryItem,
+  progress: BridgeProgressBar
+) => {
+  if (item.status !== 'fromSuccess') return undefined;
+  if (progress.footer.kind === 'delayed') return undefined;
+  if (progress.footer.kind === 'stillBridging') {
+    return BRIDGE_STATUS_SLOW_TICK_MS;
+  }
+  // 倒计时，或源链完成后前 5 秒的空白期。
+  return BRIDGE_STATUS_TICK_MS;
+};
+
+export const getBridgePopupRefreshMs = (
+  item: BridgeTxHistoryItem,
+  popup: BridgePopupState
+) => {
+  if (item.status === 'pending') {
+    return popup.step1 === 'pending' ? undefined : BRIDGE_STATUS_SLOW_TICK_MS;
+  }
+  if (item.status !== 'fromSuccess') return undefined;
+  if (popup.caption.kind === 'estimate') return BRIDGE_STATUS_TICK_MS;
+  if (popup.caption.kind === 'stillBridging') return BRIDGE_STATUS_SLOW_TICK_MS;
+  return undefined;
+};

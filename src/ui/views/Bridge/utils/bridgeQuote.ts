@@ -2,6 +2,35 @@ import BigNumber from 'bignumber.js';
 import { TokenItem } from '@/background/service/openapi';
 import type { SelectedBridgeQuote } from '../hooks';
 
+export const getBridgeQuoteKey = (
+  quote: Pick<SelectedBridgeQuote, 'aggregator' | 'bridge_id'>
+) => `${quote.aggregator.id}-${quote.bridge_id}`;
+
+export const isSameBridgeQuote = (
+  a: Pick<SelectedBridgeQuote, 'aggregator' | 'bridge_id'>,
+  b: Pick<SelectedBridgeQuote, 'aggregator' | 'bridge_id'>
+) => getBridgeQuoteKey(a) === getBridgeQuoteKey(b);
+
+export const BRIDGE_SLIPPAGE_PERCENT_FALLBACK = '1';
+
+export const getBridgePayTokenRawAmount = (amount: string, decimals: number) =>
+  new BigNumber(amount)
+    .times(10 ** decimals)
+    .toFixed(0, 1)
+    .toString();
+
+export const resolveBridgeSlippagePercent = (slippagePercent: string) =>
+  slippagePercent || BRIDGE_SLIPPAGE_PERCENT_FALLBACK;
+
+const bridgeSlippageRatioBn = (slippagePercent: string) =>
+  new BigNumber(resolveBridgeSlippagePercent(slippagePercent)).div(100);
+
+export const formatBridgeSlippageRatio = (slippagePercent: string) =>
+  bridgeSlippageRatioBn(slippagePercent).toString(10);
+
+export const getBridgeSlippageRatio = (slippagePercent: string) =>
+  bridgeSlippageRatioBn(slippagePercent).toNumber();
+
 export const bridgeQuoteEstimatedValueBn = (
   quote: SelectedBridgeQuote,
   receiveToken: TokenItem

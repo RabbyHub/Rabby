@@ -352,7 +352,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   usePerpsDefaultAccount({
     isPro: false,
   });
-  // useCheckBridgePendingItem();
 
   const wallet = useWallet();
 

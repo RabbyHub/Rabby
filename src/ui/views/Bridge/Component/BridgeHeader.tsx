@@ -2,11 +2,7 @@ import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history-cc.svg
 
 import { PageHeader } from '@/ui/component';
 import React, { useCallback, useEffect, useState } from 'react';
-import {
-  usePollBridgePendingNumber,
-  useSetSettingVisible,
-  useSettingVisible,
-} from '../hooks';
+import { useSetSettingVisible, useSettingVisible } from '../hooks';
 import { BridgeTxHistory } from './BridgeHistory';
 import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
