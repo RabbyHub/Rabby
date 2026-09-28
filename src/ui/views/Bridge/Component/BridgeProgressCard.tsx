@@ -148,10 +148,9 @@ const ProgressFooter = ({
           <>
             {t('page.bridge.pendingItem.refundedLead')}
             {', '}
-            {t('page.bridge.view')}
           </>
         }
-        link={t('page.bridge.details')}
+        link={t('page.bridge.viewDetails')}
         onClick={openRefund}
       />
     ) : (
@@ -162,10 +161,9 @@ const ProgressFooter = ({
               token: getTokenSymbol(data.actualToToken),
             })}
             {', '}
-            {t('page.bridge.view')}
           </>
         }
-        link={t('page.bridge.pendingItem.refundedDetails')}
+        link={t('page.bridge.pendingItem.viewRefundedDetails')}
         onClick={openRefund}
       />
     );
