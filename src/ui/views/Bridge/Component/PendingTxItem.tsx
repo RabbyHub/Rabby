@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { findChain } from '@/utils/chain';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { useRabbySelector } from '@/ui/store';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
@@ -77,7 +77,8 @@ export const BridgePendingTxItem = ({
   }, [!!data, hidden, onDisplayChange]);
 
   const pending =
-    data?.address?.toLowerCase() === userAddress.toLowerCase() &&
+    !!data?.address &&
+    isSameAddress(data.address, userAddress) &&
     (data?.status === 'pending' || data?.status === 'fromSuccess');
   useEffect(() => {
     onPendingChange?.(pending);
