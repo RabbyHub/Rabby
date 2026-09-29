@@ -2798,7 +2798,8 @@
       "lowBalance": "Saldo gas Anda tidak cukup (<$1.00). Setor gas agar transaksi berikutnya dapat diproses dengan lancar.",
       "gasBalance": "Saldo Gas",
       "loginSuccess": "Login Berhasil",
-      "loginFailed": "Login Gagal"
+      "loginFailed": "Login Gagal",
+      "signTextInvalid": "Pemeriksaan keamanan gagal: pesan masuk GasAccount tidak valid. Silakan coba lagi nanti"
     },
     "safeMessageQueue": {
       "loading": "Memuat pesan",

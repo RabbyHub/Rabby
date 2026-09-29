@@ -2801,6 +2801,7 @@
       "gasBalance": "Gas-Guthaben",
       "loginSuccess": "Anmeldung erfolgreich",
       "loginFailed": "Anmeldung fehlgeschlagen",
+      "signTextInvalid": "Sicherheitsprüfung fehlgeschlagen: Die GasAccount-Anmeldenachricht ist ungültig. Bitte versuche es später erneut",
       "lowBalance": "Ihr Gas-Guthaben reicht nicht aus (＜ 1,00 $). Zahlen Sie Gas ein, damit künftige Transaktionen reibungslos ausgeführt werden."
     },
     "safeMessageQueue": {
