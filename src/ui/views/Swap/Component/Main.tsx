@@ -25,7 +25,7 @@ import {
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useCss, useDebounce } from 'react-use';
-import { DEX_WITH_WRAP } from '@/constant';
+import { DEX_WITH_WRAP, KEYRING_CLASS } from '@/constant';
 import ChainSelectorInForm, {
   ChainSelectorRef,
 } from '@/ui/component/ChainSelector/InForm';
@@ -260,6 +260,34 @@ export const Main = () => {
     async () => {
       if (!inSufficient && payToken && receiveToken && activeProvider?.quote) {
         try {
+          if (isGnosis && activeProvider.shouldApproveToken) {
+            const promise = wallet.approveToken(
+              findChainByEnum(chain)!.serverId,
+              payToken.id,
+              DEX_SPENDER_WHITELIST[activeProvider.name][chain],
+              activeProvider.shouldTwoStepApprove
+                ? 0
+                : activeProvider.quote.fromTokenAmount,
+              {
+                ga: {
+                  category: 'Swap',
+                  source: 'approvalAndSwap|tokenApproval',
+                  trigger: rbiSource,
+                  swapUseSlider,
+                },
+              },
+              undefined,
+              { isSwap: true, swapPreferMEVGuarded: preferMEVGuarded }
+            );
+            if (!(isTab || isDesktop)) {
+              window.close();
+            } else {
+              await promise;
+              // A Safe proposal must execute before its allowance permits a swap.
+              resumeQuoteRefresh();
+            }
+            return;
+          }
           const promise = wallet.dexSwap(
             {
               swapPreferMEVGuarded: preferMEVGuarded,
@@ -494,6 +522,7 @@ export const Main = () => {
   });
 
   const currentAccount = useCurrentAccount();
+  const isGnosis = currentAccount?.type === KEYRING_CLASS.GNOSIS;
 
   const chainSelectorRef = useRef<ChainSelectorRef>(null);
 
@@ -518,10 +547,10 @@ export const Main = () => {
   );
 
   const {
-    shouldTwoStep: shouldTwoStepSwap,
+    shouldTwoStep: shouldTwoStepDirectSwap,
     currentTxs,
     next,
-    isApprove,
+    isApprove: isDirectApprove,
     approvePending: approveTxPending,
     setApprovePending,
     approveHash,
@@ -532,6 +561,10 @@ export const Main = () => {
     type: 'approveSwap',
     onApprovePending,
   });
+  const shouldTwoStepSwap = isGnosis || shouldTwoStepDirectSwap;
+  const isApprove = isGnosis
+    ? !!activeProvider?.shouldApproveToken
+    : isDirectApprove;
   const pendingTxType =
     shouldTwoStepSwap && currentTxs?.length ? 'approveSwap' : 'swap';
 
