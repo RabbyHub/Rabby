@@ -804,10 +804,11 @@ describe('historyDbService daily tx count check', () => {
 
     await historyDbService.sync({ openapi, address: ADDRESS });
 
+    // the server's to_ts is exclusive, the local count is inclusive
     expect(openapi.getTxCount).toHaveBeenCalledWith({
       id: ADDRESS,
       from_ts: FROM_TS,
-      to_ts: TO_TS,
+      to_ts: TO_TS + 1,
     });
     expect(mockHistoryWhereClause.between).toHaveBeenCalledWith(
       [ADDRESS.toLowerCase(), FROM_TS],

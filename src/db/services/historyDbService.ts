@@ -130,7 +130,8 @@ class HistoryDbService {
     const { tx_count } = await openapi.getTxCount({
       id: address,
       from_ts: fromTs,
-      to_ts: toTs,
+      // to_ts is exclusive on the server; +1 matches the inclusive local count
+      to_ts: toTs + 1,
     });
     const localCount = await this.countInTimeRange(address, fromTs, toTs);
     if (localCount >= tx_count) {
