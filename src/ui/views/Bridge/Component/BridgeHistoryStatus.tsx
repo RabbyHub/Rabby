@@ -231,7 +231,9 @@ const HistoryStep = ({
     step.chainServerId ||
     '';
   const title = t(
-    step.direction === 'send'
+    step.direction === 'refund'
+      ? 'page.bridge.pendingItem.refundOn'
+      : step.direction === 'send'
       ? 'page.bridge.pendingItem.sendFrom'
       : 'page.bridge.pendingItem.receiveOn',
     { chain: chainName }

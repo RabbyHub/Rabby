@@ -1,4 +1,5 @@
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+import { isSameAddress } from '@/ui/utils';
 import { formatEstimateClock } from './duration';
 
 export const BRIDGE_PROGRESS_COUNTDOWN_MIN_SECONDS = 5;
@@ -170,7 +171,7 @@ export const getBridgePopupState = (
         !!item.actualToToken?.id &&
         !!item.fromToken?.id &&
         item.actualToToken.chain === item.fromToken.chain &&
-        item.actualToToken.id.toLowerCase() === item.fromToken.id.toLowerCase();
+        isSameAddress(item.actualToToken.id, item.fromToken.id);
       return {
         title: 'refunded',
         step1: 'completed',
@@ -263,8 +264,7 @@ export const getBridgeProgressBar = (
           kind: 'refund',
           isOriginalToken:
             item.actualToToken?.chain === item.fromToken.chain &&
-            item.actualToToken?.id.toLowerCase() ===
-              item.fromToken.id.toLowerCase(),
+            isSameAddress(item.actualToToken?.id || '', item.fromToken.id),
           txId: refund.txId,
           chainServerId: refund.chainServerId,
         },

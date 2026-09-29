@@ -3,6 +3,7 @@ import type {
   TokenItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+import { isSameAddress } from '@/ui/utils';
 import { formatEstimateClock } from './duration';
 import {
   BRIDGE_PROGRESS_DELAY_MS,
@@ -61,7 +62,7 @@ export type BridgeHistoryDetailAction =
 export type BridgeHistoryDetailStep = {
   mark: 'active' | 'waiting' | 'success' | 'failed';
   chainServerId?: string;
-  direction: 'send' | 'receive';
+  direction: 'send' | 'receive' | 'refund';
   detail:
     | { kind: 'hash'; txId: string }
     | { kind: 'waiting' }
@@ -116,7 +117,7 @@ const isOriginalRefundToken = (
   !!from?.id &&
   !!actual?.id &&
   from.chain === actual.chain &&
-  from.id.toLowerCase() === actual.id.toLowerCase();
+  isSameAddress(from.id, actual.id);
 
 /** 源链完成时间：远程 from_tx.time_at 优先，否则本地 fromTxCompleteTs。 */
 const sourceCompleteTsOf = (data: BridgeHistory, local?: BridgeTxHistoryItem) =>
@@ -301,14 +302,17 @@ const refundDetail = (
     steps: [
       sendCompletedStep(data, local),
       receiveFailedStep(data),
-      receiveSuccessStep(
-        token,
-        txId,
-        amountOrFallback(
-          data.actual?.receive_token_amount,
-          local?.actualToAmount
-        )
-      ),
+      {
+        ...receiveSuccessStep(
+          token,
+          txId,
+          amountOrFallback(
+            data.actual?.receive_token_amount,
+            local?.actualToAmount
+          )
+        ),
+        direction: 'refund',
+      },
     ],
   };
 };
@@ -396,20 +400,21 @@ const buildHistoryDetail = (
     case 'sourceFailed': {
       const payAmount = payAmountOf(data);
       const chain = data.from_token?.chain || local?.fromToken?.chain;
+      const txId = sourceTxIdOf(data, local);
       return {
         scene,
         header: 'refund',
         action: {
           kind: 'details',
-          txId: sourceTxIdOf(data, local),
+          txId,
           chainServerId: chain,
         },
         steps: [
           {
             mark: 'failed',
-            chainServerId: data.from_token?.chain,
+            chainServerId: chain,
             direction: 'send',
-            detail: { kind: 'sendFailed' },
+            detail: txId ? { kind: 'hash', txId } : { kind: 'sendFailed' },
             amount: payAmount,
             approx: false,
             sign: '-',
@@ -419,7 +424,7 @@ const buildHistoryDetail = (
           {
             mark: 'success',
             chainServerId: chain,
-            direction: 'receive',
+            direction: 'refund',
             detail: { kind: 'tokenNotSent' },
             amount: payAmount,
             approx: false,

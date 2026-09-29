@@ -488,6 +488,9 @@ export const BridgeContent = () => {
     !quoteLoading &&
     !quoteList?.length;
   const [bridgeProgressVisible, setBridgeProgressVisible] = useState(false);
+  const [bridgePending, setBridgePending] = useState(false);
+  const hideBridgeProgress =
+    amountAvailable || !!selectedBridgeQuote || !!recommendFromToken;
   const showQuoteAlert =
     !inSufficientCanGetQuote || (noQuote && !recommendFromToken);
   const showRecommendFromToken = noQuote && !!recommendFromToken;
@@ -965,6 +968,7 @@ export const BridgeContent = () => {
   return (
     <>
       <Header
+        showPending={bridgePending && hideBridgeProgress}
         historyVisible={historyVisible}
         setHistoryVisible={setHistoryVisible}
         noShowHeader={isDesktop}
@@ -1101,14 +1105,15 @@ export const BridgeContent = () => {
             />
           )}
         </div>
-        {!amountAvailable && !selectedBridgeQuote && !recommendFromToken && (
-          <div className="mt-20 mx-20">
-            <BridgePendingTxItem
-              getContainer={getContainer}
-              onDisplayChange={setBridgeProgressVisible}
-            />
-          </div>
-        )}
+        {/* 隐藏展示时仍跟踪状态，供历史入口提示。 */}
+        <div className={hideBridgeProgress ? 'hidden' : 'mt-20 mx-20'}>
+          <BridgePendingTxItem
+            hidden={hideBridgeProgress}
+            onPendingChange={setBridgePending}
+            getContainer={getContainer}
+            onDisplayChange={setBridgeProgressVisible}
+          />
+        </div>
 
         {/* for bottom padding */}
         <div
