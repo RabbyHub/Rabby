@@ -1,6 +1,10 @@
 import React from 'react';
 import { BridgeContent } from './Component/BridgeContent';
 import {
+  BridgeDebugPanel,
+  SHOW_BRIDGE_DEBUG,
+} from './Component/BridgeDebugPanel';
+import {
   QuoteVisibleProvider,
   RefreshIdProvider,
   SettingVisibleProvider,
@@ -29,6 +33,7 @@ const BridgeComponent = () => {
                     : ''
                 )}
               >
+                {SHOW_BRIDGE_DEBUG && <BridgeDebugPanel />}
                 <BridgeContent />
               </div>
             </FullscreenContainer>

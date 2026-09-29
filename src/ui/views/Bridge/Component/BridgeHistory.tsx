@@ -1,5 +1,6 @@
 import { Popup } from '@/ui/component';
 import { mergeBridgeSourceStatus } from '../utils/remoteFromTx';
+import { BridgeDebugPanel, SHOW_BRIDGE_DEBUG } from './BridgeDebugPanel';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { useBridgeHistory } from '../hooks';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -527,7 +528,16 @@ export const BridgeTxHistory = ({
       isNew
       getContainer={getContainer}
     >
-      <HistoryList />
+      <div className="h-full overflow-y-auto">
+        {SHOW_BRIDGE_DEBUG && (
+          <BridgeDebugPanel
+            renderHistory={(data, local, variant) => (
+              <BridgeHistoryCard data={data} local={local} variant={variant} />
+            )}
+          />
+        )}
+        <HistoryList />
+      </div>
     </Popup>
   );
 };
