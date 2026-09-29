@@ -100,12 +100,14 @@ const MiniTokenAmount = ({
   sign,
   tone,
   dimmed = false,
+  approx = false,
 }: {
   token?: TokenItem;
   amount?: number;
   sign: '+' | '-';
   tone: string;
   dimmed?: boolean;
+  approx?: boolean;
 }) => {
   const chain = findChain({ serverId: token?.chain });
   return (
@@ -135,7 +137,10 @@ const MiniTokenAmount = ({
         )}
       >
         <span>{sign}</span>
-        <span>{formatAmount(amount || 0)}</span>
+        <span>
+          {approx ? '≈' : ''}
+          {formatAmount(amount || 0)}
+        </span>
         <BridgeHistoryTokenSymbol token={token} />
       </div>
     </div>
@@ -150,6 +155,7 @@ const GeneralHistoryBody = ({
   receiveAmount,
   receiveToken,
   received,
+  receiving,
   sourceFailed,
   onOpen,
 }: {
@@ -160,6 +166,7 @@ const GeneralHistoryBody = ({
   receiveAmount?: number;
   receiveToken?: TokenItem;
   received: boolean;
+  receiving: boolean;
   sourceFailed: boolean;
   onOpen: () => void;
 }) => {
@@ -224,7 +231,8 @@ const GeneralHistoryBody = ({
             amount={receiveAmount}
             sign="+"
             tone="text-r-green-default"
-            dimmed={!received}
+            dimmed={!received && !receiving}
+            approx={receiving}
           />
         </div>
       </div>
@@ -241,6 +249,7 @@ const DetailHistoryBody = ({
   receiveToken,
   isSuccess,
   isFailed,
+  receiving,
   onOpen,
 }: {
   data: BridgeHistory;
@@ -251,6 +260,7 @@ const DetailHistoryBody = ({
   receiveToken?: TokenItem;
   isSuccess: boolean;
   isFailed: boolean;
+  receiving: boolean;
   onOpen: () => void;
 }) => {
   const { t } = useTranslation();
@@ -265,12 +275,7 @@ const DetailHistoryBody = ({
         </div>
       </div>
 
-      <div
-        className={clsx(
-          'flex items-center justify-between',
-          isFailed && 'opacity-50'
-        )}
-      >
+      <div className="flex items-center justify-between">
         <HistorySide
           token={data.from_token}
           amount={payAmount}
@@ -285,7 +290,8 @@ const DetailHistoryBody = ({
           label={
             isSuccess ? t('page.bridge.received') : t('page.bridge.estReceive')
           }
-          approx={data.status === 'pending'}
+          approx={receiving}
+          dimmed={!isSuccess && !receiving}
           align="end"
         />
       </div>
@@ -324,6 +330,8 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
     const isSourceFailed = data.from_tx?.status
       ? data.from_tx.status === 'failed'
       : local?.status === 'fromFailed';
+    // 源链失败即停止等待，即使接口整体状态仍是 pending。
+    const receiving = data.status === 'pending' && !isSourceFailed;
 
     const txId =
       data.from_tx?.tx_id || data?.detail_url?.split('/').pop() || '';
@@ -358,6 +366,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             receiveAmount={receiveAmount}
             receiveToken={receiveToken}
             received={isSuccess}
+            receiving={receiving}
             sourceFailed={isSourceFailed}
             onOpen={gotoScan}
           />
@@ -371,6 +380,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             receiveToken={receiveToken}
             isSuccess={isSuccess}
             isFailed={isFailed}
+            receiving={receiving}
             onOpen={gotoScan}
           />
         )}
@@ -388,18 +398,21 @@ const HistorySide = ({
   amount,
   label,
   approx,
+  dimmed = false,
   align = 'start',
 }: {
   token?: TokenItem;
   amount?: number;
   label: string;
   approx?: boolean;
+  dimmed?: boolean;
   align?: 'start' | 'end';
 }) => (
   <div
     className={clsx(
       'flex min-w-0 items-center gap-[12px]',
-      align === 'end' && 'justify-end'
+      align === 'end' && 'justify-end',
+      dimmed && 'opacity-50'
     )}
   >
     <HistoryToken token={token} />
