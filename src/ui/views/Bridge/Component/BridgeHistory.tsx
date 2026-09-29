@@ -321,9 +321,10 @@ interface TransactionProps {
   data: BridgeHistory;
   local?: BridgeTxHistoryItem;
   variant?: 'detail' | 'general';
+  displayTime?: number;
 }
 const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
-  ({ data, local, variant = 'detail' }, ref) => {
+  ({ data, local, variant = 'detail', displayTime }, ref) => {
     data = mergeBridgeSourceStatus(data, local);
     const isFailed = data.status === 'failed';
     const isSuccess = data.status === 'completed';
@@ -360,7 +361,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         {variant === 'general' ? (
           <GeneralHistoryBody
             data={data}
-            timeLabel={sinceTime(data.create_at)}
+            timeLabel={sinceTime(displayTime ?? data.create_at)}
             txId={txId}
             payAmount={payAmount}
             receiveAmount={receiveAmount}

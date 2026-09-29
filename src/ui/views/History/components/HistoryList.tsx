@@ -143,6 +143,7 @@ export const HistoryList = ({
                         data={row.item}
                         local={local}
                         variant="general"
+                        displayTime={row.displayTime}
                       />
                     </div>
                   );
