@@ -2798,7 +2798,8 @@
       "lowBalance": "gas가 부족합니다(＜$1.00). GasAccount에 gas를 예치하여 향후 거래가 원활히 진행되도록 하세요.",
       "gasBalance": "Gas 잔액",
       "loginSuccess": "로그인 성공",
-      "loginFailed": "로그인 실패"
+      "loginFailed": "로그인 실패",
+      "signTextInvalid": "보안 검사 실패: GasAccount 로그인 메시지가 올바르지 않습니다. 잠시 후 다시 시도하세요"
     },
     "safeMessageQueue": {
       "loading": "로드 중 메시지",
