@@ -3312,6 +3312,14 @@
           "totalEst": "Ingresos totales estimados",
           "platformFeeTips": "Esta tarifa es el cargo por servicio de OpenSea."
         },
+        "verifyError": {
+          "unsupportedChain": "El comercio de NFT aún no es compatible con esta cadena",
+          "currency": "Falló la verificación de seguridad: el token de pago no coincide con el esperado",
+          "nft": "Falló la verificación de seguridad: el NFT de la orden no coincide con el que seleccionaste",
+          "amount": "Falló la verificación de seguridad: el monto que recibirías no coincide con el mostrado",
+          "recipient": "Falló la verificación de seguridad: los fondos no se enviarían a tu dirección",
+          "invalid": "Falló la verificación de seguridad: los datos de la orden no son válidos. Inténtalo de nuevo más tarde"
+        },
         "empty": "Sin NFTs",
         "hideLowValue": "Ocultar NFTs de bajo valor",
         "confirmingTx": "Confirmando tu transacción",
