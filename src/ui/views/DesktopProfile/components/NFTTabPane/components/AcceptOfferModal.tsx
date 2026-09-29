@@ -106,6 +106,7 @@ const Content: React.FC<Props> = (props) => {
 
   const feesRate = useMemo(() => {
     const res = {
+      totalBps: 0,
       total: 0,
       market: 0,
       custom: 0,
@@ -129,6 +130,7 @@ const Content: React.FC<Props> = (props) => {
       });
     });
     return {
+      totalBps: res.total,
       total: res.total / 10000,
       market: res.market / 10000,
       custom: res.custom / 10000,
@@ -190,7 +192,8 @@ const Content: React.FC<Props> = (props) => {
         !nftDetail ||
         !currentAccount ||
         !chain ||
-        !bestOffer
+        !bestOffer ||
+        !fees
       ) {
         throw new Error('Error');
       }
@@ -212,6 +215,7 @@ const Content: React.FC<Props> = (props) => {
         order: bestOffer,
         quantity: formValues.amount || 1,
         isIncludeCreatorFee: formValues.creatorFeeEnable,
+        feeBps: feesRate.totalBps,
       });
 
       if (approveTx) {
@@ -230,8 +234,10 @@ const Content: React.FC<Props> = (props) => {
         currentAccount?.address,
         chain?.id,
         isApproved,
+        fees,
+        feesRate.totalBps,
       ],
-      ready: !isCheckingApproved,
+      ready: !isCheckingApproved && !!fees,
     }
   );
 

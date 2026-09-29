@@ -230,6 +230,12 @@ import {
 import { Seaport } from '@opensea/seaport-js';
 import { OrderComponents } from '@opensea/seaport-js/lib/types';
 import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
+import {
+  calcMinReceiveAmount,
+  getNFTTradingCurrency,
+  NFTOrderVerifyError,
+  verifyAcceptOfferTx,
+} from '@/utils/nftVerify';
 import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
@@ -7394,8 +7400,9 @@ export class WalletController extends BaseController {
     order,
     collectionId,
     innerId,
-    quantity,
+    quantity = 1,
     isIncludeCreatorFee,
+    feeBps,
   }: {
     address: string;
     chainId: number;
@@ -7404,6 +7411,8 @@ export class WalletController extends BaseController {
     order: NonNullable<NFTDetail['best_offer_order']>;
     quantity?: number;
     isIncludeCreatorFee?: boolean;
+    /** total fee rate shown to the user, in basis points */
+    feeBps: number;
   }) => {
     const chain = findChain({
       id: chainId,
@@ -7411,6 +7420,29 @@ export class WalletController extends BaseController {
     if (!chain) {
       throw new Error('chain not found');
     }
+    // Derive the minimum the user must receive from what the UI displayed,
+    // before trusting any fulfillment data from the backend.
+    const currency = getNFTTradingCurrency(chainId, 'offer');
+    if (order.price.decimals !== currency.decimals) {
+      throw new NFTOrderVerifyError(
+        'unexpected offer price decimals',
+        'currency'
+      );
+    }
+    const orderNFTQuantity = order.protocol_data.parameters.consideration.find(
+      (item) => isSameAddress(item.token, collectionId)
+    )?.startAmount;
+    if (!orderNFTQuantity || !(BigInt(orderNFTQuantity) > BigInt(0))) {
+      throw new NFTOrderVerifyError('cannot resolve offer quantity');
+    }
+    const minReceiveAmount = calcMinReceiveAmount({
+      gross:
+        (BigInt(order.price.value) * BigInt(quantity)) /
+        BigInt(orderNFTQuantity),
+      feeBps,
+      // absorbs per-item rounding in fees computed by OpenSea
+      toleranceBps: 1,
+    });
     const res = await this.openapi.prepareAcceptNFTOffer({
       chain_id: chain?.serverId,
       order_hash: order.order_hash,
@@ -7461,25 +7493,33 @@ export class WalletController extends BaseController {
       // Fallback: try to use values in object order
       params = Object.values(inputData);
     }
+    let encodedData: `0x${string}`;
     try {
-      const encodedData = encodeFunctionData({
+      encodedData = encodeFunctionData({
         abi: SeaportABI,
         functionName: functionName as any,
         args: params as any,
       });
-
-      // todo check this
-      return {
-        chainId,
-        from: address,
-        to: transaction.to,
-        value: transaction.value,
-        data: encodedData,
-      };
     } catch (e) {
       console.error(e);
       throw e;
     }
+    const tx = {
+      chainId,
+      from: address,
+      to: transaction.to,
+      value: transaction.value,
+      data: encodedData,
+    };
+    verifyAcceptOfferTx({
+      tx,
+      chainId,
+      account: address,
+      nft: { contract: collectionId, tokenId: innerId, quantity },
+      offerer: order.protocol_data.parameters.offerer,
+      minReceiveAmount,
+    });
+    return tx;
   };
 
   getRpcTxReceipt = transactionHistoryService.getRpcTxReceipt;

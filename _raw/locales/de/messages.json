@@ -3312,6 +3312,14 @@
           "offer": "Angebot",
           "platform": "Plattform"
         },
+        "verifyError": {
+          "unsupportedChain": "NFT-Handel wird auf dieser Chain noch nicht unterstützt",
+          "currency": "Sicherheitsprüfung fehlgeschlagen: Der Zahlungstoken entspricht nicht dem erwarteten Token",
+          "nft": "Sicherheitsprüfung fehlgeschlagen: Das NFT im Auftrag entspricht nicht dem ausgewählten",
+          "amount": "Sicherheitsprüfung fehlgeschlagen: Der Betrag, den du erhältst, entspricht nicht der Anzeige",
+          "recipient": "Sicherheitsprüfung fehlgeschlagen: Der Erlös würde nicht an deine Adresse gesendet",
+          "invalid": "Sicherheitsprüfung fehlgeschlagen: Die Auftragsdaten sind ungültig. Bitte versuche es später erneut"
+        },
         "confirmingTx": "Ihre Transaktion wird bestätigt",
         "hideLowValue": "NFTs mit niedrigem Wert ausblenden",
         "pending": "Ausstehend",
