@@ -1,4 +1,5 @@
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+import { isSameAddress } from '@/ui/utils';
 import { formatEstimateClock } from './duration';
 
 export const BRIDGE_PROGRESS_COUNTDOWN_MIN_SECONDS = 5;
@@ -170,7 +171,7 @@ export const getBridgePopupState = (
         !!item.actualToToken?.id &&
         !!item.fromToken?.id &&
         item.actualToToken.chain === item.fromToken.chain &&
-        item.actualToToken.id.toLowerCase() === item.fromToken.id.toLowerCase();
+        isSameAddress(item.actualToToken.id, item.fromToken.id);
       return {
         title: 'refunded',
         step1: 'completed',
@@ -224,11 +225,9 @@ export const getBridgePopupState = (
     };
   }
 
-  const sourceDelayed =
-    !!item.createdAt && now - item.createdAt >= BRIDGE_PROGRESS_DELAY_MS;
   return {
     title: 'processing',
-    step1: sourceDelayed ? 'pending' : 'processing',
+    step1: 'processing',
     step2: 'queued',
     caption: { kind: 'none' },
     button: 'back',
@@ -265,8 +264,7 @@ export const getBridgeProgressBar = (
           kind: 'refund',
           isOriginalToken:
             item.actualToToken?.chain === item.fromToken.chain &&
-            item.actualToToken?.id.toLowerCase() ===
-              item.fromToken.id.toLowerCase(),
+            isSameAddress(item.actualToToken?.id || '', item.fromToken.id),
           txId: refund.txId,
           chainServerId: refund.chainServerId,
         },
@@ -307,9 +305,6 @@ export const getBridgePopupRefreshMs = (
   item: BridgeTxHistoryItem,
   popup: BridgePopupState
 ) => {
-  if (item.status === 'pending') {
-    return popup.step1 === 'pending' ? undefined : BRIDGE_STATUS_SLOW_TICK_MS;
-  }
   if (item.status !== 'fromSuccess') return undefined;
   if (popup.caption.kind === 'estimate') return BRIDGE_STATUS_TICK_MS;
   if (popup.caption.kind === 'stillBridging') return BRIDGE_STATUS_SLOW_TICK_MS;

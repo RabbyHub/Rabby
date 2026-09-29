@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useInterval, useMemoizedFn } from 'ahooks';
 import { findChain } from '@/utils/chain';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { useRabbySelector } from '@/ui/store';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
@@ -55,9 +55,13 @@ const TokenWithChain = ({ token, chain }: { token: string; chain: string }) => {
 export const BridgePendingTxItem = ({
   getContainer,
   onDisplayChange,
+  hidden = false,
+  onPendingChange,
 }: {
   getContainer?: DrawerProps['getContainer'];
   onDisplayChange?: (visible: boolean) => void;
+  hidden?: boolean;
+  onPendingChange?: (pending: boolean) => void;
 }) => {
   const type = 'bridge';
   const wallet = useWallet();
@@ -68,9 +72,22 @@ export const BridgePendingTxItem = ({
   }));
 
   useEffect(() => {
-    onDisplayChange?.(!!data);
+    onDisplayChange?.(!!data && !hidden);
     return () => onDisplayChange?.(false);
-  }, [!!data, onDisplayChange]);
+  }, [!!data, hidden, onDisplayChange]);
+
+  const pending =
+    !!data?.address &&
+    isSameAddress(data.address, userAddress) &&
+    (data?.status === 'pending' || data?.status === 'fromSuccess');
+  useEffect(() => {
+    onPendingChange?.(pending);
+    return () => onPendingChange?.(false);
+  }, [pending, onPendingChange]);
+
+  useEffect(() => {
+    if (hidden) setDetailVisible(false);
+  }, [hidden]);
 
   const applyHistoryList = useMemoizedFn(
     (
@@ -139,7 +156,7 @@ export const BridgePendingTxItem = ({
 
   useEffect(() => {
     fetchHistory();
-  }, [fetchHistory]);
+  }, [fetchHistory, hidden]);
 
   const fetchRefreshLocalData = useMemoizedFn(async (data: PendingTxData) => {
     if (data.status !== 'pending') {
@@ -220,7 +237,7 @@ export const BridgePendingTxItem = ({
     setDetailVisible(true);
   });
 
-  if (!data) {
+  if (!data || hidden) {
     return null;
   }
 

@@ -231,7 +231,9 @@ const HistoryStep = ({
     step.chainServerId ||
     '';
   const title = t(
-    step.direction === 'send'
+    step.direction === 'refund'
+      ? 'page.bridge.pendingItem.refundOn'
+      : step.direction === 'send'
       ? 'page.bridge.pendingItem.sendFrom'
       : 'page.bridge.pendingItem.receiveOn',
     { chain: chainName }
@@ -369,21 +371,11 @@ export const BridgeHistoryStatus = ({
   return (
     <div className="bg-r-neutral-bg3">
       <div
-        role="button"
-        tabIndex={0}
-        aria-expanded={expanded}
         className={clsx(
           'flex w-full cursor-pointer items-center gap-[10px] bg-transparent px-[12px] py-[8px] text-left',
           expanded && 'border-b border-solid border-r-neutral-line'
         )}
         onClick={() => setExpanded((value) => !value)}
-        onKeyDown={(event) => {
-          if (event.target !== event.currentTarget) return;
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            setExpanded((value) => !value);
-          }
-        }}
       >
         <div
           className={clsx(

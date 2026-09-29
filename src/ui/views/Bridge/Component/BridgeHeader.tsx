@@ -6,11 +6,11 @@ import { useSetSettingVisible, useSettingVisible } from '../hooks';
 import { BridgeTxHistory } from './BridgeHistory';
 import { useTranslation } from 'react-i18next';
 import { useRabbyDispatch } from '@/ui/store';
-import { PendingTx } from './PendingTx';
 import { RabbyFeePopup } from '../../Swap/Component/RabbyFeePopup';
-import { getUiType, openInternalPageInTab } from '@/ui/utils';
+import { getUiType } from '@/ui/utils';
 import { useHistory } from 'react-router-dom';
 import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
+import { SvgPendingSpin } from 'ui/assets';
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
 
@@ -25,11 +25,13 @@ export const Header = ({
   noShowHeader,
   historyVisible,
   setHistoryVisible,
+  showPending = false,
 }: {
   onOpenInTab?(): void;
   noShowHeader: boolean;
   historyVisible: boolean;
   setHistoryVisible: (visible: boolean) => void;
+  showPending?: boolean;
 }) => {
   const feePopupVisible = useSettingVisible();
   const setFeePopupVisible = useSetSettingVisible();
@@ -81,6 +83,14 @@ export const Header = ({
                 onClick={openHistory}
               >
                 <RcIconHistory />
+                {showPending && (
+                  <span className="pointer-events-none absolute -bottom-4 -right-4 flex h-14 w-14 items-center justify-center">
+                    <SvgPendingSpin
+                      className="h-12 w-12 animate-spin text-r-orange-default [&_path]:stroke-current"
+                      style={{ animation: 'spin 1.5s linear infinite' }}
+                    />
+                  </span>
+                )}
               </div>
             </div>
           }

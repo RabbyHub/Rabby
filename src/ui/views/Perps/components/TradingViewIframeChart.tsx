@@ -20,6 +20,10 @@ import {
 } from '../weeklyCandles';
 
 const BRIDGE_CHANNEL = 'rabby-tradingview-bridge-v1';
+// Upper bound on how long resolveSymbol waits for a price-derived pxDecimals.
+// Past it the chart boots on the fallback precision and the late minTick
+// override corrects it, as before.
+const PX_DECIMALS_WAIT_MS = 3000;
 const DEFAULT_TRADINGVIEW_URL = process.env.DEBUG
   ? 'https://tradingview-test.vercel.app/'
   : 'https://tradingview.rabby.io/';
@@ -141,6 +145,10 @@ interface TradingViewIframeChartProps {
   coin: string;
   interval: PerpsInterval;
   pxDecimals: number;
+  // false while pxDecimals is still the price-less fallback; resolveSymbol
+  // holds its answer until it turns true so the axis never boots on a
+  // precision that is about to change
+  pxDecimalsReady?: boolean;
   isDarkTheme: boolean;
   locale: string;
   timezone: string;
@@ -336,6 +344,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   coin,
   interval,
   pxDecimals,
+  pxDecimalsReady = true,
   isDarkTheme,
   locale,
   timezone,
@@ -410,6 +419,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     coin,
     interval,
     pxDecimals,
+    pxDecimalsReady,
     isDarkTheme,
     locale,
     timezone,
@@ -425,6 +435,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       coin,
       interval,
       pxDecimals,
+      pxDecimalsReady,
       isDarkTheme,
       locale,
       timezone,
@@ -438,6 +449,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     coin,
     interval,
     pxDecimals,
+    pxDecimalsReady,
     isDarkTheme,
     locale,
     timezone,
@@ -447,6 +459,16 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     onLatestBar,
     onIntervalChange,
   ]);
+
+  // Declared after the stateRef sync so a woken resolveSymbol reads the
+  // price-derived pxDecimals.
+  const pxDecimalsWaitersRef = useRef<Array<() => void>>([]);
+  useEffect(() => {
+    if (!pxDecimalsReady) return;
+    const waiters = pxDecimalsWaitersRef.current;
+    pxDecimalsWaitersRef.current = [];
+    waiters.forEach((resolve) => resolve());
+  }, [pxDecimalsReady]);
 
   useEffect(() => {
     const sdk = getPerpsSDK();
@@ -708,6 +730,17 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       return { ok: true };
     };
 
+    // TradingView samples pricescale once per resolveSymbol, so answering it
+    // with the price-less fallback makes the axis visibly re-tick when the
+    // first asset ctx lands (BTC: 1 decimal → 0).
+    const waitForPxDecimals = () => {
+      if (stateRef.current.pxDecimalsReady) return Promise.resolve();
+      return new Promise<void>((resolve) => {
+        setTimeout(resolve, PX_DECIMALS_WAIT_MS);
+        pxDecimalsWaitersRef.current.push(resolve);
+      });
+    };
+
     const handleMessage = async (event: MessageEvent) => {
       const message = event.data as BridgeMessage;
       if (!message || message.channel !== BRIDGE_CHANNEL) return;
@@ -783,6 +816,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
             });
             break;
           case 'resolveSymbol':
+            await waitForPxDecimals();
             respond(true, {
               name: message.params?.symbol || stateRef.current.coin,
               ticker: message.params?.symbol || stateRef.current.coin,

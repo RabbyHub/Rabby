@@ -2494,6 +2494,7 @@
         "succeeded": "Succeeded",
         "sendFrom": "Send from {{chain}}",
         "receiveOn": "Receive on {{chain}}",
+        "refundOn": "Refund on {{chain}}",
         "waitingDestination": "waiting for destination transaction",
         "sendFailed": "Send failed",
         "tokenNotSent": "Your {{token}} not sent"
