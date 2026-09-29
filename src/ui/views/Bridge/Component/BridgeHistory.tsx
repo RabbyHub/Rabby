@@ -327,9 +327,6 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
     const txId =
       data.from_tx?.tx_id || data?.detail_url?.split('/').pop() || '';
-    const timeLabel = isSuccess
-      ? dayjs((data.create_at || 0) * 1000).format('YYYY/MM/DD HH:mm')
-      : sinceTime(data.create_at);
 
     const gotoScan = () => {
       if (data?.detail_url) {
@@ -367,7 +364,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         ) : (
           <DetailHistoryBody
             data={data}
-            timeLabel={timeLabel}
+            timeLabel={sinceTime(data.create_at)}
             txId={txId}
             payAmount={payAmount}
             receiveAmount={receiveAmount}
