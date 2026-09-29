@@ -502,6 +502,7 @@ export const BridgeTxHistory = ({
       visible={visible}
       title={t('page.bridge.history')}
       height={494}
+      push={false}
       onClose={onClose}
       closable
       bodyStyle={{
