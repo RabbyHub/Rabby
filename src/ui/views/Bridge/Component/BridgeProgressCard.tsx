@@ -163,7 +163,7 @@ const ProgressFooter = ({
             {', '}
           </>
         }
-        link={t('page.bridge.pendingItem.viewRefundedDetails')}
+        link={t('page.bridge.viewDetails')}
         onClick={openRefund}
       />
     );
@@ -209,7 +209,7 @@ export const BridgeProgressCard = ({
     <div
       className={clsx(
         'cursor-pointer overflow-hidden rounded-[8px] border border-solid border-transparent bg-r-neutral-card-1 shadow-[0px_4px_20px_rgba(55,56,63,0.06)] dark:shadow-none',
-        'hover:border-rabby-blue-default hover:bg-blue-light/10'
+        'hover:border-rabby-blue-default hover:bg-r-blue-light-1 active:bg-rb-brand-light-2'
       )}
       onClick={onOpen}
     >

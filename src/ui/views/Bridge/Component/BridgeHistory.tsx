@@ -1,4 +1,5 @@
 import { Popup } from '@/ui/component';
+import { mergeBridgeSourceStatus } from '../utils/remoteFromTx';
 import React, { forwardRef, useEffect, useState } from 'react';
 import { useBridgeHistory } from '../hooks';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -202,7 +203,7 @@ const GeneralHistoryBody = ({
             alt=""
           />
           <div className="flex min-w-0 flex-col gap-[4px]">
-            <span className="text-[12px] font-medium leading-[18px] text-r-neutral-title-1">
+            <span className="text-[12px] leading-[18px] text-r-neutral-title-1">
               {t('page.bridge.bridge')}
             </span>
             <span className="truncate text-[12px] text-r-neutral-foot">
@@ -240,7 +241,6 @@ const DetailHistoryBody = ({
   receiveToken,
   isSuccess,
   isFailed,
-  isSourcePending,
   onOpen,
 }: {
   data: BridgeHistory;
@@ -251,7 +251,6 @@ const DetailHistoryBody = ({
   receiveToken?: TokenItem;
   isSuccess: boolean;
   isFailed: boolean;
-  isSourcePending: boolean;
   onOpen: () => void;
 }) => {
   const { t } = useTranslation();
@@ -284,9 +283,7 @@ const DetailHistoryBody = ({
           token={receiveToken}
           amount={receiveAmount}
           label={
-            isSuccess || isSourcePending
-              ? t('page.bridge.received')
-              : t('page.bridge.estReceive')
+            isSuccess ? t('page.bridge.received') : t('page.bridge.estReceive')
           }
           approx={data.status === 'pending'}
           align="end"
@@ -321,12 +318,8 @@ interface TransactionProps {
 }
 const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
   ({ data, local, variant = 'detail' }, ref) => {
+    data = mergeBridgeSourceStatus(data, local);
     const isFailed = data.status === 'failed';
-    const isSourcePending =
-      data.status === 'pending' &&
-      (data.from_tx?.status
-        ? data.from_tx.status === 'pending'
-        : !local || local.status === 'pending');
     const isSuccess = data.status === 'completed';
     const isSourceFailed = data.from_tx?.status
       ? data.from_tx.status === 'failed'
@@ -334,9 +327,6 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
     const txId =
       data.from_tx?.tx_id || data?.detail_url?.split('/').pop() || '';
-    const timeLabel = isSuccess
-      ? dayjs((data.create_at || 0) * 1000).format('YYYY/MM/DD HH:mm')
-      : sinceTime(data.create_at);
 
     const gotoScan = () => {
       if (data?.detail_url) {
@@ -374,14 +364,13 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
         ) : (
           <DetailHistoryBody
             data={data}
-            timeLabel={timeLabel}
+            timeLabel={sinceTime(data.create_at)}
             txId={txId}
             payAmount={payAmount}
             receiveAmount={receiveAmount}
             receiveToken={receiveToken}
             isSuccess={isSuccess}
             isFailed={isFailed}
-            isSourcePending={isSourcePending}
             onOpen={gotoScan}
           />
         )}
@@ -513,6 +502,7 @@ export const BridgeTxHistory = ({
       visible={visible}
       title={t('page.bridge.history')}
       height={494}
+      push={false}
       onClose={onClose}
       closable
       bodyStyle={{
