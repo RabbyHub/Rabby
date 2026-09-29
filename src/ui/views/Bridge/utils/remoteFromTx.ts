@@ -1,4 +1,26 @@
 import type { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
+import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
+
+/** 仅合并源链状态：已确认优先，双方确认时远程优先。 */
+export const mergeBridgeSourceStatus = (
+  data: BridgeHistory,
+  local?: BridgeTxHistoryItem
+): BridgeHistory => {
+  if (
+    (data.from_tx?.status && data.from_tx.status !== 'pending') ||
+    (local?.status !== 'fromSuccess' && local?.status !== 'fromFailed')
+  ) {
+    return data;
+  }
+  const failed = local.status === 'fromFailed';
+  return {
+    ...data,
+    from_tx: {
+      ...data.from_tx,
+      status: failed ? 'failed' : 'success',
+    },
+  };
+};
 
 /** from_tx.time_at 与 create_at 一样是秒。 */
 export const bridgeFromTxTimeMs = (timeAt?: number) => {

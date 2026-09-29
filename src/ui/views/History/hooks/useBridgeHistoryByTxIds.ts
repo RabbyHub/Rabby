@@ -124,10 +124,11 @@ export const useBridgeHistoryByTxIds = (options: {
       for (let index = startIndex; index <= endIndex; index += 1) {
         const row = rows[index];
         if (!row) continue;
-        const chain =
-          row.kind === 'tx' ? row.item.chain : row.item.from_token?.chain;
-        const id = row.kind === 'tx' ? row.item.id : row.item.from_tx?.tx_id;
-        const originalIndex = indexByKey.get(historyTxKey(chain, id));
+        const key =
+          row.kind === 'tx'
+            ? historyTxKey(row.item.chain, row.item.id)
+            : row.anchorKey;
+        const originalIndex = indexByKey.get(key);
         if (originalIndex == null) continue;
         start = Math.min(start, originalIndex);
         end = Math.max(end, originalIndex);

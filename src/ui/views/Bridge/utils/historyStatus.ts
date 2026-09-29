@@ -13,6 +13,7 @@ import {
 import {
   bridgeRemoteFromTxStatus,
   bridgeRemoteSourceCompleteTs,
+  mergeBridgeSourceStatus,
 } from './remoteFromTx';
 import { BRIDGE_HISTORY_CREATE_AT_DELAY_MS } from '../constants';
 
@@ -21,7 +22,7 @@ import { BRIDGE_HISTORY_CREATE_AT_DELAY_MS } from '../constants';
  * 先由 resolveBridgeHistoryScene 判定场景，再由 buildHistoryDetail 转成界面数据。
  * 组件只渲染结果，不再自己判断超时或退款种类。
  *
- * 判定顺序（有远程 from_tx 时以远程为准）：
+ * 判定顺序（源链已确认优先，双方确认时远程优先）：
  * 1. 目标链成功
  * 2. 源链失败（from_tx.failed）
  * 3. 目标链失败（有退款 / 无退款）
@@ -226,13 +227,14 @@ const isSourceFailed = (data: BridgeHistory, local?: BridgeTxHistoryItem) => {
 
 /**
  * 把接口状态和本地状态收成一个场景。
- * 有远程 from_tx.status / time_at 时以远程为准；否则回退本地。
+ * 源链已确认优先；双方确认时，以远程为准。
  */
 export const resolveBridgeHistoryScene = (
   data: BridgeHistory,
   local?: BridgeTxHistoryItem,
   now = Date.now()
 ): BridgeHistoryScene => {
+  data = mergeBridgeSourceStatus(data, local);
   if (data.status === 'completed') {
     return 'succeeded';
   }
@@ -463,10 +465,12 @@ export const getBridgeHistoryDetail = (
   data: BridgeHistory,
   local?: BridgeTxHistoryItem,
   now = Date.now()
-): BridgeHistoryDetail =>
-  buildHistoryDetail(
-    resolveBridgeHistoryScene(data, local, now),
-    data,
+): BridgeHistoryDetail => {
+  const merged = mergeBridgeSourceStatus(data, local);
+  return buildHistoryDetail(
+    resolveBridgeHistoryScene(merged, local, now),
+    merged,
     local,
     now
   );
+};

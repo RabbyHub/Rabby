@@ -250,8 +250,7 @@ export const BridgeStatusPopup = ({
     completed: t('page.bridge.pendingItem.popupCompleted'),
   }[popup.title];
 
-  // 第二步仍在 pending（倒计时含≤5s / Still Bridging / 目标链延迟）时金额行不淡化；
-  // 仅源链未完成、第二步还是 queued 时用半透明。
+  // 等待到账时不淡化金额；排队和失败时淡化。
   const receiveFade =
     popup.step2 === 'queued'
       ? '40'
@@ -292,7 +291,11 @@ export const BridgeStatusPopup = ({
           usd={usdOf(receiveAmount, receiveToken?.price)}
           sign="+"
           amountFade={receiveFade}
-          approx={popup.step2 === 'queued' || popup.step2 === 'pending'}
+          approx={
+            popup.step2 === 'queued' ||
+            popup.step2 === 'processing' ||
+            popup.step2 === 'pending'
+          }
         />
         {popup.step3 && (
           <>
@@ -339,7 +342,7 @@ const PopupCaption = ({
     content = (
       <Trans
         t={t}
-        i18nKey="page.bridge.pendingItem.popupEstCompletion"
+        i18nKey="page.bridge.pendingItem.bridgingEta"
         values={{ time: popup.caption.time }}
         components={{
           time: <span className="text-r-neutral-title-1" />,
@@ -383,7 +386,7 @@ const PopupButton = ({
     back: t('page.bridge.pendingItem.goBack'),
     delayedSupport: t('page.bridge.pendingItem.contactSupport'),
     failedSupport: t('page.bridge.pendingItem.contactSupport'),
-    refund: t('page.bridge.pendingItem.viewRefundedDetails'),
+    refund: t('page.bridge.viewDetails'),
   }[popup.button];
   const disabled = popup.button === 'refund' && !href;
 

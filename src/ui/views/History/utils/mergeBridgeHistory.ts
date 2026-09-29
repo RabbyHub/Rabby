@@ -93,7 +93,7 @@ export const collectViewportOutgoingTxIds = (
 
 export type HistoryListRow<T> =
   | { kind: 'tx'; key: string; item: T }
-  | { kind: 'bridge'; key: string; item: BridgeHistory };
+  | { kind: 'bridge'; key: string; item: BridgeHistory; anchorKey: string };
 
 const bridgeToChain = (bridge: BridgeHistory) =>
   bridge.to_actual_token?.chain || bridge.to_token?.chain;
@@ -107,33 +107,38 @@ export const mergeHistoryWithBridge = <
   const present = new Set(
     items.map((item) => historyTxKey(item.chain, item.id))
   );
-  const fromBridge = new Map<string, BridgeHistory>();
-  const dropTo = new Set<string>();
+  const bridgeByAnchor = new Map<string, BridgeHistory>();
+  const hiddenKeys = new Set<string>();
 
   bridges.forEach((bridge) => {
     const fromId = bridge.from_tx?.tx_id;
     if (!fromId) return;
     const fromKey = historyTxKey(bridge.from_token?.chain, fromId);
-    if (!present.has(fromKey)) return;
-    fromBridge.set(fromKey, bridge);
     const toId = bridge.to_tx?.tx_id;
-    if (!toId) return;
-    const toKey = historyTxKey(bridgeToChain(bridge), toId);
-    if (toKey !== fromKey && present.has(toKey)) {
-      dropTo.add(toKey);
+    const toKey = toId ? historyTxKey(bridgeToChain(bridge), toId) : '';
+    // 到账交易已加载时放在到账位置，否则沿用源链位置。
+    const anchorKey = present.has(toKey) ? toKey : fromKey;
+    if (!present.has(anchorKey)) return;
+    bridgeByAnchor.set(anchorKey, bridge);
+    if (anchorKey !== fromKey) {
+      hiddenKeys.add(fromKey);
     }
   });
 
   const rows: HistoryListRow<T>[] = [];
   items.forEach((item) => {
     const key = historyTxKey(item.chain, item.id);
-    if (dropTo.has(key)) return;
-    const bridge = fromBridge.get(key);
+    if (hiddenKeys.has(key)) return;
+    const bridge = bridgeByAnchor.get(key);
     if (bridge) {
       rows.push({
         kind: 'bridge',
-        key: `bridge:${key}`,
+        key: `bridge:${historyTxKey(
+          bridge.from_token?.chain,
+          bridge.from_tx?.tx_id
+        )}`,
         item: bridge,
+        anchorKey: key,
       });
       return;
     }
