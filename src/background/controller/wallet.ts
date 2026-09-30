@@ -3244,19 +3244,15 @@ export class WalletController extends BaseController {
     ).then((chains) => chains.filter((chain): chain is Chain => !!chain));
   };
 
-  syncAllGnosisNetworks = () => {
+  syncAllGnosisNetworks = async () => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
       return;
     }
-    Object.entries(keyring.networkIdsMap).forEach(
-      async ([address, networks]) => {
-        const chainList = await this.fetchGnosisChainList(address);
-        keyring.setNetworkIds(
-          address,
-          uniq((networks || []).concat(chainList.map((chain) => chain.network)))
-        );
-      }
+    await Promise.all(
+      Object.keys(keyring.networkIdsMap).map((address) =>
+        this.syncGnosisNetworks(address)
+      )
     );
   };
 
@@ -3265,11 +3261,14 @@ export class WalletController extends BaseController {
     if (!keyring) {
       return;
     }
-    const networks = keyring.networkIdsMap[address];
+    const networks = keyring.networkIdsMap[address.toLowerCase()];
     const chainList = await this.fetchGnosisChainList(address);
     const nextNetworks = uniq(
       (networks || []).concat(chainList.map((chain) => chain.network))
-    );
+    ).filter((networkId) => {
+      const chain = findChain({ networkId });
+      return chain && GNOSIS_SUPPORT_CHAINS.includes(chain.enum);
+    });
     const isSame = isEqual(sortBy(networks), sortBy(nextNetworks));
     if (isSame) {
       return;
