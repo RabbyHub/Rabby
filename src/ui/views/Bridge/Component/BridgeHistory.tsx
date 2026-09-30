@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
 import { BridgeHistory } from '@/background/service/openapi';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
-import dayjs from 'dayjs';
 import { useRabbySelector } from '@/ui/store';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import {
@@ -265,6 +264,7 @@ const DetailHistoryBody = ({
   onOpen: () => void;
 }) => {
   const { t } = useTranslation();
+  const isFailedOrRefunded = !isSuccess && !receiving;
   return (
     <div className="flex flex-col gap-[20px] p-[12px]">
       <div className="flex items-center justify-between">
@@ -276,7 +276,12 @@ const DetailHistoryBody = ({
         </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div
+        className={clsx(
+          'flex items-center justify-between',
+          isFailedOrRefunded && 'opacity-50'
+        )}
+      >
         <HistorySide
           token={data.from_token}
           amount={payAmount}
@@ -292,17 +297,11 @@ const DetailHistoryBody = ({
             isSuccess ? t('page.bridge.received') : t('page.bridge.estReceive')
           }
           approx={receiving}
-          dimmed={!isSuccess && !receiving}
           align="end"
         />
       </div>
 
-      <div
-        className={clsx(
-          'flex items-center gap-[4px] text-r-neutral-foot',
-          isFailed && 'opacity-50'
-        )}
-      >
+      <div className={clsx('flex items-center gap-[4px] text-r-neutral-foot')}>
         <span className="text-[12px]">{t('page.bridge.by')}</span>
         <span className="text-[13px] font-medium">{data.aggregator?.name}</span>
         {data.aggregator?.name?.toLowerCase() !==
@@ -400,21 +399,18 @@ const HistorySide = ({
   amount,
   label,
   approx,
-  dimmed = false,
   align = 'start',
 }: {
   token?: TokenItem;
   amount?: number;
   label: string;
   approx?: boolean;
-  dimmed?: boolean;
   align?: 'start' | 'end';
 }) => (
   <div
     className={clsx(
       'flex min-w-0 items-center gap-[12px]',
-      align === 'end' && 'justify-end',
-      dimmed && 'opacity-50'
+      align === 'end' && 'justify-end'
     )}
   >
     <HistoryToken token={token} />
