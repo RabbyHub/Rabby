@@ -110,7 +110,7 @@ const TokenDetail = ({
   }, [currentAccount, getTokenAmount]);
 
   const fetchData = async (startTime = 0) => {
-    const res = await wallet.openapi.listTxHisotry({
+    const res = await wallet.openapi.listTxHistory({
       id: currentAccount!.address,
       chain_id: token.chain,
       start_time: startTime,
