@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 const SecSDK = require('warden-for-js').WardenPlugin;
 
 const config = {
@@ -20,6 +21,20 @@ const config = {
         forceCheck: false,
       }),
   ].filter(Boolean),
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        minify: TerserPlugin.swcMinify,
+        parallel: 1,
+        terserOptions: {
+          compress: {
+            passes: 2,
+          },
+        },
+      }),
+    ],
+  },
 };
 
 module.exports = config;
