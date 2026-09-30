@@ -242,6 +242,7 @@ import { appChainDbService } from '@/db/services/appChainDbService';
 import { balanceDbService } from '@/db/services/balanceDbService';
 import { nftDbService } from '@/db/services/nftDbService';
 import { BALANCE_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
+import { assertGasAccountSignText } from '@/utils/gasAccount';
 import {
   BalanceCacheData,
   normalizeBalanceCacheData,
@@ -6397,9 +6398,11 @@ export class WalletController extends BaseController {
     result?: any;
   }> {
     const { closeWindowBeforeSign = true } = options || {};
-    const { text } = await wallet.openapi.getGasAccountSignText(
+    const { text: rawText } = await wallet.openapi.getGasAccountSignText(
       account.address
     );
+    const text = assertGasAccountSignText(rawText, account.address);
+
     if (closeWindowBeforeSign) {
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.GAS_ACCOUNT.CLOSE_WINDOW,

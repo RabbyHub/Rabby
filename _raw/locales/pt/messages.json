@@ -2798,7 +2798,8 @@
       "lowBalance": "Não tem gas suficiente (＜$1,00). Deposite gas para assegurar o processamento das transações futuras.",
       "gasBalance": "Saldo de Gas",
       "loginSuccess": "Sessão iniciada com sucesso",
-      "loginFailed": "Falha ao iniciar sessão"
+      "loginFailed": "Falha ao iniciar sessão",
+      "signTextInvalid": "Falha na verificação de segurança: a mensagem de login do GasAccount é inválida. Tente novamente mais tarde"
     },
     "safeMessageQueue": {
       "loading": "A carregar mensagens",
