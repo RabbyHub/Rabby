@@ -461,14 +461,11 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   ]);
 
   // Declared after the stateRef sync so a woken resolveSymbol reads the
-  // price-derived pxDecimals.
-  const pxDecimalsWaitersRef = useRef<Array<() => void>>([]);
+  // current coin/pxDecimals. Each waiter settles itself once it is done.
+  const pxDecimalsWaitersRef = useRef(new Set<(force?: boolean) => boolean>());
   useEffect(() => {
-    if (!pxDecimalsReady) return;
-    const waiters = pxDecimalsWaitersRef.current;
-    pxDecimalsWaitersRef.current = [];
-    waiters.forEach((resolve) => resolve());
-  }, [pxDecimalsReady]);
+    pxDecimalsWaitersRef.current.forEach((settle) => settle());
+  }, [coin, pxDecimals, pxDecimalsReady]);
 
   useEffect(() => {
     const sdk = getPerpsSDK();
@@ -732,14 +729,31 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
 
     // TradingView samples pricescale once per resolveSymbol, so answering it
     // with the price-less fallback makes the axis visibly re-tick when the
-    // first asset ctx lands (BTC: 1 decimal → 0).
-    const waitForPxDecimals = () => {
-      if (stateRef.current.pxDecimalsReady) return Promise.resolve();
-      return new Promise<void>((resolve) => {
-        setTimeout(resolve, PX_DECIMALS_WAIT_MS);
-        pxDecimalsWaitersRef.current.push(resolve);
+    // first asset ctx lands (BTC: 1 decimal → 0). Wait while the requested
+    // symbol is still on that fallback — but only while it is still the
+    // parent's coin. Once the parent moves on, answer at once with the last
+    // precision seen for the requested symbol: never another coin's
+    // pricescale, and no stall ahead of the setSymbol that follows.
+    const resolvePxDecimals = (symbol: string) =>
+      new Promise<number>((resolve) => {
+        let symbolPxDecimals = stateRef.current.pxDecimals;
+        // Settling twice is harmless (the promise is already resolved), so
+        // the timeout is left to fire.
+        const settle = (force = false) => {
+          const current = stateRef.current;
+          const isRequestedCoin = current.coin === symbol;
+          if (isRequestedCoin) symbolPxDecimals = current.pxDecimals;
+          if (isRequestedCoin && !current.pxDecimalsReady && !force) {
+            return false;
+          }
+          pxDecimalsWaitersRef.current.delete(settle);
+          resolve(symbolPxDecimals);
+          return true;
+        };
+        if (settle()) return;
+        pxDecimalsWaitersRef.current.add(settle);
+        setTimeout(() => settle(true), PX_DECIMALS_WAIT_MS);
       });
-    };
 
     const handleMessage = async (event: MessageEvent) => {
       const message = event.data as BridgeMessage;
@@ -816,25 +830,38 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
             });
             break;
           case 'resolveSymbol':
-            await waitForPxDecimals();
-            respond(true, {
-              name: message.params?.symbol || stateRef.current.coin,
-              ticker: message.params?.symbol || stateRef.current.coin,
-              description: message.params?.symbol || stateRef.current.coin,
-              type: 'crypto',
-              session: '24x7',
-              timezone: stateRef.current.timezone,
-              // exchange: 'Hyperliquid',
-              // listed_exchange: 'Hyperliquid',
-              minmov: 1,
-              pricescale: 10 ** Math.max(stateRef.current.pxDecimals, 0),
-              has_intraday: true,
-              has_weekly_and_monthly: true,
-              supported_resolutions: SUPPORTED_RESOLUTIONS,
-              intraday_multipliers: ['1', '5', '15', '30', '60', '240', '480'],
-              data_status: 'streaming',
-              volume_precision: 2,
-            });
+            {
+              // Bound before the wait: the answer describes the symbol that
+              // was asked for, not whatever the parent shows by then.
+              const symbol = message.params?.symbol || stateRef.current.coin;
+              const pxDecimals = await resolvePxDecimals(symbol);
+              respond(true, {
+                name: symbol,
+                ticker: symbol,
+                description: symbol,
+                type: 'crypto',
+                session: '24x7',
+                timezone: stateRef.current.timezone,
+                // exchange: 'Hyperliquid',
+                // listed_exchange: 'Hyperliquid',
+                minmov: 1,
+                pricescale: 10 ** Math.max(pxDecimals, 0),
+                has_intraday: true,
+                has_weekly_and_monthly: true,
+                supported_resolutions: SUPPORTED_RESOLUTIONS,
+                intraday_multipliers: [
+                  '1',
+                  '5',
+                  '15',
+                  '30',
+                  '60',
+                  '240',
+                  '480',
+                ],
+                data_status: 'streaming',
+                volume_precision: 2,
+              });
+            }
             break;
           case 'getBars':
             {
