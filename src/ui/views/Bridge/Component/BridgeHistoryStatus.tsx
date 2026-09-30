@@ -286,9 +286,11 @@ const HeaderAction = ({ detail }: { detail: BridgeHistoryDetail }) => {
   }
   if (action.kind === 'delayed') {
     return (
-      <span className="inline-flex h-[14px] items-center text-[12px] leading-[14px] text-r-neutral-body">
-        {t('page.bridge.pendingItem.popupBridgeDelayed')}
-        {', '}
+      <span className="inline-flex h-[14px] gap-2 items-center text-[12px] leading-[14px] text-r-neutral-body">
+        <span>
+          {t('page.bridge.pendingItem.popupBridgeDelayed')}
+          {', '}
+        </span>
         <button
           type="button"
           className="inline bg-transparent p-0 text-[12px] leading-[14px] text-r-blue-default underline"
