@@ -54,7 +54,7 @@ const HeaderIcon = ({ header }: { header: BridgeHistoryDetail['header'] }) => {
   }
   if (header === 'refund') {
     return (
-      <RcIconUndoCC className="block h-[16px] w-[16px] -scale-y-100 rotate-180 text-r-neutral-body" />
+      <RcIconUndoCC className="block h-[16px] w-[16px] -scale-y-100 rotate-180 text-r-neutral-body dark:text-light-r-neutral-body" />
     );
   }
   return (
@@ -87,7 +87,9 @@ const StepMark = ({
     return <RcIconHistoryStepDone className="block shrink-0" />;
   }
   if (step.mark === 'failed') {
-    return <RcIconHistoryStepFailed className="block shrink-0" />;
+    return (
+      <RcIconHistoryStepFailed className="block shrink-0 dark:text-r-red-default dark:[&_path]:fill-current" />
+    );
   }
   return (
     <span
@@ -209,7 +211,7 @@ const StepStatus = ({ step }: { step: BridgeHistoryDetailStep }) => {
       )}
     >
       {step.status === 'queued' && (
-        <RcIconHistoryQueued className="block shrink-0" />
+        <RcIconHistoryQueued className="block shrink-0 dark:[&_path]:stroke-current" />
       )}
       {label}
     </span>
@@ -375,7 +377,8 @@ export const BridgeHistoryStatus = ({
       <div
         className={clsx(
           'flex w-full cursor-pointer items-center gap-[10px] bg-transparent px-[12px] py-[8px] text-left',
-          expanded && 'border-b border-solid border-r-neutral-line'
+          expanded &&
+            'border-b border-solid border-r-neutral-line dark:border-r-neutral-card-1'
         )}
         onClick={() => setExpanded((value) => !value)}
       >

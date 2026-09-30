@@ -99,21 +99,17 @@ const MiniTokenAmount = ({
   amount,
   sign,
   tone,
-  dimmed = false,
   approx = false,
 }: {
   token?: TokenItem;
   amount?: number;
   sign: '+' | '-';
   tone: string;
-  dimmed?: boolean;
   approx?: boolean;
 }) => {
   const chain = findChain({ serverId: token?.chain });
   return (
-    <div
-      className={clsx('flex items-center gap-[8px]', dimmed && 'opacity-50')}
-    >
+    <div className="flex items-center gap-[8px]">
       <div className="relative h-[16px] w-[16px] shrink-0 leading-[0]">
         <img
           className="block h-[16px] w-[16px] rounded-full object-cover"
@@ -154,7 +150,6 @@ const GeneralHistoryBody = ({
   payAmount,
   receiveAmount,
   receiveToken,
-  received,
   receiving,
   sourceFailed,
   onOpen,
@@ -165,7 +160,6 @@ const GeneralHistoryBody = ({
   payAmount?: number;
   receiveAmount?: number;
   receiveToken?: TokenItem;
-  received: boolean;
   receiving: boolean;
   sourceFailed: boolean;
   onOpen: () => void;
@@ -173,6 +167,20 @@ const GeneralHistoryBody = ({
   const { t } = useTranslation();
   const fromChain = findChain({ serverId: data.from_token?.chain });
   const toChain = findChain({ serverId: data.to_token?.chain });
+  const sentAmount = receiving ? payAmount : data.actual?.pay_token_amount;
+  const receivedAmount = receiving
+    ? receiveAmount
+    : data.actual?.receive_token_amount;
+  const receivedToken = receiving ? receiveToken : data.to_actual_token;
+  const hasSent =
+    receiving ||
+    (!sourceFailed && !!data.from_token?.id && (sentAmount ?? 0) > 0);
+  const hasReceived =
+    receiving ||
+    (hasSent &&
+      !!receivedToken?.id &&
+      (receivedAmount ?? 0) > 0 &&
+      (data.status === 'completed' || !!data.to_tx?.tx_id));
   return (
     <div className="flex flex-col gap-[16px] px-[12px] pb-[16px] pt-[12px] leading-[normal]">
       <div className="flex items-center justify-between gap-[8px]">
@@ -218,23 +226,25 @@ const GeneralHistoryBody = ({
             </span>
           </div>
         </div>
-        <div className="flex shrink-0 flex-col items-end gap-[8px]">
-          <MiniTokenAmount
-            token={data.from_token}
-            amount={payAmount}
-            sign="-"
-            tone="text-r-neutral-title-1"
-            dimmed={sourceFailed}
-          />
-          <MiniTokenAmount
-            token={receiveToken}
-            amount={receiveAmount}
-            sign="+"
-            tone="text-r-green-default"
-            dimmed={!received && !receiving}
-            approx={receiving}
-          />
-        </div>
+        {hasSent && (
+          <div className="flex shrink-0 flex-col items-end gap-[8px]">
+            <MiniTokenAmount
+              token={data.from_token}
+              amount={sentAmount}
+              sign="-"
+              tone="text-r-neutral-title-1"
+            />
+            {hasReceived && (
+              <MiniTokenAmount
+                token={receivedToken}
+                amount={receivedAmount}
+                sign="+"
+                tone="text-r-green-default"
+                approx={receiving}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -248,7 +258,6 @@ const DetailHistoryBody = ({
   receiveAmount,
   receiveToken,
   isSuccess,
-  isFailed,
   receiving,
   onOpen,
 }: {
@@ -259,14 +268,13 @@ const DetailHistoryBody = ({
   receiveAmount?: number;
   receiveToken?: TokenItem;
   isSuccess: boolean;
-  isFailed: boolean;
   receiving: boolean;
   onOpen: () => void;
 }) => {
   const { t } = useTranslation();
   const isFailedOrRefunded = !isSuccess && !receiving;
   return (
-    <div className="flex flex-col gap-[20px] p-[12px]">
+    <div className="flex flex-col gap-[20px] p-[12px] dark:bg-r-neutral-card-1">
       <div className="flex items-center justify-between">
         <span className="text-[13px] leading-[normal] text-r-neutral-title-1">
           {timeLabel}
@@ -282,21 +290,14 @@ const DetailHistoryBody = ({
           isFailedOrRefunded && 'opacity-50'
         )}
       >
-        <HistorySide
-          token={data.from_token}
-          amount={payAmount}
-          label={t('page.bridge.sent')}
-        />
+        <HistorySide token={data.from_token} amount={payAmount} />
         <span className="inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center overflow-hidden text-r-neutral-foot">
           <RcIconRouteArrow className="block shrink-0" />
         </span>
         <HistorySide
           token={receiveToken}
           amount={receiveAmount}
-          label={
-            isSuccess ? t('page.bridge.received') : t('page.bridge.estReceive')
-          }
-          approx={receiving}
+          approx={!isSuccess}
           align="end"
         />
       </div>
@@ -326,7 +327,6 @@ interface TransactionProps {
 const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
   ({ data, local, variant = 'detail', displayTime }, ref) => {
     data = mergeBridgeSourceStatus(data, local);
-    const isFailed = data.status === 'failed';
     const isSuccess = data.status === 'completed';
     const isSourceFailed = data.from_tx?.status
       ? data.from_tx.status === 'failed'
@@ -355,7 +355,12 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
 
     return (
       <div
-        className="relative overflow-hidden rounded-[8px] border-2 border-solid border-white bg-r-neutral-bg1 text-r-neutral-body dark:border-transparent dark:bg-r-neutral-card-1 dark:shadow-none"
+        className={clsx(
+          'relative overflow-hidden rounded-[8px] border-2 border-solid border-white bg-r-neutral-bg1 text-r-neutral-body dark:bg-r-neutral-card-1 dark:shadow-none',
+          variant === 'detail'
+            ? 'dark:border-r-neutral-card-1'
+            : 'dark:border-transparent'
+        )}
         ref={ref}
       >
         {variant === 'general' ? (
@@ -366,7 +371,6 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             payAmount={payAmount}
             receiveAmount={receiveAmount}
             receiveToken={receiveToken}
-            received={isSuccess}
             receiving={receiving}
             sourceFailed={isSourceFailed}
             onOpen={gotoScan}
@@ -380,7 +384,6 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
             receiveAmount={receiveAmount}
             receiveToken={receiveToken}
             isSuccess={isSuccess}
-            isFailed={isFailed}
             receiving={receiving}
             onOpen={gotoScan}
           />
@@ -397,13 +400,11 @@ export const BridgeHistoryCard = Transaction;
 const HistorySide = ({
   token,
   amount,
-  label,
   approx,
   align = 'start',
 }: {
   token?: TokenItem;
   amount?: number;
-  label: string;
   approx?: boolean;
   align?: 'start' | 'end';
 }) => (
@@ -414,15 +415,10 @@ const HistorySide = ({
     )}
   >
     <HistoryToken token={token} />
-    <div className="flex min-w-0 flex-col gap-px">
-      <div className="flex items-center gap-[2px] whitespace-nowrap text-[14px] font-medium text-r-neutral-title-1">
-        {approx && <span>≈</span>}
-        <span>{formatAmount(amount || 0)}</span>
-        <BridgeHistoryTokenSymbol token={token} underline={false} />
-      </div>
-      <span className="whitespace-nowrap text-[12px] text-r-neutral-foot">
-        {label}
-      </span>
+    <div className="flex min-w-0 items-center gap-[2px] whitespace-nowrap text-[14px] font-medium text-r-neutral-title-1">
+      {approx && <span>≈</span>}
+      <span>{formatAmount(amount || 0)}</span>
+      <BridgeHistoryTokenSymbol token={token} underline={false} />
     </div>
   </div>
 );

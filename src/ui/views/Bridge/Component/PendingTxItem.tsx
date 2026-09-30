@@ -63,7 +63,6 @@ export const BridgePendingTxItem = ({
   hidden?: boolean;
   onPendingChange?: (pending: boolean) => void;
 }) => {
-  const type = 'bridge';
   const wallet = useWallet();
   const [detailVisible, setDetailVisible] = useState(false);
   const [data, setData] = useState<PendingTxData | null>(null);
@@ -152,7 +151,7 @@ export const BridgePendingTxItem = ({
         applyHistoryList(historyData, res.history_list);
       }
     }
-  }, [type, userAddress]);
+  }, [userAddress]);
 
   useEffect(() => {
     fetchHistory();
