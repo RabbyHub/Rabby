@@ -291,11 +291,7 @@ export const BridgeStatusPopup = ({
           usd={usdOf(receiveAmount, receiveToken?.price)}
           sign="+"
           amountFade={receiveFade}
-          approx={
-            popup.step2 === 'queued' ||
-            popup.step2 === 'processing' ||
-            popup.step2 === 'pending'
-          }
+          approx={popup.step2 !== 'completed' && popup.step2 !== 'refund'}
         />
         {popup.step3 && (
           <>

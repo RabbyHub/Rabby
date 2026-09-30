@@ -93,13 +93,19 @@ export const collectViewportOutgoingTxIds = (
 
 export type HistoryListRow<T> =
   | { kind: 'tx'; key: string; item: T }
-  | { kind: 'bridge'; key: string; item: BridgeHistory; anchorKey: string };
+  | {
+      kind: 'bridge';
+      key: string;
+      item: BridgeHistory;
+      anchorKey: string;
+      displayTime?: number;
+    };
 
 const bridgeToChain = (bridge: BridgeHistory) =>
   bridge.to_actual_token?.chain || bridge.to_token?.chain;
 
 export const mergeHistoryWithBridge = <
-  T extends { chain: string; id: string; _id: string }
+  T extends { chain: string; id: string; _id: string; time_at?: number }
 >(
   items: T[],
   bridges: BridgeHistory[]
@@ -139,6 +145,11 @@ export const mergeHistoryWithBridge = <
         )}`,
         item: bridge,
         anchorKey: key,
+        // 只覆盖展示时间，不改变跨链创建时间和超时判断。
+        displayTime:
+          key !== historyTxKey(bridge.from_token?.chain, bridge.from_tx?.tx_id)
+            ? item.time_at
+            : undefined,
       });
       return;
     }
