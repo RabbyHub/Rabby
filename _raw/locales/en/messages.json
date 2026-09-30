@@ -4125,7 +4125,8 @@
         "desc": "Please switch to your login address."
       },
       "loginSuccess": "Login Successful",
-      "loginFailed": "Login Failed"
+      "loginFailed": "Login Failed",
+      "signTextInvalid": "Security check failed: the GasAccount sign-in message is invalid. Please try again later"
     },
     "safeMessageQueue": {
       "loading": "Loading messages",

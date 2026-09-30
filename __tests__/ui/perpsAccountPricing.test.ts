@@ -6,7 +6,6 @@ import {
   usdcMarkPx,
 } from '@/ui/views/DesktopPerps/components/AccountInfo/utils';
 import {
-  hasNonPerpsPortfolioAssets,
   getStakedHypeAmount,
   computeStakingValue,
   computePerpsPortfolioValue,
@@ -388,32 +387,5 @@ describe('computeAvailableBalance', () => {
         clearinghouseState: { withdrawable: '999' },
       })
     ).toBe(42);
-  });
-});
-
-describe('hasNonPerpsPortfolioAssets', () => {
-  it.each(['delegated', 'undelegated', 'totalPendingWithdrawal'] as const)(
-    'shows the breakdown for staking-only %s balances',
-    (field) => {
-      expect(
-        hasNonPerpsPortfolioAssets({
-          spotState: { balances: [] },
-          stakingSummary: {
-            delegated: '0',
-            undelegated: '0',
-            totalPendingWithdrawal: '0',
-            [field]: '2',
-          },
-        })
-      ).toBe(true);
-    }
-  );
-  it('hides the breakdown for an empty account and keeps spot balances eligible', () => {
-    expect(hasNonPerpsPortfolioAssets({ stakingSummary: null })).toBe(false);
-    expect(
-      hasNonPerpsPortfolioAssets({
-        spotState: { balances: [bal('USDC', 0, '1')] },
-      })
-    ).toBe(true);
   });
 });
