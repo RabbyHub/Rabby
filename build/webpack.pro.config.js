@@ -24,8 +24,11 @@ const config = {
     minimize: true,
     minimizer: [
       new TerserPlugin({
+        minify: TerserPlugin.swcMinify,
+        parallel: 1,
         terserOptions: {
           compress: {
+            passes: 1,
             pure_funcs: ['console.log', 'console.debug', 'console.info'],
           },
         },
