@@ -26288,11 +26288,11 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/helpers.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/internal.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/utils.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/rlp/dist/index.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/ethereum-cryptography/utils.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/address.js": {
@@ -26326,8 +26326,8 @@
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/constants.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/helpers.js": {
@@ -26388,9 +26388,9 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/bytes.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/helpers.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/types.js": {
@@ -26412,30 +26412,6 @@
       "node_modules/buffer/index.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/keccak.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/utils.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/sha3.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/secp256k1.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/utils.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "crypto": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/utils.js"
-    ]
-  },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/rlp/dist/index.js": {
     "enable": true,
     "global": {
@@ -26447,6 +26423,7 @@
     "require": [
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/common/dist/index.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/types.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js"
     ]
   },
@@ -26460,8 +26437,8 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip2930Transaction.js": {
@@ -26474,26 +26451,8 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip4844Transaction.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    },
-    "require": [
-      "node_modules/@chainsafe/ssz/lib/index.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/constants.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/kzg/kzg.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/types.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/util.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/utils/blobHelpers.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/fromRpc.js": {
@@ -26507,12 +26466,9 @@
     "require": [
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip1559Transaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip2930Transaction.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip4844Transaction.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/kzg/kzg.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/legacyTransaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/transactionFactory.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/types.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/utils/blobHelpers.js"
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/types.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/legacyTransaction.js": {
@@ -26524,10 +26480,9 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/rlp/dist/index.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/types.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/transactionFactory.js": {
@@ -26536,21 +26491,12 @@
       "Buffer": "r"
     },
     "require": [
-      "node_modules/@ethersproject/providers/lib.esm/index.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip1559Transaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip2930Transaction.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/eip4844Transaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/fromRpc.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/legacyTransaction.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
       "node_modules/buffer/index.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/types.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@chainsafe/ssz/lib/index.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/constants.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/util.js": {
@@ -26558,17 +26504,6 @@
     "require": [
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/types.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/utils/blobHelpers.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/dist/kzg/kzg.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/sha256.js",
-      "node_modules/buffer/index.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/account.js": {
@@ -26582,10 +26517,10 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/helpers.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/internal.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/ethereum-cryptography/utils.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/address.js": {
@@ -26619,8 +26554,8 @@
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/constants.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/helpers.js": {
@@ -26681,9 +26616,9 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/bytes.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/helpers.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/types.js": {
@@ -26705,30 +26640,6 @@
       "node_modules/buffer/index.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/sha3.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/secp256k1.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "crypto": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/utils.js"
-    ]
-  },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/account.js": {
     "enable": true,
     "global": {
@@ -26740,9 +26651,9 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/helpers.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/internal.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/utils.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js",
       "node_modules/buffer/index.js"
     ]
   },
@@ -26777,7 +26688,7 @@
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/constants.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
       "node_modules/buffer/index.js"
     ]
   },
@@ -26832,8 +26743,8 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/bytes.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/dist/helpers.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
       "node_modules/buffer/index.js"
     ]
   },
@@ -26863,68 +26774,40 @@
       "node_modules/buffer/index.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/_shortw_utils.js": {
+  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/weierstrass.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/sha3.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@noble/secp256k1/lib/index.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/hmac.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/utils.js"
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/sha256.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/curve.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/hash-to-curve.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/modular.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/utils.js": {
+  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js": {
     "enable": true,
     "global": {
-      "TextEncoder": "r"
-    }
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/weierstrass.js": {
-    "enable": true,
+      "TextDecoder": "r",
+      "crypto": "r"
+    },
     "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/curve.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/secp256k1.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/_shortw_utils.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/hash-to-curve.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/utils.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/curves/abstract/weierstrass.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/sha256.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_assert.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/utils.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_md.js": {
+  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_sha2.js": {
     "enable": true,
     "require": [
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_assert.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/utils.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/crypto.js": {
+  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/cryptoBrowser.js": {
     "enable": true,
     "global": {
       "crypto": "r"
@@ -26940,7 +26823,7 @@
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/sha256.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_md.js",
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_sha2.js",
       "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/utils.js"
     ]
   },
@@ -26958,8 +26841,7 @@
       "TextEncoder": "r"
     },
     "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/crypto.js"
+      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/@noble/hashes/cryptoBrowser.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/bn.js/lib/bn.js": {
@@ -26969,83 +26851,6 @@
     },
     "require": [
       "webpack:buffer (ignored)"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/keccak.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha3.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_sha2.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/cryptoBrowser.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/hmac.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha256.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_sha2.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha3.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_u64.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js": {
-    "enable": true,
-    "global": {
-      "TextEncoder": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/cryptoBrowser.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/secp256k1.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/secp256k1/lib/index.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/hmac.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha256.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/sha256.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha256.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/utils.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "crypto": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-lattice-keyring/node_modules/rlp/dist/index.js": {
@@ -27894,11 +27699,11 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/helpers.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/internal.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/utils.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/rlp/dist/index.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/ethereum-cryptography/utils.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/address.js": {
@@ -27932,8 +27737,8 @@
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/constants.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/helpers.js": {
@@ -27994,9 +27799,9 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/bytes.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/helpers.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/@ethereumjs/util/dist/types.js": {
@@ -28018,30 +27823,6 @@
       "node_modules/buffer/index.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/keccak.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/utils.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/hashes/sha3.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/secp256k1.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/curves/secp256k1.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/node_modules/ethereum-cryptography/utils.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "crypto": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/hashes/utils.js"
-    ]
-  },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/rlp/dist/index.js": {
     "enable": true,
     "global": {
@@ -28053,6 +27834,7 @@
     "require": [
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/dist/index.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/types.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js"
     ]
   },
@@ -28066,8 +27848,8 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip2930Transaction.js": {
@@ -28080,26 +27862,8 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip4844Transaction.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    },
-    "require": [
-      "node_modules/@chainsafe/ssz/lib/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/constants.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/kzg/kzg.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/types.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/util.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/utils/blobHelpers.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/fromRpc.js": {
@@ -28113,12 +27877,9 @@
     "require": [
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip1559Transaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip2930Transaction.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip4844Transaction.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/kzg/kzg.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/legacyTransaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/transactionFactory.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/types.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/utils/blobHelpers.js"
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/types.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/legacyTransaction.js": {
@@ -28130,10 +27891,9 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/rlp/dist/index.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/baseTransaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/types.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/util.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/transactionFactory.js": {
@@ -28142,21 +27902,12 @@
       "Buffer": "r"
     },
     "require": [
-      "node_modules/@ethersproject/providers/lib.esm/index.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip1559Transaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip2930Transaction.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/eip4844Transaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/fromRpc.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/legacyTransaction.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js",
       "node_modules/buffer/index.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/types.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@chainsafe/ssz/lib/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/constants.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/util.js": {
@@ -28164,17 +27915,6 @@
     "require": [
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/types.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/index.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/utils/blobHelpers.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/dist/kzg/kzg.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/sha256.js",
-      "node_modules/buffer/index.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/account.js": {
@@ -28188,10 +27928,10 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/helpers.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/internal.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/ethereum-cryptography/utils.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/address.js": {
@@ -28225,8 +27965,8 @@
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/constants.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/helpers.js": {
@@ -28287,9 +28027,9 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/bytes.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/helpers.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/buffer/index.js"
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/dist/types.js": {
@@ -28311,30 +28051,6 @@
       "node_modules/buffer/index.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/hashes/sha3.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/curves/secp256k1.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/tx/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "crypto": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/hashes/utils.js"
-    ]
-  },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/account.js": {
     "enable": true,
     "global": {
@@ -28346,9 +28062,9 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/helpers.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/internal.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/secp256k1.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/utils.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js",
       "node_modules/buffer/index.js"
     ]
   },
@@ -28383,7 +28099,7 @@
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/constants.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
       "node_modules/buffer/index.js"
     ]
   },
@@ -28438,8 +28154,8 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/bytes.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/constants.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/helpers.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js",
       "node_modules/buffer/index.js"
     ]
   },
@@ -28467,6 +28183,76 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/bytes.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/dist/types.js",
       "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/_sha2.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/_assert.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/cryptoBrowser.js": {
+    "enable": true,
+    "global": {
+      "crypto": "r"
+    }
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/hmac.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/_assert.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/sha256.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/_sha2.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/sha3.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/_assert.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/_u64.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/utils.js": {
+    "enable": true,
+    "global": {
+      "TextEncoder": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/cryptoBrowser.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/keccak.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/sha3.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/secp256k1.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@noble/secp256k1/lib/index.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/hmac.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/sha256.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/ethereum-cryptography/utils.js": {
+    "enable": true,
+    "global": {
+      "TextDecoder": "r",
+      "crypto": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/_assert.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/util/node_modules/@noble/hashes/utils.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/dist/encryption.js": {
@@ -28519,7 +28305,7 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/dist/ethereumjs-abi-utils.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/dist/utils.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/@ethereumjs/util/dist/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/keccak.js",
       "node_modules/buffer/index.js",
       "node_modules/ethjs-util/lib/index.js"
     ]
@@ -28693,6 +28479,47 @@
       "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/hashes/utils.js"
     ]
   },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/keccak.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha3.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/cryptoBrowser.js": {
+    "enable": true,
+    "global": {
+      "crypto": "r"
+    }
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha3.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_u64.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js": {
+    "enable": true,
+    "global": {
+      "TextEncoder": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/cryptoBrowser.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/utils.js": {
+    "enable": true,
+    "global": {
+      "TextDecoder": "r",
+      "crypto": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
+      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@metamask/eth-sig-util/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
+    ]
+  },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@noble/curves/_shortw_utils.js": {
     "enable": true,
     "require": [
@@ -28799,83 +28626,6 @@
       "node_modules/tslib/tslib.es6.mjs"
     ]
   },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/keccak.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha3.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_sha2.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/cryptoBrowser.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/hmac.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha256.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_sha2.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha3.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_u64.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js": {
-    "enable": true,
-    "global": {
-      "TextEncoder": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/cryptoBrowser.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/secp256k1.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/secp256k1/lib/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/hmac.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha256.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/sha256.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/sha256.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/utils.js"
-    ]
-  },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/utils.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "crypto": "r"
-    },
-    "require": [
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/_assert.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/ethereum-cryptography/node_modules/@noble/hashes/utils.js"
-    ]
-  },
   "node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/cached.js": {
     "enable": true,
     "require": [
@@ -28975,9 +28725,9 @@
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/dist/src/index.js",
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/dist/src/utils/index.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/index.js",
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/ethers/node_modules/@ethersproject/address/lib.esm/index.js",
-      "node_modules/@safe-global/api-kit/dist/esm/index.mjs",
-      "node_modules/@safe-global/safe-deployments/dist/index.js"
+      "node_modules/@safe-global/api-kit/dist/esm/index.mjs"
     ]
   },
   "node_modules/@rabby-wallet/gnosis-sdk/dist/txService.js": {
@@ -29411,7 +29161,7 @@
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/dist/src/contracts/config.js": {
     "enable": true,
     "require": [
-      "node_modules/@safe-global/safe-deployments/dist/index.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/index.js",
       "node_modules/@safe-global/safe-modules-deployments/dist/index.js"
     ]
   },
@@ -29759,6 +29509,104 @@
     "require": [
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/viem/_cjs/chains/index.js",
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/viem/_cjs/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/accessors.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/deployments.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.2.0/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/create_call.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/simulate_tx_accessor.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/compatibility_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/create_call.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send_call_only.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_l2.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_migration.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_migration.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_setup.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/sign_message_lib.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/simulate_tx_accessor.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/compatibility_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/create_call.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/extensible_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/multi_send_call_only.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_l2.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_migration.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_to_l2_setup.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/sign_message_lib.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/simulate_tx_accessor.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/token_callback_handler.json"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/factories.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/handler.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/accessors.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/factories.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/handler.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/libs.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/safes.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/types.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/libs.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/safes.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/safe-deployments/dist/utils.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/semver/functions/satisfies.js"
     ]
   },
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/@safe-global/types-kit/dist/src/contracts/CompatibilityFallbackHandler/index.js": {
@@ -30151,6 +29999,213 @@
     "require": [
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/semver/internal/constants.js",
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/protocol-kit/node_modules/semver/internal/debug.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/accessors.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.0.0/proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/default_callback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.1.1/proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.2.0/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/compatibility_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/create_call.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe_l2.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/gnosis_safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send_call_only.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/sign_message_lib.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.3.0/simulate_tx_accessor.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/compatibility_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/create_call.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send_call_only.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_l2.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_migration.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_migration.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe_to_l2_setup.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/sign_message_lib.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.4.1/simulate_tx_accessor.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/compatibility_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/create_call.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/extensible_fallback_handler.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/multi_send_call_only.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/multi_send.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_l2.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_migration.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_proxy_factory.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe_to_l2_setup.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/safe.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/sign_message_lib.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/simulate_tx_accessor.json",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/assets/v1.5.0/token_callback_handler.json"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/factories.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/handler.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/accessors.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/factories.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/handler.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/libs.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/safes.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/types.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/libs.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/safes.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/deployments.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/dist/utils.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/comparator.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/lrucache.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/identifiers.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/parse-options.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/cmp.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/semver.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/eq.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gt.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/gte.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lt.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/lte.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/neq.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/compare.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/functions/satisfies.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/classes/range.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js": {
+    "enable": true,
+    "global": {
+      "console": "r",
+      "process": "r"
+    },
+    "require": [
+      "node_modules/process/browser.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/re.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/constants.js",
+      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@safe-global/safe-deployments/node_modules/semver/internal/debug.js"
     ]
   },
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/index.js": {
@@ -95451,6 +95506,7 @@
       "node_modules/lodash/lodash.js",
       "node_modules/react/index.js",
       "src/constant/ui.ts",
+      "src/db/constants.ts",
       "src/db/index.ts",
       "src/db/services/syncDbService.ts",
       "src/ui/utils/index.ts",

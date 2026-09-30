@@ -731,8 +731,20 @@ export async function calcGasLimit({
       ? singleTxGasLimit + ''
       : recommendGasLimit;
 
+  // dapp-provided gas beyond the block or single-tx limit can never be mined,
+  // so fall back to our estimate instead of honoring it
+  const dappGasLimit = rawAmountToBn(tx.gas || 0);
+  const dappGasLimitCap = BigNumber.min(
+    block?.gasLimit ?? Infinity,
+    TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Infinity
+  );
+  // NaN fails lte, so an invalid tx.gas also falls back
+  const usableDappGasLimit = dappGasLimit.lte(dappGasLimitCap)
+    ? dappGasLimit.toNumber()
+    : 0;
+
   const gasLimit = intToHex(
-    Math.max(Number(recommendGasLimit), Number(tx.gas || 0))
+    Math.max(Number(recommendGasLimit), usableDappGasLimit)
   );
 
   return {

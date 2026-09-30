@@ -2887,7 +2887,8 @@
       },
       "gasFee": "Gas 费用",
       "loginSuccess": "登录成功",
-      "loginFailed": "登录失败"
+      "loginFailed": "登录失败",
+      "signTextInvalid": "安全校验未通过：GasAccount 登录签名内容异常，请稍后重试"
     },
     "safeMessageQueue": {
       "loading": "正在加载消息",

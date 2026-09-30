@@ -20,6 +20,10 @@ import {
 } from '../weeklyCandles';
 
 const BRIDGE_CHANNEL = 'rabby-tradingview-bridge-v1';
+// Upper bound on how long resolveSymbol waits for a price-derived pxDecimals.
+// Past it the chart boots on the fallback precision and the late minTick
+// override corrects it, as before.
+const PX_DECIMALS_WAIT_MS = 3000;
 const DEFAULT_TRADINGVIEW_URL = process.env.DEBUG
   ? 'https://tradingview-test.vercel.app/'
   : 'https://tradingview.rabby.io/';
@@ -159,6 +163,10 @@ interface TradingViewIframeChartProps {
   coin: string;
   interval: PerpsInterval;
   pxDecimals: number;
+  // false while pxDecimals is still the price-less fallback; resolveSymbol
+  // holds its answer until it turns true so the axis never boots on a
+  // precision that is about to change
+  pxDecimalsReady?: boolean;
   isDarkTheme: boolean;
   locale: string;
   timezone: string;
@@ -354,6 +362,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
   coin,
   interval,
   pxDecimals,
+  pxDecimalsReady = true,
   isDarkTheme,
   locale,
   timezone,
@@ -428,6 +437,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     coin,
     interval,
     pxDecimals,
+    pxDecimalsReady,
     isDarkTheme,
     locale,
     timezone,
@@ -443,6 +453,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       coin,
       interval,
       pxDecimals,
+      pxDecimalsReady,
       isDarkTheme,
       locale,
       timezone,
@@ -456,6 +467,7 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     coin,
     interval,
     pxDecimals,
+    pxDecimalsReady,
     isDarkTheme,
     locale,
     timezone,
@@ -465,6 +477,13 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
     onLatestBar,
     onIntervalChange,
   ]);
+
+  // Declared after the stateRef sync so a woken resolveSymbol reads the
+  // current coin/pxDecimals. Each waiter settles itself once it is done.
+  const pxDecimalsWaitersRef = useRef(new Set<(force?: boolean) => boolean>());
+  useEffect(() => {
+    pxDecimalsWaitersRef.current.forEach((settle) => settle());
+  }, [coin, pxDecimals, pxDecimalsReady]);
 
   useEffect(() => {
     const sdk = getPerpsSDK();
@@ -726,6 +745,34 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
       return { ok: true };
     };
 
+    // TradingView samples pricescale once per resolveSymbol, so answering it
+    // with the price-less fallback makes the axis visibly re-tick when the
+    // first asset ctx lands (BTC: 1 decimal → 0). Wait while the requested
+    // symbol is still on that fallback — but only while it is still the
+    // parent's coin. Once the parent moves on, answer at once with the last
+    // precision seen for the requested symbol: never another coin's
+    // pricescale, and no stall ahead of the setSymbol that follows.
+    const resolvePxDecimals = (symbol: string) =>
+      new Promise<number>((resolve) => {
+        let symbolPxDecimals = stateRef.current.pxDecimals;
+        // Settling twice is harmless (the promise is already resolved), so
+        // the timeout is left to fire.
+        const settle = (force = false) => {
+          const current = stateRef.current;
+          const isRequestedCoin = current.coin === symbol;
+          if (isRequestedCoin) symbolPxDecimals = current.pxDecimals;
+          if (isRequestedCoin && !current.pxDecimalsReady && !force) {
+            return false;
+          }
+          pxDecimalsWaitersRef.current.delete(settle);
+          resolve(symbolPxDecimals);
+          return true;
+        };
+        if (settle()) return;
+        pxDecimalsWaitersRef.current.add(settle);
+        setTimeout(() => settle(true), PX_DECIMALS_WAIT_MS);
+      });
+
     const handleMessage = async (event: MessageEvent) => {
       const message = event.data as BridgeMessage;
       if (!message || message.channel !== BRIDGE_CHANNEL) return;
@@ -802,24 +849,38 @@ export const TradingViewIframeChart: React.FC<TradingViewIframeChartProps> = ({
             });
             break;
           case 'resolveSymbol':
-            respond(true, {
-              name: message.params?.symbol || stateRef.current.coin,
-              ticker: message.params?.symbol || stateRef.current.coin,
-              description: message.params?.symbol || stateRef.current.coin,
-              type: 'crypto',
-              session: '24x7',
-              timezone: stateRef.current.timezone,
-              // exchange: 'Hyperliquid',
-              // listed_exchange: 'Hyperliquid',
-              minmov: 1,
-              pricescale: 10 ** Math.max(stateRef.current.pxDecimals, 0),
-              has_intraday: true,
-              has_weekly_and_monthly: true,
-              supported_resolutions: SUPPORTED_RESOLUTIONS,
-              intraday_multipliers: ['1', '5', '15', '30', '60', '240', '480'],
-              data_status: 'streaming',
-              volume_precision: 2,
-            });
+            {
+              // Bound before the wait: the answer describes the symbol that
+              // was asked for, not whatever the parent shows by then.
+              const symbol = message.params?.symbol || stateRef.current.coin;
+              const pxDecimals = await resolvePxDecimals(symbol);
+              respond(true, {
+                name: symbol,
+                ticker: symbol,
+                description: symbol,
+                type: 'crypto',
+                session: '24x7',
+                timezone: stateRef.current.timezone,
+                // exchange: 'Hyperliquid',
+                // listed_exchange: 'Hyperliquid',
+                minmov: 1,
+                pricescale: 10 ** Math.max(pxDecimals, 0),
+                has_intraday: true,
+                has_weekly_and_monthly: true,
+                supported_resolutions: SUPPORTED_RESOLUTIONS,
+                intraday_multipliers: [
+                  '1',
+                  '5',
+                  '15',
+                  '30',
+                  '60',
+                  '240',
+                  '480',
+                ],
+                data_status: 'streaming',
+                volume_precision: 2,
+              });
+            }
             break;
           case 'getBars':
             {
