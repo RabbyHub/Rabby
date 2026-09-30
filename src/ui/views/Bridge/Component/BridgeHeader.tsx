@@ -1,4 +1,5 @@
 import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history-cc.svg';
+import { ReactComponent as RcIconHistoryPending } from '@/ui/assets/bridge/IconHistoryPendingCC.svg';
 
 import { PageHeader } from '@/ui/component';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -10,7 +11,6 @@ import { RabbyFeePopup } from '../../Swap/Component/RabbyFeePopup';
 import { getUiType } from '@/ui/utils';
 import { useHistory } from 'react-router-dom';
 import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
-import { SvgPendingSpin } from 'ui/assets';
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
 
@@ -82,14 +82,10 @@ export const Header = ({
                 className="relative hit-slop-8 cursor-pointer text-r-neutral-title1 hover:text-r-blue-default"
                 onClick={openHistory}
               >
-                <RcIconHistory />
-                {showPending && (
-                  <span className="pointer-events-none absolute -bottom-4 -right-4 flex h-14 w-14 items-center justify-center">
-                    <SvgPendingSpin
-                      className="h-12 w-12 animate-spin text-r-orange-default [&_path]:stroke-current"
-                      style={{ animation: 'spin 1.5s linear infinite' }}
-                    />
-                  </span>
+                {showPending ? (
+                  <RcIconHistoryPending className="block [&_[data-pending-ring]]:animate-spin [&_[data-pending-ring]]:[animation-duration:1.5s]" />
+                ) : (
+                  <RcIconHistory />
                 )}
               </div>
             </div>

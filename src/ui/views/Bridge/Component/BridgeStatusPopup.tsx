@@ -134,12 +134,14 @@ const StepCard = ({
       : status === 'failed' || dimCompleted
       ? 'text-r-neutral-title-1 opacity-50'
       : 'text-r-neutral-title-1';
-  const amountTone =
-    amountFade === '40'
-      ? 'opacity-40'
-      : amountFade === '50'
-      ? 'opacity-50'
-      : '';
+  const dimAssetRow = status === 'failed' || dimCompleted;
+  const amountTone = dimAssetRow
+    ? ''
+    : amountFade === '40'
+    ? 'opacity-40'
+    : amountFade === '50'
+    ? 'opacity-50'
+    : '';
 
   return (
     <div className="flex w-full flex-col overflow-hidden rounded-[8px] bg-r-neutral-card-1">
@@ -154,7 +156,7 @@ const StepCard = ({
         className={clsx(
           'flex h-[48px] items-center justify-between',
           status === 'refund' ? 'px-[16px]' : 'px-[12px]',
-          dimCompleted && 'opacity-50'
+          dimAssetRow && 'opacity-50'
         )}
       >
         <div className="flex items-center gap-[10px]">
@@ -263,52 +265,59 @@ export const BridgeStatusPopup = ({
       <div className="flex h-[52px] shrink-0 items-center justify-center text-center text-20 font-medium text-r-neutral-title-1">
         {title}
       </div>
-      <div className="min-h-0 flex-1 overflow-y-auto pb-[16px]">
-        <StepCard
-          index={1}
-          title={t('page.bridge.pendingItem.sendingFrom', {
-            chain: fromChain?.name || '',
-          })}
-          status={popup.step1}
-          token={data.fromToken}
-          amount={data.fromAmount}
-          usd={usdOf(data.fromAmount, data.fromToken?.price)}
-          sign="-"
-          amountFade={popup.step1 === 'failed' ? '50' : undefined}
-          dimCompleted={
-            popup.step1 === 'completed' && popup.step2 !== 'completed'
-          }
-        />
-        <StepArrow compact={!!popup.step3 || popup.step2 === 'refund'} />
-        <StepCard
-          index={2}
-          title={t('page.bridge.pendingItem.receivingTo', {
-            chain: toChain?.name || '',
-          })}
-          status={popup.step2}
-          token={receiveToken}
-          amount={receiveAmount}
-          usd={usdOf(receiveAmount, receiveToken?.price)}
-          sign="+"
-          amountFade={receiveFade}
-          approx={popup.step2 !== 'completed' && popup.step2 !== 'refund'}
-        />
-        {popup.step3 && (
-          <>
-            <StepArrow compact />
-            <StepCard
-              index={3}
-              title={t('page.bridge.pendingItem.receivingTo', {
-                chain: refundChain?.name || '',
-              })}
-              status="refund"
-              token={data.actualToToken}
-              amount={data.actualToAmount}
-              usd={usdOf(data.actualToAmount, data.actualToToken?.price)}
-              sign="+"
-            />
-          </>
+      <div
+        className={clsx(
+          'min-h-0 flex-1 overflow-y-auto pb-4',
+          popup.step3 && 'flex flex-col-reverse'
         )}
+      >
+        <div className="shrink-0">
+          <StepCard
+            index={1}
+            title={t('page.bridge.pendingItem.sendingFrom', {
+              chain: fromChain?.name || '',
+            })}
+            status={popup.step1}
+            token={data.fromToken}
+            amount={data.fromAmount}
+            usd={usdOf(data.fromAmount, data.fromToken?.price)}
+            sign="-"
+            amountFade={popup.step1 === 'failed' ? '50' : undefined}
+            dimCompleted={
+              popup.step1 === 'completed' && popup.step2 !== 'completed'
+            }
+          />
+          <StepArrow compact={!!popup.step3 || popup.step2 === 'refund'} />
+          <StepCard
+            index={2}
+            title={t('page.bridge.pendingItem.receivingTo', {
+              chain: toChain?.name || '',
+            })}
+            status={popup.step2}
+            token={receiveToken}
+            amount={receiveAmount}
+            usd={usdOf(receiveAmount, receiveToken?.price)}
+            sign="+"
+            amountFade={receiveFade}
+            approx={popup.step2 !== 'completed' && popup.step2 !== 'refund'}
+          />
+          {popup.step3 && (
+            <>
+              <StepArrow compact />
+              <StepCard
+                index={3}
+                title={t('page.bridge.pendingItem.receivingTo', {
+                  chain: refundChain?.name || '',
+                })}
+                status="refund"
+                token={data.actualToToken}
+                amount={data.actualToAmount}
+                usd={usdOf(data.actualToAmount, data.actualToToken?.price)}
+                sign="+"
+              />
+            </>
+          )}
+        </div>
       </div>
       <div className="shrink-0">
         <PopupCaption popup={popup} data={data} />
