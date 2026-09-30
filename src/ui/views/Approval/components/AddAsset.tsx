@@ -373,7 +373,7 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
   const getTokenHistory = async (token: TokenItem) => {
     const currentAccount = account;
     if (!currentAccount) return;
-    const history = await wallet.openapi.listTxHisotry({
+    const history = await wallet.openapi.listTxHistory({
       id: currentAccount.address,
       chain_id: token.chain,
       page_count: 10,
