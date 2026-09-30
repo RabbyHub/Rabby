@@ -2,7 +2,7 @@ import { ReactComponent as RcIconHistory } from '@/ui/assets/swap/history-cc.svg
 import { ReactComponent as RcIconHistoryPending } from '@/ui/assets/bridge/IconHistoryPendingCC.svg';
 
 import { PageHeader } from '@/ui/component';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useSetSettingVisible, useSettingVisible } from '../hooks';
 import { BridgeTxHistory } from './BridgeHistory';
 import { useTranslation } from 'react-i18next';

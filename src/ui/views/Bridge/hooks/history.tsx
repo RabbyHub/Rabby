@@ -16,7 +16,6 @@ export const useBridgeHistory = () => {
   const refreshBridgeListTx = React.useCallback(() => {
     setRefreshListTx((e) => e + 1);
   }, []);
-  const isInBridge = true;
 
   const wallet = useWallet();
   const getBridgeHistoryList = React.useCallback(
@@ -54,14 +53,13 @@ export const useBridgeHistory = () => {
         5
       ),
     {
-      reloadDeps: [isInBridge],
       isNoMore(data) {
         if (data) {
           return data?.list.length >= data?.totalCount;
         }
         return true;
       },
-      manual: !isInBridge || !addr,
+      manual: !addr,
     }
   );
 
@@ -94,18 +92,17 @@ export const useBridgeHistory = () => {
   const [inViewport] = useInViewport(ref);
 
   useEffect(() => {
-    if (!noMore && inViewport && !loadingMore && loadMore && isInBridge) {
+    if (!noMore && inViewport && !loadingMore && loadMore) {
       loadMore();
     }
-  }, [inViewport, loadMore, loading, loadingMore, noMore, isInBridge]);
+  }, [inViewport, loadMore, loading, loadingMore, noMore]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (
       !loading &&
       !loadingMore &&
-      txList?.list?.some((e) => e.status === 'pending') &&
-      isInBridge
+      txList?.list?.some((e) => e.status === 'pending')
     ) {
       timer = setTimeout(refreshBridgeListTx, 2000);
     }
@@ -114,7 +111,7 @@ export const useBridgeHistory = () => {
         clearTimeout(timer);
       }
     };
-  }, [loading, loadingMore, refreshBridgeListTx, txList?.list, isInBridge]);
+  }, [loading, loadingMore, refreshBridgeListTx, txList?.list]);
 
   return {
     loading,

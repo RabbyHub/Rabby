@@ -113,7 +113,6 @@ const StepCard = ({
   amount,
   usd,
   sign,
-  amountFade,
   approx,
   dimCompleted = false,
 }: {
@@ -124,7 +123,6 @@ const StepCard = ({
   amount?: number;
   usd?: string;
   sign: '+' | '-';
-  amountFade?: '40' | '50';
   approx?: boolean;
   dimCompleted?: boolean;
 }) => {
@@ -135,13 +133,7 @@ const StepCard = ({
       ? 'text-r-neutral-title-1 opacity-50'
       : 'text-r-neutral-title-1';
   const dimAssetRow = status === 'failed' || dimCompleted;
-  const amountTone = dimAssetRow
-    ? ''
-    : amountFade === '40'
-    ? 'opacity-40'
-    : amountFade === '50'
-    ? 'opacity-50'
-    : '';
+  const amountTone = !dimAssetRow && status === 'queued' ? 'opacity-40' : '';
 
   return (
     <div className="flex w-full flex-col overflow-hidden rounded-[8px] bg-r-neutral-card-1">
@@ -252,14 +244,6 @@ export const BridgeStatusPopup = ({
     completed: t('page.bridge.pendingItem.popupCompleted'),
   }[popup.title];
 
-  // 等待到账时不淡化金额；排队和失败时淡化。
-  const receiveFade =
-    popup.step2 === 'queued'
-      ? '40'
-      : popup.step2 === 'failed'
-      ? '50'
-      : undefined;
-
   return (
     <div className="flex h-[440px] w-full shrink-0 flex-col px-[20px] pb-[20px]">
       <div className="flex h-[52px] shrink-0 items-center justify-center text-center text-20 font-medium text-r-neutral-title-1">
@@ -282,7 +266,6 @@ export const BridgeStatusPopup = ({
             amount={data.fromAmount}
             usd={usdOf(data.fromAmount, data.fromToken?.price)}
             sign="-"
-            amountFade={popup.step1 === 'failed' ? '50' : undefined}
             dimCompleted={
               popup.step1 === 'completed' && popup.step2 !== 'completed'
             }
@@ -298,7 +281,6 @@ export const BridgeStatusPopup = ({
             amount={receiveAmount}
             usd={usdOf(receiveAmount, receiveToken?.price)}
             sign="+"
-            amountFade={receiveFade}
             approx={popup.step2 !== 'completed' && popup.step2 !== 'refund'}
           />
           {popup.step3 && (

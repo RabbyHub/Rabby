@@ -21,8 +21,6 @@ type LookupItem = {
   id: string;
   cate_id?: string | null;
   is_scam?: boolean;
-  sends?: unknown[] | null;
-  token_approve?: unknown;
   chain: string;
   owner_addr?: string;
   tx?: { from_addr?: string } | null;
