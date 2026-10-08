@@ -2846,7 +2846,8 @@
       "lowBalance": "你的 Gas 不足（＜$1.00）。充值 Gas 以確保後續交易順利進行。",
       "gasBalance": "Gas 餘額",
       "loginSuccess": "登入成功",
-      "loginFailed": "登入失敗"
+      "loginFailed": "登入失敗",
+      "signTextInvalid": "安全校驗未通過：GasAccount 登入簽名內容異常，請稍後重試"
     },
     "safeMessageQueue": {
       "noData": "沒有訊息",

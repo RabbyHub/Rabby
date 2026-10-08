@@ -2801,7 +2801,8 @@
       "lowBalance": "ガスが十分ではありません（<$1.00）。今後の取引が滞りなく行われるよう、ガスを入金してください。",
       "gasBalance": "ガス残高",
       "loginSuccess": "ログイン成功",
-      "loginFailed": "ログイン失敗"
+      "loginFailed": "ログイン失敗",
+      "signTextInvalid": "セキュリティチェックに失敗しました：GasAccount のログインメッセージが不正です。後でもう一度お試しください"
     },
     "safeMessageQueue": {
       "loading": "メッセージを読み込み中",

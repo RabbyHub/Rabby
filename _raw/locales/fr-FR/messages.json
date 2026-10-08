@@ -3143,7 +3143,8 @@
       "lowBalance": "Vous n'avez pas assez de gas (＜ 1,00 $). Déposez du gas pour assurer le bon déroulement de vos prochaines transactions.",
       "gasBalance": "Solde de gas",
       "loginSuccess": "Connexion réussie",
-      "loginFailed": "Échec de la connexion"
+      "loginFailed": "Échec de la connexion",
+      "signTextInvalid": "Échec de la vérification de sécurité : le message de connexion GasAccount est invalide. Veuillez réessayer plus tard"
     },
     "safeMessageQueue": {
       "noData": "Aucun message",

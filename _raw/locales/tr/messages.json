@@ -2804,7 +2804,8 @@
       "lowBalance": "Gazınız yetmiyor (＜$1.00). Gelecekteki işlemlerin sorunsuz ilerlemesini sağlamak için gaz yatırın.",
       "gasBalance": "Gas bakiyesi",
       "loginSuccess": "Giriş başarılı",
-      "loginFailed": "Giriş başarısız"
+      "loginFailed": "Giriş başarısız",
+      "signTextInvalid": "Güvenlik kontrolü başarısız: GasAccount giriş mesajı geçersiz. Lütfen daha sonra tekrar deneyin"
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
