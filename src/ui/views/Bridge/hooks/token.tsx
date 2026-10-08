@@ -24,7 +24,12 @@ import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import eventBus from '@/eventBus';
-import { bridgeQuoteScore } from '../utils/bridgeQuote';
+import {
+  bridgeQuoteScore,
+  formatBridgeSlippageRatio,
+  getBridgePayTokenRawAmount,
+  isSameBridgeQuote,
+} from '../utils/bridgeQuote';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getRabbyFeeInfo } from '@/ui/views/Swap/hooks/fee';
@@ -44,10 +49,6 @@ const isValidBridgeQuote = (quote?: Omit<BridgeQuote, 'tx'>) =>
   !!quote.bridge.id &&
   !!quote.bridge.logo_url &&
   !!quote.bridge.name;
-
-const getBridgeQuoteKey = (
-  quote: Pick<SelectedBridgeQuote, 'aggregator' | 'bridge_id'>
-) => `${quote.aggregator.id}-${quote.bridge_id}`;
 
 const isBridgeQuoteSelectable = (quote: SelectedBridgeQuote) =>
   !quote.loading && isValidBridgeQuote(quote);
@@ -551,9 +552,8 @@ export const useBridge = () => {
         };
 
         setQuotesList((e) => {
-          const quoteKey = getBridgeQuoteKey(quoteWithApproval);
           const filteredArr = e.filter(
-            (item) => getBridgeQuoteKey(item) !== quoteKey
+            (item) => !isSameBridgeQuote(item, quoteWithApproval)
           );
           return [...filteredArr, quoteWithApproval];
         });
@@ -575,15 +575,10 @@ export const useBridge = () => {
                       .times(10 ** alternativeToken.decimals)
                       .toFixed(0, 1)
                       .toString()
-                  : new BigNumber(amount)
-                      .times(10 ** fromToken.decimals)
-                      .toFixed(0, 1)
-                      .toString(),
+                  : getBridgePayTokenRawAmount(amount, fromToken.decimals),
                 toChainId: toToken.chain,
                 toTokenId: toToken.id,
-                slippage: new BigNumber(slippageObj.slippageState)
-                  .div(100)
-                  .toString(10),
+                slippage: formatBridgeSlippageRatio(slippageObj.slippage),
                 feeRate: Number(feeRate),
               },
               wallet.openapi
@@ -642,10 +637,10 @@ export const useBridge = () => {
                 user_addr: userAddress,
                 from_chain_id: fromToken.chain,
                 from_token_id: fromToken.id,
-                from_token_amount: new BigNumber(amount)
-                  .times(10 ** fromToken.decimals)
-                  .toFixed(0, 1)
-                  .toString(),
+                from_token_amount: getBridgePayTokenRawAmount(
+                  amount,
+                  fromToken.decimals
+                ),
                 to_chain_id: toToken.chain,
                 to_token_id: toToken.id,
               }
@@ -837,8 +832,8 @@ export const useBridge = () => {
 
       setOriSelectedBridgeQuote((preItem) => {
         const refreshedManualQuote = preItem?.manualClick
-          ? selectableBridgeQuoteList.find(
-              (quote) => getBridgeQuoteKey(quote) === getBridgeQuoteKey(preItem)
+          ? selectableBridgeQuoteList.find((quote) =>
+              isSameBridgeQuote(quote, preItem)
             )
           : undefined;
 
