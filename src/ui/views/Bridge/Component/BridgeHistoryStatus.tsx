@@ -389,7 +389,7 @@ export const BridgeHistoryStatus = ({
           )}
         >
           <HeaderIcon header={detail.header} />
-          <span className="h-[16px] text-[13px] font-510 leading-[16px]">
+          <span className="h-[16px] text-[13px] leading-[16px]">
             {headerLabel(detail, t)}
           </span>
         </div>

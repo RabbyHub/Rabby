@@ -1,5 +1,6 @@
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { isSameAddress } from '@/ui/utils';
+import { formatEstimateClock } from './duration';
 
 export const BRIDGE_PROGRESS_COUNTDOWN_MIN_SECONDS = 5;
 export const BRIDGE_PROGRESS_DELAY_MS = 30 * 60 * 1000;
@@ -75,7 +76,9 @@ export type BridgePopupState = {
 };
 
 const formatEta = (remainingSeconds: number) =>
-  `${Math.max(0, Math.ceil(remainingSeconds))}s`;
+  remainingSeconds > 60
+    ? formatEstimateClock(remainingSeconds, true)
+    : `${Math.max(0, Math.ceil(remainingSeconds))}s`;
 
 const refundDetails = (item: BridgeTxHistoryItem) => {
   const txId = item.toTxId;

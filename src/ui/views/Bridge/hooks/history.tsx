@@ -6,6 +6,7 @@ import { uniqBy } from 'lodash';
 import { useWallet } from '@/ui/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import { refreshBridgeHistoryTop10 } from '../utils/historyCache';
 
 export const useBridgeHistory = () => {
   const addr = useRabbySelector(
@@ -20,22 +21,25 @@ export const useBridgeHistory = () => {
   const wallet = useWallet();
   const getBridgeHistoryList = React.useCallback(
     async (addr: string, start = 0, limit = 5) => {
-      const data = await wallet.openapi.getBridgeHistoryList({
-        user_addr: addr,
-        start: start,
-        limit: limit,
-        is_all: true,
-      });
+      const data =
+        start === 0
+          ? await refreshBridgeHistoryTop10(wallet, addr)
+          : await wallet.openapi.getBridgeHistoryList({
+              user_addr: addr,
+              start,
+              limit,
+              is_all: true,
+            });
       if (data?.history_list && start === 0) {
         eventBus.emit(EVENTS.BRIDGE_HISTORY_UPDATED, data.history_list);
       }
       return {
-        list: data?.history_list,
+        list: data?.history_list?.slice(0, limit),
         last: data,
         totalCount: data?.total_cnt,
       };
     },
-    [wallet?.openapi?.getBridgeHistoryList]
+    [wallet]
   );
 
   const {

@@ -6,12 +6,6 @@ import {
   bridgeRemoteSourceCompleteTs,
 } from './remoteFromTx';
 
-export const BRIDGE_PENDING_HISTORY_QUERY = {
-  start: 0,
-  limit: 10,
-  is_all: true,
-} as const;
-
 export const isBridgePendingExpired = (createdAt?: number, now = Date.now()) =>
   !!createdAt && now - createdAt > ONE_DAY_MS;
 
@@ -58,8 +52,11 @@ export const resolveBridgePendingFromHistoryList = (
     return { kind: 'keep' };
   }
 
-  const matchHash = local.acceleratedHash || local.hash;
-  const findTx = list.find((item) => item.from_tx?.tx_id === matchHash);
+  // 优先加速交易，未找到时回退原交易。
+  const findTx =
+    (local.acceleratedHash
+      ? list.find((item) => item.from_tx?.tx_id === local.acceleratedHash)
+      : undefined) || list.find((item) => item.from_tx?.tx_id === local.hash);
 
   if (!findTx) {
     if (now - local.createdAt > ONE_HOUR_MS) {
