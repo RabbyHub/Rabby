@@ -159,7 +159,8 @@ const StepCard = ({
               amountTone
             )}
           >
-            {sign} {formatTokenAmount(amount || 0)} {getTokenSymbol(token)}
+            {sign} {approx ? '≈' : ''}
+            {formatTokenAmount(amount || 0)} {getTokenSymbol(token)}
           </span>
         </div>
         <span
