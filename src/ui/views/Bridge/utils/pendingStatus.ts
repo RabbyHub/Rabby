@@ -58,8 +58,11 @@ export const resolveBridgePendingFromHistoryList = (
     return { kind: 'keep' };
   }
 
-  const matchHash = local.acceleratedHash || local.hash;
-  const findTx = list.find((item) => item.from_tx?.tx_id === matchHash);
+  // 优先加速交易，未找到时回退原交易。
+  const findTx =
+    (local.acceleratedHash
+      ? list.find((item) => item.from_tx?.tx_id === local.acceleratedHash)
+      : undefined) || list.find((item) => item.from_tx?.tx_id === local.hash);
 
   if (!findTx) {
     if (now - local.createdAt > ONE_HOUR_MS) {
