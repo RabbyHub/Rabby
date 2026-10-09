@@ -3315,6 +3315,14 @@
           "creatorFee": "Taxas do criador ({{fee}}%)",
           "platformFee": "Taxas da plataforma Opensea ({{fee}}%)"
         },
+        "verifyError": {
+          "unsupportedChain": "A negociação de NFT ainda não é suportada nesta rede",
+          "currency": "Falha na verificação de segurança: o token de pagamento não corresponde ao esperado",
+          "nft": "Falha na verificação de segurança: o NFT da ordem não corresponde ao que você selecionou",
+          "amount": "Falha na verificação de segurança: o valor que você receberia não corresponde ao exibido",
+          "recipient": "Falha na verificação de segurança: os fundos não seriam enviados para o seu endereço",
+          "invalid": "Falha na verificação de segurança: os dados da ordem são inválidos. Tente novamente mais tarde"
+        },
         "all": "Todos",
         "confirmingTx": "Confirmando sua transação",
         "hideLowValue": "Ocultar NFTs de Baixo Valor",

@@ -4489,6 +4489,14 @@
           "rabbyFee": "Rabby fee (0%)",
           "totalEst": "Total est. proceeds",
           "acceptOffer": "Accept Offer"
+        },
+        "verifyError": {
+          "unsupportedChain": "NFT trading is not supported on this chain yet",
+          "currency": "Security check failed: the payment token doesn't match the expected token",
+          "nft": "Security check failed: the NFT in the order doesn't match the one you selected",
+          "amount": "Security check failed: the amount you'd receive doesn't match what's shown",
+          "recipient": "Security check failed: the proceeds would not be sent to your address",
+          "invalid": "Security check failed: the order data is invalid. Please try again later"
         }
       }
     },

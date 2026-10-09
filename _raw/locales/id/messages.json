@@ -3310,6 +3310,14 @@
           "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
           "creatorFee": "Biaya pencipta ({{fee}}%)"
         },
+        "verifyError": {
+          "unsupportedChain": "Perdagangan NFT belum didukung di chain ini",
+          "currency": "Pemeriksaan keamanan gagal: token pembayaran tidak sesuai dengan yang diharapkan",
+          "nft": "Pemeriksaan keamanan gagal: NFT dalam order tidak sesuai dengan yang Anda pilih",
+          "amount": "Pemeriksaan keamanan gagal: jumlah yang akan Anda terima tidak sesuai dengan yang ditampilkan",
+          "recipient": "Pemeriksaan keamanan gagal: hasil penjualan tidak akan dikirim ke alamat Anda",
+          "invalid": "Pemeriksaan keamanan gagal: data order tidak valid. Silakan coba lagi nanti"
+        },
         "empty": "Tidak ada NFT",
         "all": "Semua",
         "confirmingTx": "Mengonfirmasi transaksi Anda",

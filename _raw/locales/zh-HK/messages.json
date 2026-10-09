@@ -3360,6 +3360,14 @@
           "creatorFeeTips1": "創作者收益將由賣方支付。創作者收益是強制執行的。",
           "creatorFee": "創作者費用（{{fee}}%）"
         },
+        "verifyError": {
+          "unsupportedChain": "該鏈暫不支援 NFT 交易",
+          "currency": "安全校驗未通過：收款代幣與預期不符",
+          "nft": "安全校驗未通過：訂單中的 NFT 與你選擇的不一致",
+          "amount": "安全校驗未通過：實際到賬金額與頁面顯示不符",
+          "recipient": "安全校驗未通過：收款地址不是你的地址",
+          "invalid": "安全校驗未通過：訂單數據異常，請稍後重試"
+        },
         "hideLowValue": "隱藏低價值 NFT",
         "pending": "待處理",
         "confirmingTx": "正在確認你的交易",
