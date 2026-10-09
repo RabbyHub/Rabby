@@ -554,7 +554,8 @@ export const verifyAcceptOfferTx = ({
         denominator: BigInt(1),
         criteriaResolvers: [],
         fulfillerConduitKey: args[1],
-        recipient: args[2],
+        // fulfillOrder has no recipient param, offer items go to msg.sender
+        recipient: account,
         nftContract: nft.contract,
       });
       break;

@@ -310,6 +310,78 @@ describe('verifyAcceptOfferTx', () => {
     expect(verify(advancedTx()).received).toBe(ONE_ETH - fee);
   });
 
+  // fulfillOrder(order, fulfillerConduitKey) has no recipient argument
+  const fulfillOrderTx = ({
+    identifier = BigInt(42),
+    offerToken = WETH,
+  }: { identifier?: bigint; offerToken?: string } = {}) => ({
+    to: CROSS_CHAIN_SEAPORT_V1_6_ADDRESS,
+    value: 0,
+    data: encodeFunctionData({
+      abi: SeaportABI as any,
+      functionName: 'fulfillOrder',
+      args: [
+        {
+          parameters: {
+            offerer: OFFERER,
+            zone: zeroAddress,
+            offer: [
+              {
+                itemType: ItemType.ERC20,
+                token: offerToken,
+                identifierOrCriteria: BigInt(0),
+                startAmount: ONE_ETH,
+                endAmount: ONE_ETH,
+              },
+            ],
+            consideration: [
+              {
+                itemType: ItemType.ERC721,
+                token: NFT,
+                identifierOrCriteria: identifier,
+                startAmount: BigInt(1),
+                endAmount: BigInt(1),
+                recipient: OFFERER,
+              },
+              {
+                itemType: ItemType.ERC20,
+                token: offerToken,
+                identifierOrCriteria: BigInt(0),
+                startAmount: fee,
+                endAmount: fee,
+                recipient: OS_FEE,
+              },
+            ],
+            orderType: 0,
+            startTime: BigInt(0),
+            endTime: BigInt(2) ** BigInt(40),
+            zoneHash: zeroHash,
+            salt: BigInt(1),
+            conduitKey: OPENSEA_CONDUIT_KEY,
+            totalOriginalConsiderationItems: BigInt(2),
+          },
+          signature: '0x',
+        },
+        OPENSEA_CONDUIT_KEY,
+      ],
+    }),
+  });
+
+  it('passes for fulfillOrder', () => {
+    expect(verify(fulfillOrderTx()).received).toBe(ONE_ETH - fee);
+  });
+
+  it('rejects a tampered fulfillOrder', () => {
+    expectVerifyError(
+      () => verify(fulfillOrderTx({ identifier: BigInt(7) })),
+      'NFT id mismatch'
+    );
+    expectVerifyError(
+      () => verify(fulfillOrderTx({ offerToken: FAKE_TOKEN })),
+      'unexpected offer token'
+    );
+  });
+
   it('rejects a non-Seaport target or native value', () => {
     expectVerifyError(
       () => verify({ ...basicTx(), to: ATTACKER }),
