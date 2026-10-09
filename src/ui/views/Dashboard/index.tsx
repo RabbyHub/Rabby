@@ -32,12 +32,20 @@ import {
 import { ExtensionUpdateBanner } from './components/ExtensionUpdateBanner';
 import { FirstNoticeDialog } from './components/FirstNoticeDialog';
 import { useExtensionVersionInfo } from '@/ui/hooks/useExtensionVersionInfo';
+import { refreshBridgeHistoryTop10 } from '@/ui/views/Bridge/utils/historyCache';
 
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
   const currentAccount = useCurrentAccount();
+  const address = currentAccount?.address;
+  useEffect(() => {
+    if (!address) return;
+    refreshBridgeHistoryTop10(wallet, address).catch(() => {
+      // 预热失败，下次请求重试。
+    });
+  }, [address, wallet]);
   const { refreshDiscovery } = useGasAccountDiscovery({
     autoRefresh: false,
   });
