@@ -50,6 +50,11 @@ import {
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import extensionUpdateService from 'background/service/extensionUpdate';
+import {
+  clearWalletConnectTransportError,
+  getWalletConnectTransportErrorCode,
+  reportWalletConnectTransportError,
+} from 'background/utils/walletconnectTransportError';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -3844,6 +3849,9 @@ export class WalletController extends BaseController {
     }
   };
 
+  getWalletConnectTransportErrorCode = () =>
+    getWalletConnectTransportErrorCode();
+
   getWalletConnectStatus = (address: string, brandName: string) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
@@ -3968,17 +3976,14 @@ export class WalletController extends BaseController {
         }
       );
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
+        clearWalletConnectTransportError();
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
           params: { uri },
         });
       });
 
-      keyring.on('transport_error', (data) => {
-        Sentry.captureException(
-          new Error('Transport error: ' + JSON.stringify(data))
-        );
-      });
+      keyring.on('transport_error', reportWalletConnectTransportError);
 
       keyring.on('statusChange', (data) => {
         eventBus.emit(EVENTS.broadcastToUI, {

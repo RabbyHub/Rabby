@@ -1850,6 +1850,7 @@
         "haveOneKey": "Ainda não tem um OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "O WalletConnect não consegue ligar-se porque a hora do seu computador não está sincronizada. Ative a definição automática da data e hora e tente novamente.",
         "status": {
           "accountError": "Endereço não corresponde.",
           "accountErrorDesc": "Mude o endereço na sua carteira móvel",
