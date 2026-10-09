@@ -1,4 +1,4 @@
-import { EVENTS, KEYRING_CLASS } from '@/constant';
+import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { noop, useCommonPopupView, useWallet } from '@/ui/utils';
 import React from 'react';
@@ -53,7 +53,6 @@ export const ReconnectView: React.FC = () => {
     setCurrentAccount({
       ...account,
       brandName: account.realBrandName || account.brandName,
-      type: KEYRING_CLASS.WALLETCONNECT,
     });
     setPopupViewTitle(
       t('page.newAddress.walletConnect.title', { brandName: displayBrandName })

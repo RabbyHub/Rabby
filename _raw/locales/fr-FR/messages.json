@@ -1576,6 +1576,7 @@
         "title": "Impossible d'importer"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect ne peut pas se connecter car l’heure de votre ordinateur n’est pas synchronisée. Activez le réglage automatique de la date et de l’heure, puis réessayez.",
         "button": {
           "connect": "Connecter",
           "disconnect": "Déconnecter",

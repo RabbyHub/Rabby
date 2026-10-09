@@ -717,6 +717,7 @@
         "haveOneKey": "還沒有 OneKey？"
       },
       "walletConnect": {
+        "clockSkewError": "電腦時間與伺服器不一致，WalletConnect 無法連線。請開啟系統自動設定日期和時間，然後重試。",
         "connectYour": "連接你的",
         "viaWalletConnect": "透過 WalletConnect",
         "connectedSuccessfully": "連接成功",

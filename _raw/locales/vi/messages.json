@@ -1850,6 +1850,7 @@
         "haveOneKey": "Chưa có OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect không thể kết nối vì thời gian trên máy tính của bạn không đồng bộ. Hãy bật cài đặt ngày và giờ tự động, rồi thử lại.",
         "status": {
           "default": "Quét với {{brand}}",
           "brandError": "Ứng dụng ví sai.",

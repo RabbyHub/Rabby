@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect kann keine Verbindung herstellen, weil die Uhrzeit deines Computers nicht synchronisiert ist. Aktiviere die automatische Einstellung von Datum und Uhrzeit und versuche es erneut.",
         "connectYour": "Verbinden Sie Ihre",
         "viaWalletConnect": "über WalletConnect",
         "connectedSuccessfully": "Erfolgreich verbunden",

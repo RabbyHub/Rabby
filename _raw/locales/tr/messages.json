@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "Bilgisayarınızın saati senkronize olmadığı için WalletConnect bağlanamıyor. Otomatik tarih ve saat ayarını etkinleştirip tekrar deneyin.",
         "connectYour": "Bağla",
         "viaWalletConnect": "Wallet Connect ile",
         "connectedSuccessfully": "Başarıyla Bağlandı",

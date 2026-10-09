@@ -3181,6 +3181,7 @@
         "haveOneKey": "Don't have a OneKey yet?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect cannot connect because your computer time is out of sync. Enable automatic date and time, then retry.",
         "connectYour": "Connect your",
         "viaWalletConnect": "via Wallet Connect",
         "connectedSuccessfully": "Connected successfully",

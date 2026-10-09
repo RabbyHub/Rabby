@@ -1850,6 +1850,7 @@
         "haveOneKey": "Belum memiliki OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect tidak dapat terhubung karena waktu komputer Anda tidak sinkron. Aktifkan tanggal dan waktu otomatis, lalu coba lagi.",
         "status": {
           "brandError": "Aplikasi dompet salah.",
           "accountError": "Alamat tidak cocok.",
