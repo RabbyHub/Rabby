@@ -3316,6 +3316,14 @@
           "offerPrice": "Teklif Fiyatı",
           "creatorFeeTips1": "Yaratıcı kazançları satıcı tarafından ödenecek. Yaratıcı kazançlar zorunludur."
         },
+        "verifyError": {
+          "unsupportedChain": "Bu ağda NFT alım satımı henüz desteklenmiyor",
+          "currency": "Güvenlik kontrolü başarısız: ödeme tokenı beklenen tokenla eşleşmiyor",
+          "nft": "Güvenlik kontrolü başarısız: emirdeki NFT seçtiğiniz NFT ile eşleşmiyor",
+          "amount": "Güvenlik kontrolü başarısız: alacağınız tutar gösterilen tutarla eşleşmiyor",
+          "recipient": "Güvenlik kontrolü başarısız: gelir adresinize gönderilmeyecek",
+          "invalid": "Güvenlik kontrolü başarısız: emir verileri geçersiz. Lütfen daha sonra tekrar deneyin"
+        },
         "empty": "Hayır, NFT'ler yok",
         "pending": "Beklemede",
         "hideLowValue": "Düşük Değerli NFT'leri Gizle",

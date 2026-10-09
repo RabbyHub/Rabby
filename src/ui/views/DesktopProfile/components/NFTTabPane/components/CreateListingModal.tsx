@@ -18,6 +18,12 @@ import {
   calcBestOfferPrice,
   generateRandomSalt,
 } from '@/utils/nft';
+import {
+  calcMinReceiveAmount,
+  getNFTTradingCurrency,
+  NFTOrderVerifyError,
+  verifyCreateListingTypedData,
+} from '@/utils/nftVerify';
 import { OPENSEA_CONDUIT_ADDRESS } from '@opensea/seaport-js/lib/constants';
 import {
   NFTDetail,
@@ -28,6 +34,7 @@ import { useMemoizedFn, useRequest, useSetState } from 'ahooks';
 import {
   Button,
   Input,
+  message,
   Modal,
   ModalProps,
   Select,
@@ -295,6 +302,7 @@ export const Content: React.FC<Props> = (props) => {
 
   const feesRate = useMemo(() => {
     const res = {
+      totalBps: 0,
       total: 0,
       market: 0,
       custom: 0,
@@ -318,6 +326,7 @@ export const Content: React.FC<Props> = (props) => {
       });
     });
     return {
+      totalBps: res.total,
       total: res.total / 10000,
       market: res.market / 10000,
       custom: res.custom / 10000,
@@ -473,17 +482,24 @@ export const Content: React.FC<Props> = (props) => {
 
     const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
 
+    const listingCurrency = getNFTTradingCurrency(
+      chain.id,
+      'listing',
+      listingToken
+    );
+    const listingPriceInWei = new BigNumber(formValues.listingPrice)
+      .times(new BigNumber(10).exponentiatedBy(listingCurrency.decimals))
+      .times(formValues.amount || 1)
+      .integerValue()
+      .toFixed();
+
     const typedData = await wallet.buildCreateListingTypedData({
       chainId: chain.id,
       nftId: nftDetail.inner_id,
       nftAmount: formValues.amount,
       nftContractId: nftDetail.contract_id,
-      tokenId: listingToken.id,
-      listingPriceInWei: new BigNumber(formValues.listingPrice)
-        .times(new BigNumber(10).exponentiatedBy(listingToken.decimals))
-        .times(formValues.amount || 1)
-        .integerValue()
-        .toFixed(),
+      tokenId: listingCurrency.id,
+      listingPriceInWei,
       sellerAddress: currentAccount.address,
       marketFees: fees.marketplace_fees,
       royaltyFees:
@@ -493,6 +509,24 @@ export const Content: React.FC<Props> = (props) => {
 
       endTime: endTime,
       isErc721: !!nftDetail?.collection?.is_erc721,
+    });
+
+    verifyCreateListingTypedData({
+      typedData,
+      chainId: chain.id,
+      account: currentAccount.address,
+      nft: {
+        contract: nftDetail.contract_id,
+        tokenId: nftDetail.inner_id,
+        amount: formValues.amount,
+        isErc721: !!nftDetail?.collection?.is_erc721,
+      },
+      currencyId: listingCurrency.id,
+      totalPrice: BigInt(listingPriceInWei),
+      minReceiveAmount: calcMinReceiveAmount({
+        gross: BigInt(listingPriceInWei),
+        feeBps: feesRate.totalBps,
+      }),
     });
 
     // const res = await wallet.openapi.prepareListingNFT({
@@ -675,6 +709,9 @@ export const Content: React.FC<Props> = (props) => {
       manual: true,
       onError(e) {
         console.error(e);
+        if (e instanceof NFTOrderVerifyError) {
+          message.error(e.message);
+        }
         // onFailed?.();
       },
       onSuccess(res) {
