@@ -1,6 +1,12 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useSyncExternalStore,
+} from 'react';
 import {
   BRIDGE_HISTORY_INIT_SCAN_LIMIT,
   BRIDGE_HISTORY_TX_BATCH,
@@ -13,6 +19,7 @@ import {
 import {
   enqueueBridgeLookups,
   getBridgeLookupSession,
+  getBridgeLookupSnapshot,
   lookupSkipSet,
   subscribeBridgeLookup,
 } from '../utils/bridgeHistoryLookup';
@@ -27,6 +34,7 @@ type LookupItem = {
 };
 
 const POLL_INTERVAL_MS = 3000;
+const EMPTY_BRIDGES: BridgeHistory[] = [];
 
 export const useBridgeHistoryByTxIds = (options: {
   enabled: boolean;
@@ -36,19 +44,22 @@ export const useBridgeHistoryByTxIds = (options: {
 }) => {
   const { enabled, pollingEnabled, address = '', items } = options;
   const wallet = useWallet();
-  const [bridges, setBridges] = useState<BridgeHistory[]>([]);
   const session = useMemo(() => getBridgeLookupSession(address), [address]);
+  const subscribe = useCallback(
+    (notify: () => void) => {
+      if (!enabled || !address) return () => {};
+      return subscribeBridgeLookup(session, notify);
+    },
+    [address, enabled, session]
+  );
+  const getSnapshot = useCallback(
+    () =>
+      enabled && address ? getBridgeLookupSnapshot(session) : EMPTY_BRIDGES,
+    [address, enabled, session]
+  );
+  const bridges = useSyncExternalStore(subscribe, getSnapshot);
   const itemsRef = useRef(items);
   itemsRef.current = items;
-
-  useEffect(() => {
-    if (!enabled || !address) {
-      setBridges([]);
-      return;
-    }
-    const refresh = () => setBridges(Array.from(session.results.values()));
-    return subscribeBridgeLookup(session, refresh);
-  }, [address, enabled, session]);
 
   const enqueueIds = useCallback(
     (ids: string[], polling = false) => {

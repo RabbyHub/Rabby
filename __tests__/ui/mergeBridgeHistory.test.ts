@@ -6,6 +6,11 @@ import {
   mergeHistoryWithBridge,
 } from '@/ui/views/History/utils/mergeBridgeHistory';
 
+jest.mock('@/ui/utils', () => ({
+  isSameAddress: (a: string, b: string) =>
+    !!a && !!b && a.toLowerCase() === b.toLowerCase(),
+}));
+
 const user = '0xuser';
 
 const tx = (
@@ -126,7 +131,9 @@ describe('collectOutgoingTxIds', () => {
     const first = collectInitialBridgeTxIds(original, user, new Set());
     const known = new Set(first.ids);
     const updated = [tx('0xnew', 'eth'), ...original];
-    expect(collectInitialBridgeTxIds(updated, user, known).ids).toEqual(['0xnew']);
+    expect(collectInitialBridgeTxIds(updated, user, known).ids).toEqual([
+      '0xnew',
+    ]);
     expect(collectInitialBridgeTxIds(updated, user, known).ids).toEqual([]);
   });
 
@@ -134,8 +141,12 @@ describe('collectOutgoingTxIds', () => {
     const items = Array.from({ length: 21 }, (_, index) =>
       tx(`0x${index}`, 'eth', index < 20 ? '0xother' : user)
     );
-    expect(collectViewportOutgoingTxIds(items, user, new Set(), 0, 5)).toEqual([]);
-    expect(collectViewportOutgoingTxIds(items, user, new Set(), 20, 20)).toEqual(['0x20']);
+    expect(collectViewportOutgoingTxIds(items, user, new Set(), 0, 5)).toEqual(
+      []
+    );
+    expect(
+      collectViewportOutgoingTxIds(items, user, new Set(), 20, 20)
+    ).toEqual(['0x20']);
   });
 
   it('only scans the batch containing the viewport', () => {
@@ -155,9 +166,9 @@ describe('collectOutgoingTxIds', () => {
 });
 
 describe('mergeHistoryWithBridge', () => {
-  it('replaces the from tx with one bridge card and drops the to tx', () => {
+  it('places one bridge card at the destination and drops the source tx', () => {
     const items = [
-      tx('0xto', 'base', '0xbridge'),
+      { ...tx('0xto', 'base', '0xbridge'), time_at: 123 },
       tx('0xfrom', 'eth'),
       tx('0xother', 'eth'),
     ];
@@ -167,6 +178,8 @@ describe('mergeHistoryWithBridge', () => {
       {
         kind: 'bridge',
         key: 'bridge:eth:0xfrom',
+        anchorKey: 'base:0xto',
+        displayTime: 123,
         item: expect.objectContaining({
           from_tx: { tx_id: '0xfrom' },
         }),
@@ -175,11 +188,17 @@ describe('mergeHistoryWithBridge', () => {
     ]);
   });
 
-  it('keeps the to tx until the from tx is in the list', () => {
+  it('merges at the destination even when the source tx is not loaded', () => {
     const items = [tx('0xto', 'base', '0xbridge')];
     expect(
       mergeHistoryWithBridge(items, [bridge('0xfrom', 'eth', '0xto', 'base')])
-    ).toEqual([{ kind: 'tx', key: 'base-0xto', item: items[0] }]);
+    ).toMatchObject([
+      {
+        kind: 'bridge',
+        key: 'bridge:eth:0xfrom',
+        anchorKey: 'base:0xto',
+      },
+    ]);
   });
 
   it('replaces a from tx before the destination tx is loaded', () => {
@@ -191,6 +210,8 @@ describe('mergeHistoryWithBridge', () => {
       {
         kind: 'bridge',
         key: 'bridge:eth:0xfrom',
+        anchorKey: 'eth:0xfrom',
+        displayTime: undefined,
         item: expect.anything(),
       },
     ]);

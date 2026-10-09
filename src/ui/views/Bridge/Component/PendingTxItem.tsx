@@ -15,8 +15,8 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { BridgeProgressCard } from './BridgeProgressCard';
 import { BridgeStatusPopup } from './BridgeStatusPopup';
+import { refreshBridgeHistoryTop10 } from '../utils/historyCache';
 import {
-  BRIDGE_PENDING_HISTORY_QUERY,
   isBridgePendingExpired,
   resolveBridgePendingFromHistoryList,
 } from '../utils/pendingStatus';
@@ -143,10 +143,7 @@ export const BridgePendingTxItem = ({
       historyData.hash &&
       (historyData.status === 'pending' || historyData.status === 'fromSuccess')
     ) {
-      const res = await wallet.openapi.getBridgeHistoryList({
-        user_addr: userAddress,
-        ...BRIDGE_PENDING_HISTORY_QUERY,
-      });
+      const res = await refreshBridgeHistoryTop10(wallet, userAddress);
       if (res.history_list && res.history_list?.length > 0) {
         applyHistoryList(historyData, res.history_list);
       }
@@ -213,10 +210,7 @@ export const BridgePendingTxItem = ({
       recentlyTxHash &&
       (data.status === 'pending' || data.status === 'fromSuccess')
     ) {
-      const res = await wallet.openapi.getBridgeHistoryList({
-        user_addr: userAddress,
-        ...BRIDGE_PENDING_HISTORY_QUERY,
-      });
+      const res = await refreshBridgeHistoryTop10(wallet, userAddress);
       if (res.history_list?.length) {
         handleBridgeHistoryUpdate(res.history_list);
       }

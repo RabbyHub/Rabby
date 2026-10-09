@@ -5,6 +5,7 @@ import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { isEqual } from 'lodash';
 import PQueue from 'p-queue';
 import { BRIDGE_HISTORY_TX_BATCH, historyTxKey } from './mergeBridgeHistory';
+import { getBridgeHistoryTop10 } from '@/ui/views/Bridge/utils/historyCache';
 
 // 缓存过期只会多查几条，不会漏查。
 const EXCLUDED_TX_IDS_TTL_MS = 60 * 1000;
@@ -12,6 +13,8 @@ const EXCLUDED_TX_IDS_TTL_MS = 60 * 1000;
 // 会话缓存，切页保留，关闭插件页面释放。
 // 空结果也缓存，仅 pending 定时刷新。
 type LookupSession = {
+  recent?: BridgeHistory[];
+  snapshot: BridgeHistory[];
   requested: Set<string>;
   scheduled: Set<string>;
   running: Set<string>;
@@ -27,6 +30,7 @@ export const getBridgeLookupSession = (address: string): LookupSession => {
   let session = sessions.get(key);
   if (!session) {
     session = {
+      snapshot: [],
       requested: new Set(),
       scheduled: new Set(),
       running: new Set(),
@@ -37,8 +41,36 @@ export const getBridgeLookupSession = (address: string): LookupSession => {
     };
     sessions.set(key, session);
   }
+  // 每次进入读取缓存，同一份缓存不覆盖已轮询的新结果。
+  const recent = getBridgeHistoryTop10(key);
+  if (session.recent !== recent) {
+    session.recent = recent;
+    for (const item of recent) {
+      if (item.from_tx?.tx_id) {
+        session.requested.add(item.from_tx.tx_id.toLowerCase());
+      }
+    }
+    cacheBridgeResults(session, recent);
+  }
   return session;
 };
+
+const cacheBridgeResults = (session: LookupSession, list: BridgeHistory[]) => {
+  let changed = false;
+  list.forEach((item) => {
+    const key = historyTxKey(item.from_token?.chain, item.from_tx?.tx_id);
+    if (!isEqual(session.results.get(key), item)) {
+      session.results.set(key, item);
+      changed = true;
+    }
+  });
+  if (changed) session.snapshot = Array.from(session.results.values());
+  return changed;
+};
+
+/** 首次渲染即读共享缓存，避免先显示普通交易再替换。 */
+export const getBridgeLookupSnapshot = (session: LookupSession) =>
+  session.snapshot;
 
 export const lookupSkipSet = (session: LookupSession) =>
   new Set([...session.requested, ...session.scheduled]);
@@ -100,7 +132,6 @@ export const subscribeBridgeLookup = (
   notify: () => void
 ) => {
   session.listeners.add(notify);
-  notify();
   return () => {
     session.listeners.delete(notify);
     if (session.listeners.size) return;
@@ -157,14 +188,7 @@ export const enqueueBridgeLookups = (
             })
           : undefined;
         const list = res?.history_list || [];
-        let changed = false;
-        list.forEach((item) => {
-          const key = historyTxKey(item.from_token?.chain, item.from_tx?.tx_id);
-          if (!isEqual(session.results.get(key), item)) {
-            session.results.set(key, item);
-            changed = true;
-          }
-        });
+        const changed = cacheBridgeResults(session, list);
         keys.forEach((key) => session.requested.add(key));
         if (changed) session.listeners.forEach((notify) => notify());
       } catch {

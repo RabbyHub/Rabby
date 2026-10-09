@@ -6,12 +6,6 @@ import {
   bridgeRemoteSourceCompleteTs,
 } from './remoteFromTx';
 
-export const BRIDGE_PENDING_HISTORY_QUERY = {
-  start: 0,
-  limit: 10,
-  is_all: true,
-} as const;
-
 export const isBridgePendingExpired = (createdAt?: number, now = Date.now()) =>
   !!createdAt && now - createdAt > ONE_DAY_MS;
 
