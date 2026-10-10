@@ -147,7 +147,7 @@ export const PerpsSpotDetail: React.FC = () => {
         rightSlot={
           <div
             className={clsx(
-              'absolute right-0 top-[50%] translate-y-[-50%] text-20 leading-none cursor-pointer',
+              'absolute right-0 top-[20px] bottom-0 flex items-center text-20 leading-none cursor-pointer',
               isFavorite ? 'text-r-orange-default' : 'text-r-neutral-foot'
             )}
             title={t(

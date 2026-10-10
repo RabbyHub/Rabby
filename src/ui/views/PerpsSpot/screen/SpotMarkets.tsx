@@ -89,7 +89,7 @@ export const PerpsSpotMarkets: React.FC = () => {
         rightSlot={
           isLogin ? (
             <div
-              className="absolute right-0 top-[50%] translate-y-[-50%] flex items-center gap-4 text-13 font-medium text-r-blue-default cursor-pointer"
+              className="absolute right-0 top-[20px] bottom-0 flex items-center gap-4 text-13 font-medium text-r-blue-default cursor-pointer"
               onClick={() => history.push(perpsSpotPaths.portfolio)}
             >
               {t('page.perpsSpot.portfolioEntry')}
