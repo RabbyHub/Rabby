@@ -76,9 +76,7 @@ export type BridgePopupState = {
 };
 
 const formatEta = (remainingSeconds: number) =>
-  remainingSeconds > 60
-    ? formatEstimateClock(remainingSeconds, true)
-    : `${Math.max(0, Math.ceil(remainingSeconds))}s`;
+  formatEstimateClock(remainingSeconds, true);
 
 const refundDetails = (item: BridgeTxHistoryItem) => {
   const txId = item.toTxId;
