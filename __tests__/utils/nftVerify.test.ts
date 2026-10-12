@@ -89,6 +89,17 @@ describe('getNFTTradingCurrency', () => {
   });
 });
 
+describe('calcMinReceiveAmount', () => {
+  it('uses an absolute tolerance that does not scale with trade value', () => {
+    const gross = ONE_ETH * BigInt(100);
+    const net = (gross * BigInt(9900)) / BigInt(10000);
+    expect(
+      calcMinReceiveAmount({ gross, feeBps: 100, toleranceWei: BigInt(2) })
+    ).toBe(net - BigInt(2));
+    expect(calcMinReceiveAmount({ gross, feeBps: 100 })).toBe(net);
+  });
+});
+
 describe('verifyCreateListingTypedData', () => {
   const nft = { contract: NFT, tokenId: '42', amount: 1, isErc721: true };
   const totalPrice = ONE_ETH;
@@ -175,10 +186,11 @@ describe('verifyCreateListingTypedData', () => {
 
 describe('verifyAcceptOfferTx', () => {
   const nft = { contract: NFT, tokenId: '42', quantity: 1 };
+  // one displayed fee item -> 1 wei rounding tolerance
   const minReceiveAmount = calcMinReceiveAmount({
     gross: ONE_ETH,
     feeBps: 100,
-    toleranceBps: 1,
+    toleranceWei: BigInt(1),
   });
   const fee = ONE_ETH / BigInt(100);
 
@@ -301,6 +313,16 @@ describe('verifyAcceptOfferTx', () => {
       minReceiveAmount,
       ...overrides,
     });
+
+  it('only tolerates a fixed wei rounding bound', () => {
+    const withFee = (amount: bigint) =>
+      basicTx({ additionalRecipients: [{ amount, recipient: OS_FEE }] });
+    expect(verify(withFee(fee + BigInt(1))).received).toBe(minReceiveAmount);
+    expectVerifyError(
+      () => verify(withFee(fee + BigInt(2))),
+      'received amount is too low'
+    );
+  });
 
   it('passes for a basic order', () => {
     expect(verify(basicTx()).received).toBe(ONE_ETH - fee);
