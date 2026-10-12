@@ -35,6 +35,8 @@ const DECIMAL_INPUT_RE = /^\d*\.?\d*$/;
 const QUICK_PCTS = [25, 50, 75, 100] as const;
 const POPUP_BASE_HEIGHT = 560;
 const POPUP_LIMIT_EXTRA_HEIGHT = 84;
+// Keep the title visible in the 600px popup window; the form scrolls instead.
+const POPUP_TOP_GAP = 20;
 
 const sanitizeDecimalInput = (text: string) => {
   const normalized = text.replace(',', '.');
@@ -408,10 +410,11 @@ export const SpotOrderPopup: React.FC<{
   return (
     <Popup
       placement="bottom"
-      height={
+      height={Math.min(
         POPUP_BASE_HEIGHT +
-        (orderType === 'limit' ? POPUP_LIMIT_EXTRA_HEIGHT : 0)
-      }
+          (orderType === 'limit' ? POPUP_LIMIT_EXTRA_HEIGHT : 0),
+        window.innerHeight - POPUP_TOP_GAP
+      )}
       isSupportDarkMode
       bodyStyle={{ padding: 0 }}
       destroyOnClose
