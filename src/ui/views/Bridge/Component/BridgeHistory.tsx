@@ -24,6 +24,7 @@ import { BridgeHistory } from '@/background/service/openapi';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
 import { useRabbySelector } from '@/ui/store';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
+import { getTokenSymbol } from '@/ui/utils/token';
 import {
   BridgeHistoryStatus,
   BridgeHistoryTokenSymbol,
@@ -34,16 +35,25 @@ import {
 } from '../utils/historyRefresh';
 
 const isTab = getUiType().isTab;
+const HISTORY_SIDE_INLINE_MAX_LENGTH = 11;
 
-const HistoryToken = ({ token }: { token?: TokenItem }) => {
+const HistoryToken = ({
+  token,
+  compact = false,
+}: {
+  token?: TokenItem;
+  compact?: boolean;
+}) => {
   const chain = findChain({ serverId: token?.chain });
+  const size = compact ? 28 : 32;
+  const sizeClass = compact ? 'h-[28px] w-[28px]' : 'h-[32px] w-[32px]';
   return (
-    <div className="relative h-[32px] w-[32px] shrink-0 leading-[0]">
+    <div className={clsx('relative shrink-0 leading-[0]', sizeClass)}>
       <img
-        className="block h-[32px] w-[32px] rounded-full object-cover"
+        className={clsx('block rounded-full object-cover', sizeClass)}
         src={token?.logo_url}
-        width={32}
-        height={32}
+        width={size}
+        height={size}
         alt=""
       />
       <img
@@ -272,6 +282,8 @@ const DetailHistoryBody = ({
 }) => {
   const { t } = useTranslation();
   const isFailedOrRefunded = !isSuccess && !receiving;
+  const compactArrow =
+    Math.max(Math.abs(payAmount || 0), Math.abs(receiveAmount || 0)) > 100000;
   return (
     <div className="flex flex-col gap-[20px] p-[12px] dark:bg-r-neutral-card-1">
       <div className="flex items-center justify-between">
@@ -285,13 +297,23 @@ const DetailHistoryBody = ({
 
       <div
         className={clsx(
-          'flex items-center justify-between',
+          'flex items-center gap-[8px]',
           isFailedOrRefunded && 'opacity-50'
         )}
       >
         <HistorySide token={data.from_token} amount={payAmount} />
-        <span className="inline-flex h-[24px] w-[24px] shrink-0 items-center justify-center overflow-hidden text-r-neutral-foot">
-          <RcIconRouteArrow className="block shrink-0" />
+        <span
+          className={clsx(
+            'inline-flex shrink-0 items-center justify-center text-r-neutral-foot',
+            compactArrow ? 'h-[20px] w-[20px]' : 'h-[24px] w-[24px]'
+          )}
+        >
+          <RcIconRouteArrow
+            className={clsx(
+              'block shrink-0',
+              compactArrow && 'h-[20px] w-[20px]'
+            )}
+          />
         </span>
         <HistorySide
           token={receiveToken}
@@ -406,21 +428,47 @@ const HistorySide = ({
   amount?: number;
   approx?: boolean;
   align?: 'start' | 'end';
-}) => (
-  <div
-    className={clsx(
-      'flex min-w-0 items-center gap-[12px]',
-      align === 'end' && 'justify-end'
-    )}
-  >
-    <HistoryToken token={token} />
-    <div className="flex min-w-0 items-center gap-[2px] whitespace-nowrap text-[14px] font-medium text-r-neutral-title-1">
-      {approx && <span>≈</span>}
-      <span>{formatAmount(amount || 0)}</span>
-      <BridgeHistoryTokenSymbol token={token} underline={false} />
+}) => {
+  const compact = Math.abs(amount || 0) > 100000;
+  const amountText = `${approx ? '≈' : ''}${formatAmount(amount || 0)}`;
+  const symbol = token ? getTokenSymbol(token) : '';
+  const stacked =
+    amountText.length + symbol.length > HISTORY_SIDE_INLINE_MAX_LENGTH;
+
+  return (
+    <div
+      className={clsx(
+        'flex min-w-0 flex-1 items-center gap-[8px]',
+        align === 'end' && 'justify-end'
+      )}
+    >
+      <HistoryToken token={token} compact={compact} />
+      <div
+        className={clsx(
+          'flex min-w-0 gap-[2px] font-medium leading-[17px] text-r-neutral-title-1',
+          compact ? 'text-[13px]' : 'text-[14px]',
+          stacked
+            ? ['flex-col', align === 'end' ? 'items-end' : 'items-start']
+            : 'items-center'
+        )}
+      >
+        <span className="min-w-0 max-w-full truncate" title={amountText}>
+          {amountText}
+        </span>
+        <span className="min-w-0 max-w-full truncate" title={symbol}>
+          <BridgeHistoryTokenSymbol
+            token={token}
+            underline={false}
+            className={clsx(
+              'hover:underline',
+              stacked && 'text-r-neutral-foot'
+            )}
+          />
+        </span>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const HistoryList = () => {
   const { txList, loading, loadingMore, ref } = useBridgeHistory();
