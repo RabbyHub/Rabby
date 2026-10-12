@@ -6,6 +6,8 @@ import {
 import i18next from 'i18next';
 import { encodeFunctionData, zeroAddress, zeroHash } from 'viem';
 import { SeaportABI } from '@/constant/abi';
+import { cloneDeep } from 'lodash';
+import matchFixture from '../fixtures/nft/seaport-match-advanced-orders.json';
 import enMessages from '../../_raw/locales/en/messages.json';
 import zhCNMessages from '../../_raw/locales/zh-CN/messages.json';
 import { buildCreateListingTypedData } from '@/utils/nft';
@@ -479,6 +481,180 @@ describe('verifyAcceptOfferTx', () => {
     expectVerifyError(
       () => verify(basicTx({ offerer: ATTACKER })),
       'offerer mismatch'
+    );
+  });
+});
+
+describe('verifyAcceptOfferTx matchAdvancedOrders', () => {
+  // Real OpenSea response for selling 1 of a 2-unit ERC1155 offer on Polygon,
+  // with fulfiller / offer maker addresses replaced by ACCOUNT / OFFERER.
+  const MATCH_NFT = '0xdbc52cd5b8eda1a7bcbabb838ca927d23e3673e5';
+  const MATCH_NFT_ID =
+    '24708872285590753891201118773777317370184416942185790922';
+  const POLYGON_WETH = '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619';
+  // 0.0001 WETH gross for 1 unit, 1% OpenSea fee, 1 fee item
+  const matchMinReceive = calcMinReceiveAmount({
+    gross: BigInt('100000000000000'),
+    feeBps: 100,
+    toleranceWei: BigInt(1),
+  });
+
+  const matchTx = (mutate?: (input: any) => void) => {
+    const transaction = cloneDeep(matchFixture);
+    const input = transaction.input_data;
+    mutate?.(input);
+    return {
+      to: transaction.to,
+      value: transaction.value,
+      data: encodeFunctionData({
+        abi: SeaportABI as any,
+        functionName: 'matchAdvancedOrders',
+        args: [
+          input.orders,
+          input.criteriaResolvers,
+          input.fulfillments,
+          input.recipient,
+        ],
+      }),
+    };
+  };
+  const verifyMatch = (tx: any, overrides: Record<string, unknown> = {}) =>
+    verifyAcceptOfferTx({
+      tx,
+      chainId: 137,
+      account: ACCOUNT,
+      nft: { contract: MATCH_NFT, tokenId: MATCH_NFT_ID, quantity: 1 },
+      offerer: OFFERER,
+      minReceiveAmount: matchMinReceive,
+      ...overrides,
+    });
+  // order 1 is the order OpenSea built for the fulfiller
+  const ownOrder = (input: any) => input.orders[1].parameters;
+
+  it('passes for the real OpenSea payload', () => {
+    const res = verifyMatch(matchTx());
+    expect(res.token).toBe(POLYGON_WETH);
+    expect(res.received).toBe(BigInt('99000000000000'));
+  });
+
+  it('rejects giving away more than the selected NFT', () => {
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            ownOrder(input).offer[0].startAmount = '2';
+            ownOrder(input).offer[0].endAmount = '2';
+          })
+        ),
+      'NFT quantity mismatch'
+    );
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            ownOrder(input).offer.push({
+              itemType: ItemType.ERC20,
+              token: POLYGON_WETH,
+              identifierOrCriteria: '0',
+              startAmount: '1',
+              endAmount: '1',
+            });
+          })
+        ),
+      'only give the selected NFT'
+    );
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            ownOrder(input).offer[0].identifierOrCriteria = '7';
+          })
+        ),
+      'NFT id mismatch'
+    );
+  });
+
+  it('counts an extra order signed by the user as outflow', () => {
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            input.orders.push(cloneDeep(input.orders[1]));
+          })
+        ),
+      'NFT quantity mismatch'
+    );
+  });
+
+  it('rejects proceeds below what was shown', () => {
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            ownOrder(input).consideration[0].recipient = ATTACKER;
+          })
+        ),
+      'received amount is too low'
+    );
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            ownOrder(input).consideration[0].startAmount = '98000000000000';
+            ownOrder(input).consideration[0].endAmount = '98000000000000';
+          })
+        ),
+      'received amount is too low'
+    );
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            ownOrder(input).consideration[0].token = FAKE_TOKEN;
+          })
+        ),
+      'received amount is too low'
+    );
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            ownOrder(input).consideration[0].endAmount = '0';
+          })
+        ),
+      'must be fixed'
+    );
+  });
+
+  it('rejects leftovers sent to someone else or an unknown offerer', () => {
+    expectVerifyError(
+      () =>
+        verifyMatch(
+          matchTx((input) => {
+            input.recipient = ATTACKER;
+          })
+        ),
+      'unspent recipient'
+    );
+    expectVerifyError(
+      () => verifyMatch(matchTx(), { offerer: ATTACKER }),
+      'offerer mismatch'
+    );
+  });
+
+  it('still rejects other unsupported functions', () => {
+    const tx = matchTx();
+    expectVerifyError(
+      () =>
+        verifyMatch({
+          ...tx,
+          data: encodeFunctionData({
+            abi: SeaportABI as any,
+            functionName: 'incrementCounter',
+            args: [],
+          }),
+        }),
+      'unsupported function'
     );
   });
 });

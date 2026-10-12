@@ -509,6 +509,114 @@ const normalizeOrder = ({
   };
 };
 
+/**
+ * matchAdvancedOrders: OpenSea builds an order on behalf of the fulfiller
+ * (no signature needed, msg.sender is its offerer) and matches it against
+ * the offer. In a match every transfer comes out of some order's offer items,
+ * every consideration item must be fully met or the tx reverts, and unspent
+ * offer items go to `recipient`. So the user's exposure is fully described by
+ * the orders the user is offerer of:
+ * - what leaves the wallet: their offer items, which must be exactly the NFT
+ * - what is guaranteed back: their consideration items paid to the user.
+ *   They scale with the same fill fraction as the NFT, so partial fill
+ *   capping by Seaport cannot change the ratio. Unspent leftovers or items
+ *   from other orders are not counted.
+ */
+const verifyMatchAdvancedOrders = ({
+  args,
+  currency,
+  account,
+  nft,
+  offerer,
+}: {
+  args: readonly any[];
+  currency: TradingCurrency;
+  account: string;
+  nft: { contract: string; tokenId: string; quantity: number };
+  offerer: string;
+}) => {
+  const orders: readonly {
+    parameters: DecodedOrderParameters & { conduitKey: string };
+    numerator: bigint;
+    denominator: bigint;
+  }[] = args[0] || [];
+  const recipient: string = args[3];
+
+  assert(
+    isSame(recipient, zeroAddress) || isSame(recipient, account),
+    'unspent recipient is not current account',
+    'recipient'
+  );
+  assert(
+    orders.some((order) => isSame(order.parameters.offerer, offerer)),
+    'offerer mismatch'
+  );
+
+  const tokenId = toBigInt(nft.tokenId, 'NFT id');
+  let nftOut = BigInt(0);
+  let received = BigInt(0);
+  let ownOrders = 0;
+  orders.forEach((order) => {
+    const { parameters } = order;
+    if (!isSame(parameters.offerer, account)) {
+      return;
+    }
+    ownOrders++;
+    assert(
+      isSame(parameters.conduitKey, OPENSEA_CONDUIT_KEY) ||
+        isSame(parameters.conduitKey, zeroHash),
+      'invalid conduit'
+    );
+    const numerator = toBigInt(order.numerator, 'numerator');
+    const denominator = toBigInt(order.denominator, 'denominator');
+    assert(
+      denominator > BigInt(0) &&
+        numerator > BigInt(0) &&
+        numerator <= denominator,
+      'invalid fill fraction'
+    );
+    const fixedAmount = (item: DecodedItem, field: string) => {
+      assert(
+        item.startAmount === item.endAmount,
+        `${field} must be fixed`,
+        'amount'
+      );
+      assert(
+        (item.startAmount * numerator) % denominator === BigInt(0),
+        `inexact ${field} fraction`
+      );
+      return (item.startAmount * numerator) / denominator;
+    };
+
+    // Only the selected NFT may leave the wallet
+    (parameters.offer || []).forEach((item) => {
+      assert(
+        item.itemType === ItemType.ERC721 || item.itemType === ItemType.ERC1155,
+        'user may only give the selected NFT',
+        'nft'
+      );
+      assert(isSame(item.token, nft.contract), 'NFT contract mismatch', 'nft');
+      assert(item.identifierOrCriteria === tokenId, 'NFT id mismatch', 'nft');
+      nftOut += fixedAmount(item, 'NFT amount');
+    });
+
+    // Proceeds guaranteed to the user
+    (parameters.consideration || []).forEach((item) => {
+      if (
+        isSame(item.recipient, account) &&
+        item.itemType === ItemType.ERC20 &&
+        isSame(item.token, currency.id)
+      ) {
+        received += fixedAmount(item, 'proceeds');
+      }
+    });
+  });
+
+  assert(ownOrders > 0, 'no order from current account', 'nft');
+  assert(nftOut === BigInt(nft.quantity), 'NFT quantity mismatch', 'nft');
+  return received;
+};
+
 export const verifyAcceptOfferTx = ({
   tx,
   chainId,
@@ -542,6 +650,22 @@ export const verifyAcceptOfferTx = ({
     throw new NFTOrderVerifyError('cannot decode calldata');
   }
   const args = decoded.args || [];
+
+  if (decoded.functionName === 'matchAdvancedOrders') {
+    const received = verifyMatchAdvancedOrders({
+      args,
+      currency,
+      account,
+      nft,
+      offerer,
+    });
+    assert(
+      received >= minReceiveAmount,
+      'received amount is too low',
+      'amount'
+    );
+    return { token: currency.id, received };
+  }
 
   let fulfillment: NormalizedFulfillment;
   switch (decoded.functionName) {
@@ -621,10 +745,5 @@ export const verifyAcceptOfferTx = ({
   const received = fulfillment.gross - fulfillment.fees;
   assert(received >= minReceiveAmount, 'received amount is too low', 'amount');
 
-  return {
-    token: fulfillment.offerToken,
-    gross: fulfillment.gross,
-    fees: fulfillment.fees,
-    received,
-  };
+  return { token: fulfillment.offerToken, received };
 };

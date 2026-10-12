@@ -7493,6 +7493,22 @@ export class WalletController extends BaseController {
         inputData.fulfillerConduitKey ||
           '0x0000000000000000000000000000000000000000000000000000000000000000',
       ];
+    } else if (
+      functionName === 'matchAdvancedOrders' &&
+      'orders' in inputData
+    ) {
+      // OpenSea matches partial offers against an order built for the fulfiller
+      const matchData = inputData as typeof inputData & {
+        criteriaResolvers?: unknown[];
+        fulfillments?: unknown[];
+        recipient?: string;
+      };
+      params = [
+        matchData.orders,
+        matchData.criteriaResolvers || [],
+        matchData.fulfillments || [],
+        matchData.recipient || zeroAddress,
+      ];
     } else {
       // Fallback: try to use values in object order
       params = Object.values(inputData);
