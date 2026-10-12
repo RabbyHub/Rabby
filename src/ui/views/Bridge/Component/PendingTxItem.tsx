@@ -89,11 +89,19 @@ export const BridgePendingTxItem = ({
   }, [hidden]);
 
   const applyHistoryList = useMemoizedFn(
-    (
+    async (
       local: BridgeTxHistoryItem,
       list: BridgeHistory[] | undefined,
       updateHash = local.hash
     ) => {
+      // 远程请求期间可能已取消，先读本地取消标记。
+      const latest = await wallet.getRecentTxHistory<
+        BridgeTxHistoryItem | undefined
+      >(local.address, local.hash, local.fromChainId, 'bridge');
+      if (latest?.isCanceled) {
+        setData({ ...latest, status: 'fromFailed' });
+        return;
+      }
       const resolution = resolveBridgePendingFromHistoryList(local, list);
       if (resolution.kind === 'hide-failed') {
         wallet.completeBridgeTxHistory(
@@ -155,11 +163,6 @@ export const BridgePendingTxItem = ({
   }, [fetchHistory, hidden]);
 
   const fetchRefreshLocalData = useMemoizedFn(async (data: PendingTxData) => {
-    if (data.status !== 'pending') {
-      // has done
-      return;
-    }
-
     const address = data.address;
     const chainId = data.fromChainId;
     const hash = data.hash;
@@ -170,7 +173,11 @@ export const BridgePendingTxItem = ({
       'bridge'
     );
 
-    if (newData?.status !== 'pending') {
+    if (
+      newData &&
+      newData.status !== 'pending' &&
+      newData.status !== data.status
+    ) {
       return newData;
     }
   });

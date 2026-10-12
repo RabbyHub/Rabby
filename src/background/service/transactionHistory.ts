@@ -98,6 +98,7 @@ export interface BridgeTxHistoryItem {
   status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   hash: string;
   acceleratedHash?: string;
+  isCanceled?: boolean;
   estimatedDuration: number; // seconds from the quote
   createdAt: number;
   fromTxCompleteTs?: number;
@@ -547,8 +548,11 @@ class TxHistory {
       if (item.fromChainId === chainId && hashArr.includes(item.hash)) {
         return {
           ...item,
-          status: status === 'success' ? 'fromSuccess' : 'fromFailed',
+          // 取消成功代表原跨链未执行，按源链失败展示。
+          status:
+            status === 'success' && !isCancel ? 'fromSuccess' : 'fromFailed',
           acceleratedHash: completedHash || item.hash,
+          isCanceled: isCancel,
           fromTxCompleteTs: completedAt,
         };
       }
@@ -607,6 +611,8 @@ class TxHistory {
         item.fromChainId === chainId &&
         (item.hash === from_tx_id || item.acceleratedHash === from_tx_id)
       ) {
+        // 已取消的跨链不再接受远程完成结果。
+        if (item.isCanceled) return item;
         return {
           ...item,
           status,

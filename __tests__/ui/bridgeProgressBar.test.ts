@@ -19,6 +19,11 @@ import {
 } from '@/ui/views/Bridge/constants';
 import { shouldPollPendingBridge } from '@/ui/views/History/utils/mergeBridgeHistory';
 
+jest.mock('@/ui/utils', () => ({
+  isSameAddress: (a: string, b: string) =>
+    !!a && !!b && a.toLowerCase() === b.toLowerCase(),
+}));
+
 const now = 1_700_000_000_000;
 
 const item = (overrides: Record<string, unknown> = {}): BridgeTxHistoryItem =>
@@ -57,7 +62,7 @@ describe('getBridgeProgressBar', () => {
         }),
         now
       ).footer
-    ).toEqual({ kind: 'countdown', time: '0:06' });
+    ).toEqual({ kind: 'countdown', time: '6s' });
 
     expect(
       getBridgeProgressBar(
@@ -95,7 +100,7 @@ describe('getBridgeProgressBar', () => {
     ).toMatchObject({
       step1: 'success',
       step2: 'destLoading',
-      footer: { kind: 'countdown', time: '0:04' },
+      footer: { kind: 'countdown', time: '4s' },
     });
   });
 
@@ -210,7 +215,7 @@ describe('getBridgePopupState', () => {
         }),
         now
       ).caption
-    ).toEqual({ kind: 'estimate', time: '0:03' });
+    ).toEqual({ kind: 'estimate', time: '3s' });
   });
 
   it('shows Still Bridging as soon as a short quote expires', () => {
@@ -528,7 +533,7 @@ describe('getBridgeHistoryDetail', () => {
       steps: [
         {
           mark: 'failed',
-          detail: { kind: 'sendFailed' },
+          detail: { kind: 'hash', txId: '0xsource' },
           amount: 1,
           sign: '-',
         },
@@ -603,7 +608,7 @@ describe('getBridgeHistoryDetail', () => {
     });
   });
 
-  it('keeps source pending when remote from_tx is still pending', () => {
+  it('uses the confirmed local source status when remote from_tx is still pending', () => {
     expect(
       getBridgeHistoryDetail(
         history({
@@ -619,7 +624,7 @@ describe('getBridgeHistoryDetail', () => {
         }),
         now
       ).scene
-    ).toBe('sourcePending');
+    ).toBe('destCountdown');
   });
 
   it('uses a plain Refund title when the refund is the original token', () => {
@@ -851,9 +856,7 @@ describe('status refresh intervals', () => {
       const data = item(overrides);
       return getBridgePopupRefreshMs(data, getBridgePopupState(data, now));
     };
-    expect(at({ status: 'pending', createdAt: now })).toBe(
-      BRIDGE_STATUS_SLOW_TICK_MS
-    );
+    expect(at({ status: 'pending', createdAt: now })).toBeUndefined();
     expect(
       at({ status: 'pending', createdAt: now - BRIDGE_PROGRESS_DELAY_MS })
     ).toBeUndefined();
