@@ -7,6 +7,7 @@ import {
   Side,
 } from '@opensea/seaport-js/lib/constants';
 import { SeaportABI } from '@/constant/abi';
+import * as Sentry from '@sentry/browser';
 import { t } from 'i18next';
 import { decodeFunctionData, zeroAddress, zeroHash } from 'viem';
 
@@ -48,6 +49,45 @@ export class NFTOrderVerifyError extends Error {
     this.data = { reason, category };
   }
 }
+
+/**
+ * Report verification failures so a new fulfillment shape from OpenSea, or
+ * a bad backend payload, shows up before users report failed sales. Grouped
+ * by a stable English reason (the message is localized); no addresses or
+ * order hashes are attached.
+ */
+export const reportNFTOrderVerifyError = (
+  error: unknown,
+  context: {
+    flow: 'listing' | 'acceptOffer';
+    chainId?: number;
+    functionName?: string;
+  }
+) => {
+  if (!(error instanceof NFTOrderVerifyError)) {
+    return;
+  }
+  const functionName = context.functionName?.replace(/[^\w]/g, '').slice(0, 64);
+  Sentry.captureException(
+    new Error(`NFT order verification failed: ${error.reason}`),
+    {
+      level: 'warning',
+      fingerprint: [
+        'nft-order-verify',
+        context.flow,
+        error.category,
+        error.reason,
+        functionName || '',
+      ],
+      tags: {
+        nft_verify_flow: context.flow,
+        nft_verify_category: error.category,
+        nft_verify_function: functionName || 'none',
+        chain_id: context.chainId === undefined ? 'unknown' : context.chainId,
+      },
+    }
+  );
+};
 
 export const OPENSEA_RESTRICTED_ZONE =
   '0x000056f7000000ece9003ca63978907a00ffd100';

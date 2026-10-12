@@ -3,6 +3,7 @@ import {
   ItemType,
   OPENSEA_CONDUIT_KEY,
 } from '@opensea/seaport-js/lib/constants';
+import * as Sentry from '@sentry/browser';
 import i18next from 'i18next';
 import { encodeFunctionData, zeroAddress, zeroHash } from 'viem';
 import { SeaportABI } from '@/constant/abi';
@@ -15,9 +16,12 @@ import {
   calcMinReceiveAmount,
   getNFTTradingCurrency,
   NFTOrderVerifyError,
+  reportNFTOrderVerifyError,
   verifyAcceptOfferTx,
   verifyCreateListingTypedData,
 } from '@/utils/nftVerify';
+
+jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 
 const ACCOUNT = '0x1111111111111111111111111111111111111111';
 const ATTACKER = '0x9999999999999999999999999999999999999999';
@@ -655,6 +659,48 @@ describe('verifyAcceptOfferTx matchAdvancedOrders', () => {
           }),
         }),
       'unsupported function'
+    );
+  });
+});
+
+describe('reportNFTOrderVerifyError', () => {
+  const captureException = Sentry.captureException as jest.Mock;
+  beforeEach(() => captureException.mockClear());
+
+  it('ignores errors that are not verification failures', () => {
+    reportNFTOrderVerifyError(new Error('network'), { flow: 'acceptOffer' });
+    expect(captureException).not.toHaveBeenCalled();
+  });
+
+  it('reports a stable reason and tags without addresses', () => {
+    reportNFTOrderVerifyError(
+      new NFTOrderVerifyError('unsupported function', 'invalid'),
+      {
+        flow: 'acceptOffer',
+        chainId: 137,
+        functionName: 'fulfillAvailableAdvancedOrders(<script>)',
+      }
+    );
+    expect(captureException).toHaveBeenCalledTimes(1);
+    const [error, hint] = captureException.mock.calls[0];
+    expect(error.message).toBe(
+      'NFT order verification failed: unsupported function'
+    );
+    expect(hint.tags).toEqual({
+      nft_verify_flow: 'acceptOffer',
+      nft_verify_category: 'invalid',
+      nft_verify_function: 'fulfillAvailableAdvancedOrdersscript',
+      chain_id: 137,
+    });
+    expect(hint.fingerprint).toEqual([
+      'nft-order-verify',
+      'acceptOffer',
+      'invalid',
+      'unsupported function',
+      'fulfillAvailableAdvancedOrdersscript',
+    ]);
+    expect(JSON.stringify([error.message, hint])).not.toMatch(
+      /0x[0-9a-f]{40}/i
     );
   });
 });
