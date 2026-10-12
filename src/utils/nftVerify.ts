@@ -143,20 +143,21 @@ export const getNFTTradingCurrency = (
 export const calcMinReceiveAmount = ({
   gross,
   feeBps,
-  toleranceBps = 0,
+  toleranceWei = BigInt(0),
 }: {
   gross: bigint;
   feeBps: number;
-  toleranceBps?: number;
+  // absolute bound for integer rounding, never a share of the trade value
+  toleranceWei?: bigint;
 }) => {
   assert(
     Number.isInteger(feeBps) && feeBps >= 0 && feeBps < 10000,
     'invalid fee',
     'amount'
   );
+  assert(toleranceWei >= BigInt(0), 'invalid tolerance', 'amount');
   const net = (gross * (BPS_BASE - BigInt(feeBps))) / BPS_BASE;
-  const tolerance = (gross * BigInt(toleranceBps)) / BPS_BASE;
-  return net > tolerance ? net - tolerance : BigInt(0);
+  return net > toleranceWei ? net - toleranceWei : BigInt(0);
 };
 
 /* -------------------------------------------------------------------------- */

@@ -7405,7 +7405,7 @@ export class WalletController extends BaseController {
     innerId,
     quantity = 1,
     isIncludeCreatorFee,
-    feeBps,
+    feeBpsList,
   }: {
     address: string;
     chainId: number;
@@ -7414,8 +7414,8 @@ export class WalletController extends BaseController {
     order: NonNullable<NFTDetail['best_offer_order']>;
     quantity?: number;
     isIncludeCreatorFee?: boolean;
-    /** total fee rate shown to the user, in basis points */
-    feeBps: number;
+    /** each fee item shown to the user and counted in the total, in bps */
+    feeBpsList: number[];
   }) => {
     const chain = findChain({
       id: chainId,
@@ -7438,13 +7438,18 @@ export class WalletController extends BaseController {
     if (!orderNFTQuantity || !(BigInt(orderNFTQuantity) > BigInt(0))) {
       throw new NFTOrderVerifyError('cannot resolve offer quantity');
     }
+    if (!feeBpsList.every((bps) => Number.isInteger(bps) && bps >= 0)) {
+      throw new NFTOrderVerifyError('invalid fee', 'amount');
+    }
     const minReceiveAmount = calcMinReceiveAmount({
       gross:
         (BigInt(order.price.value) * BigInt(quantity)) /
         BigInt(orderNFTQuantity),
-      feeBps,
-      // absorbs per-item rounding in fees computed by OpenSea
-      toleranceBps: 1,
+      feeBps: feeBpsList.reduce((sum, bps) => sum + bps, 0),
+      // Seaport fractions are exact and OpenSea floors fees, so only an
+      // optional creator fee rounded up can cost the seller, by at most
+      // 1 wei per displayed fee item
+      toleranceWei: BigInt(feeBpsList.length),
     });
     const res = await this.openapi.prepareAcceptNFTOffer({
       chain_id: chain?.serverId,
