@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { intToHex } from '@/ui/utils/number';
 import { findChain, isTestnet } from '@/utils/chain';
+import { isHyperEvmChain } from '@/utils/hyperEvm';
 import {
   BlockInfo,
   calcGasLimit,
@@ -544,13 +545,15 @@ export class SignatureSteps {
       lastSelection: gasSelection?.lastSelection,
     });
 
-    const preparedBlock = wallet.requestETHRpc<BlockInfo>(
-      {
-        method: 'eth_getBlockByNumber',
-        params: ['latest', false],
-      },
-      chain.serverId
-    );
+    const preparedBlock = isHyperEvmChain(chain.id)
+      ? undefined
+      : wallet.requestETHRpc<BlockInfo>(
+          {
+            method: 'eth_getBlockByNumber',
+            params: ['latest', false],
+          },
+          chain.serverId
+        );
 
     const [
       _,
