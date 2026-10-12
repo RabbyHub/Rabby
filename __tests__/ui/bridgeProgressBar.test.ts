@@ -62,7 +62,7 @@ describe('getBridgeProgressBar', () => {
         }),
         now
       ).footer
-    ).toEqual({ kind: 'countdown', time: '6s' });
+    ).toEqual({ kind: 'countdown', time: '00:06' });
 
     expect(
       getBridgeProgressBar(
@@ -100,7 +100,7 @@ describe('getBridgeProgressBar', () => {
     ).toMatchObject({
       step1: 'success',
       step2: 'destLoading',
-      footer: { kind: 'countdown', time: '4s' },
+      footer: { kind: 'countdown', time: '00:04' },
     });
   });
 
@@ -215,7 +215,7 @@ describe('getBridgePopupState', () => {
         }),
         now
       ).caption
-    ).toEqual({ kind: 'estimate', time: '3s' });
+    ).toEqual({ kind: 'estimate', time: '00:03' });
   });
 
   it('shows Still Bridging as soon as a short quote expires', () => {
