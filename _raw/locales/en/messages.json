@@ -2749,6 +2749,12 @@
           "perpsFloatWidget": "Perps Floating Widget",
           "dataAnalysis": "Data Analysis"
         },
+        "removedToken": {
+          "title": "Removed Token",
+          "description": "Removed tokens will be hidden from your Portfolio across all your addresses, but still included in your balance calculation.",
+          "loadFailed": "Failed to load token",
+          "retry": "Retry"
+        },
         "aboutUs": "About us",
         "currentVersion": "Current Version",
         "updateAvailable": "Update Available",
@@ -2799,7 +2805,7 @@
           "remove": "Remove",
           "confirmTitle": "Remove this token?",
           "portfolioNotice": "This token will no longer appear in your Portfolio after removal.",
-          "restoreNotice": "You can restore it anytime in ” Settings >> Removed Token. “",
+          "restoreNotice": "You can restore it anytime in Settings > Removed Token.",
           "warning": "Removed tokens will be hidden from your Portfolio across all your addresses, but still included in your balance calculation.",
           "removeFailed": "Failed to remove token",
           "restore": "Restore removed token",
