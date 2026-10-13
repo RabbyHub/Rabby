@@ -104,13 +104,15 @@ export const useApproval = (binding: ApprovalBinding | null) => {
     if (stay) {
       return true;
     }
-    setTimeout(() => {
-      if (!mounted.current) return;
-      if (data && enablePopup(data.type)) {
-        return showPopup();
-      }
+    // Waiting views unmount in their caller's .then(closePopup). Complete this
+    // deferred navigation first so that cleanup cannot cancel the transition.
+    await new Promise<void>((resolve) => setTimeout(resolve, 0));
+    if (!mounted.current) return true;
+    if (data && enablePopup(data.type)) {
+      showPopup();
+    } else {
       history.replace('/');
-    }, 0);
+    }
     return true;
   };
 
