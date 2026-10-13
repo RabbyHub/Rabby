@@ -27,6 +27,11 @@ import type { ChainGas } from 'background/service/preference';
 import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
 import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
 import {
+  getHyperEvmGasLimit,
+  HYPER_EVM_SMALL_BLOCK_GAS_LIMIT,
+  isHyperEvmChain,
+} from '@/utils/hyperEvm';
+import {
   buildTempoTransaction,
   getTempoFeeTokenInfo,
   isTempoChain,
@@ -659,6 +664,7 @@ export async function calcGasLimit({
   preparedBlock,
   gasTokenDecimals = GAS_PRICE_DECIMALS,
   checkTxValueInBalance = true,
+  isGnosisAccount = false,
 }: {
   chain: Chain;
   tx: Tx;
@@ -671,15 +677,23 @@ export async function calcGasLimit({
   preparedBlock?: BlockInfo | Promise<BlockInfo | null>;
   gasTokenDecimals?: number;
   checkTxValueInBalance?: boolean;
+  isGnosisAccount?: boolean;
 }) {
+  const isHyperEvm = isHyperEvmChain(chain.id) && !isGnosisAccount;
+  // HyperEVM's latest block alternates between small and big blocks.
+  // Use the sender's mode, retaining the small-block cap if the query fails.
+  const hyperEvmGasLimit = isHyperEvm
+    ? (await getHyperEvmGasLimit({ wallet, chain, from: tx.from })) ??
+      HYPER_EVM_SMALL_BLOCK_GAS_LIMIT
+    : undefined;
   let block: null | BlockInfo = null;
   try {
-    block = preparedBlock ? await preparedBlock : null;
+    block = !isHyperEvm && preparedBlock ? await preparedBlock : null;
   } catch (error) {
     // NOTHING
   }
   try {
-    if (!block) {
+    if (!isHyperEvm && !block) {
       block = await wallet.requestETHRpc<BlockInfo>(
         {
           method: 'eth_getBlockByNumber',
@@ -724,7 +738,8 @@ export async function calcGasLimit({
   }
 
   const singleTxGasLimit =
-    TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Number(recommendGasLimit);
+    hyperEvmGasLimit ??
+    (TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Number(recommendGasLimit));
 
   recommendGasLimit =
     Number(recommendGasLimit) > singleTxGasLimit
@@ -736,7 +751,7 @@ export async function calcGasLimit({
   const dappGasLimit = rawAmountToBn(tx.gas || 0);
   const dappGasLimitCap = BigNumber.min(
     block?.gasLimit ?? Infinity,
-    TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Infinity
+    hyperEvmGasLimit ?? (TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Infinity)
   );
   // NaN fails lte, so an invalid tx.gas also falls back
   const usableDappGasLimit = dappGasLimit.lte(dappGasLimitCap)
