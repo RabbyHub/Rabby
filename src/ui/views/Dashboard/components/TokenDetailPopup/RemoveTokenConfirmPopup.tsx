@@ -6,6 +6,7 @@ import Popup from '@/ui/component/Popup';
 import TokenWithChain from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { useRemovedTokens } from '@/ui/hooks/useRemovedTokens';
+import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RcIconBack } from '@/ui/assets/icon-back-cc.svg';
 import './style.less';
@@ -21,6 +22,7 @@ export const RemoveTokenConfirmPopup = ({
   getContainer?: DrawerProps['getContainer'];
 }) => {
   const { t } = useTranslation();
+  const { getContainer: fromModalContainer } = usePopupContainer();
   const addRemovedToken = useRemovedTokens((state) => state.addRemovedToken);
   const [removing, setRemoving] = useState(false);
 
@@ -54,7 +56,7 @@ export const RemoveTokenConfirmPopup = ({
       push={false}
       isSupportDarkMode
       className="remove-token-confirm-popup"
-      getContainer={getContainer}
+      getContainer={getContainer ?? fromModalContainer}
     >
       <div className="remove-token-confirm-content">
         <div className="remove-token-confirm-description">

@@ -3,7 +3,7 @@ import type { NetSwitchTabsKey } from '@/ui/component/PillsSwitch/NetSwitchTabs'
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenItem';
 import clsx from 'clsx';
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { CustomTestnetAssetList } from './TestTokenlist';
@@ -15,6 +15,7 @@ import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import { uniqBy } from 'lodash';
 import { useLocation } from 'react-router-dom';
+import { usePortfolioDisplayTokens } from '@/ui/hooks/useRemovedTokens';
 
 export interface Props {
   list?: TokenItemProps['item'][];
@@ -44,12 +45,23 @@ export const TokenList = ({
   search,
   lpTokenMode,
 }: Props) => {
+  const mergedList = useMemo(
+    () =>
+      isSearch
+        ? uniqBy(
+            concatAndSort(searchList, list || [], search || ''),
+            (token) => `${token.chain}-${token.id}`
+          )
+        : list || [],
+    [isSearch, searchList, list, search]
+  );
+  const portfolioTokenList = usePortfolioDisplayTokens(mergedList, isSearch);
   const {
     result: currentList,
     isExpanded,
     toggleExpand,
     hasExpandSwitch,
-  } = useExpandList(list, totalValue);
+  } = useExpandList(portfolioTokenList, totalValue);
 
   const { t } = useTranslation();
 
@@ -71,7 +83,7 @@ export const TokenList = ({
     <div className="protocol-item-wrapper" id={TOKEN_WALLET_ANCHOR_ID}>
       <ListContainer>
         {selectedTab === 'mainnet' ? (
-          isNoResults ? (
+          !isSearch && (isNoResults || !portfolioTokenList.length) ? (
             <TokenListEmpty
               text={
                 lpTokenMode
@@ -82,16 +94,7 @@ export const TokenList = ({
           ) : (
             <>
               <TokenTable
-                list={
-                  isSearch
-                    ? uniqBy(
-                        concatAndSort(searchList, list || [], search || ''),
-                        (token) => {
-                          return `${token.chain}-${token.id}`;
-                        }
-                      )
-                    : currentList
-                }
+                list={isSearch ? portfolioTokenList : currentList}
                 EmptyComponent={
                   isSearch ? (
                     <TokenListEmpty
