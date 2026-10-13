@@ -97,6 +97,7 @@ export const TokenDetailPopup = ({
           canClickToken={canClickToken}
           hideOperationButtons={hideOperationButtons}
           tipsFromTokenSelect={tipsFromTokenSelect}
+          getContainer={getContainer}
         />
       )}
     </Popup>
