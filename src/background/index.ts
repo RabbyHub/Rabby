@@ -55,6 +55,7 @@ import {
   pageStateCacheService,
   permissionService,
   preferenceService,
+  removedTokensService,
   RabbyPointsService,
   RPCService,
   securityEngineService,
@@ -174,6 +175,7 @@ async function restoreAppState() {
   await customTestnetService.init();
   await permissionService.init();
   await preferenceService.init();
+  await removedTokensService.init();
   await currencyService.init();
   await extensionUpdateService.init();
   await transactionWatchService.init();

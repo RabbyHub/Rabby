@@ -22,6 +22,7 @@ import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
   preferenceService,
+  removedTokensService,
   notificationService,
   permissionService,
   sessionService,
@@ -2707,6 +2708,8 @@ export class WalletController extends BaseController {
         return getOpenapiStore() as PersistedStoreMap[Key];
       case 'rpc':
         return RPCService.getCustomRPCStore() as PersistedStoreMap[Key];
+      case 'removedTokens':
+        return removedTokensService.store as PersistedStoreMap[Key];
       case 'swap':
         return swapService.getSwap() as PersistedStoreMap[Key];
       case 'whitelist':
@@ -2772,6 +2775,11 @@ export class WalletController extends BaseController {
       }
       case 'swap':
         swapService.patchStore(patch as PersistedStorePatch<'swap'>);
+        return;
+      case 'removedTokens':
+        removedTokensService.patchStore(
+          patch as PersistedStorePatch<'removedTokens'>
+        );
         return;
       case 'whitelist':
         whitelistService.patchStore(patch as PersistedStorePatch<'whitelist'>);
@@ -5671,6 +5679,14 @@ export class WalletController extends BaseController {
   addBlockedToken = preferenceService.addBlockedToken;
 
   removeBlockedToken = preferenceService.removeBlockedToken;
+
+  getRemovedTokens = removedTokensService.getRemovedTokens;
+
+  isTokenRemoved = removedTokensService.isTokenRemoved;
+
+  addRemovedToken = removedTokensService.addRemovedToken;
+
+  removeRemovedToken = removedTokensService.removeRemovedToken;
 
   getCollectionStarred = preferenceService.getCollectionStarred;
 
