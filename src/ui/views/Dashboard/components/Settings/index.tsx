@@ -58,6 +58,8 @@ import { ReactComponent as RcIconSettingsGitForkCC } from 'ui/assets/dashboard/s
 import { ReactComponent as RcIconSettingsCodeCC } from 'ui/assets/dashboard/settings/code-cc.svg';
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
+import { ReactComponent as RcIconRemovedToken } from 'ui/assets/settings/removed-token.svg';
+import { ReactComponent as RcArrowRight } from 'ui/assets/arrow-right-cc.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
@@ -69,6 +71,7 @@ import Contacts from '../Contacts';
 import RecentConnections from '../RecentConnections';
 import SwitchThemeModal from './components/SwitchThemeModal';
 import { CurrencyModal } from './components/CurrencyModal';
+import { useRemovedTokenPopup } from './components/RemovedTokenPopup';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import FeedbackPopup from '../Feedback';
 import { getChainList } from '@/utils/chain';
@@ -631,6 +634,11 @@ const SettingsInner = ({
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [isShowAutoLockModal, setIsShowAutoLockModal] = useState(false);
   const [isShowLangModal, setIsShowLangModal] = useState(false);
+  const {
+    removedTokenCount,
+    openRemovedTokenPopup,
+    removedTokenPopup,
+  } = useRemovedTokenPopup();
   const [isShowCurrencyModal, setIsShowCurrencyModal] = useState(false);
   const [isShowThemeModeModal, setIsShowThemeModeModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
@@ -1142,6 +1150,29 @@ const SettingsInner = ({
             </>
           ),
         },
+        ...(removedTokenCount
+          ? [
+              {
+                leftIcon: RcIconRemovedToken,
+                leftIconClassName:
+                  'text-r-neutral-body [&_path]:stroke-current',
+                className: 'font-normal [&_.left-icon]:mr-12',
+                content: t('page.dashboard.settings.removedToken.title'),
+                onClick: () => {
+                  reportSettings('Removed Token');
+                  openRemovedTokenPopup();
+                },
+                rightIcon: (
+                  <span className="flex items-center gap-4">
+                    <span className="text-14 font-normal text-r-neutral-title-1">
+                      {removedTokenCount}
+                    </span>
+                    <RcArrowRight className="text-r-neutral-foot" />
+                  </span>
+                ),
+              },
+            ]
+          : []),
         {
           leftIcon: RcIconCurrency,
           content: t('page.dashboard.settings.settings.currency'),
@@ -1752,6 +1783,7 @@ const SettingsInner = ({
         onFinish={() => setIsShowCurrencyModal(false)}
         onCancel={() => setIsShowCurrencyModal(false)}
       />
+      {removedTokenPopup}
       <SwitchThemeModal
         visible={isShowThemeModeModal}
         onFinish={() => setIsShowThemeModeModal(false)}
