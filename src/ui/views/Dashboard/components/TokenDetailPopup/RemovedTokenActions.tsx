@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Dropdown, Menu, message } from 'antd';
+import { Button, Menu, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import { useRemovedTokens } from '@/ui/hooks/useRemovedTokens';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import DropdownWithMask from '@/ui/component/DropdownWithMask';
 import { ReactComponent as RcIconMore } from '@/ui/assets/desktop/profile/more-cc.svg';
 
 export type RemovedTokenAction = {
@@ -65,13 +66,12 @@ export const RemovedTokenActions = ({
       >
         {t('page.dashboard.tokenDetail.removed.restore')}
       </Button>
-      <Dropdown
+      <DropdownWithMask
         trigger={['click']}
         placement="topRight"
         align={{ offset: [0, -8] }}
-        visible={moreOpen}
-        onVisibleChange={setMoreOpen}
-        getPopupContainer={(trigger) => trigger.parentElement!}
+        open={moreOpen}
+        onOpenChange={setMoreOpen}
         overlay={
           <MoreActionsMenu
             className="w-[260px] p-0 overflow-hidden border border-r-neutral-bg-1 rounded-[16px] backdrop-blur-[14.5px] shadow-[0_18px_40px_rgba(55,56,63,0.04)]"
@@ -117,7 +117,7 @@ export const RemovedTokenActions = ({
           type="button"
           className={clsx(
             'flex items-center justify-center shrink-0 w-40 h-40 p-0 border rounded-[8px] bg-r-neutral-bg-1 cursor-pointer',
-            'hover:border-r-blue-default hover:text-r-blue-default active:border-r-blue-default active:text-r-blue-default',
+            'hover:border-r-blue-default hover:text-r-blue-default active:border-r-blue-default active:bg-r-blue-light-2 active:text-r-blue-default',
             'focus-visible:outline-2 focus-visible:outline-r-blue-default focus-visible:outline-offset-2',
             moreOpen
               ? 'border-r-blue-default text-r-blue-default'
@@ -129,7 +129,7 @@ export const RemovedTokenActions = ({
         >
           <RcIconMore className="block scale-[1.2]" />
         </button>
-      </Dropdown>
+      </DropdownWithMask>
     </div>
   );
 };
