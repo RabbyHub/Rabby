@@ -59,7 +59,6 @@ import { ReactComponent as RcIconSettingsCodeCC } from 'ui/assets/dashboard/sett
 import { ReactComponent as RcIconSettingsSearchDapps } from 'ui/assets/dashboard/settings/search.svg';
 import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.svg';
 import { ReactComponent as RcIconRemovedToken } from 'ui/assets/settings/removed-token.svg';
-import { ReactComponent as RcArrowRight } from 'ui/assets/arrow-right-cc.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
@@ -1156,19 +1155,21 @@ const SettingsInner = ({
                 leftIcon: RcIconRemovedToken,
                 leftIconClassName:
                   'text-r-neutral-body [&_path]:stroke-current',
-                className: 'font-normal [&_.left-icon]:mr-12',
                 content: t('page.dashboard.settings.removedToken.title'),
                 onClick: () => {
                   reportSettings('Removed Token');
                   openRemovedTokenPopup();
                 },
                 rightIcon: (
-                  <span className="flex items-center gap-4">
-                    <span className="text-14 font-normal text-r-neutral-title-1">
+                  <>
+                    <span className="text-14 mr-[8px] text-r-neutral-foot">
                       {removedTokenCount}
                     </span>
-                    <RcArrowRight className="text-r-neutral-foot" />
-                  </span>
+                    <ThemeIcon
+                      src={RcIconArrowRight}
+                      className="icon icon-arrow-right"
+                    />
+                  </>
                 ),
               },
             ]
