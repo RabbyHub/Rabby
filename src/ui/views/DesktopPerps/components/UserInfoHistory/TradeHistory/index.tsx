@@ -1,3 +1,4 @@
+import { getFillFeeRates } from '@/utils/perps/fillFee';
 import { PositionAndOpenOrder } from '@/ui/state/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
@@ -179,10 +180,25 @@ export const TradeHistory: React.FC = () => {
         width: '8%',
         sorter: (a, b) => Number(a.fee) - Number(b.fee),
         render: (_, record) => {
-          return (
+          const feeRates = getFillFeeRates(record);
+          const amount = (
             <div className="text-[12px] leading-[14px]  text-r-neutral-body">
               ${splitNumberByStep(Number(record.fee).toFixed(2))}
             </div>
+          );
+          return record.coin.startsWith('@') ? (
+            amount
+          ) : (
+            <Tooltip
+              title={
+                <>
+                  <div>Hyperliquid: {feeRates.exchange}</div>
+                  <div>Rabby Wallet: {feeRates.builder}</div>
+                </>
+              }
+            >
+              {amount}
+            </Tooltip>
           );
         },
       },
