@@ -31,8 +31,13 @@ export const getFillFeeRates = (fill?: FillFee | null) => {
   ) {
     return unknown;
   }
-  const percent = (amount: BigNumber) =>
-    `${amount.div(notional).times(100).decimalPlaces(8).toFixed()}%`;
+  const percent = (amount: BigNumber) => {
+    const display = amount
+      .div(notional)
+      .times(100)
+      .toFixed(2, BigNumber.ROUND_HALF_UP);
+    return `${new BigNumber(display).isZero() ? '0.00' : display}%`;
+  };
   const total = parse(fill.fee);
   return {
     builder: percent(builder),
