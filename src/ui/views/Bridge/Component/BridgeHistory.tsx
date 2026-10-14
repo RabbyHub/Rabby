@@ -37,6 +37,19 @@ import {
 const isTab = getUiType().isTab;
 const HISTORY_SIDE_INLINE_MAX_LENGTH = 11;
 
+const getHistorySideLevel = (
+  token?: TokenItem,
+  amount?: number,
+  approx = false
+) => {
+  if (Math.abs(amount || 0) > 100000) return 3;
+  const amountText = `${approx ? '≈' : ''}${formatAmount(amount || 0)}`;
+  const symbol = token ? getTokenSymbol(token) : '';
+  return amountText.length + symbol.length > HISTORY_SIDE_INLINE_MAX_LENGTH
+    ? 2
+    : 1;
+};
+
 const HistoryToken = ({
   token,
   compact = false,
@@ -282,8 +295,12 @@ const DetailHistoryBody = ({
 }) => {
   const { t } = useTranslation();
   const isFailedOrRefunded = !isSuccess && !receiving;
-  const compactArrow =
-    Math.max(Math.abs(payAmount || 0), Math.abs(receiveAmount || 0)) > 100000;
+  // 两侧统一使用较高档位。
+  const sideLevel = Math.max(
+    getHistorySideLevel(data.from_token, payAmount),
+    getHistorySideLevel(receiveToken, receiveAmount, !isSuccess)
+  );
+  const compactArrow = sideLevel === 3;
   return (
     <div className="flex flex-col gap-[20px] p-[12px] dark:bg-r-neutral-card-1">
       <div className="flex items-center justify-between">
@@ -301,7 +318,11 @@ const DetailHistoryBody = ({
           isFailedOrRefunded && 'opacity-50'
         )}
       >
-        <HistorySide token={data.from_token} amount={payAmount} />
+        <HistorySide
+          token={data.from_token}
+          amount={payAmount}
+          level={sideLevel}
+        />
         <span
           className={clsx(
             'inline-flex shrink-0 items-center justify-center text-r-neutral-foot',
@@ -320,6 +341,7 @@ const DetailHistoryBody = ({
           amount={receiveAmount}
           approx={!isSuccess}
           align="end"
+          level={sideLevel}
         />
       </div>
 
@@ -422,18 +444,19 @@ const HistorySide = ({
   token,
   amount,
   approx,
+  level,
   align = 'start',
 }: {
   token?: TokenItem;
   amount?: number;
   approx?: boolean;
+  level: number;
   align?: 'start' | 'end';
 }) => {
-  const compact = Math.abs(amount || 0) > 100000;
+  const compact = level === 3;
   const amountText = `${approx ? '≈' : ''}${formatAmount(amount || 0)}`;
   const symbol = token ? getTokenSymbol(token) : '';
-  const stacked =
-    amountText.length + symbol.length > HISTORY_SIDE_INLINE_MAX_LENGTH;
+  const stacked = level >= 2;
 
   return (
     <div
