@@ -40,9 +40,9 @@ export function initOneKey() {
             });
           break;
 
-        case OneKeyAction.getFeatures:
+        case OneKeyAction.getDeviceState:
           bridge
-            .getFeatures()
+            .getDeviceState(...(msg.params as [string]))
             .then(sendResponse)
             .catch((err) => {
               sendResponse({ error: err });

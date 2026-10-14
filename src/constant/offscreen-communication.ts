@@ -30,7 +30,7 @@ export enum OneKeyAction {
   searchDevices = 'onekey-search-devices',
   getPassphraseState = 'onekey-get-passphrase-state',
   evmGetPublicKey = 'onekey-evm-get-public-key',
-  getFeatures = 'onekey-get-device-features',
+  getDeviceState = 'onekey-get-device-state',
 }
 
 export enum TrezorAction {
