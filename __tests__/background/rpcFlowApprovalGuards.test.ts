@@ -199,3 +199,27 @@ test('cancels the captured OneKey signing task when its waiting approval is reje
   );
   expect(mockOneKeyCancel).toHaveBeenCalledTimes(1);
 });
+
+test('does not start OneKey signing if approval is cancelled before the waiting UI mounts', async () => {
+  const { waitSignComponentAmounted } = require('@/utils/signEvent');
+  let mounted!: () => void;
+  waitSignComponentAmounted.mockImplementationOnce(
+    () =>
+      new Promise<void>((resolve) => {
+        mounted = resolve;
+      })
+  );
+  ethSignTypedDataV4.mockClear();
+  mockNotificationService.requestApproval
+    .mockResolvedValueOnce({
+      uiRequestComponent: 'CommonWaiting',
+      type: 'Onekey Hardware',
+      address: '0xaccount',
+    })
+    .mockRejectedValueOnce(new Error('user cancel'));
+  await expect(rpcFlow(baseRequest() as any)).rejects.toThrow('user cancel');
+  mounted();
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+});
