@@ -218,11 +218,12 @@ const INIT_PERPS_BUILD_FEE_RECEIVE_ADDRESS =
   '0xAd9bE64fD7a35d99a138b87CB212BAefbCDCf045';
 export const PERPS_BUILD_FEE_RECEIVE_ADDRESS = INIT_PERPS_BUILD_FEE_RECEIVE_ADDRESS.toLowerCase();
 
-export const PERPS_EXCHANGE_FEE_NUMBER = 0.0002;
+// Hyperliquid builder fees use tenths of a basis point: 40 = 4 bps = 0.04%.
+export const PERPS_BUILD_FEE = 40;
 
-export const PERPS_BUILD_FEE = 20; // '0.02%'
+export const PERPS_EXCHANGE_FEE_NUMBER = PERPS_BUILD_FEE / 100000;
 
-const PERPS_BUILD_FEE_PRO = 20;
+const PERPS_BUILD_FEE_PRO = PERPS_BUILD_FEE;
 
 export const PERPS_BUILDER_INFO = {
   address: PERPS_BUILD_FEE_RECEIVE_ADDRESS,
