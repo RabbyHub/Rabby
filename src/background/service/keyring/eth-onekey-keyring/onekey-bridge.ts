@@ -66,6 +66,8 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
 
   evmSignTypedData = HardwareWebSdk.evmSignTypedData;
 
+  cancel = HardwareWebSdk.cancel;
+
   searchDevices = HardwareWebSdk.searchDevices;
 
   getPassphraseState = HardwareWebSdk.getPassphraseState;

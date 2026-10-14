@@ -12,13 +12,16 @@ const state = {
   hasPermission: true,
 };
 
+const mockOneKeyCancel = jest.fn();
 const mockKeyringService = {
+  getKeyringForAccount: jest.fn(async () => ({ cancel: mockOneKeyCancel })),
   memStore: { getState: () => ({ isUnlocked: state.isUnlocked }) },
   isUnlocked: () => state.isUnlocked,
 };
 const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
+  setCurrentRequestDeferFn: jest.fn(),
   setStatsData: jest.fn(),
   getStatsData: jest.fn(() => undefined),
   unLock: jest.fn(),
@@ -27,6 +30,8 @@ const mockPermissionService = {
   hasPermission: jest.fn(() => state.hasPermission),
   getConnectedSite: jest.fn(() => undefined),
   addConnectedSiteV2: jest.fn(),
+  updateConnectSite: jest.fn(),
+  touchConnectedSite: jest.fn(),
 };
 const mockPreferenceService = {
   getPreference: jest.fn(),
@@ -91,6 +96,10 @@ jest.mock('consts', () => ({
     CoboArgusKeyring: 'CoboArgusKeyring',
   },
   SUPPORT_1559_KEYRING_TYPE: [],
+}));
+
+jest.mock('@/utils/signEvent', () => ({
+  waitSignComponentAmounted: jest.fn(async () => undefined),
 }));
 
 import rpcFlow from '@/background/controller/provider/rpcFlow';
@@ -168,4 +177,25 @@ describe('rpcFlow: inline (onApproval) requests fail closed instead of queuing o
     await rpcFlow(baseRequest() as any).catch(() => undefined);
     expect(mockNotificationService.requestApproval).toHaveBeenCalled();
   });
+});
+
+test('cancels the captured OneKey signing task when its waiting approval is rejected', async () => {
+  state.isUnlocked = true;
+  state.currentApproval = null;
+  state.hasPermission = true;
+  mockOneKeyCancel.mockClear();
+  mockNotificationService.requestApproval
+    .mockResolvedValueOnce({
+      uiRequestComponent: 'CommonWaiting',
+      type: 'Onekey Hardware',
+      address: '0xaccount',
+    })
+    .mockRejectedValueOnce(new Error('user cancel'));
+  ethSignTypedDataV4.mockImplementationOnce(() => new Promise(() => {}));
+  await expect(rpcFlow(baseRequest() as any)).rejects.toThrow('user cancel');
+  expect(mockKeyringService.getKeyringForAccount).toHaveBeenCalledWith(
+    '0xaccount',
+    'Onekey Hardware'
+  );
+  expect(mockOneKeyCancel).toHaveBeenCalledTimes(1);
 });

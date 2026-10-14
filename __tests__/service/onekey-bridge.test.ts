@@ -1,5 +1,6 @@
 const mockSdk = {
   init: jest.fn(),
+  cancel: jest.fn(),
   on: jest.fn(),
   uiResponse: jest.fn(),
   evmSignTransaction: jest.fn(),
@@ -54,6 +55,24 @@ describe('OneKey SDK 1.2.7 bridge', () => {
     expect(mockSdk.on).toHaveBeenCalledTimes(1);
   });
 
+  it('forwards device-scoped cancellation through the offscreen bridge', async () => {
+    const browser = require('webextension-polyfill');
+    browser.runtime.sendMessage.mockResolvedValue({ success: true });
+    const Bridge = jest.requireActual(
+      '@/background/service/keyring/eth-onekey-keyring/onekey-offscreen-bridge'
+    ).default;
+    await new Bridge().cancel('usb-path');
+    expect(browser.runtime.sendMessage).toHaveBeenCalledWith(
+      expect.objectContaining({ action: 'onekey-cancel', params: ['usb-path'] })
+    );
+    browser.runtime.sendMessage.mockRejectedValueOnce(
+      new Error('Offscreen closed')
+    );
+    await expect(new Bridge().cancel('usb-path')).rejects.toThrow(
+      'Offscreen closed'
+    );
+  });
+
   it('reports failed SDK initialization and permits another attempt', async () => {
     mockSdk.init.mockResolvedValueOnce(false);
     const bridge = createBridge();
@@ -102,6 +121,12 @@ describe('OneKey SDK 1.2.7 bridge', () => {
 });
 
 jest.mock('@/utils/env', () => ({ isManifestV3: false }));
+jest.mock('@/constant', () => ({ EVENTS: {} }));
+jest.mock('@/eventBus', () => ({ emit: jest.fn() }));
+jest.mock('webextension-polyfill', () => ({
+  storage: { session: { get: jest.fn(), set: jest.fn() } },
+  runtime: { sendMessage: jest.fn() },
+}));
 jest.mock('@/background/utils', () => ({
   isSameAddress: (first: string, second: string) =>
     first.toLowerCase() === second.toLowerCase(),
@@ -113,6 +138,8 @@ describe('OneKey V1/V2 account import', () => {
   function setup(protocol: 'V1' | 'V2', passphraseState?: string) {
     const bridge = {
       init: jest.fn().mockResolvedValue(undefined),
+      cancel: jest.fn(),
+      evmSignMessage: jest.fn(),
       searchDevices: jest.fn().mockResolvedValue({
         success: true,
         payload: [{ connectId: 'usb-path', deviceId: 'legacy-projection' }],
@@ -157,6 +184,59 @@ describe('OneKey V1/V2 account import', () => {
       expect(keyring.hdk.publicKey.toString('hex')).toBe(publicKey);
     }
   );
+
+  it('does not restore a cleared wallet cache on the next unlock', async () => {
+    const env = require('@/utils/env');
+    const browser = require('webextension-polyfill');
+    env.isManifestV3 = true;
+    browser.storage.session.get.mockResolvedValue({
+      onekeySessionState: {
+        deviceId: 'authoritative-device-id',
+        connectId: 'usb-path',
+        publicKey,
+        chainCode: '11'.repeat(32),
+        passphraseState: 'old-wallet',
+      },
+    });
+    try {
+      const { keyring, bridge } = setup('V2', 'new-wallet');
+      await keyring.init();
+      keyring.cleanUp();
+      expect(keyring.isUnlocked()).toBe(false);
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
+      expect(keyring.passphraseState).toBe('new-wallet');
+    } finally {
+      env.isManifestV3 = false;
+    }
+  });
+
+  it('cancels a pending signing delay before sending a message to the device', async () => {
+    jest.useFakeTimers();
+    try {
+      const { keyring, bridge } = setup('V2');
+      keyring.unlock = jest.fn().mockResolvedValue('just unlocked');
+      (keyring as any)._requestPassphraseParams = jest.fn().mockResolvedValue({
+        status: 'just unlocked',
+        params: {},
+      });
+      const signing = keyring.signPersonalMessage(
+        '0x' + '11'.repeat(20),
+        '0x01'
+      );
+      const rejected = expect(signing).rejects.toThrow(
+        'OneKey signing cancelled'
+      );
+      await Promise.resolve();
+      keyring.cancel();
+      jest.runAllTimers();
+      await rejected;
+      expect(bridge.cancel).toHaveBeenCalled();
+      expect(bridge.evmSignMessage).not.toHaveBeenCalled();
+    } finally {
+      jest.useRealTimers();
+    }
+  });
 
   it('stops before requesting wallet or public-key data when identity lookup fails', async () => {
     const { bridge, keyring } = setup('V2');

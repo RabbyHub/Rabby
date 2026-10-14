@@ -22,6 +22,13 @@ export function initOneKey() {
       }
 
       switch (msg.action) {
+        case OneKeyAction.cancel:
+          Promise.resolve()
+            .then(() => bridge.cancel(...(msg.params as [string?])))
+            .then(() => sendResponse({ success: true }))
+            .catch((err) => sendResponse({ error: String(err) }));
+          break;
+
         case OneKeyAction.init:
           bridge
             .init()

@@ -23,6 +23,7 @@ export enum ImKeyAction {
 }
 
 export enum OneKeyAction {
+  cancel = 'onekey-cancel',
   init = 'onekey-init',
   evmSignTransaction = 'onekey-evm-sign-transaction',
   evmSignMessage = 'onekey-evm-sign-message',
