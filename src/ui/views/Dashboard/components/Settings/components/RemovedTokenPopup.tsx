@@ -1,17 +1,37 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { TokenItem } from '@/background/service/openapi';
+import type { RemovedToken } from '@/background/service/removedTokens';
 import { Popup } from '@/ui/component';
 import TokenWithChain from '@/ui/component/TokenWithChain';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRemovedTokens } from '@/ui/hooks/useRemovedTokens';
 import { getContainerByScreen, useWallet } from '@/ui/utils';
 import { getTokenSymbol } from '@/ui/utils/token';
+import { ellipsisAddress } from '@/ui/utils/address';
 import { getRemovedTokenKey } from '@/utils/removedTokens';
 import { ReactComponent as RcIconBack } from '@/ui/assets/icon-back-cc.svg';
 import { TokenDetailPopup } from '../../TokenDetailPopup';
 
 const TOKEN_INFO_BATCH_SIZE = 50;
+
+/** Keeps the saved identity usable in token detail when metadata is unavailable. */
+const createFallbackToken = (token: RemovedToken): TokenItem => ({
+  id: token.tokenId,
+  chain: token.chain.toLowerCase(),
+  symbol: ellipsisAddress(token.tokenId),
+  display_symbol: null,
+  optimized_symbol: '',
+  logo_url: '',
+  name: '',
+  amount: 0,
+  price: 0,
+  decimals: 0,
+  time_at: 0,
+  is_core: null,
+  is_verified: null,
+  is_wallet: false,
+});
 
 type TokenInfoCache = {
   address: string | undefined;
@@ -36,7 +56,6 @@ export const RemovedTokenPopup = ({
   }));
   const tokenInfoCache = useRef(tokenInfo);
   const [failedKeys, setFailedKeys] = useState<Set<string>>(new Set());
-  const [reloadCount, setReloadCount] = useState(0);
 
   useEffect(() => {
     if (tokenInfoCache.current.address !== address) {
@@ -102,7 +121,7 @@ export const RemovedTokenPopup = ({
     return () => {
       cancelled = true;
     };
-  }, [address, removedTokens, reloadCount, wallet]);
+  }, [address, removedTokens, wallet]);
 
   return (
     <Popup
@@ -141,22 +160,8 @@ export const RemovedTokenPopup = ({
                 tokenInfo.address === address
                   ? tokenInfo.tokens.get(key)
                   : undefined;
-              if (!token) {
-                return failedKeys.has(key) ? (
-                  <button
-                    key={key}
-                    type="button"
-                    className="flex h-60 shrink-0 items-center justify-between rounded-[8px] bg-r-neutral-card-1 px-12 text-14"
-                    onClick={() => setReloadCount((count) => count + 1)}
-                  >
-                    <span className="text-r-neutral-foot">
-                      {t('page.dashboard.settings.removedToken.loadFailed')}
-                    </span>
-                    <span className="text-r-blue-default">
-                      {t('page.dashboard.settings.removedToken.retry')}
-                    </span>
-                  </button>
-                ) : (
+              if (!token && !failedKeys.has(key)) {
+                return (
                   <div
                     key={key}
                     aria-busy="true"
@@ -164,22 +169,26 @@ export const RemovedTokenPopup = ({
                   />
                 );
               }
+              const displayToken = token || createFallbackToken(item);
               return (
                 <button
                   key={key}
                   type="button"
                   className="flex h-60 shrink-0 items-center gap-10 rounded-[8px] bg-r-neutral-card-1 px-12 text-left"
-                  onClick={() => onSelect(token)}
+                  onClick={() => onSelect(displayToken)}
                 >
                   <TokenWithChain
-                    token={token}
+                    token={displayToken}
                     width="32px"
                     height="32px"
                     chainSize={16}
                     className="shrink-0"
                   />
-                  <span className="truncate text-15 font-medium leading-18 text-r-neutral-title-1">
-                    {getTokenSymbol(token) || item.tokenId}
+                  <span
+                    className="truncate text-15 font-medium leading-18 text-r-neutral-title-1"
+                    title={!token ? item.tokenId : undefined}
+                  >
+                    {getTokenSymbol(displayToken) || item.tokenId}
                   </span>
                 </button>
               );
@@ -214,7 +223,6 @@ export const useRemovedTokenPopup = () => {
           <RemovedTokenPopup
             onClose={() => setVisible(false)}
             onSelect={(token) => {
-              setVisible(false);
               setSelectedToken(token);
             }}
           />
