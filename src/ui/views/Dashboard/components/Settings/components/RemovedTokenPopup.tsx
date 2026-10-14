@@ -214,7 +214,6 @@ export const useRemovedTokenPopup = () => {
           <RemovedTokenPopup
             onClose={() => setVisible(false)}
             onSelect={(token) => {
-              setVisible(false);
               setSelectedToken(token);
             }}
           />
