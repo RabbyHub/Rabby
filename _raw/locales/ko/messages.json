@@ -1172,9 +1172,44 @@
         "pending": "대기 중",
         "beReturnFailed": "브리지에 실패했습니다. 귀하의 자산이 반환되었습니다.",
         "sendStatus": "전송 상태",
-        "swapStatus": "스왑 상태"
+        "swapStatus": "스왑 상태",
+        "bridgingEta": "브리지 진행 중, 예상 소요 시간: <time>{{time}}</time>",
+        "stillBridging": "브리지 진행 중",
+        "sourceFailed": "브리지 실패, {{token}}이 전송되지 않았습니다",
+        "refundedLead": "환불됨",
+        "popupProcessing": "브리지 처리 중",
+        "popupPending": "브리지 대기 중",
+        "popupFailed": "브리지 실패",
+        "popupRefunded": "브리지 환불 완료",
+        "popupCompleted": "브리지 완료",
+        "popupBridgeDelayed": "브리지 지연",
+        "popupBridgeFailed": "브리지에 실패했습니다",
+        "popupRefundedIn": "{{token}}으로 환불됨",
+        "processing": "처리 중",
+        "refund": "환불됨",
+        "goBack": "돌아가기",
+        "contactSupport": "지원팀에 문의",
+        "succeeded": "성공",
+        "sendFrom": "{{chain}}에서 보내기",
+        "receiveOn": "{{chain}}에서 받기",
+        "refundOn": "{{chain}}에서 환불됨",
+        "waitingDestination": "대상 체인의 트랜잭션 대기 중",
+        "sendFailed": "전송 실패",
+        "tokenNotSent": "{{token}}이 전송되지 않았습니다"
       },
-      "best-subtitle": "최고의报价은 예상 총 비용(gas 비용 포함)과 거래 속도의 조합에 의해 결정됩니다."
+      "best-subtitle": "최고의报价은 예상 총 비용(gas 비용 포함)과 거래 속도의 조합에 의해 결정됩니다.",
+      "bridge": "브리지",
+      "by": "제공:",
+      "timeLeft": "{{time}} 남음",
+      "refundIn": "{{token}}으로 환불됨",
+      "viewDetails": "상세 보기",
+      "duration-sec": "{{duration}}초",
+      "duration-hour": "{{duration}}시간",
+      "duration-hour-min": "{{hours}}시간 {{minutes}}분",
+      "duration-day": "{{duration}}일",
+      "duration-day-hour": "{{days}}일 {{hours}}시간",
+      "duration-day-min": "{{days}}일 {{minutes}}분",
+      "duration-day-hour-min": "{{days}}일 {{hours}}시간 {{minutes}}분"
     },
     "manageAddress": {
       "deleted": "삭제됨",
@@ -1500,7 +1535,13 @@
         "biometricUnlockEnableFailed": "생체 인식 잠금 해제를 활성화하는 데 실패했습니다.",
         "biometricUnlockSetupDesc": "바이오메트릭 잠금을 활성화하려면 비밀번호를 확인하세요.",
         "clearPendingCheckbox": "로컬 nonce 데이터와 서명 기록도 재설정",
-        "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다."
+        "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다.",
+        "removedToken": {
+          "title": "삭제된 토큰",
+          "description": "삭제된 토큰은 모든 주소의 포트폴리오에서 숨겨지지만 잔액 계산에는 계속 포함됩니다.",
+          "loadFailed": "토큰을 불러오지 못했습니다",
+          "retry": "다시 시도"
+        }
       },
       "tokenDetail": {
         "customized": "맞춤형",
@@ -1544,7 +1585,19 @@
         "verifyScamTips": "이것은 사기 토큰입니다.",
         "BridgeProvider": "브리지 제공자",
         "bridge": "브리지",
-        "bridgeToEth": "Ethereum 체인으로 브릿지"
+        "bridgeToEth": "Ethereum 체인으로 브릿지",
+        "removed": {
+          "more": "더 보기",
+          "removeToken": "토큰 삭제",
+          "remove": "삭제",
+          "confirmTitle": "이 토큰을 삭제하시겠습니까?",
+          "portfolioNotice": "삭제하면 이 토큰은 포트폴리오에 더 이상 표시되지 않습니다.",
+          "restoreNotice": "“설정 >> 삭제된 토큰”에서 언제든지 복원할 수 있습니다.",
+          "warning": "삭제된 토큰은 모든 주소의 포트폴리오에서 숨겨지지만 잔액 계산에는 계속 포함됩니다.",
+          "removeFailed": "토큰을 삭제하지 못했습니다",
+          "restore": "삭제된 토큰 복원",
+          "restoreFailed": "토큰을 복원하지 못했습니다"
+        }
       },
       "assets": {
         "portfolio": {

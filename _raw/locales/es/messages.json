@@ -1407,7 +1407,13 @@
         "biometricUnlockSetupTitle": "Habilitar Desbloqueo Biométrico",
         "biometricUnlockEnableFailed": "No se pudo habilitar el desbloqueo biométrico.",
         "biometricUnlockSetupDesc": "Confirma tu contraseña para activar el desbloqueo biométrico.",
-        "clearPendingCheckbox": "Restablecer también mis datos de nonce locales y el registro de firmas"
+        "clearPendingCheckbox": "Restablecer también mis datos de nonce locales y el registro de firmas",
+        "removedToken": {
+          "title": "Tokens eliminados",
+          "description": "Los tokens eliminados se ocultarán de tu Portafolio en todas tus direcciones, pero seguirán incluidos en el cálculo de tu saldo.",
+          "loadFailed": "No se pudo cargar el token",
+          "retry": "Reintentar"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -1451,7 +1457,19 @@
         "OriginalToken": "Token original",
         "fdvTips": "La capitalización de mercado si la oferta máxima estuviera en circulación. Valoración totalmente diluida (FDV) = precio × oferta máxima. Si no se especifica la oferta máxima, FDV = precio × oferta total. Si ninguna de las dos está definida o es infinita, no se muestra la FDV.",
         "bridgeToEth": "Hacer bridge a Ethereum",
-        "bridge": "Bridge"
+        "bridge": "Bridge",
+        "removed": {
+          "more": "Más",
+          "removeToken": "Eliminar token",
+          "remove": "Eliminar",
+          "confirmTitle": "¿Eliminar este token?",
+          "portfolioNotice": "Este token dejará de aparecer en tu Portafolio después de eliminarlo.",
+          "restoreNotice": "Puedes restaurarlo en cualquier momento en «Configuración >> Tokens eliminados».",
+          "warning": "Los tokens eliminados se ocultarán de tu Portafolio en todas tus direcciones, pero seguirán incluidos en el cálculo de tu saldo.",
+          "removeFailed": "No se pudo eliminar el token",
+          "restore": "Restaurar token eliminado",
+          "restoreFailed": "No se pudo restaurar el token"
+        }
       },
       "assets": {
         "usdValue": "VALOR EN USD",
@@ -2363,9 +2381,44 @@
         "pending": "Pendiente",
         "sendingFrom": "Enviando desde {{chain}}",
         "swapStatus": "Estado de intercambio",
-        "sendStatus": "Estado del envío"
+        "sendStatus": "Estado del envío",
+        "bridgingEta": "Bridge en curso, tiempo estimado: <time>{{time}}</time>",
+        "stillBridging": "Bridge aún en curso",
+        "sourceFailed": "El bridge falló. Tus {{token}} no se enviaron",
+        "refundedLead": "Reembolsado",
+        "popupProcessing": "Bridge en proceso",
+        "popupPending": "Bridge pendiente",
+        "popupFailed": "Bridge fallido",
+        "popupRefunded": "Bridge reembolsado",
+        "popupCompleted": "Bridge completado",
+        "popupBridgeDelayed": "Bridge retrasado",
+        "popupBridgeFailed": "El bridge falló",
+        "popupRefundedIn": "Reembolsado en {{token}}",
+        "processing": "Procesando",
+        "refund": "Reembolsado",
+        "goBack": "Volver",
+        "contactSupport": "Contactar con soporte",
+        "succeeded": "Completado con éxito",
+        "sendFrom": "Enviar desde {{chain}}",
+        "receiveOn": "Recibir en {{chain}}",
+        "refundOn": "Reembolsado en {{chain}}",
+        "waitingDestination": "Esperando la transacción de destino",
+        "sendFailed": "Error de envío",
+        "tokenNotSent": "Tus {{token}} no se enviaron"
       },
-      "best-subtitle": "La mejor cotización se determina por una combinación del costo total estimado (incluyendo las tarifas de gas) y la velocidad de entrega."
+      "best-subtitle": "La mejor cotización se determina por una combinación del costo total estimado (incluyendo las tarifas de gas) y la velocidad de entrega.",
+      "bridge": "Bridge",
+      "by": "por",
+      "timeLeft": "Tiempo restante: {{time}}",
+      "refundIn": "Reembolsado en {{token}}",
+      "viewDetails": "Ver detalles",
+      "duration-sec": "{{duration}} s",
+      "duration-hour": "{{duration}} h",
+      "duration-hour-min": "{{hours}} h {{minutes}} min",
+      "duration-day": "{{duration}} d",
+      "duration-day-hour": "{{days}} d {{hours}} h",
+      "duration-day-min": "{{days}} d {{minutes}} min",
+      "duration-day-hour-min": "{{days}} d {{hours}} h {{minutes}} min"
     },
     "pendingDetail": {
       "Header": {
