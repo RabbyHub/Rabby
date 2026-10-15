@@ -6,7 +6,6 @@ import {
   DEX_ENUM,
   getRouter as getSwapRouter,
   getSpender,
-  verifySdk,
 } from '@rabby-wallet/rabby-swap';
 import { QuoteResult, getQuote } from '@rabby-wallet/rabby-swap/dist/quote';
 import BigNumber from 'bignumber.js';
@@ -23,6 +22,7 @@ import {
   getSwapNativeTokenAddress,
   isSwapWrapToken,
 } from '../utils';
+import { verifySdkWithDebug } from './calldataDebug';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -459,24 +459,27 @@ export const useQuoteMethods = () => {
             spenderPass,
             callDataPass,
             receiverPass,
-          } = verifySdk({
-            chain,
-            dexId,
-            slippage,
-            data: {
-              ...data,
-              fromToken: payToken.id,
-              fromTokenAmount: new BigNumber(payAmount)
-                .times(10 ** payToken.decimals)
-                .toFixed(0, 1),
-              toToken: receiveToken?.id,
+          } = verifySdkWithDebug(
+            {
+              chain,
+              dexId,
+              slippage,
+              data: {
+                ...data,
+                fromToken: payToken.id,
+                fromTokenAmount: new BigNumber(payAmount)
+                  .times(10 ** payToken.decimals)
+                  .toFixed(0, 1),
+                toToken: receiveToken?.id,
+              },
+              payTokenId: payToken.id,
+              receiveTokenId: receiveToken.id,
+              userAddress,
+              nativeTokenAddress: getSwapNativeTokenAddress(chain),
+              chainId: getSwapChainId(chain),
             },
-            payTokenId: payToken.id,
-            receiveTokenId: receiveToken.id,
-            userAddress,
-            nativeTokenAddress: getSwapNativeTokenAddress(chain),
-            chainId: getSwapChainId(chain),
-          });
+            data
+          );
 
           if (!isSdkDataPass) {
             const failed = [
