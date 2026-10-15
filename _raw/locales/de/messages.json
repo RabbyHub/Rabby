@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect kann keine Verbindung herstellen, weil die Uhrzeit deines Computers nicht synchronisiert ist. Aktiviere die automatische Einstellung von Datum und Uhrzeit und versuche es erneut.",
         "connectYour": "Verbinden Sie Ihre",
         "viaWalletConnect": "über WalletConnect",
         "connectedSuccessfully": "Erfolgreich verbunden",
@@ -3313,6 +3314,14 @@
           "offer": "Angebot",
           "platform": "Plattform"
         },
+        "verifyError": {
+          "unsupportedChain": "NFT-Handel wird auf dieser Chain noch nicht unterstützt",
+          "currency": "Sicherheitsprüfung fehlgeschlagen: Der Zahlungstoken entspricht nicht dem erwarteten Token",
+          "nft": "Sicherheitsprüfung fehlgeschlagen: Das NFT im Auftrag entspricht nicht dem ausgewählten",
+          "amount": "Sicherheitsprüfung fehlgeschlagen: Der Betrag, den du erhältst, entspricht nicht der Anzeige",
+          "recipient": "Sicherheitsprüfung fehlgeschlagen: Der Erlös würde nicht an deine Adresse gesendet",
+          "invalid": "Sicherheitsprüfung fehlgeschlagen: Die Auftragsdaten sind ungültig. Bitte versuche es später erneut"
+        },
         "confirmingTx": "Ihre Transaktion wird bestätigt",
         "hideLowValue": "NFTs mit niedrigem Wert ausblenden",
         "pending": "Ausstehend",
@@ -3627,7 +3636,6 @@
       "yourPosition": "Ihre Position",
       "fundingRate": "Finanzierungsrate",
       "withdraw": "Abheben",
-      "rabbyFeeTipsZero": "Rabby-Gebühr: 0%",
       "add": "Hinzufügen",
       "stopLossWhen": "Stop-Loss-Preis festlegen",
       "isolated": "Isoliert",
@@ -3653,7 +3661,7 @@
       "sizeTips": "Der Gesamtwert oder die Menge Ihres Trades, festgelegt durch Margin und Hebel.",
       "cross": "Cross-Margin",
       "minimumOrderSize": "Die Mindestordergröße beträgt 10 US-Dollar.",
-      "rabbyFeeTipsV2": "Rabby-Gebühr: 0,02 %",
+      "rabbyFeeTipsV2": "Rabby-Gebühr: 0,04 %",
       "TakeProfit": "Gewinnmitnahme",
       "marginCross": "Margin (Cross-Margin)",
       "logInPerpsAccount": "Bei meinem Perps-Konto anmelden.",

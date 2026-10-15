@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "Bilgisayarınızın saati senkronize olmadığı için WalletConnect bağlanamıyor. Otomatik tarih ve saat ayarını etkinleştirip tekrar deneyin.",
         "connectYour": "Bağla",
         "viaWalletConnect": "Wallet Connect ile",
         "connectedSuccessfully": "Başarıyla Bağlandı",
@@ -3316,6 +3317,14 @@
           "offerPrice": "Teklif Fiyatı",
           "creatorFeeTips1": "Yaratıcı kazançları satıcı tarafından ödenecek. Yaratıcı kazançlar zorunludur."
         },
+        "verifyError": {
+          "unsupportedChain": "Bu ağda NFT alım satımı henüz desteklenmiyor",
+          "currency": "Güvenlik kontrolü başarısız: ödeme tokenı beklenen tokenla eşleşmiyor",
+          "nft": "Güvenlik kontrolü başarısız: emirdeki NFT seçtiğiniz NFT ile eşleşmiyor",
+          "amount": "Güvenlik kontrolü başarısız: alacağınız tutar gösterilen tutarla eşleşmiyor",
+          "recipient": "Güvenlik kontrolü başarısız: gelir adresinize gönderilmeyecek",
+          "invalid": "Güvenlik kontrolü başarısız: emir verileri geçersiz. Lütfen daha sonra tekrar deneyin"
+        },
         "empty": "Hayır, NFT'ler yok",
         "pending": "Beklemede",
         "hideLowValue": "Düşük Değerli NFT'leri Gizle",
@@ -3593,7 +3602,6 @@
       "closeAll": "Tümünü Kapat",
       "withdraw": "Çek",
       "leverage": "Kaldıraç",
-      "rabbyFeeTipsZero": "Rabby ücreti: 0%",
       "insufficientBalance": "Yetersiz bakiye",
       "lastUsed": "En son kullanılan",
       "timeAgo": "{{time}} önce",
@@ -3633,7 +3641,7 @@
       "takeProfitWhen": "Kâr Alım Fiyatını Belirle",
       "size": "Pozisyon Büyüklüğü",
       "autoClose": "Otomatik Kapat",
-      "rabbyFeeTipsV2": "Rabby ücreti: 0,02%",
+      "rabbyFeeTipsV2": "Rabby ücreti: 0,04%",
       "stopLossTipsLongLiquidation": "Fiyat, tasfiye fiyatının ({{price}}) altında.",
       "long": "Uzun Pozisyon",
       "stopLoss": "Zarar Durdurma Emri",

@@ -717,6 +717,7 @@
         "haveOneKey": "還沒有 OneKey？"
       },
       "walletConnect": {
+        "clockSkewError": "電腦時間與伺服器不一致，WalletConnect 無法連線。請開啟系統自動設定日期和時間，然後重試。",
         "connectYour": "連接你的",
         "viaWalletConnect": "透過 WalletConnect",
         "connectedSuccessfully": "連接成功",
@@ -3360,6 +3361,14 @@
           "creatorFeeTips1": "創作者收益將由賣方支付。創作者收益是強制執行的。",
           "creatorFee": "創作者費用（{{fee}}%）"
         },
+        "verifyError": {
+          "unsupportedChain": "該鏈暫不支援 NFT 交易",
+          "currency": "安全校驗未通過：收款代幣與預期不符",
+          "nft": "安全校驗未通過：訂單中的 NFT 與你選擇的不一致",
+          "amount": "安全校驗未通過：實際到賬金額與頁面顯示不符",
+          "recipient": "安全校驗未通過：收款地址不是你的地址",
+          "invalid": "安全校驗未通過：訂單數據異常，請稍後重試"
+        },
         "hideLowValue": "隱藏低價值 NFT",
         "pending": "待處理",
         "confirmingTx": "正在確認你的交易",
@@ -3646,7 +3655,7 @@
       "short": "做空",
       "takeProfitWhen": "設定止賺價格",
       "deleteAgentSuccess": "代理已成功刪除",
-      "rabbyFeeTipsV2": "Rabby 手續費：0.02%",
+      "rabbyFeeTipsV2": "Rabby 手續費：0.04%",
       "closeAll": "全部平倉",
       "price": "價格",
       "close": "平倉",
@@ -3691,7 +3700,6 @@
       "sizeTips": "你的交易的總價值或數量，由保證金與槓桿決定。",
       "learnAboutPerps": "了解 Perps",
       "isolated": "逐倉",
-      "rabbyFeeTipsZero": "Rabby 手續費：0%",
       "marginCross": "保證金（全倉）",
       "cross": "全倉",
       "availableBalance": "可用餘額：{{balance}}",

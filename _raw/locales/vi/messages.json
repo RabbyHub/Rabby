@@ -1850,6 +1850,7 @@
         "haveOneKey": "Chưa có OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect không thể kết nối vì thời gian trên máy tính của bạn không đồng bộ. Hãy bật cài đặt ngày và giờ tự động, rồi thử lại.",
         "status": {
           "default": "Quét với {{brand}}",
           "brandError": "Ứng dụng ví sai.",
@@ -3310,6 +3311,14 @@
           "creatorFeeTips1": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán. Thu nhập của người sáng tạo được thi hành.",
           "quantity": "Số lượng"
         },
+        "verifyError": {
+          "unsupportedChain": "Chuỗi này chưa hỗ trợ giao dịch NFT",
+          "currency": "Kiểm tra bảo mật thất bại: token thanh toán không khớp với token mong đợi",
+          "nft": "Kiểm tra bảo mật thất bại: NFT trong lệnh không khớp với NFT bạn đã chọn",
+          "amount": "Kiểm tra bảo mật thất bại: số tiền bạn nhận được không khớp với số hiển thị",
+          "recipient": "Kiểm tra bảo mật thất bại: tiền thu được sẽ không được gửi đến địa chỉ của bạn",
+          "invalid": "Kiểm tra bảo mật thất bại: dữ liệu lệnh không hợp lệ. Vui lòng thử lại sau"
+        },
         "all": "Tất cả",
         "empty": "Không có NFTs",
         "hideLowValue": "Ẩn NFT Giá Trị Thấp",
@@ -3609,7 +3618,7 @@
       "tradePerps": "Giao dịch Perps",
       "leverageRangeMaxError": "Đòn bẩy tối đa là {{max}}x",
       "openInterest": "Tổng số hợp đồng đang mở",
-      "rabbyFeeTipsV2": "Phí Rabby: 0,02%",
+      "rabbyFeeTipsV2": "Phí Rabby: 0,04%",
       "marginCross": "Ký quỹ (chéo)",
       "margin": "Ký quỹ",
       "stopLossTipsShort": "Giá dừng lỗ phải cao hơn giá hiện tại.",
@@ -3650,7 +3659,6 @@
       "openLong": "Mở vị thế mua",
       "funding": "Tỷ lệ funding",
       "fundingRate": "Tỷ lệ cấp vốn",
-      "rabbyFeeTipsZero": "Phí Rabby: 0%",
       "openPositionTips": "Giao dịch hợp đồng vĩnh viễn mang lại rủi ro đáng kể, bao gồm khả năng mất đột ngột và toàn bộ khoản đầu tư và tài sản thế chấp của bạn do đòn bẩy cao và biến động thị trường, và có thể không phù hợp với tất cả người dùng. Giá có thể bị ảnh hưởng bởi tỷ lệ funding và thanh khoản và bạn có thể phải chịu thanh lý tự động mà không nhận được thông báo trước. Dữ liệu thị trường được cung cấp bởi Hyperliquid.",
       "takeProfit": "Lệnh chốt lời",
       "estimatedLiquidationPrice": "Giá thanh lý ước tính",

@@ -361,7 +361,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 </span>
               </div>
               <span className="text-13 text-r-neutral-title-1 font-medium">
-                0.02%
+                0.04%
               </span>
             </div>
           </div>

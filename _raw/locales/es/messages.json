@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect no puede conectarse porque la hora de tu ordenador no está sincronizada. Activa la fecha y hora automáticas y vuelve a intentarlo.",
         "connectYour": "Conectar tu",
         "viaWalletConnect": "mediante WalletConnect",
         "connectedSuccessfully": "Conectado exitosamente",
@@ -3313,6 +3314,14 @@
           "totalEst": "Ingresos totales estimados",
           "platformFeeTips": "Esta tarifa es el cargo por servicio de OpenSea."
         },
+        "verifyError": {
+          "unsupportedChain": "El comercio de NFT aún no es compatible con esta cadena",
+          "currency": "Falló la verificación de seguridad: el token de pago no coincide con el esperado",
+          "nft": "Falló la verificación de seguridad: el NFT de la orden no coincide con el que seleccionaste",
+          "amount": "Falló la verificación de seguridad: el monto que recibirías no coincide con el mostrado",
+          "recipient": "Falló la verificación de seguridad: los fondos no se enviarían a tu dirección",
+          "invalid": "Falló la verificación de seguridad: los datos de la orden no son válidos. Inténtalo de nuevo más tarde"
+        },
         "empty": "Sin NFTs",
         "hideLowValue": "Ocultar NFTs de bajo valor",
         "confirmingTx": "Confirmando tu transacción",
@@ -3602,7 +3611,6 @@
       "closeLong": "Cerrar posición larga",
       "stopLossTipsLongLiquidation": "El precio es más bajo que el precio de liquidación ({{price}})",
       "closeShort": "Cerrar posición corta",
-      "rabbyFeeTipsZero": "Tarifa de Rabby: 0%",
       "withdraw": "Retirar fondos",
       "size": "Tamaño",
       "openInterest": "Interés abierto",
@@ -3621,7 +3629,7 @@
       "openShort": "Abrir posición corta",
       "fundingRate": "Tasa de financiación",
       "openLong": "Abrir posición larga",
-      "rabbyFeeTipsV2": "Tarifa de Rabby: 0,02%",
+      "rabbyFeeTipsV2": "Tarifa de Rabby: 0,04%",
       "lastUsed": "Último utilizado",
       "directDeposit": "Depósito directo",
       "permissionTips": "La apertura de posiciones no está disponible en tu región.",

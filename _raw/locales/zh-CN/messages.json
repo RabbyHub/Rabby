@@ -718,6 +718,7 @@
         "haveOneKey": "还没有 OneKey 硬件？"
       },
       "walletConnect": {
+        "clockSkewError": "电脑时间与服务器不一致，WalletConnect 无法连接。请开启系统自动设置日期和时间，然后重试。",
         "connectYour": "连接你的",
         "viaWalletConnect": "通过 WalletConnect",
         "connectedSuccessfully": "连接成功",
@@ -3360,6 +3361,14 @@
           "creatorFeeTips1": "创作者收益将由卖方支付。创作者收益是强制执行的。",
           "rabbyFee": "Rabby 费用 (0%)"
         },
+        "verifyError": {
+          "unsupportedChain": "该链暂不支持 NFT 交易",
+          "currency": "安全校验未通过：收款代币与预期不符",
+          "nft": "安全校验未通过：订单中的 NFT 与你选择的不一致",
+          "amount": "安全校验未通过：实际到账金额与页面显示不符",
+          "recipient": "安全校验未通过：收款地址不是你的地址",
+          "invalid": "安全校验未通过：订单数据异常，请稍后重试"
+        },
         "empty": "没有 NFT",
         "pending": "待处理",
         "confirmingTx": "正在确认你的交易",
@@ -3643,7 +3652,7 @@
       "funding": "资金费率",
       "sizeTips": "你的交易总价值或数量由保证金和杠杆决定。",
       "fundingRate": "资金费率",
-      "rabbyFeeTipsV2": "Rabby 手续费：0.02%",
+      "rabbyFeeTipsV2": "Rabby 手续费：0.04%",
       "explorePerps": "探索 Perps",
       "closeAll": "全部平仓",
       "dailyVolume": "24小时成交量",
@@ -3706,7 +3715,6 @@
       "leverageRangeMaxError": "最大杠杆为 {{max}}倍",
       "leverageRangeMinError": "最小杠杆是 {{min}}x",
       "stopLossTipsLongLiquidation": "价格低于强平价（{{price}}）",
-      "rabbyFeeTipsZero": "Rabby 费率：0%",
       "reviewOrder": "订单预览",
       "directDepositFast": "快速，零滑点",
       "settings": "设置",

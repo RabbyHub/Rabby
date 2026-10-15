@@ -1850,6 +1850,7 @@
         "haveOneKey": "Belum memiliki OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect tidak dapat terhubung karena waktu komputer Anda tidak sinkron. Aktifkan tanggal dan waktu otomatis, lalu coba lagi.",
         "status": {
           "brandError": "Aplikasi dompet salah.",
           "accountError": "Alamat tidak cocok.",
@@ -3310,6 +3311,14 @@
           "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
           "creatorFee": "Biaya pencipta ({{fee}}%)"
         },
+        "verifyError": {
+          "unsupportedChain": "Perdagangan NFT belum didukung di chain ini",
+          "currency": "Pemeriksaan keamanan gagal: token pembayaran tidak sesuai dengan yang diharapkan",
+          "nft": "Pemeriksaan keamanan gagal: NFT dalam order tidak sesuai dengan yang Anda pilih",
+          "amount": "Pemeriksaan keamanan gagal: jumlah yang akan Anda terima tidak sesuai dengan yang ditampilkan",
+          "recipient": "Pemeriksaan keamanan gagal: hasil penjualan tidak akan dikirim ke alamat Anda",
+          "invalid": "Pemeriksaan keamanan gagal: data order tidak valid. Silakan coba lagi nanti"
+        },
         "empty": "Tidak ada NFT",
         "all": "Semua",
         "confirmingTx": "Mengonfirmasi transaksi Anda",
@@ -3605,7 +3614,7 @@
       "deleteAgentModal": "Anda telah mencapai jumlah agen maksimum. Apakah Anda ingin menghapus agen yang ada untuk membuat yang baru?",
       "logInTips": "Masuk dengan alamat Anda dan setor dana untuk mulai memperdagangkan Perps.",
       "price": "Harga",
-      "rabbyFeeTipsV2": "Biaya Rabby: 0,02%",
+      "rabbyFeeTipsV2": "Biaya Rabby: 0,04%",
       "deleteAgentSuccess": "Agen berhasil dihapus.",
       "marginIsolated": "Margin Terisolasi",
       "timeAgo": "{{time}} yang lalu",
@@ -3656,7 +3665,6 @@
       "fundingRate": "Tingkat pendanaan",
       "add": "Tambahkan",
       "leverageRangeMaxError": "Leverage maksimum adalah {{max}}x",
-      "rabbyFeeTipsZero": "Biaya Rabby: 0%",
       "close": "Tutup posisi",
       "directDepositFast": "Cepat, 0 Slippage",
       "positionValue": "Nilai Posisi",

@@ -22,7 +22,7 @@ import {
   zeroAddress,
   zeroHash,
 } from 'viem';
-const RESTRICTED_ZONE = '0x000056f7000000ece9003ca63978907a00ffd100';
+import { OPENSEA_RESTRICTED_ZONE } from './nftVerify';
 
 export const calcBestOfferPrice = (nftDetail?: NFTDetail | null) => {
   if (!nftDetail || !nftDetail?.best_offer_order) {
@@ -139,7 +139,7 @@ export const buildCreateListingTypedData = (params: {
       },
       ...feeConsiderations,
     ],
-    zone: isCreatorFeeEnforced ? RESTRICTED_ZONE : zeroAddress,
+    zone: isCreatorFeeEnforced ? OPENSEA_RESTRICTED_ZONE : zeroAddress,
     zoneHash: zeroHash,
     counter: counter,
     offerer: sellerAddress,

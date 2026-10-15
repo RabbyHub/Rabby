@@ -1576,6 +1576,7 @@
         "title": "Impossible d'importer"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect ne peut pas se connecter car l’heure de votre ordinateur n’est pas synchronisée. Activez le réglage automatique de la date et de l’heure, puis réessayez.",
         "button": {
           "connect": "Connecter",
           "disconnect": "Déconnecter",
@@ -3655,6 +3656,14 @@
           "rabbyFee": "Frais de Rabby (0%)",
           "creatorFeeTips1": "Les droits du créateur sont payés par le vendeur et leur versement est obligatoire."
         },
+        "verifyError": {
+          "unsupportedChain": "Le trading de NFT n'est pas encore pris en charge sur cette chaîne",
+          "currency": "Échec de la vérification de sécurité : le jeton de paiement ne correspond pas au jeton attendu",
+          "nft": "Échec de la vérification de sécurité : le NFT de l'ordre ne correspond pas à celui sélectionné",
+          "amount": "Échec de la vérification de sécurité : le montant que vous recevriez ne correspond pas à celui affiché",
+          "recipient": "Échec de la vérification de sécurité : les fonds ne seraient pas envoyés à votre adresse",
+          "invalid": "Échec de la vérification de sécurité : les données de l'ordre sont invalides. Veuillez réessayer plus tard"
+        },
         "pending": "En attente",
         "hideLowValue": "Masquer les NFTs de faible valeur",
         "confirmingTx": "Confirmation de votre transaction",
@@ -3961,7 +3970,6 @@
       "openInterest": "Intérêt ouvert",
       "lastUsed": "Dernière utilisation",
       "takeProfit": "Prise de bénéfices",
-      "rabbyFeeTipsZero": "Frais Rabby : 0 %",
       "margin": "Marge",
       "short": "Position courte",
       "isolated": "Marge isolée",
@@ -3990,7 +3998,7 @@
       "stopLoss": "Ordre stop-loss",
       "cross": "Marge croisée",
       "learnAboutPerps": "En savoir plus sur les Perps.",
-      "rabbyFeeTipsV2": "Frais Rabby : 0,02 %",
+      "rabbyFeeTipsV2": "Frais Rabby : 0,04 %",
       "direction": "Direction",
       "takeProfitWhen": "Définir le prix de prise de bénéfices",
       "leverageRangeMaxError": "L’effet de levier maximal est de {{max}}x",

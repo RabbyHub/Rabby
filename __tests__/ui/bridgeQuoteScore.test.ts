@@ -3,6 +3,12 @@ import type { SelectedBridgeQuote } from '@/ui/views/Bridge/hooks';
 import {
   bridgeQuoteEstimatedValueBn,
   bridgeQuoteScore,
+  formatBridgeSlippageRatio,
+  getBridgePayTokenRawAmount,
+  getBridgeQuoteKey,
+  getBridgeSlippageRatio,
+  isSameBridgeQuote,
+  resolveBridgeSlippagePercent,
 } from '@/ui/views/Bridge/utils/bridgeQuote';
 
 const quote = ({
@@ -102,5 +108,49 @@ describe('bridgeQuoteScore', () => {
     expect(
       getBestBridgeQuote([slowQuote, fastQuote], receiveToken).bridge_id
     ).toBe('fast');
+  });
+});
+
+describe('bridge quote identity and amount helpers', () => {
+  const left = quote({
+    aggregatorId: 'lifi',
+    bridgeId: 'stargate',
+    amount: '1',
+    duration: 0,
+    gasUsd: 0,
+  });
+  const right = quote({
+    aggregatorId: 'lifi',
+    bridgeId: 'stargate',
+    amount: '2',
+    duration: 0,
+    gasUsd: 0,
+  });
+  const other = quote({
+    aggregatorId: 'socket',
+    bridgeId: 'stargate',
+    amount: '1',
+    duration: 0,
+    gasUsd: 0,
+  });
+
+  it('builds a stable aggregator-bridge key', () => {
+    expect(getBridgeQuoteKey(left)).toBe('lifi-stargate');
+    expect(isSameBridgeQuote(left, right)).toBe(true);
+    expect(isSameBridgeQuote(left, other)).toBe(false);
+  });
+
+  it('converts pay amount to raw integer string', () => {
+    expect(getBridgePayTokenRawAmount('1.23', 6)).toBe('1230000');
+  });
+
+  it('converts percent slippage to a ratio, same as the original BigNumber.div(100)', () => {
+    expect(formatBridgeSlippageRatio('1')).toBe('0.01');
+    expect(getBridgeSlippageRatio('1')).toBe(0.01);
+  });
+
+  it('keeps the hook empty fallback as 1 percent', () => {
+    expect(resolveBridgeSlippagePercent('')).toBe('1');
+    expect(resolveBridgeSlippagePercent('0.5')).toBe('0.5');
   });
 });
