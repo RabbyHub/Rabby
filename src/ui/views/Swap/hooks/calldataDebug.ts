@@ -10,7 +10,12 @@ import {
   VerifySdkResult,
 } from '@rabby-wallet/rabby-swap';
 import type { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
-import { decodeCalldata, MagpieABI, UniABI } from '@/utils/swapCalldata';
+import {
+  CalldataDecodeError,
+  decodeCalldata,
+  MagpieABI,
+  UniABI,
+} from '@/utils/swapCalldata';
 import BigNumber from 'bignumber.js';
 import { utils } from 'ethers';
 
@@ -44,13 +49,6 @@ const inspectDecodeFailure = (params: VerifySdkParams, quote: QuoteResult) => {
     const transaction = new utils.Interface(abi).parseTransaction({
       data: quote.tx.data,
     });
-    const expectedFunctions = abi.map((fragment) => fragment.name);
-    if (!transaction || !expectedFunctions.includes(transaction.name)) {
-      return {
-        step: 'decode.function',
-        reason: `Unsupported calldata function: ${transaction?.name || 'unknown'}`,
-      };
-    }
     step = isUni ? 'decode.uni.commands' : 'decode.magpie.packedData';
     // Retry without the SDK's exception-swallowing wrapper to retain the stack.
     decodeCalldata(params.dexId, { ...quote.tx, chainId: params.chainId });
@@ -61,7 +59,10 @@ const inspectDecodeFailure = (params: VerifySdkParams, quote: QuoteResult) => {
         'Outer ABI decoding succeeded, but the local decoder returned null without an internal failure reason.',
     };
   } catch (error) {
-    return { step, error: describeError(error) };
+    return {
+      step: error instanceof CalldataDecodeError ? error.step : step,
+      error: describeError(error),
+    };
   }
 };
 

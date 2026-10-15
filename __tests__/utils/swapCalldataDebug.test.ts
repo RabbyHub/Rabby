@@ -5,7 +5,7 @@ import {
   VerifySdkParams,
   VerifySdkResult,
 } from '@rabby-wallet/rabby-swap';
-import { decodeCalldata } from '@/utils/swapCalldata';
+import { CalldataDecodeError, decodeCalldata } from '@/utils/swapCalldata';
 import { verifySdkWithDebug } from '@/ui/views/Swap/hooks/calldataDebug';
 import sample from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
 
@@ -151,4 +151,28 @@ it('keeps using the SDK verifier for other DEXes', () => {
   expect(verifySdkWithDebug(otherDexParams, quote)).toBe(result);
   expect(sdkVerifier).toHaveBeenCalledWith(otherDexParams);
   expect(localDecoder).not.toHaveBeenCalled();
+});
+
+it('logs the version-specific decoding step together with the original quote', () => {
+  const step = 'decode.magpie.dexAggregator.amountOutMin';
+  localDecoder.mockImplementation(() => {
+    throw new CalldataDecodeError(
+      step,
+      'amountOutMin points outside the payload'
+    );
+  });
+
+  verifySdkWithDebug(params, quote);
+
+  expect(console.log).toHaveBeenCalledWith(
+    '[swap-calldata-debug]',
+    'Magpie: calldata ❌failed',
+    expect.objectContaining({
+      firstFailedStep: step,
+      error: expect.objectContaining({
+        message: 'amountOutMin points outside the payload',
+      }),
+      quote,
+    })
+  );
 });

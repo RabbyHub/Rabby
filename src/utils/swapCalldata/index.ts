@@ -5,6 +5,7 @@ import { decodeCalldata as decodeMagpieCalldata } from './magpie';
 export { UniABI, MagpieABI } from './abi';
 export { isSameAddress, NULL_ADDRESS } from './utils';
 export type { DecodeCalldataResult, TxWithChainId } from './types';
+export { CalldataDecodeError } from './errors';
 
 export const decodeCalldata = (dexId: string, tx: TxWithChainId) => {
   switch (dexId) {
