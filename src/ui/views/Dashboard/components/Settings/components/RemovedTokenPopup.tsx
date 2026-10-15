@@ -174,7 +174,7 @@ export const RemovedTokenPopup = ({
                 <button
                   key={key}
                   type="button"
-                  className="flex h-60 shrink-0 items-center gap-10 rounded-[8px] bg-r-neutral-card-1 px-12 text-left"
+                  className="flex h-60 shrink-0 items-center gap-10 rounded-[8px] border border-transparent bg-r-neutral-card-1 px-12 text-left hover:border-r-blue-default active:border-r-blue-default active:bg-r-blue-light-2"
                   onClick={() => onSelect(displayToken)}
                 >
                   <TokenWithChain

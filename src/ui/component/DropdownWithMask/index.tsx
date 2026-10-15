@@ -60,6 +60,7 @@ const DropdownWithMask = ({
         )}
       <Dropdown
         {...props}
+        transitionName=""
         open={open}
         onOpenChange={onOpenChange}
         getPopupContainer={() => document.body}

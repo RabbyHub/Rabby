@@ -12,7 +12,8 @@ export type RemovedTokenAction = {
   key: string;
   title: string;
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
-  iconSize?: 16 | 24;
+  iconSize?: 20 | 24;
+  iconClassName?: string;
   onClick: () => void;
   disabled?: boolean;
   disabledReason?: string;
@@ -100,8 +101,9 @@ export const RemovedTokenActions = ({
                         className={clsx(
                           'block origin-top-left',
                           action.iconSize === 24
-                            ? 'scale-[0.8333333333]'
-                            : 'scale-[1.25]'
+                            ? 'w-24 h-24 scale-[0.8333333333]'
+                            : 'w-20 h-20',
+                          action.iconClassName
                         )}
                       />
                     </span>
@@ -119,9 +121,7 @@ export const RemovedTokenActions = ({
             'flex items-center justify-center shrink-0 w-40 h-40 p-0 border rounded-[8px] bg-r-neutral-bg-1 cursor-pointer',
             'hover:border-r-blue-default hover:text-r-blue-default active:border-r-blue-default active:bg-r-blue-light-2 active:text-r-blue-default',
             'focus-visible:outline-2 focus-visible:outline-r-blue-default focus-visible:outline-offset-2',
-            moreOpen
-              ? 'border-r-blue-default text-r-blue-default'
-              : 'border-r-neutral-line text-r-neutral-body'
+            'border-r-neutral-line text-r-neutral-body'
           )}
           aria-label={t('page.dashboard.tokenDetail.removed.more')}
           aria-haspopup="menu"
