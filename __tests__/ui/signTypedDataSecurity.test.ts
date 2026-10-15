@@ -262,9 +262,6 @@ describe('SignTypedData security lifecycle', () => {
       '@/ui/state/exchange': { getCexInfo: async () => ({}) },
       '@/ui/utils/ledger-dmk': { requestLedgerHIDPermission: noop },
       './signMessageHighlighter': { tokenizeSignTypedDataMessage: () => [] },
-      './signMessageOrigin': {
-        addSignMessageOriginFallback: (value: any) => value,
-      },
       './useSignMessageAddressData': { useSignMessageAddressData: () => ({}) },
     };
     const compiled = transpileModule(
@@ -315,6 +312,32 @@ describe('SignTypedData security lifecycle', () => {
     expect(wallet.getConnectedSite).not.toHaveBeenCalled();
     expect(footer.securityBlocked).toBe(false);
   });
+
+  test.each([false, true])(
+    'passes the original security context through for a cross-origin URL (parsed risk: %p)',
+    async (hasParsedRisk) => {
+      const ctx = hasParsedRisk
+        ? { verifyAddress: { allowOrigins: [], origin: 'https://dapp.test' } }
+        : {};
+      const results = hasParsedRisk ? [risk()] : [];
+      wallet.openapi.parseCommon.mockResolvedValue(
+        hasParsedRisk
+          ? response(['verify_address'])
+          : { action: null, log_id: 'log' }
+      );
+      const typedData = JSON.parse(props.params.data[1]);
+      typedData.message = { resource: 'https://docs.example.org/terms' };
+      props.params.data[1] = JSON.stringify(typedData);
+      formatContext.mockResolvedValue(ctx);
+      engine.mockResolvedValue(results);
+      act(render);
+      await flush();
+      expect(engine).toHaveBeenCalled();
+      expect(engine.mock.calls.every(([input]) => input === ctx)).toBe(true);
+      expect(footer.securityBlocked).toBe(hasParsedRisk);
+      expect(actions.engineResults).toEqual(results);
+    }
+  );
 
   test('rule updates wait for required action data before formatting security context', async () => {
     const pending = defer<any>();

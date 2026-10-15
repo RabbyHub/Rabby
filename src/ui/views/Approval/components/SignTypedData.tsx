@@ -45,7 +45,6 @@ import {
   normalizeTypeData,
 } from './TypedDataActions/utils';
 import {
-  ContextActionData,
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
@@ -76,7 +75,6 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 import { tokenizeSignTypedDataMessage } from './signMessageHighlighter';
-import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
 
 interface SignTypedDataProps {
@@ -174,7 +172,6 @@ const SignTypedData = ({
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const securityEngineCtx = useRef<any>(null);
-  const isUnparsedAction = useRef(false);
   const logId = useRef('');
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
@@ -736,14 +733,6 @@ const SignTypedData = ({
     return requireData;
   };
 
-  const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
-    addSignMessageOriginFallback(ctx, {
-      isUnparsedAction: isUnparsedAction.current,
-      isInternalOrigin: params.session.origin === INTERNAL_REQUEST_ORIGIN,
-      message: parsedMessage,
-      origin: params.session.origin,
-    });
-
   const getSecurityEngineResult = async ({
     data,
     requireData,
@@ -757,7 +746,7 @@ const SignTypedData = ({
         id: Number(data.chainId),
       })?.serverId;
     }
-    const baseCtx = await formatSecurityEngineContext({
+    const ctx = await formatSecurityEngineContext({
       type: 'typed_data',
       actionData: data,
       requireData,
@@ -769,7 +758,6 @@ const SignTypedData = ({
       },
       origin: params.session.origin,
     });
-    const ctx = withOriginFallback(baseCtx);
     const result = await executeEngine(ctx);
     if (
       !Array.isArray(result) ||
@@ -928,7 +916,6 @@ const SignTypedData = ({
     if (loading || error || parsedResponse?.requestKey !== requestKey) return;
     const prepare = async () => {
       const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
-      isUnparsedAction.current = typedDataActionData?.action === null;
       if (!typedDataActionData) {
         setPreparedActions({
           requestKey,
