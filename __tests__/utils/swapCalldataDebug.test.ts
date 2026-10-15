@@ -62,7 +62,7 @@ it('uses the editable local decoder in Magpie quote diagnostics', () => {
   expect(result.isSdkDataPass).toBe(true);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie: calldata passed',
+    'Magpie: calldata ✅passed',
     {
       decoded,
       checks: {
@@ -88,7 +88,7 @@ it('logs successful parsing even when the receiver check fails', () => {
   expect(result.isSdkDataPass).toBe(false);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie: calldata passed',
+    'Magpie: calldata ✅passed',
     {
       decoded,
       checks: {
@@ -104,20 +104,27 @@ it('logs successful parsing even when the receiver check fails', () => {
 
 it('includes the original quote when decoding fails', () => {
   localDecoder.mockReturnValue(null);
+  const unsupportedQuote = {
+    ...quote,
+    tx: { ...quote.tx, data: '0xdeadbeef' + quote.tx.data.slice(10) },
+  };
 
-  const result = verifySdkWithDebug(params, quote);
+  const result = verifySdkWithDebug(
+    { ...params, data: unsupportedQuote },
+    unsupportedQuote
+  );
 
   expect(result.isSdkDataPass).toBe(true);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie: calldata failed',
+    'Magpie: calldata ❌failed',
     {
       firstFailedStep: 'decode.transactionABI',
       reason: undefined,
       error: expect.objectContaining({
         message: expect.stringContaining('no matching function'),
       }),
-      quote,
+      quote: unsupportedQuote,
       checks: {
         routerPass: true,
         spenderPass: true,
