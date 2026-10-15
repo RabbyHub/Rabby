@@ -220,7 +220,7 @@
 }
 
 .token-detail-more-menu.ant-dropdown {
-  width: 160px;
+  width: 180px;
 
   .ant-dropdown-menu {
     padding: 8px 12px;
@@ -234,12 +234,18 @@
     border-radius: 4px;
     color: var(--r-neutral-title-1, #192945);
     font-size: 16px;
-    font-weight: 600;
+    font-weight: 500;
     line-height: 20px;
 
     &:hover,
+    &:active,
     &.ant-dropdown-menu-item-active {
       background: transparent;
+      color: var(--r-blue-default, #7084ff);
+
+      .token-detail-more-menu-arrow {
+        color: inherit;
+      }
     }
   }
 
@@ -256,6 +262,10 @@
 
     svg {
       display: block;
+
+      path {
+        stroke-width: 2;
+      }
     }
   }
 }

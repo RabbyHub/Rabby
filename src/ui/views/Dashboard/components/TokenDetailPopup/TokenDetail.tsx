@@ -41,9 +41,9 @@ import { useRemovedTokens } from '@/ui/hooks/useRemovedTokens';
 import { RemoveTokenConfirmPopup } from './RemoveTokenConfirmPopup';
 import { RemovedTokenActions } from './RemovedTokenActions';
 import type { RemovedTokenAction } from './RemovedTokenActions';
-import { ReactComponent as RcIconSend } from '@/ui/assets/desktop/profile/send-cc.svg';
-import { ReactComponent as RcIconSwap } from '@/ui/assets/desktop/profile/swap-cc.svg';
-import { ReactComponent as RcIconBridge } from '@/ui/assets/desktop/profile/bridge-cc.svg';
+import { ReactComponent as RcIconSend } from '@/ui/assets/dashboard/panel/send-cc.svg';
+import { ReactComponent as RcIconSwap } from '@/ui/assets/dashboard/panel/swap-cc.svg';
+import { ReactComponent as RcIconBridge } from '@/ui/assets/tokenDetail/more-bridge.svg';
 import { ReactComponent as RcIconReceive } from '@/ui/assets/dashboard/panel/receive-cc.svg';
 const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
@@ -328,29 +328,35 @@ const TokenDetail = ({
     if (isPortfolioDisplay && isRemoved) {
       const actions: RemovedTokenAction[] = [
         {
-          key: 'send',
-          title: t('page.dashboard.tokenDetail.send'),
-          Icon: RcIconSend,
-          onClick: goToSend,
-        },
-        {
           key: 'swap',
           title: t('page.dashboard.tokenDetail.swap'),
           Icon: RcIconSwap,
+          iconSize: 24,
+          iconClassName: '[&_path]:stroke-[2.128944]',
           onClick: goToSwap,
+        },
+        {
+          key: 'bridge',
+          title: t('page.dashboard.tokenDetail.bridge'),
+          Icon: RcIconBridge,
+          iconClassName: '[&_path]:fill-current',
+          onClick: gotoBridge,
+        },
+        {
+          key: 'send',
+          title: t('page.dashboard.tokenDetail.send'),
+          Icon: RcIconSend,
+          iconSize: 24,
+          iconClassName: '[&_path]:stroke-[2.1]',
+          onClick: goToSend,
         },
         {
           key: 'receive',
           title: t('page.dashboard.tokenDetail.receive'),
           Icon: RcIconReceive,
           iconSize: 24,
+          iconClassName: '[&_path]:stroke-[2.1]',
           onClick: goToReceive,
-        },
-        {
-          key: 'bridge',
-          title: t('page.dashboard.tokenDetail.bridge'),
-          Icon: RcIconBridge,
-          onClick: gotoBridge,
         },
       ];
 
@@ -456,7 +462,7 @@ const TokenDetail = ({
                     label: (
                       <span className="token-detail-more-menu-item">
                         <span>
-                          {t('page.dashboard.tokenDetail.removed.remove')}
+                          {t('page.dashboard.tokenDetail.removed.removeToken')}
                         </span>
                         <span className="token-detail-more-menu-arrow">
                           <RcArrowRight />
