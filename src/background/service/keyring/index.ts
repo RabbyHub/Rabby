@@ -55,6 +55,10 @@ import uninstalledMetricService from '../uninstalled';
 import { isEmpty } from 'lodash';
 import { sanitizeUnencryptedKeyringData } from './sanitizeUnencryptedKeyringData';
 import { SigningAttempt, withSigningDiagnostics } from './signing-diagnostics';
+import {
+  clearWalletConnectTransportError,
+  reportWalletConnectTransportError,
+} from '@/background/utils/walletconnectTransportError';
 
 class PrivateKeyKeyring extends SimpleKeyring {
   signingDiagnosticsProvider = 'private_key';
@@ -1249,22 +1253,14 @@ export class KeyringService extends EventEmitter {
         );
       });
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
+        clearWalletConnectTransportError();
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
           params: { uri },
         });
       });
 
-      keyring.on('transport_error', (data) => {
-        Sentry.captureException(
-          new Error('Transport error: ' + JSON.stringify(data))
-        );
-
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.WALLETCONNECT.TRANSPORT_ERROR,
-          params: data,
-        });
-      });
+      keyring.on('transport_error', reportWalletConnectTransportError);
       keyring.on('statusChange', (data) => {
         if (!preference.getPopupOpen() && hasWalletConnectPageStateCache()) {
           setPageStateCacheWhenPopupClose(data);

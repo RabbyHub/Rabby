@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "O WalletConnect não consegue se conectar porque a hora do seu computador está dessincronizada. Ative a data e a hora automáticas e tente novamente.",
         "connectYour": "Conectar sua",
         "viaWalletConnect": "via WalletConnect",
         "connectedSuccessfully": "Conectado com sucesso",

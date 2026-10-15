@@ -1760,6 +1760,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect не може підключитися, оскільки час на вашому комп’ютері не синхронізовано. Увімкніть автоматичне налаштування дати й часу та повторіть спробу.",
         "connectYour": "Підключіть свій",
         "viaWalletConnect": "через Wallet Connect",
         "connectedSuccessfully": "Підключено успішно",

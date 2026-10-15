@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "パソコンの時刻が同期されていないため、WalletConnect に接続できません。日付と時刻の自動設定を有効にしてから、もう一度お試しください。",
         "connectYour": "ウォレットを接続",
         "viaWalletConnect": "WalletConnect経由",
         "connectedSuccessfully": "接続しました",

@@ -5,6 +5,7 @@ import {
   CHAINS_ENUM,
   WALLETCONNECT_STATUS_MAP,
   WALLET_BRAND_CONTENT,
+  KEYRING_CLASS,
 } from 'consts';
 import { useCommonPopupView } from 'ui/utils';
 import {
@@ -12,6 +13,8 @@ import {
   useDisplayBrandName,
 } from '@/ui/component/WalletConnect/useDisplayBrandName';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
+import { useWalletConnectClockSkew } from '@/ui/component/WalletConnect/useWalletConnectClockSkew';
+import { ClockSkewWarning } from '@/ui/component/WalletConnect/ClockSkewWarning';
 import { useInterval } from 'react-use';
 import {
   ApprovalPopupContainer,
@@ -45,6 +48,9 @@ const Process = ({
   const [displayBrandName] = useDisplayBrandName(account.brandName);
   const brandRealUrl = useWalletConnectIcon(account);
   const { t } = useTranslation();
+  const hasClockSkew = useWalletConnectClockSkew(
+    account.type === KEYRING_CLASS.WALLETCONNECT
+  );
   const brandUrl = React.useMemo(() => {
     return (
       brandRealUrl ||
@@ -129,6 +135,21 @@ const Process = ({
   React.useEffect(() => {
     init();
   }, []);
+
+  if (hasClockSkew && mergedStatus !== WALLETCONNECT_STATUS_MAP.SUBMITTED) {
+    return (
+      <div className="text-center">
+        <ClockSkewWarning />
+        <button
+          type="button"
+          className="mt-16 text-r-neutral-title-1 text-13"
+          onClick={onCancel}
+        >
+          {t('global.cancelButton')}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <ApprovalPopupContainer

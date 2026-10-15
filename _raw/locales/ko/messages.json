@@ -1850,6 +1850,7 @@
         "haveOneKey": "아직 OneKey가 없으신가요?"
       },
       "walletConnect": {
+        "clockSkewError": "컴퓨터 시간이 동기화되지 않아 WalletConnect에 연결할 수 없습니다. 날짜 및 시간 자동 설정을 켠 후 다시 시도하세요.",
         "status": {
           "accountError": "주소가 일치하지 않습니다.",
           "connected": "연결됨",

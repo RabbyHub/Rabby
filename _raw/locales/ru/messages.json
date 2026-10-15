@@ -1769,6 +1769,7 @@
         "haveOneKey": "Еще нет OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect не может подключиться, поскольку время на вашем компьютере не синхронизировано. Включите автоматическую настройку даты и времени и повторите попытку.",
         "connectYour": "Подключите ваш",
         "viaWalletConnect": "через Wallet Connect",
         "connectedSuccessfully": "Успешно подключено",

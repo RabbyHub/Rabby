@@ -164,6 +164,7 @@ export const ImportCoinbase: React.FC<{
         </p>
       </div>
       <ScanCopyQRCode
+        isWalletConnect={false}
         showURL={showURL}
         changeShowURL={setShowURL}
         qrcodeURL={walletconnectUri}

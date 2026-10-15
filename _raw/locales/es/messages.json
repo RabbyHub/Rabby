@@ -1748,6 +1748,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect no puede conectarse porque la hora de tu ordenador no está sincronizada. Activa la fecha y hora automáticas y vuelve a intentarlo.",
         "connectYour": "Conectar tu",
         "viaWalletConnect": "mediante WalletConnect",
         "connectedSuccessfully": "Conectado exitosamente",
