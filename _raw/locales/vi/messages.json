@@ -3310,6 +3310,14 @@
           "creatorFeeTips1": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán. Thu nhập của người sáng tạo được thi hành.",
           "quantity": "Số lượng"
         },
+        "verifyError": {
+          "unsupportedChain": "Chuỗi này chưa hỗ trợ giao dịch NFT",
+          "currency": "Kiểm tra bảo mật thất bại: token thanh toán không khớp với token mong đợi",
+          "nft": "Kiểm tra bảo mật thất bại: NFT trong lệnh không khớp với NFT bạn đã chọn",
+          "amount": "Kiểm tra bảo mật thất bại: số tiền bạn nhận được không khớp với số hiển thị",
+          "recipient": "Kiểm tra bảo mật thất bại: tiền thu được sẽ không được gửi đến địa chỉ của bạn",
+          "invalid": "Kiểm tra bảo mật thất bại: dữ liệu lệnh không hợp lệ. Vui lòng thử lại sau"
+        },
         "all": "Tất cả",
         "empty": "Không có NFTs",
         "hideLowValue": "Ẩn NFT Giá Trị Thấp",

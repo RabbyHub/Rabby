@@ -3360,6 +3360,14 @@
           "creatorFeeTips1": "创作者收益将由卖方支付。创作者收益是强制执行的。",
           "rabbyFee": "Rabby 费用 (0%)"
         },
+        "verifyError": {
+          "unsupportedChain": "该链暂不支持 NFT 交易",
+          "currency": "安全校验未通过：收款代币与预期不符",
+          "nft": "安全校验未通过：订单中的 NFT 与你选择的不一致",
+          "amount": "安全校验未通过：实际到账金额与页面显示不符",
+          "recipient": "安全校验未通过：收款地址不是你的地址",
+          "invalid": "安全校验未通过：订单数据异常，请稍后重试"
+        },
         "empty": "没有 NFT",
         "pending": "待处理",
         "confirmingTx": "正在确认你的交易",
