@@ -73,6 +73,10 @@ import { hexToNumber, isAddress, numberToHex, stringToHex, toHex } from 'viem';
 import { Transaction as ViemTempoTransaction } from 'viem/tempo';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
+import {
+  findShadowedBuiltinType,
+  parseTypedDataJson,
+} from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
 import {
   EIP7702RevokeMiniGasLimit,
@@ -406,11 +410,21 @@ const signTypedDataVlidation = ({
   session,
   account,
 }: ProviderRequest) => {
-  let jsonData;
+  let parsed: ReturnType<typeof parseTypedDataJson>;
   try {
-    jsonData = JSON.parse(data);
+    parsed = parseTypedDataJson(data);
   } catch (e) {
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
+  }
+  if (parsed.hasProtoKey) {
+    throw ethErrors.rpc.invalidParams('data should not contain __proto__ key');
+  }
+  const jsonData = parsed.json;
+  const shadowedType = findShadowedBuiltinType(jsonData?.types);
+  if (shadowedType) {
+    throw ethErrors.rpc.invalidParams(
+      `types should not redefine built-in type: ${shadowedType}`
+    );
   }
   if (!permissionService.isInternalOrigin(session!.origin)) {
     const currentChain = permissionService.getConnectedSite(session!.origin)
