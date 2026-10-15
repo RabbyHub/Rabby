@@ -1407,7 +1407,13 @@
         "biometricUnlockEnabled": "Biometrische Entsperrung aktiviert.",
         "biometricUnlockSetupDesc": "Bestätigen Sie Ihr Passwort, um die biometrische Entsperrung zu aktivieren.",
         "clearPendingCheckbox": "Auch meine lokalen Nonce-Daten und Signaturaufzeichnungen zurücksetzen",
-        "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung."
+        "biometricUnlockUnsupported": "Dieses Gerät unterstützt keine biometrische Entsperrung.",
+        "removedToken": {
+          "title": "Entfernte Token",
+          "description": "Entfernte Token werden für alle Ihre Adressen in Ihrem Portfolio ausgeblendet, aber weiterhin bei der Berechnung Ihres Guthabens berücksichtigt.",
+          "loadFailed": "Token konnte nicht geladen werden",
+          "retry": "Erneut versuchen"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Blockierte Token werden nicht in der Tokenliste angezeigt",
@@ -1451,7 +1457,19 @@
         "BridgeIssue": "Von einem Drittanbieter gebridgter Token",
         "fdvTips": "Die Marktkapitalisierung, falls das maximale Angebot vollständig im Umlauf wäre. Vollständig verwässerte Bewertung (FDV) = Preis × maximales Angebot. Ist das maximale Angebot nicht angegeben, gilt: FDV = Preis × Gesamtangebot. Ist weder das maximale noch das Gesamtangebot definiert oder ist es unendlich, wird die FDV nicht angezeigt.",
         "bridge": "Bridge",
-        "bridgeToEth": "Zu Ethereum bridgen"
+        "bridgeToEth": "Zu Ethereum bridgen",
+        "removed": {
+          "more": "Mehr",
+          "removeToken": "Token entfernen",
+          "remove": "Entfernen",
+          "confirmTitle": "Diesen Token entfernen?",
+          "portfolioNotice": "Dieser Token wird nach dem Entfernen nicht mehr in Ihrem Portfolio angezeigt.",
+          "restoreNotice": "Sie können ihn jederzeit unter „Einstellungen >> Entfernte Token“ wiederherstellen.",
+          "warning": "Entfernte Token werden für alle Ihre Adressen in Ihrem Portfolio ausgeblendet, aber weiterhin bei der Berechnung Ihres Guthabens berücksichtigt.",
+          "removeFailed": "Token konnte nicht entfernt werden",
+          "restore": "Entfernten Token wiederherstellen",
+          "restoreFailed": "Token konnte nicht wiederhergestellt werden"
+        }
       },
       "assets": {
         "usdValue": "USD WERT",
@@ -2363,9 +2381,44 @@
         "longTimeNoReceive": "Das Netzwerk ist beschäftigt. Dies könnte länger als üblich dauern. Bitte haben Sie Geduld.",
         "estimatedTime": "Geschätzte Zeit",
         "sendStatus": "Sendestatus",
-        "swapStatus": "Swap-Status"
+        "swapStatus": "Swap-Status",
+        "bridgingEta": "Bridge läuft, geschätzte Dauer: <time>{{time}}</time>",
+        "stillBridging": "Bridge läuft noch",
+        "sourceFailed": "Bridge fehlgeschlagen. Ihre {{token}} wurden nicht gesendet",
+        "refundedLead": "Zurückerstattet",
+        "popupProcessing": "Bridge wird verarbeitet",
+        "popupPending": "Bridge ausstehend",
+        "popupFailed": "Bridge fehlgeschlagen",
+        "popupRefunded": "Bridge zurückerstattet",
+        "popupCompleted": "Bridge abgeschlossen",
+        "popupBridgeDelayed": "Bridge verzögert",
+        "popupBridgeFailed": "Bridge fehlgeschlagen",
+        "popupRefundedIn": "In {{token}} zurückerstattet",
+        "processing": "Wird verarbeitet",
+        "refund": "Zurückerstattet",
+        "goBack": "Zurück",
+        "contactSupport": "Support kontaktieren",
+        "succeeded": "Erfolgreich",
+        "sendFrom": "Von {{chain}} senden",
+        "receiveOn": "Auf {{chain}} empfangen",
+        "refundOn": "Auf {{chain}} zurückerstattet",
+        "waitingDestination": "Warten auf die Transaktion im Zielnetzwerk",
+        "sendFailed": "Senden fehlgeschlagen",
+        "tokenNotSent": "Ihre {{token}} wurden nicht gesendet"
       },
-      "best-subtitle": "Das beste Angebot wird durch eine Kombination aus geschätzten Gesamtkosten (einschließlich Gasgebühren) und Liefergeschwindigkeit bestimmt."
+      "best-subtitle": "Das beste Angebot wird durch eine Kombination aus geschätzten Gesamtkosten (einschließlich Gasgebühren) und Liefergeschwindigkeit bestimmt.",
+      "bridge": "Bridge",
+      "by": "von",
+      "timeLeft": "Noch {{time}}",
+      "refundIn": "In {{token}} zurückerstattet",
+      "viewDetails": "Details anzeigen",
+      "duration-sec": "{{duration}} s",
+      "duration-hour": "{{duration}} h",
+      "duration-hour-min": "{{hours}} h {{minutes}} min",
+      "duration-day": "{{duration}} T.",
+      "duration-day-hour": "{{days}} T. {{hours}} h",
+      "duration-day-min": "{{days}} T. {{minutes}} min",
+      "duration-day-hour-min": "{{days}} T. {{hours}} h {{minutes}} min"
     },
     "pendingDetail": {
       "Header": {
