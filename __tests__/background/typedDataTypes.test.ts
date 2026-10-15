@@ -1,4 +1,7 @@
-import { findShadowedBuiltinType } from '@/background/utils/typedDataTypes';
+import {
+  findShadowedBuiltinType,
+  parseTypedDataJson,
+} from '@/background/utils/typedDataTypes';
 
 const EIP712Domain = [
   { name: 'name', type: 'string' },
@@ -87,4 +90,77 @@ describe('findShadowedBuiltinType', () => {
       expect(findShadowedBuiltinType(v)).toBeUndefined();
     }
   );
+});
+
+describe('parseTypedDataJson', () => {
+  const domain = {
+    name: 'Dai Stablecoin',
+    version: '1',
+    chainId: 1,
+    verifyingContract: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+  };
+  const message = {
+    owner: '0x1111111111111111111111111111111111111111',
+    spender: '0x2222222222222222222222222222222222222222',
+    value: '1',
+    nonce: 0,
+    deadline: 1,
+  };
+
+  it('accepts a standard permit', () => {
+    const data = JSON.stringify({
+      types: { EIP712Domain, Permit },
+      primaryType: 'Permit',
+      domain,
+      message,
+    });
+    const { json, hasProtoKey } = parseTypedDataJson(data);
+    expect(hasProtoKey).toBe(false);
+    expect(json.types.Permit).toEqual(Permit);
+  });
+
+  // JSON.stringify never emits `__proto__`, so these are hand-written strings.
+  const d = JSON.stringify(domain);
+  const m = JSON.stringify(message);
+  const ed = JSON.stringify(EIP712Domain);
+  const p = JSON.stringify(Permit);
+
+  it.each([
+    [
+      'types',
+      `{"types":{"EIP712Domain":${ed},"__proto__":{"Permit":${p}}},"primaryType":"Permit","domain":${d},"message":${m}}`,
+    ],
+    [
+      'top level',
+      `{"__proto__":{"types":{"EIP712Domain":${ed},"Permit":${p}}},"primaryType":"Permit","domain":${d},"message":${m}}`,
+    ],
+    [
+      'domain',
+      `{"types":{"EIP712Domain":${ed},"Permit":${p}},"primaryType":"Permit","domain":{"__proto__":${d}},"message":${m}}`,
+    ],
+    [
+      'nested message',
+      `{"types":{"EIP712Domain":${ed},"Permit":${p}},"primaryType":"Permit","domain":${d},"message":{"owner":"0x1111111111111111111111111111111111111111","x":[{"__proto__":{}}]}}`,
+    ],
+    [
+      'escaped key',
+      `{"types":{"EIP712Domain":${ed},"\\u005f_proto__":{"Permit":${p}}},"primaryType":"Permit","domain":${d},"message":${m}}`,
+    ],
+  ])('flags __proto__ in %s', (_, data) => {
+    expect(parseTypedDataJson(data).hasProtoKey).toBe(true);
+  });
+
+  it('does not flag __proto__ as a value', () => {
+    const data = JSON.stringify({
+      types: { EIP712Domain, Permit },
+      primaryType: 'Permit',
+      domain: { ...domain, name: '__proto__' },
+      message,
+    });
+    expect(parseTypedDataJson(data).hasProtoKey).toBe(false);
+  });
+
+  it('throws on invalid JSON', () => {
+    expect(() => parseTypedDataJson('{')).toThrow();
+  });
 });
