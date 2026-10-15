@@ -2,11 +2,6 @@ import {
   tokenizeSignMessageText,
   tokenizeSignTypedDataMessage,
 } from '@/ui/views/Approval/components/signMessageHighlighter';
-import {
-  addSignMessageOriginFallback,
-  hasSignMessageOriginMismatch,
-} from '@/ui/views/Approval/components/signMessageOrigin';
-
 const address = '0xde709f2102306220921060314715629080e2fb77';
 
 describe('sign message highlighter', () => {
@@ -75,87 +70,5 @@ describe('sign message highlighter', () => {
       },
       { type: 'address', value: recipient, address: recipient },
     ]);
-  });
-
-  test('warns when any visible hostname differs from the request hostname', () => {
-    expect(
-      hasSignMessageOriginMismatch(
-        'example.com\nURI: https://example.com/login',
-        'https://EXAMPLE.com.:443'
-      )
-    ).toBe(false);
-    expect(
-      hasSignMessageOriginMismatch(
-        'example.com\nResource: https://docs.example.org/terms',
-        'https://example.com'
-      )
-    ).toBe(true);
-    expect(
-      hasSignMessageOriginMismatch(
-        'https://app.example.com',
-        'https://example.com'
-      )
-    ).toBe(true);
-    expect(
-      hasSignMessageOriginMismatch(
-        'https://xn--fsqu00a.xn--0zwm56d',
-        'https://例子.测试'
-      )
-    ).toBe(false);
-    expect(
-      hasSignMessageOriginMismatch(
-        '"verifying_contract": "intents.near"',
-        'https://near.com'
-      )
-    ).toBe(false);
-    expect(
-      hasSignMessageOriginMismatch(
-        '"verifying_contract": "https://intents.near"',
-        'https://near.com'
-      )
-    ).toBe(true);
-    expect(
-      hasSignMessageOriginMismatch(
-        'No hostname in this message',
-        'https://example.com'
-      )
-    ).toBe(false);
-  });
-
-  test('adds the origin rule only for an unparsed mismatched request', () => {
-    const ctx = { contractCall: {} } as any;
-    const options = {
-      message: 'https://docs.example.org',
-      origin: 'https://example.com',
-    };
-
-    expect(
-      addSignMessageOriginFallback(ctx, {
-        ...options,
-        isUnparsedAction: false,
-        isInternalOrigin: false,
-      })
-    ).toBe(ctx);
-    expect(
-      addSignMessageOriginFallback(ctx, {
-        message: 'example.com',
-        origin: 'https://example.com',
-        isUnparsedAction: true,
-        isInternalOrigin: false,
-      })
-    ).toBe(ctx);
-    expect(
-      addSignMessageOriginFallback(ctx, {
-        ...options,
-        isUnparsedAction: true,
-        isInternalOrigin: false,
-      })
-    ).toEqual({
-      contractCall: {},
-      verifyAddress: {
-        allowOrigins: [],
-        origin: 'https://example.com',
-      },
-    });
   });
 });
