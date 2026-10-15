@@ -2,6 +2,7 @@ import { decodeCalldata } from '@/utils/swapCalldata';
 import { utils } from 'ethers';
 import magpieArbitrum from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
 import magpieArbitrumUsdcToWeth from '../fixtures/swap-calldata/magpie-arbitrum-usdc-to-weth-backend-signature.json';
+import uniArbitrumUsdt0ToUsdc from '../fixtures/swap-calldata/uni-arbitrum-usdt0-to-usdc-v4.json';
 
 const cases = [
   {
@@ -22,6 +23,15 @@ const cases = [
       minReceiveToTokenAmount: '834587873749995',
     },
   },
+  {
+    name: 'Uniswap / Arbitrum / USDT0 to USDC / SwapProxy / V4',
+    dexId: uniArbitrumUsdt0ToUsdc.dex,
+    sample: uniArbitrumUsdt0ToUsdc,
+    expectedAmounts: {
+      fromTokenAmount: '4759000',
+      minReceiveToTokenAmount: '4739264',
+    },
+  },
 ];
 
 describe('recorded swap calldata decoding', () => {
@@ -35,10 +45,18 @@ describe('recorded swap calldata decoding', () => {
 
     console.log('[swap-calldata-test]', dexId, decoded);
 
-    expect(decoded).toEqual({
-      fromToken: sample.quote.fromToken,
-      toToken: sample.quote.toToken,
-      toTokenReceiver: sample.quote.tx.from,
+    // Address casing is not part of the decoded swap semantics.
+    expect(
+      decoded && {
+        ...decoded,
+        fromToken: decoded.fromToken.toLowerCase(),
+        toToken: decoded.toToken.toLowerCase(),
+        toTokenReceiver: decoded.toTokenReceiver.toLowerCase(),
+      }
+    ).toEqual({
+      fromToken: sample.quote.fromToken.toLowerCase(),
+      toToken: sample.quote.toToken.toLowerCase(),
+      toTokenReceiver: sample.quote.tx.from.toLowerCase(),
       ...expectedAmounts,
     });
   });
