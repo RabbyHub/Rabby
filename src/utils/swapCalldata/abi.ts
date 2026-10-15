@@ -48,4 +48,11 @@ export const MagpieABI = [
     stateMutability: 'payable',
     type: 'function',
   },
+  {
+    inputs: [{ internalType: 'bytes', name: 'swapData', type: 'bytes' }],
+    name: 'swapWithBackendSignature',
+    outputs: [{ internalType: 'uint256', name: 'amountOut', type: 'uint256' }],
+    stateMutability: 'payable',
+    type: 'function',
+  },
 ];
