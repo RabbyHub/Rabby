@@ -1,22 +1,19 @@
 import BigNumber from 'bignumber.js';
 import type { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 
-type FillFee = Pick<WsFill, 'px' | 'sz' | 'fee' | 'builderFee'>;
+type FillFee = Pick<WsFill, 'px' | 'sz' | 'builderFee'>;
 
-/** Fee amounts and px * abs(sz) are in the fill's quote currency.
- * Aggregated fills carry summed fees and size with a weighted average price.
- * Older records may omit builderFee; retain the existing 0.04% display then.
+/** Match the recorded Rabby rate after rounding to two percentage decimals.
+ * Server-aggregated records are consumed as supplied; no client aggregation.
+ * Missing, invalid, zero or non-Rabby rates retain the 0.04% display fallback.
  */
-export const getFillFeeRates = (fill?: FillFee | null) => {
-  const unknown = { builder: '-', exchange: '-' };
-  if (!fill) return unknown;
+export const getRabbyFillFeeRate = (fill?: FillFee | null): string => {
+  const fallback = '0.04%';
+  if (!fill) return fallback;
   const parse = (value?: string) =>
     typeof value === 'string' && value.trim()
       ? new BigNumber(value)
       : new BigNumber(NaN);
-  if (fill.builderFee == null || !fill.builderFee.trim()) {
-    return { builder: '0.04%', exchange: '-' };
-  }
   const price = parse(fill.px);
   const size = parse(fill.sz).abs();
   const builder = parse(fill.builderFee);
@@ -29,18 +26,12 @@ export const getFillFeeRates = (fill?: FillFee | null) => {
     !builder.isFinite() ||
     builder.isNegative()
   ) {
-    return unknown;
+    return fallback;
   }
-  const percent = (amount: BigNumber) => {
-    const display = amount
-      .div(notional)
-      .times(100)
-      .toFixed(2, BigNumber.ROUND_HALF_UP);
-    return `${new BigNumber(display).isZero() ? '0.00' : display}%`;
-  };
-  const total = parse(fill.fee);
-  return {
-    builder: percent(builder),
-    exchange: total.isFinite() ? percent(total.minus(builder)) : '-',
-  };
+  const display = `${builder
+    .div(notional)
+    .times(100)
+    .toFixed(2, BigNumber.ROUND_HALF_UP)}%`;
+  // No nearest-tier inference: whitelist only the rounded display value.
+  return display === '0.02%' || display === '0.04%' ? display : fallback;
 };
