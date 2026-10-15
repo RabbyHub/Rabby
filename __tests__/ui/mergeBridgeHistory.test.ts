@@ -1,0 +1,219 @@
+import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  collectInitialBridgeTxIds,
+  collectOutgoingTxIds,
+  collectViewportOutgoingTxIds,
+  mergeHistoryWithBridge,
+} from '@/ui/views/History/utils/mergeBridgeHistory';
+
+jest.mock('@/ui/utils', () => ({
+  isSameAddress: (a: string, b: string) =>
+    !!a && !!b && a.toLowerCase() === b.toLowerCase(),
+}));
+
+const user = '0xuser';
+
+const tx = (
+  id: string,
+  chain: string,
+  from = user
+): {
+  _id: string;
+  id: string;
+  chain: string;
+  tx: { from_addr: string };
+  sends?: unknown[] | null;
+} => ({
+  _id: `${chain}-${id}`,
+  id,
+  chain,
+  tx: { from_addr: from },
+  sends: [{}],
+});
+
+const bridge = (
+  fromId: string,
+  fromChain: string,
+  toId?: string,
+  toChain = 'base'
+): BridgeHistory =>
+  (({
+    from_token: { chain: fromChain },
+    to_token: { chain: toChain },
+    to_actual_token: { chain: toChain },
+    from_tx: { tx_id: fromId },
+    to_tx: { tx_id: toId },
+  } as unknown) as BridgeHistory);
+
+describe('collectOutgoingTxIds', () => {
+  it('collects outgoing candidates and skips known ids', () => {
+    const items = [
+      tx('0x1', 'eth'),
+      tx('0x2', 'eth', '0xother'),
+      tx('0x3', 'arb'),
+    ];
+    const skip = new Set(['0x1']);
+    expect(collectOutgoingTxIds(items, user, skip, 20)).toEqual(['0x3']);
+    expect(skip.has('0x3')).toBe(true);
+  });
+
+  it('does not query cancel transactions', () => {
+    const items = [
+      { ...tx('0xcancel', 'eth'), cate_id: 'cancel' },
+      tx('0xok', 'eth'),
+    ];
+    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
+  });
+
+  it('does not query scam transactions', () => {
+    const items = [
+      { ...tx('0xscam', 'eth'), is_scam: true, sends: [{}] },
+      { ...tx('0xok', 'eth'), sends: [{}] },
+    ];
+    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
+  });
+
+  it('still queries transactions with empty sends (failed source txs have none)', () => {
+    const items = [
+      { ...tx('0xempty', 'eth'), sends: [] },
+      { ...tx('0xmissing', 'eth'), sends: undefined },
+      { ...tx('0xok', 'eth'), sends: [{}] },
+    ];
+    expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual([
+      '0xempty',
+      '0xmissing',
+      '0xok',
+    ]);
+  });
+
+  it('keeps scanning until 20 matches, 100 inspected, or the list ends', () => {
+    const skipped = Array.from({ length: 30 }, (_, index) =>
+      tx(`0xskip${index}`, 'eth', '0xother')
+    );
+    const matched = Array.from({ length: 25 }, (_, index) =>
+      tx(`0xok${index}`, 'eth')
+    );
+    const { ids, scanned } = collectInitialBridgeTxIds(
+      [...skipped, ...matched],
+      user,
+      new Set()
+    );
+    expect(ids).toHaveLength(20);
+    expect(ids[0]).toBe('0xok0');
+    expect(scanned).toBe(50);
+
+    const short = collectInitialBridgeTxIds(
+      skipped.slice(0, 10),
+      user,
+      new Set()
+    );
+    expect(short.ids).toEqual([]);
+    expect(short.scanned).toBe(10);
+
+    const capped = collectInitialBridgeTxIds(
+      Array.from({ length: 150 }, (_, index) =>
+        index < 90
+          ? tx(`0xskip${index}`, 'eth', '0xother')
+          : tx(`0xok${index}`, 'eth')
+      ),
+      user,
+      new Set(),
+      0,
+      20,
+      100
+    );
+    expect(capped.ids).toHaveLength(10);
+    expect(capped.scanned).toBe(100);
+  });
+
+  it('rescans prepended records without querying known hashes again', () => {
+    const original = [tx('0xold', 'eth')];
+    const first = collectInitialBridgeTxIds(original, user, new Set());
+    const known = new Set(first.ids);
+    const updated = [tx('0xnew', 'eth'), ...original];
+    expect(collectInitialBridgeTxIds(updated, user, known).ids).toEqual([
+      '0xnew',
+    ]);
+    expect(collectInitialBridgeTxIds(updated, user, known).ids).toEqual([]);
+  });
+
+  it('does not fill a filtered viewport batch from the next batch', () => {
+    const items = Array.from({ length: 21 }, (_, index) =>
+      tx(`0x${index}`, 'eth', index < 20 ? '0xother' : user)
+    );
+    expect(collectViewportOutgoingTxIds(items, user, new Set(), 0, 5)).toEqual(
+      []
+    );
+    expect(
+      collectViewportOutgoingTxIds(items, user, new Set(), 20, 20)
+    ).toEqual(['0x20']);
+  });
+
+  it('only scans the batch containing the viewport', () => {
+    const items = Array.from({ length: 25 }, (_, index) =>
+      tx(`0x${index}`, 'eth')
+    );
+    const ids = collectViewportOutgoingTxIds(
+      items,
+      user,
+      new Set(['0x0', '0x1']),
+      0,
+      2,
+      5
+    );
+    expect(ids).toEqual(['0x2', '0x3', '0x4']);
+  });
+});
+
+describe('mergeHistoryWithBridge', () => {
+  it('places one bridge card at the destination and drops the source tx', () => {
+    const items = [
+      { ...tx('0xto', 'base', '0xbridge'), time_at: 123 },
+      tx('0xfrom', 'eth'),
+      tx('0xother', 'eth'),
+    ];
+    expect(
+      mergeHistoryWithBridge(items, [bridge('0xfrom', 'eth', '0xto', 'base')])
+    ).toEqual([
+      {
+        kind: 'bridge',
+        key: 'bridge:eth:0xfrom',
+        anchorKey: 'base:0xto',
+        displayTime: 123,
+        item: expect.objectContaining({
+          from_tx: { tx_id: '0xfrom' },
+        }),
+      },
+      { kind: 'tx', key: 'eth-0xother', item: items[2] },
+    ]);
+  });
+
+  it('merges at the destination even when the source tx is not loaded', () => {
+    const items = [tx('0xto', 'base', '0xbridge')];
+    expect(
+      mergeHistoryWithBridge(items, [bridge('0xfrom', 'eth', '0xto', 'base')])
+    ).toMatchObject([
+      {
+        kind: 'bridge',
+        key: 'bridge:eth:0xfrom',
+        anchorKey: 'base:0xto',
+      },
+    ]);
+  });
+
+  it('replaces a from tx before the destination tx is loaded', () => {
+    const items = [tx('0xfrom', 'eth')];
+    const rows = mergeHistoryWithBridge(items, [
+      bridge('0xfrom', 'eth', '0xto', 'base'),
+    ]);
+    expect(rows).toEqual([
+      {
+        kind: 'bridge',
+        key: 'bridge:eth:0xfrom',
+        anchorKey: 'eth:0xfrom',
+        displayTime: undefined,
+        item: expect.anything(),
+      },
+    ]);
+  });
+});
