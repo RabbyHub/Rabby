@@ -62,7 +62,7 @@ it('uses the editable local decoder in Magpie quote diagnostics', () => {
   expect(result.isSdkDataPass).toBe(true);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie: calldata ✅passed',
+    'Magpie | DexAggregator | ARBITRUM: calldata ✅passed',
     {
       decoded,
       checks: {
@@ -88,7 +88,7 @@ it('logs successful parsing even when the receiver check fails', () => {
   expect(result.isSdkDataPass).toBe(false);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie: calldata ✅passed',
+    'Magpie | DexAggregator | ARBITRUM: calldata ✅passed',
     {
       decoded,
       checks: {
@@ -117,7 +117,7 @@ it('includes the original quote when decoding fails', () => {
   expect(result.isSdkDataPass).toBe(true);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie: calldata ❌failed',
+    'Magpie | unknown | ARBITRUM: calldata ❌failed',
     {
       firstFailedStep: 'decode.transactionABI',
       reason: undefined,
@@ -166,7 +166,7 @@ it('logs the version-specific decoding step together with the original quote', (
 
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie: calldata ❌failed',
+    'Magpie | DexAggregator | ARBITRUM: calldata ❌failed',
     expect.objectContaining({
       firstFailedStep: step,
       error: expect.objectContaining({

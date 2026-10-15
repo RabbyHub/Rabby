@@ -35,6 +35,24 @@ const selectorVersions = new Map(
   )
 );
 
+const versionLabels: Record<string, string> = {
+  swapRouterV3: 'SwapRouter V3',
+  swapRouter02: 'SwapRouter02',
+  routerV2: 'Router V2',
+};
+
+export const getSwapRouterVersion = (data: string): string | undefined => {
+  const version = selectorVersions.get(data.slice(0, 10).toLowerCase());
+  if (!version) return undefined;
+  if (version.name !== 'multicall') return versionLabels[version.name];
+  const calls = version.abi.parseTransaction({ data }).args.data as string[];
+  for (const call of calls) {
+    const nestedVersion = getSwapRouterVersion(call);
+    if (nestedVersion) return nestedVersion;
+  }
+  return undefined;
+};
+
 const walkCall = (data: string, swap: Swap, ctx: Context, path: string) => {
   const selector = data.slice(0, 10).toLowerCase();
   const version = selectorVersions.get(selector);

@@ -4,10 +4,24 @@ import { decodeAt } from '../errors';
 import type { DecodeCalldataResult, TxWithChainId } from '../types';
 import { UniABI } from './abi';
 import { Context, finishSwap } from './shared';
-import { decodeSwapRouter } from './swapRouter';
+import { decodeSwapRouter, getSwapRouterVersion } from './swapRouter';
 import { decodeUniversalRouter } from './universalRouter';
+import { getRouterProfile } from './universalRouter/profiles';
 
 const uniInterface = new utils.Interface(UniABI);
+
+export const getVersion = (tx: TxWithChainId) => {
+  const fragment = uniInterface.getFunction(tx.data.slice(0, 10));
+  if (fragment.name !== 'execute' && fragment.name !== 'executeSigned') {
+    return getSwapRouterVersion(tx.data) || 'unknown';
+  }
+  const proxy = fragment.inputs[0]?.name === 'router';
+  const router = proxy
+    ? uniInterface.parseTransaction({ data: tx.data }).args.router
+    : tx.to;
+  const { version } = getRouterProfile(tx.chainId, router);
+  return `Universal Router ${version}${proxy ? ' (SwapProxy)' : ''}`;
+};
 
 export const decodeCalldata = (
   tx: TxWithChainId

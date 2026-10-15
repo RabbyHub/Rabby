@@ -12,23 +12,44 @@ import { decodeRouterV3 } from './routerV3';
 const magpieInterface = new utils.Interface(MagpieABI);
 const versions: Record<
   string,
-  { step: string; decode: (data: PackedReader) => PackedSwap }
+  { version: string; step: string; decode: (data: PackedReader) => PackedSwap }
 > = {
-  swap: { step: 'decode.magpie.routerV2', decode: decodeRouterV2 },
-  silentSwap: { step: 'decode.magpie.routerV2', decode: decodeRouterV2 },
+  swap: {
+    version: 'MagpieRouter V2',
+    step: 'decode.magpie.routerV2',
+    decode: decodeRouterV2,
+  },
+  silentSwap: {
+    version: 'MagpieRouter V2',
+    step: 'decode.magpie.routerV2',
+    decode: decodeRouterV2,
+  },
   swapWithMagpieSignature: {
+    version: 'MagpieRouter V3/V3_1',
     step: 'decode.magpie.routerV3',
     decode: decodeRouterV3,
   },
   swapWithUserSignature: {
+    version: 'MagpieRouter V3/V3_1',
     step: 'decode.magpie.routerV3',
     decode: decodeRouterV3,
   },
   swapWithBackendSignature: {
+    version: 'DexAggregator',
     step: 'decode.magpie.dexAggregator',
     decode: decodeDexAggregator,
   },
 };
+
+const versionsBySelector = new Map(
+  Object.entries(versions).map(([name, version]) =>
+    [magpieInterface.getSighash(name), version] as const
+  )
+);
+
+export const getVersion = (tx: TxWithChainId) =>
+  versionsBySelector.get(tx.data.slice(0, 10).toLowerCase())?.version ||
+  'unknown';
 
 export const decodeCalldata = (
   tx: TxWithChainId
@@ -37,10 +58,8 @@ export const decodeCalldata = (
   if (!chain) return null;
 
   const selector = tx.data.slice(0, 10).toLowerCase();
-  const knownSelector = Object.values(magpieInterface.functions).some(
-    (fragment) => magpieInterface.getSighash(fragment) === selector
-  );
-  if (!knownSelector) {
+  const version = versionsBySelector.get(selector);
+  if (!version) {
     throw new CalldataDecodeError(
       'decode.transactionABI',
       `Unsupported Magpie calldata selector: ${selector}`
@@ -49,7 +68,6 @@ export const decodeCalldata = (
   const transaction = decodeAt('decode.transactionABI', () =>
     magpieInterface.parseTransaction({ data: tx.data })
   );
-  const version = versions[transaction.name];
   const payloadLength = utils.arrayify(transaction.args[0]).length;
   const swap = version.decode(
     new PackedReader(tx.data, payloadLength, version.step)

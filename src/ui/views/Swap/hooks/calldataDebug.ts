@@ -13,6 +13,7 @@ import type { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import {
   CalldataDecodeError,
   decodeCalldata,
+  getCalldataVersion,
   MagpieABI,
   UniABI,
 } from '@/utils/swapCalldata';
@@ -27,12 +28,19 @@ const describeError = (error: unknown) =>
     : String(error);
 
 const printSnapshot = (
-  snapshot: Record<string, unknown> & { dex: DEX_ENUM; status?: 'passed' }
+  snapshot: Record<string, unknown> & {
+    dex: DEX_ENUM;
+    version: string;
+    chain: string;
+    status?: 'passed';
+  }
 ) => {
-  const { dex, status, ...details } = snapshot;
+  const { dex, version, chain, status, ...details } = snapshot;
   console.log(
     logPrefix,
-    `${dex}: calldata ${status === 'passed' ? '✅passed' : '❌failed'}`,
+    `${dex} | ${version} | ${chain}: calldata ${
+      status === 'passed' ? '✅passed' : '❌failed'
+    }`,
     details
   );
 };
@@ -130,6 +138,15 @@ export const verifySdkWithDebug = (
     return result;
   }
 
+  const context = {
+    dex: params.dexId,
+    version: getCalldataVersion(params.dexId, {
+      ...(params.data || quote).tx,
+      chainId: params.chainId,
+    }),
+    chain: params.chain,
+  };
+
   const checks = {
     routerPass: result.routerPass,
     spenderPass: result.spenderPass,
@@ -140,7 +157,7 @@ export const verifySdkWithDebug = (
 
   if (result.decoded) {
     printSnapshot({
-      dex: params.dexId,
+      ...context,
       status: 'passed',
       decoded: result.decoded,
       checks,
@@ -151,7 +168,7 @@ export const verifySdkWithDebug = (
   try {
     const decodeFailure = inspectDecodeFailure(params, params.data || quote);
     printSnapshot({
-      dex: params.dexId,
+      ...context,
       firstFailedStep: decodeFailure.step,
       reason: decodeFailure.reason,
       error: decodeFailure.error,
@@ -160,7 +177,7 @@ export const verifySdkWithDebug = (
     });
   } catch (error) {
     printSnapshot({
-      dex: params.dexId,
+      ...context,
       firstFailedStep: 'diagnostics',
       error: describeError(error),
       checks,
