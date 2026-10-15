@@ -40,6 +40,9 @@ describe('approval gesture binding', () => {
   const mount = (binding: ApprovalBinding | null = null) => {
     act(() => root.render(React.createElement(Probe, { binding })));
   };
+  const flushMicrotasks = async () => {
+    for (let i = 0; i < 10; i++) await Promise.resolve();
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -168,6 +171,63 @@ describe('approval gesture binding', () => {
     expect(mockWallet.rejectApprovalFor).not.toHaveBeenCalled();
     // getApproval() itself is a harmless read and remains available.
     expect(mockWallet.getApproval).not.toHaveBeenCalled();
+  });
+
+  test('navigates before caller cleanup unmounts each successfully completed approval', async () => {
+    for (const id of ['first-request', 'second-request']) {
+      mockWallet.getApproval.mockResolvedValue({
+        id,
+        data: { approvalComponent: 'PrivatekeyWaiting' },
+      });
+      mount({ approvalId: id, approvalComponent: 'PrivatekeyWaiting' });
+      const closePopup = jest.fn(() => {
+        act(() => root.render(null));
+      });
+
+      // Waiting components close their popup when resolveApproval completes.
+      const pending = approvalHook[1]('0xtxhash').then((accepted) => {
+        closePopup();
+        return accepted;
+      });
+      await flushMicrotasks();
+
+      expect(closePopup).not.toHaveBeenCalled();
+      expect(jest.getTimerCount()).toBe(1);
+      jest.runOnlyPendingTimers();
+      expect(await pending).toBe(true);
+      expect(mockHistory.replace).toHaveBeenLastCalledWith('/');
+      expect(closePopup).toHaveBeenCalledTimes(1);
+      expect(
+        mockHistory.replace.mock.invocationCallOrder.slice(-1)[0]
+      ).toBeLessThan(closePopup.mock.invocationCallOrder[0]);
+    }
+
+    expect(mockWallet.resolveApprovalFor).toHaveBeenCalledTimes(2);
+    expect(mockHistory.replace).toHaveBeenCalledTimes(2);
+  });
+
+  test('stay resolves immediately without scheduling navigation', async () => {
+    mount({ approvalId: approval.id, approvalComponent: 'SignTx' });
+
+    expect(await approvalHook[1]({}, true)).toBe(true);
+
+    expect(mockWallet.resolveApprovalFor).toHaveBeenCalledTimes(1);
+    expect(jest.getTimerCount()).toBe(0);
+    expect(mockHistory.replace).not.toHaveBeenCalled();
+  });
+
+  test('skips navigation if another action unmounts a settled approval before its timer', async () => {
+    mount({ approvalId: approval.id, approvalComponent: 'SignTx' });
+    const pending = approvalHook[1]({});
+    await flushMicrotasks();
+
+    expect(mockWallet.resolveApprovalFor).toHaveBeenCalledTimes(1);
+    expect(jest.getTimerCount()).toBe(1);
+    act(() => root.render(null));
+    jest.runOnlyPendingTimers();
+
+    expect(await pending).toBe(true);
+    expect(mockHistory.replace).not.toHaveBeenCalled();
   });
 
   test('reject is not gated by the extra canResolve readiness check, only by ownership', async () => {

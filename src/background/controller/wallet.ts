@@ -579,6 +579,7 @@ export class WalletController extends BaseController {
   };
 
   getApproval = notificationService.getApproval;
+  closeNotificationWindow = notificationService.closeNotificationWindow;
   resolveApprovalFor = notificationService.resolveApprovalFor;
   rejectApprovalFor = notificationService.rejectApprovalFor;
 

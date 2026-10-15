@@ -139,6 +139,7 @@ class NotificationService extends Events {
   >();
   _approvals: Approval[] = [];
   notifiWindowId: null | number = null;
+  private openingNotification?: Promise<void>;
   isLocked = false;
   currentRequestDeferFn?: (retry?: boolean) => void;
   statsData: StatsData | undefined;
@@ -167,10 +168,6 @@ class NotificationService extends Events {
 
   constructor() {
     super();
-
-    winMgr.event.on('closeNotification', () => {
-      this.notifiWindowId = null;
-    });
 
     winMgr.event.on(
       'windowRemoved',
@@ -248,6 +245,24 @@ class NotificationService extends Events {
   };
 
   getApproval = () => this.currentApproval;
+
+  closeNotificationWindow = async (winId: number): Promise<boolean> => {
+    // The UI can finish loading before windows.create has returned its id.
+    if (this.openingNotification) await this.openingNotification;
+    // An untracked/stale UI may close itself, but must not touch a newer window.
+    if (winId !== this.notifiWindowId) return true;
+
+    // SortHat's empty snapshot may already be obsolete. Let it reload the
+    // approval instead of closing the window that the next request reused.
+    if (this.currentApproval || this.approvals.length > 0) return false;
+
+    // Detach synchronously before removal. A request arriving during the
+    // browser call must open a new window; old onRemoved cannot cancel it.
+    this.notifiWindowId = null;
+    this.unLock();
+    await winMgr.remove(winId);
+    return true;
+  };
 
   /**
    * The only entry points that settle a single approval — no overload falls back to
@@ -483,12 +498,14 @@ class NotificationService extends Events {
     this.approvals = [];
     this.currentApproval = null;
     if (this.notifiWindowId !== null && !stay) {
+      const winId = this.notifiWindowId;
+      this.notifiWindowId = null;
+      this.unLock();
       try {
-        await winMgr.remove(this.notifiWindowId);
+        await winMgr.remove(winId);
       } catch (e) {
         // ignore error
       }
-      this.notifiWindowId = null;
     }
   };
 
@@ -514,6 +531,9 @@ class NotificationService extends Events {
   };
 
   openNotification = (winProps, ignoreLock = false) => {
+    // Flow completion may unlock while windows.create is still pending.
+    // Even explicit recovery must share that in-flight creation.
+    if (this.openingNotification) return;
     // Only use ignoreLock flag when approval exist but no notification window exist
     if (!ignoreLock) {
       if (this.isLocked) return;
@@ -523,7 +543,7 @@ class NotificationService extends Events {
       winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = null;
     }
-    winMgr
+    this.openingNotification = winMgr
       .openNotification(winProps)
       .then((winId) => {
         if (winId == null) {
@@ -541,6 +561,9 @@ class NotificationService extends Events {
         Sentry.captureException(e, {
           tags: { function: 'openNotification' },
         });
+      })
+      .finally(() => {
+        this.openingNotification = undefined;
       });
   };
 
