@@ -10,12 +10,19 @@ import {
 } from '../../shared';
 import { decodeV4SwapV2_0 } from './v2_0';
 import { decodeV4SwapV2_1 } from './v2_1';
+import { decodeV4SwapV2_1_0 } from './v2_1_0';
+
+const swapDecoders = {
+  '2.0': decodeV4SwapV2_0,
+  '2.1.0': decodeV4SwapV2_1_0,
+  '2.1': decodeV4SwapV2_1,
+};
 
 export const walkV4 = (
   input: string,
   swap: Swap,
   ctx: Context,
-  version: '2.0' | '2.1',
+  version: keyof typeof swapDecoders,
   step: string
 ) => {
   const [actions, params] = decodeAbi(['bytes', 'bytes[]'], input, step);
@@ -23,7 +30,7 @@ export const walkV4 = (
   if (actionBytes.length / 2 !== params.length) {
     throw new CalldataDecodeError(step, 'V4 actions and params lengths differ');
   }
-  const decodeSwap = version === '2.0' ? decodeV4SwapV2_0 : decodeV4SwapV2_1;
+  const decodeSwap = swapDecoders[version];
 
   for (let i = 0; i < params.length; i++) {
     const action = parseInt(actionBytes.slice(i * 2, i * 2 + 2), 16);

@@ -1,7 +1,11 @@
-import { CHAINS } from '@debank/common';
 import { utils } from 'ethers';
+import { getNativeTokenAddress } from '../chain';
 import { CalldataDecodeError, decodeAt } from '../errors';
-import type { DecodeCalldataResult, TxWithChainId } from '../types';
+import type {
+  DecodeCalldataOptions,
+  DecodeCalldataResult,
+  TxWithChainId,
+} from '../types';
 import { isSameAddress, NULL_ADDRESS, resolveToTokenReceiver } from '../utils';
 import { MagpieABI } from './abi';
 import { decodeDexAggregator } from './dexAggregator';
@@ -52,10 +56,10 @@ export const getVersion = (tx: TxWithChainId) =>
   'unknown';
 
 export const decodeCalldata = (
-  tx: TxWithChainId
+  tx: TxWithChainId,
+  options: DecodeCalldataOptions = {}
 ): DecodeCalldataResult | null => {
-  const chain = Object.values(CHAINS).find((item) => item.id === tx.chainId);
-  if (!chain) return null;
+  const native = getNativeTokenAddress(tx.chainId, options.nativeTokenAddress);
 
   const selector = tx.data.slice(0, 10).toLowerCase();
   const version = versionsBySelector.get(selector);
@@ -75,11 +79,11 @@ export const decodeCalldata = (
 
   return {
     fromToken: isSameAddress(swap.fromAsset, NULL_ADDRESS)
-      ? chain.nativeTokenAddress
+      ? native
       : swap.fromAsset,
     fromTokenAmount: swap.amountIn,
     toToken: isSameAddress(swap.toAsset, NULL_ADDRESS)
-      ? chain.nativeTokenAddress
+      ? native
       : swap.toAsset,
     minReceiveToTokenAmount: swap.amountOutMin,
     toTokenReceiver: resolveToTokenReceiver(swap.receiver, tx.from),

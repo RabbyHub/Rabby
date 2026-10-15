@@ -1,6 +1,6 @@
-import { CHAINS } from '@debank/common';
 import {
   DEX_ENUM,
+  DEX_SUPPORT_CHAINS,
   isSwapCalldataReceiverAllowed,
   isSwapWrapToken,
   verifyCalldata,
@@ -46,12 +46,8 @@ const printSnapshot = (
 };
 
 const inspectDecodeFailure = (params: VerifySdkParams, quote: QuoteResult) => {
-  let step = 'decode.chain';
+  let step = 'decode.transactionABI';
   try {
-    if (!Object.values(CHAINS).some((chain) => chain.id === params.chainId)) {
-      return { step, reason: 'chainId not found in the SDK chain list' };
-    }
-    step = 'decode.transactionABI';
     const isUni = params.dexId === DEX_ENUM.UNI;
     const abi = isUni ? UniABI : MagpieABI;
     const transaction = new utils.Interface(abi).parseTransaction({
@@ -59,7 +55,11 @@ const inspectDecodeFailure = (params: VerifySdkParams, quote: QuoteResult) => {
     });
     step = isUni ? 'decode.uni.commands' : 'decode.magpie.packedData';
     // Retry without the SDK's exception-swallowing wrapper to retain the stack.
-    decodeCalldata(params.dexId, { ...quote.tx, chainId: params.chainId });
+    decodeCalldata(
+      params.dexId,
+      { ...quote.tx, chainId: params.chainId },
+      { nativeTokenAddress: params.nativeTokenAddress }
+    );
     return {
       step,
       functionName: transaction.name,
@@ -90,7 +90,9 @@ const verifyWithLocalDecoder = (params: VerifySdkParams): VerifySdkResult => {
   let decoded: VerifySdkResult['decoded'] = null;
   if (tx) {
     try {
-      decoded = decodeCalldata(params.dexId, tx);
+      decoded = decodeCalldata(params.dexId, tx, {
+        nativeTokenAddress: params.nativeTokenAddress,
+      });
     } catch {
       // Preserve SDK fallback behavior; inspectDecodeFailure logs the error.
     }
@@ -124,6 +126,7 @@ export const verifySdkWithDebug = (
     params.dexId === DEX_ENUM.UNI || params.dexId === DEX_ENUM.MAGPIE;
   const useLocalDecoder =
     isTargetDex &&
+    DEX_SUPPORT_CHAINS[params.dexId].includes(params.chain) &&
     !isSwapWrapToken(
       params.payTokenId,
       params.receiveTokenId,

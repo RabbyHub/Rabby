@@ -8,6 +8,10 @@ export interface TxWithChainId {
   gasPrice?: string;
 }
 
+export interface DecodeCalldataOptions {
+  nativeTokenAddress?: string;
+}
+
 export interface DecodeCalldataResult {
   fromToken: string;
   fromTokenAmount: string;

@@ -702,9 +702,11 @@ export const useQuoteMethods = () => {
         });
       }
 
-      const dexList = params.dexId
-        ? ([params.dexId] as DEX_ENUM[])
-        : (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[]);
+      const dexList = (
+        params.dexId
+          ? ([params.dexId] as DEX_ENUM[])
+          : (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])
+      ).filter((dexId) => DEX[dexId]?.chains.includes(params.chain));
 
       return Promise.all([
         ...dexList.map((dexId) =>

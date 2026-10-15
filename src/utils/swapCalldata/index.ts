@@ -1,4 +1,4 @@
-import type { TxWithChainId } from './types';
+import type { DecodeCalldataOptions, TxWithChainId } from './types';
 import {
   decodeCalldata as decodeUniCalldata,
   getVersion as getUniVersion,
@@ -10,7 +10,11 @@ import {
 
 export { UniABI, MagpieABI } from './abi';
 export { isSameAddress, NULL_ADDRESS } from './utils';
-export type { DecodeCalldataResult, TxWithChainId } from './types';
+export type {
+  DecodeCalldataOptions,
+  DecodeCalldataResult,
+  TxWithChainId,
+} from './types';
 export { CalldataDecodeError } from './errors';
 
 export const getCalldataVersion = (dexId: string, tx: TxWithChainId) => {
@@ -29,12 +33,16 @@ export const getCalldataVersion = (dexId: string, tx: TxWithChainId) => {
   }
 };
 
-export const decodeCalldata = (dexId: string, tx: TxWithChainId) => {
+export const decodeCalldata = (
+  dexId: string,
+  tx: TxWithChainId,
+  options: DecodeCalldataOptions = {}
+) => {
   switch (dexId) {
     case 'Uniswap':
-      return decodeUniCalldata(tx);
+      return decodeUniCalldata(tx, options);
     case 'Magpie':
-      return decodeMagpieCalldata(tx);
+      return decodeMagpieCalldata(tx, options);
     default:
       throw new Error(dexId + ' calldata decoder is not available locally');
   }

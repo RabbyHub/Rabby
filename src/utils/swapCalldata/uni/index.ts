@@ -1,7 +1,11 @@
-import { CHAINS } from '@debank/common';
 import { utils } from 'ethers';
+import { getNativeTokenAddress } from '../chain';
 import { decodeAt } from '../errors';
-import type { DecodeCalldataResult, TxWithChainId } from '../types';
+import type {
+  DecodeCalldataOptions,
+  DecodeCalldataResult,
+  TxWithChainId,
+} from '../types';
 import { UniABI } from './abi';
 import { Context, finishSwap } from './shared';
 import { decodeSwapRouter, getSwapRouterVersion } from './swapRouter';
@@ -24,15 +28,15 @@ export const getVersion = (tx: TxWithChainId) => {
 };
 
 export const decodeCalldata = (
-  tx: TxWithChainId
+  tx: TxWithChainId,
+  options: DecodeCalldataOptions = {}
 ): DecodeCalldataResult | null => {
-  const chain = Object.values(CHAINS).find((item) => item.id === tx.chainId);
-  if (!chain) return null;
+  const native = getNativeTokenAddress(tx.chainId, options.nativeTokenAddress);
   const transaction = decodeAt('decode.transactionABI', () =>
     uniInterface.parseTransaction({ data: tx.data })
   );
   const ctx: Context = {
-    native: chain.nativeTokenAddress,
+    native,
     sender: tx.from,
     // SwapProxy passes the actual Universal Router as an explicit argument.
     router: transaction.args.router || tx.to,

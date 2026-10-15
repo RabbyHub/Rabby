@@ -81,10 +81,16 @@ export const walkCommands = (
       case 0x06: // PAY_PORTION
       case 0x0a: // PERMIT2_PERMIT
       case 0x0d: // PERMIT2_TRANSFER_FROM_BATCH
-      case 0x0e: // BALANCE_CHECK_ERC20
+        break;
+      case 0x0e: // BALANCE_CHECK_ERC20, added after the original V1 deployments.
+        if (profile.commandMask === 0x1f)
+          throw new CalldataDecodeError(
+            commandStep,
+            'Command 0x0e is not defined in this Router version'
+          );
         break;
       case 0x07:
-        if (profile.commandMask !== 0x7f)
+        if (profile.commandMask !== 0x7f || profile.version === '2.1.0')
           throw new CalldataDecodeError(
             commandStep,
             'Command 0x07 is not defined in this Router version'
@@ -124,7 +130,7 @@ export const walkCommands = (
         if (!profile.v4Version) {
           throw new CalldataDecodeError(
             commandStep,
-            'Router 1.2 command 0x10 is Seaport, not a V4 swap'
+            `Router ${profile.version} command 0x10 is Seaport, not a V4 swap`
           );
         }
         walkV4(input, swap, ctx, profile.v4Version, `${commandStep}.v4`);
