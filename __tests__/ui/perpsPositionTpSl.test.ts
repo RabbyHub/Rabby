@@ -1,0 +1,604 @@
+import type { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
+import {
+  PositionTpSlOrder,
+  TpSlCalcContext,
+  calcPnlRoiFromModeValue,
+  calcTpSlPnl,
+  calcTpSlRoi,
+  calcTriggerFromModeValue,
+  calculateTpSlCoverage,
+  collectPositionTpSlOrders,
+  findNearestTpSlOrder,
+  formatTpSlAmount,
+  getTpSlMaxAmountInput,
+  groupTpSlOrders,
+  isSameTriggerPrice,
+  normalizeTriggerPrice,
+  resolvePartialTpSlSize,
+  resolveTpSlSideView,
+  sortTpSlOrders,
+  validatePartialTpSlTrigger,
+  validatePositionTpSlTrigger,
+} from '@/ui/views/DesktopPerps/positionTpSl';
+
+const makeOrder = (patch: Partial<OpenOrder>): OpenOrder => ({
+  coin: 'BTC',
+  side: 'A',
+  limitPx: '0',
+  sz: '0.5',
+  oid: 1,
+  timestamp: 1,
+  triggerCondition: '',
+  isTrigger: true,
+  triggerPx: '70000',
+  isPositionTpsl: false,
+  reduceOnly: true,
+  orderType: 'Take Profit Market',
+  origSz: '0.5',
+  tif: null,
+  ...patch,
+});
+
+const makeTpSl = (patch: Partial<PositionTpSlOrder>): PositionTpSlOrder => ({
+  oid: 1,
+  kind: 'takeProfit',
+  scope: 'partial',
+  triggerPrice: '100',
+  remainingSize: '1',
+  timestamp: 1,
+  ...patch,
+});
+
+const LONG_BTC = { coin: 'BTC', direction: 'Long' as const };
+
+describe('collectPositionTpSlOrders', () => {
+  it('keeps reduce-only trigger orders on the closing side and classifies their scope', () => {
+    const orders = collectPositionTpSlOrders(
+      [
+        makeOrder({ oid: 1 }),
+        makeOrder({
+          oid: 2,
+          orderType: 'Stop Market',
+          triggerPx: '60000',
+          sz: '0',
+          isPositionTpsl: true,
+        }),
+      ],
+      LONG_BTC
+    );
+    expect(orders).toEqual([
+      {
+        oid: 1,
+        kind: 'takeProfit',
+        scope: 'partial',
+        triggerPrice: '70000',
+        remainingSize: '0.5',
+        timestamp: 1,
+      },
+      {
+        oid: 2,
+        kind: 'stopLoss',
+        scope: 'position',
+        triggerPrice: '60000',
+        remainingSize: '0',
+        timestamp: 1,
+      },
+    ]);
+  });
+
+  it('drops orders that do not close this position', () => {
+    const orders = collectPositionTpSlOrders(
+      [
+        makeOrder({ oid: 1, side: 'B' }),
+        makeOrder({ oid: 2, reduceOnly: false }),
+        makeOrder({ oid: 3, coin: 'ETH' }),
+        makeOrder({ oid: 4, isTrigger: false, orderType: 'Limit' }),
+        makeOrder({ oid: 5, sz: '0' }),
+        makeOrder({ oid: 6, triggerPx: '0' }),
+        makeOrder({ oid: 7, orderType: 'Limit', triggerCondition: 'N/A' }),
+      ],
+      LONG_BTC
+    );
+    expect(orders).toEqual([]);
+  });
+
+  it('uses the buy side for a short position', () => {
+    const orders = collectPositionTpSlOrders(
+      [makeOrder({ oid: 1, side: 'B' }), makeOrder({ oid: 2, side: 'A' })],
+      { coin: 'BTC', direction: 'Short' }
+    );
+    expect(orders.map((o) => o.oid)).toEqual([1]);
+  });
+
+  it('falls back to the trigger condition to tell take profit from stop loss', () => {
+    const [order] = collectPositionTpSlOrders(
+      [
+        makeOrder({
+          orderType: 'Trigger',
+          triggerCondition: 'Stop loss when price below 60000',
+        }),
+      ],
+      LONG_BTC
+    );
+    expect(order.kind).toBe('stopLoss');
+  });
+
+  it('ignores TP/SL children that still hang off an unfilled parent order', () => {
+    const child = makeOrder({ oid: 9 });
+    const parent = makeOrder({
+      oid: 8,
+      side: 'B',
+      reduceOnly: false,
+      isTrigger: false,
+      orderType: 'Limit',
+      children: [child],
+    });
+    expect(collectPositionTpSlOrders([parent, child], LONG_BTC)).toEqual([]);
+  });
+});
+
+describe('sortTpSlOrders', () => {
+  const orders = [
+    makeTpSl({ oid: 1, triggerPrice: '70000', timestamp: 3 }),
+    makeTpSl({ oid: 2, triggerPrice: '72000', timestamp: 2 }),
+    makeTpSl({ oid: 3, triggerPrice: '71000', timestamp: 1 }),
+    makeTpSl({ oid: 4, triggerPrice: '71000', timestamp: 0 }),
+  ];
+
+  it('orders a long from the highest trigger down, older first on ties', () => {
+    expect(sortTpSlOrders(orders, 'Long').map((o) => o.oid)).toEqual([
+      2,
+      4,
+      3,
+      1,
+    ]);
+  });
+
+  it('orders a short from the lowest trigger up, older first on ties', () => {
+    expect(sortTpSlOrders(orders, 'Short').map((o) => o.oid)).toEqual([
+      1,
+      4,
+      3,
+      2,
+    ]);
+  });
+});
+
+describe('groupTpSlOrders', () => {
+  it('splits one scope into sorted take-profit and stop-loss groups', () => {
+    const groups = groupTpSlOrders(
+      [
+        makeTpSl({ oid: 1, kind: 'takeProfit', triggerPrice: '110' }),
+        makeTpSl({ oid: 2, kind: 'takeProfit', triggerPrice: '120' }),
+        makeTpSl({ oid: 3, kind: 'stopLoss', triggerPrice: '90' }),
+        makeTpSl({
+          oid: 4,
+          kind: 'stopLoss',
+          scope: 'position',
+          triggerPrice: '80',
+        }),
+      ],
+      'partial',
+      'Long'
+    );
+    expect(groups.takeProfit.map((o) => o.oid)).toEqual([2, 1]);
+    expect(groups.stopLoss.map((o) => o.oid)).toEqual([3]);
+  });
+});
+
+describe('findNearestTpSlOrder', () => {
+  it('picks the trigger closest to the mark price', () => {
+    const nearest = findNearestTpSlOrder(
+      [
+        makeTpSl({ oid: 1, triggerPrice: '70000' }),
+        makeTpSl({ oid: 2, triggerPrice: '71200' }),
+      ],
+      '70500'
+    );
+    expect(nearest?.oid).toBe(1);
+  });
+
+  it('breaks a distance tie by the newer order, then the lower oid', () => {
+    const nearest = findNearestTpSlOrder(
+      [
+        makeTpSl({ oid: 3, triggerPrice: '70000', timestamp: 1 }),
+        makeTpSl({ oid: 2, triggerPrice: '71000', timestamp: 2 }),
+        makeTpSl({ oid: 1, triggerPrice: '71000', timestamp: 2 }),
+      ],
+      70500
+    );
+    expect(nearest?.oid).toBe(1);
+  });
+
+  it('returns null without a mark price', () => {
+    expect(findNearestTpSlOrder([makeTpSl({})], 0)).toBeNull();
+  });
+});
+
+describe('calculateTpSlCoverage', () => {
+  it('sums unfilled sizes over the position without capping at 100%', () => {
+    expect(
+      calculateTpSlCoverage(
+        [
+          makeTpSl({ remainingSize: '0.5' }),
+          makeTpSl({ remainingSize: '1.5' }),
+        ],
+        '1'
+      )
+    ).toBe(200);
+  });
+
+  it('returns null for an empty position', () => {
+    expect(calculateTpSlCoverage([makeTpSl({})], '0')).toBeNull();
+  });
+});
+
+describe('PnL and ROI', () => {
+  it('computes PnL in the direction of the position', () => {
+    expect(
+      calcTpSlPnl({
+        direction: 'Long',
+        entryPrice: '100',
+        triggerPrice: '110',
+        size: '2',
+      })?.toNumber()
+    ).toBe(20);
+    expect(
+      calcTpSlPnl({
+        direction: 'Short',
+        entryPrice: '100',
+        triggerPrice: '110',
+        size: '2',
+      })?.toNumber()
+    ).toBe(-20);
+  });
+
+  it('computes ROI on margin', () => {
+    expect(
+      calcTpSlRoi({
+        direction: 'Long',
+        entryPrice: '100',
+        triggerPrice: '110',
+        leverage: 10,
+      })?.toNumber()
+    ).toBe(100);
+    expect(
+      calcTpSlRoi({
+        direction: 'Short',
+        entryPrice: '100',
+        triggerPrice: '95',
+        leverage: 10,
+      })?.toNumber()
+    ).toBe(50);
+  });
+
+  it('derives signed PnL and ROI from a typed magnitude', () => {
+    const tp = calcPnlRoiFromModeValue({
+      mode: 'pnl',
+      kind: 'takeProfit',
+      value: '20',
+      entryPrice: '100',
+      size: '2',
+      leverage: 10,
+    });
+    expect(tp?.pnl.toNumber()).toBe(20);
+    expect(tp?.roi.toNumber()).toBe(100);
+
+    const sl = calcPnlRoiFromModeValue({
+      mode: 'roi',
+      kind: 'stopLoss',
+      value: '50',
+      entryPrice: '100',
+      size: '2',
+      leverage: 10,
+    });
+    expect(sl?.pnl.toNumber()).toBe(-10);
+    expect(sl?.roi.toNumber()).toBe(-50);
+  });
+});
+
+describe('calcTriggerFromModeValue', () => {
+  const base = { entryPrice: '100', size: '2', leverage: 10, szDecimals: 2 };
+
+  it.each([
+    ['Long', 'takeProfit', '110'],
+    ['Long', 'stopLoss', '90'],
+    ['Short', 'takeProfit', '90'],
+    ['Short', 'stopLoss', '110'],
+  ] as const)(
+    'places a %s %s on the correct side of entry from PnL',
+    (direction, kind, expected) => {
+      expect(
+        calcTriggerFromModeValue({
+          ...base,
+          direction,
+          kind,
+          mode: 'pnl',
+          value: '20',
+        })
+      ).toBe(expected);
+    }
+  );
+
+  it('derives the trigger from ROI on margin', () => {
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Long',
+        kind: 'takeProfit',
+        mode: 'roi',
+        value: '100',
+      })
+    ).toBe('110');
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Short',
+        kind: 'stopLoss',
+        mode: 'roi',
+        value: '50',
+      })
+    ).toBe('105');
+  });
+
+  it('returns an empty trigger when the target needs a non-positive price', () => {
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Long',
+        kind: 'stopLoss',
+        mode: 'pnl',
+        value: '300',
+      })
+    ).toBe('');
+  });
+
+  it('rounds the derived trigger to a valid Hyperliquid price', () => {
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Long',
+        kind: 'takeProfit',
+        mode: 'pnl',
+        value: '0.123456',
+      })
+    ).toBe('100.06');
+  });
+});
+
+describe('validatePartialTpSlTrigger', () => {
+  it.each([
+    ['Long', 'takeProfit', '110', null],
+    ['Long', 'takeProfit', '105', 'invalidForMark'],
+    ['Long', 'stopLoss', '100', null],
+    ['Long', 'stopLoss', '106', 'invalidForMark'],
+    ['Short', 'takeProfit', '100', null],
+    ['Short', 'stopLoss', '104', 'invalidForMark'],
+  ] as const)(
+    '%s %s at %s against mark 105 -> %s',
+    (direction, kind, triggerPrice, expected) => {
+      expect(
+        validatePartialTpSlTrigger({
+          direction,
+          kind,
+          triggerPrice,
+          markPrice: 105,
+        })
+      ).toBe(expected);
+    }
+  );
+
+  it('treats an empty trigger as not yet entered', () => {
+    expect(
+      validatePartialTpSlTrigger({
+        direction: 'Long',
+        kind: 'takeProfit',
+        triggerPrice: '',
+        markPrice: 105,
+      })
+    ).toBeNull();
+  });
+});
+
+describe('validatePositionTpSlTrigger', () => {
+  it.each([
+    ['Long', 'stopLoss', '80', '85', 'stopLossBelowLiquidation'],
+    ['Long', 'stopLoss', '101', '85', 'stopLossAboveMark'],
+    ['Long', 'takeProfit', '99', '85', 'takeProfitBelowMark'],
+    ['Short', 'takeProfit', '101', '115', 'takeProfitAboveMark'],
+    ['Short', 'stopLoss', '120', '115', 'stopLossAboveLiquidation'],
+    ['Short', 'stopLoss', '99', '115', 'stopLossBelowMark'],
+    ['Long', 'takeProfit', '120', '85', null],
+    ['Long', 'stopLoss', '90', '85', null],
+  ] as const)(
+    '%s %s at %s (liq %s, mark 100) -> %s',
+    (direction, kind, triggerPrice, liquidationPrice, expected) => {
+      expect(
+        validatePositionTpSlTrigger({
+          direction,
+          kind,
+          triggerPrice,
+          markPrice: 100,
+          liquidationPrice,
+        })
+      ).toBe(expected);
+    }
+  );
+});
+
+describe('resolveTpSlSideView', () => {
+  const ctx: TpSlCalcContext = {
+    scope: 'partial',
+    direction: 'Long',
+    entryPrice: '100',
+    leverage: 10,
+    size: '2',
+    szDecimals: 2,
+    markPrice: 105,
+    liquidationPrice: '85',
+  };
+
+  it('derives the trigger from a typed PnL', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'mode', triggerPrice: '', modeValue: '20' },
+      'takeProfit',
+      ctx
+    );
+    expect(view.triggerPrice).toBe('110');
+    expect(view.status).toBe('valid');
+    expect(view.pnl?.toNumber()).toBe(20);
+    expect(view.roi?.toNumber()).toBe(100);
+  });
+
+  it('derives the magnitude from a typed trigger in the selected unit', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'roi', source: 'trigger', triggerPrice: '110', modeValue: '' },
+      'takeProfit',
+      ctx
+    );
+    expect(view.modeValue).toBe('100');
+    expect(view.pnl?.toNumber()).toBe(20);
+  });
+
+  it('flags a target that has no positive trigger', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'mode', triggerPrice: '', modeValue: '300' },
+      'stopLoss',
+      ctx
+    );
+    expect(view).toMatchObject({
+      triggerPrice: '',
+      status: 'invalid',
+      error: 'triggerUnavailable',
+    });
+  });
+
+  it('flags a trigger on the wrong side of the mark price', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'trigger', triggerPrice: '104', modeValue: '' },
+      'takeProfit',
+      ctx
+    );
+    expect(view).toMatchObject({ status: 'invalid', error: 'invalidForMark' });
+  });
+
+  it('uses the position rules for a position-scope side', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'trigger', triggerPrice: '80', modeValue: '' },
+      'stopLoss',
+      { ...ctx, scope: 'position' }
+    );
+    expect(view.error).toBe('stopLossBelowLiquidation');
+  });
+
+  it('reports an untouched side as empty', () => {
+    expect(
+      resolveTpSlSideView(
+        { mode: 'pnl', source: 'trigger', triggerPrice: '', modeValue: '' },
+        'stopLoss',
+        ctx
+      ).status
+    ).toBe('empty');
+  });
+});
+
+describe('partial amount', () => {
+  const base = { positionSize: '1.2345', markPrice: 200, szDecimals: 4 };
+
+  it('rounds a slider share of the position down to szDecimals', () => {
+    expect(
+      resolvePartialTpSlSize({
+        ...base,
+        source: 'slider',
+        percent: 50,
+        amountInput: '',
+        unit: 'base',
+      })
+    ).toBe('0.6172');
+    expect(
+      resolvePartialTpSlSize({
+        ...base,
+        source: 'slider',
+        percent: 100,
+        amountInput: '',
+        unit: 'base',
+      })
+    ).toBe('1.2345');
+  });
+
+  it('reads a typed coin amount as is and a typed USD amount at the mark price', () => {
+    expect(
+      resolvePartialTpSlSize({
+        ...base,
+        source: 'manual',
+        percent: 0,
+        amountInput: '0.5',
+        unit: 'base',
+      })
+    ).toBe('0.5');
+    expect(
+      resolvePartialTpSlSize({
+        ...base,
+        source: 'manual',
+        percent: 0,
+        amountInput: '100',
+        unit: 'usd',
+      })
+    ).toBe('0.5');
+  });
+
+  it('rejects an empty amount, one above the position, or one that rounds to zero', () => {
+    const manual = { ...base, source: 'manual' as const, percent: 0 };
+    expect(
+      resolvePartialTpSlSize({ ...manual, amountInput: '', unit: 'base' })
+    ).toBeNull();
+    expect(
+      resolvePartialTpSlSize({ ...manual, amountInput: '2', unit: 'base' })
+    ).toBeNull();
+    expect(
+      resolvePartialTpSlSize({
+        ...manual,
+        amountInput: '0.00001',
+        unit: 'base',
+      })
+    ).toBeNull();
+  });
+
+  it('caps typed input at the position in the active unit', () => {
+    expect(getTpSlMaxAmountInput({ ...base, unit: 'base' })).toBe('1.2345');
+    expect(getTpSlMaxAmountInput({ ...base, unit: 'usd' })).toBe('246.9');
+  });
+
+  it('shows an amount in coin, or in USD at the mark price', () => {
+    expect(
+      formatTpSlAmount({
+        unit: 'base',
+        size: '0.6172',
+        markPrice: 200,
+        szDecimals: 4,
+      })
+    ).toBe('0.6172');
+    expect(
+      formatTpSlAmount({
+        unit: 'usd',
+        size: '0.6172',
+        markPrice: 200,
+        szDecimals: 4,
+      })
+    ).toBe('123.44');
+  });
+});
+
+describe('trigger price helpers', () => {
+  it('normalizes a stored trigger that breaks the input precision rule', () => {
+    expect(normalizeTriggerPrice('69260.0', 5)).toBe('69260');
+    expect(normalizeTriggerPrice('110.5', 2)).toBe('110.5');
+  });
+
+  it('compares trigger prices numerically', () => {
+    expect(isSameTriggerPrice('110', '110.0')).toBe(true);
+    expect(isSameTriggerPrice('110', '110.5')).toBe(false);
+    expect(isSameTriggerPrice('', '')).toBe(true);
+    expect(isSameTriggerPrice('110', '')).toBe(false);
+  });
+});
