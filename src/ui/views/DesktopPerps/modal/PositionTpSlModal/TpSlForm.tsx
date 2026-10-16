@@ -100,6 +100,9 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
         )}`
       : '';
 
+  // Prefill from `editingOrder` / `existingOrders` is read once on mount.
+  // Callers must key the form by the identity of those orders (e.g. their oids)
+  // so it remounts when they change.
   const [drafts, setDrafts] = useState<Record<TpSlKind, TpSlSideDraft>>(
     () => {
       const build = (kind: TpSlKind): TpSlSideDraft => {
@@ -168,7 +171,7 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
     direction: position.direction,
     entryPrice: position.entryPx,
     leverage: position.leverage,
-    size: partialSize || position.size,
+    size: scope === 'partial' ? partialSize ?? '' : position.size,
     szDecimals,
     markPrice,
     liquidationPrice: position.liquidationPx,

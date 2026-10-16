@@ -340,7 +340,10 @@ export interface TpSlCalcContext {
   direction: TpSlDirection;
   entryPrice: string;
   leverage: number;
-  /** Coin size the PnL is computed on: the partial amount, or the whole position. */
+  /**
+   * Coin size the PnL is computed on: the partial amount, or the whole position.
+   * `''` when the partial amount is not usable (empty / zero / over the max).
+   */
   size: string;
   szDecimals: number;
   markPrice: Numeric;
@@ -392,6 +395,17 @@ export const resolveTpSlSideView = (
 ): TpSlSideView => {
   if (draft.source === 'mode') {
     if (!positive(draft.modeValue)) {
+      return {
+        triggerPrice: '',
+        modeValue: draft.modeValue,
+        pnl: null,
+        roi: null,
+        status: 'empty',
+        error: null,
+      };
+    }
+    // A PnL target cannot be priced without a size: show nothing, not an error.
+    if (draft.mode === 'pnl' && !positive(ctx.size)) {
       return {
         triggerPrice: '',
         modeValue: draft.modeValue,

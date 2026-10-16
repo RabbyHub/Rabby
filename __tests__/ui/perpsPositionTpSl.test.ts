@@ -450,6 +450,31 @@ describe('resolveTpSlSideView', () => {
     expect(view.roi?.toNumber()).toBe(100);
   });
 
+  it('shows nothing for a PnL target when the size is unusable', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'mode', triggerPrice: '', modeValue: '20' },
+      'takeProfit',
+      { ...ctx, size: '' }
+    );
+    expect(view).toMatchObject({
+      status: 'empty',
+      triggerPrice: '',
+      error: null,
+      pnl: null,
+      roi: null,
+    });
+  });
+
+  it('still derives the trigger of an ROI target when the size is unusable', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'roi', source: 'mode', triggerPrice: '', modeValue: '100' },
+      'takeProfit',
+      { ...ctx, size: '' }
+    );
+    expect(view.triggerPrice).toBe('110');
+    expect(view.pnl).toBeNull();
+  });
+
   it('derives the magnitude from a typed trigger in the selected unit', () => {
     const view = resolveTpSlSideView(
       { mode: 'roi', source: 'trigger', triggerPrice: '110', modeValue: '' },
