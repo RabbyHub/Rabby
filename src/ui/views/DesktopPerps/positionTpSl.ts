@@ -274,7 +274,9 @@ export const validatePartialTpSlTrigger = (params: {
 }): TpSlTriggerError | null => {
   const trigger = positive(params.triggerPrice);
   const mark = positive(params.markPrice);
-  if (!trigger || !mark) return null;
+  if (!trigger) return null;
+  // Without a mark price the side cannot be checked: fail closed.
+  if (!mark) return 'invalidForMark';
   const shouldBeAbove =
     (params.direction === 'Long') === (params.kind === 'takeProfit');
   const ok = shouldBeAbove ? trigger.gt(mark) : trigger.lt(mark);

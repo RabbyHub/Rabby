@@ -402,6 +402,17 @@ describe('validatePartialTpSlTrigger', () => {
     }
   );
 
+  it('rejects a trigger when the mark price is unavailable', () => {
+    expect(
+      validatePartialTpSlTrigger({
+        direction: 'Long',
+        kind: 'takeProfit',
+        triggerPrice: '110',
+        markPrice: 0,
+      })
+    ).toBe('invalidForMark');
+  });
+
   it('treats an empty trigger as not yet entered', () => {
     expect(
       validatePartialTpSlTrigger({

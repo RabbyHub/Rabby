@@ -35,6 +35,32 @@ const formatTriggerPx = (px?: string) => {
   return px ? Number(px).toString() : undefined;
 };
 
+/** Error strings of the rejected orders in an exchange response's statuses. */
+const getOrderStatusErrors = (res: unknown): string[] => {
+  const statuses = (res as
+    | {
+        response?: { data?: { statuses?: unknown } };
+      }
+    | null
+    | undefined)?.response?.data?.statuses;
+  if (!Array.isArray(statuses)) return [];
+  return statuses.flatMap((s) =>
+    typeof s === 'object' && s !== null && (s as { error?: string }).error
+      ? [(s as { error: string }).error]
+      : []
+  );
+};
+
+const hasOrderStatuses = (res: unknown): boolean => {
+  const statuses = (res as
+    | {
+        response?: { data?: { statuses?: unknown } };
+      }
+    | null
+    | undefined)?.response?.data?.statuses;
+  return Array.isArray(statuses) && statuses.length > 0;
+};
+
 export const usePerpsProPosition = () => {
   const currentPerpsAccount = useRabbySelector(
     (state) => state.perps.currentPerpsAccount
@@ -818,14 +844,7 @@ export const usePerpsProPosition = () => {
             slTriggerPx: formattedSlTriggerPx,
             builder: PERPS_BUILDER_INFO_PRO,
           });
-          const statuses: unknown[] = res?.response?.data?.statuses || [];
-          const errors = statuses
-            .map((s) =>
-              typeof s === 'object' && s !== null
-                ? (s as { error?: string }).error
-                : undefined
-            )
-            .filter(Boolean);
+          const errors = getOrderStatusErrors(res);
           if (!res || errors.length > 0) {
             throw new Error(errors[0] || 'Set auto close failed');
           }
@@ -864,15 +883,8 @@ export const usePerpsProPosition = () => {
             tp,
             sl,
           });
-          const statuses: unknown[] = res?.response?.data?.statuses || [];
-          const errors = statuses
-            .map((s) =>
-              typeof s === 'object' && s !== null
-                ? (s as { error?: string }).error
-                : undefined
-            )
-            .filter(Boolean);
-          if (statuses.length > 0 && errors.length === 0) {
+          const errors = getOrderStatusErrors(res);
+          if (hasOrderStatuses(res) && errors.length === 0) {
             return true;
           }
           throw new Error(errors[0] || 'modify auto close failed');
@@ -905,15 +917,9 @@ export const usePerpsProPosition = () => {
             reduceOnly: true,
             builder: PERPS_BUILDER_INFO_PRO,
           });
-          const status = res?.response?.data?.statuses?.[0] as
-            | { error?: string }
-            | string
-            | undefined;
-          if (!res || (status && typeof status === 'object' && status.error)) {
-            throw new Error(
-              (status as { error?: string } | undefined)?.error ||
-                'place partial tp/sl failed'
-            );
+          const errors = getOrderStatusErrors(res);
+          if (!res || errors.length > 0) {
+            throw new Error(errors[0] || 'place partial tp/sl failed');
           }
           return true as const;
         },
@@ -957,27 +963,10 @@ export const usePerpsProPosition = () => {
             },
           });
           // A single modify answers `{ type: 'default' }`; a batch answers
-          // per-order statuses. Either way an error string means rejected.
-          const payload = (res as unknown) as {
-            status?: string;
-            response?:
-              | string
-              | { data?: { statuses?: Array<{ error?: string } | string> } };
-          };
-          if (payload?.status !== 'ok') {
-            throw new Error(
-              typeof payload?.response === 'string' && payload.response
-                ? payload.response
-                : 'modify partial tp/sl failed'
-            );
-          }
-          const status =
-            typeof payload.response === 'object'
-              ? payload.response?.data?.statuses?.[0]
-              : undefined;
-          if (status && typeof status === 'object' && status.error) {
-            throw new Error(status.error);
-          }
+          // per-order statuses. An error string means rejected (the SDK http
+          // client already throws for err/error/fail statuses).
+          const errors = getOrderStatusErrors(res);
+          if (errors.length > 0) throw new Error(errors[0]);
           return true as const;
         },
         params,

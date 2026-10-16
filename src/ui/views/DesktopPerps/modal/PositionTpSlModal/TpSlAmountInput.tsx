@@ -18,6 +18,8 @@ interface TpSlAmountInputProps {
   titleSize?: 'default' | 'large';
   disabled?: boolean;
   hasError?: boolean;
+  /** Shown under the input in red; also turns the border red. */
+  errorText?: string;
   /** Focus the manual input on mount (after switching from the slider). */
   autoFocusInput?: boolean;
   onBeginManual: () => void;
@@ -35,6 +37,7 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
   titleSize = 'default',
   disabled,
   hasError,
+  errorText,
   autoFocusInput,
   onBeginManual,
   onInputChange,
@@ -61,18 +64,28 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
         className={clsx(
           'flex h-[40px] items-center gap-[8px] rounded-[6px] border border-solid bg-rb-neutral-bg-5 px-[12px]',
           'hover:border-rb-brand-default focus-within:border-rb-brand-default',
-          hasError ? 'border-rb-red-default' : 'border-transparent'
+          hasError || errorText ? 'border-rb-red-default' : 'border-transparent'
         )}
       >
         {source === 'slider' ? (
-          // Display-only while the slider drives the amount; focusing it hands
-          // control to typing (the slider drops to 0, per the PRD).
+          // Display-only while the slider drives the amount; clicking or typing
+          // hands control to typing (the slider drops to 0, per the PRD). Focus
+          // alone (e.g. Tab) must not switch modes.
           <input
             type="text"
             readOnly
             value={sliderText}
             disabled={disabled}
-            onFocus={onBeginManual}
+            onMouseDown={onBeginManual}
+            onKeyDown={(e) => {
+              if (
+                e.key.length === 1 ||
+                e.key === 'Backspace' ||
+                e.key === 'Delete'
+              ) {
+                onBeginManual();
+              }
+            }}
             className="min-w-0 flex-1 cursor-text border-0 bg-transparent p-0 text-[15px] leading-[18px] text-rb-neutral-title-1 outline-none"
           />
         ) : (
@@ -89,6 +102,11 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
           {unitLabel}
         </span>
       </div>
+      {errorText ? (
+        <div className="-mt-[4px] text-[12px] leading-[16px] text-rb-red-default">
+          {errorText}
+        </div>
+      ) : null}
       <div className="flex flex-col gap-[6px]">
         <Slider
           className="desktop-perps-tpsl-slider"

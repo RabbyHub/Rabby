@@ -92,6 +92,9 @@ export const PositionsInfo: React.FC = () => {
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [editTpSlVisible, setEditTpSlVisible] = useState(false);
   const [tpSlTab, setTpSlTab] = useState<TpSlScope>('partial');
+  // Bumped on every open so the modal content always mounts fresh, even when
+  // reopened during the previous close animation.
+  const [tpSlOpenCount, setTpSlOpenCount] = useState(0);
   const [closePositionVisible, setClosePositionVisible] = useState(false);
   const [closePositionType, setClosePositionType] = useState<
     'limit' | 'market' | 'reverse'
@@ -298,6 +301,7 @@ export const PositionsInfo: React.FC = () => {
   const openTpSlModal = useMemoizedFn((coin: string, tab: TpSlScope) => {
     setSelectedCoin(coin);
     setTpSlTab(tab);
+    setTpSlOpenCount((n) => n + 1);
     setEditTpSlVisible(true);
   });
 
@@ -333,16 +337,12 @@ export const PositionsInfo: React.FC = () => {
 
   const renderTpSlPrices = (
     tp: PositionTpSlOrder | null,
-    sl: PositionTpSlOrder | null,
-    pxDecimals: number
+    sl: PositionTpSlOrder | null
   ) => (
     <div className="flex flex-col gap-[4px] text-[12px] leading-[14px]">
       {tp ? (
         <span className="text-rb-green-default">
-          $
-          {splitNumberByStep(
-            new BigNumber(tp.triggerPrice).toFixed(pxDecimals)
-          )}
+          {`$${splitNumberByStep(tp.triggerPrice)}`}
         </span>
       ) : (
         <span className="text-rb-neutral-foot">
@@ -351,10 +351,7 @@ export const PositionsInfo: React.FC = () => {
       )}
       {sl ? (
         <span className="text-rb-red-default">
-          $
-          {splitNumberByStep(
-            new BigNumber(sl.triggerPrice).toFixed(pxDecimals)
-          )}
+          {`$${splitNumberByStep(sl.triggerPrice)}`}
         </span>
       ) : (
         <span className="text-rb-neutral-foot">
@@ -685,8 +682,7 @@ export const PositionsInfo: React.FC = () => {
             <div className="flex items-center gap-[12px]">
               {renderTpSlPrices(
                 pickTpSlOrder(orders, 'takeProfit', markPx),
-                pickTpSlOrder(orders, 'stopLoss', markPx),
-                marketDataMap[record.coin]?.pxDecimals ?? 2
+                pickTpSlOrder(orders, 'stopLoss', markPx)
               )}
               {renderTpSlEdit(record.coin, 'position')}
             </div>
@@ -715,8 +711,7 @@ export const PositionsInfo: React.FC = () => {
               <div className="flex items-center gap-[6px]">
                 {renderTpSlPrices(
                   pickTpSlOrder(orders, 'takeProfit', markPx),
-                  pickTpSlOrder(orders, 'stopLoss', markPx),
-                  marketDataMap[record.coin]?.pxDecimals ?? 2
+                  pickTpSlOrder(orders, 'stopLoss', markPx)
                 )}
                 <span className="text-[12px] leading-[14px] text-rb-neutral-foot">
                   ({orders.length})
@@ -776,6 +771,7 @@ export const PositionsInfo: React.FC = () => {
             }}
           />
           <PositionTpSlModal
+            key={tpSlOpenCount}
             visible={editTpSlVisible}
             position={currentPosition}
             marketData={marketDataMap[currentPosition.coin] || {}}

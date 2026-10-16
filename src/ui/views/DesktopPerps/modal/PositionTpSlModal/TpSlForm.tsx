@@ -59,6 +59,9 @@ interface TpSlFormProps {
 
 const KINDS: TpSlKind[] = ['takeProfit', 'stopLoss'];
 
+/** Same floor as the trading panel's order value check. */
+const MIN_ORDER_VALUE_USD = 10;
+
 const stripDecorations = (value: string) =>
   value.replace(/,/g, '').replace(/[$%\s+-]/g, '');
 
@@ -246,6 +249,14 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
   let hasInvalidSide = false;
   visibleKinds.forEach((kind) => {
     const view = views[kind];
+    // An untouched existing order never blocks the other side.
+    if (
+      mode === 'positionModify' &&
+      existingOrders?.[kind] &&
+      isSameTriggerPrice(view.triggerPrice, existingOrders[kind]!.triggerPrice)
+    ) {
+      return;
+    }
     if (view.status === 'invalid') {
       hasInvalidSide = true;
       return;
@@ -284,7 +295,16 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
       }
     }
   });
-  const amountValid = scope === 'position' || Boolean(partialSize);
+  const partialNotional =
+    partialSize && markPrice > 0
+      ? new BigNumber(partialSize).times(markPrice)
+      : null;
+  const belowMinOrder =
+    partialNotional !== null &&
+    partialNotional.gt(0) &&
+    partialNotional.lt(MIN_ORDER_VALUE_USD);
+  const amountValid =
+    scope === 'position' || (Boolean(partialSize) && !belowMinOrder);
   const canSubmit =
     legs.length > 0 &&
     !hasInvalidSide &&
@@ -370,6 +390,11 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
                   amountSource === 'manual' &&
                   amountInput !== '' &&
                   !partialSize
+                }
+                errorText={
+                  belowMinOrder
+                    ? t('page.perpsPro.tradingPanel.minimumOrderSize')
+                    : undefined
                 }
                 autoFocusInput={focusAmountInput}
                 onBeginManual={handleBeginManual}

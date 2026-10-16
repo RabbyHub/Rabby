@@ -24,7 +24,6 @@ import {
   TpSlCommandLeg,
   TpSlKind,
   TpSlScope,
-  collectPositionTpSlOrders,
   groupTpSlOrders,
   isTpSlCommandStale,
 } from '../../positionTpSl';
@@ -66,7 +65,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
 }) => {
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
-  const openOrders = useRabbySelector((s) => s.perps.openOrders);
   const orderConfirmations = useRabbySelector(
     (s) => s.perps.orderConfirmations
   );
@@ -106,14 +104,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     onBusyChange(busy);
   }, [busy, onBusyChange]);
 
-  const orders = useMemo(
-    () =>
-      collectPositionTpSlOrders(openOrders, {
-        coin: position.coin,
-        direction: position.direction,
-      }),
-    [openOrders, position.coin, position.direction]
-  );
+  const orders = position.tpslOrders;
   const partialGroups = useMemo(
     () => groupTpSlOrders(orders, 'partial', position.direction),
     [orders, position.direction]
@@ -220,8 +211,10 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     try {
       if (command.scope === 'partial') {
         let succeeded = 0;
+        let attempted = 0;
         for (const leg of command.legs) {
           if (!leg.size) continue;
+          attempted += 1;
           const tpsl = leg.kind === 'takeProfit' ? 'tp' : 'sl';
           const ok =
             leg.action === 'modify' && leg.oid !== undefined
@@ -247,10 +240,16 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
           }
         }
         if (succeeded > 0) {
-          perpsToast.success({
-            title: t('page.perps.toast.success'),
-            description: t('page.perpsPro.positionTpSl.submitted'),
-          });
+          if (succeeded === attempted) {
+            perpsToast.success({
+              title: t('page.perps.toast.success'),
+              description: t('page.perpsPro.positionTpSl.submitted'),
+            });
+          } else {
+            perpsToast.info({
+              title: t('page.perpsPro.positionTpSl.partialSubmitted'),
+            });
+          }
           await refreshOrders();
           setFormResetKey((prev) => prev + 1);
           goRoot();

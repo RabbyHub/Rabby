@@ -1856,6 +1856,7 @@
         "volume": "Volume",
         "estimatedPnl": "Estimated PNL",
         "submitted": "TP/SL submitted",
+        "partialSubmitted": "Some TP/SL orders were submitted. The latest orders are shown after refresh.",
         "contextChanged": "Position or Mark Price changed. Please review again.",
         "noTp": "no TP",
         "noSl": "no SL"
