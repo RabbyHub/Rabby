@@ -31,23 +31,30 @@ const expected = {
 // Encode independently using the official SDK's dynamic swap structs.
 const poolKey = 'tuple(address,address,uint24,int24,address)';
 const pathKey = 'tuple(address,uint24,int24,address,bytes)';
-const v4Input = (newVersion: boolean, action: number) => {
+const v4Input = (
+  newVersion: boolean,
+  action: number,
+  zeroForOne = true,
+  deprecated = false
+) => {
   const single = action === 0x06 || action === 0x08;
   const exactOut = action === 0x08 || action === 0x09;
+  const input = single && !zeroForOne ? toToken : fromToken;
+  const output = single && !zeroForOne ? fromToken : toToken;
   const amountA = exactOut ? 90 : 100;
   const amountB = exactOut ? 100 : 90;
   let schema: string;
   let value: unknown[];
   if (single) {
     schema = `tuple(${poolKey},bool,uint128,uint128,${
-      newVersion ? 'uint256,' : ''
+      newVersion && !deprecated ? 'uint256,' : ''
     }bytes)`;
     value = [
       [fromToken, toToken, 3000, 60, zero],
-      true,
+      zeroForOne,
       amountA,
       amountB,
-      ...(newVersion ? [1] : []),
+      ...(newVersion && !deprecated ? [1] : []),
       '0x',
     ];
   } else {
@@ -68,11 +75,13 @@ const v4Input = (newVersion: boolean, action: number) => {
   return encode(
     ['bytes', 'bytes[]'],
     [
-      `0x${action.toString(16).padStart(2, '0')}0c0f`,
+      `0x${action.toString(16).padStart(2, '0')}0c0e`,
       [
         encode([schema], [value]),
-        encode(['address', 'uint256'], [fromToken, 100]),
-        encode(['address', 'uint256'], [toToken, 90]),
+        encode(['address', 'uint256'], [input, 100]),
+        // OPEN_DELTA takes the complete credit without repeating the swap's
+        // minimum. A wrong swap amount must not be masked by a later bound.
+        encode(['address', 'address', 'uint256'], [output, sender, 0]),
       ],
     ]
   );
@@ -118,8 +127,43 @@ describe.each(routerVersions)(
         );
       }
     );
+
+    it.each([0x06, 0x08])(
+      'reads both currencies in a zeroForOne=false single swap (%s)',
+      (action) => {
+        const data = universal.encodeFunctionData('execute', [
+          '0x10',
+          [v4Input(newVersion, action, false)],
+          2000000000,
+        ]);
+        expect(decodeCalldata('Uniswap', transaction(data, address))).toEqual({
+          ...expected,
+          fromToken: toToken,
+          toToken: fromToken,
+        });
+      }
+    );
   }
 );
+
+describe('deprecated Universal Router 2.1.0 swap field layout', () => {
+  it.each([0x06, 0x07, 0x08, 0x09])(
+    'reads action %s without confusing single-swap and path price fields',
+    (action) => {
+      const data = universal.encodeFunctionData('execute', [
+        '0x10',
+        [v4Input(true, action, true, true)],
+        2000000000,
+      ]);
+      expect(
+        decodeCalldata(
+          'Uniswap',
+          transaction(data, '0xd92a36b0000531ef3063ded4de20a0783308446c')
+        )
+      ).toEqual(expected);
+    }
+  );
+});
 
 describe('Universal Router entry points and version selection', () => {
   const ammInput = encode(
@@ -413,38 +457,6 @@ describe('traditional Router multicalls and native tokens', () => {
     ]);
     expect(decodeCalldata('Uniswap', transaction(data))).toEqual(expected);
   });
-});
-
-describe('Magpie V2 packed layout', () => {
-  it.each(['swap', 'silentSwap'])(
-    'decodes %s(bytes), summing its input amount pointers',
-    (method) => {
-      const abi = new utils.Interface([`function ${method}(bytes)`]);
-      const packed = new Uint8Array(198);
-      const put = (offset: number, value: string) =>
-        packed.set(utils.arrayify(value), offset - 68);
-      const uint = (offset: number, value: number, bytes = 32) =>
-        put(offset, utils.hexZeroPad(utils.hexlify(value), bytes));
-      uint(68, 190, 2);
-      uint(70, 4, 2);
-      uint(72, 40);
-      uint(104, 1, 2);
-      put(106, sender);
-      put(126, fromToken);
-      put(146, toToken);
-      uint(166, 2000000000);
-      uint(198, 90);
-      uint(230, 60);
-      uint(262, 72, 2);
-      uint(264, 230, 2);
-      expect(
-        decodeCalldata(
-          'Magpie',
-          transaction(abi.encodeFunctionData(method, [packed]))
-        )
-      ).toEqual(expected);
-    }
-  );
 });
 
 describe('Magpie packed amount boundaries', () => {

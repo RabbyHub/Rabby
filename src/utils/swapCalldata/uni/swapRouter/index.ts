@@ -12,7 +12,7 @@ import {
   Context,
   MSG_SENDER,
   Swap,
-  setReceiver,
+  setOutput,
   unwrapNative,
   wrapNative,
 } from '../shared';
@@ -86,9 +86,13 @@ const walkCall = (data: string, swap: Swap, ctx: Context, path: string) => {
         );
         break;
       case 'sweepToken':
-        swap.toToken = chainToken(args.token, ctx.native);
-        swap.minReceive = args.amountMinimum.toString();
-        setReceiver(swap, args.recipient || MSG_SENDER, ctx);
+        setOutput(
+          swap,
+          ctx,
+          args.token,
+          args.recipient || MSG_SENDER,
+          args.amountMinimum.toString()
+        );
         break;
       case 'wrapETH':
         wrapNative(swap, ctx, args.value.toString());

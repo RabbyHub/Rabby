@@ -1,5 +1,5 @@
 import { utils } from 'ethers';
-import { Context, setReceiver, setSwap, Swap, v3PathTokens } from '../shared';
+import { Context, setSwap, Swap, v3PathTokens } from '../shared';
 
 // Both V3 SwapRouter and SwapRouter02 expose named swap tuples. Their ABI
 // definitions remain separate because only the original includes deadline.
@@ -30,7 +30,7 @@ export const decodeV3Swap = (
     inputAmount,
     amountB.toString(),
     exactOut,
-    step
+    step,
+    { recipient: params.recipient }
   );
-  setReceiver(swap, params.recipient, ctx);
 };

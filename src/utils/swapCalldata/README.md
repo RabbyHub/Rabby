@@ -26,7 +26,11 @@ SwapProxy version selection uses the inner `router` argument. Unknown Universal 
 SwapProxy transfers and native wraps keep the full input fixed while individual
 route legs are decoded. Direct parallel inputs are summed; intermediate token
 balances never replace the original input. Terminal payments distinguish the
-output from a refund of the input asset. Unresolved dynamic inputs fail with
+output from a refund of the input asset. Intermediate balances and external
+payouts are tracked separately, including interleaved split routes and V4-to-V2
+handoffs. Explicit TRANSFER and TAKE amounts describe the actual payment;
+balance sentinels use the remaining output bound. Multiple final assets or
+receivers fail instead of returning just the last payout. Unresolved dynamic inputs fail with
 the command/action step instead of returning a zero-amount success.
 
 `uni/assets.ts` normalizes Arc's ERC20 USDC (6 decimals) to the native USDC
@@ -47,10 +51,15 @@ Deployment sources:
 
 ## Magpie
 
-- `magpie/routerV2.ts`: `swap(bytes)` and `silentSwap(bytes)`, including the sum of input amount pointers.
-- `magpie/routerV3.ts`: `swapWithMagpieSignature(bytes)` and `swapWithUserSignature(bytes)`; the inspected V3_1 deployments share this layout.
 - `magpie/dexAggregator.ts`: `swapWithBackendSignature(bytes)`.
 - `magpie/packed.ts`: bounded reads of absolute calldata offsets and compact integers.
+
+Magpie confirmed on 2026-10-16 that its current quote API uses DexAggregator
+only and that the older MagpieRouter contracts are deprecated. The local
+decoder therefore accepts only `swapWithBackendSignature(bytes)` (`0x46ec278a`).
+Other selectors return an explicit unsupported-selector error and an unknown
+version. Magpie also confirmed that all chains use the same version; deployment
+addresses can differ, but the packed-data decoder is shared across chains.
 
 `CalldataDecodeError.step` identifies the version, command/action index or packed field that failed. The quote logger preserves that step and the original quote.
 
@@ -129,10 +138,14 @@ quote diagnostic tests together. The standard Jest run also includes them.
 The [fixture index](../../../__tests__/fixtures/swap-calldata/README.md) describes
 the 2026-10-16 dataset: all 222 quoted records, six Uni protocol-route families,
 15 version/entry/route combinations, 27 command shapes, and Magpie's observed
-DexAggregator format. Successful records assert exact decoded fields; the two
-known native-refund failures are explicitly reproduced separately, with their
-intended outputs pinned from calldata. No decoder fix is implied by those
-known-failure tests passing.
+DexAggregator format. Every record asserts exact decoded fields, including the
+two native-refund regressions with intended outputs pinned from calldata.
+The two native-refund cases are fixed and must pass the same assertions;
+diagnostic markers do not exempt a sample from successful-result assertions.
+`swapCalldataCorrectness.test.ts` adds payment, split-route and compact-integer
+regressions that assert all fields, including cases that previously returned
+a successful but incorrect result. V4 version tests avoid a later repeated
+payment bound masking an incorrectly decoded swap minimum.
 
 `uni-cross-chain-regressions.json` preserves all 11 relevant original records
 from the 2026-10-15 export, with independently specified expected results. Eight

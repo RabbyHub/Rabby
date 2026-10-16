@@ -60,12 +60,19 @@ export const walkV4 = (
         break;
       case 0x0e: {
         // TAKE
-        const [currency, recipient] = decodeAbi(
+        const [currency, recipient, amount] = decodeAbi(
           ['address', 'address', 'uint256'],
           data,
           actionStep
         );
-        setOutput(swap, ctx, currency, recipient);
+        setOutput(
+          swap,
+          ctx,
+          currency,
+          recipient,
+          amount.isZero() ? undefined : amount.toString(),
+          !amount.isZero()
+        );
         break;
       }
       case 0x0f: {

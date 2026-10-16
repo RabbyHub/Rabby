@@ -1,4 +1,4 @@
-import { decodeCalldata } from '@/utils/swapCalldata';
+import { decodeCalldata, getCalldataVersion } from '@/utils/swapCalldata';
 import { utils } from 'ethers';
 import magpieArbitrum from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
 import magpieArbitrumUsdcToWeth from '../fixtures/swap-calldata/magpie-arbitrum-usdc-to-weth-backend-signature.json';
@@ -156,32 +156,20 @@ describe('local decoder supported formats', () => {
     ).toEqual(expected);
   });
 
-  it.each(['swapWithMagpieSignature', 'swapWithUserSignature'])(
-    'decodes the existing Magpie packed-data format: %s',
-    (method) => {
-      const router = new utils.Interface([
-        `function ${method}(bytes swapData)`,
-      ]);
-      // The bytes argument starts at calldata byte 68. Its amount pointers
-      // reference absolute calldata offsets, matching the copied SDK format.
-      const packed = new Uint8Array(156);
-      packed.set(utils.arrayify(fromToken), 92 - 68);
-      packed.set(utils.arrayify(toToken), 112 - 68);
-      packed[137 - 68] = 160;
-      packed[143 - 68] = 192;
-      packed.set(
-        utils.arrayify(utils.hexZeroPad(utils.hexlify(90), 32)),
-        160 - 68
-      );
-      packed.set(
-        utils.arrayify(utils.hexZeroPad(utils.hexlify(100), 32)),
-        192 - 68
-      );
-      const data = router.encodeFunctionData(method, [packed]);
-
-      expect(decodeCalldata('Magpie', transaction(data))).toEqual(expected);
-    }
-  );
+  it.each([
+    'swap',
+    'silentSwap',
+    'swapWithMagpieSignature',
+    'swapWithUserSignature',
+  ])('rejects the deprecated Magpie entry point: %s', (method) => {
+    const router = new utils.Interface([`function ${method}(bytes swapData)`]);
+    const data = router.encodeFunctionData(method, ['0x']);
+    const tx = transaction(data);
+    expect(getCalldataVersion('Magpie', tx)).toBe('unknown');
+    expect(() => decodeCalldata('Magpie', tx)).toThrow(
+      `Unsupported Magpie calldata selector: ${data.slice(0, 10)}`
+    );
+  });
 
   it('rejects unsupported Magpie selectors without trying another layout', () => {
     expect(() => decodeCalldata('Magpie', transaction('0xdeadbeef'))).toThrow(

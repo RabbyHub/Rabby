@@ -2,13 +2,13 @@ import { CalldataDecodeError } from '../../errors';
 import {
   Context,
   decodeAbi,
-  setReceiver,
   setSwap,
   Swap,
   unwrapNative,
   v3PathTokens,
   wrapNative,
   setOutput,
+  CONTRACT_BALANCE,
 } from '../shared';
 import type { RouterProfile } from './profiles';
 import { walkV4 } from './v4';
@@ -21,7 +21,7 @@ const decodeAmmSwap = (
   exactOut: boolean,
   step: string
 ) => {
-  const [recipient, amountA, amountB, path] = decodeAbi(
+  const [recipient, amountA, amountB, path, payerIsUser] = decodeAbi(
     ['address', 'uint256', 'uint256', v3 ? 'bytes' : 'address[]', 'bool'],
     input,
     step
@@ -44,9 +44,9 @@ const decodeAmmSwap = (
     amountA.toString(),
     amountB.toString(),
     exactOut,
-    step
+    step,
+    { recipient, payerIsUser }
   );
-  setReceiver(swap, recipient, ctx);
 };
 
 export const walkCommands = (
@@ -104,12 +104,15 @@ export const walkCommands = (
           input,
           commandStep
         );
+        const entireBalance =
+          command === 0x05 && CONTRACT_BALANCE.eq(amount.toString());
         setOutput(
           swap,
           ctx,
           token,
           recipient,
-          command === 0x04 ? amount.toString() : undefined
+          entireBalance ? undefined : amount.toString(),
+          command === 0x05 && !entireBalance
         );
         break;
       }

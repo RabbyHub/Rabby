@@ -1,6 +1,5 @@
 import { utils } from 'ethers';
 import {
-  CalldataDecodeError,
   decodeCalldata,
   getCalldataVersion,
   UniABI,
@@ -8,8 +7,9 @@ import {
 import recorded from '../fixtures/swap-calldata/recorded-swaps-2026-10-16.json';
 
 const uni = new utils.Interface(UniABI);
-const successful = recorded.cases.filter((sample) => !sample.knownFailure);
-const knownFailures = recorded.cases.filter((sample) => sample.knownFailure);
+const refundRegressions = recorded.cases.filter(
+  (sample) => sample.knownFailure
+);
 const transaction = (sample: typeof recorded.cases[number]) => ({
   ...sample.record.quote.tx,
   chainId: sample.record.chainId,
@@ -57,8 +57,13 @@ describe('2026-10-16 real quote dataset coverage', () => {
     expect(new Set(recorded.cases.map((sample) => sample.recordId)).size).toBe(
       222
     );
-    expect(successful).toHaveLength(220);
-    expect(knownFailures.map((sample) => sample.recordId)).toEqual([548, 562]);
+    expect(
+      recorded.cases.filter((sample) => sample.record.status === 'passed')
+    ).toHaveLength(220);
+    expect(refundRegressions.map((sample) => sample.recordId)).toEqual([
+      548,
+      562,
+    ]);
     recorded.cases.forEach((sample) => {
       expect(sample.recordId).toBe(sample.record.id);
       expect(sample.record.quote.tx.data).toMatch(/^0x[0-9a-f]+$/i);
@@ -129,8 +134,9 @@ describe('2026-10-16 real quote dataset coverage', () => {
   });
 });
 
-describe('2026-10-16 successful calldata regressions', () => {
-  it.each(successful)('$name', (sample) => {
+describe('2026-10-16 calldata must decode to the expected result', () => {
+  // Diagnostic markers never exempt a quote from successful-result assertions.
+  it.each(recorded.cases)('$name', (sample) => {
     const decoded = decode(sample);
     expect(
       decoded && {
@@ -143,22 +149,8 @@ describe('2026-10-16 successful calldata regressions', () => {
   });
 });
 
-describe('2026-10-16 KNOWN FAILURE: native refund overwrites ERC20 output', () => {
-  it.each(knownFailures)('reproduces the current error: $name', (sample) => {
-    let failure: unknown;
-    try {
-      decode(sample);
-    } catch (error) {
-      failure = error;
-    }
-    expect(failure).toBeInstanceOf(CalldataDecodeError);
-    expect(failure).toMatchObject({
-      step: sample.knownFailure!.step,
-      message: sample.knownFailure!.message,
-    });
-  });
-
-  it.each(knownFailures)(
+describe('2026-10-16 native refund output regressions', () => {
+  it.each(refundRegressions)(
     'pins the intended output from the original SWEEP: $name',
     (sample) => {
       const parsed = uni.parseTransaction(transaction(sample));

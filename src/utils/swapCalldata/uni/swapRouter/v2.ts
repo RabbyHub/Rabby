@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 import { CalldataDecodeError } from '../../errors';
-import { Context, setReceiver, setSwap, Swap } from '../shared';
+import { Context, setSwap, Swap } from '../shared';
 
 export const decodeV2Swap = (
   transaction: utils.TransactionDescription,
@@ -38,7 +38,7 @@ export const decodeV2Swap = (
     exactOut ? outputAmount : inputAmount,
     exactOut ? inputAmount : outputAmount,
     exactOut,
-    step
+    step,
+    { recipient: args.to }
   );
-  setReceiver(swap, args.to, ctx);
 };

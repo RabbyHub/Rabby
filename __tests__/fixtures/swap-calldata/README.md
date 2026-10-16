@@ -46,12 +46,18 @@ format**; the opaque packed payload can route through other DEXes internally.
 It is not classified here as a single underlying swap or a single-hop route.
 
 Real samples absent from this export are explicitly listed under
-`coverage.absentFromThisExport`. In particular, it does not contain Magpie
-Router V2/V3/V3_1, Uni exact-output swaps, V4's single-pool struct action, or
-every supported Universal Router version. Synthetic version-format coverage
+`coverage.absentFromThisExport`. In particular, it does not contain Uni
+exact-output swaps, V4's single-pool struct action, or every supported
+Universal Router version. Synthetic version-format coverage
 remains in `__tests__/utils/swapCalldataVersions.test.ts`.
 
-## Expected results and known failures
+Magpie confirmed on 2026-10-16 that its current quote API uses DexAggregator
+only, with the same version across chains. Deprecated MagpieRouter V2/V3/V3_1
+formats are excluded from the decoder and its coverage requirements. Tests
+verify that their entry points are rejected explicitly; all real Magpie quotes
+and DexAggregator correctness cases remain covered.
+
+## Expected results and historical failures
 
 Expected values are fixed in `expected`, independently read from the packed
 Magpie fields, Uni ingress amounts, swap paths and terminal payout bounds.
@@ -59,14 +65,31 @@ They are not recomputed by the production decoder during the test. Address
 case is normalized; amount strings must match exactly. Arc USDC uses the
 6-to-18-decimal normalization without adding sub-contract-unit quote dust.
 
-220 cases assert complete successful decode results. Records **548**
+All 222 cases assert complete successful decode results. Records **548**
 (Unichain, ETH → LINK, Router 2.0) and **562** (zkSync, ETH → ZF, Router 1.2)
-are the two known failures: a trailing native-input refund currently replaces
-the ERC20 payout. Their intended outputs are pinned from the original `SWEEP`;
-the `KNOWN FAILURE` suite separately checks the exact current error and the
-refund command responsible.
+are the two original failures: a trailing native-input refund replaced the
+ERC20 payout. Both are now fixed. Their intended outputs remain pinned from
+the original `SWEEP`, and the original failed diagnostics are preserved.
 
-A passing known-failure reproduction does **not** mean the parser is fixed.
-When the refund handling is fixed, remove those cases' `knownFailure` markers;
-they will automatically join the successful-result assertions. Their original
-records and expected outputs should remain unchanged.
+`knownFailure` preserves the original diagnosis only; it never skips a case or
+changes an assertion into an expected exception. A separate check verifies
+the expected payout and refund command directly from the original calldata.
+The parser fix turns these same result assertions green without changing the
+original quotes or their expected outputs.
+
+## Correctness beyond successful parsing
+
+`__tests__/utils/swapCalldataCorrectness.test.ts` asserts complete decoded
+objects for refunds, router-only payments, explicit TRANSFER / V4 TAKE
+amounts, interleaved split routes, V4-to-V2 handoffs and reused router funds.
+It distinguishes user payouts from intermediate balances and sums payments
+to the same receiver. Multiple final assets or receivers fail explicitly
+because one `DecodeCalldataResult` cannot describe them.
+
+Magpie compact-number cases independently encode non-byte-aligned shifts,
+two-byte pointers, nonzero discarded bits and amounts above JavaScript's
+safe integer range. All five decoded fields must match the original values.
+Version-format tests take the V4 output with OPEN_DELTA rather than repeating
+the expected minimum in TAKE_ALL, so a bad swap amount cannot be hidden by
+a later payment bound. Both V4 pool directions and the deprecated 2.1.0
+single/path layouts are checked.
