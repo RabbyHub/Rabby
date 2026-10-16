@@ -656,6 +656,39 @@ describe('HyperEVM sender gas limit', () => {
     jest.requireMock('consts').DEFAULT_GAS_LIMIT_BUFFER = 0;
   });
 
+  test.each([
+    [21_000, 0, 31_500],
+    [2_000_000, 0, 3_000_000],
+    [1_000_000, 3_000_000, 3_000_000],
+  ])(
+    'skips the mode query when both gas candidates fit a small block',
+    async (gas, txGas, expected) => {
+      const { result, requestETHRpc } = await run(true, 30_000_000, gas, txGas);
+      expect(Number(result.gasLimit)).toBe(expected);
+      expect(requestETHRpc).not.toHaveBeenCalled();
+    }
+  );
+
+  test.each([
+    [true, 3_750_000],
+    [false, 3_000_000],
+  ])(
+    'queries mode %s when only the buffer exceeds 3M',
+    async (mode, expected) => {
+      const { result, requestETHRpc } = await run(
+        mode,
+        3_000_000,
+        2_500_000,
+        0
+      );
+      expect(Number(result.gasLimit)).toBe(expected);
+      expect(requestETHRpc).toHaveBeenCalledWith(
+        { method: 'eth_usingBigBlocks', params: ['0xsender'] },
+        'hyper'
+      );
+    }
+  );
+
   test.each([3_000_000, 30_000_000])(
     'big-block sender ignores latest block limit %i',
     async (blockLimit) => {
@@ -674,8 +707,17 @@ describe('HyperEVM sender gas limit', () => {
   });
 
   test('honors a dapp gas limit that fits the sender big-block cap', async () => {
-    const { result } = await run(true, 3_000_000, 2_000_000, 9_000_000);
+    const { result, requestETHRpc } = await run(
+      true,
+      3_000_000,
+      2_000_000,
+      9_000_000
+    );
     expect(Number(result.gasLimit)).toBe(9_000_000);
+    expect(requestETHRpc).toHaveBeenCalledWith(
+      { method: 'eth_usingBigBlocks', params: ['0xsender'] },
+      'hyper'
+    );
   });
 
   test('only caps the buffer when the estimate fits a big block', async () => {
