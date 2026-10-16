@@ -283,7 +283,11 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
   });
   const amountValid = scope === 'position' || Boolean(partialSize);
   const canSubmit =
-    legs.length > 0 && !hasInvalidSide && amountValid && !submitting;
+    legs.length > 0 &&
+    !hasInvalidSide &&
+    amountValid &&
+    !submitting &&
+    (cancelingOid ?? null) === null;
 
   const renderTitleExtra = (kind: TpSlKind) => {
     if (mode !== 'positionModify' || !onCancelExisting) return null;

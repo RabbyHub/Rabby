@@ -6,7 +6,13 @@ import { useMemoizedFn } from 'ahooks';
 import { Modal, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import perpsToast from '../../components/PerpsToast';
 import type { PositionFormatData } from '../../components/UserInfoHistory/PositionsInfo';
@@ -127,7 +133,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
 
   // One-time intro: the first time a tab's root renders, show the card and
   // record it right away — it never shows again, Got it or not.
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (bodyPage !== 'root' || !tpslIntroShown) return;
     if (tpslIntroShown[tab] || introVisible[tab]) return;
     setIntroVisible((prev) => ({ ...prev, [tab]: true }));
@@ -243,6 +249,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
       const slCreate = findLeg('stopLoss', 'create');
 
       let ok = true;
+      let anyStepOk = false;
       if (tpModify || slModify) {
         ok = Boolean(
           await handleModifyTpSlOrders({
@@ -258,6 +265,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
                 : undefined,
           })
         );
+        anyStepOk = ok;
       }
       if (ok && (tpCreate || slCreate)) {
         // handleSetAutoClose shows its own success toast.
@@ -281,6 +289,12 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
       }
       await refreshOrders();
       closeAfter = ok;
+      if (!ok && anyStepOk) {
+        // A leg was already applied: drop the stale command so the form
+        // recomputes legs from the refreshed orders.
+        if (page === 'confirm') setPage(returnPage);
+        setPendingCommand(null);
+      }
     } finally {
       inFlightRef.current = false;
       setSubmitting(false);
@@ -289,6 +303,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
   });
 
   const handleFormSubmit = useMemoizedFn((command: TpSlCommand) => {
+    if (busy) return;
     if (orderConfirmations?.tpsl === false) {
       void execute(command);
       return;
@@ -299,6 +314,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
   });
 
   const handleConfirm = useMemoizedFn((dontShowAgain: boolean) => {
+    if (busy) return;
     if (!pendingCommand) return;
     if (dontShowAgain) {
       dispatch.perps.updateOrderConfirmation({ type: 'tpsl', enabled: false });

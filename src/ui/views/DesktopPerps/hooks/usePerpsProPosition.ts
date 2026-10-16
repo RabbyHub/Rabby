@@ -853,13 +853,18 @@ export const usePerpsProPosition = () => {
             tp,
             sl,
           });
-          const resting = res?.response?.data?.statuses[0]?.resting;
-          if (resting?.oid) {
+          const statuses: unknown[] = res?.response?.data?.statuses || [];
+          const errors = statuses
+            .map((s) =>
+              typeof s === 'object' && s !== null
+                ? (s as { error?: string }).error
+                : undefined
+            )
+            .filter(Boolean);
+          if (statuses.length > 0 && errors.length === 0) {
             return true;
-          } else {
-            const msg = res?.response?.data?.statuses[0].error;
-            throw new Error(msg || 'modify auto close failed');
           }
+          throw new Error(errors[0] || 'modify auto close failed');
         },
         params,
         'modify auto close failed'
