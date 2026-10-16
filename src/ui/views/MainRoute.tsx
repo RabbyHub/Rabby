@@ -27,6 +27,11 @@ import { HistoryPage } from './History';
 import PerpsSingleCoin from './Perps/screen/SingleCoin';
 import { HistoryPage as PerpsHistoryPage } from './Perps/screen/HistoryPage';
 import ExploreMore from './Perps/screen/ExploreMore';
+import {
+  PerpsSpotDetail,
+  PerpsSpotMarkets,
+  PerpsSpotPortfolio,
+} from './PerpsSpot';
 import Staking from './Staking';
 import StakingDetail from './Staking/Detail';
 import AdvancedSettings from './AdvanceSettings';
@@ -548,6 +553,15 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/perps/history/:coin">
           <PerpsHistoryPage />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/spot">
+          <PerpsSpotMarkets />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/spot/portfolio">
+          <PerpsSpotPortfolio />
+        </PrivateRoute>
+        <PrivateRoute exact path="/perps/spot/trade/:pairIndex">
+          <PerpsSpotDetail />
         </PrivateRoute>
         <PrivateRoute exact path="/staking">
           <Staking />
