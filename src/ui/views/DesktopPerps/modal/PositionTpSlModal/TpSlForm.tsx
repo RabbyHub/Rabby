@@ -142,6 +142,8 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
   );
   // Until the amount is edited, a modify keeps the order's exact size.
   const [amountTouched, setAmountTouched] = useState(false);
+  // Focus the manual input only right after the user switched from the slider.
+  const [focusAmountInput, setFocusAmountInput] = useState(false);
 
   const maxAmountInput = getTpSlMaxAmountInput({
     unit,
@@ -218,6 +220,7 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
     setPercent(0);
     setAmountInput('');
     setAmountTouched(true);
+    setFocusAmountInput(true);
   });
 
   const handleAmountInputChange = useMemoizedFn((value: string) => {
@@ -368,6 +371,7 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
                   amountInput !== '' &&
                   !partialSize
                 }
+                autoFocusInput={focusAmountInput}
                 onBeginManual={handleBeginManual}
                 onInputChange={handleAmountInputChange}
                 onPercentChange={handlePercentChange}
@@ -391,7 +395,9 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
           className="desktop-perps-tpsl-confirm h-[48px] rounded-[6px] text-[15px] font-medium"
           disabled={!canSubmit}
           loading={submitting}
-          onClick={() => onSubmit({ scope, legs })}
+          onClick={() =>
+            onSubmit({ scope, direction: position.direction, legs })
+          }
         >
           {t('global.confirm')}
         </Button>

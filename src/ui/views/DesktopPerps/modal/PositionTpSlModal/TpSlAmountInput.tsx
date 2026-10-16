@@ -18,6 +18,8 @@ interface TpSlAmountInputProps {
   titleSize?: 'default' | 'large';
   disabled?: boolean;
   hasError?: boolean;
+  /** Focus the manual input on mount (after switching from the slider). */
+  autoFocusInput?: boolean;
   onBeginManual: () => void;
   onInputChange: (value: string) => void;
   onPercentChange: (percent: number) => void;
@@ -33,6 +35,7 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
   titleSize = 'default',
   disabled,
   hasError,
+  autoFocusInput,
   onBeginManual,
   onInputChange,
   onPercentChange,
@@ -74,7 +77,7 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
           />
         ) : (
           <ThousandsNativeInput
-            autoFocus
+            autoFocus={autoFocusInput}
             value={inputValue}
             inputMode="decimal"
             disabled={disabled}

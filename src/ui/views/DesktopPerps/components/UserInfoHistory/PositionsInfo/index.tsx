@@ -175,6 +175,11 @@ export const PositionsInfo: React.FC = () => {
     );
   }, [positionFormatData, selectedCoin]);
 
+  // The modal unmounts with its position; don't leave it armed to reappear.
+  useEffect(() => {
+    if (!currentPosition) setEditTpSlVisible(false);
+  }, [currentPosition]);
+
   const {
     handleUpdateMargin,
     handleCloseAllPositions,
@@ -328,12 +333,16 @@ export const PositionsInfo: React.FC = () => {
 
   const renderTpSlPrices = (
     tp: PositionTpSlOrder | null,
-    sl: PositionTpSlOrder | null
+    sl: PositionTpSlOrder | null,
+    pxDecimals: number
   ) => (
     <div className="flex flex-col gap-[4px] text-[12px] leading-[14px]">
       {tp ? (
         <span className="text-rb-green-default">
-          ${splitNumberByStep(tp.triggerPrice)}
+          $
+          {splitNumberByStep(
+            new BigNumber(tp.triggerPrice).toFixed(pxDecimals)
+          )}
         </span>
       ) : (
         <span className="text-rb-neutral-foot">
@@ -342,7 +351,10 @@ export const PositionsInfo: React.FC = () => {
       )}
       {sl ? (
         <span className="text-rb-red-default">
-          ${splitNumberByStep(sl.triggerPrice)}
+          $
+          {splitNumberByStep(
+            new BigNumber(sl.triggerPrice).toFixed(pxDecimals)
+          )}
         </span>
       ) : (
         <span className="text-rb-neutral-foot">
@@ -673,7 +685,8 @@ export const PositionsInfo: React.FC = () => {
             <div className="flex items-center gap-[12px]">
               {renderTpSlPrices(
                 pickTpSlOrder(orders, 'takeProfit', markPx),
-                pickTpSlOrder(orders, 'stopLoss', markPx)
+                pickTpSlOrder(orders, 'stopLoss', markPx),
+                marketDataMap[record.coin]?.pxDecimals ?? 2
               )}
               {renderTpSlEdit(record.coin, 'position')}
             </div>
@@ -702,7 +715,8 @@ export const PositionsInfo: React.FC = () => {
               <div className="flex items-center gap-[6px]">
                 {renderTpSlPrices(
                   pickTpSlOrder(orders, 'takeProfit', markPx),
-                  pickTpSlOrder(orders, 'stopLoss', markPx)
+                  pickTpSlOrder(orders, 'stopLoss', markPx),
+                  marketDataMap[record.coin]?.pxDecimals ?? 2
                 )}
                 <span className="text-[12px] leading-[14px] text-rb-neutral-foot">
                   ({orders.length})

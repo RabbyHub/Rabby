@@ -26,6 +26,7 @@ import {
   TpSlScope,
   collectPositionTpSlOrders,
   groupTpSlOrders,
+  isTpSlCommandStale,
 } from '../../positionTpSl';
 import {
   PositionTpSlPositionCard,
@@ -92,6 +93,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     null
   );
   const [submitting, setSubmitting] = useState(false);
+  const [formResetKey, setFormResetKey] = useState(0);
   const [cancelingOid, setCancelingOid] = useState<number | null>(null);
   const inFlightRef = useRef(false);
   const [introVisible, setIntroVisible] = useState<Record<TpSlScope, boolean>>({
@@ -198,6 +200,20 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
 
   const execute = useMemoizedFn(async (command: TpSlCommand) => {
     if (inFlightRef.current) return;
+    if (
+      isTpSlCommandStale(command, {
+        direction: position.direction,
+        markPrice,
+        liquidationPrice: position.liquidationPx,
+      })
+    ) {
+      perpsToast.error({
+        title: t('page.perpsPro.positionTpSl.contextChanged'),
+      });
+      if (page === 'confirm') setPage(returnPage);
+      setPendingCommand(null);
+      return;
+    }
     inFlightRef.current = true;
     setSubmitting(true);
     let closeAfter = false;
@@ -236,6 +252,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
             description: t('page.perpsPro.positionTpSl.submitted'),
           });
           await refreshOrders();
+          setFormResetKey((prev) => prev + 1);
           goRoot();
         }
         return;
@@ -331,7 +348,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
         const ok = await handleCancelOrder(
           targets.map((order) => ({ coin: position.coin, oid: order.oid }))
         );
-        if (ok) await refreshOrders();
+        await refreshOrders();
         return Boolean(ok);
       } finally {
         inFlightRef.current = false;
@@ -423,7 +440,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
       }
       return (
         <TpSlForm
-          key="partial-root"
+          key={`partial-root-${formResetKey}`}
           mode="partialAdd"
           variant="root"
           header={intro}

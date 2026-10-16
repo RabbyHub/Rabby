@@ -78,6 +78,8 @@ export const collectPositionTpSlOrders = (
     if (!order.reduceOnly || !order.isTrigger) return;
     const kind = resolveTpSlKind(order);
     if (!kind || !positive(order.triggerPx)) return;
+    // Only market triggers count; limit triggers stay in Open Orders.
+    if ((order.orderType || '').toLowerCase().includes('limit')) return;
     const scope: TpSlScope = order.isPositionTpsl ? 'position' : 'partial';
     if (scope === 'partial' && !positive(order.sz)) return;
     result.push({
@@ -565,5 +567,38 @@ export interface TpSlCommandLeg {
 
 export interface TpSlCommand {
   scope: TpSlScope;
+  /** Direction of the position the command was built for. */
+  direction: TpSlDirection;
   legs: TpSlCommandLeg[];
 }
+
+/**
+ * True when the position or mark moved since the command was built: the
+ * direction flipped, or a leg's trigger no longer passes its scope's rules.
+ */
+export const isTpSlCommandStale = (
+  command: TpSlCommand,
+  live: {
+    direction: TpSlDirection;
+    markPrice: Numeric;
+    liquidationPrice: string;
+  }
+): boolean => {
+  if (command.direction !== live.direction) return true;
+  return command.legs.some((leg) =>
+    command.scope === 'partial'
+      ? validatePartialTpSlTrigger({
+          direction: live.direction,
+          kind: leg.kind,
+          triggerPrice: leg.triggerPrice,
+          markPrice: live.markPrice,
+        }) !== null
+      : validatePositionTpSlTrigger({
+          direction: live.direction,
+          kind: leg.kind,
+          triggerPrice: leg.triggerPrice,
+          markPrice: live.markPrice,
+          liquidationPrice: live.liquidationPrice,
+        }) !== null
+  );
+};

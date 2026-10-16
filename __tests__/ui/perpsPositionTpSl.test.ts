@@ -2,6 +2,7 @@ import type { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
 import {
   PositionTpSlOrder,
   TpSlCalcContext,
+  TpSlCommand,
   calcPnlRoiFromModeValue,
   calcTpSlPnl,
   calcTpSlRoi,
@@ -13,6 +14,7 @@ import {
   getTpSlMaxAmountInput,
   groupTpSlOrders,
   isSameTriggerPrice,
+  isTpSlCommandStale,
   normalizeTriggerPrice,
   resolvePartialTpSlSize,
   resolveTpSlSideView,
@@ -121,6 +123,18 @@ describe('collectPositionTpSlOrders', () => {
       LONG_BTC
     );
     expect(order.kind).toBe('stopLoss');
+  });
+
+  it('excludes limit trigger orders (only market triggers count)', () => {
+    const orders = collectPositionTpSlOrders(
+      [
+        makeOrder({ oid: 1, orderType: 'Take Profit Limit' }),
+        makeOrder({ oid: 2, orderType: 'Stop Limit', triggerPx: '60000' }),
+        makeOrder({ oid: 3, orderType: 'Stop Market', triggerPx: '60000' }),
+      ],
+      LONG_BTC
+    );
+    expect(orders.map((o) => o.oid)).toEqual([3]);
   });
 
   it('ignores TP/SL children that still hang off an unfilled parent order', () => {
@@ -625,5 +639,53 @@ describe('trigger price helpers', () => {
     expect(isSameTriggerPrice('110', '110.5')).toBe(false);
     expect(isSameTriggerPrice('', '')).toBe(true);
     expect(isSameTriggerPrice('110', '')).toBe(false);
+  });
+});
+
+describe('isTpSlCommandStale', () => {
+  const live = {
+    direction: 'Long' as const,
+    markPrice: 100,
+    liquidationPrice: '50',
+  };
+  const leg = (kind: 'takeProfit' | 'stopLoss', triggerPrice: string) => ({
+    kind,
+    action: 'create' as const,
+    triggerPrice,
+    size: '1',
+    pnl: null,
+  });
+  const partial = (triggerPrice: string): TpSlCommand => ({
+    scope: 'partial',
+    direction: 'Long',
+    legs: [leg('takeProfit', triggerPrice)],
+  });
+
+  it('is stale when the position direction flipped', () => {
+    expect(
+      isTpSlCommandStale(partial('110'), { ...live, direction: 'Short' })
+    ).toBe(true);
+  });
+
+  it('is stale when a long partial TP is no longer above the live mark', () => {
+    expect(
+      isTpSlCommandStale(partial('110'), { ...live, markPrice: 110 })
+    ).toBe(true);
+  });
+
+  it('is not stale when every trigger still validates', () => {
+    expect(isTpSlCommandStale(partial('110'), live)).toBe(false);
+  });
+
+  it('is stale when a position SL is at or below liquidation', () => {
+    const command: TpSlCommand = {
+      scope: 'position',
+      direction: 'Long',
+      legs: [leg('stopLoss', '60')],
+    };
+    expect(isTpSlCommandStale(command, live)).toBe(false);
+    expect(
+      isTpSlCommandStale(command, { ...live, liquidationPrice: '60' })
+    ).toBe(true);
   });
 });

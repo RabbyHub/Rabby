@@ -818,6 +818,17 @@ export const usePerpsProPosition = () => {
             slTriggerPx: formattedSlTriggerPx,
             builder: PERPS_BUILDER_INFO_PRO,
           });
+          const statuses: unknown[] = res?.response?.data?.statuses || [];
+          const errors = statuses
+            .map((s) =>
+              typeof s === 'object' && s !== null
+                ? (s as { error?: string }).error
+                : undefined
+            )
+            .filter(Boolean);
+          if (!res || errors.length > 0) {
+            throw new Error(errors[0] || 'Set auto close failed');
+          }
           perpsToast.success({
             title: t('page.perps.toast.success'),
             description: t('page.perps.toast.setAutoCloseSuccess'),
