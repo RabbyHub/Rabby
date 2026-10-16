@@ -1,9 +1,6 @@
 import BigNumber from 'bignumber.js';
 import type { OpenOrder } from '@rabby-wallet/hyperliquid-sdk';
-import {
-  formatTpOrSlPrice,
-  validatePriceInput,
-} from '../Perps/pricePrecision';
+import { formatTpOrSlPrice, validatePriceInput } from '../Perps/pricePrecision';
 
 /**
  * Rules for the TP/SL orders that sit on an open position: which open orders
@@ -488,7 +485,8 @@ export const getTpSlMaxAmountInput = (params: {
 }): string => {
   const size = positive(params.positionSize);
   if (!size) return '0';
-  if (params.unit === 'base') return roundDown(size, params.szDecimals).toFixed();
+  if (params.unit === 'base')
+    return roundDown(size, params.szDecimals).toFixed();
   const mark = positive(params.markPrice);
   return mark ? roundDown(size.times(mark), 2).toFixed() : '0';
 };
@@ -502,7 +500,8 @@ export const formatTpSlAmount = (params: {
 }): string => {
   const size = new BigNumber(params.size || 0);
   if (!size.isFinite()) return '0';
-  if (params.unit === 'base') return roundDown(size, params.szDecimals).toFixed();
+  if (params.unit === 'base')
+    return roundDown(size, params.szDecimals).toFixed();
   const mark = positive(params.markPrice);
   return mark ? roundDown(size.times(mark), 2).toFixed(2) : '0.00';
 };

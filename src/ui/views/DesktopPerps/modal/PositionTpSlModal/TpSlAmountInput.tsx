@@ -38,7 +38,9 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
   onPercentChange,
 }) => {
   const { t } = useTranslation();
-  const sliderText = `${percent}% (${percent === 100 ? '' : '≈'}${sliderAmountText})`;
+  const sliderText = `${percent}% (${
+    percent === 100 ? '' : '≈'
+  }${sliderAmountText})`;
 
   return (
     <section className="flex flex-col gap-[12px]">

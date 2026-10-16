@@ -100,12 +100,17 @@ export const TpSlConfirmPage: React.FC<TpSlConfirmPageProps> = ({
                       markPrice,
                       szDecimals,
                     })
-                  )} ${unitLabel} (${formatSizeRatio(leg.size, position.size)})`}
+                  )} ${unitLabel} (${formatSizeRatio(
+                    leg.size,
+                    position.size
+                  )})`}
                 />
               ) : null}
               <ConfirmRow
                 label={t('page.perpsPro.positionTpSl.estimatedPnl')}
-                value={leg.pnl ? `${formatSignedValue(leg.pnl)} ${quoteAsset}` : '-'}
+                value={
+                  leg.pnl ? `${formatSignedValue(leg.pnl)} ${quoteAsset}` : '-'
+                }
                 tone={leg.pnl ? (leg.pnl.gte(0) ? 'up' : 'down') : undefined}
               />
             </section>

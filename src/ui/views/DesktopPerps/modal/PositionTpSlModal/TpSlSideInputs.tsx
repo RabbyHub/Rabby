@@ -79,7 +79,11 @@ export const TpSlSideInputs: React.FC<TpSlSideInputsProps> = ({
   const errorText = getErrorText(view.error);
 
   const modeOptions: { value: TpSlInputMode; label: string; unit: string }[] = [
-    { value: 'pnl', label: t('page.perpsPro.positionTpSl.pnl'), unit: quoteAsset },
+    {
+      value: 'pnl',
+      label: t('page.perpsPro.positionTpSl.pnl'),
+      unit: quoteAsset,
+    },
     { value: 'roi', label: t('page.perpsPro.positionTpSl.roi'), unit: '%' },
   ];
   const currentMode =

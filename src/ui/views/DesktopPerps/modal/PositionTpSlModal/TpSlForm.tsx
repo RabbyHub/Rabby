@@ -103,29 +103,27 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
   // Prefill from `editingOrder` / `existingOrders` is read once on mount.
   // Callers must key the form by the identity of those orders (e.g. their oids)
   // so it remounts when they change.
-  const [drafts, setDrafts] = useState<Record<TpSlKind, TpSlSideDraft>>(
-    () => {
-      const build = (kind: TpSlKind): TpSlSideDraft => {
-        const preference =
-          kind === 'takeProfit' ? tpslModePreferences.tp : tpslModePreferences.sl;
-        const draft = createEmptyTpSlDraft(preference === 'roi' ? 'roi' : 'pnl');
-        const order = isPartialModify
-          ? editingOrder?.kind === kind
-            ? editingOrder
-            : undefined
-          : mode === 'positionModify'
-          ? existingOrders?.[kind]
-          : undefined;
-        return order
-          ? {
-              ...draft,
-              triggerPrice: normalizeTriggerPrice(order.triggerPrice, szDecimals),
-            }
-          : draft;
-      };
-      return { takeProfit: build('takeProfit'), stopLoss: build('stopLoss') };
-    }
-  );
+  const [drafts, setDrafts] = useState<Record<TpSlKind, TpSlSideDraft>>(() => {
+    const build = (kind: TpSlKind): TpSlSideDraft => {
+      const preference =
+        kind === 'takeProfit' ? tpslModePreferences.tp : tpslModePreferences.sl;
+      const draft = createEmptyTpSlDraft(preference === 'roi' ? 'roi' : 'pnl');
+      const order = isPartialModify
+        ? editingOrder?.kind === kind
+          ? editingOrder
+          : undefined
+        : mode === 'positionModify'
+        ? existingOrders?.[kind]
+        : undefined;
+      return order
+        ? {
+            ...draft,
+            triggerPrice: normalizeTriggerPrice(order.triggerPrice, szDecimals),
+          }
+        : draft;
+    };
+    return { takeProfit: build('takeProfit'), stopLoss: build('stopLoss') };
+  });
 
   // Amount — partial modes only.
   const [amountSource, setAmountSource] = useState<'slider' | 'manual'>(
@@ -276,7 +274,9 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
       const existing = existingOrders?.[kind];
       if (!existing) {
         legs.push({ ...leg, action: 'create' });
-      } else if (!isSameTriggerPrice(view.triggerPrice, existing.triggerPrice)) {
+      } else if (
+        !isSameTriggerPrice(view.triggerPrice, existing.triggerPrice)
+      ) {
         legs.push({ ...leg, action: 'modify', oid: existing.oid });
       }
     }
@@ -328,7 +328,9 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
                 titleExtra={renderTitleExtra(kind)}
                 disabled={submitting}
                 onTriggerChange={(value) => handleTriggerChange(kind, value)}
-                onModeValueChange={(value) => handleModeValueChange(kind, value)}
+                onModeValueChange={(value) =>
+                  handleModeValueChange(kind, value)
+                }
                 onModeChange={(next) => handleModeChange(kind, next)}
               />
             ))}

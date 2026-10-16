@@ -62,7 +62,8 @@ export const PositionTpSlPositionCard: React.FC<{
     {
       key: 'mark',
       label: t('page.perpsPro.positionTpSl.markPrice'),
-      value: markPrice > 0 ? splitNumberByStep(markPrice.toFixed(pxDecimals)) : '-',
+      value:
+        markPrice > 0 ? splitNumberByStep(markPrice.toFixed(pxDecimals)) : '-',
     },
     {
       key: 'liq',
@@ -106,7 +107,10 @@ export const PositionTpSlPositionCard: React.FC<{
       {variant === 'full' ? (
         <div className="flex gap-[12px]">
           {items.map((item) => (
-            <div key={item.key} className="flex min-w-0 flex-1 flex-col gap-[3px]">
+            <div
+              key={item.key}
+              className="flex min-w-0 flex-1 flex-col gap-[3px]"
+            >
               <span className="text-[12px] leading-[20px] text-rb-neutral-secondary">
                 {item.label}
               </span>

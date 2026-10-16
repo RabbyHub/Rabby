@@ -88,9 +88,10 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
   const [submitting, setSubmitting] = useState(false);
   const [cancelingOid, setCancelingOid] = useState<number | null>(null);
   const inFlightRef = useRef(false);
-  const [introVisible, setIntroVisible] = useState<Record<TpSlScope, boolean>>(
-    { partial: false, position: false }
-  );
+  const [introVisible, setIntroVisible] = useState<Record<TpSlScope, boolean>>({
+    partial: false,
+    position: false,
+  });
 
   const busy = submitting || cancelingOid !== null;
   useEffect(() => {
@@ -113,7 +114,10 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     () => groupTpSlOrders(orders, 'position', position.direction),
     [orders, position.direction]
   );
-  const partialOrders = [...partialGroups.takeProfit, ...partialGroups.stopLoss];
+  const partialOrders = [
+    ...partialGroups.takeProfit,
+    ...partialGroups.stopLoss,
+  ];
   const positionOrders = [
     ...positionGroups.takeProfit,
     ...positionGroups.stopLoss,
@@ -360,7 +364,12 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     if (tab === 'partial') {
       if (bodyPage === 'add') {
         return (
-          <TpSlForm key="partial-add" mode="partialAdd" variant="page" {...formCommon} />
+          <TpSlForm
+            key="partial-add"
+            mode="partialAdd"
+            variant="page"
+            {...formCommon}
+          />
         );
       }
       if (bodyPage === 'modify' && editingOrder) {
@@ -412,7 +421,9 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     if (bodyPage === 'modify') {
       return (
         <TpSlForm
-          key={`position-modify-${tpOrder?.oid ?? 'none'}-${slOrder?.oid ?? 'none'}`}
+          key={`position-modify-${tpOrder?.oid ?? 'none'}-${
+            slOrder?.oid ?? 'none'
+          }`}
           mode="positionModify"
           variant="page"
           existingOrders={{ takeProfit: tpOrder, stopLoss: slOrder }}
