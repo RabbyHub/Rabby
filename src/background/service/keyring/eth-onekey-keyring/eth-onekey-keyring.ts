@@ -31,7 +31,7 @@ const DELAY_BETWEEN_POPUPS = 1000;
 const ONEKEY_SESSION_STATE_KEY = 'onekeySessionState';
 
 interface OneKeySessionState {
-  passphraseState: string;
+  passphraseState: string | undefined;
   deviceId: string;
   connectId: string;
   publicKey: string;
@@ -146,16 +146,28 @@ class OneKeyKeyring extends EventEmitter {
     this.bridge = opts.bridge;
     this.accountDetails = {};
     this.deserialize(opts);
-    this.init();
   }
+
+  private sessionStatePromise?: Promise<void>;
+  private restoreSessionState = true;
 
   async init() {
     await this.bridge.init();
+    if (!this.sessionStatePromise) {
+      this.sessionStatePromise = this.restoreStoredSession().catch((error) => {
+        this.sessionStatePromise = undefined;
+        throw error;
+      });
+    }
+    return this.sessionStatePromise;
+  }
+
+  private async restoreStoredSession() {
     if (isManifestV3) {
       // resume passphrase state from session after sw inactive
       const value = await browser.storage.session.get(ONEKEY_SESSION_STATE_KEY);
       const state: OneKeySessionState = value[ONEKEY_SESSION_STATE_KEY];
-      if (state) {
+      if (state && this.restoreSessionState) {
         this.passphraseState = state.passphraseState;
         this.deviceId = state.deviceId;
         this.connectId = state.connectId;
@@ -191,7 +203,15 @@ class OneKeyKeyring extends EventEmitter {
     return Boolean(this.hdk && this.hdk.publicKey);
   }
 
+  private cancellationVersion = 0;
+
+  cancel() {
+    this.cancellationVersion += 1;
+    return this.bridge.cancel(this.connectId || undefined);
+  }
+
   cleanUp() {
+    this.restoreSessionState = false;
     this.hdk = new HDKey();
   }
 
@@ -200,30 +220,40 @@ class OneKeyKeyring extends EventEmitter {
     //   return Promise.resolve('already unlocked');
     // }
     return new Promise((resolve, reject) => {
-      this.bridge
-        .searchDevices()
+      this.init()
+        .then(() => this.bridge.searchDevices())
         .then(async (result) => {
           if (result.success) {
             if (result.payload.length <= 0) {
-              const features = await this.bridge.getFeatures();
-              if (!features.success) {
-                if (
-                  features.payload.code === HardwareErrorCode.DeviceNotFound
-                ) {
+              const state = await this.bridge.getDeviceState();
+              if (!state.success) {
+                if (state.payload.code === HardwareErrorCode.DeviceNotFound) {
                   reject('No OneKey Device found');
                 } else {
                   reject(
-                    handleDeviceError(
-                      features.payload.code,
-                      features.payload.error
-                    )
+                    handleDeviceError(state.payload.code, state.payload.error)
                   );
                 }
+              } else {
+                reject('No OneKey Device found');
               }
+              return;
             }
             const device = result.payload[0];
             this._readHardwareSigningMetadata(device);
-            const { deviceId, connectId } = device;
+            const { connectId } = device;
+            if (!connectId) {
+              reject('no connectId');
+              return;
+            }
+            const state = await this.bridge.getDeviceState(connectId);
+            if (!state.success) {
+              reject(
+                handleDeviceError(state.payload.code, state.payload.error)
+              );
+              return;
+            }
+            const deviceId = state.payload.identity.deviceId;
             if (!deviceId || !connectId) {
               reject('no deviceId or connectId');
               return;
@@ -250,7 +280,7 @@ class OneKeyKeyring extends EventEmitter {
               return;
             }
             this.passphraseState = passphraseState.payload;
-            this.bridge
+            return this.bridge
               .evmGetPublicKey(connectId, deviceId, {
                 showOnOneKey: false,
                 chainId: 1,
@@ -418,11 +448,16 @@ class OneKeyKeyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address: string, tx: TypedTransaction): Promise<any> {
+    const cancellationVersion = this.cancellationVersion;
     return new Promise((resolve, reject) => {
       this._requestPassphraseParams(address)
         .then((param) => {
           setTimeout(
             (_) => {
+              if (cancellationVersion !== this.cancellationVersion) {
+                reject(new Error('OneKey signing cancelled'));
+                return;
+              }
               this._signTransaction(
                 param.params,
                 address,
@@ -469,6 +504,7 @@ class OneKeyKeyring extends EventEmitter {
     tx: TypedTransaction,
     handleSigning
   ) {
+    const cancellationVersion = this.cancellationVersion;
     // new-style transaction from @ethereumjs/tx package
     // we can just copy tx.toJSON() for everything except chainId, which must be a number
     const transaction = {
@@ -483,6 +519,9 @@ class OneKeyKeyring extends EventEmitter {
         transaction: transaction as any,
       })
       .then((res) => {
+        if (cancellationVersion !== this.cancellationVersion) {
+          throw new Error('OneKey signing cancelled');
+        }
         if (res.success) {
           const newOrMutatedTx: TypedTransaction = handleSigning(res.payload);
           const addressSignedWith = toChecksumAddress(
@@ -509,11 +548,16 @@ class OneKeyKeyring extends EventEmitter {
 
   // For personal_sign, we need to prefix the message:
   signPersonalMessage(withAccount: string, message: string): Promise<any> {
+    const cancellationVersion = this.cancellationVersion;
     return new Promise((resolve, reject) => {
       this._requestPassphraseParams(withAccount)
         .then((param) => {
           setTimeout(
             (_) => {
+              if (cancellationVersion !== this.cancellationVersion) {
+                reject(new Error('OneKey signing cancelled'));
+                return;
+              }
               this.bridge
                 .evmSignMessage(this.connectId!, this.deviceId!, {
                   path: this._pathFromAddress(withAccount),
@@ -521,6 +565,10 @@ class OneKeyKeyring extends EventEmitter {
                   messageHex: stripHexPrefix(message),
                 })
                 .then((response) => {
+                  if (cancellationVersion !== this.cancellationVersion) {
+                    reject(new Error('OneKey signing cancelled'));
+                    return;
+                  }
                   if (response.success) {
                     if (
                       response.payload.address !==
@@ -585,6 +633,7 @@ class OneKeyKeyring extends EventEmitter {
     typedData,
     opts: { version?: 'V3' | 'V4' } = {}
   ) {
+    const cancellationVersion = this.cancellationVersion;
     return new Promise((resolve, reject) => {
       const isV4 = opts.version === 'V4';
       const {
@@ -610,6 +659,10 @@ class OneKeyKeyring extends EventEmitter {
         .then((param) => {
           setTimeout(
             (_) => {
+              if (cancellationVersion !== this.cancellationVersion) {
+                reject(new Error('OneKey signing cancelled'));
+                return;
+              }
               try {
                 this.bridge
                   .evmSignTypedData(this.connectId!, this.deviceId!, {
@@ -624,6 +677,10 @@ class OneKeyKeyring extends EventEmitter {
                       : undefined,
                   })
                   .then((response) => {
+                    if (cancellationVersion !== this.cancellationVersion) {
+                      reject(new Error('OneKey signing cancelled'));
+                      return;
+                    }
                     if (response.success) {
                       if (
                         response.payload.address !== toChecksumAddress(address)
@@ -691,7 +748,7 @@ class OneKeyKeyring extends EventEmitter {
 
   forgetDevice(): void {
     this.accounts = [];
-    this.hdk = new HDKey();
+    this.cleanUp();
     this.page = 0;
     this.unlockedAccount = 0;
     this.paths = {};
@@ -854,6 +911,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   private async _requestPassphraseParams(address: string) {
+    await this.init();
     await this._refreshHardwareSigningMetadata();
     const accountDetail = this._accountDetailsFromAddress(address);
     if (accountDetail.version === 2) {

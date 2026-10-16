@@ -409,6 +409,7 @@ const flowContext = flow
   })
   .use(async (ctx) => {
     const { approvalRes, mapMethod, request } = ctx;
+    let oneKeyRequestCancelled = false;
     // process request
     const [approvalType] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
@@ -434,7 +435,15 @@ const flowContext = flow
           return resolve(undefined);
         }
 
-        return waitSignComponentPromise.then(() => {
+        waitSignComponentPromise = waitSignComponentPromise.then(() => {
+          if (oneKeyRequestCancelled) {
+            throw ethErrors.provider.userRejectedRequest(
+              'OneKey signing cancelled'
+            );
+          }
+        });
+
+        const signingTask = waitSignComponentPromise.then(() => {
           let _approvalRes = originApprovalRes;
 
           if (
@@ -542,6 +551,7 @@ const flowContext = flow
               reject(e);
             });
         });
+        return signingTask.catch(reject);
       });
 
     const requestDeferFn = createRequestDeferFn(approvalRes);
@@ -549,7 +559,15 @@ const flowContext = flow
     if (!approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
+    const oneKeyKeyring =
+      uiRequestComponent === 'CommonWaiting' && rest.type === 'Onekey Hardware'
+        ? await keyringService.getKeyringForAccount(rest.address, rest.type)
+        : undefined;
     const requestDefer = requestDeferFn();
+    if (oneKeyKeyring) {
+      // The approval promise owns the result; SDK cancellation also rejects this task.
+      void requestDefer.catch(() => undefined);
+    }
     async function requestApprovalLoop({
       uiRequestComponent,
       $account,
@@ -573,7 +591,20 @@ const flowContext = flow
 
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
+      const result = await requestApprovalLoop({
+        uiRequestComponent,
+        ...rest,
+      }).catch(async (error) => {
+        if (oneKeyKeyring) {
+          oneKeyRequestCancelled = true;
+          try {
+            await oneKeyKeyring.cancel();
+          } catch (cancelError) {
+            console.error('OneKey cancellation failed', cancelError);
+          }
+        }
+        throw error;
+      });
       reportStatsData();
       if (rest?.safeMessage) {
         const safeMessage: {
