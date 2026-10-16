@@ -126,6 +126,14 @@ under the current browser profile and extension origin; they are not uploaded.
 
 Run `npm run test:swap-calldata` for the recorded quotes, router versions and
 quote diagnostic tests together. The standard Jest run also includes them.
+The [fixture index](../../../__tests__/fixtures/swap-calldata/README.md) describes
+the 2026-10-16 dataset: all 222 quoted records, six Uni protocol-route families,
+15 version/entry/route combinations, 27 command shapes, and Magpie's observed
+DexAggregator format. Successful records assert exact decoded fields; the two
+known native-refund failures are explicitly reproduced separately, with their
+intended outputs pinned from calldata. No decoder fix is implied by those
+known-failure tests passing.
+
 `uni-cross-chain-regressions.json` preserves all 11 relevant original records
 from the 2026-10-15 export, with independently specified expected results. Eight
 exposed decoder errors before the fix; three Tempo samples preserve correct
