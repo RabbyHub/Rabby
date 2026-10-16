@@ -37,7 +37,8 @@ export const decodeV2Swap = (
     nativeOut ? ctx.native : path[path.length - 1],
     exactOut ? outputAmount : inputAmount,
     exactOut ? inputAmount : outputAmount,
-    exactOut
+    exactOut,
+    step
   );
   setReceiver(swap, args.to, ctx);
 };

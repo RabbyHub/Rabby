@@ -1,6 +1,6 @@
 import { Popup } from '@/ui/component';
 import React, { useMemo, useState } from 'react';
-import { QuoteListLoading, QuoteLoading } from './loading';
+import { QuoteListLoading } from './loading';
 import { IconRefresh } from './IconRefresh';
 import { DexQuoteItem, QuoteItemProps } from './QuoteItem';
 import {
@@ -13,12 +13,12 @@ import BigNumber from 'bignumber.js';
 import { DEX_WITH_WRAP } from '@/constant';
 import { SvgIconCross } from 'ui/assets';
 import { useTranslation } from 'react-i18next';
-import { getTokenSymbol } from '@/ui/utils/token';
 import { ReactComponent as RcIconHiddenArrow } from '@/ui/assets/swap/hidden-quote-arrow.svg';
 import clsx from 'clsx';
 import { useRabbySelector } from '@/ui/store';
 import { useSwapStore } from '@/ui/state/swap';
 import { DrawerProps } from 'antd';
+import { getCalldataTestDexes } from '@/utils/swapCalldata/testSupport';
 
 interface QuotesProps
   extends Omit<
@@ -97,49 +97,16 @@ export const Quotes = ({
   const [hiddenError, setHiddenError] = useState(true);
   const [errorQuoteDEXs, setErrorQuoteDEXs] = useState<string[]>([]);
 
-  const dexListLength = useSwapStore((s) => s.supportedDEXList.length);
+  const supportedDEXList = useSwapStore((s) => s.supportedDEXList);
+  const dexListLength = getCalldataTestDexes(other.chain, supportedDEXList)
+    .length;
 
   if (isSwapWrapToken(other.payToken.id, other.receiveToken.id, other.chain)) {
-    const dex = sortedList.find((e) => e.isDex) as TDexQuoteData | undefined;
-
     return (
-      <div className={clsx('flex flex-col gap-8', !noPadding && 'px-20')}>
-        {dex ? (
-          <DexQuoteItem
-            active={activeName === dex?.name}
-            inSufficient={inSufficient}
-            preExecResult={dex?.preExecResult}
-            quote={dex?.data}
-            name={dex?.name}
-            isBestQuote
-            bestQuoteAmount={`${
-              new BigNumber(dex?.data?.toTokenAmount || 0)
-                .div(
-                  10 **
-                    (dex?.data?.toTokenDecimals || other.receiveToken.decimals)
-                )
-                .toString() || '0'
-            }`}
-            bestQuoteGasUsd={bestQuoteGasUsd}
-            isLoading={dex.loading}
-            quoteProviderInfo={{
-              name: t('page.swap.wrap-contract'),
-              logo: other?.receiveToken?.logo_url,
-            }}
-            {...other}
-          />
-        ) : (
-          <QuoteLoading
-            name={t('page.swap.wrap-contract')}
-            logo={other?.receiveToken?.logo_url}
-          />
-        )}
-
-        <div className="text-13 text-r-neutral-foot">
-          {t('page.swap.directlySwap', {
-            symbol: getTokenSymbol(other.payToken),
-          })}
-        </div>
+      <div
+        className={clsx('text-13 text-r-neutral-foot', !noPadding && 'px-20')}
+      >
+        {t('page.swap.calldataTest.wrapPairNotice')}
       </div>
     );
   }
@@ -176,7 +143,7 @@ export const Quotes = ({
           );
         })}
 
-        <QuoteListLoading fetchedList={fetchedList} />
+        <QuoteListLoading chain={other.chain} fetchedList={fetchedList} />
       </div>
       <div
         className={clsx(
@@ -251,7 +218,8 @@ export const QuoteList = (props: Omit<QuotesProps, 'sortIncludeGasFee'>) => {
 
   const { t } = useTranslation();
 
-  const dexList = useSwapStore((s) => s.supportedDEXList);
+  const supportedDEXList = useSwapStore((s) => s.supportedDEXList);
+  const dexList = getCalldataTestDexes(props.chain, supportedDEXList);
 
   const height = useMemo(() => {
     const min = 333;

@@ -29,7 +29,8 @@ export const decodeV3Swap = (
     reverse ? tokens[0] : tokens[1],
     inputAmount,
     amountB.toString(),
-    exactOut
+    exactOut,
+    step
   );
   setReceiver(swap, params.recipient, ctx);
 };

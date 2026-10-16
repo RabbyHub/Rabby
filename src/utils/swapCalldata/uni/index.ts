@@ -11,6 +11,7 @@ import { Context, finishSwap } from './shared';
 import { decodeSwapRouter, getSwapRouterVersion } from './swapRouter';
 import { decodeUniversalRouter } from './universalRouter';
 import { getRouterProfile } from './universalRouter/profiles';
+import { normalizeUniAssets } from './assets';
 
 const uniInterface = new utils.Interface(UniABI);
 
@@ -47,9 +48,13 @@ export const decodeCalldata = (
 
   const universal =
     transaction.name === 'execute' || transaction.name === 'executeSigned';
-  return finishSwap(
-    universal
-      ? decodeUniversalRouter(transaction, tx.chainId, ctx)
-      : decodeSwapRouter(tx.data, ctx)
+  return normalizeUniAssets(
+    finishSwap(
+      universal
+        ? decodeUniversalRouter(transaction, tx.chainId, ctx)
+        : decodeSwapRouter(tx.data, ctx)
+    ),
+    tx.chainId,
+    native
   );
 };

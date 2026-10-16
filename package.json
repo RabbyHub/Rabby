@@ -27,6 +27,7 @@
     "typecheck": "tsc --noEmit --skipLibCheck --pretty false",
     "check": "npm run lint && npm run typecheck",
     "test": "jest",
+    "test:swap-calldata": "jest --runInBand --watchman=false --runTestsByPath __tests__/utils/swapCalldata.test.ts __tests__/utils/swapCalldataVersions.test.ts __tests__/utils/swapCalldataDebug.test.ts",
     "pub": "node build/release.js",
     "postinstall": "patch-package"
   },

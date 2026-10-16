@@ -149,6 +149,7 @@ export const ChainRender = ({
   bridge,
   swap,
   loading,
+  renderChainExtra,
   ...other
 }: {
   chain?: CHAINS_ENUM;
@@ -157,6 +158,7 @@ export const ChainRender = ({
   bridge?: boolean;
   loading?: boolean;
   swap?: boolean;
+  renderChainExtra?: SelectChainListProps['renderChainExtra'];
 } & InsHTMLAttributes<HTMLDivElement>) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -216,6 +218,7 @@ export const ChainRender = ({
           <span className={clsx('name')}>
             {chainInfo?.name || t('page.bridge.Select')}
           </span>
+          {chain && renderChainExtra?.(chain)}
         </>
       )}
       {/* {!readonly && <img className="down" src={ImgArrowDown} alt="" />} */}
@@ -236,6 +239,7 @@ interface ChainSelectorProps {
   showModal?: boolean;
   direction?: 'top' | 'bottom';
   supportChains?: SelectChainListProps['supportChains'];
+  renderChainExtra?: SelectChainListProps['renderChainExtra'];
   disabledTips?: SelectChainListProps['disabledTips'];
   title?: React.ReactNode;
   chainRenderClassName?: string;
@@ -269,6 +273,7 @@ const ChainSelectorInForm = React.forwardRef<
       disableChainCheck,
       title,
       supportChains,
+      renderChainExtra,
       chainRenderClassName,
       arrowDownComponent,
       bridge,
@@ -348,6 +353,7 @@ const ChainSelectorInForm = React.forwardRef<
           bridge={bridge}
           swap={swap}
           loading={loading}
+          renderChainExtra={renderChainExtra}
         />
         {!readonly && (
           <ChainSelectorModal
@@ -359,6 +365,7 @@ const ChainSelectorInForm = React.forwardRef<
             onChange={checkBeforeConfirm}
             onCancel={handleCancel}
             supportChains={supportChains}
+            renderChainExtra={renderChainExtra}
             disabledTips={disabledTips}
             disableChainCheck={disableChainCheck}
             title={title}

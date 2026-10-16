@@ -8,7 +8,7 @@ import {
   unwrapNative,
   v3PathTokens,
   wrapNative,
-  chainToken,
+  setOutput,
 } from '../shared';
 import type { RouterProfile } from './profiles';
 import { walkV4 } from './v4';
@@ -43,7 +43,8 @@ const decodeAmmSwap = (
     reverse ? first : last,
     amountA.toString(),
     amountB.toString(),
-    exactOut
+    exactOut,
+    step
   );
   setReceiver(swap, recipient, ctx);
 };
@@ -103,9 +104,13 @@ export const walkCommands = (
           input,
           commandStep
         );
-        swap.toToken = chainToken(token, ctx.native);
-        if (command === 0x04) swap.minReceive = amount.toString();
-        setReceiver(swap, recipient, ctx);
+        setOutput(
+          swap,
+          ctx,
+          token,
+          recipient,
+          command === 0x04 ? amount.toString() : undefined
+        );
         break;
       }
       case 0x0b: {

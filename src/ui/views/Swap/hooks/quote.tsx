@@ -1,4 +1,4 @@
-import { DEX, ETH_USDT_CONTRACT, SWAP_FEE_ADDRESS } from '@/constant';
+import { ETH_USDT_CONTRACT, SWAP_FEE_ADDRESS } from '@/constant';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import { GasLevel, TokenItem, Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -23,6 +23,14 @@ import {
   isSwapWrapToken,
 } from '../utils';
 import { verifySdkWithDebug } from './calldataDebug';
+import {
+  getCalldataTestDexes,
+  isCalldataTestDex,
+} from '@/utils/swapCalldata/testSupport';
+import {
+  describeCalldataTestError,
+  recordCalldataTestResult,
+} from '@/utils/swapCalldata/testResults';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -400,7 +408,32 @@ export const useQuoteMethods = () => {
         recommendNonceTask?: Promise<string>;
       };
     }): Promise<TDexQuoteData> => {
+      if (
+        !isCalldataTestDex(dexId) ||
+        !getCalldataTestDexes(chain).includes(dexId) ||
+        isSwapWrapToken(payToken.id, receiveToken.id, chain)
+      ) {
+        const quote: TDexQuoteData = {
+          name: dexId,
+          isDex: true,
+          data: null,
+          preExecResult: null,
+        };
+        setQuote?.(quote);
+        return quote;
+      }
       const chainInfo = findChainByEnum(chain)!;
+      const fromTokenAmount = new BigNumber(payAmount)
+        .shiftedBy(payToken.decimals)
+        .toFixed(0, 1);
+      const testRequest = {
+        fromToken: payToken.id,
+        fromTokenAmount,
+        toToken: receiveToken.id,
+        userAddress,
+        slippage,
+        nativeTokenAddress: chainInfo.nativeTokenAddress,
+      };
       const recommendNonceTask = !inSufficient
         ? sharedTasks?.recommendNonceTask ??
           getRecommendNonceOnce({
@@ -418,17 +451,13 @@ export const useQuoteMethods = () => {
 
         const getData = () =>
           getQuote(
-            isSwapWrapToken(payToken.id, receiveToken.id, chain)
-              ? DEX_ENUM.WRAPTOKEN
-              : dexId,
+            dexId,
             {
               fromToken: payToken.id,
               toToken: receiveToken.id,
               feeAddress: SWAP_FEE_ADDRESS,
               fromTokenDecimals: payToken.decimals,
-              amount: new BigNumber(payAmount)
-                .times(10 ** payToken.decimals)
-                .toFixed(0, 1),
+              amount: fromTokenAmount,
               userAddress,
               slippage: Number(slippage),
               feeRate: Number(feeAfterDiscount),
@@ -441,7 +470,31 @@ export const useQuoteMethods = () => {
             walletOpenapi
           );
 
-        const data = await getData();
+        const data = await getData().catch((error) => {
+          recordCalldataTestResult({
+            dex: dexId,
+            chain,
+            chainId: chainInfo.id,
+            version: 'unknown',
+            status: 'quote-failed',
+            request: testRequest,
+            firstFailedStep: 'quote.request',
+            error: describeCalldataTestError(error),
+          });
+          throw error;
+        });
+        if (!data) {
+          recordCalldataTestResult({
+            dex: dexId,
+            chain,
+            chainId: chainInfo.id,
+            version: 'unknown',
+            status: 'no-quote',
+            request: testRequest,
+            firstFailedStep: 'quote.response',
+            reason: 'The DEX returned no quote.',
+          });
+        }
 
         stats.report('swapQuoteResult', {
           dex: dexId,
@@ -467,9 +520,7 @@ export const useQuoteMethods = () => {
               data: {
                 ...data,
                 fromToken: payToken.id,
-                fromTokenAmount: new BigNumber(payAmount)
-                  .times(10 ** payToken.decimals)
-                  .toFixed(0, 1),
+                fromTokenAmount,
                 toToken: receiveToken?.id,
               },
               payTokenId: payToken.id,
@@ -653,6 +704,20 @@ export const useQuoteMethods = () => {
         dexId?: DEX_ENUM;
       }
     ) => {
+      const dexList = getCalldataTestDexes(
+        params.chain,
+        supportedDEXList
+      ).filter((dex) => !params.dexId || dex === params.dexId);
+      if (
+        !dexList.length ||
+        isSwapWrapToken(
+          params.payToken.id,
+          params.receiveToken.id,
+          params.chain
+        )
+      ) {
+        return [];
+      }
       recommendNonceTaskCache.current = undefined;
       gasMarketTaskCache.current = undefined;
       nativeTokenPriceCache.current = undefined;
@@ -684,29 +749,6 @@ export const useQuoteMethods = () => {
           chainInfo: chainObj,
         });
       }
-
-      if (
-        isSwapWrapToken(
-          params.payToken.id,
-          params.receiveToken.id,
-          params.chain
-        )
-      ) {
-        return getDexQuote({
-          ...params,
-          dexId: DEX_ENUM.WRAPTOKEN,
-          sharedTasks: {
-            preFetched: sharedPreFetched,
-            recommendNonceTask: sharedRecommendNonceTask || undefined,
-          },
-        });
-      }
-
-      const dexList = (
-        params.dexId
-          ? ([params.dexId] as DEX_ENUM[])
-          : (supportedDEXList.filter((e) => DEX[e]) as DEX_ENUM[])
-      ).filter((dexId) => DEX[dexId]?.chains.includes(params.chain));
 
       return Promise.all([
         ...dexList.map((dexId) =>

@@ -19,6 +19,10 @@ import {
 } from '@/utils/swapCalldata';
 import BigNumber from 'bignumber.js';
 import { utils } from 'ethers';
+import {
+  CalldataTestRecord,
+  recordCalldataTestResult,
+} from '@/utils/swapCalldata/testResults';
 
 const logPrefix = '[swap-calldata-debug]';
 
@@ -28,12 +32,22 @@ const describeError = (error: unknown) =>
     : String(error);
 
 const printSnapshot = (
-  snapshot: Record<string, unknown> & {
-    dex: DEX_ENUM;
-    version: string;
-    chain: string;
+  snapshot: Pick<
+    CalldataTestRecord,
+    | 'dex'
+    | 'version'
+    | 'chain'
+    | 'decoded'
+    | 'checks'
+    | 'firstFailedStep'
+    | 'reason'
+    | 'error'
+    | 'quote'
+  > & {
     status?: 'passed';
-  }
+  },
+  params: VerifySdkParams,
+  quote: QuoteResult
 ) => {
   const { dex, version, chain, status, ...details } = snapshot;
   console.log(
@@ -43,6 +57,20 @@ const printSnapshot = (
     }`,
     details
   );
+  recordCalldataTestResult({
+    ...snapshot,
+    chainId: params.chainId,
+    status: status === 'passed' ? 'passed' : 'failed',
+    quote,
+    request: {
+      fromToken: params.payTokenId,
+      fromTokenAmount: params.data?.fromTokenAmount || quote.fromTokenAmount,
+      toToken: params.receiveTokenId,
+      userAddress: params.userAddress,
+      slippage: String(params.slippage),
+      nativeTokenAddress: params.nativeTokenAddress,
+    },
+  });
 };
 
 const inspectDecodeFailure = (params: VerifySdkParams, quote: QuoteResult) => {
@@ -159,33 +187,45 @@ export const verifySdkWithDebug = (
   };
 
   if (result.decoded) {
-    printSnapshot({
-      ...context,
-      status: 'passed',
-      decoded: result.decoded,
-      checks,
-    });
+    printSnapshot(
+      {
+        ...context,
+        status: 'passed',
+        decoded: result.decoded,
+        checks,
+      },
+      params,
+      quote
+    );
     return result;
   }
 
   try {
     const decodeFailure = inspectDecodeFailure(params, params.data || quote);
-    printSnapshot({
-      ...context,
-      firstFailedStep: decodeFailure.step,
-      reason: decodeFailure.reason,
-      error: decodeFailure.error,
-      checks,
-      quote,
-    });
+    printSnapshot(
+      {
+        ...context,
+        firstFailedStep: decodeFailure.step,
+        reason: decodeFailure.reason,
+        error: decodeFailure.error,
+        checks,
+        quote,
+      },
+      params,
+      quote
+    );
   } catch (error) {
-    printSnapshot({
-      ...context,
-      firstFailedStep: 'diagnostics',
-      error: describeError(error),
-      checks,
-      quote,
-    });
+    printSnapshot(
+      {
+        ...context,
+        firstFailedStep: 'diagnostics',
+        error: describeError(error),
+        checks,
+        quote,
+      },
+      params,
+      quote
+    );
   }
   return result;
 };

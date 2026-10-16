@@ -1,12 +1,12 @@
 import { CalldataDecodeError } from '../../../errors';
 import {
-  chainToken,
   Context,
   decodeAbi,
   setReceiver,
   setSwap,
   Swap,
   wrapNative,
+  setOutput,
 } from '../../shared';
 import { decodeV4SwapV2_0 } from './v2_0';
 import { decodeV4SwapV2_1 } from './v2_1';
@@ -47,7 +47,8 @@ export const walkV4 = (
         parsed.toToken,
         parsed.amountA,
         parsed.amountB,
-        parsed.exactOut
+        parsed.exactOut,
+        actionStep
       );
       continue;
     }
@@ -64,8 +65,7 @@ export const walkV4 = (
           data,
           actionStep
         );
-        swap.toToken = chainToken(currency, ctx.native);
-        setReceiver(swap, recipient, ctx);
+        setOutput(swap, ctx, currency, recipient);
         break;
       }
       case 0x0f: {
@@ -75,9 +75,7 @@ export const walkV4 = (
           data,
           actionStep
         );
-        swap.toToken = chainToken(currency, ctx.native);
-        swap.minReceive = minimum.toString();
-        swap.receiver = ctx.sender;
+        setOutput(swap, ctx, currency, ctx.sender, minimum.toString());
         break;
       }
       case 0x10: // TAKE_PORTION: the following TAKE/SWEEP determines the final receiver.
@@ -101,8 +99,7 @@ export const walkV4 = (
           data,
           actionStep
         );
-        swap.toToken = chainToken(currency, ctx.native);
-        setReceiver(swap, recipient, ctx);
+        setOutput(swap, ctx, currency, recipient);
         break;
       }
       case 0x15: {
