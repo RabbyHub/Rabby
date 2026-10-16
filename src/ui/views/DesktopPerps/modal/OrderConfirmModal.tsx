@@ -53,7 +53,7 @@ export interface OrderConfirmModalProps {
  * The unchecked stroke takes `--rb-neutral-secondary` via currentColor so light
  * mode follows the token.
  */
-const OrderConfirmCheckbox: React.FC<{ checked: boolean }> = ({ checked }) => (
+export const OrderConfirmCheckbox: React.FC<{ checked: boolean }> = ({ checked }) => (
   <svg
     width="14"
     height="14"
