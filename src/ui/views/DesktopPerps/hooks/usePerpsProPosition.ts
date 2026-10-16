@@ -822,6 +822,7 @@ export const usePerpsProPosition = () => {
             title: t('page.perps.toast.success'),
             description: t('page.perps.toast.setAutoCloseSuccess'),
           });
+          return true;
         },
         params,
         'Set auto close failed'
@@ -854,10 +855,7 @@ export const usePerpsProPosition = () => {
           });
           const resting = res?.response?.data?.statuses[0]?.resting;
           if (resting?.oid) {
-            // message.success({
-            //   duration: 1.5,
-            //   content: t('page.perps.toast.setAutoCloseSuccess'),
-            // });
+            return true;
           } else {
             const msg = res?.response?.data?.statuses[0].error;
             throw new Error(msg || 'modify auto close failed');
@@ -865,6 +863,109 @@ export const usePerpsProPosition = () => {
         },
         params,
         'modify auto close failed'
+      );
+    }
+  );
+
+  // Partial TP/SL: a reduce-only trigger order with its own size, placed on
+  // the closing side (sell to close a long, buy to close a short).
+  const handlePlacePartialTpSl = useMemoizedFn(
+    async (params: {
+      coin: string;
+      direction: 'Long' | 'Short';
+      size: string;
+      triggerPx: string;
+      tpsl: 'tp' | 'sl';
+    }) => {
+      return withErrorHandler(
+        async (p) => {
+          const sdk = getPerpsSDK();
+          const res = await sdk.exchange?.placeTPSlMarketOrder({
+            coin: p.coin,
+            isBuy: p.direction === 'Short',
+            size: p.size,
+            triggerPx: formatTriggerPx(p.triggerPx) || '',
+            tpsl: p.tpsl,
+            reduceOnly: true,
+            builder: PERPS_BUILDER_INFO_PRO,
+          });
+          const status = res?.response?.data?.statuses?.[0] as
+            | { error?: string }
+            | string
+            | undefined;
+          if (!res || (status && typeof status === 'object' && status.error)) {
+            throw new Error(
+              (status as { error?: string } | undefined)?.error ||
+                'place partial tp/sl failed'
+            );
+          }
+          return true as const;
+        },
+        params,
+        'place partial tp/sl failed'
+      );
+    }
+  );
+
+  // Edits a partial TP/SL in place (one signed modify, no unprotected gap).
+  const handleModifyPartialTpSl = useMemoizedFn(
+    async (params: {
+      coin: string;
+      oid: number;
+      direction: 'Long' | 'Short';
+      size: string;
+      triggerPx: string;
+      tpsl: 'tp' | 'sl';
+      szDecimals: number;
+    }) => {
+      return withErrorHandler(
+        async (p) => {
+          const sdk = getPerpsSDK();
+          if (!sdk.exchange) throw new Error('Hyperliquid no exchange client');
+          const isBuy = p.direction === 'Short';
+          const triggerPx = formatTriggerPx(p.triggerPx) || '';
+          const res = await sdk.exchange.modifyOrder({
+            oid: p.oid,
+            coin: p.coin,
+            isBuy,
+            sz: p.size,
+            limitPx: sdk.exchange.getSlippagePx(
+              triggerPx,
+              SLIPPAGE,
+              isBuy,
+              p.szDecimals
+            ),
+            reduceOnly: true,
+            orderType: {
+              trigger: { isMarket: true, triggerPx, tpsl: p.tpsl },
+            },
+          });
+          // A single modify answers `{ type: 'default' }`; a batch answers
+          // per-order statuses. Either way an error string means rejected.
+          const payload = (res as unknown) as {
+            status?: string;
+            response?:
+              | string
+              | { data?: { statuses?: Array<{ error?: string } | string> } };
+          };
+          if (payload?.status !== 'ok') {
+            throw new Error(
+              typeof payload?.response === 'string' && payload.response
+                ? payload.response
+                : 'modify partial tp/sl failed'
+            );
+          }
+          const status =
+            typeof payload.response === 'object'
+              ? payload.response?.data?.statuses?.[0]
+              : undefined;
+          if (status && typeof status === 'object' && status.error) {
+            throw new Error(status.error);
+          }
+          return true as const;
+        },
+        params,
+        'modify partial tp/sl failed'
       );
     }
   );
@@ -927,11 +1028,13 @@ export const usePerpsProPosition = () => {
             setTimeout(() => {
               dispatch.perps.fetchPositionOpenOrders();
             }, 100);
+            return true;
           } else {
             perpsToast.error({
               title: t('page.perps.toast.cancelFailed'),
               description: t('page.perps.toast.cancelOrderError'),
             });
+            return false;
           }
         },
         params,
@@ -954,6 +1057,8 @@ export const usePerpsProPosition = () => {
     handleSetAutoClose,
     handleCloseAllPositions,
     handleModifyTpSlOrders,
+    handlePlacePartialTpSl,
+    handleModifyPartialTpSl,
     handleUpdateMarginModeLeverage,
     handleCancelOrder,
     handleStableCoinOrder,
