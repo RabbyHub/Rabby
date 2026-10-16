@@ -7015,6 +7015,8 @@ export class WalletController extends BaseController {
   setPerpsMarginModePreference = perpsService.setPerpsMarginModePreference;
   getPerpsTpslModePreferences = perpsService.getTpslModePreferences;
   setPerpsTpslModePreference = perpsService.setTpslModePreference;
+  getPerpsTpslIntroShown = perpsService.getTpslIntroShown;
+  setPerpsTpslIntroShown = perpsService.setTpslIntroShown;
   setPerpsSelectedCoin = perpsService.setSelectedCoin;
   getPerpsSelectedCoin = perpsService.getSelectedCoin;
   getMarketSlippage = perpsService.getMarketSlippage;

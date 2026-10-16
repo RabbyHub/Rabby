@@ -45,6 +45,15 @@ const DEFAULT_TPSL_MODE_PREFERENCES: PerpsTpslModePreferences = {
   sl: 'pnl',
 };
 
+export type PerpsTpslIntroTab = 'partial' | 'position';
+/** Whether each TP/SL modal tab has already shown its one-time intro card. */
+export type PerpsTpslIntroShown = Record<PerpsTpslIntroTab, boolean>;
+
+const DEFAULT_TPSL_INTRO_SHOWN: PerpsTpslIntroShown = {
+  partial: false,
+  position: false,
+};
+
 export interface PerpsServiceStore {
   agentVaults: string; // encrypted JSON string of {[address: string]: string}
   agentPreferences: {
@@ -73,6 +82,7 @@ export interface PerpsServiceStore {
   skipMarketCloseConfirm: boolean;
   candleInterval: string;
   tpslModePreferences: PerpsTpslModePreferences;
+  tpslIntroShown: PerpsTpslIntroShown;
   orderConfirmations: PerpsOrderConfirmations;
   showPopularTradings: boolean;
 }
@@ -113,6 +123,7 @@ class PerpsService {
         skipMarketCloseConfirm: false,
         candleInterval: '15M',
         tpslModePreferences: DEFAULT_TPSL_MODE_PREFERENCES,
+        tpslIntroShown: DEFAULT_TPSL_INTRO_SHOWN,
         orderConfirmations: DEFAULT_PERPS_ORDER_CONFIRMATIONS,
         showPopularTradings: true,
       },
@@ -544,6 +555,29 @@ class PerpsService {
     };
   };
 
+  getTpslIntroShown = async () => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    return {
+      ...DEFAULT_TPSL_INTRO_SHOWN,
+      ...(this.store.tpslIntroShown || {}),
+    };
+  };
+
+  setTpslIntroShown = async (tab: PerpsTpslIntroTab) => {
+    if (!this.store) {
+      throw new Error('PerpsService not initialized');
+    }
+    if (!['partial', 'position'].includes(tab)) return;
+
+    this.store.tpslIntroShown = {
+      ...DEFAULT_TPSL_INTRO_SHOWN,
+      ...(this.store.tpslIntroShown || {}),
+      [tab]: true,
+    };
+  };
+
   getMarketSlippage = async () => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -727,6 +761,7 @@ class PerpsService {
       skipMarketCloseConfirm: false,
       candleInterval: '15M',
       tpslModePreferences: DEFAULT_TPSL_MODE_PREFERENCES,
+      tpslIntroShown: DEFAULT_TPSL_INTRO_SHOWN,
       orderConfirmations: DEFAULT_PERPS_ORDER_CONFIRMATIONS,
       showPopularTradings: true,
     };
