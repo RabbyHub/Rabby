@@ -1,5 +1,14 @@
 import React, { act } from 'react';
 import { createRoot, Root } from 'react-dom/client';
+import {
+  focusManager,
+  onlineManager,
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from '@tanstack/react-query';
+import { createQueryClient } from '@/ui/query/queryClient';
+import { createQueryKey } from '@/ui/query/queryKey';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -26,6 +35,15 @@ const response = (ids: string[]) => ({
 
 describe('SignTypedData security lifecycle', () => {
   let root: Root;
+  let queryClient: QueryClient;
+  let container: HTMLDivElement;
+  let presentationMounts: string[];
+  const usePresentation = (name: string) => {
+    React.useLayoutEffect(() => {
+      presentationMounts.push(name);
+    }, []);
+    return React.createElement('div', { 'data-presentation': name });
+  };
   const reactActEnvironment = globalThis as typeof globalThis & {
     IS_REACT_ACT_ENVIRONMENT?: boolean;
   };
@@ -51,16 +69,32 @@ describe('SignTypedData security lifecycle', () => {
   let destroySafeModal: jest.Mock;
   const empty = () => null;
   const noop = () => undefined;
-  const render = () => root.render(React.createElement(Component, props));
+  const render = () =>
+    root.render(
+      React.createElement(
+        QueryClientProvider,
+        { client: queryClient },
+        React.createElement(Component, props)
+      )
+    );
   const flush = async () => {
-    await act(async () => {
-      for (let index = 0; index < 25; index++) await Promise.resolve();
-    });
+    // Query observers batch notifications with a timer. Alternate microtasks
+    // and small timer steps so the real query and component effects settle.
+    for (let phase = 0; phase < 3; phase++) {
+      await act(async () => {
+        for (let index = 0; index < 25; index++) await Promise.resolve();
+        jest.advanceTimersByTime(1);
+      });
+    }
   };
 
   beforeEach(() => {
+    jest.useFakeTimers();
+    queryClient = createQueryClient();
     reactActEnvironment.IS_REACT_ACT_ENVIRONMENT = true;
-    root = createRoot(document.createElement('div'));
+    container = document.createElement('div');
+    root = createRoot(container);
+    presentationMounts = [];
     rules = [];
     userData = {};
     processedRules = [];
@@ -122,6 +156,8 @@ describe('SignTypedData security lifecycle', () => {
     // transitions covered without loading the extension's entire UI bundle.
     const modules: Record<string, any> = {
       react: React,
+      '@tanstack/react-query': { useQuery },
+      '@/ui/query/queryKey': { createQueryKey },
       'react-use': {
         useAsyncRetry,
         useScroll: () => undefined,
@@ -138,7 +174,7 @@ describe('SignTypedData security lifecycle', () => {
         },
         Drawer: empty,
         Modal: { info: showSafeModal },
-        Skeleton: { Input: empty },
+        Skeleton: { Input: () => usePresentation('Skeleton') },
       },
       lodash: { cloneDeep: (data: any) => JSON.parse(JSON.stringify(data)) },
       '@/background/utils': { underline2Camelcase: (value: string) => value },
@@ -168,7 +204,7 @@ describe('SignTypedData security lifecycle', () => {
       './FooterBar/FooterBar': {
         FooterBar: (value: any) => {
           footer = value;
-          return null;
+          return React.createElement('div', { 'data-footer': 'true' });
         },
       },
       '@/ui/state/securityEngine': {
@@ -208,7 +244,7 @@ describe('SignTypedData security lifecycle', () => {
         __esModule: true,
         default: (value: any) => {
           actions = value;
-          return null;
+          return usePresentation('Actions');
         },
       },
       './TypedDataActions/utils': {
@@ -222,8 +258,32 @@ describe('SignTypedData security lifecycle', () => {
       },
       '@/utils/chain': {
         isTestnetChainId: () => isTestnet,
-        findChain: ({ id }: { id?: number }) =>
-          id ? { id, serverId: id === 1 ? 'eth' : 'matic' } : undefined,
+        findChain: ({
+          id,
+          enum: chainEnum,
+        }: {
+          id?: number;
+          enum?: string;
+        }) => {
+          const resolvedId =
+            id ||
+            (chainEnum === 'ARB_SEPOLIA'
+              ? 421614
+              : chainEnum === 'ETH'
+              ? 1
+              : undefined);
+          return resolvedId
+            ? {
+                id: resolvedId,
+                serverId:
+                  resolvedId === 1
+                    ? 'eth'
+                    : resolvedId === 421614
+                    ? 'arb_sepolia'
+                    : 'matic',
+              }
+            : undefined;
+        },
       },
       '@/ui/views/Dashboard/components/TokenDetailPopup': {
         TokenDetailPopup: empty,
@@ -262,9 +322,6 @@ describe('SignTypedData security lifecycle', () => {
       '@/ui/state/exchange': { getCexInfo: async () => ({}) },
       '@/ui/utils/ledger-dmk': { requestLedgerHIDPermission: noop },
       './signMessageHighlighter': { tokenizeSignTypedDataMessage: () => [] },
-      './signMessageOrigin': {
-        addSignMessageOriginFallback: (value: any) => value,
-      },
       './useSignMessageAddressData': { useSignMessageAddressData: () => ({}) },
     };
     const compiled = transpileModule(
@@ -298,6 +355,10 @@ describe('SignTypedData security lifecycle', () => {
 
   afterEach(() => {
     act(() => root.unmount());
+    queryClient.clear();
+    focusManager.setFocused(undefined);
+    onlineManager.setOnline(true);
+    jest.useRealTimers();
     delete reactActEnvironment.IS_REACT_ACT_ENVIRONMENT;
   });
 
@@ -315,6 +376,32 @@ describe('SignTypedData security lifecycle', () => {
     expect(wallet.getConnectedSite).not.toHaveBeenCalled();
     expect(footer.securityBlocked).toBe(false);
   });
+
+  test.each([false, true])(
+    'passes the original security context through for a cross-origin URL (parsed risk: %p)',
+    async (hasParsedRisk) => {
+      const ctx = hasParsedRisk
+        ? { verifyAddress: { allowOrigins: [], origin: 'https://dapp.test' } }
+        : {};
+      const results = hasParsedRisk ? [risk()] : [];
+      wallet.openapi.parseCommon.mockResolvedValue(
+        hasParsedRisk
+          ? response(['verify_address'])
+          : { action: null, log_id: 'log' }
+      );
+      const typedData = JSON.parse(props.params.data[1]);
+      typedData.message = { resource: 'https://docs.example.org/terms' };
+      props.params.data[1] = JSON.stringify(typedData);
+      formatContext.mockResolvedValue(ctx);
+      engine.mockResolvedValue(results);
+      act(render);
+      await flush();
+      expect(engine).toHaveBeenCalled();
+      expect(engine.mock.calls.every(([input]) => input === ctx)).toBe(true);
+      expect(footer.securityBlocked).toBe(hasParsedRisk);
+      expect(actions.engineResults).toEqual(results);
+    }
+  );
 
   test('rule updates wait for required action data before formatting security context', async () => {
     const pending = defer<any>();
@@ -503,6 +590,242 @@ describe('SignTypedData security lifecycle', () => {
       expect(approve).toHaveBeenCalledWith({});
     }
   );
+
+  test.each(['testnet', 'V1'])(
+    '%s waits for delayed connected-site context before showing content or signing',
+    async (kind) => {
+      rules = [{ id: 'already-loaded' }];
+      userData = { alreadyLoaded: true };
+      const initialRules = rules;
+      const initialUserData = userData;
+      const pendingSite = defer<any>();
+      wallet.getConnectedSite.mockReturnValue(pendingSite.promise);
+      if (kind === 'V1') {
+        props.params = {
+          ...props.params,
+          method: 'eth_signTypedData',
+          data: [
+            [{ name: 'Message', type: 'string', value: 'Hello' }],
+            '0xaccount',
+          ],
+        };
+      } else {
+        isTestnet = true;
+        props.params.data[1] = JSON.stringify({
+          domain: { chainId: 421614 },
+          types: {},
+          message: { contents: 'Hello' },
+          primaryType: 'Mail',
+        });
+      }
+
+      act(render);
+      await flush();
+      expect(presentationMounts).toEqual(['Skeleton']);
+      expect(
+        container.querySelector('[data-presentation="Actions"]')
+      ).toBeNull();
+      expect(footer.securityBlocked).toBe(true);
+      await act(async () => {
+        await footer.onSubmit();
+      });
+      expect(approve).not.toHaveBeenCalled();
+      const initialFooterNode = container.querySelector('[data-footer]');
+
+      await act(async () =>
+        pendingSite.resolve({ chain: kind === 'V1' ? 'ETH' : 'ARB_SEPOLIA' })
+      );
+      await flush();
+      expect(presentationMounts).toEqual(['Skeleton', 'Actions']);
+      expect(
+        container.querySelector('[data-presentation="Skeleton"]')
+      ).toBeNull();
+      expect(container.querySelector('[data-footer]')).toBe(initialFooterNode);
+      expect(safeInfoArgs.chainId).toBe(kind === 'V1' ? 1 : 421614);
+      expect(rules).toBe(initialRules);
+      expect(userData).toBe(initialUserData);
+      expect(wallet.openapi.parseCommon).not.toHaveBeenCalled();
+      expect(requiredData).not.toHaveBeenCalled();
+      expect(engine).not.toHaveBeenCalled();
+      expect(footer.securityBlocked).toBe(false);
+      await act(async () => {
+        await footer.onSubmit();
+      });
+      expect(approve).toHaveBeenCalledWith({});
+    }
+  );
+
+  test('a connected-site lookup resolving without a chain finishes loading', async () => {
+    isTestnet = true;
+    const pendingSite = defer<any>();
+    wallet.getConnectedSite.mockReturnValue(pendingSite.promise);
+    act(render);
+    await flush();
+    expect(presentationMounts).toEqual(['Skeleton']);
+    expect(footer.securityBlocked).toBe(true);
+
+    await act(async () => pendingSite.resolve(undefined));
+    await flush();
+    expect(safeInfoArgs.chainId).toBeUndefined();
+    expect(presentationMounts).toEqual(['Skeleton', 'Actions']);
+    expect(footer.securityBlocked).toBe(false);
+    await act(async () => {
+      await footer.onSubmit();
+    });
+    expect(approve).toHaveBeenCalledWith({});
+  });
+
+  test('connected-site lookup failure blocks signing until a successful retry', async () => {
+    isTestnet = true;
+    wallet.getConnectedSite
+      .mockRejectedValueOnce(new Error('Connected-site lookup failed'))
+      .mockResolvedValueOnce({ chain: 'ARB_SEPOLIA' });
+    act(render);
+    await flush();
+    expect(container.querySelector('[data-presentation="Actions"]')).toBeNull();
+    expect(footer.securityBlocked).toBe(true);
+    await act(async () => {
+      await footer.onSubmit();
+    });
+    expect(approve).not.toHaveBeenCalled();
+    const retry = buttons.get('global.refresh');
+    expect(retry).toBeDefined();
+
+    act(() => retry.onClick());
+    await flush();
+    expect(wallet.getConnectedSite).toHaveBeenCalledTimes(2);
+    expect(safeInfoArgs.chainId).toBe(421614);
+    expect(
+      container.querySelector('[data-presentation="Actions"]')
+    ).not.toBeNull();
+    expect(footer.securityBlocked).toBe(false);
+    await act(async () => {
+      await footer.onSubmit();
+    });
+    expect(approve).toHaveBeenCalledWith({});
+  });
+
+  test('an old origin lookup cannot replace the current chain or remount content', async () => {
+    isTestnet = true;
+    const oldSite = defer<any>();
+    const currentSite = defer<any>();
+    wallet.getConnectedSite
+      .mockReturnValueOnce(oldSite.promise)
+      .mockReturnValueOnce(currentSite.promise);
+    act(render);
+    await flush();
+    expect(footer.securityBlocked).toBe(true);
+    props = {
+      ...props,
+      params: {
+        ...props.params,
+        session: { ...props.params.session, origin: 'https://new-dapp.test' },
+      },
+    };
+    act(render);
+    await flush();
+    expect(wallet.getConnectedSite).toHaveBeenLastCalledWith(
+      'https://new-dapp.test'
+    );
+    expect(footer.securityBlocked).toBe(true);
+    await act(async () => currentSite.resolve({ chain: 'ARB_SEPOLIA' }));
+    await flush();
+    expect(safeInfoArgs.chainId).toBe(421614);
+    expect(presentationMounts).toEqual(['Skeleton', 'Actions']);
+    expect(footer.securityBlocked).toBe(false);
+
+    await act(async () => oldSite.resolve({ chain: 'ETH' }));
+    await flush();
+    expect(safeInfoArgs.chainId).toBe(421614);
+    expect(presentationMounts).toEqual(['Skeleton', 'Actions']);
+    expect(footer.securityBlocked).toBe(false);
+  });
+
+  test('a new approval on the same origin waits for its own chain context', async () => {
+    isTestnet = true;
+    const nextSite = defer<any>();
+    wallet.getConnectedSite
+      .mockResolvedValueOnce({ chain: 'ETH' })
+      .mockReturnValueOnce(nextSite.promise);
+    act(render);
+    await flush();
+    expect(safeInfoArgs.chainId).toBe(1);
+    expect(footer.securityBlocked).toBe(false);
+
+    props = { ...props, approvalId: 'next-approval' };
+    wallet.getApproval.mockResolvedValue({
+      id: 'next-approval',
+      data: { approvalComponent: 'SignTypedData' },
+    });
+    act(render);
+    await flush();
+    expect(wallet.getConnectedSite).toHaveBeenCalledTimes(2);
+    expect(wallet.getConnectedSite).toHaveBeenLastCalledWith(
+      'https://dapp.test'
+    );
+    expect(presentationMounts).toEqual(['Skeleton', 'Actions', 'Skeleton']);
+    expect(footer.securityBlocked).toBe(true);
+    await act(async () => {
+      await footer.onSubmit();
+    });
+    expect(approve).not.toHaveBeenCalled();
+
+    await act(async () => nextSite.resolve({ chain: 'ARB_SEPOLIA' }));
+    await flush();
+    expect(safeInfoArgs.chainId).toBe(421614);
+    expect(presentationMounts).toEqual([
+      'Skeleton',
+      'Actions',
+      'Skeleton',
+      'Actions',
+    ]);
+    expect(footer.securityBlocked).toBe(false);
+    await act(async () => {
+      await footer.onSubmit();
+    });
+    expect(approve).toHaveBeenCalledWith({});
+  });
+
+  test('the local connected-site lookup completes while the browser is offline', async () => {
+    isTestnet = true;
+    onlineManager.setOnline(false);
+    wallet.getConnectedSite.mockResolvedValue({ chain: 'ARB_SEPOLIA' });
+    act(render);
+    await flush();
+    expect(wallet.getConnectedSite).toHaveBeenCalledTimes(1);
+    expect(safeInfoArgs.chainId).toBe(421614);
+    expect(presentationMounts).toEqual(['Skeleton', 'Actions']);
+    expect(footer.securityBlocked).toBe(false);
+    await act(async () => {
+      await footer.onSubmit();
+    });
+    expect(approve).toHaveBeenCalledWith({});
+  });
+
+  test('focus and reconnect do not reload chain context or remount ready content', async () => {
+    isTestnet = true;
+    wallet.getConnectedSite.mockResolvedValue({ chain: 'ARB_SEPOLIA' });
+    act(render);
+    await flush();
+    const initialContent = container.querySelector(
+      '[data-presentation="Actions"]'
+    );
+    expect(initialContent).not.toBeNull();
+    act(() => {
+      jest.advanceTimersByTime(60_000);
+      focusManager.setFocused(false);
+      focusManager.setFocused(true);
+      onlineManager.setOnline(false);
+      onlineManager.setOnline(true);
+    });
+    await flush();
+    expect(wallet.getConnectedSite).toHaveBeenCalledTimes(1);
+    expect(container.querySelector('[data-presentation="Actions"]')).toBe(
+      initialContent
+    );
+    expect(presentationMounts).toEqual(['Skeleton', 'Actions']);
+    expect(footer.securityBlocked).toBe(false);
+  });
 
   test('Safe completion waits for risk review and an old modal cannot confirm a replacement request', async () => {
     engine.mockResolvedValue([risk()]);

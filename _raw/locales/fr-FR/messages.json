@@ -1127,7 +1127,13 @@
         "clearPendingCheckbox": "Réinitialiser également mes données de nonce locales et mon historique de signatures",
         "biometricUnlockEnabled": "Déverrouillage par biométrie activé.",
         "biometricUnlockSetupTitle": "Activer le déverrouillage biométrique",
-        "biometricUnlockEnableFailed": "Échec de l'activation du déverrouillage biométrique"
+        "biometricUnlockEnableFailed": "Échec de l'activation du déverrouillage biométrique",
+        "removedToken": {
+          "title": "Tokens supprimés",
+          "description": "Les tokens supprimés seront masqués dans votre Portefeuille pour toutes vos adresses, mais resteront inclus dans le calcul de votre solde.",
+          "loadFailed": "Impossible de charger le token",
+          "retry": "Réessayer"
+        }
       },
       "tokenDetail": {
         "blocked": "Bloqué",
@@ -1171,7 +1177,19 @@
         "BridgeProvider": "Fournisseur du bridge",
         "fdvTips": "La capitalisation boursière si l'offre maximale était en circulation. Valorisation entièrement diluée (FDV) = prix × offre maximale. Si l'offre maximale n'est pas renseignée, FDV = prix × offre totale. Si aucune des deux n'est définie ou si elle est infinie, la FDV n'est pas affichée.",
         "bridgeToEth": "Bridger vers Ethereum",
-        "bridge": "Bridge"
+        "bridge": "Bridge",
+        "removed": {
+          "more": "Plus",
+          "removeToken": "Supprimer le token",
+          "remove": "Supprimer",
+          "confirmTitle": "Supprimer ce token ?",
+          "portfolioNotice": "Ce token n’apparaîtra plus dans votre Portefeuille après sa suppression.",
+          "restoreNotice": "Vous pouvez le restaurer à tout moment dans « Paramètres >> Tokens supprimés ».",
+          "warning": "Les tokens supprimés seront masqués dans votre Portefeuille pour toutes vos adresses, mais resteront inclus dans le calcul de votre solde.",
+          "removeFailed": "Impossible de supprimer le token",
+          "restore": "Restaurer le token supprimé",
+          "restoreFailed": "Impossible de restaurer le token"
+        }
       },
       "GnosisWrongChainAlertBar": {
         "warning": "L'adresse Safe ne prend pas en charge {{chain}}",
@@ -1576,6 +1594,7 @@
         "title": "Impossible d'importer"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect ne peut pas se connecter car l’heure de votre ordinateur n’est pas synchronisée. Activez le réglage automatique de la date et de l’heure, puis réessayez.",
         "button": {
           "connect": "Connecter",
           "disconnect": "Déconnecter",
@@ -2783,9 +2802,44 @@
         "BridgeStatusUnavailable": "Statut du pont indisponible. Veuillez vérifier votre historique de transactions pour confirmer que les fonds sont arrivés.",
         "fromFailed": "La transaction n'a pas été effectuée. Essayez à nouveau.",
         "swapStatus": "État de l'échange",
-        "sendStatus": "État de l'envoi"
+        "sendStatus": "État de l'envoi",
+        "bridgingEta": "Bridge en cours, durée estimée : <time>{{time}}</time>",
+        "stillBridging": "Bridge toujours en cours",
+        "sourceFailed": "Le bridge a échoué. Vos {{token}} n’ont pas été envoyés",
+        "refundedLead": "Remboursé",
+        "popupProcessing": "Bridge en cours de traitement",
+        "popupPending": "Bridge en attente",
+        "popupFailed": "Échec du bridge",
+        "popupRefunded": "Bridge remboursé",
+        "popupCompleted": "Bridge terminé",
+        "popupBridgeDelayed": "Bridge retardé",
+        "popupBridgeFailed": "Le bridge a échoué",
+        "popupRefundedIn": "Remboursé en {{token}}",
+        "processing": "Traitement en cours",
+        "refund": "Remboursé",
+        "goBack": "Retour",
+        "contactSupport": "Contacter l’assistance",
+        "succeeded": "Réussi",
+        "sendFrom": "Envoyer depuis {{chain}}",
+        "receiveOn": "Recevoir sur {{chain}}",
+        "refundOn": "Remboursé sur {{chain}}",
+        "waitingDestination": "En attente de la transaction de destination",
+        "sendFailed": "Échec de l’envoi",
+        "tokenNotSent": "Vos {{token}} n’ont pas été envoyés"
       },
-      "best-subtitle": "La meilleure offre est déterminée par une combinaison du coût total estimé (frais de gas inclus) et de la vitesse de livraison."
+      "best-subtitle": "La meilleure offre est déterminée par une combinaison du coût total estimé (frais de gas inclus) et de la vitesse de livraison.",
+      "bridge": "Bridge",
+      "by": "par",
+      "timeLeft": "Temps restant : {{time}}",
+      "refundIn": "Remboursé en {{token}}",
+      "viewDetails": "Voir les détails",
+      "duration-sec": "{{duration}} s",
+      "duration-hour": "{{duration}} h",
+      "duration-hour-min": "{{hours}} h {{minutes}} min",
+      "duration-day": "{{duration}} j",
+      "duration-day-hour": "{{days}} j {{hours}} h",
+      "duration-day-min": "{{days}} j {{minutes}} min",
+      "duration-day-hour-min": "{{days}} j {{hours}} h {{minutes}} min"
     },
     "dappSearch": {
       "searchResult": {
@@ -3654,6 +3708,14 @@
           "creatorFee": "Frais de créateur ({{fee}}%)",
           "rabbyFee": "Frais de Rabby (0%)",
           "creatorFeeTips1": "Les droits du créateur sont payés par le vendeur et leur versement est obligatoire."
+        },
+        "verifyError": {
+          "unsupportedChain": "Le trading de NFT n'est pas encore pris en charge sur cette chaîne",
+          "currency": "Échec de la vérification de sécurité : le jeton de paiement ne correspond pas au jeton attendu",
+          "nft": "Échec de la vérification de sécurité : le NFT de l'ordre ne correspond pas à celui sélectionné",
+          "amount": "Échec de la vérification de sécurité : le montant que vous recevriez ne correspond pas à celui affiché",
+          "recipient": "Échec de la vérification de sécurité : les fonds ne seraient pas envoyés à votre adresse",
+          "invalid": "Échec de la vérification de sécurité : les données de l'ordre sont invalides. Veuillez réessayer plus tard"
         },
         "pending": "En attente",
         "hideLowValue": "Masquer les NFTs de faible valeur",

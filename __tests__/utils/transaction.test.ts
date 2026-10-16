@@ -588,3 +588,116 @@ describe('calcGasLimit dapp tx.gas cap', () => {
     await expect(run(enumName, blockGasLimit, txGas)).resolves.toBe(expected);
   });
 });
+
+describe('calcGasLimit prepared block fallback on ordinary chains', () => {
+  beforeEach(() => {
+    jest.requireMock('consts').DEFAULT_GAS_LIMIT_BUFFER = 0.95;
+  });
+  afterEach(() => {
+    jest.requireMock('consts').DEFAULT_GAS_LIMIT_BUFFER = 0;
+  });
+
+  test.each(['null', 'rejected', 'ready'])(
+    'preserves the latest block cap with a %s prepared block',
+    async (state) => {
+      const block = { gasLimit: intToHex(1_000_000) };
+      const requestETHRpc = jest.fn().mockResolvedValue(block);
+      const preparedBlock =
+        state === 'ready'
+          ? Promise.resolve(block)
+          : state === 'null'
+          ? Promise.resolve(null)
+          : Promise.reject(new Error('prefetch failed'));
+      const result = await calcGasLimit({
+        chain: { id: 1, enum: 'UNKNOWN', serverId: 'eth' } as any,
+        tx: { from: '0xsender' } as any,
+        gas: new BigNumber(2_000_000),
+        selectedGas: null,
+        nativeTokenBalance: '0',
+        explainTx: { gas: { gas_ratio: 1 } } as any,
+        needRatio: false,
+        wallet: { requestETHRpc } as any,
+        preparedBlock: preparedBlock as any,
+      });
+      expect(Number(result.gasLimit)).toBe(950_000);
+      expect(requestETHRpc).toHaveBeenCalledTimes(state === 'ready' ? 0 : 1);
+    }
+  );
+});
+
+describe('HyperEVM sender gas limit', () => {
+  const run = (
+    usingBigBlocks: unknown,
+    blockGasLimit = 3_000_000,
+    gas = 8_300_000,
+    txGas = 10_000_000
+  ) => {
+    const requestETHRpc = jest.fn().mockResolvedValue(usingBigBlocks);
+    return calcGasLimit({
+      chain: { id: 999, enum: 'HYPER', serverId: 'hyper' } as any,
+      tx: { from: '0xsender', gas: intToHex(txGas) } as any,
+      gas: new BigNumber(gas),
+      selectedGas: null,
+      nativeTokenBalance: '0',
+      explainTx: { gas: { gas_ratio: 1.5 } } as any,
+      needRatio: true,
+      wallet: { requestETHRpc } as any,
+      preparedBlock: { gasLimit: intToHex(blockGasLimit) } as any,
+    }).then((result) => ({ result, requestETHRpc }));
+  };
+
+  beforeEach(() => {
+    jest.requireMock('consts').DEFAULT_GAS_LIMIT_RATIO = 1.5;
+    jest.requireMock('consts').DEFAULT_GAS_LIMIT_BUFFER = 0.95;
+  });
+
+  afterEach(() => {
+    jest.requireMock('consts').DEFAULT_GAS_LIMIT_RATIO = 1;
+    jest.requireMock('consts').DEFAULT_GAS_LIMIT_BUFFER = 0;
+  });
+
+  test.each([3_000_000, 30_000_000])(
+    'big-block sender ignores latest block limit %i',
+    async (blockLimit) => {
+      const { result, requestETHRpc } = await run(true, blockLimit);
+      expect(Number(result.gasLimit)).toBe(12_450_000);
+      expect(requestETHRpc).toHaveBeenCalledWith(
+        { method: 'eth_usingBigBlocks', params: ['0xsender'] },
+        'hyper'
+      );
+    }
+  );
+
+  test('small-block sender keeps its limit even when latest is a big block', async () => {
+    const { result } = await run(false, 30_000_000);
+    expect(Number(result.gasLimit)).toBe(3_000_000);
+  });
+
+  test('honors a dapp gas limit that fits the sender big-block cap', async () => {
+    const { result } = await run(true, 3_000_000, 2_000_000, 9_000_000);
+    expect(Number(result.gasLimit)).toBe(9_000_000);
+  });
+
+  test('only caps the buffer when the estimate fits a big block', async () => {
+    const { result } = await run(true, 3_000_000, 29_000_000);
+    expect(Number(result.gasLimit)).toBe(30_000_000);
+  });
+
+  test('discards a dapp limit above small-block cap when the estimate fits', async () => {
+    const { result } = await run(false, 30_000_000, 2_000_000, 4_000_000);
+    expect(Number(result.gasLimit)).toBe(3_000_000);
+  });
+
+  test.each([
+    [2_800_000, 0, 3_000_000],
+    [8_300_000, 0, 3_000_000],
+    [2_000_000, 9_000_000, 3_000_000],
+    [2_000_000, 30_000_001, 3_000_000],
+  ])(
+    'retains the small-block cap when the sender mode is unavailable',
+    async (gas, txGas, expected) => {
+      const { result } = await run(null, 3_000_000, gas, txGas);
+      expect(Number(result.gasLimit)).toBe(expected);
+    }
+  );
+});

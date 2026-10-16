@@ -348,7 +348,13 @@
         "biometricUnlockDisabled": "已停用生物識別解鎖",
         "biometricUnlockEnableFailed": "無法啟用生物識別解鎖",
         "biometricUnlockUnsupported": "此裝置不支援生物識別解鎖。",
-        "biometricUnlockSetupTitle": "啟用生物識別解鎖"
+        "biometricUnlockSetupTitle": "啟用生物識別解鎖",
+        "removedToken": {
+          "title": "已移除代幣",
+          "description": "移除的代幣會從你所有地址的投資組合中隱藏，但仍計入餘額。",
+          "loadFailed": "載入代幣失敗",
+          "retry": "重試"
+        }
       },
       "tokenDetail": {
         "blockedTip": "已隱藏的代幣將不會顯示在代幣清單中",
@@ -392,7 +398,19 @@
         "myBalance": "我的餘額",
         "fdvTips": "假設最大供應量全部流通時的市值。完全稀釋估值（FDV）= 價格 x 最大供應量。如果最大供應量為空，則 FDV = 價格 x 總供應量。如果最大供應量和總供應量均未定義或為無限，則不顯示 FDV。",
         "bridgeToEth": "跨鏈到 Ethereum",
-        "bridge": "跨鏈"
+        "bridge": "跨鏈",
+        "removed": {
+          "more": "更多",
+          "removeToken": "移除代幣",
+          "remove": "移除",
+          "confirmTitle": "移除此代幣？",
+          "portfolioNotice": "移除後，此代幣將不再顯示在你的投資組合中。",
+          "restoreNotice": "你可以隨時在「設定 >> 已移除代幣」中恢復。",
+          "warning": "移除的代幣會從你所有地址的投資組合中隱藏，但仍計入餘額。",
+          "removeFailed": "移除代幣失敗",
+          "restore": "恢復已移除代幣",
+          "restoreFailed": "恢復代幣失敗"
+        }
       },
       "assets": {
         "usdValue": "美元價值",
@@ -717,6 +735,7 @@
         "haveOneKey": "還沒有 OneKey？"
       },
       "walletConnect": {
+        "clockSkewError": "電腦時間與伺服器不一致，WalletConnect 無法連線。請開啟系統自動設定日期和時間，然後重試。",
         "connectYour": "連接你的",
         "viaWalletConnect": "透過 WalletConnect",
         "connectedSuccessfully": "連接成功",
@@ -2596,9 +2615,44 @@
         "longTimeNoReceive": "網絡繁忙。這可能需要比平常更長的時間。請耐心等待。",
         "BridgeStatusUnavailable": "橋接狀態不可用。請檢查你的交易記錄以確認資金是否已到達。",
         "sendStatus": "發送狀態",
-        "swapStatus": "兌換狀態"
+        "swapStatus": "兌換狀態",
+        "bridgingEta": "跨鏈中，預計還需 <time>{{time}}</time>",
+        "stillBridging": "仍在跨鏈中",
+        "sourceFailed": "跨鏈失敗，你的 {{token}} 未發送",
+        "refundedLead": "已退還",
+        "popupProcessing": "跨鏈處理中",
+        "popupPending": "跨鏈待處理",
+        "popupFailed": "跨鏈失敗",
+        "popupRefunded": "跨鏈資產已退還",
+        "popupCompleted": "跨鏈已完成",
+        "popupBridgeDelayed": "跨鏈延遲",
+        "popupBridgeFailed": "跨鏈失敗",
+        "popupRefundedIn": "已退還為 {{token}}",
+        "processing": "處理中",
+        "refund": "已退還",
+        "goBack": "返回",
+        "contactSupport": "聯絡客服",
+        "succeeded": "成功",
+        "sendFrom": "從 {{chain}} 發送",
+        "receiveOn": "在 {{chain}} 上接收",
+        "refundOn": "已在 {{chain}} 上退還",
+        "waitingDestination": "等待目標鏈交易",
+        "sendFailed": "發送失敗",
+        "tokenNotSent": "你的 {{token}} 未發送"
       },
-      "best-subtitle": "最佳報價由預計總成本（包括 Gas 費用）及到賬速度綜合決定。"
+      "best-subtitle": "最佳報價由預計總成本（包括 Gas 費用）及到賬速度綜合決定。",
+      "bridge": "跨鏈",
+      "by": "由",
+      "timeLeft": "剩餘 {{time}}",
+      "refundIn": "已退還為 {{token}}",
+      "viewDetails": "查看詳情",
+      "duration-sec": "{{duration}} 秒",
+      "duration-hour": "{{duration}} 小時",
+      "duration-hour-min": "{{hours}} 小時 {{minutes}} 分鐘",
+      "duration-day": "{{duration}} 天",
+      "duration-day-hour": "{{days}} 天 {{hours}} 小時",
+      "duration-day-min": "{{days}} 天 {{minutes}} 分鐘",
+      "duration-day-hour-min": "{{days}} 天 {{hours}} 小時 {{minutes}} 分鐘"
     },
     "ecology": {
       "sonic": {
@@ -3359,6 +3413,14 @@
           "platformFeeTips": "這個費用是 OpenSea 的服務收費。",
           "creatorFeeTips1": "創作者收益將由賣方支付。創作者收益是強制執行的。",
           "creatorFee": "創作者費用（{{fee}}%）"
+        },
+        "verifyError": {
+          "unsupportedChain": "該鏈暫不支援 NFT 交易",
+          "currency": "安全校驗未通過：收款代幣與預期不符",
+          "nft": "安全校驗未通過：訂單中的 NFT 與你選擇的不一致",
+          "amount": "安全校驗未通過：實際到賬金額與頁面顯示不符",
+          "recipient": "安全校驗未通過：收款地址不是你的地址",
+          "invalid": "安全校驗未通過：訂單數據異常，請稍後重試"
         },
         "hideLowValue": "隱藏低價值 NFT",
         "pending": "待處理",

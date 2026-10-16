@@ -1172,9 +1172,44 @@
         "receivedDifferentTokenFromSource": "A ponte falhou. Um token diferente foi retornado na rede de origem.",
         "queued": "Em espera",
         "sendStatus": "Estado do envio",
-        "swapStatus": "Estado da troca"
+        "swapStatus": "Estado da troca",
+        "bridgingEta": "Transferência por ponte em curso, tempo estimado: <time>{{time}}</time>",
+        "stillBridging": "Transferência por ponte ainda em curso",
+        "sourceFailed": "A ponte falhou. Os seus {{token}} não foram enviados",
+        "refundedLead": "Reembolsado",
+        "popupProcessing": "Ponte em processamento",
+        "popupPending": "Ponte pendente",
+        "popupFailed": "Falha na ponte",
+        "popupRefunded": "Ponte reembolsada",
+        "popupCompleted": "Ponte concluída",
+        "popupBridgeDelayed": "Ponte atrasada",
+        "popupBridgeFailed": "A ponte falhou",
+        "popupRefundedIn": "Reembolsado em {{token}}",
+        "processing": "A processar",
+        "refund": "Reembolsado",
+        "goBack": "Voltar",
+        "contactSupport": "Contactar o suporte",
+        "succeeded": "Concluído com sucesso",
+        "sendFrom": "Enviar de {{chain}}",
+        "receiveOn": "Receber em {{chain}}",
+        "refundOn": "Reembolsado em {{chain}}",
+        "waitingDestination": "A aguardar a transação de destino",
+        "sendFailed": "Falha no envio",
+        "tokenNotSent": "Os seus {{token}} não foram enviados"
       },
-      "best-subtitle": "A melhor cotação é determinada por uma combinação do custo total estimado (incluindo taxas de gas) e velocidade de entrega."
+      "best-subtitle": "A melhor cotação é determinada por uma combinação do custo total estimado (incluindo taxas de gas) e velocidade de entrega.",
+      "bridge": "Ponte",
+      "by": "por",
+      "timeLeft": "Tempo restante: {{time}}",
+      "refundIn": "Reembolsado em {{token}}",
+      "viewDetails": "Ver detalhes",
+      "duration-sec": "{{duration}} s",
+      "duration-hour": "{{duration}} h",
+      "duration-hour-min": "{{hours}} h {{minutes}} min",
+      "duration-day": "{{duration}} d",
+      "duration-day-hour": "{{days}} d {{hours}} h",
+      "duration-day-min": "{{days}} d {{minutes}} min",
+      "duration-day-hour-min": "{{days}} d {{hours}} h {{minutes}} min"
     },
     "manageAddress": {
       "whitelisted-address": "Endereço na lista branca",
@@ -1500,7 +1535,13 @@
         "clearPendingCheckbox": "Também redefinir meus dados locais de nonce e o registo de assinaturas",
         "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
         "biometricUnlockEnableFailed": "Falha ao ativar o desbloqueio biométrico",
-        "biometricUnlockDisabled": "Desbloqueio biométrico desativado"
+        "biometricUnlockDisabled": "Desbloqueio biométrico desativado",
+        "removedToken": {
+          "title": "Tokens removidos",
+          "description": "Os tokens removidos ficarão ocultos no seu Portefólio em todos os seus endereços, mas continuarão a ser incluídos no cálculo do seu saldo.",
+          "loadFailed": "Não foi possível carregar o token",
+          "retry": "Tentar novamente"
+        }
       },
       "tokenDetail": {
         "txFailed": "Falha",
@@ -1544,7 +1585,19 @@
         "NoSupportedExchanges": "Nenhuma plataforma de negociação suportada",
         "customizedListTitles": "tokens personalizados",
         "bridge": "Ponte",
-        "bridgeToEth": "Ponte para a rede Ethereum"
+        "bridgeToEth": "Ponte para a rede Ethereum",
+        "removed": {
+          "more": "Mais",
+          "removeToken": "Remover token",
+          "remove": "Remover",
+          "confirmTitle": "Remover este token?",
+          "portfolioNotice": "Este token deixará de aparecer no seu Portefólio após a remoção.",
+          "restoreNotice": "Pode restaurá-lo a qualquer momento em «Definições >> Tokens removidos».",
+          "warning": "Os tokens removidos ficarão ocultos no seu Portefólio em todos os seus endereços, mas continuarão a ser incluídos no cálculo do seu saldo.",
+          "removeFailed": "Não foi possível remover o token",
+          "restore": "Restaurar token removido",
+          "restoreFailed": "Não foi possível restaurar o token"
+        }
       },
       "assets": {
         "portfolio": {
@@ -1850,6 +1903,7 @@
         "haveOneKey": "Ainda não tem um OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "O WalletConnect não consegue ligar-se porque a hora do seu computador não está sincronizada. Ative a definição automática da data e hora e tente novamente.",
         "status": {
           "accountError": "Endereço não corresponde.",
           "accountErrorDesc": "Mude o endereço na sua carteira móvel",
@@ -3309,6 +3363,14 @@
           "platformFeeTips": "Essa taxa é a comissão de serviço da OpenSea",
           "creatorFeeTips1": "Os ganhos dos criadores serão pagos pelo vendedor. Os ganhos dos criadores são aplicados.",
           "platform": "Plataforma"
+        },
+        "verifyError": {
+          "unsupportedChain": "A negociação de NFT ainda não é suportada nesta rede",
+          "currency": "Falha na verificação de segurança: o token de pagamento não corresponde ao esperado",
+          "nft": "Falha na verificação de segurança: o NFT da ordem não corresponde ao que selecionou",
+          "amount": "Falha na verificação de segurança: o valor a receber não corresponde ao apresentado",
+          "recipient": "Falha na verificação de segurança: os fundos não seriam enviados para o seu endereço",
+          "invalid": "Falha na verificação de segurança: os dados da ordem são inválidos. Tente novamente mais tarde"
         },
         "pending": "Pendente",
         "empty": "Sem NFTs",

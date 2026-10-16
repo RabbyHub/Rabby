@@ -1,8 +1,8 @@
 diff --git a/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js b/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js
-index 7c7fddd..6dff923 100644
+index 7c7fddd..bf0b754 100644
 --- a/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js
 +++ b/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/v2sdk.js
-@@ -138,7 +138,7 @@ class V2SDK extends sdk_1.SDK {
+@@ -138,10 +138,16 @@ class V2SDK extends sdk_1.SDK {
              });
              const listenerJwtError = () => {
                  var _a;
@@ -11,3 +11,12 @@ index 7c7fddd..6dff923 100644
                      var _b;
                      // error code 3000 meaning the jwt token is expired, need to re-init the client
                      // only appear in connect method
++                    // Reissuing a JWT cannot fix a clock that is ahead of the relay.
++                    if (/WebSocket connection closed abnormally with code: 3000 \((?:Authorization error: )?JWT validation error: JWT Token is not yet valid:/.test(e.message)) {
++                        listenerJwtError();
++                        this.emit('transport_error', e);
++                        return;
++                    }
+                     if (e.message.includes('3000')) {
+                         yield this.initSDK();
+                         (_b = this.onAfterSessionCreated) === null || _b === void 0 ? void 0 : _b.call(this, '');

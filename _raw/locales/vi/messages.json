@@ -1172,9 +1172,44 @@
         "longTimeNoReceive": "Mạng đang bận. Điều này có thể mất thời gian hơn bình thường. Vui lòng chờ đợi một cách kiên nhẫn.",
         "receivedDifferentTokenNeedSwap": "Bạn đã nhận một token khác. Bạn có thể trao đổi nó với token mà bạn đã chọn.",
         "sendStatus": "Gửi trạng thái",
-        "swapStatus": "Trạng thái hoán đổi"
+        "swapStatus": "Trạng thái hoán đổi",
+        "bridgingEta": "Đang chuyển qua cầu nối, thời gian dự kiến: <time>{{time}}</time>",
+        "stillBridging": "Vẫn đang chuyển qua cầu nối",
+        "sourceFailed": "Cầu nối thất bại, {{token}} của bạn chưa được gửi",
+        "refundedLead": "Đã hoàn trả",
+        "popupProcessing": "Cầu nối đang xử lý",
+        "popupPending": "Cầu nối đang chờ xử lý",
+        "popupFailed": "Cầu nối thất bại",
+        "popupRefunded": "Đã hoàn trả qua cầu nối",
+        "popupCompleted": "Cầu nối hoàn tất",
+        "popupBridgeDelayed": "Cầu nối bị chậm trễ",
+        "popupBridgeFailed": "Cầu nối thất bại",
+        "popupRefundedIn": "Đã hoàn trả bằng {{token}}",
+        "processing": "Đang xử lý",
+        "refund": "Đã hoàn trả",
+        "goBack": "Quay lại",
+        "contactSupport": "Liên hệ hỗ trợ",
+        "succeeded": "Thành công",
+        "sendFrom": "Gửi từ {{chain}}",
+        "receiveOn": "Nhận trên {{chain}}",
+        "refundOn": "Đã hoàn trả trên {{chain}}",
+        "waitingDestination": "đang chờ giao dịch trên chuỗi đích",
+        "sendFailed": "Gửi thất bại",
+        "tokenNotSent": "{{token}} của bạn chưa được gửi"
       },
-      "best-subtitle": "Báo giá tốt nhất được xác định bởi sự kết hợp của chi phí ước tính tổng cộng (bao gồm phí gas) và tốc độ giao hàng."
+      "best-subtitle": "Báo giá tốt nhất được xác định bởi sự kết hợp của chi phí ước tính tổng cộng (bao gồm phí gas) và tốc độ giao hàng.",
+      "bridge": "Cầu nối",
+      "by": "bởi",
+      "timeLeft": "Còn {{time}}",
+      "refundIn": "Đã hoàn trả bằng {{token}}",
+      "viewDetails": "Xem chi tiết",
+      "duration-sec": "{{duration}} giây",
+      "duration-hour": "{{duration}} giờ",
+      "duration-hour-min": "{{hours}} giờ {{minutes}} phút",
+      "duration-day": "{{duration}} ngày",
+      "duration-day-hour": "{{days}} ngày {{hours}} giờ",
+      "duration-day-min": "{{days}} ngày {{minutes}} phút",
+      "duration-day-hour-min": "{{days}} ngày {{hours}} giờ {{minutes}} phút"
     },
     "manageAddress": {
       "no-match": "Không tìm thấy",
@@ -1500,7 +1535,13 @@
         "biometricUnlockSetupDesc": "Xác nhận mật khẩu của bạn để kích hoạt mở khóa sinh trắc học.",
         "clearPendingCheckbox": "Đồng thời đặt lại dữ liệu nonce cục bộ và lịch sử chữ ký",
         "biometricUnlockDisabled": "Mở khóa sinh trắc học đã bị vô hiệu hóa",
-        "biometricUnlockPasswordPlaceholder": "Nhập mật khẩu"
+        "biometricUnlockPasswordPlaceholder": "Nhập mật khẩu",
+        "removedToken": {
+          "title": "Token đã xóa",
+          "description": "Token đã xóa sẽ bị ẩn khỏi danh mục đầu tư trên tất cả địa chỉ của bạn, nhưng vẫn được tính vào số dư.",
+          "loadFailed": "Không thể tải token",
+          "retry": "Thử lại"
+        }
       },
       "tokenDetail": {
         "txFailed": "Thất bại",
@@ -1544,7 +1585,19 @@
         "maybeScamTips": "Đây là một token chất lượng thấp và có thể là một trò lừa đảo.",
         "fdvTips": "Vốn hóa thị trường nếu số cung tối đa được lưu hành. Định giá hoàn toàn pha loãng (FDV) = Giá x Số cung tối đa. Nếu Số cung tối đa là null, FDV = Giá x Tổng cung. Nếu cả Số cung tối đa và Tổng cung đều không được xác định hoặc vô hạn, FDV sẽ không được hiển thị.",
         "bridgeToEth": "Cầu nối đến chuỗi Ethereum",
-        "bridge": "Cầu nối"
+        "bridge": "Cầu nối",
+        "removed": {
+          "more": "Thêm",
+          "removeToken": "Xóa token",
+          "remove": "Xóa",
+          "confirmTitle": "Xóa token này?",
+          "portfolioNotice": "Token này sẽ không còn xuất hiện trong danh mục đầu tư sau khi xóa.",
+          "restoreNotice": "Bạn có thể khôi phục bất cứ lúc nào trong “Cài đặt >> Token đã xóa”.",
+          "warning": "Token đã xóa sẽ bị ẩn khỏi danh mục đầu tư trên tất cả địa chỉ của bạn, nhưng vẫn được tính vào số dư.",
+          "removeFailed": "Không thể xóa token",
+          "restore": "Khôi phục token đã xóa",
+          "restoreFailed": "Không thể khôi phục token"
+        }
       },
       "assets": {
         "portfolio": {
@@ -1850,6 +1903,7 @@
         "haveOneKey": "Chưa có OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect không thể kết nối vì thời gian trên máy tính của bạn không đồng bộ. Hãy bật cài đặt ngày và giờ tự động, rồi thử lại.",
         "status": {
           "default": "Quét với {{brand}}",
           "brandError": "Ứng dụng ví sai.",
@@ -3309,6 +3363,14 @@
           "title": "Chấp nhận đề xuất",
           "creatorFeeTips1": "Thu nhập của người sáng tạo sẽ được thanh toán bởi người bán. Thu nhập của người sáng tạo được thi hành.",
           "quantity": "Số lượng"
+        },
+        "verifyError": {
+          "unsupportedChain": "Chuỗi này chưa hỗ trợ giao dịch NFT",
+          "currency": "Kiểm tra bảo mật thất bại: token thanh toán không khớp với token mong đợi",
+          "nft": "Kiểm tra bảo mật thất bại: NFT trong lệnh không khớp với NFT bạn đã chọn",
+          "amount": "Kiểm tra bảo mật thất bại: số tiền bạn nhận được không khớp với số hiển thị",
+          "recipient": "Kiểm tra bảo mật thất bại: tiền thu được sẽ không được gửi đến địa chỉ của bạn",
+          "invalid": "Kiểm tra bảo mật thất bại: dữ liệu lệnh không hợp lệ. Vui lòng thử lại sau"
         },
         "all": "Tất cả",
         "empty": "Không có NFTs",
