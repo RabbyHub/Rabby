@@ -4870,7 +4870,9 @@
     },
     "DappActions": {
       "queueDescription": "Mevcut çekim, bekleme kuyruğuna girecektir. İşlem tamamlandığında, cüzdanınıza çekilebilir.",
-      "manage": "Yönetmek"
+      "manage": "Yönetmek",
+      "claimAllRewards": "{{count}} pozisyondan ödüller",
+      "claimAllDescription": "Her pozisyon için bir tane olmak üzere {{count}} talep işlemi gönderilecek"
     },
     "DesktopChainSelector": {
       "allChains": "Tüm Zincirler"

@@ -18,6 +18,7 @@ import { useRequest } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';
 import { useSticky } from '@/ui/hooks/useSticky';
 import { useLocation } from 'react-router-dom';
+import { ClaimAllButton } from '@/ui/views/CommonPopup/AssetList/components/DappActions/ClaimAll';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -258,7 +259,10 @@ const ProtocolItem = ({
             )}
             <RcIconExternal1CC className="ml-[6px] w-[16px] h-[16px] text-r-neutral-foot" />
           </div>
-          <div className="flex items-center justify-end flex-1">
+          <div className="flex items-center justify-end flex-1 gap-[16px]">
+            {!isAppChain && (
+              <ClaimAllButton protocol={protocol} variant="desktop" />
+            )}
             <span className="text-[20px] text-r-neutral-title1 font-semibold">
               {protocol._netWorth}
             </span>
