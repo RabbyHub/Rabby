@@ -1,43 +1,44 @@
+import {
+  UNIVERSAL_ROUTER_ADDRESS,
+  UniversalRouterVersion,
+} from '@uniswap/universal-router-sdk';
 import { CalldataDecodeError } from '../../errors';
-import { deployments, UniversalRouterVersion } from './deployments';
+import { isSameAddress } from '../../utils';
 
 export interface RouterProfile {
   version: UniversalRouterVersion;
   commandMask: number;
-  v4Version: '2.0' | '2.1.0' | '2.1' | null;
-  supportsSigned: boolean;
 }
-
-const profiles: Record<
-  UniversalRouterVersion,
-  Omit<RouterProfile, 'version'>
-> = {
-  // The official v1.1.0 tag still references the original V1 deployments.
-  '1.0/1.1': { commandMask: 0x1f, v4Version: null, supportsSigned: false },
-  '1.2': { commandMask: 0x3f, v4Version: null, supportsSigned: false },
-  '2.0': { commandMask: 0x3f, v4Version: '2.0', supportsSigned: false },
-  '2.1.0': { commandMask: 0x7f, v4Version: '2.1.0', supportsSigned: true },
-  '2.1.1': { commandMask: 0x7f, v4Version: '2.1', supportsSigned: true },
-  '2.1.2': { commandMask: 0x7f, v4Version: '2.1', supportsSigned: true },
-  '2.2.0': { commandMask: 0x7f, v4Version: '2.1', supportsSigned: true },
-};
 
 export const getRouterProfile = (
   chainId: number,
   router: string
 ): RouterProfile => {
-  const deployment = deployments[chainId]?.[router.toLowerCase()];
-  if (!deployment) {
+  // Match the current backend's x-universal-router-version configuration.
+  const requestedVersion =
+    chainId === 4663 || chainId === 5042
+      ? UniversalRouterVersion.V2_1_1
+      : UniversalRouterVersion.V2_0;
+  let expectedRouter: string | undefined;
+  try {
+    expectedRouter = UNIVERSAL_ROUTER_ADDRESS(requestedVersion, chainId);
+  } catch {
+    // Unsupported chains and addresses must not fall back to a guessed layout.
+  }
+  if (!expectedRouter || !isSameAddress(router, expectedRouter)) {
     throw new CalldataDecodeError(
       'decode.uni.routerVersion',
-      `Unknown Universal Router version for chain ${chainId}, router ${router}`
+      `Unknown Universal Router version for chain ${chainId}, router ${router}; expected the current quote deployment (${requestedVersion})`
     );
   }
-  const version =
-    typeof deployment === 'string' ? deployment : deployment.version;
-  const profile = { version, ...profiles[version] };
-  if (typeof deployment !== 'string') {
-    profile.commandMask = deployment.commandMask;
+
+  // The SDK's zkSync 2.0 address aliases the deployed 1.2 Router. Its verified
+  // Commands.sol uses a 5-bit mask and has no V4 swap command.
+  if (chainId === 324) {
+    return { version: UniversalRouterVersion.V1_2, commandMask: 0x1f };
   }
-  return profile;
+  return {
+    version: requestedVersion,
+    commandMask: requestedVersion === UniversalRouterVersion.V2_0 ? 0x3f : 0x7f,
+  };
 };

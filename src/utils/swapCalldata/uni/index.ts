@@ -8,7 +8,6 @@ import type {
 } from '../types';
 import { UniABI } from './abi';
 import { Context, finishSwap } from './shared';
-import { decodeSwapRouter, getSwapRouterVersion } from './swapRouter';
 import { decodeUniversalRouter } from './universalRouter';
 import { getRouterProfile } from './universalRouter/profiles';
 import { normalizeUniAssets } from './assets';
@@ -17,9 +16,6 @@ const uniInterface = new utils.Interface(UniABI);
 
 export const getVersion = (tx: TxWithChainId) => {
   const fragment = uniInterface.getFunction(tx.data.slice(0, 10));
-  if (fragment.name !== 'execute' && fragment.name !== 'executeSigned') {
-    return getSwapRouterVersion(tx.data) || 'unknown';
-  }
   const proxy = fragment.inputs[0]?.name === 'router';
   const router = proxy
     ? uniInterface.parseTransaction({ data: tx.data }).args.router
@@ -46,14 +42,8 @@ export const decodeCalldata = (
     txValue: tx.value,
   };
 
-  const universal =
-    transaction.name === 'execute' || transaction.name === 'executeSigned';
   return normalizeUniAssets(
-    finishSwap(
-      universal
-        ? decodeUniversalRouter(transaction, tx.chainId, ctx)
-        : decodeSwapRouter(tx.data, ctx)
-    ),
+    finishSwap(decodeUniversalRouter(transaction, tx.chainId, ctx)),
     tx.chainId,
     native
   );

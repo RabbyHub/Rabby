@@ -1,5 +1,9 @@
 import { utils } from 'ethers';
-import { CalldataDecodeError, decodeCalldata } from '@/utils/swapCalldata';
+import {
+  CalldataDecodeError,
+  decodeCalldata,
+  getCalldataVersion,
+} from '@/utils/swapCalldata';
 import magpieQuote from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
 
 const fromToken = '0x1111111111111111111111111111111111111111';
@@ -8,16 +12,17 @@ const sender = '0x3333333333333333333333333333333333333333';
 const zero = '0x0000000000000000000000000000000000000000';
 const msgSender = '0x0000000000000000000000000000000000000001';
 const v2Router = '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af';
+const arcRouter = '0x4fca4a51ab4f23a7447b3284fbd7d73289a89fb1';
+const eraRouter = '0x28731bcc616b5f51dd52cf2e4df0e78dd1136c06';
 const universal = new utils.Interface([
   'function execute(bytes commands,bytes[] inputs,uint256 deadline)',
-  'function executeSigned(bytes commands,bytes[] inputs,bytes32 intent,bytes32 data,bool verifySender,bytes32 nonce,bytes signature,uint256 deadline)',
 ]);
 const encode = utils.defaultAbiCoder.encode.bind(utils.defaultAbiCoder);
-const transaction = (data: string, to = v2Router) => ({
+const transaction = (data: string, to = v2Router, chainId = 1) => ({
   from: sender,
   to,
   value: '0',
-  chainId: 1,
+  chainId,
   data,
 });
 const expected = {
@@ -28,50 +33,39 @@ const expected = {
   toTokenReceiver: sender,
 };
 
-// Encode independently using the official SDK's dynamic swap structs.
+// Independent encodings keep the SDK decoder from defining its own expectations.
 const poolKey = 'tuple(address,address,uint24,int24,address)';
 const pathKey = 'tuple(address,uint24,int24,address,bytes)';
-const v4Input = (
-  newVersion: boolean,
-  action: number,
-  zeroForOne = true,
-  deprecated = false
-) => {
+const v4Input = (newVersion: boolean, action: number, zeroForOne = true) => {
   const single = action === 0x06 || action === 0x08;
   const exactOut = action === 0x08 || action === 0x09;
   const input = single && !zeroForOne ? toToken : fromToken;
   const output = single && !zeroForOne ? fromToken : toToken;
-  const amountA = exactOut ? 90 : 100;
-  const amountB = exactOut ? 100 : 90;
-  let schema: string;
-  let value: unknown[];
-  if (single) {
-    schema = `tuple(${poolKey},bool,uint128,uint128,${
-      newVersion && !deprecated ? 'uint256,' : ''
-    }bytes)`;
-    value = [
-      [fromToken, toToken, 3000, 60, zero],
-      zeroForOne,
-      amountA,
-      amountB,
-      ...(newVersion && !deprecated ? [1] : []),
-      '0x',
-    ];
-  } else {
-    schema = `tuple(address,${pathKey}[],${
-      newVersion ? 'uint256[],' : ''
-    }uint128,uint128)`;
-    value = [
-      exactOut ? toToken : fromToken,
-      [
-        ['0x4444444444444444444444444444444444444444', 3000, 60, zero, '0x'],
-        [exactOut ? fromToken : toToken, 3000, 60, zero, '0x'],
-      ],
-      ...(newVersion ? [[1, 1]] : []),
-      amountA,
-      amountB,
-    ];
-  }
+  const schema = single
+    ? `tuple(${poolKey},bool,uint128,uint128,${
+        newVersion ? 'uint256,' : ''
+      }bytes)`
+    : `tuple(address,${pathKey}[],${
+        newVersion ? 'uint256[],' : ''
+      }uint128,uint128)`;
+  const amounts = exactOut ? [90, 100] : [100, 90];
+  const value = single
+    ? [
+        [fromToken, toToken, 3000, 60, zero],
+        zeroForOne,
+        ...amounts,
+        ...(newVersion ? [1] : []),
+        '0x',
+      ]
+    : [
+        exactOut ? toToken : fromToken,
+        [
+          ['0x4444444444444444444444444444444444444444', 3000, 60, zero, '0x'],
+          [exactOut ? fromToken : toToken, 3000, 60, zero, '0x'],
+        ],
+        ...(newVersion ? [[1, 1]] : []),
+        ...amounts,
+      ];
   return encode(
     ['bytes', 'bytes[]'],
     [
@@ -79,8 +73,7 @@ const v4Input = (
       [
         encode([schema], [value]),
         encode(['address', 'uint256'], [input, 100]),
-        // OPEN_DELTA takes the complete credit without repeating the swap's
-        // minimum. A wrong swap amount must not be masked by a later bound.
+        // OPEN_DELTA avoids a later payment bound hiding a wrong swap minimum.
         encode(['address', 'address', 'uint256'], [output, sender, 0]),
       ],
     ]
@@ -88,82 +81,50 @@ const v4Input = (
 };
 
 const routerVersions = [
-  { version: '2.0', address: v2Router, newVersion: false },
-  {
-    version: '2.1.1',
-    address: '0x4C82D1fBFe28C977cBB58D8C7FF8FCF9F70a2cCA',
-    newVersion: true,
-  },
-  {
-    version: '2.1.2',
-    address: '0x23617e59A5925b2A4Bf75d73ff6711cD0b29De85',
-    newVersion: true,
-  },
-  {
-    version: '2.2.0',
-    address: '0xab863E752Bf67D8DCDD929EaAe9Be9dc83Fb3BbB',
-    newVersion: true,
-  },
+  { version: '2.0', address: v2Router, chainId: 1, newVersion: false },
+  { version: '2.1.1', address: arcRouter, chainId: 5042, newVersion: true },
 ];
 
 describe.each(routerVersions)(
-  'Universal Router $version',
-  ({ address, newVersion }) => {
+  'current Universal Router $version / chain $chainId',
+  ({ address, chainId, newVersion }) => {
     it.each([
       { name: 'single exact input', action: 0x06 },
       { name: 'path exact input', action: 0x07 },
-      { name: 'single exact output', action: 0x08 },
-      { name: 'path exact output', action: 0x09 },
-    ])(
-      'decodes V4 $name with the correct input amount and currencies',
-      ({ action }) => {
-        const data = universal.encodeFunctionData('execute', [
-          '0x10',
-          [v4Input(newVersion, action)],
-          2000000000,
-        ]);
-        expect(decodeCalldata('Uniswap', transaction(data, address))).toEqual(
-          expected
-        );
-      }
-    );
-
-    it.each([0x06, 0x08])(
-      'reads both currencies in a zeroForOne=false single swap (%s)',
-      (action) => {
-        const data = universal.encodeFunctionData('execute', [
-          '0x10',
-          [v4Input(newVersion, action, false)],
-          2000000000,
-        ]);
-        expect(decodeCalldata('Uniswap', transaction(data, address))).toEqual({
-          ...expected,
-          fromToken: toToken,
-          toToken: fromToken,
-        });
-      }
-    );
-  }
-);
-
-describe('deprecated Universal Router 2.1.0 swap field layout', () => {
-  it.each([0x06, 0x07, 0x08, 0x09])(
-    'reads action %s without confusing single-swap and path price fields',
-    (action) => {
+    ])('decodes V4 $name with the correct fields', ({ action }) => {
       const data = universal.encodeFunctionData('execute', [
         '0x10',
-        [v4Input(true, action, true, true)],
+        [v4Input(newVersion, action)],
         2000000000,
       ]);
       expect(
-        decodeCalldata(
-          'Uniswap',
-          transaction(data, '0xd92a36b0000531ef3063ded4de20a0783308446c')
-        )
+        decodeCalldata('Uniswap', transaction(data, address, chainId))
       ).toEqual(expected);
-    }
-  );
-});
+    });
+
+    it('reads both currencies in a zeroForOne=false single swap', () => {
+      const data = universal.encodeFunctionData('execute', [
+        '0x10',
+        [v4Input(newVersion, 0x06, false)],
+        2000000000,
+      ]);
+      expect(
+        decodeCalldata('Uniswap', transaction(data, address, chainId))
+      ).toEqual({ ...expected, fromToken: toToken, toToken: fromToken });
+    });
+
+    it.each([0x08, 0x09])('rejects V4 exact-output action %s', (action) => {
+      const data = universal.encodeFunctionData('execute', [
+        '0x10',
+        [v4Input(newVersion, action)],
+        2000000000,
+      ]);
+      expect(() =>
+        decodeCalldata('Uniswap', transaction(data, address, chainId))
+      ).toThrow('current exact-input quote flow');
+    });
+  }
+);
 
 describe('Universal Router entry points and version selection', () => {
   const ammInput = encode(
@@ -179,78 +140,75 @@ describe('Universal Router entry points and version selection', () => {
       true,
     ]
   );
+  const execute = (commands: string, inputs: string[]) =>
+    universal.encodeFunctionData('execute', [commands, inputs, 2000000000]);
 
-  it.each([0x08, 0x09])(
-    'keeps the V2 path direction for command %s',
-    (command) => {
-      const exactOut = command === 0x09;
-      const input = encode(
-        ['address', 'uint256', 'uint256', 'address[]', 'bool'],
-        [
-          msgSender,
-          exactOut ? 90 : 100,
-          exactOut ? 100 : 90,
-          [fromToken, toToken],
-          true,
-        ]
-      );
-      const data = universal.encodeFunctionData('execute', [
-        `0x0${command.toString(16)}`,
-        [input],
-        2000000000,
-      ]);
-      expect(decodeCalldata('Uniswap', transaction(data))).toEqual(expected);
-    }
-  );
-
-  it('uses the 1.2 command mask instead of the newer 7-bit mask', () => {
-    const data = universal.encodeFunctionData('execute', [
-      '0x40',
-      [ammInput],
-      2000000000,
-    ]);
+  it('decodes V2 exact input without reversing its path', () => {
+    const input = encode(
+      ['address', 'uint256', 'uint256', 'address[]', 'bool'],
+      [msgSender, 100, 90, [fromToken, toToken], true]
+    );
     expect(
-      decodeCalldata(
-        'Uniswap',
-        transaction(data, '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD')
-      )
+      decodeCalldata('Uniswap', transaction(execute('0x08', [input])))
     ).toEqual(expected);
-    expect(() =>
-      decodeCalldata('Uniswap', transaction(data, routerVersions[1].address))
-    ).toThrow('Unsupported command 0x40');
   });
 
-  it('does not interpret a 1.2 Seaport command as a V4 swap', () => {
-    const data = universal.encodeFunctionData('execute', [
-      '0x10',
-      [v4Input(false, 0x06)],
-      2000000000,
-    ]);
+  it.each([0x01, 0x09])('rejects exact-output command %s', (command) => {
+    const data = execute(utils.hexlify(command), [ammInput]);
+    expect(() => decodeCalldata('Uniswap', transaction(data))).toThrow(
+      'current exact-input quote flow'
+    );
+  });
+
+  it('uses the zkSync 1.2 mask despite the SDK 2.0 address alias', () => {
+    const data = execute('0x20', [ammInput]);
+    const tx = transaction(data, eraRouter, 324);
+    expect(getCalldataVersion('Uniswap', tx)).toBe('Universal Router 1.2');
+    expect(decodeCalldata('Uniswap', tx)).toEqual(expected);
     expect(() =>
-      decodeCalldata(
-        'Uniswap',
-        transaction(data, '0x3fC91A3afd70395Cd496C647d5a6CC9D4B2b7FAD')
-      )
+      decodeCalldata('Uniswap', transaction(data, arcRouter, 5042))
+    ).toThrow('Unsupported command 0x20');
+  });
+
+  it('strips execution flags before delegating a command to the SDK', () => {
+    expect(
+      decodeCalldata('Uniswap', transaction(execute('0x80', [ammInput])))
+    ).toEqual(expected);
+  });
+
+  it('does not interpret a zkSync 1.2 Seaport command as a V4 swap', () => {
+    const data = execute('0x10', [v4Input(false, 0x06)]);
+    expect(() =>
+      decodeCalldata('Uniswap', transaction(data, eraRouter, 324))
     ).toThrow('Seaport, not a V4 swap');
   });
 
-  it('does not guess a version for an unknown router address', () => {
-    const data = universal.encodeFunctionData('execute', [
-      '0x00',
-      [ammInput],
-      2000000000,
-    ]);
-    expect(() => decodeCalldata('Uniswap', transaction(data, sender))).toThrow(
-      'Unknown Universal Router version'
-    );
-  });
+  it.each([
+    sender,
+    '0xef1c6e67703c7bd7107eed8303fbe6ec2554bf6b',
+    '0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad',
+    '0xd92a36b0000531ef3063ded4de20a0783308446c',
+    '0x4c82d1fbfe28c977cbb58d8c7ff8fcf9f70a2cca',
+    '0x23617e59a5925b2a4bf75d73ff6711cd0b29de85',
+    '0xab863e752bf67d8dcdd929eaae9be9dc83fb3bbb',
+  ])(
+    'rejects a router outside the current chain configuration: %s',
+    (address) => {
+      expect(() =>
+        decodeCalldata(
+          'Uniswap',
+          transaction(execute('0x00', [ammInput]), address)
+        )
+      ).toThrow('Unknown Universal Router version');
+    }
+  );
 
   it('selects the inner router version for SwapProxy calls', () => {
     const proxy = new utils.Interface([
       'function execute(address router,address token,uint256 amount,bytes commands,bytes[] inputs,uint256 deadline)',
     ]);
     const data = proxy.encodeFunctionData('execute', [
-      routerVersions[1].address,
+      arcRouter,
       fromToken,
       100,
       '0x10',
@@ -260,13 +218,16 @@ describe('Universal Router entry points and version selection', () => {
     expect(
       decodeCalldata(
         'Uniswap',
-        transaction(data, '0x02E5be68D46DAc0B524905bfF209cf47EE6dB2a9')
+        transaction(data, '0x02E5be68D46DAc0B524905bfF209cf47EE6dB2a9', 5042)
       )
     ).toEqual(expected);
   });
 
-  it('parses executeSigned while keeping MSG_SENDER tied to the transaction sender', () => {
-    const data = universal.encodeFunctionData('executeSigned', [
+  it('rejects executeSigned outside the current quote flow', () => {
+    const signed = new utils.Interface([
+      'function executeSigned(bytes commands,bytes[] inputs,bytes32 intent,bytes32 data,bool verifySender,bytes32 nonce,bytes signature,uint256 deadline)',
+    ]);
+    const data = signed.encodeFunctionData('executeSigned', [
       '0x00',
       [ammInput],
       utils.hexZeroPad('0x01', 32),
@@ -276,27 +237,19 @@ describe('Universal Router entry points and version selection', () => {
       '0x' + '11'.repeat(65),
       2000000000,
     ]);
-    expect(
-      decodeCalldata('Uniswap', transaction(data, routerVersions[1].address))
-    ).toEqual(expected);
-    expect(() => decodeCalldata('Uniswap', transaction(data))).toThrow(
-      'executeSigned is not supported by Router 2.0'
-    );
+    expect(() =>
+      decodeCalldata('Uniswap', transaction(data, arcRouter, 5042))
+    ).toThrow('no matching function');
   });
 
-  it('keeps the command index and version in a V4 decoding failure', () => {
+  it('keeps the command, action index and version in a V4 decoding failure', () => {
     const brokenV4 = encode(['bytes', 'bytes[]'], ['0x06', ['0x']]);
-    const data = universal.encodeFunctionData('execute', [
-      '0x10',
-      [brokenV4],
-      2000000000,
-    ]);
-    expect(() => decodeCalldata('Uniswap', transaction(data))).toThrow(
-      CalldataDecodeError
-    );
+    const data = execute('0x10', [brokenV4]);
     try {
       decodeCalldata('Uniswap', transaction(data));
+      throw new Error('Malformed V4 input unexpectedly decoded');
     } catch (error) {
+      expect(error).toBeInstanceOf(CalldataDecodeError);
       expect((error as CalldataDecodeError).step).toBe(
         'decode.uni.universal.2.0.commands[0].0x10.v4.actions[0].0x06'
       );
@@ -308,154 +261,49 @@ describe('Universal Router entry points and version selection', () => {
       ['bytes', 'bytes[]'],
       ['0x10', [v4Input(true, 0x07)]]
     );
-    const data = universal.encodeFunctionData('execute', [
-      '0x21',
-      [nested],
-      2000000000,
-    ]);
     expect(
-      decodeCalldata('Uniswap', transaction(data, routerVersions[1].address))
+      decodeCalldata(
+        'Uniswap',
+        transaction(execute('0xa1', [nested]), arcRouter, 5042)
+      )
     ).toEqual(expected);
   });
 
   it('rejects command/input length mismatches', () => {
-    const data = universal.encodeFunctionData('execute', [
-      '0x0000',
-      [ammInput],
-      2000000000,
-    ]);
-    expect(() => decodeCalldata('Uniswap', transaction(data))).toThrow(
-      'Commands and inputs lengths differ'
-    );
+    expect(() =>
+      decodeCalldata('Uniswap', transaction(execute('0x0000', [ammInput])))
+    ).toThrow('Commands and inputs lengths differ');
   });
 });
 
-describe.each([true, false])(
-  'V3 SwapRouter with deadline in tuple: %s',
-  (withDeadline) => {
-    it.each([false, true])(
-      'decodes a single-hop swap, exact output: %s',
-      (exactOut) => {
-        const method = exactOut ? 'exactOutputSingle' : 'exactInputSingle';
-        const abi = new utils.Interface([
-          `function ${method}(tuple(address,address,uint24,address,${
-            withDeadline ? 'uint256,' : ''
-          }uint256,uint256,uint160) params)`,
-        ]);
-        const values = [
-          fromToken,
-          toToken,
-          3000,
-          sender,
-          ...(withDeadline ? [2000000000] : []),
-          exactOut ? 90 : 100,
-          exactOut ? 100 : 90,
-          0,
-        ];
-        expect(
-          decodeCalldata(
-            'Uniswap',
-            transaction(abi.encodeFunctionData(method, [values]))
-          )
-        ).toEqual(expected);
-      }
-    );
-
-    it.each([false, true])(
-      'decodes a path swap, exact output: %s',
-      (exactOut) => {
-        const method = exactOut ? 'exactOutput' : 'exactInput';
-        const abi = new utils.Interface([
-          `function ${method}(tuple(bytes,address,${
-            withDeadline ? 'uint256,' : ''
-          }uint256,uint256) params)`,
-        ]);
-        const path = utils.solidityPack(
-          ['address', 'uint24', 'address'],
-          [exactOut ? toToken : fromToken, 3000, exactOut ? fromToken : toToken]
-        );
-        const values = [
-          path,
-          sender,
-          ...(withDeadline ? [2000000000] : []),
-          exactOut ? 90 : 100,
-          exactOut ? 100 : 90,
-        ];
-        expect(
-          decodeCalldata(
-            'Uniswap',
-            transaction(abi.encodeFunctionData(method, [values]))
-          )
-        ).toEqual(expected);
-      }
-    );
-  }
-);
-
-describe('traditional Router multicalls and native tokens', () => {
-  const swap = new utils.Interface([
-    'function exactInputSingle(tuple(address,address,uint24,address,uint256,uint256,uint160) params)',
-  ]);
-
+describe('traditional Router entry points are outside the current quote flow', () => {
   it.each([
-    { signature: 'multicall(bytes[] data)', prefix: [] },
     {
-      signature: 'multicall(uint256 deadline,bytes[] data)',
-      prefix: [2000000000],
+      abi:
+        'function swapExactETHForTokens(uint256,address[],address,uint256) payable',
+      method: 'swapExactETHForTokens',
+      args: [90, [fromToken, toToken], sender, 2000000000],
     },
     {
-      signature: 'multicall(bytes32 previousBlockhash,bytes[] data)',
-      prefix: [utils.hexZeroPad('0x01', 32)],
+      abi:
+        'function exactInputSingle(tuple(address,address,uint24,address,uint256,uint256,uint256,uint160))',
+      method: 'exactInputSingle',
+      args: [[fromToken, toToken, 3000, sender, 2000000000, 100, 90, 0]],
     },
-  ])(
-    'decodes $signature and the final native-token recipient',
-    ({ signature, prefix }) => {
-      const multicall = new utils.Interface([`function ${signature}`]);
-      const payments = new utils.Interface([
-        'function unwrapWETH9(uint256 minimum,address recipient)',
-      ]);
-      const data = multicall.encodeFunctionData('multicall', [
-        ...prefix,
-        [
-          swap.encodeFunctionData('exactInputSingle', [
-            [fromToken, toToken, 3000, v2Router, 100, 90, 0],
-          ]),
-          payments.encodeFunctionData('unwrapWETH9', [90, sender]),
-        ],
-      ]);
-      expect(decodeCalldata('Uniswap', transaction(data))).toEqual({
-        ...expected,
-        toToken: 'eth',
-      });
-    }
-  );
-
-  it('decodes native input on the traditional V2 Router', () => {
-    const abi = new utils.Interface([
-      'function swapExactETHForTokens(uint256,address[],address,uint256) payable',
-    ]);
-    const data = abi.encodeFunctionData('swapExactETHForTokens', [
-      90,
-      [toToken, fromToken],
-      sender,
-      2000000000,
-    ]);
-    expect(
-      decodeCalldata('Uniswap', { ...transaction(data), value: '100' })
-    ).toEqual({ ...expected, fromToken: 'eth', toToken: fromToken });
-  });
-
-  it('decodes V2 exact output inside SwapRouter02 without reversing its path', () => {
-    const abi = new utils.Interface([
-      'function swapTokensForExactTokens(uint256,uint256,address[],address)',
-    ]);
-    const data = abi.encodeFunctionData('swapTokensForExactTokens', [
-      90,
-      100,
-      [fromToken, toToken],
-      sender,
-    ]);
-    expect(decodeCalldata('Uniswap', transaction(data))).toEqual(expected);
+    {
+      abi:
+        'function exactInputSingle(tuple(address,address,uint24,address,uint256,uint256,uint160))',
+      method: 'exactInputSingle',
+      args: [[fromToken, toToken, 3000, sender, 100, 90, 0]],
+    },
+  ])('rejects $abi', ({ abi, method, args }) => {
+    const legacy = new utils.Interface([abi]);
+    expect(() =>
+      decodeCalldata(
+        'Uniswap',
+        transaction(legacy.encodeFunctionData(method, args))
+      )
+    ).toThrow('no matching function');
   });
 });
 

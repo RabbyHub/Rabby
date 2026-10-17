@@ -177,44 +177,37 @@ describe('local decoder supported formats', () => {
     );
   });
 
-  it.each([false, true])(
-    'sums direct parallel V3 swaps (exact output: %s)',
-    (exactOut) => {
-      const router = new utils.Interface([
-        'function execute(bytes commands,bytes[] inputs,uint256 deadline)',
-      ]);
-      const inputs = [
-        [40, 36],
-        [60, 54],
-      ].map(([amountIn, amountOut]) =>
-        utils.defaultAbiCoder.encode(
-          ['address', 'uint256', 'uint256', 'bytes', 'bool'],
-          [
-            sender,
-            exactOut ? amountOut : amountIn,
-            exactOut ? amountIn : amountOut,
-            utils.solidityPack(
-              ['address', 'uint24', 'address'],
-              exactOut ? [toToken, 3000, fromToken] : [fromToken, 3000, toToken]
-            ),
-            true,
-          ]
-        )
-      );
-      expect(
-        decodeCalldata('Uniswap', {
-          ...transaction(
-            router.encodeFunctionData('execute', [
-              exactOut ? '0x0101' : '0x0000',
-              inputs,
-              1,
-            ])
+  it('sums direct parallel V3 exact-input swaps', () => {
+    const router = new utils.Interface([
+      'function execute(bytes commands,bytes[] inputs,uint256 deadline)',
+    ]);
+    const inputs = [
+      [40, 36],
+      [60, 54],
+    ].map(([amountIn, amountOut]) =>
+      utils.defaultAbiCoder.encode(
+        ['address', 'uint256', 'uint256', 'bytes', 'bool'],
+        [
+          sender,
+          amountIn,
+          amountOut,
+          utils.solidityPack(
+            ['address', 'uint24', 'address'],
+            [fromToken, 3000, toToken]
           ),
-          to: '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af',
-        })
-      ).toEqual(expected);
-    }
-  );
+          true,
+        ]
+      )
+    );
+    expect(
+      decodeCalldata('Uniswap', {
+        ...transaction(
+          router.encodeFunctionData('execute', ['0x0000', inputs, 1])
+        ),
+        to: '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af',
+      })
+    ).toEqual(expected);
+  });
 
   it('rejects an unresolved dynamic input instead of returning a zero-amount success', () => {
     const router = new utils.Interface([

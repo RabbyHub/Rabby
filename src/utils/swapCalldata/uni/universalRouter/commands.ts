@@ -1,53 +1,20 @@
+import {
+  CommandType,
+  UniversalRouterVersion,
+} from '@uniswap/universal-router-sdk';
 import { CalldataDecodeError } from '../../errors';
 import {
   Context,
-  decodeAbi,
   setSwap,
   Swap,
   unwrapNative,
-  v3PathTokens,
   wrapNative,
   setOutput,
   CONTRACT_BALANCE,
 } from '../shared';
 import type { RouterProfile } from './profiles';
+import { decodeCommand, paramValues } from './sdk';
 import { walkV4 } from './v4';
-
-const decodeAmmSwap = (
-  input: string,
-  swap: Swap,
-  ctx: Context,
-  v3: boolean,
-  exactOut: boolean,
-  step: string
-) => {
-  const [recipient, amountA, amountB, path, payerIsUser] = decodeAbi(
-    ['address', 'uint256', 'uint256', v3 ? 'bytes' : 'address[]', 'bool'],
-    input,
-    step
-  );
-  const tokens = v3 ? v3PathTokens(path, step) : (path as string[]);
-  if (tokens.length < 2)
-    throw new CalldataDecodeError(
-      step,
-      'Swap path requires at least two tokens'
-    );
-  const first = tokens[0];
-  const last = tokens[tokens.length - 1];
-  // V3 exact-output paths are reversed; V2 exact-output paths are not.
-  const reverse = v3 && exactOut;
-  setSwap(
-    swap,
-    ctx,
-    reverse ? last : first,
-    reverse ? first : last,
-    amountA.toString(),
-    amountB.toString(),
-    exactOut,
-    step,
-    { recipient, payerIsUser }
-  );
-};
 
 export const walkCommands = (
   commands: string,
@@ -62,110 +29,117 @@ export const walkCommands = (
     throw new CalldataDecodeError(step, 'Commands and inputs lengths differ');
 
   for (let i = 0; i < inputs.length; i++) {
+    // Strip execution flags before passing the command to the SDK parser.
     const command =
       parseInt(hex.slice(i * 2, i * 2 + 2), 16) & profile.commandMask;
-    const input = inputs[i];
     const commandStep = `${step}.commands[${i}].0x${command
       .toString(16)
       .padStart(2, '0')}`;
-    switch (command) {
-      case 0x00:
-      case 0x01:
-        decodeAmmSwap(input, swap, ctx, true, command === 0x01, commandStep);
-        break;
-      case 0x08:
-      case 0x09:
-        decodeAmmSwap(input, swap, ctx, false, command === 0x09, commandStep);
-        break;
-      case 0x02: // PERMIT2_TRANSFER_FROM
-      case 0x03: // PERMIT2_PERMIT_BATCH
-      case 0x06: // PAY_PORTION
-      case 0x0a: // PERMIT2_PERMIT
-      case 0x0d: // PERMIT2_TRANSFER_FROM_BATCH
-        break;
-      case 0x0e: // BALANCE_CHECK_ERC20, added after the original V1 deployments.
-        if (profile.commandMask === 0x1f)
-          throw new CalldataDecodeError(
-            commandStep,
-            'Command 0x0e is not defined in this Router version'
-          );
-        break;
-      case 0x07:
-        if (profile.commandMask !== 0x7f || profile.version === '2.1.0')
-          throw new CalldataDecodeError(
-            commandStep,
-            'Command 0x07 is not defined in this Router version'
-          );
-        break;
-      case 0x04:
-      case 0x05: {
-        const [token, recipient, amount] = decodeAbi(
-          ['address', 'address', 'uint256'],
-          input,
-          commandStep
+    const unsupported = () =>
+      new CalldataDecodeError(
+        commandStep,
+        `Unsupported command 0x${command.toString(
+          16
+        )} for the current exact-input quote flow (Router ${profile.version})`
+      );
+
+    if (command === CommandType.V4_SWAP) {
+      if (profile.version === UniversalRouterVersion.V1_2) {
+        throw new CalldataDecodeError(
+          commandStep,
+          'Router 1.2 command 0x10 is Seaport, not a V4 swap'
         );
-        const entireBalance =
-          command === 0x05 && CONTRACT_BALANCE.eq(amount.toString());
+      }
+      walkV4(inputs[i], swap, ctx, profile.version, `${commandStep}.v4`);
+      continue;
+    }
+    if (
+      (command === CommandType.PAY_PORTION_FULL_PRECISION &&
+        profile.version !== UniversalRouterVersion.V2_1_1) ||
+      (command === CommandType.BALANCE_CHECK_ERC20 &&
+        profile.commandMask === 0x1f)
+    )
+      throw unsupported();
+    if (
+      ![
+        CommandType.V3_SWAP_EXACT_IN,
+        CommandType.V2_SWAP_EXACT_IN,
+        CommandType.SWEEP,
+        CommandType.TRANSFER,
+        CommandType.PAY_PORTION,
+        CommandType.PAY_PORTION_FULL_PRECISION,
+        CommandType.WRAP_ETH,
+        CommandType.UNWRAP_WETH,
+        CommandType.BALANCE_CHECK_ERC20,
+        CommandType.EXECUTE_SUB_PLAN,
+      ].includes(command)
+    )
+      throw unsupported();
+
+    const args = paramValues(
+      decodeCommand(command, inputs[i], profile.version, commandStep).params
+    );
+    switch (command) {
+      case CommandType.V3_SWAP_EXACT_IN:
+      case CommandType.V2_SWAP_EXACT_IN: {
+        const v3 = command === CommandType.V3_SWAP_EXACT_IN;
+        const path = args.path;
+        if (path.length < (v3 ? 1 : 2)) {
+          throw new CalldataDecodeError(
+            commandStep,
+            'Swap path requires at least two tokens'
+          );
+        }
+        const first = path[0];
+        const last = path[path.length - 1];
+        setSwap(
+          swap,
+          ctx,
+          v3 ? first.tokenIn : first,
+          v3 ? last.tokenOut : last,
+          args.amountIn.toString(),
+          args.amountOutMin.toString(),
+          commandStep,
+          { recipient: args.recipient, payerIsUser: args.payerIsUser }
+        );
+        break;
+      }
+      case CommandType.SWEEP:
+      case CommandType.TRANSFER: {
+        const transfer = command === CommandType.TRANSFER;
+        const amount = (transfer ? args.value : args.amountMin).toString();
+        const entireBalance = transfer && CONTRACT_BALANCE.eq(amount);
         setOutput(
           swap,
           ctx,
-          token,
-          recipient,
-          entireBalance ? undefined : amount.toString(),
-          command === 0x05 && !entireBalance
+          args.token,
+          args.recipient,
+          entireBalance ? undefined : amount,
+          transfer && !entireBalance
         );
         break;
       }
-      case 0x0b: {
-        const [, amount] = decodeAbi(
-          ['address', 'uint256'],
-          input,
-          commandStep
-        );
-        wrapNative(swap, ctx, amount.toString());
+      case CommandType.WRAP_ETH:
+        wrapNative(swap, ctx, args.amount.toString());
         break;
-      }
-      case 0x0c: {
-        const [recipient, minimum] = decodeAbi(
-          ['address', 'uint256'],
-          input,
-          commandStep
-        );
-        unwrapNative(swap, ctx, recipient, minimum.toString());
+      case CommandType.UNWRAP_WETH:
+        unwrapNative(swap, ctx, args.recipient, args.amountMin.toString());
         break;
-      }
-      case 0x10:
-        if (!profile.v4Version) {
-          throw new CalldataDecodeError(
-            commandStep,
-            `Router ${profile.version} command 0x10 is Seaport, not a V4 swap`
-          );
-        }
-        walkV4(input, swap, ctx, profile.v4Version, `${commandStep}.v4`);
-        break;
-      case 0x21: {
-        const [nestedCommands, nestedInputs] = decodeAbi(
-          ['bytes', 'bytes[]'],
-          input,
-          commandStep
-        );
+      case CommandType.EXECUTE_SUB_PLAN:
         walkCommands(
-          nestedCommands,
-          nestedInputs,
+          args.commands,
+          args.inputs,
           swap,
           ctx,
           profile,
           `${commandStep}.subPlan`
         );
         break;
-      }
-      default:
-        throw new CalldataDecodeError(
-          commandStep,
-          `Unsupported command 0x${command.toString(16)} for Router ${
-            profile.version
-          }`
-        );
+      // Fees and balance assertions are decoded but do not describe a payout.
+      case CommandType.PAY_PORTION:
+      case CommandType.PAY_PORTION_FULL_PRECISION:
+      case CommandType.BALANCE_CHECK_ERC20:
+        break;
     }
   }
 };

@@ -11,17 +11,22 @@ DEX support list for the selected chain.
 
 ## Uniswap
 
-- `uni/index.ts`: selects Universal Router / SwapProxy or traditional SwapRouter calls.
-- `uni/universalRouter/deployments.ts`: chain and address to deployed Router version, restricted to the 15 chains currently supported by the installed Uniswap integration. These entries select a decoder and do not change approval whitelists.
-- `uni/universalRouter/profiles.ts`: version-specific command masks and V4 parameter versions.
-- `uni/universalRouter/commands.ts`: shared swap, payment and sub-plan commands. Legacy Seaport commands are never treated as V4.
-- `uni/universalRouter/v4/v2_0.ts`: V4 structs without per-hop price fields.
-- `uni/universalRouter/v4/v2_1_0.ts`: deprecated 2.1.0 structs; single swaps retain the 2.0 format, while path swaps insert `maxHopSlippage` before amounts.
-- `uni/universalRouter/v4/v2_1.ts`: V4 structs for Router 2.1.1, 2.1.2 and 2.2.0.
-- `uni/swapRouter/`: original V3 SwapRouter, SwapRouter02, traditional V2 swaps and multicalls.
+- `uni/index.ts`: handles Universal Router `execute` and SwapProxy calls.
+- `uni/abi.ts`: obtains both entry-point ABIs from `@uniswap/universal-router-sdk`.
+- `uni/universalRouter/profiles.ts`: matches the backend's chain-specific Router version and resolves its address through the official SDK. Arc and Robinhood use 2.1.1; other supported chains request 2.0. zkSync's shared 1.2/2.0 deployment retains its verified 1.2 layout and 5-bit command mask.
+- `uni/universalRouter/sdk.ts`: delegates command, V3 path and V4 parameter decoding to the official SDK. Commands and V4 actions are parsed individually to preserve exact failing indexes. Only the standard `bytes,bytes[]` plan envelope is decoded locally.
+- `uni/universalRouter/commands.ts`: interprets decoded exact-input swaps, payments and nested plans.
+- `uni/universalRouter/v4/index.ts`: interprets decoded V4 exact-input swaps and settlements without maintaining version-specific tuple schemas.
 
-SwapProxy version selection uses the inner `router` argument. Unknown Universal Router addresses fail explicitly instead of guessing a command layout.
-`executeSigned` is decoded structurally; this code does not validate signatures or on-chain execution.
+The SDK is pinned to 5.14.0. Its `CommandParser` selects the version-specific
+command and V4 action layouts; it does not calculate the final wallet swap result.
+The local `shared.ts` continues to aggregate user inputs and final payouts.
+
+SwapProxy version selection uses the inner `router` argument. Addresses outside
+the current backend configuration fail explicitly. Traditional V2 Router,
+V3 SwapRouter, SwapRouter02, signed execution, exact-output swaps and other
+Router versions are outside this local quote-decoding scope. This is a scope
+restriction, not a claim that those contracts are inactive onchain.
 
 SwapProxy transfers and native wraps keep the full input fixed while individual
 route legs are decoded. Direct parallel inputs are summed; intermediate token
@@ -37,17 +42,11 @@ the command/action step instead of returning a zero-amount success.
 identifier and 18-decimal units after aggregation. It does not turn Tempo
 pathUSD into the API's `tempo` placeholder: pathUSD stays a 6-decimal TIP20.
 
-The official `v1.1.0` tag points to the original V1 deployment addresses, so those
-contracts use the shared `1.0/1.1` label and 5-bit command mask. zkSync also uses a
-5-bit mask despite the SDK's 1.2/2.0 aliases. Monad's shared address is a verified
-2.0 deployment. Soneium and testnets are outside the current DEX support list.
-
-Deployment sources:
-
-- [Current official deployments](https://github.com/Uniswap/universal-router/tree/main/deploy-addresses).
-- [Original V1 addresses](https://github.com/Uniswap/universal-router/tree/v1.1.0/deploy-addresses).
-- [Deprecated 2.1.0 addresses](https://github.com/Uniswap/sdks/blob/1d9acec18f51f7138121a33759dea30c86e6e24f/sdks/universal-router-sdk/src/utils/constants.ts).
-- [Verified 2.1.0 source and ABI](https://etherscan.io/address/0xd92a36b0000531ef3063ded4de20a0783308446c#code).
+SDK source: [official Universal Router SDK](https://github.com/Uniswap/sdks/tree/main/sdks/universal-router-sdk).
+Its deployment configuration replaces the former local address table. Quote
+requests and test recommendations still use the installed Rabby integration's
+DEX support list; SDK deployment metadata does not expand that list or approval
+whitelists.
 
 ## Magpie
 

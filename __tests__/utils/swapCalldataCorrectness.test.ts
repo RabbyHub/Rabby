@@ -228,53 +228,6 @@ describe('Uni payment semantics and complete decoded results', () => {
   });
 });
 
-describe('traditional SwapRouter payment semantics', () => {
-  const abi = new utils.Interface([
-    'function exactInputSingle(tuple(address,address,uint24,address,uint256,uint256,uint160))',
-    'function sweepToken(address,uint256,address)',
-    'function multicall(bytes[])',
-  ]);
-  const swap = abi.encodeFunctionData('exactInputSingle', [
-    [inputToken, outputToken, 3000, router, 100, 90, 0],
-  ]);
-
-  it('does not replace an ERC20 payout with a refund of the input', () => {
-    expect(
-      decode(
-        abi.encodeFunctionData('multicall', [
-          [
-            swap,
-            abi.encodeFunctionData('sweepToken', [outputToken, 90, sender]),
-            abi.encodeFunctionData('sweepToken', [
-              inputToken,
-              0,
-              refundReceiver,
-            ]),
-          ],
-        ])
-      )
-    ).toEqual(expected);
-  });
-
-  it('ignores a sweep back to the router itself', () => {
-    expect(
-      decode(
-        abi.encodeFunctionData('multicall', [
-          [
-            swap,
-            abi.encodeFunctionData('sweepToken', [outputToken, 90, sender]),
-            abi.encodeFunctionData('sweepToken', [
-              intermediateToken,
-              0,
-              router,
-            ]),
-          ],
-        ])
-      )
-    ).toEqual(expected);
-  });
-});
-
 describe('Magpie DexAggregator field correctness', () => {
   const method = 'swapWithBackendSignature';
   const abi = new utils.Interface([`function ${method}(bytes)`]);

@@ -46,10 +46,16 @@ format**; the opaque packed payload can route through other DEXes internally.
 It is not classified here as a single underlying swap or a single-hop route.
 
 Real samples absent from this export are explicitly listed under
-`coverage.absentFromThisExport`. In particular, it does not contain Uni
-exact-output swaps, V4's single-pool struct action, or every supported
-Universal Router version. Synthetic version-format coverage
-remains in `__tests__/utils/swapCalldataVersions.test.ts`.
+`coverage.absentFromThisExport`: V4's single-pool struct action and a combined
+V2+V3+V4 route. Synthetic version-format coverage remains in
+`__tests__/utils/swapCalldataVersions.test.ts`.
+
+Uni decoding now uses the official Universal Router SDK for the current backend
+scope: SwapProxy or direct execute, Router 2.0 / 2.1.1 and zkSync's 1.2 alias,
+and exact-input swaps. Traditional Routers, signed execution, exact-output
+swaps and other Router versions are excluded explicitly. Their absence is not
+counted as a gap in this quote dataset. All original quotes and expected fields
+are preserved.
 
 Magpie confirmed on 2026-10-16 that its current quote API uses DexAggregator
 only, with the same version across chains. Deprecated MagpieRouter V2/V3/V3_1
@@ -91,5 +97,6 @@ two-byte pointers, nonzero discarded bits and amounts above JavaScript's
 safe integer range. All five decoded fields must match the original values.
 Version-format tests take the V4 output with OPEN_DELTA rather than repeating
 the expected minimum in TAKE_ALL, so a bad swap amount cannot be hidden by
-a later payment bound. Both V4 pool directions and the deprecated 2.1.0
-single/path layouts are checked.
+a later payment bound. Both V4 pool directions and the current 2.0 / 2.1.1
+single/path layouts are checked. Out-of-scope versions and entry points must
+be rejected, rather than retained as successful decoding cases.

@@ -698,12 +698,6 @@
     },
     "absentFromThisExport": {
       "Uniswap": [
-        "Universal Router 1.0/1.1",
-        "Universal Router 2.1.0",
-        "Universal Router 2.1.2",
-        "Universal Router 2.2.0",
-        "traditional SwapRouter / SwapRouter02 / V2 Router",
-        "exact-output swaps",
         "V4 single-pool ABI action 0x06",
         "V2+V3+V4 combined"
       ],

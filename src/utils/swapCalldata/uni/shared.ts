@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { utils } from 'ethers';
-import { CalldataDecodeError, decodeAt } from '../errors';
+import { CalldataDecodeError } from '../errors';
 import type { DecodeCalldataResult } from '../types';
 import { isSameAddress, NULL_ADDRESS } from '../utils';
 
@@ -34,9 +33,6 @@ export interface Context {
   proxyToken?: string;
   proxyAmount?: string;
 }
-
-export const decodeAbi = (types: string[], data: string, step: string) =>
-  decodeAt(step, () => utils.defaultAbiCoder.decode(types, data));
 
 export const chainToken = (token: string, native: string) =>
   isSameAddress(token, NULL_ADDRESS) || isSameAddress(token, EETH)
@@ -83,7 +79,6 @@ export const setSwap = (
   toToken: string,
   amountA: string,
   amountB: string,
-  exactOut: boolean,
   step = 'decode.uni.inputAmount',
   payment: { recipient?: string; payerIsUser?: boolean } = {}
 ) => {
@@ -102,12 +97,10 @@ export const setSwap = (
   }
   if (!swap.inputAmountLocked) {
     if (!swap.hasSwap) {
-      const amount = exactOut
-        ? amountB
-        : realAmount(
-            amountA,
-            swap.fromTokenAmount || ctx.proxyAmount || ctx.txValue
-          );
+      const amount = realAmount(
+        amountA,
+        swap.fromTokenAmount || ctx.proxyAmount || ctx.txValue
+      );
       if (!new BigNumber(amount).gt(0) || CONTRACT_BALANCE.eq(amount)) {
         throw new CalldataDecodeError(
           step,
@@ -120,7 +113,7 @@ export const setSwap = (
       payment.payerIsUser !== false &&
       isSameAddress(input, swap.fromToken || '')
     ) {
-      const amount = exactOut ? amountB : amountA;
+      const amount = amountA;
       // Only explicit root inputs can be summed. Intermediate OPEN_DELTA (0)
       // and CONTRACT_BALANCE values describe router funds, not another user debit.
       if (!CONTRACT_BALANCE.eq(amount)) {
@@ -133,7 +126,7 @@ export const setSwap = (
   const pending = (swap.pendingMinimums ||= {});
   const inputKey = input.toLowerCase();
   if (payment.payerIsUser !== true && pending[inputKey] !== undefined) {
-    const amount = exactOut ? amountB : amountA;
+    const amount = amountA;
     pending[inputKey] =
       amount === '0' || CONTRACT_BALANCE.eq(amount)
         ? '0'
@@ -143,7 +136,7 @@ export const setSwap = (
           ).toFixed();
   }
   swap.toToken = output;
-  const minimum = exactOut ? amountA : amountB;
+  const minimum = amountB;
   swap.hasSwap = true;
   const recipient = payment.recipient || ROUTER;
   if (isRouter(recipient, ctx)) {
@@ -196,14 +189,6 @@ export const unwrapNative = (
   minimum: string
 ) => {
   setOutput(swap, ctx, ctx.native, recipient, minimum);
-};
-
-export const v3PathTokens = (path: string, step: string) => {
-  const hex = path.slice(2);
-  if (hex.length < 86 || (hex.length - 40) % 46 !== 0) {
-    throw new CalldataDecodeError(step, 'Invalid Uniswap V3 token/fee path');
-  }
-  return [`0x${hex.slice(0, 40)}`, `0x${hex.slice(-40)}`];
 };
 
 export const finishSwap = (swap: Swap): DecodeCalldataResult => {
