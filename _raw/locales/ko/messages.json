@@ -4803,7 +4803,9 @@
     },
     "DappActions": {
       "queueDescription": "현재 출금은 대기열에 들어갑니다. 처리가 완료되면 지갑으로 출금할 수 있습니다.",
-      "manage": "관리하다"
+      "manage": "관리하다",
+      "claimAllRewards": "{{count}}개 포지션의 보상",
+      "claimAllDescription": "포지션마다 하나씩, {{count}}개의 청구 트랜잭션이 전송됩니다"
     },
     "DesktopChainSelector": {
       "allChains": "모든 체인"

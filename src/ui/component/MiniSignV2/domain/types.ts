@@ -46,7 +46,10 @@ export type SignerConfig = {
   session?: any;
   showSimulateChange?: boolean;
   disableSignBtn?: boolean;
-  onPreExecChange?: (p: ExplainTxResponse) => void;
+  /**
+   * `p` is the pre-exec result of the last tx, `all` contains one result per tx
+   */
+  onPreExecChange?: (p: ExplainTxResponse, all: ExplainTxResponse[]) => void;
   onPreExecError?: () => void;
   onRedirectToDeposit?: () => void;
   originGasPrice?: string; // for speed up / cancel

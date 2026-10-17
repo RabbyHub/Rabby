@@ -4853,7 +4853,9 @@
     },
     "DappActions": {
       "queueDescription": "当前提款将进入等待队列。一旦处理完成，可以提取到你的钱包。",
-      "manage": "管理"
+      "manage": "管理",
+      "claimAllRewards": "来自 {{count}} 个仓位的奖励",
+      "claimAllDescription": "将发送 {{count}} 笔领取交易，每个仓位一笔"
     },
     "DesktopChainSelector": {
       "allChains": "所有链"

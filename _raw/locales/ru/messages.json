@@ -4808,7 +4808,9 @@
     },
     "DappActions": {
       "queueDescription": "Текущий вывод будет помещен в очередь ожидания. После обработки его можно будет вывести на ваш кошелек.",
-      "manage": "Управлять"
+      "manage": "Управлять",
+      "claimAllRewards": "Награды по позициям: {{count}}",
+      "claimAllDescription": "Транзакций получения наград: {{count}} (по одной на позицию)"
     },
     "DesktopChainSelector": {
       "allChains": "Все цепочки"

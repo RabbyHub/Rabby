@@ -49,39 +49,42 @@ export const isWhitelistSpender = (address: string, chain: string) => {
 const cacheMap = new Map<string, boolean>();
 export const useIsContractBySymbol = () => {
   const wallet = useWallet();
-  return async (address: string, serverId?: string) => {
-    const key = `${address}-${serverId}`;
-    if (cacheMap.has(key)) {
-      return cacheMap.get(key);
-    }
-    try {
-      // symbol call
-      if (!serverId) return false;
-      if (!isValidAddress(address)) return false;
-      const data = '0x95d89b41';
-      const ret = await rpcQueue.add(() =>
-        wallet.requestETHRpc<string>(
-          {
-            method: 'eth_call',
-            params: [
-              {
-                to: address,
-                data,
-              },
-              'latest',
-            ],
-          },
-          serverId
-        )
-      );
+  return useCallback(
+    async (address: string, serverId?: string) => {
+      const key = `${address}-${serverId}`;
+      if (cacheMap.has(key)) {
+        return cacheMap.get(key);
+      }
+      try {
+        // symbol call
+        if (!serverId) return false;
+        if (!isValidAddress(address)) return false;
+        const data = '0x95d89b41';
+        const ret = await rpcQueue.add(() =>
+          wallet.requestETHRpc<string>(
+            {
+              method: 'eth_call',
+              params: [
+                {
+                  to: address,
+                  data,
+                },
+                'latest',
+              ],
+            },
+            serverId
+          )
+        );
 
-      const result = !!ret && ret !== '0x' && ret !== '0x0';
-      cacheMap.set(key, result);
-      return result;
-    } catch (e) {
-      return false;
-    }
-  };
+        const result = !!ret && ret !== '0x' && ret !== '0x0';
+        cacheMap.set(key, result);
+        return result;
+      } catch (e) {
+        return false;
+      }
+    },
+    [wallet]
+  );
 };
 
 export const getMethodDesc = (fncName: string) => {
@@ -104,6 +107,122 @@ export const buildActionCalldata = (func: string, strParams?: string[]) => {
   return { abi, calldata };
 };
 
+export const buildDappActionTx = ({
+  data,
+  chainId,
+  chainServerId,
+  from,
+  protocolName,
+}: {
+  data: WithdrawAction;
+  chainId: number;
+  chainServerId: string;
+  from: string;
+  protocolName?: string;
+}): Tx | null => {
+  let calldata: `0x${string}`;
+  let methodName = '';
+  let expectedParamCount: number | undefined;
+  try {
+    const built = buildActionCalldata(data.func, data.str_params);
+    expectedParamCount = built.abi.inputs.length;
+    methodName = built.abi.name;
+    calldata = built.calldata;
+  } catch (error) {
+    const errorName =
+      error instanceof Error && error.name ? error.name : 'UnknownError';
+
+    Sentry.captureException(
+      new Error(`DappAction parameter encoding failed: ${errorName}`),
+      {
+        tags: {
+          feature: 'dapp_action',
+          error_stage: 'encode_params',
+          protocol_name: protocolName || 'unknown',
+          chain_id: String(chainId),
+          chain_server_id: chainServerId,
+          action_type: data.type,
+          original_error_name: errorName,
+        },
+        fingerprint: ['dapp-action', 'encode-params', errorName],
+        extra: {
+          function_signature: data.func,
+          expected_param_count: expectedParamCount,
+          actual_param_count: data.str_params?.length || 0,
+        },
+      }
+    );
+    return null;
+  }
+
+  if (isBlacklistMethodName(methodName)) {
+    return null;
+  }
+
+  return {
+    chainId,
+    from,
+    to: data.contract_id,
+    value: '0x0',
+    data: calldata,
+  } as any;
+};
+
+export const useValidateDappAction = () => {
+  const currentAccount = useCurrentAccount();
+  const isErc20Contract = useIsContractBySymbol();
+
+  return useCallback(
+    async (data: WithdrawAction, chain: string) => {
+      try {
+        const { abi } = buildActionCalldata(data.func, data.str_params);
+        const isAddressArray = abi.inputs.map(
+          (item) => item.type === 'address'
+        );
+        const addresses = data.str_params
+          ? data.str_params
+              ?.map((item, index) =>
+                isAddressArray[index] ? (item as string) : ''
+              )
+              ?.filter((item) => !!item)
+          : [];
+
+        const validate = async (addr: string) => {
+          if (
+            currentAccount?.address &&
+            isSameAddress(currentAccount.address, addr)
+          )
+            return true;
+          if (isWhitelistAddress(addr)) return true;
+          const isErc20 = await isErc20Contract(addr, chain);
+          return isErc20;
+        };
+
+        if (
+          data?.need_approve?.to &&
+          !isWhitelistSpender(data.need_approve?.to, chain)
+        ) {
+          return false;
+        }
+        if (isBlacklistMethodName(abi.name)) {
+          return false;
+        }
+        if (!addresses?.length) {
+          return true;
+        }
+        const results = await Promise.all(
+          addresses.map((addr) => validate(addr))
+        );
+        return results.every((item) => item);
+      } catch (error) {
+        // ignore error and hide actions
+        return false;
+      }
+    },
+    [currentAccount?.address, isErc20Contract]
+  );
+};
+
 export const useDappAction = (
   data: WithdrawAction | undefined,
   chain?: string,
@@ -112,7 +231,7 @@ export const useDappAction = (
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
   const [valid, setValid] = useState(false);
-  const isErc20Contract = useIsContractBySymbol();
+  const validateDappAction = useValidateDappAction();
 
   const chainInfo = useMemo(() => {
     return findChain({
@@ -128,71 +247,16 @@ export const useDappAction = (
 
     let isMounted = true;
 
-    try {
-      const { abi } = buildActionCalldata(data.func, data.str_params);
-      const isAddressArray = abi.inputs.map((item) => item.type === 'address');
-      const addresses = data.str_params
-        ? data.str_params
-            ?.map((item, index) =>
-              isAddressArray[index] ? (item as string) : ''
-            )
-            ?.filter((item) => !!item)
-        : [];
-
-      const validate = async (addr: string) => {
-        if (
-          currentAccount?.address &&
-          isSameAddress(currentAccount.address, addr)
-        )
-          return true;
-        if (isWhitelistAddress(addr)) return true;
-        const isErc20 = await isErc20Contract(addr, chain);
-        return isErc20;
-      };
-
-      const run = async () => {
-        if (
-          data?.need_approve?.to &&
-          !isWhitelistSpender(data.need_approve?.to, chain)
-        ) {
-          if (isMounted) {
-            setValid(false);
-          }
-          return;
-        }
-        if (isBlacklistMethodName(abi.name)) {
-          if (isMounted) {
-            setValid(false);
-          }
-          return;
-        }
-        if (!addresses?.length) {
-          if (isMounted) {
-            setValid(true);
-          }
-          return;
-        }
-        const results = await Promise.all(
-          addresses.map((addr) => validate(addr))
-        );
-        const passed = results.every((item) => item);
-        if (isMounted) {
-          setValid(passed);
-        }
-      };
-
-      run();
-    } catch (error) {
-      // ignore error and hide actions
+    validateDappAction(data, chain).then((passed) => {
       if (isMounted) {
-        setValid(false);
+        setValid(passed);
       }
-    }
+    });
 
     return () => {
       isMounted = false;
     };
-  }, [chain, currentAccount?.address, data, isErc20Contract]);
+  }, [chain, data, validateDappAction]);
 
   const buildApproveTxs = useCallback(async (): Promise<Tx[]> => {
     const resTxs: Tx[] = [];
@@ -289,50 +353,14 @@ export const useDappAction = (
       return [];
     }
 
-    let calldata: `0x${string}`;
-    let methodName = '';
-    let expectedParamCount: number | undefined;
-    try {
-      const built = buildActionCalldata(data.func, data.str_params);
-      expectedParamCount = built.abi.inputs.length;
-      methodName = built.abi.name;
-      calldata = built.calldata;
-    } catch (error) {
-      const errorName =
-        error instanceof Error && error.name ? error.name : 'UnknownError';
-
-      Sentry.captureException(
-        new Error(`DappAction parameter encoding failed: ${errorName}`),
-        {
-          tags: {
-            feature: 'dapp_action',
-            error_stage: 'encode_params',
-            protocol_name: protocolName || 'unknown',
-            chain_id: String(chainInfo.id),
-            chain_server_id: chainInfo.serverId,
-            action_type: data.type,
-            original_error_name: errorName,
-          },
-          fingerprint: ['dapp-action', 'encode-params', errorName],
-          extra: {
-            function_signature: data.func,
-            expected_param_count: expectedParamCount,
-            actual_param_count: data.str_params?.length || 0,
-          },
-        }
-      );
-      return [];
-    }
-
-    const tx = {
+    const tx = buildDappActionTx({
+      data,
       chainId: chainInfo.id,
+      chainServerId: chainInfo.serverId,
       from: currentAccount.address,
-      to: data.contract_id,
-      value: '0x0',
-      data: calldata,
-    } as any;
-
-    if (isBlacklistMethodName(methodName)) {
+      protocolName,
+    });
+    if (!tx) {
       return [];
     }
 

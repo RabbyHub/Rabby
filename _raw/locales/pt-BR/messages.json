@@ -4809,7 +4809,9 @@
     },
     "DappActions": {
       "queueDescription": "O saque atual entrará em uma fila de espera. Após o processamento, ele poderá ser transferido para sua carteira.",
-      "manage": "Gerenciar"
+      "manage": "Gerenciar",
+      "claimAllRewards": "Recompensas de {{count}} posições",
+      "claimAllDescription": "Serão enviadas {{count}} transações de resgate, uma por posição"
     },
     "DesktopChainSelector": {
       "allChains": "Todas as redes"
