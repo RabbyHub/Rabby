@@ -4,6 +4,10 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { SwapServiceStore } from '@/background/service/swap';
 import { DEX } from '@/constant';
 import { findChain } from '@/utils/chain';
+import {
+  CALLDATA_TEST_DEXES,
+  isCalldataTestDex,
+} from '@/utils/swapCalldata/testSupport';
 import { wallet } from '@/ui/wallet';
 import { createExtensionStoreOptions } from './createStore/createExtensionStoreOptions';
 import { createRabbyStore } from './createStore/createRabbyStore';
@@ -38,7 +42,7 @@ export const useSwapStore = createRabbyStore<SwapStore>(
   (set, get) => ({
     slippage: '0.1',
     autoSlippage: true,
-    supportedDEXList: Object.keys(DEX),
+    supportedDEXList: [...CALLDATA_TEST_DEXES],
     selectedChain: null,
     mevProtection: true,
     $$initialSelectedChain: null,
@@ -71,8 +75,10 @@ export const useSwapStore = createRabbyStore<SwapStore>(
       const data = await wallet.openapi.getSupportedDEXList();
       if (data.dex_list) {
         set({
-          supportedDEXList: data.dex_list.filter((item) =>
-            Object.prototype.hasOwnProperty.call(DEX, item)
+          supportedDEXList: data.dex_list.filter(
+            (item) =>
+              isCalldataTestDex(item) &&
+              Object.prototype.hasOwnProperty.call(DEX, item)
           ),
         });
       }

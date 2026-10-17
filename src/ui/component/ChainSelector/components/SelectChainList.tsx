@@ -31,6 +31,7 @@ export type SelectChainListProps = {
   disabledTips?: SelectChainItemProps['disabledTips'];
   disableChainCheck?: TDisableCheckChainFn;
   showRPCStatus?: boolean;
+  renderChainExtra?: SelectChainItemProps['renderChainExtra'];
 };
 
 export const SelectChainList = (props: SelectChainListProps) => {
@@ -47,6 +48,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
     disabledTips,
     disableChainCheck,
     showRPCStatus = false,
+    renderChainExtra,
   } = props;
   const getAllRPC = useCustomRPCStore((state) => state.getAllRPC);
 
@@ -118,6 +120,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
                   disabledTips={disabledTips}
                   disableChainCheck={disableChainCheck}
                   showRPCStatus={showRPCStatus}
+                  renderChainExtra={renderChainExtra}
                 ></SortableSelectChainItem>
               );
             })}
@@ -145,6 +148,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
             disabledTips={disabledTips}
             disableChainCheck={disableChainCheck}
             showRPCStatus={showRPCStatus}
+            renderChainExtra={renderChainExtra}
           ></SortableSelectChainItem>
         );
       })}

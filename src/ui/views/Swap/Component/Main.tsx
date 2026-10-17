@@ -72,6 +72,14 @@ import {
   isMEVProtectionSupported,
   useSwapMainRenderState,
 } from '../hooks/render';
+import {
+  CalldataChainBadges,
+  CalldataTestPanel,
+  useCalldataTestSummaries,
+  useCalldataTestCoverage,
+} from './CalldataTestPanel';
+import { CALLDATA_TEST_CHAINS } from '@/utils/swapCalldata/testSupport';
+import type { CalldataTestPair } from '@/utils/swapCalldata/testCases';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -496,6 +504,42 @@ export const Main = () => {
   const currentAccount = useCurrentAccount();
 
   const chainSelectorRef = useRef<ChainSelectorRef>(null);
+  const calldataTestSummaries = useCalldataTestSummaries();
+  const calldataTestCoverage = useCalldataTestCoverage();
+  const mainnetChains = useRabbySelector((state) => state.chains.mainnetList);
+  const excludedCalldataTestChains = useMemo(
+    () =>
+      mainnetChains
+        .filter((item) => !CALLDATA_TEST_CHAINS.includes(item.enum))
+        .map((item) => item.enum),
+    [mainnetChains]
+  );
+  useEffect(() => {
+    if (!CALLDATA_TEST_CHAINS.includes(chain)) {
+      const first = mainnetChains.find((item) =>
+        CALLDATA_TEST_CHAINS.includes(item.enum)
+      );
+      if (first) switchChain(first.enum);
+    }
+  }, [chain, mainnetChains, switchChain]);
+  const applyCalldataTestPair = useCallback(
+    (pair: CalldataTestPair, amount: string) => {
+      setPayToken(pair.from);
+      setReceiveToken(pair.to);
+      handleAmountChange(amount);
+    },
+    [setPayToken, setReceiveToken, handleAmountChange]
+  );
+  const renderCalldataChainSupport = useCallback(
+    (chainEnum: CHAINS_ENUM) => (
+      <CalldataChainBadges
+        chain={chainEnum}
+        summaries={calldataTestSummaries}
+        coverage={calldataTestCoverage}
+      />
+    ),
+    [calldataTestSummaries, calldataTestCoverage]
+  );
 
   const showLoss = useDetectLoss({
     payToken: payToken,
@@ -632,7 +676,6 @@ export const Main = () => {
     showUnsupportedChainTips,
     showQuoteAlert,
     showPendingTxItem,
-    hasSwapProgress,
     showStickyInfo,
     showSubmitTooltip,
     showDirectSignButton,
@@ -674,8 +717,6 @@ export const Main = () => {
       approveHash,
     },
   });
-  const canScrollContent =
-    showStickyInfo && showPendingTxItem && hasSwapProgress;
   const buildTopUpSnapshot = useCallback(
     (): SwapTopUpSnapshot => ({
       amount: inputAmount || '',
@@ -1199,19 +1240,25 @@ export const Main = () => {
           window.close();
         }}
       />
-      <div
-        className={clsx(
-          'flex-1 page-has-ant-input pb-[76px]',
-          canScrollContent ? 'overflow-auto' : 'overflow-hidden'
-        )}
-      >
+      <div className="flex-1 min-h-0 overflow-auto page-has-ant-input pb-[76px]">
+        <CalldataTestPanel
+          chain={chain}
+          summaries={calldataTestSummaries}
+          coverage={calldataTestCoverage}
+          isWrapToken={isWrapToken}
+          userAddress={userAddress}
+          onSwitchChain={switchChain}
+          onApplyPair={applyCalldataTestPair}
+        />
         <div className="mx-20 flex flex-col gap-2 overflow-hidden rounded-lg">
           <ChainSelectorInForm
             swap
             value={chain}
             onChange={switchChain}
             disabledTips={getDisabledTips}
-            // supportChains={SWAP_SUPPORT_CHAINS}
+            supportChains={CALLDATA_TEST_CHAINS}
+            excludeChains={excludedCalldataTestChains}
+            renderChainExtra={renderCalldataChainSupport}
             hideTestnetTab={true}
             chainRenderClassName="font-medium"
             arrowDownComponent={

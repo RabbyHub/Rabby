@@ -50,6 +50,7 @@ interface ChainSelectorModalProps {
   title?: ReactNode;
   className?: string;
   supportChains?: SelectChainListProps['supportChains'];
+  renderChainExtra?: SelectChainListProps['renderChainExtra'];
   disabledTips?: SelectChainListProps['disabledTips'];
   disableChainCheck?: TDisableCheckChainFn;
   hideTestnetTab?: boolean;
@@ -153,6 +154,7 @@ const ChainSelectorModal = ({
   className,
   supportChains,
   disabledTips,
+  renderChainExtra,
   hideTestnetTab = false,
   hideMainnetTab = false,
   showRPCStatus = false,
@@ -279,6 +281,7 @@ const ChainSelectorModal = ({
           <div className="chain-selector__modal-content">
             <SelectChainList
               supportChains={supportChains}
+              renderChainExtra={renderChainExtra}
               data={matteredList}
               sortable={false /* !supportChains */}
               pinned={pinned as CHAINS_ENUM[]}
@@ -292,6 +295,7 @@ const ChainSelectorModal = ({
             ></SelectChainList>
             <SelectChainList
               supportChains={supportChains}
+              renderChainExtra={renderChainExtra}
               data={unmatteredList}
               value={value}
               pinned={pinned as CHAINS_ENUM[]}
