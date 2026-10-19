@@ -20,3 +20,23 @@ export const TX_GAS_LIMIT_CHAIN_MAPPING = {
   // https://docs.tempo.xyz/protocol/tips/tip-1010
   ['TEMPO' as CHAINS_ENUM]: 30_000_000,
 };
+
+/**
+ * https://eips.ethereum.org/EIPS/eip-8037
+ * After EIP-8037 the EIP-7825 cap only bounds execution gas; state gas is paid
+ * from the part of tx.gas above it, so tx.gas itself may reach 2^32 - 1.
+ * Fill in a chain's activation timestamp (seconds) once its fork is scheduled.
+ */
+export const EIP8037_ACTIVATION_TIME: Partial<Record<CHAINS_ENUM, number>> = {};
+
+const EIP8037_TX_MAX_TOTAL_GAS_LIMIT = 2 ** 32 - 1;
+
+export const getTxGasLimit = (
+  chainEnum: CHAINS_ENUM,
+  timestamp: number
+): number | undefined => {
+  const activationTime = EIP8037_ACTIVATION_TIME[chainEnum];
+  return activationTime !== undefined && timestamp >= activationTime
+    ? EIP8037_TX_MAX_TOTAL_GAS_LIMIT
+    : TX_GAS_LIMIT_CHAIN_MAPPING[chainEnum];
+};

@@ -25,7 +25,7 @@ import i18n from '@/i18n';
 import { Account } from 'background/service/preference';
 import type { ChainGas } from 'background/service/preference';
 import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
-import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
+import { getTxGasLimit } from '@/constant/txGasLimit';
 import {
   getHyperEvmGasLimit,
   HYPER_EVM_SMALL_BLOCK_GAS_LIMIT,
@@ -737,9 +737,13 @@ export async function calcGasLimit({
     recommendGasLimit = new BigNumber(block.gasLimit).times(buffer).toFixed(0);
   }
 
+  // fall back to local time when the block is unavailable or lacks a timestamp
+  const txGasLimit = getTxGasLimit(
+    chain.enum,
+    Number(block?.timestamp) || Date.now() / 1000
+  );
   const singleTxGasLimit =
-    hyperEvmGasLimit ??
-    (TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Number(recommendGasLimit));
+    hyperEvmGasLimit ?? (txGasLimit || Number(recommendGasLimit));
 
   recommendGasLimit =
     Number(recommendGasLimit) > singleTxGasLimit
@@ -751,7 +755,7 @@ export async function calcGasLimit({
   const dappGasLimit = rawAmountToBn(tx.gas || 0);
   const dappGasLimitCap = BigNumber.min(
     block?.gasLimit ?? Infinity,
-    hyperEvmGasLimit ?? (TX_GAS_LIMIT_CHAIN_MAPPING[chain.enum] || Infinity)
+    hyperEvmGasLimit ?? (txGasLimit || Infinity)
   );
   // NaN fails lte, so an invalid tx.gas also falls back
   const usableDappGasLimit = dappGasLimit.lte(dappGasLimitCap)
