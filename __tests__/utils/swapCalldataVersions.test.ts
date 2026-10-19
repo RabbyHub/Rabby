@@ -81,13 +81,25 @@ const v4Input = (newVersion: boolean, action: number, zeroForOne = true) => {
 };
 
 const routerVersions = [
-  { version: '2.0', address: v2Router, chainId: 1, newVersion: false },
-  { version: '2.1.1', address: arcRouter, chainId: 5042, newVersion: true },
+  {
+    version: '2.0',
+    address: v2Router,
+    chainId: 1,
+    nativeTokenAddress: 'eth',
+    newVersion: false,
+  },
+  {
+    version: '2.1.1',
+    address: arcRouter,
+    chainId: 5042,
+    nativeTokenAddress: 'arc',
+    newVersion: true,
+  },
 ];
 
 describe.each(routerVersions)(
   'current Universal Router $version / chain $chainId',
-  ({ address, chainId, newVersion }) => {
+  ({ address, chainId, nativeTokenAddress, newVersion }) => {
     it.each([
       { name: 'single exact input', action: 0x06 },
       { name: 'path exact input', action: 0x07 },
@@ -98,7 +110,9 @@ describe.each(routerVersions)(
         2000000000,
       ]);
       expect(
-        decodeCalldata('Uniswap', transaction(data, address, chainId))
+        decodeCalldata('Uniswap', transaction(data, address, chainId), {
+          nativeTokenAddress,
+        })
       ).toEqual(expected);
     });
 
@@ -109,7 +123,9 @@ describe.each(routerVersions)(
         2000000000,
       ]);
       expect(
-        decodeCalldata('Uniswap', transaction(data, address, chainId))
+        decodeCalldata('Uniswap', transaction(data, address, chainId), {
+          nativeTokenAddress,
+        })
       ).toEqual({ ...expected, fromToken: toToken, toToken: fromToken });
     });
 
@@ -120,7 +136,9 @@ describe.each(routerVersions)(
         2000000000,
       ]);
       expect(() =>
-        decodeCalldata('Uniswap', transaction(data, address, chainId))
+        decodeCalldata('Uniswap', transaction(data, address, chainId), {
+          nativeTokenAddress,
+        })
       ).toThrow('current exact-input quote flow');
     });
   }
@@ -166,7 +184,9 @@ describe('Universal Router entry points and version selection', () => {
     expect(getCalldataVersion('Uniswap', tx)).toBe('Universal Router 1.2');
     expect(decodeCalldata('Uniswap', tx)).toEqual(expected);
     expect(() =>
-      decodeCalldata('Uniswap', transaction(data, arcRouter, 5042))
+      decodeCalldata('Uniswap', transaction(data, arcRouter, 5042), {
+        nativeTokenAddress: 'arc',
+      })
     ).toThrow('Unsupported command 0x20');
   });
 
@@ -218,7 +238,8 @@ describe('Universal Router entry points and version selection', () => {
     expect(
       decodeCalldata(
         'Uniswap',
-        transaction(data, '0x02E5be68D46DAc0B524905bfF209cf47EE6dB2a9', 5042)
+        transaction(data, '0x02E5be68D46DAc0B524905bfF209cf47EE6dB2a9', 5042),
+        { nativeTokenAddress: 'arc' }
       )
     ).toEqual(expected);
   });
@@ -238,7 +259,9 @@ describe('Universal Router entry points and version selection', () => {
       2000000000,
     ]);
     expect(() =>
-      decodeCalldata('Uniswap', transaction(data, arcRouter, 5042))
+      decodeCalldata('Uniswap', transaction(data, arcRouter, 5042), {
+        nativeTokenAddress: 'arc',
+      })
     ).toThrow('no matching function');
   });
 
@@ -264,7 +287,8 @@ describe('Universal Router entry points and version selection', () => {
     expect(
       decodeCalldata(
         'Uniswap',
-        transaction(execute('0xa1', [nested]), arcRouter, 5042)
+        transaction(execute('0xa1', [nested]), arcRouter, 5042),
+        { nativeTokenAddress: 'arc' }
       )
     ).toEqual(expected);
   });

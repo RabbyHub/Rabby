@@ -24,7 +24,7 @@ export const getVersion = (tx: TxWithChainId) =>
 export const decodeCalldata = (
   tx: TxWithChainId,
   options: DecodeCalldataOptions = {}
-): DecodeCalldataResult | null => {
+): DecodeCalldataResult => {
   const native = getNativeTokenAddress(tx.chainId, options.nativeTokenAddress);
 
   const selector = tx.data.slice(0, 10).toLowerCase();

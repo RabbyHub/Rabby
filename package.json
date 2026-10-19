@@ -21,7 +21,7 @@
     "build:debug": "cross-env MANIFEST_TYPE=chrome-mv3 npm run build:debug:default",
     "build:sourcemap": "npm run clean && npm run make-theme && webpack --progress --env config=sourcemap",
     "upload:sourcemap": "npx sentry-cli sourcemaps upload --org $SENTRY_ORG --project $SENTRY_PROJECT --release $npm_package_version dist tmp/sourcemaps/mv3",
-    "sync-chain": "node ./scripts/sync-support-chain.js",
+    "sync-chain": "node ./scripts/sync-support-chain.js", 
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "typecheck": "tsc --noEmit --skipLibCheck --pretty false",

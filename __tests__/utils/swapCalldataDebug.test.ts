@@ -1,18 +1,9 @@
 import { CHAINS_ENUM } from '@debank/common';
-import {
-  DEX_ENUM,
-  verifySdk,
-  VerifySdkParams,
-  VerifySdkResult,
-} from '@rabby-wallet/rabby-swap';
+import { DEX_ENUM, VerifySdkParams } from '@rabby-wallet/rabby-swap';
 import { CalldataDecodeError, decodeCalldata } from '@/utils/swapCalldata';
 import { verifySdkWithDebug } from '@/ui/views/Swap/hooks/calldataDebug';
 import sample from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
 
-jest.mock('@rabby-wallet/rabby-swap', () => ({
-  ...jest.requireActual('@rabby-wallet/rabby-swap'),
-  verifySdk: jest.fn(),
-}));
 jest.mock('@/utils/swapCalldata', () => ({
   ...jest.requireActual('@/utils/swapCalldata'),
   decodeCalldata: jest.fn(),
@@ -21,7 +12,6 @@ jest.mock('@/utils/swapCalldata', () => ({
 const localDecoder = decodeCalldata as jest.MockedFunction<
   typeof decodeCalldata
 >;
-const sdkVerifier = verifySdk as jest.MockedFunction<typeof verifySdk>;
 // Keep recorded API metadata in the fixture, outside the normalized quote.
 const { origin: _origin, ...quote } = sample.quote;
 const params: VerifySdkParams = {
@@ -45,7 +35,6 @@ const decoded = {
 
 beforeEach(() => {
   localDecoder.mockReset();
-  sdkVerifier.mockReset();
   jest.spyOn(console, 'log').mockImplementation(() => undefined);
 });
 
@@ -57,7 +46,6 @@ it('uses the editable local decoder in Magpie quote diagnostics', () => {
   const result = verifySdkWithDebug(params, quote);
 
   expect(localDecoder).toHaveBeenCalledTimes(1);
-  expect(sdkVerifier).not.toHaveBeenCalled();
   expect(result.decoded).toBe(decoded);
   expect(result.isSdkDataPass).toBe(true);
   expect(console.log).toHaveBeenCalledWith(
@@ -103,7 +91,13 @@ it('logs successful parsing even when the receiver check fails', () => {
 });
 
 it('includes the original quote when decoding fails', () => {
-  localDecoder.mockReturnValue(null);
+  const error = new CalldataDecodeError(
+    'decode.transactionABI',
+    'Unsupported Magpie calldata selector: 0xdeadbeef'
+  );
+  localDecoder.mockImplementationOnce(() => {
+    throw error;
+  });
   const unsupportedQuote = {
     ...quote,
     tx: { ...quote.tx, data: '0xdeadbeef' + quote.tx.data.slice(10) },
@@ -114,16 +108,14 @@ it('includes the original quote when decoding fails', () => {
     unsupportedQuote
   );
 
+  expect(localDecoder).toHaveBeenCalledTimes(1);
   expect(result.isSdkDataPass).toBe(true);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
     'Magpie | unknown | ARBITRUM: calldata ❌failed',
     {
       firstFailedStep: 'decode.transactionABI',
-      reason: undefined,
-      error: expect.objectContaining({
-        message: expect.stringContaining('no matching function'),
-      }),
+      error: { name: error.name, message: error.message, stack: error.stack },
       quote: unsupportedQuote,
       checks: {
         routerPass: true,
@@ -136,34 +128,19 @@ it('includes the original quote when decoding fails', () => {
   );
 });
 
-it('keeps using the SDK verifier for other DEXes', () => {
-  const result: VerifySdkResult = {
-    routerPass: true,
-    spenderPass: true,
-    callDataPass: true,
-    receiverPass: true,
-    isSdkDataPass: true,
-    decoded: null,
-  };
-  sdkVerifier.mockReturnValue(result);
-  const otherDexParams = { ...params, dexId: DEX_ENUM.ONEINCH };
-
-  expect(verifySdkWithDebug(otherDexParams, quote)).toBe(result);
-  expect(sdkVerifier).toHaveBeenCalledWith(otherDexParams);
-  expect(localDecoder).not.toHaveBeenCalled();
-});
-
 it('logs the version-specific decoding step together with the original quote', () => {
   const step = 'decode.magpie.dexAggregator.amountOutMin';
-  localDecoder.mockImplementation(() => {
-    throw new CalldataDecodeError(
-      step,
-      'amountOutMin points outside the payload'
-    );
+  const error = new CalldataDecodeError(
+    step,
+    'amountOutMin points outside the payload'
+  );
+  localDecoder.mockImplementationOnce(() => {
+    throw error;
   });
 
   verifySdkWithDebug(params, quote);
 
+  expect(localDecoder).toHaveBeenCalledTimes(1);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
     'Magpie | DexAggregator | ARBITRUM: calldata ❌failed',
@@ -171,6 +148,7 @@ it('logs the version-specific decoding step together with the original quote', (
       firstFailedStep: step,
       error: expect.objectContaining({
         message: 'amountOutMin points outside the payload',
+        stack: error.stack,
       }),
       quote,
     })

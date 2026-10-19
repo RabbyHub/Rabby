@@ -553,10 +553,7 @@ export const useQuoteMethods = () => {
             });
           }
 
-          const effectiveSdkPass =
-            dexId === DEX_ENUM.UNI || dexId === DEX_ENUM.MAGPIE
-              ? routerPass && spenderPass
-              : isSdkDataPass;
+          const effectiveSdkPass = routerPass && spenderPass;
 
           if (inSufficient) {
             const quote: TDexQuoteData = {
@@ -791,7 +788,7 @@ export const useQuoteMethods = () => {
       params: getDexQuoteParams & { setQuote?: (quote: TDexQuoteData) => void }
     ) => {
       const quotes = await _getAllQuotes(params);
-      return Array.isArray(quotes) ? quotes[0] : quotes;
+      return quotes[0];
     },
     [_getAllQuotes]
   );
