@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { intToHex, isHexString } from '@ethereumjs/util';
 import { omit } from 'lodash';
+import { EIP8037_ACTIVATION_TIME } from '@/constant/txGasLimit';
 
 import {
   buildParseTxRequest,
@@ -586,6 +587,38 @@ describe('calcGasLimit dapp tx.gas cap', () => {
     ['invalid tx.gas', 'UNKNOWN', 1_000_000, '0x', '0x5208'],
   ])('%s', async (_, enumName, blockGasLimit, txGas, expected) => {
     await expect(run(enumName, blockGasLimit, txGas)).resolves.toBe(expected);
+  });
+});
+
+describe('calcGasLimit EIP-8037 tx.gas cap', () => {
+  const run = (timestamp: number, txGas: number) =>
+    calcGasLimit({
+      chain: { id: 1, enum: 'ETH', serverId: 'x' } as any,
+      tx: { gas: intToHex(txGas) } as any,
+      gas: new BigNumber(21000),
+      selectedGas: null,
+      nativeTokenBalance: '0',
+      explainTx: { gas: { gas_ratio: 1 } } as any,
+      needRatio: false,
+      wallet: {} as any,
+      preparedBlock: {
+        gasLimit: intToHex(60_000_000),
+        timestamp: intToHex(timestamp),
+      } as any,
+    }).then((r) => r.gasLimit);
+
+  beforeEach(() => {
+    EIP8037_ACTIVATION_TIME['ETH'] = 1000;
+  });
+  afterEach(() => {
+    delete EIP8037_ACTIVATION_TIME['ETH'];
+  });
+
+  test.each([
+    ['before activation keeps the EIP-7825 cap', 999, '0x5208'],
+    ['at activation only the block limit caps', 1000, intToHex(40_000_000)],
+  ])('%s', async (_, timestamp, expected) => {
+    await expect(run(timestamp, 40_000_000)).resolves.toBe(expected);
   });
 });
 
