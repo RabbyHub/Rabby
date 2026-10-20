@@ -96,9 +96,12 @@ export const PositionTpSlPositionCard: React.FC<{
         <span
           className={clsx(
             'flex h-[16px] items-center rounded-[3px] px-[4px] text-[10px] leading-[16px] font-medium text-rb-neutral-title-1',
+            // Figma's 功能色 green/red-light-2 (#58C669@27% / #FF736B@20%).
+            // Read the raw tokens: `html.perps-pro-theme` remaps the
+            // `--rb-*-light-2` vars to the -r palette (antd-overwrite.less).
             position.direction === 'Long'
-              ? 'bg-rb-green-light-2'
-              : 'bg-rb-red-light-2'
+              ? 'bg-[var(--rb-dark-green-light-2)]'
+              : 'bg-[var(--rb-dark-red-light-2)]'
           )}
         >
           {position.direction.toLowerCase()} {position.leverage}x
