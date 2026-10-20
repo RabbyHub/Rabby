@@ -59,9 +59,6 @@ interface TpSlFormProps {
 
 const KINDS: TpSlKind[] = ['takeProfit', 'stopLoss'];
 
-/** Same floor as the trading panel's order value check. */
-const MIN_ORDER_VALUE_USD = 10;
-
 const stripDecorations = (value: string) =>
   value.replace(/,/g, '').replace(/[$%\s+-]/g, '');
 
@@ -295,16 +292,9 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
       }
     }
   });
-  const partialNotional =
-    partialSize && markPrice > 0
-      ? new BigNumber(partialSize).times(markPrice)
-      : null;
-  const belowMinOrder =
-    partialNotional !== null &&
-    partialNotional.gt(0) &&
-    partialNotional.lt(MIN_ORDER_VALUE_USD);
-  const amountValid =
-    scope === 'position' || (Boolean(partialSize) && !belowMinOrder);
+  // No $10 order-value floor here, matching mobile's TP/SL form: the exchange
+  // is left to reject an order it won't accept.
+  const amountValid = scope === 'position' || Boolean(partialSize);
   const canSubmit =
     legs.length > 0 &&
     !hasInvalidSide &&
@@ -400,11 +390,6 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
                   amountSource === 'manual' &&
                   amountInput !== '' &&
                   !partialSize
-                }
-                errorText={
-                  belowMinOrder
-                    ? t('page.perpsPro.tradingPanel.minimumOrderSize')
-                    : undefined
                 }
                 autoFocusInput={focusAmountInput}
                 onBeginManual={handleBeginManual}
