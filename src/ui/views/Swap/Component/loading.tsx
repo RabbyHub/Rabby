@@ -3,8 +3,6 @@ import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React, { SVGProps } from 'react';
 import { useSwapStore } from '@/ui/state/swap';
-import type { CHAINS_ENUM } from '@debank/common';
-import { getCalldataTestDexes } from '@/utils/swapCalldata/testSupport';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
@@ -13,7 +11,6 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 
 type QuoteListLoadingProps = {
   fetchedList?: string[];
-  chain: CHAINS_ENUM;
 };
 
 export const QuoteLoading = ({
@@ -78,15 +75,13 @@ export const QuoteLoading = ({
 
 export const QuoteListLoading = ({
   fetchedList: dataList,
-  chain,
 }: QuoteListLoadingProps) => {
   const supportedDEXList = useSwapStore((s) => s.supportedDEXList);
-  const testDexes = getCalldataTestDexes(chain, supportedDEXList);
   return (
     <>
       {Object.entries(DEX).map(([key, value]) => {
         if (
-          !testDexes.some((dex) => dex === key) ||
+          !supportedDEXList.includes(key) ||
           (dataList && dataList.includes(key))
         )
           return null;

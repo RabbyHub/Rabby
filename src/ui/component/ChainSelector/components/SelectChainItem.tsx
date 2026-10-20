@@ -40,7 +40,6 @@ export type SelectChainItemProps = {
   disabled?: boolean;
   disabledTips?: string | ((ctx: { chain: Chain }) => string);
   showRPCStatus?: boolean;
-  renderChainExtra?: (chain: CHAINS_ENUM) => React.ReactNode;
   disableChainCheck?: TDisableCheckChainFn;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>;
 
@@ -56,7 +55,6 @@ export const SelectChainItem = forwardRef(
       disabled = false,
       disabledTips = 'Coming soon',
       showRPCStatus = false,
-      renderChainExtra,
       disableChainCheck,
       ...rest
     }: SelectChainItemProps,
@@ -172,7 +170,6 @@ export const SelectChainItem = forwardRef(
                 )}
               </div>
             </div>
-            {renderChainExtra?.(data.enum)}
             <ThemeIcon
               className={clsx(
                 'select-chain-item-star w-16 h-16',
