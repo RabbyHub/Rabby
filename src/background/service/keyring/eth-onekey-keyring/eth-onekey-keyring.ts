@@ -308,7 +308,11 @@ class OneKeyKeyring extends EventEmitter {
 
           for (let i = from; i < to; i++) {
             const address = this._addressFromIndex(pathBase, i);
-            if (!this.accounts.includes(address)) {
+            if (
+              !this.accounts.some(
+                (a) => a.toLowerCase() === address.toLowerCase()
+              )
+            ) {
               this.accounts.push(address);
               this.accountDetails[toChecksumAddress(address)] = {
                 version: 2,
