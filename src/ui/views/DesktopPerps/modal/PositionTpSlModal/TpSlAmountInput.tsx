@@ -110,7 +110,9 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
             step={1}
             marks={MARKS}
             value={source === 'slider' ? percent : 0}
-            tipFormatter={null}
+            // antd 4.24 treats `tipFormatter={null}` as unset and falls back to
+            // its default formatter; `tooltip.open` is what turns it off.
+            tooltip={{ open: false }}
             disabled={disabled}
             onChange={(value: number) => onPercentChange(value)}
           />

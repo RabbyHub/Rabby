@@ -559,10 +559,26 @@ export const PositionTpSlModal: React.FC<PositionTpSlModalProps> = ({
   ...rest
 }) => {
   const [busy, setBusy] = useState(false);
+  // A press that starts inside the modal and is released over the mask (e.g.
+  // dragging the amount slider past 100%) must not count as a mask click.
+  // rc-dialog guards this with its own content mousedown listener, but
+  // rc-slider stops mousedown propagation, so we record it in the capture
+  // phase and clear it only after the click that follows the mouseup.
+  const pressedInsideRef = useRef(false);
+  useEffect(() => {
+    const handleMouseUp = () => {
+      setTimeout(() => {
+        pressedInsideRef.current = false;
+      });
+    };
+    document.addEventListener('mouseup', handleMouseUp, true);
+    return () => document.removeEventListener('mouseup', handleMouseUp, true);
+  }, []);
   // Mask click / Esc must not close mid-submit; programmatic closes from the
   // content (after a successful submit) go straight to `onClose`.
   const handleMaskClose = useMemoizedFn(() => {
-    if (!busy) onClose();
+    if (busy || pressedInsideRef.current) return;
+    onClose();
   });
 
   return (
@@ -582,7 +598,17 @@ export const PositionTpSlModal: React.FC<PositionTpSlModalProps> = ({
       }}
       className="modal-support-darkmode desktop-perps-modal-surface"
     >
-      <PositionTpSlContent {...rest} onClose={onClose} onBusyChange={setBusy} />
+      <div
+        onMouseDownCapture={() => {
+          pressedInsideRef.current = true;
+        }}
+      >
+        <PositionTpSlContent
+          {...rest}
+          onClose={onClose}
+          onBusyChange={setBusy}
+        />
+      </div>
     </Modal>
   );
 };
