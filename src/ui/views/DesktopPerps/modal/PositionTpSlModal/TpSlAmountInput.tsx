@@ -62,7 +62,7 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
       </div>
       <div
         className={clsx(
-          'flex h-[40px] items-center gap-[8px] rounded-[6px] border border-solid bg-rb-neutral-bg-5 px-[12px]',
+          'flex h-[40px] items-center gap-[8px] rounded-[6px] border border-solid bg-rb-neutral-bg-5 px-[11px]',
           'hover:border-rb-brand-default focus-within:border-rb-brand-default',
           hasError || errorText ? 'border-rb-red-default' : 'border-transparent'
         )}
@@ -108,17 +108,21 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
         </div>
       ) : null}
       <div className="flex flex-col gap-[6px]">
-        <Slider
-          className="desktop-perps-tpsl-slider"
-          min={0}
-          max={100}
-          step={1}
-          marks={MARKS}
-          value={source === 'slider' ? percent : 0}
-          tipFormatter={null}
-          disabled={disabled}
-          onChange={(value: number) => onPercentChange(value)}
-        />
+        {/* Figma: the rail is inset 4px each side so the 8px end marks sit
+            inside the row instead of overhanging it. */}
+        <div className="px-[4px]">
+          <Slider
+            className="desktop-perps-tpsl-slider"
+            min={0}
+            max={100}
+            step={1}
+            marks={MARKS}
+            value={source === 'slider' ? percent : 0}
+            tipFormatter={null}
+            disabled={disabled}
+            onChange={(value: number) => onPercentChange(value)}
+          />
+        </div>
         <div className="text-[12px] leading-[16px] text-rb-neutral-secondary">
           {t('page.perpsPro.positionTpSl.positionAmount', {
             amount: positionAmountText,

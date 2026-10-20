@@ -2,7 +2,7 @@ import { Dropdown, Menu } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ReactComponent as RcIconArrowDownPerpsCC } from '@/ui/assets/perps/icon-arrow-down.svg';
+import { ReactComponent as RcIconTriangleDownCC } from '@/ui/assets/perps/icon-triangle-down-cc.svg';
 import { ThousandsNativeInput } from '../../components/ThousandsNativeInput';
 import type {
   TpSlInputMode,
@@ -13,8 +13,9 @@ import type {
 import { formatSignedValue } from './format';
 import { TpSlSectionTitle } from './TpSlSectionTitle';
 
+// 11px padding + the 1px focus/error border = Figma's 12px text inset.
 const INPUT_BOX =
-  'h-[40px] rounded-[6px] border border-solid bg-rb-neutral-bg-5 px-[12px] hover:border-rb-brand-default focus-within:border-rb-brand-default';
+  'h-[40px] rounded-[6px] border border-solid bg-rb-neutral-bg-5 px-[11px] hover:border-rb-brand-default focus-within:border-rb-brand-default';
 
 interface TpSlSideInputsProps {
   kind: TpSlKind;
@@ -129,7 +130,7 @@ export const TpSlSideInputs: React.FC<TpSlSideInputsProps> = ({
           )}
         >
           {view.modeValue ? (
-            <span className="mr-[2px] shrink-0 text-[15px] leading-[18px] text-rb-neutral-title-1">
+            <span className="shrink-0 text-[15px] leading-[18px] text-rb-neutral-title-1">
               {sign}
             </span>
           ) : null}
@@ -166,7 +167,7 @@ export const TpSlSideInputs: React.FC<TpSlSideInputsProps> = ({
               className="ml-[10px] flex shrink-0 items-center gap-[4px] border-0 bg-transparent p-0 text-[15px] leading-[18px] text-rb-neutral-foot"
             >
               {currentMode.unit}
-              <RcIconArrowDownPerpsCC className="h-[16px] w-[16px] text-rb-neutral-foot" />
+              <RcIconTriangleDownCC className="h-[16px] w-[16px] text-rb-neutral-secondary" />
             </button>
           </Dropdown>
         </div>

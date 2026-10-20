@@ -334,8 +334,15 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 overflow-y-auto px-[20px] pt-[12px] pb-[24px]">
-        <div className="flex flex-col gap-[12px]">
+      {/* Figma: 24px from the tabs (or card) to the first section; the intro
+          card, when shown, sits 12px under the tabs and 24px above the form. */}
+      <div
+        className={clsx(
+          'min-h-0 flex-1 overflow-y-auto px-[20px] pb-[24px]',
+          header ? 'pt-[12px]' : 'pt-[24px]'
+        )}
+      >
+        <div className="flex flex-col gap-[24px]">
           {header}
           <div
             className={clsx(
@@ -406,13 +413,7 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
           </div>
         </div>
       </div>
-      <div
-        className={clsx(
-          'shrink-0 px-[20px] py-[16px]',
-          variant === 'root' &&
-            'border-t-[0.5px] border-solid border-rb-neutral-line'
-        )}
-      >
+      <div className="shrink-0 px-[20px] py-[16px]">
         <Button
           block
           size="large"

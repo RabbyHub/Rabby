@@ -514,7 +514,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
       />
       <div
         className={clsx(
-          'flex shrink-0 flex-col gap-[12px] px-[20px] pt-[12px]',
+          'flex shrink-0 flex-col gap-[24px] px-[20px] pt-[12px]',
           page === 'confirm' && 'hidden'
         )}
       >

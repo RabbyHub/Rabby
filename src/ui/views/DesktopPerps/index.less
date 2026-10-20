@@ -521,15 +521,20 @@ button.desktop-perps-topbar-deposit-button {
     height: 4px;
   }
 
+  // Marks ahead of the handle: grey ring (Figma 164444:143872, #C5C5CF);
+  // marks already passed: title-1 ring (164444:143870).
   .ant-slider-dot,
-  .ant-slider-dot-active,
-  &:hover .ant-slider-dot,
-  &:hover .ant-slider-dot-active {
+  &:hover .ant-slider-dot {
     top: -2px;
     width: 8px;
     height: 8px;
-    border: 1px solid var(--rb-neutral-title-1) !important;
+    border: 1px solid var(--rb-neutral-foot) !important;
     background-color: var(--rb-neutral-bg-1) !important;
+  }
+
+  .ant-slider-dot-active,
+  &:hover .ant-slider-dot-active {
+    border-color: var(--rb-neutral-title-1) !important;
   }
 
   .ant-slider-handle,
@@ -539,7 +544,7 @@ button.desktop-perps-topbar-deposit-button {
     width: 16px !important;
     height: 16px !important;
     margin-top: -6px !important;
-    border: 1.5px solid var(--rb-neutral-title-1) !important;
+    border: 2px solid var(--rb-neutral-title-1) !important;
     background-color: var(--rb-neutral-bg-1) !important;
     box-shadow: none !important;
   }

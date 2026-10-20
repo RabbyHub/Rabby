@@ -15,7 +15,7 @@ export const PositionTpSlTabs: React.FC<{
   ];
 
   return (
-    <div className="flex items-end gap-[12px] border-b border-solid border-rb-neutral-bg-5 px-[16px]">
+    <div className="flex items-end gap-[12px] border-b border-solid border-rb-neutral-bg-5 px-[16px] pb-[1px]">
       {tabs.map((tab) => {
         const active = tab.key === value;
         return (
@@ -24,7 +24,7 @@ export const PositionTpSlTabs: React.FC<{
             type="button"
             disabled={disabled}
             className={clsx(
-              'relative border-0 bg-transparent px-[2px] pb-[6px] text-[16px] leading-[18px] font-medium disabled:cursor-not-allowed',
+              'relative border-0 bg-transparent px-[2px] py-[6px] text-[16px] leading-[19px] font-medium disabled:cursor-not-allowed',
               active
                 ? 'text-rb-neutral-title-1'
                 : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1'
@@ -35,7 +35,9 @@ export const PositionTpSlTabs: React.FC<{
           >
             {tab.label}
             {active ? (
-              <span className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-rb-neutral-title-1" />
+              // Text-wide 2px bar centred on the tab's bottom edge, resting on
+              // the bar's 1px bottom padding above the divider (Figma 164444:143801).
+              <span className="absolute bottom-[-1px] left-[2px] right-[2px] h-[2px] bg-rb-neutral-body" />
             ) : null}
           </button>
         );
