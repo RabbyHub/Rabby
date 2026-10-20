@@ -335,10 +335,13 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
   return (
     <div className="flex min-h-0 flex-1 flex-col">
       {/* Figma: 24px from the tabs (or card) to the first section; the intro
-          card, when shown, sits 12px under the tabs and 24px above the form. */}
+          card, when shown, sits 12px under the tabs and 24px above the form.
+          No bottom padding: in the first-time frame (164431:142352) the
+          container's 24px bottom padding is clipped — the content fills 638 of
+          its 644px — and the footer's own 16px top padding spaces the button. */}
       <div
         className={clsx(
-          'min-h-0 flex-1 overflow-y-auto px-[20px] pb-[24px]',
+          'min-h-0 flex-1 overflow-y-auto px-[20px]',
           header ? 'pt-[12px]' : 'pt-[24px]'
         )}
       >

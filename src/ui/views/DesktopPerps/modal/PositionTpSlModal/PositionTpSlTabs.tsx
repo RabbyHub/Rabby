@@ -15,7 +15,9 @@ export const PositionTpSlTabs: React.FC<{
   ];
 
   return (
-    <div className="flex items-end gap-[12px] border-b border-solid border-rb-neutral-bg-5 px-[16px] pb-[1px]">
+    // 32px tall like Figma (31px tabs + 1px divider): Figma's stroke doesn't
+    // take layout, so its 1px bottom padding *is* the divider here.
+    <div className="flex items-end gap-[12px] border-b border-solid border-rb-neutral-bg-5 px-[16px]">
       {tabs.map((tab) => {
         const active = tab.key === value;
         return (
@@ -35,8 +37,8 @@ export const PositionTpSlTabs: React.FC<{
           >
             {tab.label}
             {active ? (
-              // Text-wide 2px bar centred on the tab's bottom edge, resting on
-              // the bar's 1px bottom padding above the divider (Figma 164444:143801).
+              // Text-wide 2px bar centred on the tab's bottom edge, overlapping
+              // the divider like Figma's (164431:142374).
               <span className="absolute bottom-[-1px] left-[2px] right-[2px] h-[2px] bg-rb-neutral-body" />
             ) : null}
           </button>

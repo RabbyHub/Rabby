@@ -89,7 +89,7 @@ export const PositionTpSlPositionCard: React.FC<{
           item={marketData}
           separator="-"
           showDexTag
-          className="text-[16px] leading-[20px] font-medium"
+          className="text-[16px] leading-[19px] font-medium"
           baseClassName="text-rb-neutral-title-1"
           quoteClassName="text-rb-neutral-title-1"
         />
