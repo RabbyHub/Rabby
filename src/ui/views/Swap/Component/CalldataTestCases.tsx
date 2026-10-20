@@ -96,31 +96,30 @@ const PairGroup = ({
                 const failed = counts.filter(
                   (item) => item?.lastStatus === 'failed'
                 ).length;
-                const quoteIssues = counts.filter(
-                  (item) =>
-                    item?.lastStatus === 'quote-failed' ||
-                    item?.lastStatus === 'no-quote'
+                const mismatch = counts.filter(
+                  (item) => item?.lastStatus === 'mismatch'
                 ).length;
+                const quoted = passed + failed + mismatch;
                 return (
                   <span
                     key={dex}
                     className={clsx(
-                      failed
+                      failed || mismatch
                         ? 'text-r-red-default'
-                        : passed === scenarios.length && passed
+                        : passed === quoted && passed
                         ? 'text-r-green-default'
                         : 'text-r-neutral-foot'
                     )}
                   >
-                    {dex === DEX_ENUM.UNI ? 'Uni' : 'Magpie'} {passed}/
-                    {scenarios.length}
+                    {dex === DEX_ENUM.UNI ? 'Uni' : 'Magpie'}{' '}
+                    {quoted ? `${passed}/${quoted}` : '—'}
                     {!!failed &&
                       ` · ${t('page.swap.calldataTest.decodeFailures', {
                         count: failed,
                       })}`}
-                    {!!quoteIssues &&
-                      ` · ${t('page.swap.calldataTest.quoteIssues', {
-                        count: quoteIssues,
+                    {!!mismatch &&
+                      ` · ${t('page.swap.calldataTest.resultMismatches', {
+                        count: mismatch,
                       })}`}
                   </span>
                 );

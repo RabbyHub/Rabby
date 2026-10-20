@@ -36,7 +36,12 @@ const expected = {
 // Independent encodings keep the SDK decoder from defining its own expectations.
 const poolKey = 'tuple(address,address,uint24,int24,address)';
 const pathKey = 'tuple(address,uint24,int24,address,bytes)';
-const v4Input = (newVersion: boolean, action: number, zeroForOne = true) => {
+const v4Input = (
+  newVersion: boolean,
+  action: number,
+  zeroForOne = true,
+  prepaid = false
+) => {
   const single = action === 0x06 || action === 0x08;
   const exactOut = action === 0x08 || action === 0x09;
   const input = single && !zeroForOne ? toToken : fromToken;
@@ -69,10 +74,12 @@ const v4Input = (newVersion: boolean, action: number, zeroForOne = true) => {
   return encode(
     ['bytes', 'bytes[]'],
     [
-      `0x${action.toString(16).padStart(2, '0')}0c0e`,
+      `0x${action.toString(16).padStart(2, '0')}${prepaid ? '0b' : '0c'}0e`,
       [
         encode([schema], [value]),
-        encode(['address', 'uint256'], [input, 100]),
+        prepaid
+          ? encode(['address', 'uint256', 'bool'], [input, 100, false])
+          : encode(['address', 'uint256'], [input, 100]),
         // OPEN_DELTA avoids a later payment bound hiding a wrong swap minimum.
         encode(['address', 'address', 'uint256'], [output, sender, 0]),
       ],
@@ -232,7 +239,7 @@ describe('Universal Router entry points and version selection', () => {
       fromToken,
       100,
       '0x10',
-      [v4Input(true, 0x07)],
+      [v4Input(true, 0x07, true, true)], // Spend proxy funds, not another user debit.
       2000000000,
     ]);
     expect(

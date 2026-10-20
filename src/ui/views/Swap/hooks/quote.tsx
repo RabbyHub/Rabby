@@ -27,10 +27,7 @@ import {
   getCalldataTestDexes,
   isCalldataTestDex,
 } from '@/utils/swapCalldata/testSupport';
-import {
-  describeCalldataTestError,
-  recordCalldataTestResult,
-} from '@/utils/swapCalldata/testResults';
+import { recordCalldataTestAttempt } from '@/utils/swapCalldata/testResults';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -470,31 +467,13 @@ export const useQuoteMethods = () => {
             walletOpenapi
           );
 
-        const data = await getData().catch((error) => {
-          recordCalldataTestResult({
-            dex: dexId,
-            chain,
-            chainId: chainInfo.id,
-            version: 'unknown',
-            status: 'quote-failed',
-            request: testRequest,
-            firstFailedStep: 'quote.request',
-            error: describeCalldataTestError(error),
-          });
-          throw error;
+        recordCalldataTestAttempt({
+          dex: dexId,
+          chain,
+          chainId: chainInfo.id,
+          request: testRequest,
         });
-        if (!data) {
-          recordCalldataTestResult({
-            dex: dexId,
-            chain,
-            chainId: chainInfo.id,
-            version: 'unknown',
-            status: 'no-quote',
-            request: testRequest,
-            firstFailedStep: 'quote.response',
-            reason: 'The DEX returned no quote.',
-          });
-        }
+        const data = await getData();
 
         stats.report('swapQuoteResult', {
           dex: dexId,
@@ -660,8 +639,6 @@ export const useQuoteMethods = () => {
         setQuote?.(quote);
         return quote;
       } catch (error) {
-        console.error('getQuote error ', error);
-
         stats.report('swapQuoteResult', {
           dex: dexId,
           chain,

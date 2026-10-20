@@ -33,8 +33,13 @@ export const decodeCalldata = (
     uniInterface.parseTransaction({ data: tx.data })
   );
   const ctx: Context = {
+    chainId: tx.chainId,
     native,
     sender: tx.from,
+    // SwapProxy calls execute normally, so the Router's msgSender() is the
+    // proxy, while tx.from remains the user whose requested payout we verify.
+    // https://github.com/Uniswap/universal-router/blob/main/contracts/SwapProxy.sol
+    routerCaller: transaction.args.router ? tx.to : tx.from,
     // SwapProxy passes the actual Universal Router as an explicit argument.
     router: transaction.args.router || tx.to,
     proxyToken: transaction.args.token,

@@ -56,7 +56,7 @@ export const CalldataChainBadges = ({
           (item) => item.chain === chain && item.dex === dex
         );
         const counts = coverage.byChainDex.get(`${chain}:${dex}`);
-        const hasFailure = !!counts?.failed;
+        const hasFailure = !!counts?.failed || !!counts?.mismatch;
         return (
           <span
             key={dex}
@@ -64,19 +64,18 @@ export const CalldataChainBadges = ({
               'text-11 leading-[18px] rounded px-4 whitespace-nowrap',
               hasFailure
                 ? 'text-r-red-default bg-r-red-light'
-                : !!counts?.total && counts.passed === counts.total
+                : !!counts?.quoted && counts.passed === counts.quoted
                 ? 'text-r-green-default bg-r-green-light'
                 : 'text-r-blue-default bg-r-blue-light1'
             )}
             title={t('page.swap.calldataTest.counts', {
               passed: summary?.passed || 0,
               failed: summary?.failed || 0,
-              quoteIssues:
-                (summary?.quoteFailed || 0) + (summary?.noQuote || 0),
+              mismatch: summary?.mismatch || 0,
             })}
           >
             {dexLabel(dex)}
-            {counts?.total ? ` ${counts.passed}/${counts.total}` : ' —'}
+            {counts?.quoted ? ` ${counts.passed}/${counts.quoted}` : ' —'}
             {hasFailure ? ' ✕' : ''}
           </span>
         );
@@ -120,28 +119,17 @@ export const CalldataTestPanel = ({
   const [clearing, setClearing] = useState(false);
   const [copied, setCopied] = useState<number>();
   const sampleCount = summaries.reduce(
-    (sum, item) =>
-      sum + item.passed + item.failed + item.quoteFailed + item.noQuote,
+    (sum, item) => sum + item.passed + item.failed + item.mismatch,
     0
   );
-  const overall = useMemo(() => {
-    let total = 0,
-      attempted = 0,
-      passed = 0,
-      unplanned = 0;
-    supportedChains.forEach((item) => {
-      const counts = getCalldataTestDexes(item.enum).map((dex) =>
-        coverage.byChainDex.get(`${item.enum}:${dex}`)
-      );
-      if (counts.some((value) => !value?.total)) unplanned++;
-      counts.forEach((value) => {
-        total += value?.total || 0;
-        attempted += value?.attempted || 0;
-        passed += value?.passed || 0;
-      });
-    });
-    return { total, attempted, passed, unplanned };
-  }, [supportedChains, coverage]);
+  const overall = summaries.reduce(
+    (counts, item) => ({
+      passed: counts.passed + item.passed,
+      failed: counts.failed + item.failed,
+      mismatch: counts.mismatch + item.mismatch,
+    }),
+    { passed: 0, failed: 0, mismatch: 0 }
+  );
   const chainIndex = supportedChains.findIndex((item) => item.enum === chain);
   const needsAttempt = (chainEnum: CHAINS_ENUM) =>
     getCalldataTestDexes(chainEnum).some((dex) => {
@@ -229,10 +217,9 @@ export const CalldataTestPanel = ({
       <div className="mt-4 text-11 text-r-neutral-foot">
         {t('page.swap.calldataTest.progress', {
           samples: sampleCount,
-          attempted: overall.attempted,
           passed: overall.passed,
-          total: overall.total,
-          unplanned: overall.unplanned,
+          failed: overall.failed,
+          mismatch: overall.mismatch,
         })}
       </div>
       <div className="mt-8 flex items-center gap-4">
@@ -300,6 +287,7 @@ export const CalldataTestPanel = ({
         const summary = summaries.find(
           (item) => item.chain === chain && item.dex === dex
         );
+        if (!summary) return null;
         return (
           <div
             key={dex}
@@ -307,13 +295,11 @@ export const CalldataTestPanel = ({
           >
             <span>{dexLabel(dex)}</span>
             <span className="text-r-neutral-foot">
-              {summary
-                ? t('page.swap.calldataTest.counts', {
-                    passed: summary.passed,
-                    failed: summary.failed,
-                    quoteIssues: summary.quoteFailed + summary.noQuote,
-                  })
-                : t('page.swap.calldataTest.untested')}
+              {t('page.swap.calldataTest.counts', {
+                passed: summary.passed,
+                failed: summary.failed,
+                mismatch: summary.mismatch,
+              })}
             </span>
           </div>
         );
@@ -323,6 +309,9 @@ export const CalldataTestPanel = ({
           <summary className="cursor-pointer text-r-blue-default">
             {t('page.swap.calldataTest.latestSamples')}
           </summary>
+          <div className="mt-4 text-r-neutral-foot">
+            {t('page.swap.calldataTest.validationPolicy')}
+          </div>
           {latest.map((record) => (
             <details key={record.id} className="mt-8">
               <summary className="cursor-pointer break-all">
@@ -330,15 +319,7 @@ export const CalldataTestPanel = ({
                 {record.testCase
                   ? t(`page.swap.calldataTest.${record.testCase}`)
                   : ''}{' '}
-                ·{' '}
-                {t(
-                  `page.swap.calldataTest.${
-                    record.status === 'quote-failed' ||
-                    record.status === 'no-quote'
-                      ? 'quoteIssue'
-                      : record.status
-                  }`
-                )}
+                · {t(`page.swap.calldataTest.${record.status}`)}
               </summary>
               <Button
                 size="small"
@@ -364,11 +345,18 @@ export const CalldataTestPanel = ({
               </Button>
               <pre className="mt-4 max-h-[200px] overflow-auto whitespace-pre-wrap break-all">
                 {JSON.stringify(
-                  record.decoded || {
-                    firstFailedStep: record.firstFailedStep,
-                    reason: record.reason,
-                    error: record.error,
-                  },
+                  record.decoded
+                    ? {
+                        decoded: record.decoded,
+                        validation: record.validation,
+                        firstFailedStep: record.firstFailedStep,
+                        reason: record.reason,
+                      }
+                    : {
+                        firstFailedStep: record.firstFailedStep,
+                        reason: record.reason,
+                        error: record.error,
+                      },
                   null,
                   2
                 )}

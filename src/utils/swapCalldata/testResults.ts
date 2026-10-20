@@ -1,8 +1,14 @@
 import { Dexie } from 'dexie';
-import type { Chain } from '@debank/common';
+import type { Chain, CHAINS_ENUM } from '@debank/common';
 import type { DEX_ENUM, VerifySdkResult } from '@rabby-wallet/rabby-swap';
 import type { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import type { DecodeCalldataResult } from './types';
+import {
+  validateCalldataResult,
+  isCalldataMatch,
+  CalldataResultValidation,
+} from './verify';
+import BigNumber from 'bignumber.js';
 import { getCalldataTestDexes, isCalldataTestDex } from './testSupport';
 import {
   getCalldataTestCases,
@@ -15,6 +21,9 @@ import {
 export type CalldataTestStatus =
   | 'passed'
   | 'failed'
+  | 'mismatch'
+  | 'ignored'
+  // Legacy statuses are read during migration, never added as new results.
   | 'quote-failed'
   | 'no-quote';
 
@@ -52,13 +61,14 @@ export interface CalldataTestRecord {
     | 'receiverPass'
     | 'isSdkDataPass'
   >;
+  validation?: CalldataResultValidation;
 }
 
 export interface CalldataTestCounts {
   passed: number;
   failed: number;
-  quoteFailed: number;
-  noQuote: number;
+  mismatch: number;
+  attempted?: boolean;
   lastStatus: CalldataTestStatus;
   lastVersion: string;
   lastRecordedAt: number;
@@ -124,9 +134,8 @@ const addResult = (
 ): CalldataTestCounts => ({
   passed: (previous?.passed || 0) + Number(record.status === 'passed'),
   failed: (previous?.failed || 0) + Number(record.status === 'failed'),
-  quoteFailed:
-    (previous?.quoteFailed || 0) + Number(record.status === 'quote-failed'),
-  noQuote: (previous?.noQuote || 0) + Number(record.status === 'no-quote'),
+  mismatch: (previous?.mismatch || 0) + Number(record.status === 'mismatch'),
+  attempted: true,
   lastStatus: record.status,
   lastVersion: record.version,
   lastRecordedAt: record.recordedAt,
@@ -160,16 +169,68 @@ const addSummary = (
 
 export const getCalldataTestParseStatus = (counts?: CalldataTestCounts) =>
   counts?.failed
-    ? counts.passed
+    ? counts.passed || counts.mismatch
       ? 'mixed'
       : 'failed'
-    : counts?.passed
+    : counts?.passed || counts?.mismatch
     ? 'passed'
     : 'untested';
 
 export const hasCalldataTestAttempt = (counts?: CalldataTestCounts) =>
   !!counts &&
-  counts.passed + counts.failed + counts.quoteFailed + counts.noQuote > 0;
+  (!!counts.attempted ||
+    counts.passed + counts.failed + (counts.mismatch || 0) > 0);
+
+const hasQuotedResult = (counts?: CalldataTestCounts) =>
+  !!counts && counts.passed + counts.failed + (counts.mismatch || 0) > 0;
+
+const refreshRecordedValidation = (record: CalldataTestRecord) => {
+  if (!record.quote || !record.decoded) return record;
+  const validation = validateCalldataResult({
+    dexId: record.dex,
+    data: {
+      ...record.quote,
+      fromToken: record.request.fromToken,
+      fromTokenAmount: record.request.fromTokenAmount,
+      toToken: record.request.toToken,
+    },
+    tx: { ...record.quote.tx, chainId: record.chainId },
+    decoded: record.decoded,
+    nativeTokenAddress: record.request.nativeTokenAddress,
+    userAddress: record.request.userAddress,
+    slippage: new BigNumber(record.request.slippage).div(100).toFixed(),
+  });
+  if (!validation) return record;
+  const failedField = Object.entries(validation.checks).find(
+    ([, pass]) => !pass
+  )?.[0];
+  const callDataPass = isCalldataMatch(validation);
+  const receiverPass = validation.checks.toTokenReceiver;
+  return {
+    ...record,
+    status: validation.passed ? ('passed' as const) : ('mismatch' as const),
+    validation,
+    ...(record.checks
+      ? {
+          checks: {
+            ...record.checks,
+            callDataPass,
+            receiverPass,
+            isSdkDataPass:
+              record.checks.routerPass &&
+              record.checks.spenderPass &&
+              callDataPass &&
+              receiverPass,
+          },
+        }
+      : {}),
+    firstFailedStep: failedField ? `validate.${failedField}` : undefined,
+    reason: failedField
+      ? validation.error ||
+        `Decoded ${failedField} does not match the expected result.`
+      : undefined,
+  };
+};
 
 // Keep the test dataset separate from wallet data and its schema migrations.
 const db = new Dexie('rabby-swap-calldata-tests');
@@ -223,6 +284,67 @@ db.version(3)
       .table<CalldataTestScenarioSummary, string>('scenarios')
       .bulkPut(Array.from(rebuilt.values()));
   });
+db.version(4)
+  .stores({
+    results: '++id,[chain+dex],recordedAt,status,testCase',
+    summaries: '&key,chain,dex',
+    scenarios: '&key,[chain+dex],chain,dex',
+    plans: '&key,chain',
+  })
+  .upgrade(async (transaction) => {
+    const records = await transaction
+      .table<CalldataTestRecord, number>('results')
+      .orderBy('recordedAt')
+      .toArray();
+    const summaryMap = new Map<string, CalldataTestSummary>();
+    const scenarioMap = new Map<string, CalldataTestScenarioSummary>();
+    for (const original of records) {
+      const key = getCalldataTestScenarioKey(
+        original.chain,
+        original.dex,
+        getCalldataTestScenarioId(original.request)
+      );
+      // Keep only an attempt marker for old requests without quotes. Such a
+      // request must not replace the latest quoted outcome for that scenario.
+      if (!original.quote) {
+        if (!scenarioMap.has(key))
+          scenarioMap.set(
+            key,
+            addScenario(undefined, {
+              ...original,
+              status: 'ignored',
+              error: undefined,
+              reason: undefined,
+              firstFailedStep: undefined,
+            })
+          );
+        continue;
+      }
+      const record = refreshRecordedValidation(original);
+      await transaction
+        .table<CalldataTestRecord, number>('results')
+        .put(record);
+      const summaryKey = `${record.chain}:${record.dex}`;
+      summaryMap.set(
+        summaryKey,
+        addSummary(summaryMap.get(summaryKey), record)
+      );
+      scenarioMap.set(key, addScenario(scenarioMap.get(key), record));
+    }
+    const summaryTable = transaction.table<CalldataTestSummary, string>(
+      'summaries'
+    );
+    const scenarioTable = transaction.table<
+      CalldataTestScenarioSummary,
+      string
+    >('scenarios');
+    await summaryTable.clear();
+    await scenarioTable.clear();
+    if (summaryMap.size)
+      await summaryTable.bulkPut(Array.from(summaryMap.values()));
+    if (scenarioMap.size)
+      await scenarioTable.bulkPut(Array.from(scenarioMap.values()));
+  });
 const results = db.table<CalldataTestRecord, number>('results');
 const summaries = db.table<CalldataTestSummary, string>('summaries');
 const scenarios = db.table<CalldataTestScenarioSummary, string>('scenarios');
@@ -244,12 +366,14 @@ export const buildCalldataTestCoverage = (
       latestPlans.set(plan.chain, plan);
   });
   latestPlans.forEach((plan) =>
-    plan.dexes.forEach((dex) => {
-      const key = `${plan.chain}:${dex}`;
-      let ids = planned.get(key);
-      if (!ids) planned.set(key, (ids = new Set()));
-      plan.scenarioIds.forEach((id) => ids!.add(id));
-    })
+    getCalldataTestDexes(plan.chain as CHAINS_ENUM, plan.dexes).forEach(
+      (dex) => {
+        const key = `${plan.chain}:${dex}`;
+        let ids = planned.get(key);
+        if (!ids) planned.set(key, (ids = new Set()));
+        plan.scenarioIds.forEach((id) => ids!.add(id));
+      }
+    )
   );
   const byChainDex = new Map<
     string,
@@ -258,7 +382,8 @@ export const buildCalldataTestCoverage = (
       attempted: number;
       passed: number;
       failed: number;
-      quoteIssues: number;
+      mismatch: number;
+      quoted: number;
     }
   >();
   planned.forEach((ids, key) => {
@@ -267,18 +392,16 @@ export const buildCalldataTestCoverage = (
       attempted: 0,
       passed: 0,
       failed: 0,
-      quoteIssues: 0,
+      mismatch: 0,
+      quoted: 0,
     };
     ids.forEach((id) => {
       const result = byScenario.get(`${key}:${id}`);
       if (hasCalldataTestAttempt(result)) counts.attempted++;
       if (result?.lastStatus === 'passed') counts.passed++;
       if (result?.lastStatus === 'failed') counts.failed++;
-      if (
-        result?.lastStatus === 'quote-failed' ||
-        result?.lastStatus === 'no-quote'
-      )
-        counts.quoteIssues++;
+      if (result?.lastStatus === 'mismatch') counts.mismatch++;
+      if (hasQuotedResult(result)) counts.quoted++;
     });
     byChainDex.set(key, counts);
   });
@@ -320,7 +443,7 @@ export const recordCalldataTestResult = (
     'id' | 'recordedAt' | 'testCase' | 'scenarioId'
   >
 ) => {
-  if (!isCalldataTestDex(record.dex)) return;
+  if (!isCalldataTestDex(record.dex) || !record.quote) return;
   // Snapshot before queuing: quote consumers may subsequently mutate API data.
   let snapshot: CalldataTestRecord;
   try {
@@ -358,6 +481,36 @@ export const recordCalldataTestResult = (
 
 export const flushCalldataTestResults = () => pendingWrites;
 
+// Track navigation progress without retaining quote errors or empty responses.
+export const recordCalldataTestAttempt = (
+  record: Pick<CalldataTestRecord, 'dex' | 'chain' | 'chainId' | 'request'>
+) => {
+  const snapshot = JSON.parse(JSON.stringify(record)) as typeof record;
+  pendingWrites = pendingWrites
+    .then(async () => {
+      const scenarioId = getCalldataTestScenarioId(snapshot.request);
+      const key = getCalldataTestScenarioKey(
+        snapshot.chain,
+        snapshot.dex,
+        scenarioId
+      );
+      await db.transaction('rw', scenarios, async () => {
+        if (await scenarios.get(key)) return;
+        await scenarios.put(
+          addScenario(undefined, {
+            ...snapshot,
+            scenarioId,
+            recordedAt: Date.now(),
+            version: 'unknown',
+            status: 'ignored',
+            testCase: classifyCalldataTestCase(snapshot.request),
+          })
+        );
+      });
+    })
+    .catch(setStorageError);
+};
+
 export const recordCalldataTestPlan = (plan: CalldataTestPlan) => {
   const snapshot = JSON.parse(JSON.stringify(plan)) as CalldataTestPlan;
   const write = pendingWrites.then(() => plans.put(snapshot));
@@ -387,7 +540,7 @@ export const readLatestCalldataTestResults = async (chain: string) => {
     return await results
       .orderBy('recordedAt')
       .reverse()
-      .filter((record) => record.chain === chain)
+      .filter((record) => record.chain === chain && !!record.quote)
       .limit(6)
       .toArray();
   } catch (error) {
@@ -414,9 +567,9 @@ export const readCalldataTestDataset = async () => {
     scenarios,
     plans,
     async () => ({
-      records: await results.toArray(),
+      records: await results.filter((record) => !!record.quote).toArray(),
       summaries: await summaries.toArray(),
-      scenarios: await scenarios.toArray(),
+      scenarios: await scenarios.filter(hasQuotedResult).toArray(),
       plans: await plans.toArray(),
       captureError: storageError,
     })
@@ -430,51 +583,53 @@ export const buildCalldataTestExport = (
   const byPair = new Map(dataset.summaries.map((item) => [item.key, item]));
   const coverage = buildCalldataTestCoverage(dataset.scenarios, dataset.plans);
   return {
-    schemaVersion: 3,
+    schemaVersion: 4,
     exportedAt: new Date().toISOString(),
     database: db.name,
     ...dataset,
     coverage: chains.flatMap((chain) =>
-      getCalldataTestDexes(chain.enum).map((dex) => {
-        const summary = byPair.get(`${chain.enum}:${dex}`);
-        const passed = summary?.passed || 0;
-        const failed = summary?.failed || 0;
-        return {
-          chain: chain.enum,
-          chainId: chain.id,
-          chainName: chain.name,
-          dex,
-          parseStatus: getCalldataTestParseStatus(summary),
-          passed,
-          failed,
-          quoteFailed: summary?.quoteFailed || 0,
-          noQuote: summary?.noQuote || 0,
-          lastVersion: summary?.lastVersion || null,
-          lastRecordedAt: summary?.lastRecordedAt || null,
-          scenarios: coverage.byChainDex.get(`${chain.enum}:${dex}`) || {
-            total: 0,
-            attempted: 0,
-            passed: 0,
-            failed: 0,
-            quoteIssues: 0,
-          },
-          cases: getCalldataTestCases(chain.enum).map((testCase) => {
-            const counts = summary?.cases?.[testCase];
-            return {
-              testCase,
-              attempted: hasCalldataTestAttempt(counts),
-              parseStatus: getCalldataTestParseStatus(counts),
-              passed: counts?.passed || 0,
-              failed: counts?.failed || 0,
-              quoteFailed: counts?.quoteFailed || 0,
-              noQuote: counts?.noQuote || 0,
-              lastStatus: counts?.lastStatus || null,
-              lastVersion: counts?.lastVersion || null,
-              lastRecordedAt: counts?.lastRecordedAt || null,
-            };
-          }),
-        };
-      })
+      getCalldataTestDexes(chain.enum)
+        .filter((dex) => hasQuotedResult(byPair.get(`${chain.enum}:${dex}`)))
+        .map((dex) => {
+          const summary = byPair.get(`${chain.enum}:${dex}`);
+          const passed = summary?.passed || 0;
+          const failed = summary?.failed || 0;
+          return {
+            chain: chain.enum,
+            chainId: chain.id,
+            chainName: chain.name,
+            dex,
+            parseStatus: getCalldataTestParseStatus(summary),
+            passed,
+            failed,
+            mismatch: summary?.mismatch || 0,
+            decoded: passed + (summary?.mismatch || 0),
+            lastVersion: summary?.lastVersion || null,
+            lastRecordedAt: summary?.lastRecordedAt || null,
+            scenarios: coverage.byChainDex.get(`${chain.enum}:${dex}`) || {
+              total: 0,
+              attempted: 0,
+              passed: 0,
+              failed: 0,
+              mismatch: 0,
+              quoted: 0,
+            },
+            cases: getCalldataTestCases(chain.enum).map((testCase) => {
+              const counts = summary?.cases?.[testCase];
+              return {
+                testCase,
+                attempted: hasQuotedResult(counts),
+                parseStatus: getCalldataTestParseStatus(counts),
+                passed: counts?.passed || 0,
+                failed: counts?.failed || 0,
+                mismatch: counts?.mismatch || 0,
+                lastStatus: counts?.lastStatus || null,
+                lastVersion: counts?.lastVersion || null,
+                lastRecordedAt: counts?.lastRecordedAt || null,
+              };
+            }),
+          };
+        })
     ),
   };
 };

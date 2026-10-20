@@ -175,7 +175,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
 
   useLayoutEffect(() => {
     if (token?.id && isFrom && !disabled) {
-      inputRef.current?.focus();
+      inputRef.current?.focus({ preventScroll: true });
     }
   }, [token?.id, disabled]);
 

@@ -1,6 +1,4 @@
 import {
-  isSwapCalldataReceiverAllowed,
-  verifyCalldata,
   verifyRouterAndSpender,
   VerifySdkParams,
   VerifySdkResult,
@@ -12,6 +10,10 @@ import {
   getCalldataVersion,
 } from '@/utils/swapCalldata';
 import BigNumber from 'bignumber.js';
+import {
+  isCalldataMatch,
+  validateCalldataResult,
+} from '@/utils/swapCalldata/verify';
 import {
   CalldataTestRecord,
   describeCalldataTestError,
@@ -30,9 +32,11 @@ const printSnapshot = (
     | 'checks'
     | 'firstFailedStep'
     | 'error'
+    | 'reason'
     | 'quote'
+    | 'validation'
   > & {
-    status?: 'passed';
+    status?: 'passed' | 'mismatch';
   },
   params: VerifySdkParams,
   quote: QuoteResult
@@ -41,14 +45,18 @@ const printSnapshot = (
   console.log(
     logPrefix,
     `${dex} | ${version} | ${chain}: calldata ${
-      status === 'passed' ? '✅passed' : '❌failed'
+      status === 'passed'
+        ? '✅passed'
+        : status === 'mismatch'
+        ? 'parsed, result ❌mismatch'
+        : '❌failed'
     }`,
     details
   );
   recordCalldataTestResult({
     ...snapshot,
     chainId: params.chainId,
-    status: status === 'passed' ? 'passed' : 'failed',
+    status: status || 'failed',
     quote,
     request: {
       fromToken: params.payTokenId,
@@ -91,17 +99,18 @@ export const verifySdkWithDebug = (
       error: describeCalldataTestError(error),
     };
   }
-  const callDataPass = verifyCalldata({
+  const validation = validateCalldataResult({
     data: params.data,
     dexId: params.dexId,
     slippage: new BigNumber(params.slippage).div(100).toFixed(),
     tx,
     decoded,
+    nativeTokenAddress: params.nativeTokenAddress,
+    userAddress: params.userAddress,
   });
-  const receiverPass = isSwapCalldataReceiverAllowed(
-    decoded?.toTokenReceiver,
-    params.userAddress
-  );
+  // A failed decode cannot establish calldata or recipient correctness.
+  const callDataPass = !!validation && isCalldataMatch(validation);
+  const receiverPass = validation?.checks.toTokenReceiver ?? false;
   const checks = {
     routerPass,
     spenderPass,
@@ -120,9 +129,25 @@ export const verifySdkWithDebug = (
     printSnapshot(
       {
         ...context,
-        status: 'passed',
+        status: validation?.passed ? 'passed' : 'mismatch',
         decoded,
         checks,
+        ...(validation ? { validation } : {}),
+        ...(!validation?.passed
+          ? {
+              firstFailedStep: `validate.${
+                validation
+                  ? Object.entries(validation.checks).find(
+                      ([, pass]) => !pass
+                    )?.[0]
+                  : 'quote'
+              }`,
+              reason:
+                validation?.error ||
+                'Decoded calldata result does not match the requested swap and quote.',
+              quote,
+            }
+          : {}),
       },
       params,
       quote

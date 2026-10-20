@@ -501,8 +501,7 @@ describe('bounded calldata test matrix', () => {
       dex: DEX_ENUM.UNI,
       passed: 1,
       failed: 0,
-      quoteFailed: 0,
-      noQuote: 0,
+      mismatch: 0,
       lastStatus: 'passed',
     } as CalldataTestScenarioSummary;
     const coverage = buildCalldataTestCoverage(
@@ -514,21 +513,41 @@ describe('bounded calldata test matrix', () => {
       attempted: 1,
       passed: 1,
       failed: 0,
-      quoteIssues: 0,
+      mismatch: 0,
+      quoted: 1,
     });
     expect(coverage.byChainDex.get(`ETH:${DEX_ENUM.MAGPIE}`)).toEqual({
       total: 4,
       attempted: 0,
       passed: 0,
       failed: 0,
-      quoteIssues: 0,
+      mismatch: 0,
+      quoted: 0,
     });
     const retried = buildCalldataTestCoverage(
+      [{ ...result, passed: 0, attempted: true, lastStatus: 'ignored' }],
+      [plan]
+    );
+    expect(retried.byChainDex.get(`ETH:${DEX_ENUM.UNI}`)).toEqual({
+      total: 4,
+      attempted: 1,
+      passed: 0,
+      failed: 0,
+      mismatch: 0,
+      quoted: 0,
+    });
+    const mismatched = buildCalldataTestCoverage(
+      [{ ...result, passed: 0, mismatch: 1, lastStatus: 'mismatch' }],
+      [plan]
+    );
+    expect(mismatched.byChainDex.get(`ETH:${DEX_ENUM.UNI}`)?.mismatch).toBe(1);
+    expect(mismatched.byChainDex.get(`ETH:${DEX_ENUM.UNI}`)?.passed).toBe(0);
+    const failed = buildCalldataTestCoverage(
       [{ ...result, failed: 1, lastStatus: 'failed' }],
       [plan]
     );
-    expect(retried.byChainDex.get(`ETH:${DEX_ENUM.UNI}`)?.passed).toBe(0);
-    expect(retried.byChainDex.get(`ETH:${DEX_ENUM.UNI}`)?.failed).toBe(1);
+    expect(failed.byChainDex.get(`ETH:${DEX_ENUM.UNI}`)?.passed).toBe(0);
+    expect(failed.byChainDex.get(`ETH:${DEX_ENUM.UNI}`)?.failed).toBe(1);
     const bounded = buildCalldataTestCoverage(
       [result],
       [

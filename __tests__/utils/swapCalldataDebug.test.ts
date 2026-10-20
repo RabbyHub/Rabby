@@ -27,7 +27,8 @@ const params: VerifySdkParams = {
 };
 const decoded = {
   fromToken: sample.quote.fromToken,
-  fromTokenAmount: sample.quote.fromTokenAmount,
+  // Encoded route input; the remaining 3750000000000 wei is a native fee.
+  fromTokenAmount: '1496250000000000',
   toToken: sample.quote.toToken,
   minReceiveToTokenAmount: '3494249',
   toTokenReceiver: sample.quote.tx.from,
@@ -53,6 +54,7 @@ it('uses the editable local decoder in Magpie quote diagnostics', () => {
     'Magpie | DexAggregator | ARBITRUM: calldata ✅passed',
     {
       decoded,
+      validation: expect.objectContaining({ passed: true }),
       checks: {
         routerPass: true,
         spenderPass: true,
@@ -64,7 +66,7 @@ it('uses the editable local decoder in Magpie quote diagnostics', () => {
   );
 });
 
-it('logs successful parsing even when the receiver check fails', () => {
+it('distinguishes successful decoding from a mismatched recipient', () => {
   localDecoder.mockReturnValue(decoded);
 
   const result = verifySdkWithDebug(
@@ -76,9 +78,12 @@ it('logs successful parsing even when the receiver check fails', () => {
   expect(result.isSdkDataPass).toBe(false);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie | DexAggregator | ARBITRUM: calldata ✅passed',
-    {
+    'Magpie | DexAggregator | ARBITRUM: calldata parsed, result ❌mismatch',
+    expect.objectContaining({
       decoded,
+      validation: expect.objectContaining({ passed: false }),
+      firstFailedStep: 'validate.toTokenReceiver',
+      quote,
       checks: {
         routerPass: true,
         spenderPass: true,
@@ -86,11 +91,11 @@ it('logs successful parsing even when the receiver check fails', () => {
         receiverPass: false,
         isSdkDataPass: false,
       },
-    }
+    })
   );
 });
 
-it('includes the original quote when decoding fails', () => {
+it('fails validation and includes the original quote when decoding fails', () => {
   const error = new CalldataDecodeError(
     'decode.transactionABI',
     'Unsupported Magpie calldata selector: 0xdeadbeef'
@@ -109,7 +114,9 @@ it('includes the original quote when decoding fails', () => {
   );
 
   expect(localDecoder).toHaveBeenCalledTimes(1);
-  expect(result.isSdkDataPass).toBe(true);
+  expect(result.callDataPass).toBe(false);
+  expect(result.receiverPass).toBe(false);
+  expect(result.isSdkDataPass).toBe(false);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
     'Magpie | unknown | ARBITRUM: calldata ❌failed',
@@ -120,9 +127,9 @@ it('includes the original quote when decoding fails', () => {
       checks: {
         routerPass: true,
         spenderPass: true,
-        callDataPass: true,
-        receiverPass: true,
-        isSdkDataPass: true,
+        callDataPass: false,
+        receiverPass: false,
+        isSdkDataPass: false,
       },
     }
   );

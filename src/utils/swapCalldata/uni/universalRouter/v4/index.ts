@@ -1,7 +1,20 @@
+import BigNumber from 'bignumber.js';
 import type { UniversalRouterVersion } from '@uniswap/universal-router-sdk';
 import { CalldataDecodeError } from '../../../errors';
-import { Context, setReceiver, setSwap, Swap, setOutput } from '../../shared';
+import {
+  assertInputAsset,
+  chainToken,
+  Context,
+  CONTRACT_BALANCE,
+  MSG_SENDER,
+  Minimums,
+  payPortion,
+  setSwap,
+  Swap,
+  setOutput,
+} from '../../shared';
 import { decodeV4Action, readPlan } from '../sdk';
+import { isSameUniAsset } from '../../assets';
 
 export const walkV4 = (
   input: string,
@@ -16,6 +29,11 @@ export const walkV4 = (
     throw new CalldataDecodeError(step, 'V4 actions and params lengths differ');
   }
 
+  // PoolManager credit is not a router balance. TAKE transfers it to the
+  // router or the recipient; SETTLE can spend router funds in the other direction.
+  // https://github.com/Uniswap/v4-periphery/blob/main/src/base/DeltaResolver.sol
+  const poolMinimums: Minimums = {};
+  const debtBounds: Minimums = {};
   for (let i = 0; i < params.length; i++) {
     const action = parseInt(actionBytes.slice(i * 2, i * 2 + 2), 16);
     const actionStep = `${step}.actions[${i}].0x${action
@@ -23,6 +41,8 @@ export const walkV4 = (
       .padStart(2, '0')}`;
     const decoded = decodeV4Action(action, params[i], version, actionStep);
     const args = decoded.params;
+    const keyFor = (currency: string) =>
+      chainToken(currency, ctx.native).toLowerCase();
     switch (decoded.name) {
       case 'SWAP_EXACT_IN_SINGLE':
       case 'SWAP_EXACT_IN': {
@@ -37,14 +57,53 @@ export const walkV4 = (
         const to = single
           ? data.poolKey[data.zeroForOne ? 'currency1' : 'currency0']
           : lastHop.intermediateCurrency;
+        const amount = data.amountIn.toString();
+        const key = keyFor(from);
+        if (
+          swap.fromToken &&
+          isSameUniAsset(to, swap.fromToken, ctx.chainId, ctx.native) &&
+          !swap.inputAmountLocked
+        ) {
+          throw new CalldataDecodeError(
+            actionStep,
+            'V4 returns the original input asset without a fixed prepaid budget; the net user input depends on pool deltas'
+          );
+        }
+        if (amount === '0' && poolMinimums[key] === undefined) {
+          throw new CalldataDecodeError(
+            actionStep,
+            'OPEN_DELTA input has no preceding pool credit'
+          );
+        }
+        // A prior pool credit can fund an intermediate leg. Only its possible
+        // shortfall contributes to the upper bound later spent by SETTLE.
+        if (amount !== '0') {
+          const debt = BigNumber.max(
+            0,
+            new BigNumber(amount).minus(poolMinimums[key] || 0)
+          );
+          debtBounds[key] = new BigNumber(debtBounds[key] || 0)
+            .plus(debt)
+            .toFixed();
+        }
+        // Output first repays any existing debt in that currency; only the
+        // excess is a positive pool credit available to TAKE or OPEN_DELTA.
+        const outputKey = keyFor(to);
+        const outputMinimum = new BigNumber(data.amountOutMinimum.toString());
+        const outputDebt = new BigNumber(debtBounds[outputKey] || 0);
+        debtBounds[outputKey] = BigNumber.max(
+          0,
+          outputDebt.minus(outputMinimum)
+        ).toFixed();
         setSwap(
           swap,
           ctx,
           from,
           to,
-          data.amountIn.toString(),
-          data.amountOutMinimum.toString(),
-          actionStep
+          amount,
+          BigNumber.max(0, outputMinimum.minus(outputDebt)).toFixed(),
+          actionStep,
+          { minimums: poolMinimums }
         );
         break;
       }
@@ -56,7 +115,8 @@ export const walkV4 = (
           args.currency,
           args.recipient,
           amount === '0' ? undefined : amount,
-          amount !== '0'
+          amount !== '0',
+          poolMinimums
         );
         break;
       }
@@ -65,24 +125,98 @@ export const walkV4 = (
           swap,
           ctx,
           args.currency,
-          ctx.sender,
-          args.minAmount.toString()
+          // V4Router TAKE_ALL pays msgSender(), including the proxy caller.
+          // https://github.com/Uniswap/v4-periphery/blob/main/src/V4Router.sol
+          MSG_SENDER,
+          BigNumber.max(
+            poolMinimums[keyFor(args.currency)] || 0,
+            args.minAmount.toString()
+          ).toFixed(),
+          false,
+          poolMinimums
         );
         break;
-      case 'TAKE_PAIR':
-        setReceiver(swap, args.recipient, ctx);
-        break;
-      case 'SWEEP':
-        setOutput(swap, ctx, args.currency, args.recipient);
+      case 'TAKE_PORTION':
+        payPortion(
+          swap,
+          ctx,
+          args.currency,
+          args.recipient,
+          args.bips.toString(),
+          '10000',
+          actionStep,
+          poolMinimums
+        );
         break;
       case 'SETTLE':
-      case 'SETTLE_ALL':
-      case 'SETTLE_PAIR':
-      case 'TAKE_PORTION':
-      case 'CLOSE_CURRENCY':
-      case 'UNWRAP':
+      case 'SETTLE_ALL': {
+        const key = keyFor(args.currency);
+        const amount = decoded.name === 'SETTLE' ? args.amount.toString() : '0';
+        const payerIsUser = decoded.name === 'SETTLE_ALL' || args.payerIsUser;
+        const native = key === ctx.native.toLowerCase();
+        const pending = (swap.pendingMinimums ||= {});
+        const debt = new BigNumber(debtBounds[key] || 0);
+        // Native currency always comes from the router's msg.value/balance,
+        // even if the settlement specifies the user as payer.
+        if (
+          payerIsUser &&
+          !native &&
+          (new BigNumber(debtBounds[key] || 0).gt(0) ||
+            new BigNumber(amount).gt(0))
+        ) {
+          assertInputAsset(swap, ctx, args.currency, actionStep);
+        }
+        if (amount !== '0') {
+          // SETTLE may precede SWAP: overpayment creates pool credit that a
+          // subsequent OPEN_DELTA swap consumes. CONTRACT_BALANCE reads the
+          // router, not the user's allowance or a previous pool credit.
+          const settledMinimum = CONTRACT_BALANCE.eq(amount)
+            ? new BigNumber(pending[key] || 0)
+            : new BigNumber(amount);
+          const credit = BigNumber.max(0, settledMinimum.minus(debt));
+          // Merely clearing a debt does not create a reusable input credit.
+          // Retain a zero lower bound only for an actual prepayment or a
+          // previously established credit whose exact balance is unknown.
+          if (
+            debt.isZero() ||
+            credit.gt(0) ||
+            poolMinimums[key] !== undefined
+          ) {
+            poolMinimums[key] = new BigNumber(poolMinimums[key] || 0)
+              .plus(credit)
+              .toFixed();
+          }
+          if (
+            !swap.hasSwap &&
+            !swap.fromToken &&
+            payerIsUser &&
+            !native &&
+            !CONTRACT_BALANCE.eq(amount)
+          ) {
+            swap.fromToken = chainToken(args.currency, ctx.native);
+            swap.fromTokenAmount = amount;
+            swap.inputAmountLocked = true;
+          }
+        }
+        if (!payerIsUser || native) {
+          const bound = amount === '0' ? debtBounds[key] : amount;
+          pending[key] =
+            bound === undefined || CONTRACT_BALANCE.eq(bound)
+              ? '0'
+              : BigNumber.max(
+                  0,
+                  new BigNumber(pending[key] || 0).minus(bound)
+                ).toFixed();
+        }
+        debtBounds[key] =
+          amount === '0' || CONTRACT_BALANCE.eq(amount)
+            ? '0'
+            : BigNumber.max(0, debt.minus(amount)).toFixed();
         break;
+      }
       default:
+        // An SDK ABI entry does not imply that its payment effects are modeled.
+        // Never ignore an action that could change the final assets or amounts.
         throw new CalldataDecodeError(
           actionStep,
           `Unsupported V4 action ${decoded.name} for the current exact-input quote flow`

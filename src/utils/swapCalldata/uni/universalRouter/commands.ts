@@ -11,6 +11,7 @@ import {
   wrapNative,
   setOutput,
   CONTRACT_BALANCE,
+  payPortion,
 } from '../shared';
 import type { RouterProfile } from './profiles';
 import { decodeCommand, paramValues } from './sdk';
@@ -100,7 +101,13 @@ export const walkCommands = (
           args.amountIn.toString(),
           args.amountOutMin.toString(),
           commandStep,
-          { recipient: args.recipient, payerIsUser: args.payerIsUser }
+          {
+            recipient: args.recipient,
+            payerIsUser: args.payerIsUser,
+            // V2 amountIn=0 explicitly denotes a pair that was already paid.
+            // https://github.com/Uniswap/universal-router/blob/main/contracts/modules/uniswap/v2/V2SwapRouter.sol
+            alreadyPaid: !v3 && args.amountIn.toString() === '0',
+          }
         );
         break;
       }
@@ -120,7 +127,13 @@ export const walkCommands = (
         break;
       }
       case CommandType.WRAP_ETH:
-        wrapNative(swap, ctx, args.amount.toString());
+        wrapNative(
+          swap,
+          ctx,
+          args.amount.toString(),
+          args.recipient,
+          commandStep
+        );
         break;
       case CommandType.UNWRAP_WETH:
         unwrapNative(swap, ctx, args.recipient, args.amountMin.toString());
@@ -135,9 +148,21 @@ export const walkCommands = (
           `${commandStep}.subPlan`
         );
         break;
-      // Fees and balance assertions are decoded but do not describe a payout.
       case CommandType.PAY_PORTION:
       case CommandType.PAY_PORTION_FULL_PRECISION:
+        payPortion(
+          swap,
+          ctx,
+          args.token,
+          args.recipient,
+          (command === CommandType.PAY_PORTION
+            ? args.bips
+            : args.portion
+          ).toString(),
+          command === CommandType.PAY_PORTION ? '10000' : '1000000000000000000',
+          commandStep
+        );
+        break;
       case CommandType.BALANCE_CHECK_ERC20:
         break;
     }
