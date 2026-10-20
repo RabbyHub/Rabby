@@ -1,13 +1,12 @@
 import React, { useMemo } from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import type { CHAINS_ENUM } from '@debank/common';
 import {
   CalldataTestPair,
   CalldataTestScenario,
   CALLDATA_TEST_SLIPPAGES,
-  CALLDATA_TEST_PAIR_LIMIT,
+  CALLDATA_TEST_PAIR_LIMITS,
   CALLDATA_TEST_USD_SIZES,
   getCalldataTestAmount,
   getCalldataTestCases,
@@ -69,8 +68,14 @@ const PairGroup = ({
               <Button
                 size="small"
                 disabled={busy}
+                title={t('page.swap.calldataTest.fillSize', {
+                  usd: test.usdSizes[0].toLocaleString(),
+                })}
                 onClick={() =>
-                  onApplyPair(pair, getCalldataTestAmount(pair.from, test.usd))
+                  onApplyPair(
+                    pair,
+                    getCalldataTestAmount(pair.from, test.usdSizes[0])
+                  )
                 }
               >
                 {t('page.swap.calldataTest.fill')}
@@ -80,7 +85,9 @@ const PairGroup = ({
                 disabled={busy || !test.dexes.length}
                 onClick={() => test.run([pair.id])}
               >
-                {t('page.swap.calldataTest.test')}
+                {t('page.swap.calldataTest.testRequests', {
+                  count: scenarios.length * test.dexes.length,
+                })}
               </Button>
             </div>
             <div className="flex flex-wrap gap-8 mt-2">
@@ -111,8 +118,7 @@ const PairGroup = ({
                         : 'text-r-neutral-foot'
                     )}
                   >
-                    {dex === DEX_ENUM.UNI ? 'Uni' : 'Magpie'}{' '}
-                    {quoted ? `${passed}/${quoted}` : '—'}
+                    Uni {quoted ? `${passed}/${quoted}` : '—'}
                     {!!failed &&
                       ` · ${t('page.swap.calldataTest.decodeFailures', {
                         count: failed,
@@ -171,8 +177,25 @@ export const CalldataTestCases = ({
     <div className="mt-8">
       <div className="text-11 text-r-neutral-foot">
         {t('page.swap.calldataTest.caseLimit', {
-          count: CALLDATA_TEST_PAIR_LIMIT,
+          count: test.pairLimit,
         })}
+      </div>
+      <div className="mt-8 text-11 text-r-neutral-foot">
+        {t('page.swap.calldataTest.pairLimit')}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-4">
+        {CALLDATA_TEST_PAIR_LIMITS.map((limit) => (
+          <Button
+            key={limit}
+            size="small"
+            type={test.pairLimit === limit ? 'primary' : 'default'}
+            aria-pressed={test.pairLimit === limit}
+            disabled={busy}
+            onClick={() => test.setPairLimit(limit)}
+          >
+            {limit}
+          </Button>
+        ))}
       </div>
       <div className="mt-8 flex flex-wrap gap-4">
         <Button
@@ -191,17 +214,29 @@ export const CalldataTestCases = ({
           {t('page.swap.calldataTest.discoverMore')}
         </Button>
       </div>
-      <div className="mt-8 text-11 text-r-neutral-foot">
-        {t('page.swap.calldataTest.size')}
+      <div className="mt-8 flex items-center gap-4 text-11">
+        <span className="text-r-neutral-foot mr-auto">
+          {t('page.swap.calldataTest.size')}
+        </span>
+        <Button
+          size="small"
+          disabled={
+            busy || test.usdSizes.length === CALLDATA_TEST_USD_SIZES.length
+          }
+          onClick={test.selectAllSizes}
+        >
+          {t('page.swap.calldataTest.selectAll')}
+        </Button>
       </div>
       <div className="flex flex-wrap gap-4 mt-4">
         {CALLDATA_TEST_USD_SIZES.map((usd) => (
           <Button
             key={usd}
             size="small"
-            type={test.usd === usd ? 'primary' : 'default'}
+            type={test.usdSizes.includes(usd) ? 'primary' : 'default'}
+            aria-pressed={test.usdSizes.includes(usd)}
             disabled={busy}
-            onClick={() => test.setUsd(usd)}
+            onClick={() => test.toggleUsd(usd)}
           >
             ${usd.toLocaleString()}
           </Button>
@@ -211,17 +246,35 @@ export const CalldataTestCases = ({
         <span className="text-r-neutral-foot mr-auto">
           {t('page.swap.calldataTest.slippage')}
         </span>
+        <Button
+          size="small"
+          disabled={
+            busy || test.slippages.length === CALLDATA_TEST_SLIPPAGES.length
+          }
+          onClick={test.selectAllSlippages}
+        >
+          {t('page.swap.calldataTest.selectAll')}
+        </Button>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-4">
         {CALLDATA_TEST_SLIPPAGES.map((value) => (
           <Button
             key={value}
             size="small"
-            type={test.slippage === value ? 'primary' : 'default'}
+            type={test.slippages.includes(value) ? 'primary' : 'default'}
+            aria-pressed={test.slippages.includes(value)}
             disabled={busy}
-            onClick={() => test.setSlippage(value)}
+            onClick={() => test.toggleSlippage(value)}
           >
             {value}%
           </Button>
         ))}
+      </div>
+      <div className="mt-4 text-11 text-r-neutral-foot">
+        {t('page.swap.calldataTest.matrixSelection', {
+          sizes: test.usdSizes.length,
+          slippages: test.slippages.length,
+        })}
       </div>
       {test.loading && (
         <div className="mt-8 text-11 text-r-neutral-foot">
@@ -274,6 +327,7 @@ export const CalldataTestCases = ({
               total: test.progress.total,
               pair: `${test.progress.current.pair.from.symbol} → ${test.progress.current.pair.to.symbol}`,
               amount: test.progress.current.payAmount,
+              usd: test.progress.current.usd.toLocaleString(),
               slippage: test.progress.current.slippage,
             })
           : t('page.swap.calldataTest.quoteOnly')}

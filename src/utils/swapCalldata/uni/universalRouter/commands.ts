@@ -16,6 +16,7 @@ import {
 import type { RouterProfile } from './profiles';
 import { decodeCommand, paramValues } from './sdk';
 import { walkV4 } from './v4';
+import { getV2InputPair } from './v2';
 
 export const walkCommands = (
   commands: string,
@@ -104,9 +105,15 @@ export const walkCommands = (
           {
             recipient: args.recipient,
             payerIsUser: args.payerIsUser,
-            // V2 amountIn=0 explicitly denotes a pair that was already paid.
-            // https://github.com/Uniswap/universal-router/blob/main/contracts/modules/uniswap/v2/V2SwapRouter.sol
-            alreadyPaid: !v3 && args.amountIn.toString() === '0',
+            // Mixed routes may prepay this pair even when V2 also spends the
+            // Router balance. Match its actual address before consuming a payout.
+            inputPair:
+              !v3 &&
+              args.payerIsUser === false &&
+              (args.amountIn.toString() === '0' ||
+                CONTRACT_BALANCE.eq(args.amountIn.toString()))
+                ? getV2InputPair(ctx.chainId, path, commandStep)
+                : undefined,
           }
         );
         break;

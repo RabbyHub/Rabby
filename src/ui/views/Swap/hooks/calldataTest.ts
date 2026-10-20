@@ -12,7 +12,14 @@ import {
 import {
   buildCalldataTestPairs,
   buildCalldataTestScenarios,
-  CALLDATA_TEST_TOKEN_SEARCHES,
+  getCalldataTestTokenSearches,
+  CALLDATA_TEST_DEFAULT_PAIR_LIMIT,
+  CALLDATA_TEST_DEFAULT_USD_SIZES,
+  CALLDATA_TEST_DEFAULT_SLIPPAGES,
+  CALLDATA_TEST_PAIR_LIMIT,
+  CALLDATA_TEST_PRIORITY_CHAINS,
+  CALLDATA_TEST_USD_SIZES,
+  CALLDATA_TEST_SLIPPAGES,
   CalldataTestScenario,
 } from '@/utils/swapCalldata/testCases';
 import { TEMPO_PATH_USD_TOKEN } from '@/constant/tempo';
@@ -27,6 +34,21 @@ import {
 import { useQuoteMethods } from './quote';
 import { getRabbyFeeRate } from './fee';
 
+const QUOTE_START_INTERVAL_MS = 500;
+const MAX_CONCURRENT_QUOTES = 2;
+
+// Keep preset order and at least one selected value in each dimension.
+const toggleSelection = <T extends string | number>(
+  selected: T[],
+  value: T,
+  presets: readonly T[]
+) => {
+  const next = selected.includes(value)
+    ? selected.filter((item) => item !== value)
+    : [...selected, value];
+  return next.length ? presets.filter((item) => next.includes(item)) : selected;
+};
+
 export const useCalldataTest = ({
   chain,
   userAddress,
@@ -40,8 +62,19 @@ export const useCalldataTest = ({
   const { getDexQuote, supportedDEXList } = useQuoteMethods();
   const [reloadId, setReloadId] = useState(0);
   const [discoverAll, setDiscoverAll] = useState(false);
-  const [usd, setUsd] = useState(20);
-  const [slippage, setSlippage] = useState('1');
+  const [sizesByChain, setSizesByChain] = useState<Record<string, number[]>>(
+    {}
+  );
+  const [pairLimits, setPairLimits] = useState<Record<string, number>>({});
+  const pairLimit = pairLimits[chain] ?? CALLDATA_TEST_DEFAULT_PAIR_LIMIT;
+  const usdSizes = sizesByChain[chain] ?? CALLDATA_TEST_DEFAULT_USD_SIZES;
+  const expandedDiscovery =
+    discoverAll ||
+    pairLimit > CALLDATA_TEST_PAIR_LIMIT ||
+    CALLDATA_TEST_PRIORITY_CHAINS.includes(chain);
+  const [slippages, setSlippages] = useState([
+    ...CALLDATA_TEST_DEFAULT_SLIPPAGES,
+  ]);
   const [tokens, setTokens] = useState<{
     key: string;
     native?: TokenItem;
@@ -58,7 +91,7 @@ export const useCalldataTest = ({
   const running = useRef(false);
   const stopRequested = useRef(false);
   const [stopping, setStopping] = useState(false);
-  const key = `${chain}:${userAddress}:${reloadId}:${discoverAll}`;
+  const key = `${chain}:${userAddress}:${reloadId}:${expandedDiscovery}`;
   const dexes = getCalldataTestDexes(chain, supportedDEXList);
 
   useEffect(() => {
@@ -96,9 +129,7 @@ export const useCalldataTest = ({
             : [result.value]
           : []
       );
-      const searches = discoverAll
-        ? CALLDATA_TEST_TOKEN_SEARCHES
-        : CALLDATA_TEST_TOKEN_SEARCHES.slice(0, 12);
+      const searches = getCalldataTestTokenSearches(chain, expandedDiscovery);
       // Use API metadata, never guessed token addresses or decimal precision.
       // Limit discovery concurrency separately from DEX quote requests.
       for (let index = 0; index < searches.length && active; index += 4) {
@@ -153,7 +184,7 @@ export const useCalldataTest = ({
     return () => {
       active = false;
     };
-  }, [chain, key, userAddress, wallet.openapi, discoverAll]);
+  }, [chain, key, userAddress, wallet.openapi, expandedDiscovery]);
 
   useEffect(() => {
     runId.current += 1;
@@ -171,12 +202,12 @@ export const useCalldataTest = ({
   const pairs = useMemo(() => {
     const chainInfo = findChainByEnum(chain);
     return chainInfo && tokens?.key === key
-      ? buildCalldataTestPairs(chainInfo, tokens.native, tokens.list)
+      ? buildCalldataTestPairs(chainInfo, tokens.native, tokens.list, pairLimit)
       : [];
-  }, [chain, key, tokens]);
+  }, [chain, key, tokens, pairLimit]);
   const scenarios = useMemo(
-    () => buildCalldataTestScenarios(pairs, [usd], [slippage]),
-    [pairs, usd, slippage]
+    () => buildCalldataTestScenarios(pairs, usdSizes, slippages),
+    [pairs, usdSizes, slippages]
   );
 
   const run = async (pairIds: readonly string[], onlyMissing = false) => {
@@ -228,46 +259,68 @@ export const useCalldataTest = ({
               ])
           ).values()
         ),
-        sizesUsd: [usd],
-        slippages: [slippage],
+        sizesUsd: usdSizes,
+        slippages,
+        pairIds: pairs.map((pair) => pair.id),
       });
+      const pending = new Set<Promise<void>>();
+      let nextQuoteAt = 0;
+      let batchError: Error | undefined;
       for (const job of jobs) {
+        if (runId.current !== id || stopRequested.current) break;
+        if (pending.size >= MAX_CONCURRENT_QUOTES) await Promise.race(pending);
+        const delay = nextQuoteAt - Date.now();
+        if (delay > 0)
+          await new Promise((resolve) => setTimeout(resolve, delay));
         if (runId.current !== id || stopRequested.current) break;
         const { pair, payAmount, slippage } = job.scenario;
         setProgress({ current: job.scenario, done, total });
-        // Insufficient-balance mode skips allowance, nonce and pre-execution.
-        // Only fetch and decode quotes; never sign or submit a transaction.
-        await Promise.allSettled(
-          job.dexes.map((dexId) =>
-            getDexQuote({
-              chain,
-              dexId,
-              userAddress,
-              payToken: pair.from,
-              receiveToken: pair.to,
-              payAmount,
-              slippage,
-              fee: getRabbyFeeRate({
-                payAmount,
-                payTokenPrice: pair.from.price,
+        // Pace request starts, rather than adding 500 ms after each response.
+        // Bound in-flight quotes as well when the backend responds slowly.
+        nextQuoteAt = Date.now() + QUOTE_START_INTERVAL_MS;
+        const task: Promise<void> = (async () => {
+          // Insufficient-balance mode skips allowance, nonce and pre-execution.
+          // Only fetch and decode quotes; never sign or submit a transaction.
+          await Promise.allSettled(
+            job.dexes.map((dexId) =>
+              getDexQuote({
+                chain,
+                dexId,
+                userAddress,
                 payToken: pair.from,
                 receiveToken: pair.to,
-                isWrapToken: false,
-              }),
-              inSufficient: true,
-            })
-          )
-        );
-        await flushCalldataTestResults();
-        if (runId.current !== id) break;
-        const error = getCalldataTestStorageError();
-        if (error) throw new Error(error);
-        done += job.dexes.length;
-        setProgress({ current: job.scenario, done, total });
-        // Avoid starting a burst of hundreds of requests on fast/error responses.
-        if (done < total && !stopRequested.current && runId.current === id)
-          await new Promise((resolve) => setTimeout(resolve, 250));
+                payAmount,
+                slippage,
+                testUsd: job.scenario.usd,
+                fee: getRabbyFeeRate({
+                  payAmount,
+                  payTokenPrice: pair.from.price,
+                  payToken: pair.from,
+                  receiveToken: pair.to,
+                  isWrapToken: false,
+                }),
+                inSufficient: true,
+              })
+            )
+          );
+          await flushCalldataTestResults();
+          if (runId.current !== id) return;
+          const error = getCalldataTestStorageError();
+          if (error) throw new Error(error);
+          done += job.dexes.length;
+          setProgress((current) => current && { ...current, done });
+        })()
+          .catch((error) => {
+            if (runId.current !== id) return;
+            batchError =
+              error instanceof Error ? error : new Error(String(error));
+            stopRequested.current = true;
+          })
+          .finally(() => pending.delete(task));
+        pending.add(task);
       }
+      await Promise.all(pending);
+      if (batchError) throw batchError;
     } catch (error) {
       if (runId.current === id)
         setRunError(error instanceof Error ? error.message : String(error));
@@ -284,11 +337,31 @@ export const useCalldataTest = ({
     pairs,
     scenarios,
     dexes,
-    usd,
-    slippage,
-    setUsd,
-    setSlippage,
-    discoverAll,
+    usdSizes,
+    slippages,
+    pairLimit,
+    setPairLimit: (value: number) =>
+      setPairLimits((previous) => ({ ...previous, [chain]: value })),
+    toggleUsd: (value: number) =>
+      setSizesByChain((previous) => ({
+        ...previous,
+        [chain]: toggleSelection(
+          previous[chain] ?? CALLDATA_TEST_DEFAULT_USD_SIZES,
+          value,
+          CALLDATA_TEST_USD_SIZES
+        ),
+      })),
+    toggleSlippage: (value: string) =>
+      setSlippages((selected) =>
+        toggleSelection(selected, value, CALLDATA_TEST_SLIPPAGES)
+      ),
+    selectAllSizes: () =>
+      setSizesByChain((previous) => ({
+        ...previous,
+        [chain]: [...CALLDATA_TEST_USD_SIZES],
+      })),
+    selectAllSlippages: () => setSlippages([...CALLDATA_TEST_SLIPPAGES]),
+    discoverAll: expandedDiscovery,
     discoverMore: () => {
       setDiscoverAll(true);
       setReloadId((value) => value + 1);

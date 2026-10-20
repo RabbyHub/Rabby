@@ -1,14 +1,13 @@
 import type { CHAINS_ENUM } from '@debank/common';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
-export const CALLDATA_TEST_DEXES = [DEX_ENUM.UNI, DEX_ENUM.MAGPIE];
+export const CALLDATA_TEST_DEXES = [DEX_ENUM.UNI];
 
 // Match the backend's enabled DEX handlers and globally supported chains.
 const BACKEND_UNSUPPORTED_CHAINS: Partial<
   Record<DEX_ENUM, readonly string[]>
 > = {
   [DEX_ENUM.UNI]: ['CELO', 'MONAD'],
-  [DEX_ENUM.MAGPIE]: ['FTM', 'PZE', 'STABLE'],
 };
 
 export const isCalldataTestDex = (dex: string) =>

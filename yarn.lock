@@ -8059,7 +8059,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/sdk-core@npm:^7.19.4":
+"@uniswap/sdk-core@npm:7.19.4, @uniswap/sdk-core@npm:^7.19.4":
   version: 7.19.4
   resolution: "@uniswap/sdk-core@npm:7.19.4"
   dependencies:
@@ -8135,7 +8135,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/v2-sdk@npm:^4.21.5":
+"@uniswap/v2-sdk@npm:4.21.5, @uniswap/v2-sdk@npm:^4.21.5":
   version: 4.21.5
   resolution: "@uniswap/v2-sdk@npm:4.21.5"
   dependencies:
@@ -20666,7 +20666,9 @@ __metadata:
     "@types/webextension-polyfill": "npm:0.10.2"
     "@typescript-eslint/eslint-plugin": "npm:7.1.1"
     "@typescript-eslint/parser": "npm:7.1.1"
+    "@uniswap/sdk-core": "npm:7.19.4"
     "@uniswap/universal-router-sdk": "npm:5.14.0"
+    "@uniswap/v2-sdk": "npm:4.21.5"
     "@zumer/snapdom": "npm:2.12.0"
     "@zxing/browser": "npm:0.0.10"
     "@zxing/library": "npm:0.8.0"

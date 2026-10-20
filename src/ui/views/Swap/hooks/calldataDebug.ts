@@ -22,6 +22,8 @@ import {
 
 const logPrefix = '[swap-calldata-debug]';
 
+type LocalVerifySdkParams = VerifySdkParams & { testUsd?: number };
+
 const printSnapshot = (
   snapshot: Pick<
     CalldataTestRecord,
@@ -38,7 +40,7 @@ const printSnapshot = (
   > & {
     status?: 'passed' | 'mismatch';
   },
-  params: VerifySdkParams,
+  params: LocalVerifySdkParams,
   quote: QuoteResult
 ) => {
   const { dex, version, chain, status, ...details } = snapshot;
@@ -59,6 +61,7 @@ const printSnapshot = (
     status: status || 'failed',
     quote,
     request: {
+      ...(params.testUsd !== undefined ? { targetUsd: params.testUsd } : {}),
       fromToken: params.payTokenId,
       fromTokenAmount: params.data?.fromTokenAmount || quote.fromTokenAmount,
       toToken: params.receiveTokenId,
@@ -71,7 +74,7 @@ const printSnapshot = (
 
 // getDexQuote filters unsupported DEXes, chains and wrap pairs before this call.
 export const verifySdkWithDebug = (
-  params: VerifySdkParams,
+  params: LocalVerifySdkParams,
   quote: QuoteResult
 ): VerifySdkResult => {
   const tx = { ...(params.data || quote).tx, chainId: params.chainId };

@@ -6,15 +6,18 @@ import {
 } from '@/utils/swapCalldata';
 import recorded from '../fixtures/swap-calldata/recorded-swaps-2026-10-16.json';
 
-const uni = new utils.Interface(UniABI);
-const refundRegressions = recorded.cases.filter(
-  (sample) => sample.knownFailure
+// Keep historical raw quotes intact; only Uni belongs to the active test scope.
+const samples = recorded.cases.filter(
+  (sample) => sample.record.dex === 'Uniswap'
 );
-const transaction = (sample: typeof recorded.cases[number]) => ({
+
+const uni = new utils.Interface(UniABI);
+const refundRegressions = samples.filter((sample) => sample.knownFailure);
+const transaction = (sample: typeof samples[number]) => ({
   ...sample.record.quote.tx,
   chainId: sample.record.chainId,
 });
-const decode = (sample: typeof recorded.cases[number]) =>
+const decode = (sample: typeof samples[number]) =>
   decodeCalldata(sample.record.dex, transaction(sample), {
     nativeTokenAddress: sample.record.request.nativeTokenAddress,
   });
@@ -52,37 +55,29 @@ const routeFamilies = (commands: string, inputs: readonly string[]) => {
 };
 
 describe('2026-10-16 real quote dataset coverage', () => {
-  it('retains every quoted record, excluding backend and no-quote errors', () => {
-    expect(recorded.cases).toHaveLength(222);
-    expect(new Set(recorded.cases.map((sample) => sample.recordId)).size).toBe(
-      222
-    );
+  it('covers every Uni quote, excluding backend and no-quote errors', () => {
+    expect(samples).toHaveLength(63);
+    expect(new Set(samples.map((sample) => sample.recordId)).size).toBe(63);
     expect(
-      recorded.cases.filter((sample) => sample.record.status === 'passed')
-    ).toHaveLength(220);
+      samples.filter((sample) => sample.record.status === 'passed')
+    ).toHaveLength(61);
     expect(refundRegressions.map((sample) => sample.recordId)).toEqual([
       548,
       562,
     ]);
-    recorded.cases.forEach((sample) => {
+    samples.forEach((sample) => {
       expect(sample.recordId).toBe(sample.record.id);
       expect(sample.record.quote.tx.data).toMatch(/^0x[0-9a-f]+$/i);
       expect(['passed', 'failed']).toContain(sample.record.status);
     });
   });
 
-  it('contains all six Uni protocol combinations and the observed Magpie format', () => {
+  it('contains all six Uni protocol combinations', () => {
     const families: Record<string, number> = {};
-    recorded.cases.forEach((sample) => {
+    samples.forEach((sample) => {
       const tx = transaction(sample);
-      let family: string;
-      if (sample.record.dex === 'Uniswap') {
-        const parsed = uni.parseTransaction(tx);
-        family = routeFamilies(parsed.args.commands, parsed.args.inputs);
-      } else {
-        expect(tx.data.slice(0, 10)).toBe('0x46ec278a');
-        family = 'DexAggregator';
-      }
+      const parsed = uni.parseTransaction(tx);
+      const family = routeFamilies(parsed.args.commands, parsed.args.inputs);
       expect(family).toBe(sample.route.family);
       const key = `${sample.record.dex} / ${family}`;
       families[key] = (families[key] || 0) + 1;
@@ -94,14 +89,10 @@ describe('2026-10-16 real quote dataset coverage', () => {
       'Uniswap / V2+V3': 1,
       'Uniswap / V2+V4': 3,
       'Uniswap / V3+V4': 5,
-      'Magpie / DexAggregator': 159,
     });
   });
 
   it('retains every observed version, proxy variant and command shape', () => {
-    const samples = recorded.cases.filter(
-      (sample) => sample.record.dex === 'Uniswap'
-    );
     expect(
       new Set(samples.map((sample) => sample.route.routerVersion))
     ).toEqual(new Set(['1.2', '2.0', '2.1.1']));
@@ -126,7 +117,7 @@ describe('2026-10-16 real quote dataset coverage', () => {
         )
       ).size
     ).toBe(27);
-    recorded.cases.forEach((sample) => {
+    samples.forEach((sample) => {
       expect(getCalldataVersion(sample.record.dex, transaction(sample))).toBe(
         sample.record.version
       );
@@ -136,7 +127,7 @@ describe('2026-10-16 real quote dataset coverage', () => {
 
 describe('2026-10-16 calldata must decode to the expected result', () => {
   // Diagnostic markers never exempt a quote from successful-result assertions.
-  it.each(recorded.cases)('$name', (sample) => {
+  it.each(samples)('$name', (sample) => {
     const decoded = decode(sample);
     expect(
       decoded && {

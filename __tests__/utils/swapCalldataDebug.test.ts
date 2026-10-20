@@ -2,7 +2,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { DEX_ENUM, VerifySdkParams } from '@rabby-wallet/rabby-swap';
 import { CalldataDecodeError, decodeCalldata } from '@/utils/swapCalldata';
 import { verifySdkWithDebug } from '@/ui/views/Swap/hooks/calldataDebug';
-import sample from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
+import sample from '../fixtures/swap-calldata/uni-arbitrum-usdt0-to-usdc-v4.json';
 
 jest.mock('@/utils/swapCalldata', () => ({
   ...jest.requireActual('@/utils/swapCalldata'),
@@ -17,7 +17,7 @@ const { origin: _origin, ...quote } = sample.quote;
 const params: VerifySdkParams = {
   chain: CHAINS_ENUM.ARBITRUM,
   chainId: sample.chainId,
-  dexId: DEX_ENUM.MAGPIE,
+  dexId: DEX_ENUM.UNI,
   slippage: '1',
   data: quote,
   payTokenId: sample.quote.fromToken,
@@ -27,10 +27,9 @@ const params: VerifySdkParams = {
 };
 const decoded = {
   fromToken: sample.quote.fromToken,
-  // Encoded route input; the remaining 3750000000000 wei is a native fee.
-  fromTokenAmount: '1496250000000000',
+  fromTokenAmount: '4759000',
   toToken: sample.quote.toToken,
-  minReceiveToTokenAmount: '3494249',
+  minReceiveToTokenAmount: '4739264',
   toTokenReceiver: sample.quote.tx.from,
 };
 
@@ -41,7 +40,7 @@ beforeEach(() => {
 
 afterEach(() => jest.restoreAllMocks());
 
-it('uses the editable local decoder in Magpie quote diagnostics', () => {
+it('uses the editable local decoder in Uni quote diagnostics', () => {
   localDecoder.mockReturnValue(decoded);
 
   const result = verifySdkWithDebug(params, quote);
@@ -51,7 +50,7 @@ it('uses the editable local decoder in Magpie quote diagnostics', () => {
   expect(result.isSdkDataPass).toBe(true);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie | DexAggregator | ARBITRUM: calldata ✅passed',
+    'Uniswap | Universal Router 2.0 (SwapProxy) | ARBITRUM: calldata ✅passed',
     {
       decoded,
       validation: expect.objectContaining({ passed: true }),
@@ -78,7 +77,7 @@ it('distinguishes successful decoding from a mismatched recipient', () => {
   expect(result.isSdkDataPass).toBe(false);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie | DexAggregator | ARBITRUM: calldata parsed, result ❌mismatch',
+    'Uniswap | Universal Router 2.0 (SwapProxy) | ARBITRUM: calldata parsed, result ❌mismatch',
     expect.objectContaining({
       decoded,
       validation: expect.objectContaining({ passed: false }),
@@ -98,7 +97,7 @@ it('distinguishes successful decoding from a mismatched recipient', () => {
 it('fails validation and includes the original quote when decoding fails', () => {
   const error = new CalldataDecodeError(
     'decode.transactionABI',
-    'Unsupported Magpie calldata selector: 0xdeadbeef'
+    'no matching function for selector 0xdeadbeef'
   );
   localDecoder.mockImplementationOnce(() => {
     throw error;
@@ -119,7 +118,7 @@ it('fails validation and includes the original quote when decoding fails', () =>
   expect(result.isSdkDataPass).toBe(false);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie | unknown | ARBITRUM: calldata ❌failed',
+    'Uniswap | unknown | ARBITRUM: calldata ❌failed',
     {
       firstFailedStep: 'decode.transactionABI',
       error: { name: error.name, message: error.message, stack: error.stack },
@@ -136,11 +135,8 @@ it('fails validation and includes the original quote when decoding fails', () =>
 });
 
 it('logs the version-specific decoding step together with the original quote', () => {
-  const step = 'decode.magpie.dexAggregator.amountOutMin';
-  const error = new CalldataDecodeError(
-    step,
-    'amountOutMin points outside the payload'
-  );
+  const step = 'decode.uni.universal.2.0.commands[0].0x10.v4.actions[0].0x07';
+  const error = new CalldataDecodeError(step, 'V4 swap input is malformed');
   localDecoder.mockImplementationOnce(() => {
     throw error;
   });
@@ -150,11 +146,11 @@ it('logs the version-specific decoding step together with the original quote', (
   expect(localDecoder).toHaveBeenCalledTimes(1);
   expect(console.log).toHaveBeenCalledWith(
     '[swap-calldata-debug]',
-    'Magpie | DexAggregator | ARBITRUM: calldata ❌failed',
+    'Uniswap | Universal Router 2.0 (SwapProxy) | ARBITRUM: calldata ❌failed',
     expect.objectContaining({
       firstFailedStep: step,
       error: expect.objectContaining({
-        message: 'amountOutMin points outside the payload',
+        message: 'V4 swap input is malformed',
         stack: error.stack,
       }),
       quote,

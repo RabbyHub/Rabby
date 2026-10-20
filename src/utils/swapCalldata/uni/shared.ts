@@ -123,7 +123,7 @@ export const setSwap = (
   payment: {
     recipient?: string;
     payerIsUser?: boolean;
-    alreadyPaid?: boolean;
+    inputPair?: string;
     minimums?: Minimums;
   } = {}
 ) => {
@@ -133,16 +133,11 @@ export const setSwap = (
   const inputKey = input.toLowerCase();
   const poolCredit = payment.minimums && pending[inputKey] !== undefined;
   if (payment.payerIsUser === true) assertInputAsset(swap, ctx, input, step);
-  if (payment.alreadyPaid && payment.payerIsUser === false) {
-    // V4 can TAKE directly to the next V2 pair. A subsequent router-funded
-    // swap consumes that handoff; it is not a completed payout to the caller.
-    Object.entries(swap.payouts || {}).forEach(([key, payout]) => {
-      if (
-        isSameAddress(payout.token, input) &&
-        !isSameAddress(payout.receiver, ctx.sender)
-      )
-        delete swap.payouts![key];
-    });
+  if (payment.inputPair && payment.payerIsUser === false) {
+    // V3 / V4 can pay this token directly into the next V2 pair. Remove only
+    // that proven handoff, retaining payments to every other token or recipient.
+    const key = `${inputKey}:${payment.inputPair.toLowerCase()}`;
+    delete swap.payouts?.[key];
   }
   if (!swap.inputAmountLocked) {
     if (!swap.hasSwap) {

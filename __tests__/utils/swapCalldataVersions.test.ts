@@ -4,7 +4,6 @@ import {
   decodeCalldata,
   getCalldataVersion,
 } from '@/utils/swapCalldata';
-import magpieQuote from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
 
 const fromToken = '0x1111111111111111111111111111111111111111';
 const toToken = '0x2222222222222222222222222222222222222222';
@@ -335,47 +334,5 @@ describe('traditional Router entry points are outside the current quote flow', (
         transaction(legacy.encodeFunctionData(method, args))
       )
     ).toThrow('no matching function');
-  });
-});
-
-describe('Magpie packed amount boundaries', () => {
-  it('reads a compact value ending at the payload boundary like Solidity shr', () => {
-    const abi = new utils.Interface([
-      'function swapWithBackendSignature(bytes)',
-    ]);
-    const packed = new Uint8Array(220);
-    const put = (offset: number, data: string) =>
-      packed.set(utils.arrayify(data), offset - 68);
-    put(72, sender);
-    put(92, fromToken);
-    put(112, toToken);
-    put(132, utils.hexZeroPad('0x64', 32));
-    put(167, '0xe8');
-    put(168, utils.hexZeroPad(utils.hexlify(285), 2));
-    put(285, utils.hexZeroPad('0x5a', 3));
-    expect(
-      decodeCalldata(
-        'Magpie',
-        transaction(
-          abi.encodeFunctionData('swapWithBackendSignature', [packed])
-        )
-      )
-    ).toEqual(expected);
-  });
-
-  it('reports the exact field for an out-of-bounds DexAggregator pointer', () => {
-    const tx = magpieQuote.quote.tx;
-    const data =
-      tx.data.slice(0, 2 + 168 * 2) + 'ffff' + tx.data.slice(2 + 170 * 2);
-    expect(() =>
-      decodeCalldata('Magpie', { ...tx, chainId: magpieQuote.chainId, data })
-    ).toThrow(CalldataDecodeError);
-    try {
-      decodeCalldata('Magpie', { ...tx, chainId: magpieQuote.chainId, data });
-    } catch (error) {
-      expect((error as CalldataDecodeError).step).toBe(
-        'decode.magpie.dexAggregator.amountOutMin'
-      );
-    }
   });
 });

@@ -16,6 +16,7 @@ import {
   classifyCalldataTestCase,
   getCalldataTestScenarioId,
   CALLDATA_TEST_PAIR_LIMIT,
+  CALLDATA_TEST_MAX_PAIRS,
 } from './testCases';
 
 export type CalldataTestStatus =
@@ -28,6 +29,8 @@ export type CalldataTestStatus =
   | 'no-quote';
 
 export interface CalldataTestRequest {
+  // Approximate USD preset selected for a batch quote; absent for manual quotes.
+  targetUsd?: number;
   fromToken: string;
   fromTokenAmount: string;
   toToken: string;
@@ -102,6 +105,7 @@ export interface CalldataTestPlan {
   tokens: { id: string; symbol: string; decimals: number }[];
   sizesUsd: number[];
   slippages: string[];
+  pairIds?: string[];
   scenarioIds: string[];
 }
 
@@ -354,13 +358,22 @@ export const buildCalldataTestCoverage = (
   scenarioSummaries: CalldataTestScenarioSummary[],
   testPlans: CalldataTestPlan[]
 ) => {
-  const byScenario = new Map(scenarioSummaries.map((item) => [item.key, item]));
+  const byScenario = new Map(
+    scenarioSummaries
+      .filter((item) => isCalldataTestDex(item.dex))
+      .map((item) => [item.key, item])
+  );
   const planned = new Map<string, Set<string>>();
   const latestPlans = new Map<string, CalldataTestPlan>();
-  testPlans.forEach((plan) => {
-    // Keep expanded historical plans in exports, but count the latest bounded
-    // selection for each chain. Old thousands-case runs must not inflate it.
-    if (plan.scenarioIds.length > CALLDATA_TEST_PAIR_LIMIT) return;
+  getActiveTestPlans(testPlans).forEach((plan) => {
+    // Expanded plans count up to 100 pairs, independently of amount/slippage
+    // combinations. Unmarked legacy plans retain the old scenario limit.
+    if (
+      plan.pairIds
+        ? plan.pairIds.length > CALLDATA_TEST_MAX_PAIRS
+        : plan.scenarioIds.length > CALLDATA_TEST_PAIR_LIMIT
+    )
+      return;
     const previous = latestPlans.get(plan.chain);
     if (!previous || plan.createdAt >= previous.createdAt)
       latestPlans.set(plan.chain, plan);
@@ -518,9 +531,18 @@ export const recordCalldataTestPlan = (plan: CalldataTestPlan) => {
   return write;
 };
 
+// Retain old records in IndexedDB, but keep inactive DEXes out of the UI
+// and exports. Mixed historical plans still apply to their remaining DEXes.
+const getActiveTestPlans = (items: CalldataTestPlan[]) =>
+  items
+    .map((plan) => ({ ...plan, dexes: plan.dexes.filter(isCalldataTestDex) }))
+    .filter((plan) => plan.dexes.length > 0);
+
 export const readCalldataTestScenarios = async () => {
   try {
-    return await scenarios.toArray();
+    return await scenarios
+      .filter((item) => isCalldataTestDex(item.dex))
+      .toArray();
   } catch (error) {
     setStorageError(error);
     return [];
@@ -528,7 +550,7 @@ export const readCalldataTestScenarios = async () => {
 };
 export const readCalldataTestPlans = async () => {
   try {
-    return await plans.toArray();
+    return getActiveTestPlans(await plans.toArray());
   } catch (error) {
     setStorageError(error);
     return [];
@@ -540,7 +562,12 @@ export const readLatestCalldataTestResults = async (chain: string) => {
     return await results
       .orderBy('recordedAt')
       .reverse()
-      .filter((record) => record.chain === chain && !!record.quote)
+      .filter(
+        (record) =>
+          record.chain === chain &&
+          !!record.quote &&
+          isCalldataTestDex(record.dex)
+      )
       .limit(6)
       .toArray();
   } catch (error) {
@@ -551,7 +578,9 @@ export const readLatestCalldataTestResults = async (chain: string) => {
 
 export const readCalldataTestSummaries = async () => {
   try {
-    return await summaries.toArray();
+    return await summaries
+      .filter((item) => isCalldataTestDex(item.dex))
+      .toArray();
   } catch (error) {
     setStorageError(error);
     return [];
@@ -567,10 +596,16 @@ export const readCalldataTestDataset = async () => {
     scenarios,
     plans,
     async () => ({
-      records: await results.filter((record) => !!record.quote).toArray(),
-      summaries: await summaries.toArray(),
-      scenarios: await scenarios.filter(hasQuotedResult).toArray(),
-      plans: await plans.toArray(),
+      records: await results
+        .filter((record) => !!record.quote && isCalldataTestDex(record.dex))
+        .toArray(),
+      summaries: await summaries
+        .filter((item) => isCalldataTestDex(item.dex))
+        .toArray(),
+      scenarios: await scenarios
+        .filter((item) => hasQuotedResult(item) && isCalldataTestDex(item.dex))
+        .toArray(),
+      plans: getActiveTestPlans(await plans.toArray()),
       captureError: storageError,
     })
   );

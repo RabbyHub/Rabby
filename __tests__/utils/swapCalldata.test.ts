@@ -1,7 +1,5 @@
-import { decodeCalldata, getCalldataVersion } from '@/utils/swapCalldata';
+import { decodeCalldata } from '@/utils/swapCalldata';
 import { utils } from 'ethers';
-import magpieArbitrum from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
-import magpieArbitrumUsdcToWeth from '../fixtures/swap-calldata/magpie-arbitrum-usdc-to-weth-backend-signature.json';
 import uniArbitrumUsdt0ToUsdc from '../fixtures/swap-calldata/uni-arbitrum-usdt0-to-usdc-v4.json';
 import uniCrossChainRegressions from '../fixtures/swap-calldata/uni-cross-chain-regressions.json';
 import {
@@ -29,24 +27,6 @@ import type {
 } from '@/utils/swapCalldata/testResults';
 
 const cases = [
-  {
-    name: 'Magpie / Arbitrum / ETH to USDC / swapWithBackendSignature',
-    dexId: magpieArbitrum.dex,
-    sample: magpieArbitrum,
-    expectedAmounts: {
-      fromTokenAmount: '1496250000000000',
-      minReceiveToTokenAmount: '3494249',
-    },
-  },
-  {
-    name: 'Magpie / Arbitrum / USDC to WETH / swapWithBackendSignature',
-    dexId: magpieArbitrumUsdcToWeth.dex,
-    sample: magpieArbitrumUsdcToWeth,
-    expectedAmounts: {
-      fromTokenAmount: '1995000',
-      minReceiveToTokenAmount: '834587873749995',
-    },
-  },
   {
     name: 'Uniswap / Arbitrum / USDT0 to USDC / SwapProxy / V4',
     dexId: uniArbitrumUsdt0ToUsdc.dex,
@@ -154,27 +134,6 @@ describe('local decoder supported formats', () => {
         to: '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af',
       })
     ).toEqual(expected);
-  });
-
-  it.each([
-    'swap',
-    'silentSwap',
-    'swapWithMagpieSignature',
-    'swapWithUserSignature',
-  ])('rejects the deprecated Magpie entry point: %s', (method) => {
-    const router = new utils.Interface([`function ${method}(bytes swapData)`]);
-    const data = router.encodeFunctionData(method, ['0x']);
-    const tx = transaction(data);
-    expect(getCalldataVersion('Magpie', tx)).toBe('unknown');
-    expect(() => decodeCalldata('Magpie', tx)).toThrow(
-      `Unsupported Magpie calldata selector: ${data.slice(0, 10)}`
-    );
-  });
-
-  it('rejects unsupported Magpie selectors without trying another layout', () => {
-    expect(() => decodeCalldata('Magpie', transaction('0xdeadbeef'))).toThrow(
-      'Unsupported Magpie calldata selector: 0xdeadbeef'
-    );
   });
 
   it('sums direct parallel V3 exact-input swaps', () => {
@@ -491,7 +450,7 @@ describe('bounded calldata test matrix', () => {
       key: 'plan',
       chain: 'ETH',
       createdAt: 1,
-      dexes: [DEX_ENUM.UNI, DEX_ENUM.MAGPIE],
+      dexes: [DEX_ENUM.UNI],
       scenarioIds: scenarios.map((item) => item.id),
     } as CalldataTestPlan;
     const result = {
@@ -515,14 +474,6 @@ describe('bounded calldata test matrix', () => {
       failed: 0,
       mismatch: 0,
       quoted: 1,
-    });
-    expect(coverage.byChainDex.get(`ETH:${DEX_ENUM.MAGPIE}`)).toEqual({
-      total: 4,
-      attempted: 0,
-      passed: 0,
-      failed: 0,
-      mismatch: 0,
-      quoted: 0,
     });
     const retried = buildCalldataTestCoverage(
       [{ ...result, passed: 0, attempted: true, lastStatus: 'ignored' }],

@@ -37,6 +37,43 @@ export interface CalldataTestScenario {
 export const CALLDATA_TEST_USD_SIZES = [1, 5, 20, 100, 1000, 10000];
 export const CALLDATA_TEST_SLIPPAGES = ['0.1', '1', '3'];
 export const CALLDATA_TEST_PAIR_LIMIT = 10;
+export const CALLDATA_TEST_PAIR_LIMITS = [10, 25, 50, 100];
+export const CALLDATA_TEST_MAX_PAIRS = 100;
+export const CALLDATA_TEST_PRIORITY_CHAINS = [
+  'ETH',
+  'OP',
+  'BSC',
+  'POLYGON',
+  'TEMPO',
+  'ARC',
+  'UNI',
+  'ERA',
+];
+export const CALLDATA_TEST_DEFAULT_PAIR_LIMIT = 50;
+export const CALLDATA_TEST_DEFAULT_USD_SIZES = [20];
+export const CALLDATA_TEST_DEFAULT_SLIPPAGES = ['3'];
+
+// Symbols select API-provided tokens only; no addresses or decimals are guessed.
+// NATIVE matches the chain's native token, not an ERC20 with the same symbol.
+const REGRESSION_PAIRS: Record<
+  string,
+  readonly (readonly [string, string])[]
+> = {
+  ETH: [['ENA', 'AAVE']],
+  POLYGON: [['NATIVE', 'wstETH']],
+  TEMPO: [
+    ['OUSD', 'TIMECOIN'],
+    ['cbBTC', 'TCAT'],
+    ['USDT0', 'LUNA'],
+    ['TIMECOIN', 'cbBTC'],
+  ],
+  ARC: [
+    ['NATIVE', 'TOLLY'],
+    ['NATIVE', 'DUKE'],
+  ],
+  UNI: [['NATIVE', 'LINK']],
+  ERA: [['NATIVE', 'ZF']],
+};
 export const CALLDATA_TEST_TOKEN_SEARCHES = [
   'USDC',
   'USDT',
@@ -115,6 +152,21 @@ export const CALLDATA_TEST_TOKEN_SEARCHES = [
   'MOG',
 ];
 
+export const getCalldataTestTokenSearches = (
+  chain: string,
+  expanded: boolean
+) =>
+  Array.from(
+    new Set([
+      ...(REGRESSION_PAIRS[chain] || [])
+        .flat()
+        .filter((symbol) => symbol !== 'NATIVE'),
+      ...(expanded
+        ? CALLDATA_TEST_TOKEN_SEARCHES
+        : CALLDATA_TEST_TOKEN_SEARCHES.slice(0, 12)),
+    ])
+  );
+
 const sameToken = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 
 export const classifyCalldataTestCase = (request: {
@@ -178,9 +230,11 @@ export const getCalldataTestTokenPool = (
 export const buildCalldataTestPairs = (
   chain: Pick<Chain, 'enum' | 'serverId' | 'nativeTokenAddress'>,
   native: TokenItem | undefined,
-  tokens: TokenItem[]
+  tokens: TokenItem[],
+  pairLimit = CALLDATA_TEST_PAIR_LIMIT
 ): CalldataTestPair[] => {
-  // Search a broad pool, then keep ten diverse cases rather than a Cartesian run.
+  const limit = Math.min(CALLDATA_TEST_MAX_PAIRS, Math.max(1, pairLimit));
+  // Search a broad pool, then keep a bounded, diverse selection.
   // Prefer one representative per symbol before including bridged aliases.
   const symbolKey = (token: TokenItem) =>
     token.symbol
@@ -196,7 +250,18 @@ export const buildCalldataTestPairs = (
     (symbols.has(key) ? aliases : unique).push(token);
     symbols.add(key);
   });
-  const erc20s = [...unique, ...aliases].slice(0, 50);
+  const regressionSymbols = new Set(
+    (REGRESSION_PAIRS[String(chain.enum)] || [])
+      .flat()
+      .map((symbol) => symbol.toUpperCase())
+  );
+  const erc20s = [...unique, ...aliases]
+    .sort(
+      (a, b) =>
+        Number(regressionSymbols.has(b.symbol.toUpperCase())) -
+        Number(regressionSymbols.has(a.symbol.toUpperCase()))
+    )
+    .slice(0, 50);
   const wrapped = WrapTokenAddressMap[chain.enum];
   const pairs: CalldataTestPair[] = [];
   const add = (type: CalldataTestCase, from: TokenItem, to: TokenItem) =>
@@ -236,7 +301,34 @@ export const buildCalldataTestPairs = (
     );
     return freshSymbols * 1000 + freshAddresses * 100 - repetitions;
   };
+  const select = (pair: CalldataTestPair) => {
+    selected.push(pair);
+    candidates.delete(pair.id);
+    [pair.from, pair.to].forEach((token) => {
+      usedSymbols.add(symbolKey(token));
+      const key = token.id.toLowerCase();
+      usage.set(key, (usage.get(key) || 0) + 1);
+    });
+  };
+  const matches = (token: TokenItem, symbol: string) =>
+    symbol === 'NATIVE'
+      ? !!native && sameToken(token.id, native.id)
+      : token.symbol.toUpperCase() === symbol.toUpperCase();
+  // Replay previously failing directions and their reverses when metadata exists.
+  for (const [from, to] of REGRESSION_PAIRS[String(chain.enum)] || []) {
+    for (const [a, b] of [
+      [from, to],
+      [to, from],
+    ]) {
+      if (selected.length >= limit) break;
+      const pair = Array.from(candidates.values()).find(
+        (item) => matches(item.from, a) && matches(item.to, b)
+      );
+      if (pair) select(pair);
+    }
+  }
   const choose = (type?: CalldataTestCase) => {
+    if (selected.length >= limit) return false;
     let best: CalldataTestPair | undefined;
     let bestScore = -Infinity;
     candidates.forEach((pair) => {
@@ -248,23 +340,20 @@ export const buildCalldataTestPairs = (
       }
     });
     if (!best) return false;
-    selected.push(best);
-    candidates.delete(best.id);
-    [best.from, best.to].forEach((token) => {
-      usedSymbols.add(symbolKey(token));
-      const key = token.id.toLowerCase();
-      usage.set(key, (usage.get(key) || 0) + 1);
-    });
+    select(best);
     return true;
   };
   // Round-robin selection shares the token diversity across all three types.
-  for (let round = 0; round < 3; round++) {
-    getCalldataTestCases(chain.enum).forEach((type) => choose(type));
+  for (let round = 0; round < Math.floor(limit / 3); round++) {
+    getCalldataTestCases(chain.enum).forEach((type) => {
+      if (selected.filter((pair) => pair.type === type).length <= round)
+        choose(type);
+    });
   }
-  if (selected.length < CALLDATA_TEST_PAIR_LIMIT) choose('erc20-to-erc20');
+  while (selected.length < limit && choose('erc20-to-erc20')) {}
   // Small chains may lack a type or enough tokens. Use other valid pairs without
-  // duplicates; do not invent assets just to reach ten.
-  while (selected.length < CALLDATA_TEST_PAIR_LIMIT && choose()) {}
+  // duplicates; do not invent assets just to reach the requested limit.
+  while (selected.length < limit && choose()) {}
   return selected;
 };
 

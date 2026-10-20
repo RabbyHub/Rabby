@@ -16,6 +16,7 @@ DEX support list with the backend exclusions in `testSupport.ts` applied.
 - `uni/universalRouter/profiles.ts`: matches the backend's chain-specific Router version and resolves its address through the official SDK. Arc and Robinhood use 2.1.1; other supported chains request 2.0. zkSync's shared 1.2/2.0 deployment retains its verified 1.2 layout and 5-bit command mask.
 - `uni/universalRouter/sdk.ts`: delegates command, V3 path and V4 parameter decoding to the official SDK. Commands and V4 actions are parsed individually to preserve exact failing indexes. Only the standard `bytes,bytes[]` plan envelope is decoded locally.
 - `uni/universalRouter/commands.ts`: interprets decoded exact-input swaps, payments and nested plans.
+- `uni/universalRouter/v2.ts`: derives a V2 input pair using official chain deployment metadata and the V2 SDK's CREATE2 calculation, without a fallback factory.
 - `uni/universalRouter/v4/index.ts`: interprets decoded V4 exact-input swaps and settlements without maintaining version-specific tuple schemas.
 
 The SDK is pinned to 5.14.0. Its `CommandParser` selects the version-specific
@@ -89,8 +90,11 @@ remaining output bounds before later balance-based payments.
 
 - A second user-funded asset, or another direct user debit after a fixed
   prepaid input, fails at its command/action rather than being omitted.
-- V2 `amountIn=0` is the documented `ALREADY_PAID` pair handoff. A later
-  router-funded V3 swap does not erase an earlier external payment.
+- V2 `amountIn=0` is `ALREADY_PAID`; `CONTRACT_BALANCE` instead transfers the
+  Router's remaining input-token balance. Both can follow a V3/V4 payment
+  directly into the first V2 pair. Only the matching input-token / computed
+  pair payout is consumed as an intermediate handoff. Other recipients and
+  assets remain visible, as do payments before a later router-funded V3 swap.
 - Separate native wraps retain the complete transaction input budget.
 - V4 `SETTLE_PAIR`, `TAKE_PAIR`, `CLOSE_CURRENCY`, `SWEEP` and `UNWRAP` are not
   modeled here and fail explicitly; an SDK ABI entry alone does not establish
@@ -152,19 +156,27 @@ and all five quote-comparison checks must pass in the correctness suite.
 
 ## Collecting chain coverage locally
 
-The Swap page requests quotes only from Uniswap and Magpie, filtered by each
-DEX's SDK support list and the backend's active handlers. Uniswap excludes
-Celo and Monad; Magpie excludes Fantom, Polygon zkEVM and Stable. Monad still
-offers Magpie, and chains with neither DEX are hidden from the chain selector.
+The Swap page requests quotes only from Uniswap, filtered by the SDK support
+list and the backend's active handlers. Celo and Monad are excluded; chains
+without supported Uni quotes are hidden from the chain selector.
 The same filter applies to quote requests, badges, batch runs and coverage.
-Historical records and plans remain exportable, but excluded combinations do
-not count toward current coverage.
+Magpie test requests and regression cases are disabled. Historical Magpie
+samples remain stored, but are excluded from the panel, statistics and exports.
+Its decoder implementation remains available separately.
 DEX badges show verified / quoted concrete scenarios; a cross marks a quoted
 scenario whose latest decode failed or whose decoded result did not match.
 Requests without a quote are excluded from the denominator and result counts.
 
-Each chain gets at most **10 pairs**. With sufficient assets, the selection
-contains 3 native → ERC20, 3 ERC20 → native and 4 ERC20 → ERC20 pairs. It
+Ethereum, Optimism, BNB Chain, Polygon, Tempo, Arc, Unichain and zkSync are
+focus chains, with quick-switch buttons in the panel. Every chain defaults to
+**50 pairs**, **$20** and **3% slippage**: up to **50 Uni quote requests**.
+The pair-limit buttons offer **10 / 25 / 50 / 100**, with sizes remembered per
+chain for the current page session. Expanded USD and slippage selections remain
+available. Actual pair counts can be lower when safe token metadata is scarce.
+
+With sufficient assets, roughly one third of pairs are native → ERC20,
+one third ERC20 → native, and the rest ERC20 → ERC20. The ten-pair setting
+retains the original 3 / 3 / 4 split. Selection
 prefers tokens not yet used, then distinct contract addresses, and avoids
 repeating the same symbols through bridged aliases. If a type is unavailable,
 other valid pairs fill its slots. Fewer pairs are shown when tokens are scarce.
@@ -173,20 +185,33 @@ Direct wrap / unwrap pairs and Arc's duplicate native-USDC alias are excluded.
 Discovery uses real API metadata, including chain-specific addresses and
 precision. Initial searches mix stablecoins, BTC, ETH, governance and chain
 tokens; **Discover more tokens** broadens the candidate pool while retaining
-the ten-pair limit.
+the selected pair limit. Focus chains and expanded pair counts automatically
+search the full symbol list. Previously failing directions and their reverses
+are selected first when safe API token metadata is available: ENA/AAVE,
+POL/wstETH, Tempo's OUSD/TIMECOIN, cbBTC/TCAT, USDT0/LUNA and TIMECOIN/cbBTC,
+Arc's native USDC/TOLLY and USDC/DUKE, Unichain ETH/LINK and zkSync ETH/ZF.
+Addresses and decimals always come from the API; missing tokens are not invented.
 
-Choose **one** approximate USD size ($1 / $5 / $20 / $100 / $1,000 / $10,000)
-and **one** slippage (0.1% / 1% / 3%). A full run has up to 10 scenarios per
-supported DEX, or 20 requests when both DEXes support the chain. Without a
-price, the fallback is 0.01 tokens. Test all pairs, one swap type, or an
-individual pair.
-Quotes run one scenario at a time with its supported DEXes in parallel and a
-250 ms gap between scenarios. Insufficient-balance quote mode skips allowance,
-nonce and pre-execution. **Fill form** applies the selected size to the
+Select **multiple** approximate USD sizes ($1 / $5 / $20 / $100 / $1,000 /
+$10,000) and slippages (0.1% / 1% / 3%). Each test button runs the selected
+size × slippage combinations for its pairs. Only $20 and 3% start selected on
+every chain. **Select all** enables every available size or slippage.
+At least one value stays selected in each dimension. Without a price, the
+fallback is 0.01 tokens; equivalent concrete amounts are deduplicated.
+Test all pairs, one swap type, or an individual pair.
+Uni quote requests start at least **500 ms apart** (up to two per second),
+with at most **two requests in flight**. Slow responses can reduce the rate;
+response time does not add another fixed 500 ms pause. Insufficient-balance
+quote mode skips allowance, nonce and pre-execution. **Fill form** applies the smallest selected size to the
 normal swap form. **Retry not passed** skips only concrete scenarios whose
 latest quoted result decoded and passed field validation, independently for each DEX. **Stop** lets in-flight quotes
 finish and saves them before stopping. Chain/account changes cancel the rest of
 the queue; in-flight records retain their original request metadata.
+
+Each batch sample records its approximate USD preset as `request.targetUsd`,
+alongside the exact input base units and slippage. Latest sample labels show
+the USD preset and slippage; exported JSON retains these fields. Existing
+samples without USD metadata remain readable.
 
 Each run saves the full selected matrix before requesting quotes, including
 when running a single pair or type. Stopped or incomplete runs therefore stay visible in coverage and exports. The identity
@@ -220,23 +245,33 @@ contains quoted samples, test plans, exact-scenario summaries and
 per-chain/DEX coverage, alongside the original swap-type counts. Scenario
 coverage uses the latest bounded plan for each chain and each scenario's latest
 quoted outcome. Older large plans and historical quoted samples remain in the export,
-but do not inflate the current ten-case coverage.
+but do not inflate the latest selection's coverage. New plans support up to
+100 explicit pair IDs; legacy plans without pair IDs retain the old limit.
 Use **Clear** after
 exporting to start a fresh batch when changing the parser. Samples are stored
 under the current browser profile and extension origin; they are not uploaded.
 
 ## Regression tests
 
+`__tests__/fixtures/swap-calldata/uni-v2-handoffs-2026-10-20.json` retains all
+16 handoff failures from `swap-calldata-results-2026-10-20T06-03-10-057Z.json`:
+7 Polygon POL → wstETH, 6 Tempo V4 → V2 routes and 3 Ethereum ENA → AAVE.
+Original quotes and failed diagnostics are unchanged. Expected input amounts
+come from transaction value / SwapProxy ingress; output token, minimum and
+recipient come from the terminal SWEEP. The correctness suite checks all five
+decoded fields and every validation flag. It also rejects unrelated recipients
+or assets before V2, including the `ALREADY_PAID` case.
+
 Run `npm run test:swap-calldata` for the recorded quotes, router versions and
 quote diagnostic tests together. The standard Jest run also includes them.
 The [fixture index](../../../__tests__/fixtures/swap-calldata/README.md) describes
-the 2026-10-16 dataset: all 222 quoted records, six Uni protocol-route families,
-15 version/entry/route combinations, 27 command shapes, and Magpie's observed
-DexAggregator format. Every record asserts exact decoded fields, including the
+the 2026-10-16 dataset: 63 active Uni quotes, six protocol-route families,
+15 version/entry/route combinations and 27 command shapes. Every active record
+asserts exact decoded fields, including the
 two native-refund regressions with intended outputs pinned from calldata.
 The two native-refund cases are fixed and must pass the same assertions;
 diagnostic markers do not exempt a sample from successful-result assertions.
-`swapCalldataCorrectness.test.ts` adds payment, split-route and compact-integer
+`swapCalldataCorrectness.test.ts` adds payment and split-route
 regressions that assert all fields, including cases that previously returned
 a successful but incorrect result. V4 version tests avoid a later repeated
 payment bound masking an incorrectly decoded swap minimum.

@@ -397,6 +397,7 @@ export const useQuoteMethods = () => {
       setQuote,
       inSufficient,
       sharedTasks,
+      testUsd,
     }: getDexQuoteParams & {
       setQuote?: (quote: TDexQuoteData) => void;
       inSufficient: boolean;
@@ -424,6 +425,7 @@ export const useQuoteMethods = () => {
         .shiftedBy(payToken.decimals)
         .toFixed(0, 1);
       const testRequest = {
+        ...(testUsd !== undefined ? { targetUsd: testUsd } : {}),
         fromToken: payToken.id,
         fromTokenAmount,
         toToken: receiveToken.id,
@@ -496,6 +498,7 @@ export const useQuoteMethods = () => {
               chain,
               dexId,
               slippage,
+              testUsd,
               data: {
                 ...data,
                 fromToken: payToken.id,
@@ -830,6 +833,7 @@ export type QuotePreExecResultInfo = {
 } | null;
 
 interface getDexQuoteParams {
+  testUsd?: number;
   payToken: TokenItem;
   receiveToken: TokenItem;
   userAddress: string;

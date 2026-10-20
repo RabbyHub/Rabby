@@ -21,11 +21,14 @@ import {
 } from '@/utils/swapCalldata/testResults';
 import { getCalldataTestDexes } from '@/utils/swapCalldata/testSupport';
 import clsx from 'clsx';
-import { CalldataTestPair } from '@/utils/swapCalldata/testCases';
+import {
+  CalldataTestPair,
+  CALLDATA_TEST_PRIORITY_CHAINS,
+} from '@/utils/swapCalldata/testCases';
 import { useCalldataTest } from '../hooks/calldataTest';
 import { CalldataTestCases } from './CalldataTestCases';
 
-const dexLabel = (dex: DEX_ENUM) => (dex === DEX_ENUM.UNI ? 'Uni' : 'Magpie');
+const dexLabel = (dex: DEX_ENUM) => (dex === DEX_ENUM.UNI ? 'Uni' : dex);
 
 export const useCalldataTestSummaries = () =>
   useLiveQuery(readCalldataTestSummaries, [], []) || [];
@@ -108,6 +111,12 @@ export const CalldataTestPanel = ({
     [chains]
   );
   const test = useCalldataTest({ chain, userAddress, coverage });
+  const priorityChains = CALLDATA_TEST_PRIORITY_CHAINS.flatMap((chainEnum) => {
+    const item = supportedChains.find(
+      (candidate) => candidate.enum === chainEnum
+    );
+    return item ? [item] : [];
+  });
   const latest =
     useLiveQuery(() => readLatestCalldataTestResults(chain), [chain], []) || [];
   const storageError = useSyncExternalStore(
@@ -222,6 +231,22 @@ export const CalldataTestPanel = ({
           mismatch: overall.mismatch,
         })}
       </div>
+      <div className="mt-8 text-11 text-r-neutral-foot">
+        {t('page.swap.calldataTest.priorityChains')}
+      </div>
+      <div className="mt-4 flex flex-wrap gap-4">
+        {priorityChains.map((item) => (
+          <Button
+            key={item.enum}
+            size="small"
+            type={item.enum === chain ? 'primary' : 'default'}
+            disabled={!!test.progress}
+            onClick={() => item.enum !== chain && onSwitchChain(item.enum)}
+          >
+            {item.name}
+          </Button>
+        ))}
+      </div>
       <div className="mt-8 flex items-center gap-4">
         <Button
           size="small"
@@ -320,6 +345,9 @@ export const CalldataTestPanel = ({
                   ? t(`page.swap.calldataTest.${record.testCase}`)
                   : ''}{' '}
                 · {t(`page.swap.calldataTest.${record.status}`)}
+                {record.request.targetUsd !== undefined &&
+                  ` · ≈ $${record.request.targetUsd.toLocaleString()}`}
+                {` · ${record.request.slippage}%`}
               </summary>
               <Button
                 size="small"

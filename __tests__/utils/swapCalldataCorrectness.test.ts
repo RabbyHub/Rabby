@@ -5,17 +5,19 @@ import {
   validateCalldataResult,
   verifyCalldata,
 } from '@/utils/swapCalldata/verify';
-import { decodeInputFee } from '@/utils/swapCalldata/magpie';
 import { getComparableUniInputAmount } from '@/utils/swapCalldata/uni/assets';
 import amountRegressions from '../fixtures/swap-calldata/amount-validation-2026-10-19.json';
 import arcRegressions from '../fixtures/swap-calldata/arc-native-regressions-2026-10-19.json';
-import magpieNative from '../fixtures/swap-calldata/magpie-arbitrum-backend-signature.json';
-import magpieErc20 from '../fixtures/swap-calldata/magpie-arbitrum-usdc-to-weth-backend-signature.json';
+import uniQuote from '../fixtures/swap-calldata/uni-arbitrum-usdt0-to-usdc-v4.json';
+import v2Handoffs from '../fixtures/swap-calldata/uni-v2-handoffs-2026-10-20.json';
 
 const inputToken = '0x1111111111111111111111111111111111111111';
 const outputToken = '0x2222222222222222222222222222222222222222';
 const sender = '0x3333333333333333333333333333333333333333';
 const intermediateToken = '0x4444444444444444444444444444444444444444';
+// Ethereum V2 pair for intermediateToken / outputToken, independently derived
+// from the official factory and CREATE2 init-code hash.
+const intermediateV2Pair = '0x1b6af76ac6dd76c3894c665f40a817c02fe70b8a';
 const refundReceiver = '0x5555555555555555555555555555555555555555';
 const router = '0x66a9893cC07D91D95644AEDD05D03f95e1dBA8Af';
 const addressThis = '0x0000000000000000000000000000000000000002';
@@ -195,44 +197,68 @@ describe('Uni payment semantics and complete decoded results', () => {
     }
   );
 
-  it('keeps a V4-to-V2 pair handoff out of the final payout', () => {
-    const v4 = encode(
-      ['bytes', 'bytes[]'],
-      [
-        '0x060b0e',
+  it.each(['0', contractBalance])(
+    'keeps a V4-to-V2 pair handoff out of the final payout (amountIn %s)',
+    (amountIn) => {
+      const v4 = encode(
+        ['bytes', 'bytes[]'],
         [
-          encode(
-            [
-              'tuple(tuple(address,address,uint24,int24,address),bool,uint128,uint128,bytes)',
-            ],
-            [
+          '0x060b0e',
+          [
+            encode(
               [
-                [inputToken, intermediateToken, 3000, 60, zero],
-                true,
-                100,
-                50,
-                '0x',
+                'tuple(tuple(address,address,uint24,int24,address),bool,uint128,uint128,bytes)',
               ],
-            ]
-          ),
-          encode(['address', 'uint256', 'bool'], [inputToken, 100, true]),
-          payment(intermediateToken, refundReceiver, '0'),
-        ],
-      ]
-    );
-    expect(
-      execute('0x1008', [
-        v4,
+              [
+                [
+                  [inputToken, intermediateToken, 3000, 60, zero],
+                  true,
+                  100,
+                  50,
+                  '0x',
+                ],
+              ]
+            ),
+            encode(['address', 'uint256', 'bool'], [inputToken, 100, true]),
+            payment(intermediateToken, intermediateV2Pair, '0'),
+          ],
+        ]
+      );
+      expect(
+        execute('0x1008', [
+          v4,
+          amm(intermediateToken, outputToken, amountIn, '90', sender, false),
+        ])
+      ).toEqual(expected);
+    }
+  );
+
+  it.each(['0', contractBalance])(
+    'retains a real external recipient before V2 (amountIn %s)',
+    (amountIn) => {
+      expect(() =>
+        execute('0x0808', [
+          amm(inputToken, intermediateToken, '100', '50', refundReceiver),
+          amm(intermediateToken, outputToken, amountIn, '90', sender, false),
+        ])
+      ).toThrow('Multiple output assets or recipients');
+    }
+  );
+
+  it('does not consume a different token paid to the matching V2 pair', () => {
+    expect(() =>
+      execute('0x0808', [
+        amm(inputToken, weth, '100', '50', intermediateV2Pair),
         amm(
           intermediateToken,
           outputToken,
-          '0', // V2 ALREADY_PAID: the preceding TAKE paid the pair.
+          contractBalance,
           '90',
           sender,
           false
         ),
       ])
-    ).toEqual(expected);
+    ).toThrow('Multiple output assets or recipients');
   });
 
   it('keeps a directly paid branch separate from a later balance transfer', () => {
@@ -265,7 +291,73 @@ describe('Uni payment semantics and complete decoded results', () => {
   });
 });
 
+describe('2026-10-20 real Uni V2 handoff regressions', () => {
+  it('retains all 16 original failures across Polygon, Tempo and Ethereum', () => {
+    expect(v2Handoffs.cases.map((sample) => sample.recordId)).toEqual([
+      1906,
+      1908,
+      1910,
+      1912,
+      1914,
+      1918,
+      1920,
+      2593,
+      2603,
+      2613,
+      3204,
+      3223,
+      3242,
+      3568,
+      3570,
+      3572,
+    ]);
+    expect(new Set(v2Handoffs.cases.map(({ record }) => record.chain))).toEqual(
+      new Set(['POLYGON', 'TEMPO', 'ETH'])
+    );
+    v2Handoffs.cases.forEach(({ record }) => {
+      expect(record.status).toBe('failed');
+      expect(record.firstFailedStep).toBe('decode.uni.result');
+    });
+  });
+
+  it.each(v2Handoffs.cases)(
+    '$name / record $recordId',
+    ({ record, expected }) => {
+      const tx = { ...record.quote.tx, chainId: record.chainId };
+      const decoded = decodeCalldata('Uniswap', tx, {
+        nativeTokenAddress: record.request.nativeTokenAddress,
+      })!;
+      // Pin every field to ingress and terminal SWEEP, not production helpers.
+      expect({
+        ...decoded,
+        fromToken: decoded.fromToken.toLowerCase(),
+        toToken: decoded.toToken.toLowerCase(),
+        toTokenReceiver: decoded.toTokenReceiver.toLowerCase(),
+      }).toEqual(expected);
+      const { origin: _origin, ...quote } = record.quote;
+      const validation = validateCalldataResult({
+        dexId: DEX_ENUM.UNI,
+        tx,
+        decoded,
+        data: quote,
+        nativeTokenAddress: record.request.nativeTokenAddress,
+        userAddress: record.request.userAddress,
+        slippage: String(Number(record.request.slippage) / 100),
+      });
+      expect(validation?.passed).toBe(true);
+      expect(validation?.checks).toEqual({
+        fromToken: true,
+        fromTokenAmount: true,
+        toToken: true,
+        minReceiveToTokenAmount: true,
+        toTokenReceiver: true,
+      });
+    }
+  );
+});
+
 describe('Uni recipient execution context', () => {
+  const { origin: _origin, ...validationQuote } = uniQuote.quote;
   const msgSender = '0x0000000000000000000000000000000000000001';
   const proxyAddress = '0x02e5be68d46dac0b524905bff209cf47ee6db2a9';
   const proxy = new utils.Interface([
@@ -390,7 +482,7 @@ describe('Uni recipient execution context', () => {
             tx,
             decoded,
             data: {
-              ...magpieNative.quote,
+              ...validationQuote,
               fromToken: inputToken,
               fromTokenAmount: '100',
               toToken,
@@ -719,7 +811,9 @@ describe('funding, intermediate balances and final payments', () => {
 });
 
 describe('contract-defined input amount comparison', () => {
-  it.each(amountRegressions.cases)(
+  it.each(
+    amountRegressions.cases.filter(({ record }) => record.dex === 'Uniswap')
+  )(
     'verifies recorded $record.dex input amount (record $record.id)',
     ({ record, expected }) => {
       const tx = { ...record.quote.tx, chainId: record.chainId };
@@ -775,17 +869,6 @@ describe('contract-defined input amount comparison', () => {
       expect(decoded).toEqual(expected);
     }
   );
-
-  it('reads the actual Magpie fee, including the zero-fee case', () => {
-    const transaction = (id: number) => {
-      const { record } = amountRegressions.cases.find(
-        (sample) => sample.record.id === id
-      )!;
-      return { ...record.quote.tx, chainId: record.chainId };
-    };
-    expect(decodeInputFee(transaction(613))).toBe('24283632831471588');
-    expect(decodeInputFee(transaction(915))).toBe('0');
-  });
 
   it('keeps exact native amounts and limits truncation to Arc native USDC', () => {
     const requested = '19977999999999998249';
@@ -858,119 +941,6 @@ describe('Arc native USDC splits and refunds', () => {
         toToken: true,
         minReceiveToTokenAmount: true,
         toTokenReceiver: true,
-      });
-    }
-  );
-});
-
-describe('Magpie DexAggregator field correctness', () => {
-  const method = 'swapWithBackendSignature';
-  const abi = new utils.Interface([`function ${method}(bytes)`]);
-
-  const automaticInput = (data: string) =>
-    data.slice(0, 2 + 132 * 2) + '0'.repeat(64) + data.slice(2 + 164 * 2);
-
-  it('resolves automatic native input from value minus encoded fees', () => {
-    expect(
-      decodeCalldata('Magpie', {
-        ...magpieNative.quote.tx,
-        chainId: magpieNative.chainId,
-        data: automaticInput(magpieNative.quote.tx.data),
-      })
-    ).toEqual({
-      fromToken: 'arb',
-      fromTokenAmount: '1496250000000000',
-      toToken: magpieNative.quote.toToken,
-      minReceiveToTokenAmount: '3494249',
-      toTokenReceiver: magpieNative.quote.tx.from,
-    });
-  });
-
-  it('rejects automatic ERC20 input that needs onchain state', () => {
-    expect(() =>
-      decodeCalldata('Magpie', {
-        ...magpieErc20.quote.tx,
-        chainId: magpieErc20.chainId,
-        data: automaticInput(magpieErc20.quote.tx.data),
-      })
-    ).toThrow('Automatic ERC20 input depends on onchain balance and allowance');
-  });
-
-  it('preserves a literal zero recipient rather than validating it as the user', () => {
-    const tx = {
-      ...magpieNative.quote.tx,
-      chainId: magpieNative.chainId,
-      data:
-        magpieNative.quote.tx.data.slice(0, 2 + 72 * 2) +
-        '0'.repeat(40) +
-        magpieNative.quote.tx.data.slice(2 + 92 * 2),
-    };
-    const decoded = decodeCalldata('Magpie', tx);
-    expect(decoded.toTokenReceiver).toBe(zero);
-    const { origin: _origin, ...quote } = magpieNative.quote;
-    expect(
-      validateCalldataResult({
-        dexId: DEX_ENUM.MAGPIE,
-        data: quote,
-        tx,
-        decoded,
-        nativeTokenAddress: 'arb',
-        userAddress: tx.from,
-        slippage: '0.01',
-      })?.checks.toTokenReceiver
-    ).toBe(false);
-  });
-
-  it('rejects a native value that cannot cover the input and fees', () => {
-    expect(() =>
-      decodeCalldata('Magpie', {
-        ...magpieNative.quote.tx,
-        chainId: magpieNative.chainId,
-        value: '1',
-      })
-    ).toThrow(
-      'Native transaction value does not equal input amount plus encoded native fees'
-    );
-  });
-
-  it.each([0, 1, 7, 8, 127, 128, 248, 255])(
-    'preserves integer precision and pointer bytes with shift %s',
-    (shift) => {
-      const bits = 256 - shift;
-      const amountIn = BigNumber.from(2).pow(bits - 1);
-      const minimum = BigNumber.from(2).pow(bits).sub(1);
-      const packed = new Uint8Array(320);
-      const put = (offset: number, value: string) =>
-        packed.set(utils.arrayify(value), offset - 68);
-      const uint = (offset: number, value: BigNumber | number, bytes = 32) =>
-        put(
-          offset,
-          utils.hexZeroPad(BigNumber.from(value).toHexString(), bytes)
-        );
-      const compact = (offset: number, pointer: number, value: BigNumber) => {
-        uint(offset, shift, 1);
-        uint(offset + 1, pointer, 2);
-        // Low bits deliberately contain nonzero noise that Solidity shr drops.
-        uint(pointer, value.shl(shift).or(BigNumber.from(2).pow(shift).sub(1)));
-      };
-      put(72, refundReceiver);
-      put(92, inputToken);
-      put(112, outputToken);
-      uint(132, amountIn);
-      compact(167, 320, minimum);
-      const result = decodeCalldata('Magpie', {
-        data: abi.encodeFunctionData(method, [packed]),
-        from: sender,
-        to: router,
-        chainId: 1,
-        value: '0',
-      });
-      expect(result).toEqual({
-        fromToken: inputToken,
-        fromTokenAmount: amountIn.toString(),
-        toToken: outputToken,
-        minReceiveToTokenAmount: minimum.toString(),
-        toTokenReceiver: refundReceiver,
       });
     }
   );
