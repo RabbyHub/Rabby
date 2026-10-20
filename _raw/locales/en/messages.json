@@ -1848,7 +1848,7 @@
         "estPnl": "Est. PnL ({{unit}})",
         "price": "Price",
         "market": "Market",
-        "unfilledAmt": "Unfilled Amt ({{unit}})",
+        "unfilledAmt": "Unfilled Amount ({{unit}})",
         "all": "All",
         "modify": "Modify",
         "cancel": "Cancel",
