@@ -42,6 +42,13 @@ const positive = (value?: Numeric | null): BigNumber | null => {
   return bn.isFinite() && bn.gt(0) ? bn : null;
 };
 
+/** A typed PnL / ROI magnitude: 0 is valid and means break-even. */
+const nonNegative = (value?: Numeric | null): BigNumber | null => {
+  if (value === undefined || value === null || value === '') return null;
+  const bn = new BigNumber(value);
+  return bn.isFinite() && bn.gte(0) ? bn : null;
+};
+
 const roundDown = (value: BigNumber, decimals: number) =>
   value.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
 
@@ -207,12 +214,16 @@ export const calcPnlRoiFromModeValue = (params: {
   size: Numeric;
   leverage: Numeric;
 }): { pnl: BigNumber; roi: BigNumber } | null => {
-  const magnitude = positive(params.value);
+  const magnitude = nonNegative(params.value);
   const entry = positive(params.entryPrice);
   const size = positive(params.size);
   const leverage = positive(params.leverage);
   if (!magnitude || !entry || !size || !leverage) return null;
-  const signed = params.kind === 'takeProfit' ? magnitude : magnitude.negated();
+  // A break-even SL stays 0, not -0.
+  const signed =
+    params.kind === 'takeProfit' || magnitude.isZero()
+      ? magnitude
+      : magnitude.negated();
   const margin = size.times(entry).div(leverage);
   if (params.mode === 'pnl') {
     return { pnl: signed, roi: signed.div(margin).times(100) };
@@ -220,7 +231,10 @@ export const calcPnlRoiFromModeValue = (params: {
   return { pnl: margin.times(signed).div(100), roi: signed };
 };
 
-/** Trigger price for a typed PnL / ROI magnitude; `''` when no positive price works. */
+/**
+ * Trigger price for a typed PnL / ROI magnitude (0 = the entry price);
+ * `''` when no positive price works.
+ */
 export const calcTriggerFromModeValue = (params: {
   direction: TpSlDirection;
   kind: TpSlKind;
@@ -231,7 +245,7 @@ export const calcTriggerFromModeValue = (params: {
   leverage: Numeric;
   szDecimals: number;
 }): string => {
-  const magnitude = positive(params.value);
+  const magnitude = nonNegative(params.value);
   const entry = positive(params.entryPrice);
   if (!magnitude || !entry) return '';
   const sign =
@@ -365,9 +379,10 @@ export interface TpSlSideView {
 }
 
 // Half-up, matching the estimated PnL hint (`toFixed(2)`) and mobile, so the
-// PnL/ROI input and the hint under it never disagree in the last digit.
+// PnL/ROI input and the hint under it never disagree in the last digit. A
+// trigger at the entry price reads `0` (break-even), like a typed 0.
 const formatMagnitude = (value: BigNumber | null) => {
-  if (!value || value.isZero()) return '';
+  if (!value) return '';
   return value.abs().decimalPlaces(2, BigNumber.ROUND_HALF_UP).toFixed();
 };
 
@@ -397,7 +412,7 @@ export const resolveTpSlSideView = (
   ctx: TpSlCalcContext
 ): TpSlSideView => {
   if (draft.source === 'mode') {
-    if (!positive(draft.modeValue)) {
+    if (!nonNegative(draft.modeValue)) {
       return {
         triggerPrice: '',
         modeValue: draft.modeValue,

@@ -355,6 +355,27 @@ describe('calcTriggerFromModeValue', () => {
     ).toBe('105');
   });
 
+  it('puts a zero target (break-even) at the entry price', () => {
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Long',
+        kind: 'stopLoss',
+        mode: 'pnl',
+        value: '0',
+      })
+    ).toBe('100');
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Short',
+        kind: 'takeProfit',
+        mode: 'roi',
+        value: '0',
+      })
+    ).toBe('100');
+  });
+
   it('returns an empty trigger when the target needs a non-positive price', () => {
     expect(
       calcTriggerFromModeValue({
@@ -473,6 +494,31 @@ describe('resolveTpSlSideView', () => {
     expect(view.status).toBe('valid');
     expect(view.pnl?.toNumber()).toBe(20);
     expect(view.roi?.toNumber()).toBe(100);
+  });
+
+  it('accepts a typed 0 as a break-even target at the entry price', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'roi', source: 'mode', triggerPrice: '', modeValue: '0' },
+      'stopLoss',
+      ctx
+    );
+    expect(view).toMatchObject({
+      triggerPrice: '100',
+      status: 'valid',
+      error: null,
+    });
+    expect(view.pnl?.toNumber()).toBe(0);
+    expect(view.roi?.toNumber()).toBe(0);
+  });
+
+  it('reads a trigger at the entry price as a 0 target', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'trigger', triggerPrice: '100', modeValue: '' },
+      'stopLoss',
+      ctx
+    );
+    expect(view.modeValue).toBe('0');
+    expect(view.status).toBe('valid');
   });
 
   it('shows nothing for a PnL target when the size is unusable', () => {
