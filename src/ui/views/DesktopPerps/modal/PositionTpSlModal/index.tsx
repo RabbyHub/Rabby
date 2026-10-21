@@ -43,6 +43,8 @@ type TpSlBodyPage = Exclude<TpSlPage, 'confirm'>;
 /** `cancelingOid` while Cancel All is in flight (no real oid is negative). */
 const CANCEL_ALL_KEY = -1;
 
+const TABS: TpSlScope[] = ['partial', 'position'];
+
 export interface PositionTpSlModalProps {
   visible: boolean;
   position: PositionFormatData;
@@ -356,19 +358,19 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     }
   );
 
-  const handleCancelExisting = useMemoizedFn(
-    async (order: PositionTpSlOrder) => {
-      const ok = await cancelOrders([order], order.oid);
-      if (ok) goRoot();
-    }
+  // Stays on the modify page: the form clears the cancelled side itself and
+  // keeps whatever the user typed on the other side.
+  const handleCancelExisting = useMemoizedFn((order: PositionTpSlOrder) =>
+    cancelOrders([order], order.oid)
   );
 
-  const intro = introVisible[tab] ? (
-    <TpSlIntroCard
-      scope={tab}
-      onDismiss={() => setIntroVisible((prev) => ({ ...prev, [tab]: false }))}
-    />
-  ) : null;
+  const renderIntro = (key: TpSlScope) =>
+    introVisible[key] ? (
+      <TpSlIntroCard
+        scope={key}
+        onDismiss={() => setIntroVisible((prev) => ({ ...prev, [key]: false }))}
+      />
+    ) : null;
 
   const positionHint = (
     <Tooltip
@@ -392,9 +394,14 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     onSubmit: handleFormSubmit,
   };
 
-  const renderBody = () => {
-    if (tab === 'partial') {
-      if (bodyPage === 'add') {
+  // Both tabs stay mounted (the inactive one hidden) so switching tabs keeps
+  // unsubmitted input. Tabs only show on the root page, so a hidden tab is
+  // always at its root.
+  const renderTabBody = (key: TpSlScope) => {
+    const tabPage: TpSlBodyPage = key === tab ? bodyPage : 'root';
+    const intro = renderIntro(key);
+    if (key === 'partial') {
+      if (tabPage === 'add') {
         return (
           <TpSlForm
             key="partial-add"
@@ -404,7 +411,7 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
           />
         );
       }
-      if (bodyPage === 'modify' && editingOrder) {
+      if (tabPage === 'modify' && editingOrder) {
         return (
           <TpSlForm
             key={`partial-modify-${editingOrder.oid}`}
@@ -450,12 +457,10 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
 
     const tpOrder = positionGroups.takeProfit[0];
     const slOrder = positionGroups.stopLoss[0];
-    if (bodyPage === 'modify') {
+    if (tabPage === 'modify') {
       return (
         <TpSlForm
-          key={`position-modify-${tpOrder?.oid ?? 'none'}-${
-            slOrder?.oid ?? 'none'
-          }`}
+          key="position-modify"
           mode="positionModify"
           variant="page"
           existingOrders={{ takeProfit: tpOrder, stopLoss: slOrder }}
@@ -501,7 +506,9 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
       : page === 'add'
       ? t('page.perpsPro.positionTpSl.addTitle')
       : page === 'modify'
-      ? t('page.perpsPro.positionTpSl.modifyTitle')
+      ? tab === 'position'
+        ? t('page.perpsPro.positionTpSl.modifyPositionTitle')
+        : t('page.perpsPro.positionTpSl.modifyTitle')
       : t('page.perpsPro.positionTpSl.title');
 
   return (
@@ -537,7 +544,17 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
           page === 'confirm' && 'hidden'
         )}
       >
-        {renderBody()}
+        {TABS.map((key) => (
+          <div
+            key={key}
+            className={clsx(
+              'flex min-h-0 flex-1 flex-col',
+              key !== tab && 'hidden'
+            )}
+          >
+            {renderTabBody(key)}
+          </div>
+        ))}
       </div>
       {page === 'confirm' && pendingCommand ? (
         <TpSlConfirmPage
