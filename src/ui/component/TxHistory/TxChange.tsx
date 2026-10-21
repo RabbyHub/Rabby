@@ -7,6 +7,9 @@ import { getTokenSymbol } from 'ui/utils/token';
 import { TokenLabel } from './TokenLabel';
 import { useTranslation } from 'react-i18next';
 import { TxHistoryItemRow } from '@/db/schema/history';
+import { DesktopTokenLabel } from '@/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel';
+import clsx from 'clsx';
+import { UI_TYPE } from '@/constant/ui';
 
 type TokenChangeProps = {
   data: TxHistoryItemRow;
@@ -70,12 +73,22 @@ export const TokenChange = ({
             <span className="token-change-item-text">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
-            <TokenLabel
-              isNft={isNft}
-              token={token}
-              canClickToken={isNft ? false : canClickToken}
-              onClose={onClose}
-            />
+            {UI_TYPE.isDesktop ? (
+              <DesktopTokenLabel
+                isNft={isNft}
+                token={token}
+                onClose={onClose}
+                textClassName={clsx(isNft || !canClickToken ? '' : 'underline')}
+                canClickToken={isNft ? false : canClickToken}
+              />
+            ) : (
+              <TokenLabel
+                isNft={isNft}
+                token={token}
+                canClickToken={isNft ? false : canClickToken}
+                onClose={onClose}
+              />
+            )}
           </div>
         );
       })}
@@ -122,12 +135,22 @@ export const TokenChange = ({
             <span className="token-change-item-text">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
-            <TokenLabel
-              isNft={isNft}
-              token={token}
-              canClickToken={canClickToken}
-              onClose={onClose}
-            />
+            {UI_TYPE.isDesktop ? (
+              <DesktopTokenLabel
+                isNft={isNft}
+                token={token}
+                onClose={onClose}
+                textClassName={clsx(isNft || !canClickToken ? '' : 'underline')}
+                canClickToken={isNft ? false : canClickToken}
+              />
+            ) : (
+              <TokenLabel
+                isNft={isNft}
+                token={token}
+                canClickToken={isNft ? false : canClickToken}
+                onClose={onClose}
+              />
+            )}
           </div>
         );
       })}
