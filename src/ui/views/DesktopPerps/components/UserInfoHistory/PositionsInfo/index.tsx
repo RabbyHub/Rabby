@@ -4,7 +4,7 @@ import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
 import { Button, message, Modal, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import BigNumber from 'bignumber.js';
@@ -183,9 +183,17 @@ export const PositionsInfo: React.FC = () => {
     if (!currentPosition) setEditTpSlVisible(false);
   }, [currentPosition]);
 
-  // Switching address: the modal belongs to the previous account's position.
+  const closeAllModalRef = useRef<{ destroy: () => void } | null>(null);
+
+  // Switching address: these modals act on the previous account's positions
+  // (Close All would even close the new account's).
   useEffect(() => {
     setEditTpSlVisible(false);
+    setEditMarginVisible(false);
+    setClosePositionVisible(false);
+    setShowLeverageModal(false);
+    closeAllModalRef.current?.destroy();
+    closeAllModalRef.current = null;
   }, [currentPerpsAccount?.address]);
 
   const {
@@ -301,6 +309,7 @@ export const PositionsInfo: React.FC = () => {
         </div>
       ),
     });
+    closeAllModalRef.current = modal;
   });
 
   const openTpSlModal = useMemoizedFn((coin: string, tab: TpSlScope) => {
