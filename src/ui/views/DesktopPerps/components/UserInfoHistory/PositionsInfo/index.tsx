@@ -635,7 +635,7 @@ export const PositionsInfo: React.FC = () => {
           </div>
         ),
         key: 'closeAction',
-        width: 282,
+        width: 262,
         dataIndex: 'closeAction',
         render: (_, record) => {
           return (
