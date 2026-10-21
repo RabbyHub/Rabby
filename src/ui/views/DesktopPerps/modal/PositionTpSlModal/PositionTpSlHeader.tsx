@@ -106,7 +106,7 @@ export const PositionTpSlPositionCard: React.FC<{
         </span>
       </div>
       {variant === 'full' ? (
-        <div className="flex gap-[12px]">
+        <div className="flex gap-[48px]">
           {items.map((item) => (
             <div
               key={item.key}
