@@ -125,21 +125,22 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
     return { takeProfit: build('takeProfit'), stopLoss: build('stopLoss') };
   });
 
-  // Amount — partial modes only.
+  // Amount — partial modes only. A modify opens on the slider at the order's
+  // share of the position (an order for the whole position shows 100%, as in
+  // Figma 164378:127241); the size stays the order's exact size until edited.
   const [amountSource, setAmountSource] = useState<'slider' | 'manual'>(
-    isPartialModify ? 'manual' : 'slider'
+    'slider'
   );
-  const [percent, setPercent] = useState(isPartialModify ? 0 : 100);
-  const [amountInput, setAmountInput] = useState(() =>
-    isPartialModify && editingOrder
-      ? formatTpSlAmount({
-          unit,
-          size: editingOrder.remainingSize,
-          markPrice,
-          szDecimals,
-        })
-      : ''
-  );
+  const [percent, setPercent] = useState(() => {
+    if (!isPartialModify || !editingOrder) return 100;
+    const share = new BigNumber(editingOrder.remainingSize)
+      .div(position.size)
+      .times(100);
+    return share.isFinite()
+      ? Math.min(100, Math.max(0, Math.round(share.toNumber())))
+      : 100;
+  });
+  const [amountInput, setAmountInput] = useState('');
   // Until the amount is edited, a modify keeps the order's exact size.
   const [amountTouched, setAmountTouched] = useState(false);
   // Focus the manual input only right after the user switched from the slider.
