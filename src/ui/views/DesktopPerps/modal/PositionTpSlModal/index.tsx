@@ -267,7 +267,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
       const slCreate = findLeg('stopLoss', 'create');
 
       let ok = true;
-      let anyStepOk = false;
       if (tpModify || slModify) {
         ok = Boolean(
           await handleModifyTpSlOrders({
@@ -283,7 +282,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
                 : undefined,
           })
         );
-        anyStepOk = ok;
       }
       if (ok && (tpCreate || slCreate)) {
         // handleSetAutoClose shows its own success toast.
@@ -307,9 +305,11 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
       }
       await refreshOrders();
       closeAfter = ok;
-      if (!ok && anyStepOk) {
-        // A leg was already applied: drop the stale command so the form
-        // recomputes legs from the refreshed orders.
+      if (!ok) {
+        // A failed step may still have applied some legs: each call is a
+        // multi-order batch, and the SDK throws on the first rejected leg even
+        // when another was accepted. Drop the command so the form recomputes
+        // legs from the refreshed orders instead of resending an applied leg.
         if (page === 'confirm') setPage(returnPage);
         setPendingCommand(null);
       }
