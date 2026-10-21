@@ -706,6 +706,11 @@ export const PositionsInfo: React.FC = () => {
           );
           if (!orders.length) return renderTpSlAdd(record.coin, 'partial');
           const markPx = marketDataMap[record.coin]?.markPx || record.markPx;
+          // The cell shows one order per side; show the total only when a side
+          // has more orders than that, i.e. some are not visible here.
+          const hasHiddenOrders = (['takeProfit', 'stopLoss'] as const).some(
+            (kind) => orders.filter((order) => order.kind === kind).length > 1
+          );
           return (
             <div className="flex items-center gap-[12px]">
               <div className="flex items-center gap-[6px]">
@@ -713,9 +718,11 @@ export const PositionsInfo: React.FC = () => {
                   pickTpSlOrder(orders, 'takeProfit', markPx),
                   pickTpSlOrder(orders, 'stopLoss', markPx)
                 )}
-                <span className="text-[12px] leading-[14px] text-rb-neutral-foot">
-                  ({orders.length})
-                </span>
+                {hasHiddenOrders ? (
+                  <span className="text-[12px] leading-[14px] text-rb-neutral-foot">
+                    ({orders.length})
+                  </span>
+                ) : null}
               </div>
               {renderTpSlEdit(record.coin, 'partial')}
             </div>
