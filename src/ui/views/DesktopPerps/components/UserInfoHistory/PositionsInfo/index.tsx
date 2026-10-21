@@ -183,6 +183,11 @@ export const PositionsInfo: React.FC = () => {
     if (!currentPosition) setEditTpSlVisible(false);
   }, [currentPosition]);
 
+  // Switching address: the modal belongs to the previous account's position.
+  useEffect(() => {
+    setEditTpSlVisible(false);
+  }, [currentPerpsAccount?.address]);
+
   const {
     handleUpdateMargin,
     handleCloseAllPositions,
