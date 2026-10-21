@@ -1,4 +1,4 @@
-import { MarketData } from '@/ui/state/perps';
+import { MarketData, usePerpsStore } from '@/ui/state/perps';
 import stats from '@/stats';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
@@ -24,6 +24,8 @@ import {
   TpSlCommandLeg,
   TpSlKind,
   TpSlScope,
+  collectPositionTpSlOrders,
+  findPlacedPartialTpSlLegs,
   groupTpSlOrders,
   isTpSlCommandStale,
 } from '../../positionTpSl';
@@ -212,37 +214,66 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     let closeAfter = false;
     try {
       if (command.scope === 'partial') {
-        let succeeded = 0;
-        let attempted = 0;
-        for (const leg of command.legs) {
-          if (!leg.size) continue;
-          attempted += 1;
-          const tpsl = leg.kind === 'takeProfit' ? 'tp' : 'sl';
-          const ok =
-            leg.action === 'modify' && leg.oid !== undefined
-              ? await handleModifyPartialTpSl({
-                  coin: position.coin,
-                  oid: leg.oid,
-                  direction: position.direction,
-                  size: leg.size,
-                  triggerPx: leg.triggerPrice,
-                  tpsl,
-                  szDecimals: marketData.szDecimals ?? 5,
-                })
-              : await handlePlacePartialTpSl({
-                  coin: position.coin,
-                  direction: position.direction,
-                  size: leg.size,
-                  triggerPx: leg.triggerPrice,
-                  tpsl,
-                });
-          if (ok) {
-            succeeded += 1;
-            if (leg.action === 'create') reportCreate('partial', leg);
+        const szDecimals = marketData.szDecimals ?? 5;
+        const toTpsl = (leg: TpSlCommandLeg) =>
+          leg.kind === 'takeProfit' ? ('tp' as const) : ('sl' as const);
+        const legs = command.legs.filter((leg): leg is TpSlCommandLeg & {
+          size: string;
+        } => Boolean(leg.size));
+        const creates = legs.filter((leg) => leg.action === 'create');
+        const succeeded: TpSlCommandLeg[] = [];
+        const knownOids = new Set(orders.map((order) => order.oid));
+
+        for (const leg of legs) {
+          if (leg.action !== 'modify' || leg.oid === undefined) continue;
+          const ok = await handleModifyPartialTpSl({
+            coin: position.coin,
+            oid: leg.oid,
+            direction: position.direction,
+            size: leg.size,
+            triggerPx: leg.triggerPrice,
+            tpsl: toTpsl(leg),
+            szDecimals,
+          });
+          if (ok) succeeded.push(leg);
+        }
+
+        let reconcileCreates = false;
+        if (creates.length) {
+          const ok = await handlePlacePartialTpSl({
+            coin: position.coin,
+            direction: position.direction,
+            szDecimals,
+            legs: creates.map((leg) => ({
+              size: leg.size,
+              triggerPx: leg.triggerPrice,
+              tpsl: toTpsl(leg),
+            })),
+          });
+          if (ok) succeeded.push(...creates);
+          else reconcileCreates = creates.length > 1;
+        }
+
+        if (succeeded.length > 0 || reconcileCreates) {
+          await refreshOrders();
+          if (reconcileCreates) {
+            // A rejected leg fails the whole batch call even when the other
+            // leg was accepted: read which ones landed from the fresh orders.
+            const fresh = collectPositionTpSlOrders(
+              usePerpsStore.getState().openOrders,
+              { coin: position.coin, direction: position.direction }
+            );
+            succeeded.push(
+              ...findPlacedPartialTpSlLegs(creates, fresh, knownOids)
+            );
           }
         }
-        if (succeeded > 0) {
-          if (succeeded === attempted) {
+        succeeded
+          .filter((leg) => leg.action === 'create')
+          .forEach((leg) => reportCreate('partial', leg));
+
+        if (succeeded.length > 0) {
+          if (succeeded.length === legs.length) {
             perpsToast.success({
               title: t('page.perps.toast.success'),
               description: t('page.perpsPro.positionTpSl.submitted'),
@@ -252,7 +283,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
               title: t('page.perpsPro.positionTpSl.partialSubmitted'),
             });
           }
-          await refreshOrders();
           setFormResetKey((prev) => prev + 1);
           goRoot();
         }

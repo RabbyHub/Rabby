@@ -895,26 +895,43 @@ export const usePerpsProPosition = () => {
     }
   );
 
-  // Partial TP/SL: a reduce-only trigger order with its own size, placed on
-  // the closing side (sell to close a long, buy to close a short).
+  // Partial TP/SL: reduce-only trigger orders with their own size, placed on
+  // the closing side (sell to close a long, buy to close a short). All legs go
+  // in one signed batch so a TP + SL pair lands together; each order is the
+  // one `placeTPSlMarketOrder` would build (market trigger, SDK slippage).
+  // Throws on the first rejected leg like the SDK, even if another landed.
   const handlePlacePartialTpSl = useMemoizedFn(
     async (params: {
       coin: string;
       direction: 'Long' | 'Short';
-      size: string;
-      triggerPx: string;
-      tpsl: 'tp' | 'sl';
+      szDecimals: number;
+      legs: { size: string; triggerPx: string; tpsl: 'tp' | 'sl' }[];
     }) => {
       return withErrorHandler(
         async (p) => {
           const sdk = getPerpsSDK();
-          const res = await sdk.exchange?.placeTPSlMarketOrder({
-            coin: p.coin,
-            isBuy: p.direction === 'Short',
-            size: p.size,
-            triggerPx: formatTriggerPx(p.triggerPx) || '',
-            tpsl: p.tpsl,
-            reduceOnly: true,
+          const exchange = sdk.exchange;
+          if (!exchange) throw new Error('Hyperliquid no exchange client');
+          const isBuy = p.direction === 'Short';
+          const res = await exchange.multiOrder({
+            orders: p.legs.map((leg) => {
+              const triggerPx = formatTriggerPx(leg.triggerPx) || '';
+              return {
+                coin: p.coin,
+                isBuy,
+                sz: leg.size,
+                limitPx: exchange.getSlippagePx(
+                  triggerPx,
+                  SLIPPAGE,
+                  isBuy,
+                  p.szDecimals
+                ),
+                reduceOnly: true,
+                orderType: {
+                  trigger: { isMarket: true, triggerPx, tpsl: leg.tpsl },
+                },
+              };
+            }),
             builder: PERPS_BUILDER_INFO_PRO,
           });
           const errors = getOrderStatusErrors(res);
