@@ -73,7 +73,13 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
             readOnly
             value={sliderText}
             disabled={disabled}
-            onMouseDown={onBeginManual}
+            onMouseDown={(e) => {
+              // This input is swapped for the editable one (which autofocuses)
+              // during this mousedown; without preventDefault the browser's
+              // default focus targets the removed element and blurs the new one.
+              e.preventDefault();
+              onBeginManual();
+            }}
             onKeyDown={(e) => {
               if (
                 e.key.length === 1 ||
