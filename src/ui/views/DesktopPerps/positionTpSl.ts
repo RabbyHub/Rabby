@@ -42,6 +42,13 @@ const positive = (value?: Numeric | null): BigNumber | null => {
   return bn.isFinite() && bn.gt(0) ? bn : null;
 };
 
+/** A typed PnL / ROI magnitude: 0 is valid and means break-even. */
+const nonNegative = (value?: Numeric | null): BigNumber | null => {
+  if (value === undefined || value === null || value === '') return null;
+  const bn = new BigNumber(value);
+  return bn.isFinite() && bn.gte(0) ? bn : null;
+};
+
 const roundDown = (value: BigNumber, decimals: number) =>
   value.decimalPlaces(decimals, BigNumber.ROUND_DOWN);
 
@@ -198,29 +205,34 @@ export const calcTpSlRoi = (params: {
     .times(100);
 };
 
-/** Signed PnL and ROI implied by a typed magnitude: TP positive, SL negative. */
-export const calcPnlRoiFromModeValue = (params: {
-  mode: TpSlInputMode;
-  kind: TpSlKind;
-  value: Numeric;
-  entryPrice: Numeric;
-  size: Numeric;
-  leverage: Numeric;
-}): { pnl: BigNumber; roi: BigNumber } | null => {
-  const magnitude = positive(params.value);
-  const entry = positive(params.entryPrice);
-  const size = positive(params.size);
-  const leverage = positive(params.leverage);
-  if (!magnitude || !entry || !size || !leverage) return null;
-  const signed = params.kind === 'takeProfit' ? magnitude : magnitude.negated();
-  const margin = size.times(entry).div(leverage);
-  if (params.mode === 'pnl') {
-    return { pnl: signed, roi: signed.div(margin).times(100) };
-  }
-  return { pnl: margin.times(signed).div(100), roi: signed };
+/** Hyperliquid prices: ≤ 5 significant figures (any integer is allowed). */
+const MAX_PRICE_SIGNIFICANT_FIGURES = 5;
+/** …and ≤ 6 − szDecimals decimals. */
+const MAX_PRICE_DECIMALS = 6;
+
+/**
+ * Snap a derived trigger to a valid price, rounding toward the entry price so
+ * the PnL it implies never exceeds the typed target. A target closer to entry
+ * than one price step lands on the entry price itself (PnL 0) — e.g. a 0.01
+ * USDC target on a 70M DOGE position.
+ */
+const roundTriggerTowardEntry = (
+  trigger: BigNumber,
+  entry: BigNumber,
+  szDecimals: number
+) => {
+  const mode = trigger.gte(entry) ? BigNumber.ROUND_DOWN : BigNumber.ROUND_UP;
+  const integer = trigger.integerValue(mode);
+  if (integer.gte(10 ** MAX_PRICE_SIGNIFICANT_FIGURES)) return integer;
+  return trigger
+    .precision(MAX_PRICE_SIGNIFICANT_FIGURES, mode)
+    .decimalPlaces(Math.max(0, MAX_PRICE_DECIMALS - szDecimals), mode);
 };
 
-/** Trigger price for a typed PnL / ROI magnitude; `''` when no positive price works. */
+/**
+ * Trigger price for a typed PnL / ROI magnitude (0 = the entry price), as a
+ * valid price rounded toward entry; `''` when no positive price works.
+ */
 export const calcTriggerFromModeValue = (params: {
   direction: TpSlDirection;
   kind: TpSlKind;
@@ -231,7 +243,7 @@ export const calcTriggerFromModeValue = (params: {
   leverage: Numeric;
   szDecimals: number;
 }): string => {
-  const magnitude = positive(params.value);
+  const magnitude = nonNegative(params.value);
   const entry = positive(params.entryPrice);
   if (!magnitude || !entry) return '';
   const sign =
@@ -252,7 +264,8 @@ export const calcTriggerFromModeValue = (params: {
   }
 
   if (!trigger.isFinite() || !trigger.gt(0)) return '';
-  return formatTpOrSlPrice(trigger.toNumber(), params.szDecimals);
+  const rounded = roundTriggerTowardEntry(trigger, entry, params.szDecimals);
+  return rounded.gt(0) ? rounded.toFixed() : '';
 };
 
 export type TpSlTriggerError =
@@ -365,9 +378,10 @@ export interface TpSlSideView {
 }
 
 // Half-up, matching the estimated PnL hint (`toFixed(2)`) and mobile, so the
-// PnL/ROI input and the hint under it never disagree in the last digit.
+// PnL/ROI input and the hint under it never disagree in the last digit. A
+// trigger at the entry price reads `0` (break-even), like a typed 0.
 const formatMagnitude = (value: BigNumber | null) => {
-  if (!value || value.isZero()) return '';
+  if (!value) return '';
   return value.abs().decimalPlaces(2, BigNumber.ROUND_HALF_UP).toFixed();
 };
 
@@ -397,7 +411,7 @@ export const resolveTpSlSideView = (
   ctx: TpSlCalcContext
 ): TpSlSideView => {
   if (draft.source === 'mode') {
-    if (!positive(draft.modeValue)) {
+    if (!nonNegative(draft.modeValue)) {
       return {
         triggerPrice: '',
         modeValue: draft.modeValue,
@@ -418,14 +432,6 @@ export const resolveTpSlSideView = (
         error: null,
       };
     }
-    const implied = calcPnlRoiFromModeValue({
-      mode: draft.mode,
-      kind,
-      value: draft.modeValue,
-      entryPrice: ctx.entryPrice,
-      size: ctx.size,
-      leverage: ctx.leverage,
-    });
     const triggerPrice = calcTriggerFromModeValue({
       direction: ctx.direction,
       kind,
@@ -439,11 +445,23 @@ export const resolveTpSlSideView = (
     const error: TpSlTriggerError | null = triggerPrice
       ? validateForScope(kind, triggerPrice, ctx)
       : 'triggerUnavailable';
+    // Estimate from the rounded trigger that will be submitted, like mobile:
+    // price precision can make it differ from the typed target (down to 0).
     return {
       triggerPrice,
       modeValue: draft.modeValue,
-      pnl: implied?.pnl ?? null,
-      roi: implied?.roi ?? null,
+      pnl: calcTpSlPnl({
+        direction: ctx.direction,
+        entryPrice: ctx.entryPrice,
+        triggerPrice,
+        size: ctx.size,
+      }),
+      roi: calcTpSlRoi({
+        direction: ctx.direction,
+        entryPrice: ctx.entryPrice,
+        triggerPrice,
+        leverage: ctx.leverage,
+      }),
       status: error ? 'invalid' : 'valid',
       error,
     };

@@ -18,6 +18,8 @@ interface TpSlAmountInputProps {
   titleSize?: 'default' | 'large';
   disabled?: boolean;
   hasError?: boolean;
+  /** Shown under the input in red; also turns the border red. */
+  errorText?: string;
   /** Focus the manual input on mount (after switching from the slider). */
   autoFocusInput?: boolean;
   onBeginManual: () => void;
@@ -35,6 +37,7 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
   titleSize = 'default',
   disabled,
   hasError,
+  errorText,
   autoFocusInput,
   onBeginManual,
   onInputChange,
@@ -61,7 +64,7 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
         className={clsx(
           'flex h-[40px] items-center gap-[8px] rounded-[6px] border border-solid bg-rb-neutral-bg-5 px-[11px]',
           'hover:border-rb-brand-default focus-within:border-rb-brand-default',
-          hasError ? 'border-rb-red-default' : 'border-transparent'
+          hasError || errorText ? 'border-rb-red-default' : 'border-transparent'
         )}
       >
         {source === 'slider' ? (
@@ -105,6 +108,11 @@ export const TpSlAmountInput: React.FC<TpSlAmountInputProps> = ({
           {unitLabel}
         </span>
       </div>
+      {errorText ? (
+        <div className="-mt-[4px] text-[12px] leading-[16px] text-rb-red-default">
+          {errorText}
+        </div>
+      ) : null}
       <div className="flex flex-col gap-[6px]">
         {/* Figma: the rail is inset 4px each side so the 8px end marks sit
             inside the row instead of overhanging it. */}

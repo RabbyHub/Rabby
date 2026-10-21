@@ -105,11 +105,18 @@ export const formatTpOrSlPrice = (
   }
 
   // Calculate remaining digits allowed in decimal part
-  // Note: every digit in decimalPart counts toward allDigits length
   const remainingDigits = 5 - integerPartLength;
+  // Below 1, the zeros right after the point are not significant
+  // (0.094616 has 5 significant figures), so they don't use up the budget.
+  const leadingZeros = integerDigits
+    ? 0
+    : decimalPart.length - decimalPart.replace(/^0+/, '').length;
 
   // Limit decimal part to the minimum of remainingDigits and maxDecimals
-  const maxDecimalLength = Math.min(remainingDigits, maxDecimals);
+  const maxDecimalLength = Math.min(
+    leadingZeros + remainingDigits,
+    maxDecimals
+  );
   let composedDecimal = decimalPart.slice(0, maxDecimalLength);
 
   // Remove trailing zeros

@@ -3,7 +3,6 @@ import {
   PositionTpSlOrder,
   TpSlCalcContext,
   TpSlCommand,
-  calcPnlRoiFromModeValue,
   calcTpSlPnl,
   calcTpSlRoi,
   calcTriggerFromModeValue,
@@ -285,30 +284,6 @@ describe('PnL and ROI', () => {
       })?.toNumber()
     ).toBe(50);
   });
-
-  it('derives signed PnL and ROI from a typed magnitude', () => {
-    const tp = calcPnlRoiFromModeValue({
-      mode: 'pnl',
-      kind: 'takeProfit',
-      value: '20',
-      entryPrice: '100',
-      size: '2',
-      leverage: 10,
-    });
-    expect(tp?.pnl.toNumber()).toBe(20);
-    expect(tp?.roi.toNumber()).toBe(100);
-
-    const sl = calcPnlRoiFromModeValue({
-      mode: 'roi',
-      kind: 'stopLoss',
-      value: '50',
-      entryPrice: '100',
-      size: '2',
-      leverage: 10,
-    });
-    expect(sl?.pnl.toNumber()).toBe(-10);
-    expect(sl?.roi.toNumber()).toBe(-50);
-  });
 });
 
 describe('calcTriggerFromModeValue', () => {
@@ -353,6 +328,90 @@ describe('calcTriggerFromModeValue', () => {
         value: '50',
       })
     ).toBe('105');
+  });
+
+  it('puts a zero target (break-even) at the entry price', () => {
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Long',
+        kind: 'stopLoss',
+        mode: 'pnl',
+        value: '0',
+      })
+    ).toBe('100');
+    expect(
+      calcTriggerFromModeValue({
+        ...base,
+        direction: 'Short',
+        kind: 'takeProfit',
+        mode: 'roi',
+        value: '0',
+      })
+    ).toBe('100');
+  });
+
+  describe('a target smaller than one price step (70M DOGE short)', () => {
+    const doge = {
+      entryPrice: '0.094616',
+      size: '70772338',
+      leverage: 3,
+      szDecimals: 0,
+    };
+
+    it.each([
+      ['Short', 'stopLoss'],
+      ['Short', 'takeProfit'],
+      ['Long', 'stopLoss'],
+      ['Long', 'takeProfit'],
+    ] as const)('keeps a %s %s on the entry price', (direction, kind) => {
+      expect(
+        calcTriggerFromModeValue({
+          ...doge,
+          direction,
+          kind,
+          mode: 'pnl',
+          value: '0.01',
+        })
+      ).toBe('0.094616');
+    });
+
+    it('rounds toward entry, never past the typed PnL', () => {
+      // 100 / 70,772,338 = 0.0000014 -> one 0.000001 step from entry.
+      expect(
+        calcTriggerFromModeValue({
+          ...doge,
+          direction: 'Short',
+          kind: 'stopLoss',
+          mode: 'pnl',
+          value: '100',
+        })
+      ).toBe('0.094617');
+      expect(
+        calcTriggerFromModeValue({
+          ...doge,
+          direction: 'Short',
+          kind: 'takeProfit',
+          mode: 'pnl',
+          value: '100',
+        })
+      ).toBe('0.094615');
+    });
+  });
+
+  it('keeps any integer price above 5 significant figures', () => {
+    expect(
+      calcTriggerFromModeValue({
+        entryPrice: '123456',
+        size: '1',
+        leverage: 10,
+        szDecimals: 5,
+        direction: 'Long',
+        kind: 'takeProfit',
+        mode: 'pnl',
+        value: '100.7',
+      })
+    ).toBe('123556');
   });
 
   it('returns an empty trigger when the target needs a non-positive price', () => {
@@ -473,6 +532,53 @@ describe('resolveTpSlSideView', () => {
     expect(view.status).toBe('valid');
     expect(view.pnl?.toNumber()).toBe(20);
     expect(view.roi?.toNumber()).toBe(100);
+  });
+
+  it('accepts a typed 0 as a break-even target at the entry price', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'roi', source: 'mode', triggerPrice: '', modeValue: '0' },
+      'stopLoss',
+      ctx
+    );
+    expect(view).toMatchObject({
+      triggerPrice: '100',
+      status: 'valid',
+      error: null,
+    });
+    expect(view.pnl?.toNumber()).toBe(0);
+    expect(view.roi?.toNumber()).toBe(0);
+  });
+
+  it('reads a trigger at the entry price as a 0 target', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'trigger', triggerPrice: '100', modeValue: '' },
+      'stopLoss',
+      ctx
+    );
+    expect(view.modeValue).toBe('0');
+    expect(view.status).toBe('valid');
+  });
+
+  it('estimates from the rounded trigger: a sub-step PnL target reads 0', () => {
+    const view = resolveTpSlSideView(
+      { mode: 'pnl', source: 'mode', triggerPrice: '', modeValue: '0.01' },
+      'stopLoss',
+      {
+        ...ctx,
+        direction: 'Short',
+        entryPrice: '0.094616',
+        leverage: 3,
+        size: '70772338',
+        szDecimals: 0,
+        markPrice: 0.082127,
+        liquidationPrice: '2.272245',
+      }
+    );
+    expect(view.triggerPrice).toBe('0.094616');
+    expect(view.modeValue).toBe('0.01');
+    expect(view.pnl?.toNumber()).toBe(0);
+    expect(view.roi?.toNumber()).toBe(0);
+    expect(view.status).toBe('valid');
   });
 
   it('shows nothing for a PnL target when the size is unusable', () => {
