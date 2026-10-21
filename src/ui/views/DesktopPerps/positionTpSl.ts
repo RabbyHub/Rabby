@@ -575,6 +575,28 @@ export const isSameTriggerPrice = (a?: string, b?: string) => {
   return left.eq(right);
 };
 
+/**
+ * The created partial legs that now exist as orders: a new oid (not in
+ * `knownOids`, the orders before submitting) of the same side and trigger.
+ * Used when a batch call threw on one leg and the other may have landed.
+ */
+export const findPlacedPartialTpSlLegs = <
+  L extends Pick<TpSlCommandLeg, 'kind' | 'triggerPrice'>
+>(
+  legs: L[],
+  orders: PositionTpSlOrder[],
+  knownOids: Set<number>
+): L[] =>
+  legs.filter((leg) =>
+    orders.some(
+      (order) =>
+        order.scope === 'partial' &&
+        order.kind === leg.kind &&
+        !knownOids.has(order.oid) &&
+        isSameTriggerPrice(order.triggerPrice, leg.triggerPrice)
+    )
+  );
+
 export interface TpSlCommandLeg {
   kind: TpSlKind;
   action: 'create' | 'modify';

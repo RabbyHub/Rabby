@@ -9,6 +9,7 @@ import {
   calculateTpSlCoverage,
   collectPositionTpSlOrders,
   findNearestTpSlOrder,
+  findPlacedPartialTpSlLegs,
   formatTpSlAmount,
   getTpSlMaxAmountInput,
   groupTpSlOrders,
@@ -786,6 +787,40 @@ describe('trigger price helpers', () => {
     expect(isSameTriggerPrice('110', '110.5')).toBe(false);
     expect(isSameTriggerPrice('', '')).toBe(true);
     expect(isSameTriggerPrice('110', '')).toBe(false);
+  });
+});
+
+describe('findPlacedPartialTpSlLegs', () => {
+  const tp = { kind: 'takeProfit' as const, triggerPrice: '110' };
+  const sl = { kind: 'stopLoss' as const, triggerPrice: '90' };
+
+  it('finds the leg that landed when the batch threw on the other', () => {
+    const orders = [
+      makeTpSl({ oid: 1, kind: 'takeProfit', triggerPrice: '120' }),
+      makeTpSl({ oid: 7, kind: 'stopLoss', triggerPrice: '90.0' }),
+    ];
+    expect(findPlacedPartialTpSlLegs([tp, sl], orders, new Set([1]))).toEqual([
+      sl,
+    ]);
+  });
+
+  it('ignores orders that existed before submitting', () => {
+    const orders = [
+      makeTpSl({ oid: 3, kind: 'takeProfit', triggerPrice: '110' }),
+    ];
+    expect(findPlacedPartialTpSlLegs([tp], orders, new Set([3]))).toEqual([]);
+  });
+
+  it('ignores a new position-scope order at the same trigger', () => {
+    const orders = [
+      makeTpSl({
+        oid: 9,
+        kind: 'takeProfit',
+        scope: 'position',
+        triggerPrice: '110',
+      }),
+    ];
+    expect(findPlacedPartialTpSlLegs([tp], orders, new Set())).toEqual([]);
   });
 });
 
