@@ -510,6 +510,36 @@ describe('resolveTpSlSideView', () => {
     expect(view.pnl?.toNumber()).toBe(20);
   });
 
+  it('rounds the derived magnitude half-up, like the estimated PnL hint', () => {
+    // ROI = 0.1225 / 100 * 10 * 100 = 1.225 -> 1.23 (the hint's toFixed(2)),
+    // not 1.22; PnL = 0.1225 * 2 = 0.245 -> 0.25.
+    const roi = resolveTpSlSideView(
+      {
+        mode: 'roi',
+        source: 'trigger',
+        triggerPrice: '100.1225',
+        modeValue: '',
+      },
+      'takeProfit',
+      { ...ctx, markPrice: 100.05 }
+    );
+    expect(roi.modeValue).toBe('1.23');
+    expect(roi.modeValue).toBe(roi.roi?.toFixed(2));
+
+    const pnl = resolveTpSlSideView(
+      {
+        mode: 'pnl',
+        source: 'trigger',
+        triggerPrice: '100.1225',
+        modeValue: '',
+      },
+      'takeProfit',
+      { ...ctx, markPrice: 100.05 }
+    );
+    expect(pnl.modeValue).toBe('0.25');
+    expect(pnl.modeValue).toBe(pnl.pnl?.toFixed(2));
+  });
+
   it('flags a target that has no positive trigger', () => {
     const view = resolveTpSlSideView(
       { mode: 'pnl', source: 'mode', triggerPrice: '', modeValue: '300' },
