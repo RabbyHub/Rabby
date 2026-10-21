@@ -164,7 +164,9 @@ export const TpSlOrderList: React.FC<TpSlOrderListProps> = ({
 
   return (
     <div className="min-h-0 flex-1 overflow-y-auto px-[20px] pt-[12px] pb-[24px]">
-      <div className="flex flex-col gap-[12px]">
+      {/* Figma 164444:144929: 12px from the tabs to the action row (top
+          padding), then 24px between the action row and each group. */}
+      <div className="flex flex-col gap-[24px]">
         {header}
         <div className="flex items-center gap-[12px] px-[16px]">
           {scope === 'partial' && onAdd ? (
