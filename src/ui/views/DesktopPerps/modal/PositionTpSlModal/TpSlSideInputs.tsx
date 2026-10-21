@@ -20,6 +20,8 @@ const INPUT_BOX =
 interface TpSlSideInputsProps {
   kind: TpSlKind;
   mode: TpSlInputMode;
+  /** Which field the user typed in: the trigger, or the PnL / ROI target. */
+  source: 'trigger' | 'mode';
   view: TpSlSideView;
   quoteAsset: string;
   /** `$62,040.56`, for the liquidation error copy. */
@@ -35,6 +37,7 @@ interface TpSlSideInputsProps {
 export const TpSlSideInputs: React.FC<TpSlSideInputsProps> = ({
   kind,
   mode,
+  source,
   view,
   quoteAsset,
   liquidationPriceText,
@@ -90,9 +93,10 @@ export const TpSlSideInputs: React.FC<TpSlSideInputsProps> = ({
   const currentMode =
     modeOptions.find((option) => option.value === mode) || modeOptions[0];
 
-  // Sign of the PnL the target implies; fall back to the side's usual sign.
+  // A typed target takes its side's sign (as on mobile; the estimate below can
+  // round to 0). A typed trigger shows the sign of the PnL it implies.
   const sign =
-    view.pnl && !view.pnl.isZero()
+    source === 'trigger' && view.pnl && !view.pnl.isZero()
       ? view.pnl.gt(0)
         ? '+'
         : '-'

@@ -388,6 +388,7 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
                 key={kind}
                 kind={kind}
                 mode={drafts[kind].mode}
+                source={drafts[kind].source}
                 view={views[kind]}
                 quoteAsset={quoteAsset}
                 liquidationPriceText={liquidationPriceText}
