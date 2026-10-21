@@ -7,7 +7,6 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
-  ContextActionData,
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
@@ -53,7 +52,6 @@ import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage'
 import { ga4 } from '@/utils/ga4';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignStore } from '@/ui/state/sign';
-import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { tokenizeSignMessageText } from './signMessageHighlighter';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
 
@@ -101,7 +99,6 @@ const SignText = ({
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const securityEngineCtx = useRef<any>(null);
-  const isUnparsedAction = useRef(false);
   const logId = useRef('');
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const [engineResults, setEngineResults] = useState<Result[]>([]);
@@ -281,16 +278,8 @@ const SignText = ({
     resolveApproval({});
   };
 
-  const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
-    addSignMessageOriginFallback(ctx, {
-      isUnparsedAction: isUnparsedAction.current,
-      isInternalOrigin: session.origin === INTERNAL_REQUEST_ORIGIN,
-      message: signText,
-      origin: session.origin,
-    });
-
   const executeSecurityEngine = async () => {
-    const baseCtx = await formatSecurityEngineContext({
+    const ctx = await formatSecurityEngineContext({
       type: 'text',
       actionData: parsedActionData || ({} as any),
       origin: session.origin,
@@ -302,7 +291,6 @@ const SignText = ({
         hasAddress: wallet.hasAddress,
       },
     });
-    const ctx = withOriginFallback(baseCtx);
     securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -406,7 +394,6 @@ const SignText = ({
     sender: string
   ) => {
     logId.current = textActionData.log_id;
-    isUnparsedAction.current = textActionData.action === null;
     securityEngine.init();
     if (
       currentAccount?.type &&
@@ -422,7 +409,7 @@ const SignText = ({
       sender,
     });
     setParsedActionData(parsed);
-    const baseCtx = await formatSecurityEngineContext({
+    const ctx = await formatSecurityEngineContext({
       type: 'text',
       actionData: parsed,
       origin: params.session.origin,
@@ -434,7 +421,6 @@ const SignText = ({
         hasAddress: wallet.hasAddress,
       },
     });
-    const ctx = withOriginFallback(baseCtx);
     securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);

@@ -115,3 +115,28 @@ export const transformToHistory = ({
     return res;
   });
 };
+
+export const getGasDepositTxKey = (chainId: number, hash: string) =>
+  `${chainId}:${hash.toLowerCase()}`;
+
+// getChainId is injected so this module stays free of chain-list imports;
+// it is loaded by the db layer.
+export const markGasDepositTxs = <T extends { chain: string; id: string }>(
+  list: T[],
+  gasDepositTxKeys: ReadonlySet<string> | undefined,
+  getChainId: (serverId: string) => number | undefined
+): (T & { isGasDeposit?: boolean })[] => {
+  if (!gasDepositTxKeys?.size) {
+    return list;
+  }
+  return list.map((item) => {
+    const chainId = getChainId(item.chain);
+    if (
+      !chainId ||
+      !gasDepositTxKeys.has(getGasDepositTxKey(chainId, item.id))
+    ) {
+      return item;
+    }
+    return { ...item, isGasDeposit: true };
+  });
+};

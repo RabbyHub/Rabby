@@ -756,7 +756,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                   <>
                     <div
                       className={clsx(
-                        'flex-1 flex flex-col',
+                        'flex-1 flex flex-col min-h-0 overflow-y-auto -mx-20 px-20',
                         directSubmit &&
                           'fixed left-[99999px] top-[99999px] z-[-1]',
                         task.status !== 'idle' && 'pointer-events-none'
@@ -1049,7 +1049,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
                   {title}
 
                   {showSimulateChange ? (
-                    <div className="bg-r-neutral-card-2 px-16 py-12 rounded-[8px]">
+                    <div className="bg-r-neutral-card-2 px-16 py-12 rounded-[8px] max-h-[260px] overflow-y-auto">
                       {txsResult?.[txsResult?.length - 1]?.preExecResult ? (
                         <BalanceChange
                           version={

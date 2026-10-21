@@ -17,6 +17,7 @@ import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
 import { makeTransactionId } from '@/utils/transaction';
+import { getGasDepositTxKey } from '@/utils/history';
 import { sortBy, groupBy } from 'lodash';
 import {
   checkIsPendingTxGroup,
@@ -97,9 +98,11 @@ export interface BridgeTxHistoryItem {
   status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   hash: string;
   acceleratedHash?: string;
-  estimatedDuration: number; // ms from server
+  isCanceled?: boolean;
+  estimatedDuration: number; // seconds from the quote
   createdAt: number;
   fromTxCompleteTs?: number;
+  toTxId?: string;
   actualToToken?: TokenItem; // actual token, may be not toToken
   actualToAmount?: number; // actual amount
   completedAt?: number;
@@ -462,6 +465,12 @@ class TxHistory {
       .slice(0, 200);
   }
 
+  getBridgeTxHistory(address: string) {
+    return this.store.bridgeTxHistory.filter((item) =>
+      isSameAddress(item.address, address)
+    );
+  }
+
   getRecentPendingTxHistory(address: string, type: keyof InnerTxHistoryMap) {
     const recentItem = this.store[`${type}TxHistory`]
       .filter((item) => {
@@ -539,8 +548,11 @@ class TxHistory {
       if (item.fromChainId === chainId && hashArr.includes(item.hash)) {
         return {
           ...item,
-          status: status === 'success' ? 'fromSuccess' : 'fromFailed',
+          // 取消成功代表原跨链未执行，按源链失败展示。
+          status:
+            status === 'success' && !isCancel ? 'fromSuccess' : 'fromFailed',
           acceleratedHash: completedHash || item.hash,
+          isCanceled: isCancel,
           fromTxCompleteTs: completedAt,
         };
       }
@@ -594,12 +606,19 @@ class TxHistory {
     bridgeTx?: BridgeHistory
   ) {
     this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
-      if (item.fromChainId === chainId && item.hash === from_tx_id) {
+      // 加速后调用方可能传入新 hash，两种 hash 都应更新同一条本地记录。
+      if (
+        item.fromChainId === chainId &&
+        (item.hash === from_tx_id || item.acceleratedHash === from_tx_id)
+      ) {
+        // 已取消的跨链不再接受远程完成结果。
+        if (item.isCanceled) return item;
         return {
           ...item,
           status,
           actualToToken: bridgeTx?.to_actual_token,
           actualToAmount: bridgeTx?.actual.receive_token_amount,
+          toTxId: bridgeTx?.to_tx?.tx_id || item.toTxId,
           completedAt: Date.now(),
         };
       }
@@ -877,12 +896,7 @@ class TxHistory {
     );
   };
 
-  checkIsGasDepositTxs = (
-    txs: Array<{
-      chainId?: number;
-      hash: string;
-    }>
-  ) => {
+  getGasDepositTxKeys = () => {
     const gasDepositTxKeys = new Set<string>();
 
     Object.values(this.store?.transactions || {}).forEach((addressTxMap) => {
@@ -892,17 +906,28 @@ class TxHistory {
             return;
           }
 
-          gasDepositTxKeys.add(`${txGroup.chainId}:${tx.hash.toLowerCase()}`);
+          gasDepositTxKeys.add(getGasDepositTxKey(txGroup.chainId, tx.hash));
         });
       });
     });
+
+    return Array.from(gasDepositTxKeys);
+  };
+
+  checkIsGasDepositTxs = (
+    txs: Array<{
+      chainId?: number;
+      hash: string;
+    }>
+  ) => {
+    const gasDepositTxKeys = new Set(this.getGasDepositTxKeys());
 
     return txs.map((tx) => {
       if (!tx.chainId || !tx.hash) {
         return false;
       }
 
-      return gasDepositTxKeys.has(`${tx.chainId}:${tx.hash.toLowerCase()}`);
+      return gasDepositTxKeys.has(getGasDepositTxKey(tx.chainId, tx.hash));
     });
   };
 

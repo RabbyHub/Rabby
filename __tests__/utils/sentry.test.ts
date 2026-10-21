@@ -34,6 +34,15 @@ describe('Sentry ignored errors', () => {
     ).toBe(false);
   });
 
+  test('ignores an expired import stash, thrown or forwarded over the port', () => {
+    const thrown = Object.assign(new Error('Wallet import session expired.'), {
+      code: 'KEYRING_IMPORT_EXPIRED',
+    });
+    const forwarded = { message: thrown.message, code: thrown.code };
+    expect(shouldIgnoreSentryError(thrown)).toBe(true);
+    expect(shouldIgnoreSentryError(forwarded)).toBe(true);
+  });
+
   test('ignores a Request timeout Error', () => {
     expect(shouldIgnoreSentryError(new Error('Request timeout'))).toBe(true);
   });

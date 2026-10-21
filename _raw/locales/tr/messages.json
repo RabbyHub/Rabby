@@ -1407,7 +1407,13 @@
         "biometricUnlockDisableFailed": "Biyometrik kilidi devre dışı bırakmayı başaramadı",
         "biometricUnlockUnsupported": "Bu cihaz biyometrik kilit açma desteği sunmamaktadır.",
         "biometricUnlockSetupDesc": "Parolanızı biyometrik kilidi etkinleştirmek için onaylayın.",
-        "clearPendingCheckbox": "Yerel nonce verilerimi ve imza kayıtlarını da sıfırla"
+        "clearPendingCheckbox": "Yerel nonce verilerimi ve imza kayıtlarını da sıfırla",
+        "removedToken": {
+          "title": "Kaldırılan Tokenlar",
+          "description": "Kaldırılan tokenlar, tüm adreslerinizde portföyünüzden gizlenir ancak bakiye hesaplamasına dahil edilmeye devam eder.",
+          "loadFailed": "Token yüklenemedi",
+          "retry": "Tekrar Dene"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Engellenen token, token listesinde gösterilmeyecek",
@@ -1451,7 +1457,19 @@
         "blockedListTitle": "blokajlı token",
         "fdvTips": "Piyasa değeri, maksimum arz dolaşımdayken. Tam Sulandırılmış Değerlendirme (FDV) = Fiyat x Maksimum Arz. Eğer Maksimum Arz yoksa, FDV = Fiyat x Toplam Arz. Eğer ne Maksimum Arz ne de Toplam Arz tanımlı veya sonsuzsa, FDV gösterilmez.",
         "bridge": "Köprü",
-        "bridgeToEth": "Ethereum Zinciri'ne Köprü"
+        "bridgeToEth": "Ethereum Zinciri'ne Köprü",
+        "removed": {
+          "more": "Daha Fazla",
+          "removeToken": "Tokenı kaldır",
+          "remove": "Kaldır",
+          "confirmTitle": "Bu token kaldırılsın mı?",
+          "portfolioNotice": "Bu token, kaldırıldıktan sonra portföyünüzde görünmeyecektir.",
+          "restoreNotice": "“Ayarlar >> Kaldırılan Tokenlar” bölümünden istediğiniz zaman geri yükleyebilirsiniz.",
+          "warning": "Kaldırılan tokenlar, tüm adreslerinizde portföyünüzden gizlenir ancak bakiye hesaplamasına dahil edilmeye devam eder.",
+          "removeFailed": "Token kaldırılamadı",
+          "restore": "Kaldırılan tokenı geri yükle",
+          "restoreFailed": "Token geri yüklenemedi"
+        }
       },
       "assets": {
         "usdValue": "USD DEĞERİ",
@@ -1748,6 +1766,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "Bilgisayarınızın saati senkronize olmadığı için WalletConnect bağlanamıyor. Otomatik tarih ve saat ayarını etkinleştirip tekrar deneyin.",
         "connectYour": "Bağla",
         "viaWalletConnect": "Wallet Connect ile",
         "connectedSuccessfully": "Başarıyla Bağlandı",
@@ -2365,9 +2384,44 @@
         "receivedDifferentTokenNeedSwap": "Farklı bir token aldınız. Seçtiğiniz token ile takas edebilirsiniz.",
         "BridgeStatusUnavailable": "Köprü durumu mevcut değil. Lütfen işlem geçmişinizi kontrol edin ve fonların ulaştığını doğrulayın.",
         "swapStatus": "Takasta Değiştir",
-        "sendStatus": "Gönderim Durumu"
+        "sendStatus": "Gönderim Durumu",
+        "bridgingEta": "Köprüleme sürüyor, tahmini süre: <time>{{time}}</time>",
+        "stillBridging": "Köprüleme Hâlâ Sürüyor",
+        "sourceFailed": "Köprüleme başarısız oldu. {{token}} tokenlarınız gönderilmedi",
+        "refundedLead": "İade Edildi",
+        "popupProcessing": "Köprü İşlemi Sürüyor",
+        "popupPending": "Köprü İşlemi Beklemede",
+        "popupFailed": "Köprü İşlemi Başarısız",
+        "popupRefunded": "Köprü İşlemi İade Edildi",
+        "popupCompleted": "Köprü İşlemi Tamamlandı",
+        "popupBridgeDelayed": "Köprü İşlemi Gecikti",
+        "popupBridgeFailed": "Köprüleme başarısız oldu",
+        "popupRefundedIn": "{{token}} olarak iade edildi",
+        "processing": "İşleniyor",
+        "refund": "İade Edildi",
+        "goBack": "Geri Dön",
+        "contactSupport": "Destekle İletişime Geç",
+        "succeeded": "Başarılı",
+        "sendFrom": "{{chain}} ağından gönderim",
+        "receiveOn": "{{chain}} ağında alım",
+        "refundOn": "{{chain}} ağında iade edildi",
+        "waitingDestination": "hedef ağdaki işlem bekleniyor",
+        "sendFailed": "Gönderim başarısız oldu",
+        "tokenNotSent": "{{token}} tokenlarınız gönderilmedi"
       },
-      "best-subtitle": "En iyi teklif, tahmini toplam maliyet (gas ücretleri dahil) ve teslimat hızının kombinasyonuyla belirlenir."
+      "best-subtitle": "En iyi teklif, tahmini toplam maliyet (gas ücretleri dahil) ve teslimat hızının kombinasyonuyla belirlenir.",
+      "bridge": "Köprü",
+      "by": "Sağlayıcı:",
+      "timeLeft": "{{time}} kaldı",
+      "refundIn": "{{token}} olarak iade edildi",
+      "viewDetails": "Ayrıntıları Görüntüle",
+      "duration-sec": "{{duration}} sn",
+      "duration-hour": "{{duration}} sa",
+      "duration-hour-min": "{{hours}} sa {{minutes}} dk",
+      "duration-day": "{{duration}} gün",
+      "duration-day-hour": "{{days}} gün {{hours}} sa",
+      "duration-day-min": "{{days}} gün {{minutes}} dk",
+      "duration-day-hour-min": "{{days}} gün {{hours}} sa {{minutes}} dk"
     },
     "pendingDetail": {
       "Header": {
@@ -2804,7 +2858,8 @@
       "lowBalance": "Gazınız yetmiyor (＜$1.00). Gelecekteki işlemlerin sorunsuz ilerlemesini sağlamak için gaz yatırın.",
       "gasBalance": "Gas bakiyesi",
       "loginSuccess": "Giriş başarılı",
-      "loginFailed": "Giriş başarısız"
+      "loginFailed": "Giriş başarısız",
+      "signTextInvalid": "Güvenlik kontrolü başarısız: GasAccount giriş mesajı geçersiz. Lütfen daha sonra tekrar deneyin"
     },
     "safeMessageQueue": {
       "noData": "Mesaj yok",
@@ -3315,6 +3370,14 @@
           "offerPrice": "Teklif Fiyatı",
           "creatorFeeTips1": "Yaratıcı kazançları satıcı tarafından ödenecek. Yaratıcı kazançlar zorunludur."
         },
+        "verifyError": {
+          "unsupportedChain": "Bu ağda NFT alım satımı henüz desteklenmiyor",
+          "currency": "Güvenlik kontrolü başarısız: ödeme tokenı beklenen tokenla eşleşmiyor",
+          "nft": "Güvenlik kontrolü başarısız: emirdeki NFT seçtiğiniz NFT ile eşleşmiyor",
+          "amount": "Güvenlik kontrolü başarısız: alacağınız tutar gösterilen tutarla eşleşmiyor",
+          "recipient": "Güvenlik kontrolü başarısız: gelir adresinize gönderilmeyecek",
+          "invalid": "Güvenlik kontrolü başarısız: emir verileri geçersiz. Lütfen daha sonra tekrar deneyin"
+        },
         "empty": "Hayır, NFT'ler yok",
         "pending": "Beklemede",
         "hideLowValue": "Düşük Değerli NFT'leri Gizle",
@@ -3592,7 +3655,6 @@
       "closeAll": "Tümünü Kapat",
       "withdraw": "Çek",
       "leverage": "Kaldıraç",
-      "rabbyFeeTipsZero": "Rabby ücreti: 0%",
       "insufficientBalance": "Yetersiz bakiye",
       "lastUsed": "En son kullanılan",
       "timeAgo": "{{time}} önce",
@@ -3632,7 +3694,7 @@
       "takeProfitWhen": "Kâr Alım Fiyatını Belirle",
       "size": "Pozisyon Büyüklüğü",
       "autoClose": "Otomatik Kapat",
-      "rabbyFeeTipsV2": "Rabby ücreti: 0,02%",
+      "rabbyFeeTipsV2": "Rabby ücreti: 0,04%",
       "stopLossTipsLongLiquidation": "Fiyat, tasfiye fiyatının ({{price}}) altında.",
       "long": "Uzun Pozisyon",
       "stopLoss": "Zarar Durdurma Emri",

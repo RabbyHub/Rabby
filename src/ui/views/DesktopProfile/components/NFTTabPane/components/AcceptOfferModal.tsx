@@ -106,6 +106,7 @@ const Content: React.FC<Props> = (props) => {
 
   const feesRate = useMemo(() => {
     const res = {
+      includedBpsList: [] as number[],
       total: 0,
       market: 0,
       custom: 0,
@@ -119,16 +120,19 @@ const Content: React.FC<Props> = (props) => {
         if (key === 'marketplace_fees') {
           res.market += item.fee;
           res.total += item.fee;
+          res.includedBpsList.push(item.fee);
         } else if (key === 'custom_royalties') {
           res.custom += item.fee;
           if (formValues.creatorFeeEnable || item.required) {
             res.total += item.fee;
+            res.includedBpsList.push(item.fee);
           }
           res.isCustomRequired = item.required || res.isCustomRequired;
         }
       });
     });
     return {
+      includedBpsList: res.includedBpsList,
       total: res.total / 10000,
       market: res.market / 10000,
       custom: res.custom / 10000,
@@ -190,7 +194,8 @@ const Content: React.FC<Props> = (props) => {
         !nftDetail ||
         !currentAccount ||
         !chain ||
-        !bestOffer
+        !bestOffer ||
+        !fees
       ) {
         throw new Error('Error');
       }
@@ -212,6 +217,7 @@ const Content: React.FC<Props> = (props) => {
         order: bestOffer,
         quantity: formValues.amount || 1,
         isIncludeCreatorFee: formValues.creatorFeeEnable,
+        feeBpsList: feesRate.includedBpsList,
       });
 
       if (approveTx) {
@@ -230,8 +236,10 @@ const Content: React.FC<Props> = (props) => {
         currentAccount?.address,
         chain?.id,
         isApproved,
+        fees,
+        feesRate.includedBpsList,
       ],
-      ready: !isCheckingApproved,
+      ready: !isCheckingApproved && !!fees,
     }
   );
 

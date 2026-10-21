@@ -348,7 +348,13 @@
         "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
         "biometricUnlockSetupDesc": "确认你的密码以激活生物识别解锁。",
         "clearPendingCheckbox": "同时重置我的本地 nonce 数据和签名记录",
-        "biometricUnlockSetupTitle": "启用生物识别解锁"
+        "biometricUnlockSetupTitle": "启用生物识别解锁",
+        "removedToken": {
+          "title": "已移除代币",
+          "description": "移除的代币会从你所有地址的投资组合中隐藏，但仍计入余额。",
+          "loadFailed": "加载代币失败",
+          "retry": "重试"
+        }
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -392,7 +398,19 @@
         "ListedBy": "上架方",
         "fdvTips": "假设最大供应量全部流通时的市值。完全稀释估值（FDV）= 价格 x 最大供应量。如果最大供应量为空，则 FDV = 价格 x 总供应量。如果最大供应量和总供应量均未定义或为无限，则不显示 FDV。",
         "bridge": "跨链",
-        "bridgeToEth": "跨链到 Ethereum"
+        "bridgeToEth": "跨链到 Ethereum",
+        "removed": {
+          "more": "更多",
+          "removeToken": "移除代币",
+          "remove": "移除",
+          "confirmTitle": "移除此代币？",
+          "portfolioNotice": "移除后，此代币将不再显示在你的投资组合中。",
+          "restoreNotice": "你可以随时在“设置 >> 已移除代币”中恢复。",
+          "warning": "移除的代币会从你所有地址的投资组合中隐藏，但仍计入余额。",
+          "removeFailed": "移除代币失败",
+          "restore": "恢复已移除代币",
+          "restoreFailed": "恢复代币失败"
+        }
       },
       "assets": {
         "usdValue": "美元价值",
@@ -718,6 +736,7 @@
         "haveOneKey": "还没有 OneKey 硬件？"
       },
       "walletConnect": {
+        "clockSkewError": "电脑时间与服务器不一致，WalletConnect 无法连接。请开启系统自动设置日期和时间，然后重试。",
         "connectYour": "连接你的",
         "viaWalletConnect": "通过 WalletConnect",
         "connectedSuccessfully": "连接成功",
@@ -2638,8 +2657,43 @@
         "receivedDifferentTokenNeedSwap": "你收到了不同的代币，可以将其兑换为你选择的代币。",
         "longTimeNoReceive": "网络繁忙。这可能会比平时花费更长的时间。请耐心等待。",
         "sendStatus": "发送状态",
-        "swapStatus": "交换状态"
-      }
+        "swapStatus": "交换状态",
+        "bridgingEta": "跨链中，预计还需 <time>{{time}}</time>",
+        "stillBridging": "仍在跨链中",
+        "sourceFailed": "跨链失败，你的 {{token}} 未发送",
+        "refundedLead": "已退还",
+        "popupProcessing": "跨链处理中",
+        "popupPending": "跨链待处理",
+        "popupFailed": "跨链失败",
+        "popupRefunded": "跨链资产已退还",
+        "popupCompleted": "跨链已完成",
+        "popupBridgeDelayed": "跨链延迟",
+        "popupBridgeFailed": "跨链失败",
+        "popupRefundedIn": "已退还为 {{token}}",
+        "processing": "处理中",
+        "refund": "已退还",
+        "goBack": "返回",
+        "contactSupport": "联系客服",
+        "succeeded": "成功",
+        "sendFrom": "从 {{chain}} 发送",
+        "receiveOn": "在 {{chain}} 上接收",
+        "refundOn": "已在 {{chain}} 上退还",
+        "waitingDestination": "等待目标链交易",
+        "sendFailed": "发送失败",
+        "tokenNotSent": "你的 {{token}} 未发送"
+      },
+      "bridge": "跨链",
+      "by": "由",
+      "timeLeft": "剩余 {{time}}",
+      "refundIn": "已退还为 {{token}}",
+      "viewDetails": "查看详情",
+      "duration-sec": "{{duration}} 秒",
+      "duration-hour": "{{duration}} 小时",
+      "duration-hour-min": "{{hours}} 小时 {{minutes}} 分钟",
+      "duration-day": "{{duration}} 天",
+      "duration-day-hour": "{{days}} 天 {{hours}} 小时",
+      "duration-day-min": "{{days}} 天 {{minutes}} 分钟",
+      "duration-day-hour-min": "{{days}} 天 {{hours}} 小时 {{minutes}} 分钟"
     },
     "ecology": {
       "sonic": {
@@ -2887,7 +2941,8 @@
       },
       "gasFee": "Gas 费用",
       "loginSuccess": "登录成功",
-      "loginFailed": "登录失败"
+      "loginFailed": "登录失败",
+      "signTextInvalid": "安全校验未通过：GasAccount 登录签名内容异常，请稍后重试"
     },
     "safeMessageQueue": {
       "loading": "正在加载消息",
@@ -3359,6 +3414,14 @@
           "creatorFeeTips1": "创作者收益将由卖方支付。创作者收益是强制执行的。",
           "rabbyFee": "Rabby 费用 (0%)"
         },
+        "verifyError": {
+          "unsupportedChain": "该链暂不支持 NFT 交易",
+          "currency": "安全校验未通过：收款代币与预期不符",
+          "nft": "安全校验未通过：订单中的 NFT 与你选择的不一致",
+          "amount": "安全校验未通过：实际到账金额与页面显示不符",
+          "recipient": "安全校验未通过：收款地址不是你的地址",
+          "invalid": "安全校验未通过：订单数据异常，请稍后重试"
+        },
         "empty": "没有 NFT",
         "pending": "待处理",
         "confirmingTx": "正在确认你的交易",
@@ -3642,7 +3705,7 @@
       "funding": "资金费率",
       "sizeTips": "你的交易总价值或数量由保证金和杠杆决定。",
       "fundingRate": "资金费率",
-      "rabbyFeeTipsV2": "Rabby 手续费：0.02%",
+      "rabbyFeeTipsV2": "Rabby 手续费：0.04%",
       "explorePerps": "探索 Perps",
       "closeAll": "全部平仓",
       "dailyVolume": "24小时成交量",
@@ -3705,7 +3768,6 @@
       "leverageRangeMaxError": "最大杠杆为 {{max}}倍",
       "leverageRangeMinError": "最小杠杆是 {{min}}x",
       "stopLossTipsLongLiquidation": "价格低于强平价（{{price}}）",
-      "rabbyFeeTipsZero": "Rabby 费率：0%",
       "reviewOrder": "订单预览",
       "directDepositFast": "快速，零滑点",
       "settings": "设置",

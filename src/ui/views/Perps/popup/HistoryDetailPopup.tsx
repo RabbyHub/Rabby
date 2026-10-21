@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react';
+import { getRabbyFillFeeRate } from '@/utils/perps/fillFee';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation, Trans } from 'react-i18next';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
@@ -47,6 +48,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
   const { t } = useTranslation();
   const [feeDetailVisible, setFeeDetailVisible] = useState(false);
   const { coin, side, sz, px, closedPnl, time, fee, dir } = fill || {};
+  const rabbyFeeRate = getRabbyFillFeeRate(fill);
   const tradeValue = Number(sz) * Number(px);
   const pnlValue = Number(closedPnl) - Number(fee);
   const isClose = (dir === 'Close Long' || dir === 'Close Short') && closedPnl;
@@ -361,7 +363,7 @@ export const HistoryDetailPopup: React.FC<HistoryDetailPopupProps> = ({
                 </span>
               </div>
               <span className="text-13 text-r-neutral-title-1 font-medium">
-                0.02%
+                {rabbyFeeRate}
               </span>
             </div>
           </div>

@@ -273,11 +273,3 @@ export const computePortfolioBreakdownValues = (
     stakingValue: null,
   };
 };
-
-/** Balance-only selector: opening the breakdown does not depend on price ticks. */
-export const hasNonPerpsPortfolioAssets = (perps: {
-  spotState?: { balances?: Pick<SpotBalance, 'total'>[] };
-  stakingSummary?: StakingSummaryAmounts | null;
-}): boolean =>
-  !!perps.spotState?.balances?.some((balance) => Number(balance.total) > 0) ||
-  new BigNumber(getStakedHypeAmount(perps.stakingSummary)).gt(0);

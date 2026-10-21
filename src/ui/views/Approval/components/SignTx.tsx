@@ -133,6 +133,7 @@ import {
   getBumpedNonceAfterTopUp,
 } from '@/ui/views/GasAccount/components/topUpContinuation';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
+import { isHyperEvmChain } from '@/utils/hyperEvm';
 
 interface BasicCoboArgusInfo {
   address: string;
@@ -1150,9 +1151,11 @@ const SignTx = ({
   const explainTx = async (address: string, detailEpoch: number) => {
     const shouldCalculateGasLimit =
       !(tx.gas && origin === INTERNAL_REQUEST_ORIGIN) && !gasLimit;
-    const preparedBlock = shouldCalculateGasLimit
-      ? preparedBlockPromiseRef.current || loadLatestBlock()
-      : undefined;
+    const preparedBlock =
+      shouldCalculateGasLimit &&
+      (!isHyperEvmChain(chainId) || isGnosisAccount || isCoboArugsAccount)
+        ? preparedBlockPromiseRef.current || loadLatestBlock()
+        : undefined;
     preparedBlockPromiseRef.current = null;
     let recommendNonce = updateNonce ? '0x0' : tx.nonce || '0x0';
     // Don't block explain on requests whose results canUsePreparation is
@@ -1439,6 +1442,7 @@ const SignTx = ({
         preparedBlock,
         gasTokenDecimals: gasToken.decimals || 18,
         checkTxValueInBalance,
+        isGnosisAccount: isGnosisAccount || isCoboArugsAccount,
       });
       nextGasLimit = gasLimit;
       nextRecommendGasLimitRatio = recommendGasLimitRatio;
@@ -2360,10 +2364,20 @@ const SignTx = ({
   });
 
   const init = async () => {
+    const isGnosisAccountType =
+      currentAccount.type === KEYRING_TYPE.GnosisKeyring;
+    const isCoboArgusAccountType =
+      currentAccount.type === KEYRING_TYPE.CoboArgusKeyring;
     const syncDefaultRPCPromise = wallet.syncDefaultRPC().catch((error) => {
       console.error('before submit sync default rpc error', error);
     });
-    if (!(tx.gas && origin === INTERNAL_REQUEST_ORIGIN) && !gasLimit) {
+    if (
+      !(tx.gas && origin === INTERNAL_REQUEST_ORIGIN) &&
+      !gasLimit &&
+      (!isHyperEvmChain(chainId) ||
+        isGnosisAccountType ||
+        isCoboArgusAccountType)
+    ) {
       preparedBlockPromiseRef.current = syncDefaultRPCPromise.then(
         loadLatestBlock
       );
@@ -2383,10 +2397,6 @@ const SignTx = ({
     securityEngine.init();
     securityEngine.resetCurrentTx();
     checkBlockedAddress();
-    const isGnosisAccountType =
-      currentAccount.type === KEYRING_TYPE.GnosisKeyring;
-    const isCoboArgusAccountType =
-      currentAccount.type === KEYRING_TYPE.CoboArgusKeyring;
     if (
       !isGnosisAccountType &&
       !isCoboArgusAccountType &&

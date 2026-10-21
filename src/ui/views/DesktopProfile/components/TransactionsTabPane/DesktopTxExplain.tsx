@@ -1,7 +1,7 @@
 import { TxHistoryItemRow } from '@/db/schema/history';
 import {
   GAS_ACCOUNT_RECEIVED_ADDRESS,
-  GAS_ACCOUNT_WITHDRAWED_ADDRESS,
+  GAS_ACCOUNT_WITHDRAWED_ADDRESSES,
   L2_DEPOSIT_ADDRESS_MAP,
 } from '@/constant/gas-account';
 import { NameAndAddress, TxAvatar } from '@/ui/component';
@@ -118,7 +118,9 @@ export const DesktopTxExplain = ({ data }: TxInterAddressExplainProps) => {
   } else if (
     data.cate_id === 'receive' &&
     data.tx?.from_addr &&
-    isSameAddress(data.tx.from_addr, GAS_ACCOUNT_WITHDRAWED_ADDRESS)
+    GAS_ACCOUNT_WITHDRAWED_ADDRESSES.some((addr) =>
+      isSameAddress(data.tx!.from_addr, addr)
+    )
   ) {
     tokenURL = data.receives?.[0]?.token?.logo_url || '';
     // gas withdraw

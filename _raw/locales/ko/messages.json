@@ -1172,9 +1172,44 @@
         "pending": "대기 중",
         "beReturnFailed": "브리지에 실패했습니다. 귀하의 자산이 반환되었습니다.",
         "sendStatus": "전송 상태",
-        "swapStatus": "스왑 상태"
+        "swapStatus": "스왑 상태",
+        "bridgingEta": "브리지 진행 중, 예상 소요 시간: <time>{{time}}</time>",
+        "stillBridging": "브리지 진행 중",
+        "sourceFailed": "브리지 실패, {{token}}이 전송되지 않았습니다",
+        "refundedLead": "환불됨",
+        "popupProcessing": "브리지 처리 중",
+        "popupPending": "브리지 대기 중",
+        "popupFailed": "브리지 실패",
+        "popupRefunded": "브리지 환불 완료",
+        "popupCompleted": "브리지 완료",
+        "popupBridgeDelayed": "브리지 지연",
+        "popupBridgeFailed": "브리지에 실패했습니다",
+        "popupRefundedIn": "{{token}}으로 환불됨",
+        "processing": "처리 중",
+        "refund": "환불됨",
+        "goBack": "돌아가기",
+        "contactSupport": "지원팀에 문의",
+        "succeeded": "성공",
+        "sendFrom": "{{chain}}에서 보내기",
+        "receiveOn": "{{chain}}에서 받기",
+        "refundOn": "{{chain}}에서 환불됨",
+        "waitingDestination": "대상 체인의 트랜잭션 대기 중",
+        "sendFailed": "전송 실패",
+        "tokenNotSent": "{{token}}이 전송되지 않았습니다"
       },
-      "best-subtitle": "최고의报价은 예상 총 비용(gas 비용 포함)과 거래 속도의 조합에 의해 결정됩니다."
+      "best-subtitle": "최고의报价은 예상 총 비용(gas 비용 포함)과 거래 속도의 조합에 의해 결정됩니다.",
+      "bridge": "브리지",
+      "by": "제공:",
+      "timeLeft": "{{time}} 남음",
+      "refundIn": "{{token}}으로 환불됨",
+      "viewDetails": "상세 보기",
+      "duration-sec": "{{duration}}초",
+      "duration-hour": "{{duration}}시간",
+      "duration-hour-min": "{{hours}}시간 {{minutes}}분",
+      "duration-day": "{{duration}}일",
+      "duration-day-hour": "{{days}}일 {{hours}}시간",
+      "duration-day-min": "{{days}}일 {{minutes}}분",
+      "duration-day-hour-min": "{{days}}일 {{hours}}시간 {{minutes}}분"
     },
     "manageAddress": {
       "deleted": "삭제됨",
@@ -1500,7 +1535,13 @@
         "biometricUnlockEnableFailed": "생체 인식 잠금 해제를 활성화하는 데 실패했습니다.",
         "biometricUnlockSetupDesc": "바이오메트릭 잠금을 활성화하려면 비밀번호를 확인하세요.",
         "clearPendingCheckbox": "로컬 nonce 데이터와 서명 기록도 재설정",
-        "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다."
+        "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다.",
+        "removedToken": {
+          "title": "삭제된 토큰",
+          "description": "삭제된 토큰은 모든 주소의 포트폴리오에서 숨겨지지만 잔액 계산에는 계속 포함됩니다.",
+          "loadFailed": "토큰을 불러오지 못했습니다",
+          "retry": "다시 시도"
+        }
       },
       "tokenDetail": {
         "customized": "맞춤형",
@@ -1544,7 +1585,19 @@
         "verifyScamTips": "이것은 사기 토큰입니다.",
         "BridgeProvider": "브리지 제공자",
         "bridge": "브리지",
-        "bridgeToEth": "Ethereum 체인으로 브릿지"
+        "bridgeToEth": "Ethereum 체인으로 브릿지",
+        "removed": {
+          "more": "더 보기",
+          "removeToken": "토큰 삭제",
+          "remove": "삭제",
+          "confirmTitle": "이 토큰을 삭제하시겠습니까?",
+          "portfolioNotice": "삭제하면 이 토큰은 포트폴리오에 더 이상 표시되지 않습니다.",
+          "restoreNotice": "“설정 >> 삭제된 토큰”에서 언제든지 복원할 수 있습니다.",
+          "warning": "삭제된 토큰은 모든 주소의 포트폴리오에서 숨겨지지만 잔액 계산에는 계속 포함됩니다.",
+          "removeFailed": "토큰을 삭제하지 못했습니다",
+          "restore": "삭제된 토큰 복원",
+          "restoreFailed": "토큰을 복원하지 못했습니다"
+        }
       },
       "assets": {
         "portfolio": {
@@ -1850,6 +1903,7 @@
         "haveOneKey": "아직 OneKey가 없으신가요?"
       },
       "walletConnect": {
+        "clockSkewError": "컴퓨터 시간이 동기화되지 않아 WalletConnect에 연결할 수 없습니다. 날짜 및 시간 자동 설정을 켠 후 다시 시도하세요.",
         "status": {
           "accountError": "주소가 일치하지 않습니다.",
           "connected": "연결됨",
@@ -2798,7 +2852,8 @@
       "lowBalance": "gas가 부족합니다(＜$1.00). GasAccount에 gas를 예치하여 향후 거래가 원활히 진행되도록 하세요.",
       "gasBalance": "Gas 잔액",
       "loginSuccess": "로그인 성공",
-      "loginFailed": "로그인 실패"
+      "loginFailed": "로그인 실패",
+      "signTextInvalid": "보안 검사 실패: GasAccount 로그인 메시지가 올바르지 않습니다. 잠시 후 다시 시도하세요"
     },
     "safeMessageQueue": {
       "loading": "로드 중 메시지",
@@ -3309,6 +3364,14 @@
           "creatorFeeTips1": "판매자가 크리에이터 수익을 지급합니다. 크리에이터 수익은 강제됩니다.",
           "offer": "제안"
         },
+        "verifyError": {
+          "unsupportedChain": "이 체인에서는 아직 NFT 거래를 지원하지 않습니다",
+          "currency": "보안 검사 실패: 결제 토큰이 예상과 일치하지 않습니다",
+          "nft": "보안 검사 실패: 주문의 NFT가 선택한 NFT와 일치하지 않습니다",
+          "amount": "보안 검사 실패: 받을 금액이 표시된 금액과 일치하지 않습니다",
+          "recipient": "보안 검사 실패: 수익금이 내 주소로 전송되지 않습니다",
+          "invalid": "보안 검사 실패: 주문 데이터가 올바르지 않습니다. 잠시 후 다시 시도하세요"
+        },
         "empty": "NFT가 없음",
         "confirmingTx": "거래를 확인하는 중",
         "all": "모두",
@@ -3623,8 +3686,7 @@
       "direction": "방향",
       "review": "검토",
       "takeProfitWhen": "이익실현 가격 설정",
-      "rabbyFeeTipsV2": "Rabby 수수료: 0.02%",
-      "rabbyFeeTipsZero": "Rabby 수수료: 0%",
+      "rabbyFeeTipsV2": "Rabby 수수료: 0.04%",
       "takeProfit": "이익 실현",
       "add": "추가",
       "insufficientBalance": "잔액이 부족합니다.",

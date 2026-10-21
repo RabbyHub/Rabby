@@ -30,6 +30,10 @@ import { useTranslation } from 'react-i18next';
 import { GAS_ACCOUNT_INSUFFICIENT_TIP } from './checkTxs';
 import { useGasAccountDepositFlowActive } from './runtime';
 import { getUiType } from '@/ui/utils';
+import {
+  assertGasAccountSignText,
+  isInvalidGasAccountSignTextError,
+} from '@/utils/gasAccount';
 
 const { isTab, isDesktop } = getUiType();
 
@@ -244,6 +248,7 @@ export const useGasAccountBalance = (gasAccountAddress?: string) => {
 };
 
 export const useGasAccountMethods = () => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
@@ -256,8 +261,7 @@ export const useGasAccountMethods = () => {
       const { text } = await wallet.openapi.getGasAccountSignText(
         account.address
       );
-
-      return text;
+      return assertGasAccountSignText(text, account.address);
     },
     [wallet, dispatch, refresh, refreshHistory]
   );
@@ -298,9 +302,10 @@ export const useGasAccountMethods = () => {
       if (!account) return '';
 
       try {
-        const { text } = await wallet.openapi.getGasAccountSignText(
+        const { text: rawText } = await wallet.openapi.getGasAccountSignText(
           account.address
         );
+        const text = assertGasAccountSignText(rawText, account.address);
 
         const miniSign = supportedHardwareDirectSign(account.type);
         let signature = '';
@@ -335,6 +340,9 @@ export const useGasAccountMethods = () => {
 
         return (await handleLoginOnSig(account, signature, isClaimGift)) || '';
       } catch (e) {
+        if (isInvalidGasAccountSignTextError(e)) {
+          throw e;
+        }
         console.error('handleNoSignLogin error', e);
       }
       return '';
@@ -348,13 +356,22 @@ export const useGasAccountMethods = () => {
       isClaimGift: boolean = false,
       options?: GasAccountLoginOptions
     ) => {
-      if (account && supportedDirectSign(account.type)) {
-        return handleNoSignLogin(account, isClaimGift, options);
-      }
+      try {
+        if (account && supportedDirectSign(account.type)) {
+          return await handleNoSignLogin(account, isClaimGift, options);
+        }
 
-      return wallet.signGasAccount(account, isClaimGift);
+        return await wallet.signGasAccount(account, isClaimGift);
+      } catch (e) {
+        if (!isInvalidGasAccountSignTextError(e)) {
+          throw e;
+        }
+        console.error('[gasAccount] invalid sign text', e);
+        message.error(t('page.gasAccount.signTextInvalid'));
+        return '';
+      }
     },
-    [handleNoSignLogin, wallet]
+    [handleNoSignLogin, wallet, t]
   );
 
   const logout = useCallback(async () => {

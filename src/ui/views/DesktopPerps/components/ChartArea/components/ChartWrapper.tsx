@@ -257,6 +257,7 @@ export const ChartWrapper: React.FC<ChartWrapperProps> = ({
           coin={coin}
           interval={propInterval as any}
           pxDecimals={pxDecimals}
+          pxDecimalsReady={!!currentMarketData.markPx}
           isDarkTheme={isDarkTheme}
           locale={chartLocale}
           timezone={chartTimezone}
