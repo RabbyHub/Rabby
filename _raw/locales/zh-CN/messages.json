@@ -4286,6 +4286,7 @@
         "title": "止盈/止损",
         "addTitle": "添加止盈/止损",
         "modifyTitle": "修改止盈/止损",
+        "modifyPositionTitle": "修改仓位止盈/止损",
         "confirmTitle": "确认止盈/止损",
         "tabPartial": "止盈/止损",
         "tabPosition": "仓位止盈/止损",

@@ -4239,6 +4239,7 @@
         "title": "利確/損切り",
         "addTitle": "利確/損切りを追加",
         "modifyTitle": "利確/損切りを変更",
+        "modifyPositionTitle": "ポジション利確/損切りを変更",
         "confirmTitle": "利確/損切りを確認",
         "tabPartial": "利確/損切り",
         "tabPosition": "ポジション利確/損切り",

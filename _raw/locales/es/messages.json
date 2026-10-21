@@ -4239,6 +4239,7 @@
         "title": "TP/SL",
         "addTitle": "Añadir TP/SL",
         "modifyTitle": "Modificar TP/SL",
+        "modifyPositionTitle": "Modificar TP/SL de la posición",
         "confirmTitle": "Confirmar TP/SL",
         "tabPartial": "TP/SL",
         "tabPosition": "TP/SL de la posición",

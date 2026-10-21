@@ -79,9 +79,7 @@ export const PositionTpSlPositionCard: React.FC<{
     <div
       className={clsx(
         'flex flex-col rounded-[6px] bg-r-neutral-card3',
-        variant === 'full'
-          ? 'gap-[12px] p-[16px]'
-          : 'gap-[8px] px-[16px] py-[12px]'
+        variant === 'full' ? 'gap-[12px] p-[16px]' : 'gap-[8px] p-[16px]'
       )}
     >
       <div className="flex items-center gap-[6px]">
@@ -108,7 +106,7 @@ export const PositionTpSlPositionCard: React.FC<{
         </span>
       </div>
       {variant === 'full' ? (
-        <div className="flex gap-[12px]">
+        <div className="flex gap-[48px]">
           {items.map((item) => (
             <div
               key={item.key}

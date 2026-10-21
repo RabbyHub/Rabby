@@ -4236,6 +4236,7 @@
         "title": "TP/SL",
         "addTitle": "Tambah TP/SL",
         "modifyTitle": "Ubah TP/SL",
+        "modifyPositionTitle": "Ubah TP/SL Posisi",
         "confirmTitle": "Konfirmasi TP/SL",
         "tabPartial": "TP/SL",
         "tabPosition": "TP/SL Posisi",

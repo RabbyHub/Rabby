@@ -364,9 +364,11 @@ export interface TpSlSideView {
   error: TpSlTriggerError | null;
 }
 
+// Half-up, matching the estimated PnL hint (`toFixed(2)`) and mobile, so the
+// PnL/ROI input and the hint under it never disagree in the last digit.
 const formatMagnitude = (value: BigNumber | null) => {
   if (!value || value.isZero()) return '';
-  return value.abs().decimalPlaces(2, BigNumber.ROUND_DOWN).toFixed();
+  return value.abs().decimalPlaces(2, BigNumber.ROUND_HALF_UP).toFixed();
 };
 
 const validateForScope = (

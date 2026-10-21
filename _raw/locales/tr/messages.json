@@ -4242,6 +4242,7 @@
         "title": "TP/SL",
         "addTitle": "TP/SL Ekle",
         "modifyTitle": "TP/SL Düzenle",
+        "modifyPositionTitle": "Pozisyon TP/SL Düzenle",
         "confirmTitle": "TP/SL Onayla",
         "tabPartial": "TP/SL",
         "tabPosition": "Pozisyon TP/SL",

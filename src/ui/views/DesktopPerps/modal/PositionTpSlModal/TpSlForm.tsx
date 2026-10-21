@@ -5,7 +5,7 @@ import { useMemoizedFn } from 'ahooks';
 import { Button } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { validatePriceInput } from '../../../Perps/pricePrecision';
 import type { PositionFormatData } from '../../components/UserInfoHistory/PositionsInfo';
@@ -100,9 +100,10 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
         )}`
       : '';
 
-  // Prefill from `editingOrder` / `existingOrders` is read once on mount.
-  // Callers must key the form by the identity of those orders (e.g. their oids)
-  // so it remounts when they change.
+  // Prefill from `editingOrder` / `existingOrders` is read once on mount, so a
+  // partial modify is keyed by its order's oid. The position modify form stays
+  // mounted instead (to keep the user's input across a per-side Cancel) and
+  // clears a side below once that side's order is gone.
   const [drafts, setDrafts] = useState<Record<TpSlKind, TpSlSideDraft>>(() => {
     const build = (kind: TpSlKind): TpSlSideDraft => {
       const preference =
@@ -125,21 +126,50 @@ export const TpSlForm: React.FC<TpSlFormProps> = ({
     return { takeProfit: build('takeProfit'), stopLoss: build('stopLoss') };
   });
 
-  // Amount — partial modes only.
+  // Position modify: when a side's existing order disappears (cancelled here or
+  // elsewhere), drop its prefilled trigger — otherwise it would read as a new
+  // order and re-create what was just cancelled.
+  const tpOid = existingOrders?.takeProfit?.oid;
+  const slOid = existingOrders?.stopLoss?.oid;
+  const prevOidsRef = useRef<Record<TpSlKind, number | undefined>>({
+    takeProfit: tpOid,
+    stopLoss: slOid,
+  });
+  useEffect(() => {
+    const prev = prevOidsRef.current;
+    prevOidsRef.current = { takeProfit: tpOid, stopLoss: slOid };
+    if (mode !== 'positionModify') return;
+    const gone = KINDS.filter(
+      (kind) =>
+        prev[kind] !== undefined &&
+        (kind === 'takeProfit' ? tpOid : slOid) === undefined
+    );
+    if (!gone.length) return;
+    setDrafts((current) => {
+      const next = { ...current };
+      gone.forEach((kind) => {
+        next[kind] = createEmptyTpSlDraft(current[kind].mode);
+      });
+      return next;
+    });
+  }, [mode, tpOid, slOid]);
+
+  // Amount — partial modes only. A modify opens on the slider at the order's
+  // share of the position (an order for the whole position shows 100%, as in
+  // Figma 164378:127241); the size stays the order's exact size until edited.
   const [amountSource, setAmountSource] = useState<'slider' | 'manual'>(
-    isPartialModify ? 'manual' : 'slider'
+    'slider'
   );
-  const [percent, setPercent] = useState(isPartialModify ? 0 : 100);
-  const [amountInput, setAmountInput] = useState(() =>
-    isPartialModify && editingOrder
-      ? formatTpSlAmount({
-          unit,
-          size: editingOrder.remainingSize,
-          markPrice,
-          szDecimals,
-        })
-      : ''
-  );
+  const [percent, setPercent] = useState(() => {
+    if (!isPartialModify || !editingOrder) return 100;
+    const share = new BigNumber(editingOrder.remainingSize)
+      .div(position.size)
+      .times(100);
+    return share.isFinite()
+      ? Math.min(100, Math.max(0, Math.round(share.toNumber())))
+      : 100;
+  });
+  const [amountInput, setAmountInput] = useState('');
   // Until the amount is edited, a modify keeps the order's exact size.
   const [amountTouched, setAmountTouched] = useState(false);
   // Focus the manual input only right after the user switched from the slider.

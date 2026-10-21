@@ -4241,6 +4241,7 @@
         "title": "TP/SL",
         "addTitle": "Добавить TP/SL",
         "modifyTitle": "Изменить TP/SL",
+        "modifyPositionTitle": "Изменить TP/SL позиции",
         "confirmTitle": "Подтвердить TP/SL",
         "tabPartial": "TP/SL",
         "tabPosition": "TP/SL позиции",

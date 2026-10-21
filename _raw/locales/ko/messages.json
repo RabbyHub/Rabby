@@ -4236,6 +4236,7 @@
         "title": "TP/SL",
         "addTitle": "TP/SL 추가",
         "modifyTitle": "TP/SL 수정",
+        "modifyPositionTitle": "포지션 TP/SL 수정",
         "confirmTitle": "TP/SL 확인",
         "tabPartial": "TP/SL",
         "tabPosition": "포지션 TP/SL",
