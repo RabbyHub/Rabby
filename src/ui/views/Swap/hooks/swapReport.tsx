@@ -25,7 +25,11 @@ type SwapSdkVerificationReportParams = Pick<
 > & {
   result: Pick<
     VerifySdkResult,
-    'routerPass' | 'spenderPass' | 'callDataPass' | 'receiverPass'
+    | 'routerPass'
+    | 'spenderPass'
+    | 'callDataPass'
+    | 'receiverPass'
+    | 'decodeFailure'
   >;
 };
 
@@ -36,29 +40,34 @@ export const reportSwapSdkVerification = ({
   receiveTokenId,
   result,
 }: SwapSdkVerificationReportParams) => {
-  const addressFailures = [
-    ...(!result.routerPass ? ['router'] : []),
-    ...(!result.spenderPass ? ['spender'] : []),
-  ];
-  // Address failures take priority over dependent calldata checks.
-  const category = addressFailures.length ? 'address' : 'calldata';
-  const failed = addressFailures.length
-    ? addressFailures
-    : [
-        ...(!result.callDataPass ? ['calldata'] : []),
-        ...(!result.receiverPass ? ['receiver'] : []),
-      ];
-  if (!failed.length) return;
+  const { decodeFailure } = result;
+  let category: string;
 
-  Sentry.captureException(new Error(`swap ${category} verification failed`), {
+  if (!result.routerPass) {
+    category = 'router';
+  } else if (!result.spenderPass) {
+    category = 'spender';
+  } else if (decodeFailure) {
+    category = 'decode';
+  } else if (!result.callDataPass) {
+    category = 'calldata';
+  } else if (!result.receiverPass) {
+    category = 'receiver';
+  } else {
+    return;
+  }
+
+  Sentry.captureException(new Error('swap SDK verification failed'), {
     level: 'warning',
     tags: {
       swap_dex: dexId,
       swap_chain: chain,
       swap_verify_category: category,
-      swap_verify_failed: failed.join(','),
       swap_token_pair: `${payTokenId}/${receiveTokenId}`,
+      swap_decode_reason: decodeFailure?.reason,
+      swap_decode_selector: decodeFailure?.selector,
+      swap_decode_error_code: decodeFailure?.errorCode,
     },
-    fingerprint: ['swap-verify-sdk', category],
+    fingerprint: ['swap-verify-sdk'],
   });
 };
