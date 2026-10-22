@@ -2823,7 +2823,7 @@
         "sendFrom": "Envoyer depuis {{chain}}",
         "receiveOn": "Recevoir sur {{chain}}",
         "refundOn": "Remboursé sur {{chain}}",
-        "waitingDestination": "En attente de la transaction de destination",
+        "waitingDestination": "En attente sur la chaîne cible",
         "sendFailed": "Échec de l’envoi",
         "tokenNotSent": "Vos {{token}} n’ont pas été envoyés"
       },
