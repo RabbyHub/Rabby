@@ -4961,22 +4961,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-swap@npm:0.0.88-alpha.4":
-  version: 0.0.88-alpha.4
-  resolution: "@rabby-wallet/rabby-swap@npm:0.0.88-alpha.4"
+"@rabby-wallet/rabby-swap@npm:0.0.89-alpha.1":
+  version: 0.0.89-alpha.1
+  resolution: "@rabby-wallet/rabby-swap@npm:0.0.89-alpha.1"
   dependencies:
     "@ethersproject/abi": "npm:^5.7.0"
-    "@uniswap/sdk-core": "npm:7.19.4"
     "@uniswap/universal-router-sdk": "npm:5.14.0"
-    "@uniswap/v2-sdk": "npm:4.21.5"
     axios: "npm:^0.27.2"
     bignumber.js: "npm:^9.1.1"
-    ethers: "npm:5.8.0"
     web3-eth-abi: "npm:^1.8.1"
+    web3-utils: "npm:1.8.1"
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.6.28"
-  checksum: 10c0/840810683ab427fc690536b38cac137ab05ed1f068528ca8f4d49aaa99870ac501567bdccc4c6d6bdbdad52a768596f5ab2b2c808c4b1d1ebc4a5926c7d5e47e
+  checksum: 10c0/bd50c37f2b26ced68d456971f4d6a7860d945ef705a1d62d6605948aaff58d14f6913b6971dd6b6f002c89efdcd11c68360d89a97ea3b250f83beb4436eb3e84
   languageName: node
   linkType: hard
 
@@ -8053,7 +8051,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/sdk-core@npm:7.19.4, @uniswap/sdk-core@npm:^7.19.4":
+"@uniswap/sdk-core@npm:^7.19.4":
   version: 7.19.4
   resolution: "@uniswap/sdk-core@npm:7.19.4"
   dependencies:
@@ -8129,7 +8127,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/v2-sdk@npm:4.21.5, @uniswap/v2-sdk@npm:^4.21.5":
+"@uniswap/v2-sdk@npm:^4.21.5":
   version: 4.21.5
   resolution: "@uniswap/v2-sdk@npm:4.21.5"
   dependencies:
@@ -20628,7 +20626,7 @@ __metadata:
     "@rabby-wallet/rabby-api": "npm:0.9.69"
     "@rabby-wallet/rabby-bridge": "npm:0.0.12"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
-    "@rabby-wallet/rabby-swap": "npm:0.0.88-alpha.4"
+    "@rabby-wallet/rabby-swap": "npm:0.0.89-alpha.1"
     "@rabby-wallet/staking-sdk": "npm:0.1.0"
     "@safe-global/protocol-kit": "npm:5.0.3"
     "@safe-global/sdk-starter-kit": "npm:1.1.1"
@@ -25503,6 +25501,21 @@ __metadata:
     randombytes: "npm:^2.1.0"
     utf8: "npm:3.0.0"
   checksum: 10c0/524f058028c706c96ccb62c80fce99fd3fef30f60e4b750a08a09d7f529df0a288d2859d242991ef9581a6ce8ff0dffbe55a579c1d586d51524f424e74df424d
+  languageName: node
+  linkType: hard
+
+"web3-utils@npm:1.8.1":
+  version: 1.8.1
+  resolution: "web3-utils@npm:1.8.1"
+  dependencies:
+    bn.js: "npm:^5.2.1"
+    ethereum-bloom-filters: "npm:^1.0.6"
+    ethereumjs-util: "npm:^7.1.0"
+    ethjs-unit: "npm:0.1.6"
+    number-to-bn: "npm:1.7.0"
+    randombytes: "npm:^2.1.0"
+    utf8: "npm:3.0.0"
+  checksum: 10c0/f04175000d1e445509fd07df38ab73557177108f4dd373174eaed9f3ea773e4a417eb368628e1777169f03c7b83e9812c56e10863293349735445e7ce35e9b35
   languageName: node
   linkType: hard
 
