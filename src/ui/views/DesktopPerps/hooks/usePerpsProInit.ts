@@ -41,6 +41,7 @@ export const usePerpsProInit = (isActive = true) => {
     dispatch.perps.initQuoteUnit(undefined);
     dispatch.perps.initFavoritedCoins(undefined);
     dispatch.perps.initTpslModePreferences(undefined);
+    dispatch.perps.initTpslIntroShown(undefined);
     dispatch.perps.initMarketSlippage(undefined);
     dispatch.perps.initSoundEnabled(undefined);
     dispatch.perps.initSkipMarketCloseConfirm(undefined);
