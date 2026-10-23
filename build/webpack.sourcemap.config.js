@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 const { createSentryWebpackPlugin } = require('./sentry');
 
 const config = {
@@ -14,6 +15,20 @@ const config = {
     }),
     createSentryWebpackPlugin('sourcemap'),
   ],
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        minify: TerserPlugin.swcMinify,
+        parallel: 1,
+        terserOptions: {
+          compress: {
+            passes: 2,
+          },
+        },
+      }),
+    ],
+  },
 };
 
 module.exports = config;
