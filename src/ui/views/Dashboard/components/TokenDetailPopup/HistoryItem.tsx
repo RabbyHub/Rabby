@@ -83,21 +83,11 @@ export const HistoryItem = ({
         )}
       >
         <TxInterAddressExplain data={data}></TxInterAddressExplain>
-        {needUseTokenDetailModal ? (
-          <div className="flex justify-end flex-1 min-w-[130px]">
-            <DesktopTokenChange
-              data={data}
-              canClickToken={canClickToken}
-              onClose={onClose}
-            />
-          </div>
-        ) : (
-          <TokenChange
-            data={data}
-            canClickToken={canClickToken}
-            onClose={onClose}
-          />
-        )}
+        <TokenChange
+          data={data}
+          canClickToken={canClickToken}
+          onClose={onClose}
+        />
       </div>
     </div>
   );
