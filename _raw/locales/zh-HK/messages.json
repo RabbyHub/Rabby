@@ -4961,7 +4961,9 @@
     },
     "DappActions": {
       "queueDescription": "目前的提款將進入等候隊列。處理完成後，即可提取至你的錢包。",
-      "manage": "管理"
+      "manage": "管理",
+      "claimAllRewards": "來自 {{count}} 個倉位的獎勵",
+      "claimAllDescription": "將發送 {{count}} 筆領取交易，每個倉位一筆"
     },
     "DesktopChainSelector": {
       "allChains": "所有鏈"

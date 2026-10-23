@@ -4914,7 +4914,9 @@
     },
     "DappActions": {
       "queueDescription": "現在の引き出しは待機キューに入ります。処理が完了すると、あなたのウォレットに引き出すことができます。",
-      "manage": "管理"
+      "manage": "管理",
+      "claimAllRewards": "{{count}} 件のポジションからの報酬",
+      "claimAllDescription": "ポジションごとに1件ずつ、{{count}} 件の請求トランザクションが送信されます"
     },
     "DesktopChainSelector": {
       "allChains": "すべてのチェーン"

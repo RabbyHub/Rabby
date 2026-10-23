@@ -4926,7 +4926,9 @@
     },
     "DappActions": {
       "queueDescription": "Поточне виведення потрапить у чергу очікування. Після обробки його можна буде вивести на ваш гаманець.",
-      "manage": "Керувати"
+      "manage": "Керувати",
+      "claimAllRewards": "Винагороди за позиціями: {{count}}",
+      "claimAllDescription": "Транзакцій отримання винагород: {{count}} (по одній на позицію)"
     },
     "DesktopChainSelector": {
       "allChains": "Усі ланцюги"

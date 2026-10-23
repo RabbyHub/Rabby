@@ -13,6 +13,7 @@ import { openInTab, useCommonPopupView, useWallet } from '@/ui/utils';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import DappActionsForPopup from './components/DappActions/DappActionsForPopup';
+import { ClaimAllButton } from './components/DappActions/ClaimAll';
 import {
   useDappAction,
   useGetDappActions,
@@ -299,6 +300,9 @@ export const ProtocolItem = ({
         {isExpand && (
           <>
             <div className="border-b-[0.5px] border-b-solid border-b-r-neutral-line" />
+            {!isAppChain && (
+              <ClaimAllButton protocol={protocol} variant="popup" />
+            )}
             {protocol._portfolios.map((portfolio, index) => (
               <div key={portfolio.id}>
                 <PoolItem

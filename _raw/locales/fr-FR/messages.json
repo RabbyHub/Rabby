@@ -249,7 +249,9 @@
     },
     "DappActions": {
       "queueDescription": "Le retrait actuel sera placé dans une file d'attente. Une fois traité, il pourra être retiré vers votre wallet.",
-      "manage": "Gérer"
+      "manage": "Gérer",
+      "claimAllRewards": "Récompenses de {{count}} positions",
+      "claimAllDescription": "{{count}} transactions de réclamation seront envoyées, une par position"
     },
     "DesktopChainSelector": {
       "allChains": "Tous les réseaux"

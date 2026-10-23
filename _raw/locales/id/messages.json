@@ -4911,7 +4911,9 @@
     },
     "DappActions": {
       "queueDescription": "Penarikan saat ini akan masuk ke dalam antrean tunggu. Setelah diproses, itu dapat ditarik ke dompet Anda.",
-      "manage": "Kelola"
+      "manage": "Kelola",
+      "claimAllRewards": "Hadiah dari {{count}} posisi",
+      "claimAllDescription": "{{count}} transaksi klaim akan dikirim, satu per posisi"
     },
     "DesktopChainSelector": {
       "allChains": "Semua Rantai"
