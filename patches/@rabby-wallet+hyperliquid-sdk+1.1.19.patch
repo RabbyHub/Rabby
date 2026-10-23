@@ -1,0 +1,155 @@
+diff --git a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.d.ts b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.d.ts
+index 4b2fa3f..2daed59 100644
+--- a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.d.ts
++++ b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.d.ts
+@@ -223,4 +223,24 @@ export declare class ExchangeClient {
+         limitPx: string;
+         tif?: Tif;
+     }): Promise<OrderResponse>;
++    /**
++     * Place an order on any Hyperliquid spot pair.
++     * The SDK's symbol conversion only knows perp markets, so spot pairs are
++     * addressed directly by their universe index (asset id = 10000 + index).
++     */
++    spotOrder(params: {
++        pairIndex: number;
++        isBuy: boolean;
++        size: string;
++        limitPx: string;
++        tif?: Tif;
++        cloid?: string;
++    }): Promise<OrderResponse>;
++    /**
++     * Cancel spot orders by spot universe index and order id.
++     */
++    cancelSpotOrders(params: {
++        pairIndex: number;
++        oid: number;
++    }[]): Promise<CancelResponse>;
+ }
+diff --git a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.js b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.js
+index 7ba37d8..932e8f1 100644
+--- a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.js
++++ b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/exchange-client.js
+@@ -1572,5 +1572,58 @@ class ExchangeClient {
+             });
+         });
+     }
++    /**
++     * Place an order on any Hyperliquid spot pair (asset id = 10000 + pairIndex).
++     */
++    spotOrder(params) {
++        return __awaiter(this, void 0, void 0, function* () {
++            const { pairIndex, isBuy, size, limitPx, tif = 'Gtc', cloid } = params;
++            if (!Number.isSafeInteger(pairIndex) || pairIndex < 0) {
++                throw new Error(`Invalid spot pair index: ${pairIndex}`);
++            }
++            const nonce = Date.now();
++            const orderRequest = Object.assign({ a: 10000 + pairIndex, b: isBuy, p: (0, number_1.removeTrailingZeros)(limitPx), s: (0, number_1.removeTrailingZeros)(size), r: false, t: {
++                    limit: { tif },
++                } }, (cloid ? { c: cloid } : {}));
++            const action = {
++                type: constants_1.ExchangeType.ORDER,
++                orders: [orderRequest],
++                grouping: 'na',
++            };
++            const signature = yield this.signL1Action(action, nonce);
++            return this.httpClient.exchange({
++                action,
++                nonce,
++                signature,
++            });
++        });
++    }
++    /**
++     * Cancel spot orders by spot universe index and order id.
++     */
++    cancelSpotOrders(params) {
++        return __awaiter(this, void 0, void 0, function* () {
++            const cancels = params.map((param) => {
++                if (!Number.isSafeInteger(param.pairIndex) || param.pairIndex < 0) {
++                    throw new Error(`Invalid spot pair index: ${param.pairIndex}`);
++                }
++                return {
++                    a: 10000 + param.pairIndex,
++                    o: param.oid,
++                };
++            });
++            const nonce = Date.now();
++            const action = {
++                type: constants_1.ExchangeType.CANCEL,
++                cancels,
++            };
++            const signature = yield this.signL1Action(action, nonce);
++            return this.httpClient.exchange({
++                action,
++                nonce,
++                signature,
++            });
++        });
++    }
+ }
+ exports.ExchangeClient = ExchangeClient;
+diff --git a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.d.ts b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.d.ts
+index 82bb9d7..1f5a1ed 100644
+--- a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.d.ts
++++ b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.d.ts
+@@ -70,6 +70,12 @@ export declare class InfoClient {
+      * Used to map a held token name -> its spot pair key ('@index') for spot pricing.
+      */
+     getSpotMeta(): Promise<SpotMeta>;
++    /**
++     * Spot metadata plus the 24h context of every spot pair (mid/mark price,
++     * previous day price, day notional volume). Global, no user.
++     * The ctxs array is aligned with `meta.universe`; each ctx names its pair.
++     */
++    getSpotMetaAndAssetCtxs(): Promise<[SpotMeta, import('../types').SpotAssetCtx[]]>;
+     getFrontendOpenOrders(address?: string, dex?: string): Promise<OpenOrder[]>;
+     getUserNonFundingLedgerUpdates(address?: string, startTime?: number, endTime?: number): Promise<UserNonFundingLedgerUpdates[]>;
+     /**
+diff --git a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.js b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.js
+index eae2cd2..02406f4 100644
+--- a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.js
++++ b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/info-client.js
+@@ -248,6 +248,16 @@ class InfoClient {
+             });
+         });
+     }
++    /**
++     * Spot metadata plus the 24h context of every spot pair.
++     */
++    getSpotMetaAndAssetCtxs() {
++        return __awaiter(this, void 0, void 0, function* () {
++            return this.httpClient.info({
++                type: 'spotMetaAndAssetCtxs',
++            });
++        });
++    }
+     // frontendOpenOrders
+     getFrontendOpenOrders(address, dex) {
+         return __awaiter(this, void 0, void 0, function* () {
+diff --git a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/types/index.d.ts b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/types/index.d.ts
+index fc9350e..0d66f26 100644
+--- a/node_modules/@rabby-wallet/hyperliquid-sdk/dist/types/index.d.ts
++++ b/node_modules/@rabby-wallet/hyperliquid-sdk/dist/types/index.d.ts
+@@ -681,6 +681,20 @@ export interface SpotMeta {
+     tokens: SpotMetaToken[];
+     universe: SpotMetaUniverseItem[];
+ }
++/**
++ * 24h context of one spot pair, as returned by `spotMetaAndAssetCtxs`.
++ * `coin` is the pair's universe name ('PURR/USDC' | '@107').
++ */
++export interface SpotAssetCtx {
++    coin: string;
++    midPx: string | null;
++    markPx: string;
++    prevDayPx: string;
++    dayNtlVlm: string;
++    dayBaseVlm?: string;
++    circulatingSupply?: string;
++    totalSupply?: string;
++}
+ export interface FFastAssetCtx {
+     markPx?: string;
+     midPx?: string;
