@@ -180,7 +180,7 @@ const StepDetail = ({ step }: { step: BridgeHistoryDetailStep }) => {
     }),
   }[step.detail.kind];
   return (
-    <span className="h-[14px] whitespace-nowrap text-[12px] leading-[14px] text-r-neutral-foot">
+    <span className="h-[14px] truncate text-[12px] leading-[14px] text-r-neutral-foot">
       {text}
     </span>
   );

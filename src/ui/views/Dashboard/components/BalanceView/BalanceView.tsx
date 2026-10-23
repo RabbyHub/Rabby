@@ -31,7 +31,6 @@ import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { useCommonPopupView, useWallet } from 'ui/utils';
 import { useQueryProjects } from 'ui/utils/portfolio';
-import { OfflineChainNotify } from '../OfflineChainNotify';
 import { BalanceLabel } from './BalanceLabel';
 import { ChainList } from './ChainList';
 import { CurvePoint, CurveThumbnail } from './CurveView';
@@ -550,7 +549,6 @@ export const BalanceView = ({
           </div>
         </div>
       </div>
-      <OfflineChainNotify />
     </div>
   );
 };

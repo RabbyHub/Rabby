@@ -114,7 +114,6 @@ const StepCard = ({
   usd,
   sign,
   approx,
-  dimCompleted = false,
 }: {
   index: number;
   title: string;
@@ -124,16 +123,10 @@ const StepCard = ({
   usd?: string;
   sign: '+' | '-';
   approx?: boolean;
-  dimCompleted?: boolean;
 }) => {
   const headerTone =
-    status === 'queued'
-      ? 'text-r-neutral-foot'
-      : status === 'failed' || dimCompleted
-      ? 'text-r-neutral-title-1 opacity-50'
-      : 'text-r-neutral-title-1';
-  const dimAssetRow = status === 'failed' || dimCompleted;
-  const amountTone = !dimAssetRow && status === 'queued' ? 'opacity-40' : '';
+    status === 'queued' ? 'text-r-neutral-foot' : 'text-r-neutral-title-1';
+  const amountTone = status === 'queued' ? 'opacity-40' : '';
 
   return (
     <div className="flex w-full flex-col overflow-hidden rounded-[8px] bg-r-neutral-card-1">
@@ -147,8 +140,7 @@ const StepCard = ({
       <div
         className={clsx(
           'flex h-[48px] items-center justify-between',
-          status === 'refund' ? 'px-[16px]' : 'px-[12px]',
-          dimAssetRow && 'opacity-50'
+          status === 'refund' ? 'px-[16px]' : 'px-[12px]'
         )}
       >
         <div className="flex items-center gap-[10px]">
@@ -267,9 +259,6 @@ export const BridgeStatusPopup = ({
             amount={data.fromAmount}
             usd={usdOf(data.fromAmount, data.fromToken?.price)}
             sign="-"
-            dimCompleted={
-              popup.step1 === 'completed' && popup.step2 !== 'completed'
-            }
           />
           <StepArrow compact={!!popup.step3 || popup.step2 === 'refund'} />
           <StepCard

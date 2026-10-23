@@ -41,6 +41,7 @@ import styled from 'styled-components';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import { BalanceView, BalanceViewJumpButton } from '../BalanceView/BalanceView';
 import { useHomeBalanceViewOuterPrefetch } from '../BalanceView/useHomeBalanceView';
+import { OfflineChainNotify } from '../OfflineChainNotify';
 import PendingTxs from '../PendingTxs';
 import Queue from '../Queue';
 import Tooltip from 'antd/es/tooltip';
@@ -249,6 +250,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
           <BalanceView currentAccount={currentAccount} />
         )
       )}
+      {dashboardBalanceCacheInited && <OfflineChainNotify />}
       <SeedPhraseBackupAlert className="absolute left-0 right-0 bottom-0" />
     </Container>
   );
