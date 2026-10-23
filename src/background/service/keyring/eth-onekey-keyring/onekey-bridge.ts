@@ -12,20 +12,32 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
         debug: false,
         // The official iframe page deployed by OneKey
         // of course you can also deploy it yourself
-        connectSrc: 'https://jssdk.onekey.so/1.1.0/',
+        connectSrc: 'https://jssdk.onekey.so/1.2.7/',
         env: 'webusb',
+        fetchConfig: true,
       })
-        .then(() => {
+        .then((initialized) => {
+          if (!initialized) {
+            throw new Error('OneKey SDK initialization failed');
+          }
           HardwareWebSdk.on(UI_EVENT, (e) => {
             switch (e.type) {
               case UI_REQUEST.REQUEST_PIN:
+                if (
+                  e.payload.deviceOnly ||
+                  e.payload.interaction?.protocol === 'V2'
+                ) {
+                  break;
+                }
                 HardwareWebSdk.uiResponse({
+                  ...e.payload.responseCorrelation,
                   type: UI_RESPONSE.RECEIVE_PIN,
                   payload: '@@ONEKEY_INPUT_PIN_IN_DEVICE',
                 });
                 break;
               case UI_REQUEST.REQUEST_PASSPHRASE:
                 HardwareWebSdk.uiResponse({
+                  ...e.payload.responseCorrelation,
                   type: UI_RESPONSE.RECEIVE_PASSPHRASE,
                   payload: {
                     value: '',
@@ -54,11 +66,13 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
 
   evmSignTypedData = HardwareWebSdk.evmSignTypedData;
 
+  cancel = HardwareWebSdk.cancel;
+
   searchDevices = HardwareWebSdk.searchDevices;
 
   getPassphraseState = HardwareWebSdk.getPassphraseState;
 
   evmGetPublicKey = HardwareWebSdk.evmGetPublicKey;
 
-  getFeatures = HardwareWebSdk.getFeatures;
+  getDeviceState = HardwareWebSdk.getDeviceState;
 }
