@@ -496,6 +496,64 @@ button.desktop-perps-topbar-deposit-button {
   color: var(--rb-light-neutral-info);
 }
 
+// TP/SL amount slider (Figma 164267:124657): 4px rail, title-1 fill, hollow
+// 8px marks and a hollow 16px handle.
+.desktop-perps-tpsl-slider.ant-slider {
+  margin: 0;
+  padding: 8px 0;
+  height: 20px;
+
+  .ant-slider-rail,
+  &:hover .ant-slider-rail {
+    height: 4px;
+    border-radius: 999px;
+    background-color: var(--rb-neutral-line) !important;
+  }
+
+  .ant-slider-track,
+  &:hover .ant-slider-track {
+    height: 4px;
+    border-radius: 999px;
+    background-color: var(--rb-neutral-title-1) !important;
+  }
+
+  .ant-slider-step {
+    height: 4px;
+  }
+
+  // Marks ahead of the handle: grey ring (Figma 164444:143872, #C5C5CF);
+  // marks already passed: title-1 ring (164444:143870).
+  .ant-slider-dot,
+  &:hover .ant-slider-dot {
+    top: -2px;
+    width: 8px;
+    height: 8px;
+    border: 1px solid var(--rb-neutral-foot) !important;
+    background-color: var(--rb-neutral-bg-1) !important;
+  }
+
+  .ant-slider-dot-active,
+  &:hover .ant-slider-dot-active {
+    border-color: var(--rb-neutral-title-1) !important;
+  }
+
+  .ant-slider-handle,
+  &:hover > .ant-slider-handle,
+  .ant-slider-handle:hover,
+  .ant-slider-handle:focus {
+    width: 16px !important;
+    height: 16px !important;
+    margin-top: -6px !important;
+    border: 2px solid var(--rb-neutral-title-1) !important;
+    background-color: var(--rb-neutral-bg-1) !important;
+    box-shadow: none !important;
+  }
+
+  .ant-slider-mark {
+    display: none;
+  }
+}
+
 .desktop-perps-tpsl-confirm.ant-btn-primary[disabled],
 .desktop-perps-tpsl-confirm.ant-btn-primary[disabled]:hover,
 .desktop-perps-tpsl-confirm.ant-btn-primary[disabled]:focus,

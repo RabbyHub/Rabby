@@ -12958,6 +12958,18 @@
       "webpack:buffer (ignored)"
     ]
   },
+  "node_modules/@ethersproject/solidity/lib.esm/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@ethersproject/bytes/lib.esm/index.js",
+      "node_modules/@ethersproject/keccak256/lib.esm/index.js",
+      "node_modules/@ethersproject/logger/lib.esm/index.js",
+      "node_modules/@ethersproject/sha2/lib.esm/sha2.js",
+      "node_modules/@ethersproject/solidity/lib.esm/_version.js",
+      "node_modules/@ethersproject/strings/lib.esm/utf8.js"
+    ]
+  },
   "node_modules/@ethersproject/strings/lib.esm/bytes32.js": {
     "enable": true,
     "require": [
@@ -28845,6 +28857,12 @@
       "Buffer": "r"
     }
   },
+  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@ethersproject/solidity/node_modules/bn.js/lib/bn.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    }
+  },
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@ethersproject/units/node_modules/bn.js/lib/bn.js": {
     "enable": true,
     "global": {
@@ -40486,6 +40504,119 @@
       "navigator": "r"
     }
   },
+  "node_modules/@rabby-wallet/rabby-swap/dist/abi.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/abi.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/chain.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@debank/common/dist/index-rabby.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/dexAggregator.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/chain.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/abi.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/dexAggregator.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/packed.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/packed.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/abi.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/swapRouter.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/assets.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/chain.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/abi.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/assets.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/shared.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/commands.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/profiles.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/shared.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/assets.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/commands.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/shared.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/sdk.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/v2.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/v4/index.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/profiles.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/sdk.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/commandParser.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/v2.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/v4/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/assets.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/shared.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/sdk.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
+    ]
+  },
   "node_modules/@rabby-wallet/rabby-swap/dist/dexs/0xapi.js": {
     "enable": true,
     "require": [
@@ -40528,6 +40659,7 @@
     "enable": true,
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/index.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
     ]
@@ -40548,6 +40680,17 @@
       "node_modules/@rabby-wallet/rabby-swap/dist/abi.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/dist/dexs/pancake.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@debank/common/dist/index-rabby.js",
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/abi.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
     ]
   },
   "node_modules/@rabby-wallet/rabby-swap/dist/dexs/paraswap.js": {
@@ -40595,6 +40738,7 @@
     "enable": true,
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/index.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
     ]
@@ -40630,6 +40774,7 @@
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/magpie.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/odos.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/openocean.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/dexs/pancake.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/paraswap_v6.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/paraswap.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/rabby.js",
@@ -40651,6 +40796,7 @@
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/magpie.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/odos.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/openocean.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/dexs/pancake.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/paraswap_v6.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/paraswap.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/dexs/rabby.js",
@@ -40677,6 +40823,9 @@
   "node_modules/@rabby-wallet/rabby-swap/dist/verify/calldata.js": {
     "enable": true,
     "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/chain.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/magpie/index.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/assets.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
@@ -40727,18 +40876,236 @@
       "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
     ]
   },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/rlp/dist/index.js": {
+    "enable": true,
+    "global": {
+      "TextEncoder": "r"
+    }
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/account.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/rlp/dist/index.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/bytes.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/constants.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/helpers.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/internal.js",
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js",
+      "node_modules/ethereum-cryptography/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/address.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/account.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/bytes.js",
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/asyncEventEmitter.js": {
+    "enable": true,
+    "require": [
+      "node_modules/events/events.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/bytes.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/helpers.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/internal.js",
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/constants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/helpers.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/internal.js",
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/account.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/address.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/asyncEventEmitter.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/bytes.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/constants.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/encoding.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/internal.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/lock.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/provider.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/signature.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/types.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/units.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/withdrawal.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/internal.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/lock.js": {
+    "enable": true,
+    "global": {
+      "console": "r"
+    }
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/provider.js": {
+    "enable": true,
+    "require": [
+      "node_modules/micro-ftch/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/signature.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/bytes.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/constants.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/helpers.js",
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/ethereum-cryptography/secp256k1.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/types.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/bytes.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/internal.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/withdrawal.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/address.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/bytes.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/types.js",
+      "node_modules/buffer/index.js"
+    ]
+  },
   "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs": {
     "enable": true,
     "global": {
       "crypto": "r"
     }
   },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/bn.js/lib/bn.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "webpack:buffer (ignored)"
+    ]
+  },
   "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/lib/index.js": {
     "enable": true,
     "require": [
       "node_modules/@ethersproject/abi/lib.esm/index.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/node_modules/web3-utils/lib/index.js",
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/node_modules/web3-utils/lib/index.js": {
+    "enable": true,
+    "global": {
+      "setTimeout": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bn.js/lib/bn.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/node_modules/web3-utils/lib/soliditySha3.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/node_modules/web3-utils/lib/utils.js",
+      "node_modules/ethjs-unit/lib/index.js",
+      "node_modules/randombytes/browser.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/node_modules/web3-utils/lib/soliditySha3.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bn.js/lib/bn.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/node_modules/web3-utils/lib/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-eth-abi/node_modules/web3-utils/lib/utils.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/@ethereumjs/util/dist/index.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bn.js/lib/bn.js",
       "node_modules/buffer/index.js",
-      "node_modules/web3-utils/lib/index.js"
+      "node_modules/ethereum-bloom-filters/dist/index.js",
+      "node_modules/ethereum-cryptography/keccak.js",
+      "node_modules/number-to-bn/src/index.js",
+      "node_modules/utf8/utf8.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/index.js": {
+    "enable": true,
+    "global": {
+      "setTimeout": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bn.js/lib/bn.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/soliditySha3.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/utils.js",
+      "node_modules/ethjs-unit/lib/index.js",
+      "node_modules/randombytes/browser.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/soliditySha3.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bn.js/lib/bn.js",
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/utils.js"
+    ]
+  },
+  "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/utils.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r"
+    },
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/node_modules/bn.js/lib/bn.js",
+      "node_modules/buffer/index.js",
+      "node_modules/ethereum-bloom-filters/dist/index.js",
+      "node_modules/ethereumjs-util/dist.browser/index.js",
+      "node_modules/number-to-bn/src/index.js",
+      "node_modules/utf8/utf8.js"
     ]
   },
   "node_modules/@rabby-wallet/staking-sdk/dist/addresses/deployments.js": {
@@ -63372,6 +63739,856 @@
       "node_modules/events/events.js"
     ]
   },
+  "node_modules/@uniswap/router-sdk/dist/esm/src/constants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/router-sdk/dist/esm/src/entities/mixedRoute/route.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/router-sdk/dist/esm/src/utils/pathCurrency.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/router-sdk/dist/esm/src/entities/mixedRoute/trade.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/router-sdk/dist/esm/src/constants.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/mixedRoute/route.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/utils/pathCurrency.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sortedInsert.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/pair.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/router-sdk/dist/esm/src/entities/route.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/mixedRoute/route.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/protocol.js"
+    ]
+  },
+  "node_modules/@uniswap/router-sdk/dist/esm/src/utils/encodeMixedRouteToPath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/solidity/lib.esm/index.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/pair.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js"
+    ]
+  },
+  "node_modules/@uniswap/router-sdk/dist/esm/src/utils/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/pair.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js"
+    ]
+  },
+  "node_modules/@uniswap/router-sdk/dist/esm/src/utils/pathCurrency.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/addresses.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/chains.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/entities/baseCurrency.js": {
+    "enable": true,
+    "require": [
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/big.js/big.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js",
+      "node_modules/toformat/toFormat.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/big.js/big.js",
+      "node_modules/decimal.js-light/decimal.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js",
+      "node_modules/toformat/toFormat.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/entities/token.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/baseCurrency.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/validateAndParseAddress.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/entities/weth9.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/token.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/utils/computePriceImpact.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/utils/computeZksyncCreate2Address.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/address/lib.esm/index.js",
+      "node_modules/@ethersproject/bytes/lib.esm/index.js",
+      "node_modules/@uniswap/sdk-core/node_modules/@ethersproject/keccak256/lib.esm/index.js",
+      "node_modules/@uniswap/sdk-core/node_modules/@ethersproject/strings/lib.esm/utf8.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sortedInsert.js": {
+    "enable": true,
+    "require": [
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sqrt.js": {
+    "enable": true,
+    "require": [
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/dist/esm/src/utils/validateAndParseAddress.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/address/lib.esm/index.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/node_modules/@ethersproject/keccak256/lib.esm/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bytes/lib.esm/index.js",
+      "node_modules/js-sha3/src/sha3.js"
+    ]
+  },
+  "node_modules/@uniswap/sdk-core/node_modules/@ethersproject/strings/lib.esm/utf8.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bytes/lib.esm/index.js",
+      "node_modules/@ethersproject/logger/lib.esm/index.js",
+      "node_modules/@uniswap/sdk-core/node_modules/@ethersproject/strings/lib.esm/_version.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/entities/actions/uniswap.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/mixedRoute/route.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/mixedRoute/trade.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/protocol.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/route.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/utils/encodeMixedRouteToPath.js",
+      "node_modules/@uniswap/router-sdk/dist/esm/src/utils/index.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/entities/Command.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/getCurrencyAddress.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/numbers.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/pathCurrency.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/portionFees.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/toV4URVersion.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/pair.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/trade.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/trade.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/encodeRouteToPath.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/route.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/trade.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/encodeRouteToPath.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/swapRouter.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/addresses.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/weth9.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/entities/actions/uniswap.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/computeEncodeSwapsAmounts.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/directTransfers.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/eip712.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/encodeSwapStep.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/getCurrencyAddress.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/inputTokens.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/normalizeEncodeSwapsSpec.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/numbers.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/portionFees.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerBalanceSteps.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/validateEncodeSwaps.js",
+      "node_modules/@uniswap/universal-router/artifacts/contracts/UniversalRouter.sol/UniversalRouter.json",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/multicall.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/nonfungiblePositionManager.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/PositionManager.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/commandParser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@ethersproject/address/lib.esm/index.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js",
+      "node_modules/@uniswap/universal-router/artifacts/contracts/UniversalRouter.sol/UniversalRouter.json",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4BaseActionsParser.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/computeEncodeSwapsAmounts.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/normalizeEncodeSwapsSpec.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/portionFees.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/directTransfers.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/eip712.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bytes/lib.esm/index.js",
+      "node_modules/@ethersproject/random/lib.esm/random.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/encodeSwapStep.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/encodeV4Action.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/toV4URVersion.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/encodeV4Action.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/getCurrencyAddress.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/inputTokens.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bytes/lib.esm/index.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/validateAndParseAddress.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/nonfungiblePositionManager.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/normalizeEncodeSwapsSpec.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/entities/actions/uniswap.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/numbers.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/universal-router-sdk/node_modules/bignumber.js/bignumber.mjs",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/calldata.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/pathCurrency.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/portionFees.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/numbers.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerBalanceSteps.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerCommands.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/ethers/lib/utils.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/toV4URVersion.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/validateEncodeSwaps.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/weth9.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/entities/actions/uniswap.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/computeEncodeSwapsAmounts.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/constants.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/directTransfers.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/getCurrencyAddress.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/normalizeEncodeSwapsSpec.js",
+      "node_modules/@uniswap/universal-router-sdk/dist/esm/src/utils/routerBalanceSteps.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/universal-router-sdk/node_modules/bignumber.js/bignumber.mjs": {
+    "enable": true,
+    "global": {
+      "crypto": "r"
+    }
+  },
+  "node_modules/@uniswap/v2-sdk/dist/esm/src/constants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/addresses.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/pair.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/address/lib.esm/index.js",
+      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@ethersproject/solidity/lib.esm/index.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/token.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sqrt.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/errors.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/route.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/trade.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/computePriceImpact.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sortedInsert.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/route.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/constants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/chains.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/pool.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/tickDataProvider.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/tickListDataProvider.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/computePoolAddress.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/v3swap.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/position.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/encodeSqrtRatioX96.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/maxLiquidityForAmounts.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/priceTickConversions.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/sqrtPriceMath.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/route.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/tick.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/tickListDataProvider.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/tick.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickList.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/trade.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sortedInsert.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/route.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/multicall.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@uniswap/v3-periphery/artifacts/contracts/interfaces/IMulticall.sol/IMulticall.json"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/nonfungiblePositionManager.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/validateAndParseAddress.js",
+      "node_modules/@uniswap/v3-periphery/artifacts/contracts/NonfungiblePositionManager.sol/NonfungiblePositionManager.json",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/position.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/multicall.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/payments.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/selfPermit.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/calldata.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/payments.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/validateAndParseAddress.js",
+      "node_modules/@uniswap/v3-periphery/artifacts/contracts/interfaces/IPeripheryPaymentsWithFee.sol/IPeripheryPaymentsWithFee.json",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/calldata.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/selfPermit.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@uniswap/v3-periphery/artifacts/contracts/interfaces/ISelfPermit.sol/ISelfPermit.json",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/calldata.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/calldata.js": {
+    "enable": true,
+    "require": [
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/computePoolAddress.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
+      "node_modules/@ethersproject/address/lib.esm/index.js",
+      "node_modules/@ethersproject/solidity/lib.esm/index.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/chains.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/computeZksyncCreate2Address.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/constants.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/encodeRouteToPath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/solidity/lib.esm/index.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/encodeSqrtRatioX96.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sqrt.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/fullMath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/liquidityMath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/maxLiquidityForAmounts.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/mostSignificantBit.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/priceTickConversions.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/sqrtPriceMath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/fullMath.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/swapMath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/fullMath.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/sqrtPriceMath.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickList.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/isSorted.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/mostSignificantBit.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/v3swap.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/liquidityMath.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/swapMath.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/PositionManager.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/validateAndParseAddress.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/actionConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/position.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/multicall.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/calldata.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/positionManagerAbi.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4PositionPlanner.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/solidity/lib.esm/index.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/tickDataProvider.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/tickListDataProvider.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/v3swap.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/hook.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/sortsBefore.js",
+      "node_modules/ethers/lib/utils.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/position.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/encodeSqrtRatioX96.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/maxLiquidityForAmounts.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/sqrtPriceMath.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/priceTickConversions.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/route.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/pathCurrency.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/trade.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/fraction.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/utils/sortedInsert.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/route.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/pathCurrency.js",
+      "node_modules/jsbi/dist/jsbi-umd.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/constants/lib.esm/index.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/encodeSqrtRatioX96.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/multicall.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/interface.js",
+      "node_modules/@uniswap/v3-periphery/artifacts/contracts/interfaces/IMulticall.sol/IMulticall.json"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/calldata.js": {
+    "enable": true,
+    "require": [
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/currencyMap.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/encodeRouteToPath.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/hook.js": {
+    "enable": true,
+    "require": [
+      "node_modules/ethers/lib/utils.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/pathCurrency.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/currencyAmount.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/priceTickConversions.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/price.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/tickMath.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/sortsBefore.js",
+      "node_modules/jsbi/dist/jsbi-umd.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4BaseActionsParser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/sdk-core/dist/esm/src/constants.js",
+      "node_modules/@uniswap/sdk-core/dist/esm/src/entities/fractions/percent.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/encodeRouteToPath.js",
+      "node_modules/ethers/lib/utils.js",
+      "node_modules/tiny-invariant/dist/esm/tiny-invariant.js"
+    ]
+  },
+  "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4PositionPlanner.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/currencyMap.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js"
+    ]
+  },
   "node_modules/@walletconnect/core/dist/index.js": {
     "enable": true,
     "global": {
@@ -69921,6 +71138,12 @@
       "node_modules/safe-buffer/index.js"
     ]
   },
+  "node_modules/big.js/big.js": {
+    "enable": true,
+    "global": {
+      "define": "r"
+    }
+  },
   "node_modules/bignumber.js/bignumber.js": {
     "enable": true,
     "global": {
@@ -73334,14 +74557,14 @@
       "node_modules/@ethersproject/sha2/lib.esm/sha2.js",
       "node_modules/@ethersproject/sha2/lib.esm/types.js",
       "node_modules/@ethersproject/signing-key/lib.esm/index.js",
+      "node_modules/@ethersproject/solidity/lib.esm/index.js",
       "node_modules/@ethersproject/strings/lib.esm/bytes32.js",
       "node_modules/@ethersproject/strings/lib.esm/idna.js",
       "node_modules/@ethersproject/strings/lib.esm/utf8.js",
       "node_modules/@ethersproject/transactions/lib.esm/index.js",
       "node_modules/@ethersproject/units/lib.esm/index.js",
       "node_modules/@ethersproject/wallet/lib.esm/index.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js",
-      "node_modules/ethers/node_modules/@ethersproject/solidity/lib.esm/index.js"
+      "node_modules/@ethersproject/web/lib.esm/index.js"
     ]
   },
   "node_modules/ethers/lib/utils.js": {
@@ -73362,12 +74585,12 @@
       "node_modules/@ethersproject/rlp/lib.esm/index.js",
       "node_modules/@ethersproject/sha2/lib.esm/index.js",
       "node_modules/@ethersproject/signing-key/lib.esm/index.js",
+      "node_modules/@ethersproject/solidity/lib.esm/index.js",
       "node_modules/@ethersproject/strings/lib.esm/index.js",
       "node_modules/@ethersproject/transactions/lib.esm/index.js",
       "node_modules/@ethersproject/units/lib.esm/index.js",
       "node_modules/@ethersproject/wallet/lib.esm/index.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js",
-      "node_modules/ethers/node_modules/@ethersproject/solidity/lib.esm/index.js"
+      "node_modules/@ethersproject/web/lib.esm/index.js"
     ]
   },
   "node_modules/ethers/node_modules/@ethersproject/contracts/lib.esm/index.js": {
@@ -73387,18 +74610,6 @@
       "node_modules/@ethersproject/properties/lib.esm/index.js",
       "node_modules/@ethersproject/transactions/lib.esm/index.js",
       "node_modules/ethers/node_modules/@ethersproject/contracts/lib.esm/_version.js"
-    ]
-  },
-  "node_modules/ethers/node_modules/@ethersproject/solidity/lib.esm/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/bytes/lib.esm/index.js",
-      "node_modules/@ethersproject/keccak256/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/sha2/lib.esm/sha2.js",
-      "node_modules/@ethersproject/strings/lib.esm/utf8.js",
-      "node_modules/ethers/node_modules/@ethersproject/solidity/lib.esm/_version.js"
     ]
   },
   "node_modules/ethjs-unit/lib/index.js": {
@@ -95385,6 +96596,7 @@
       "src/ui/assets/swap/magpie.png",
       "src/ui/assets/swap/odos.png",
       "src/ui/assets/swap/openocean.png",
+      "src/ui/assets/swap/pancakeswap.png",
       "src/ui/assets/swap/paraswap.png",
       "src/ui/assets/swap/sushi.png",
       "src/ui/assets/swap/uniswap.png",
@@ -98021,6 +99233,7 @@
       "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
       "src/ui/views/Dashboard/components/NFT/NFTModal.tsx",
       "src/ui/views/Dashboard/components/TokenDetailPopup/index.tsx",
+      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx",
       "src/utils/chain.ts",
       "src/utils/index.ts"
     ]
@@ -101304,7 +102517,6 @@
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/utils/address.ts",
       "src/ui/utils/index.ts",
-      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange.tsx",
       "src/utils/chain.ts",
       "src/utils/index.ts"
     ]
@@ -101564,19 +102776,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react/index.js",
-      "src/ui/assets/token-default.svg",
-      "src/ui/utils/index.ts",
-      "src/ui/utils/token.ts",
-      "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
-      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx"
-    ]
-  },
   "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx": {
     "enable": true,
     "require": [
@@ -101818,7 +103017,6 @@
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/index.css",
-      "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenChange.tsx",
       "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx",
       "src/ui/views/DesktopSmallSwap/components/Checkbox.tsx",
       "src/ui/views/GasAccount/hooks/index.ts",
@@ -101841,6 +103039,7 @@
       "src/ui/views/Perps/hooks/usePerpsActions.ts",
       "src/ui/views/Perps/hooks/usePerpsDefaultAccount.ts",
       "src/ui/views/Perps/hooks/useStableCoinSwap.ts",
+      "src/ui/views/Perps/pricePrecision.ts",
       "src/ui/views/Perps/sdkManager.ts",
       "src/ui/views/Perps/sentry.ts",
       "src/ui/views/Perps/utils.ts",
@@ -102986,6 +104185,7 @@
       "src/constant/index.ts",
       "src/ui/state/perps.ts",
       "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Perps/pricePrecision.ts",
       "src/ui/views/Perps/sdkManager.ts",
       "src/utils/perps/quoteAsset.ts"
     ]
@@ -103390,14 +104590,13 @@
       "node_modules/lodash/lodash.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
-      "src/stats.ts",
       "src/ui/state/swap.ts",
       "src/ui/store.ts",
-      "src/ui/utils/ga-event.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/Swap/hooks/context.tsx",
       "src/ui/views/Swap/hooks/fee.ts",
       "src/ui/views/Swap/hooks/quote.tsx",
+      "src/ui/views/Swap/hooks/swapReport.tsx",
       "src/ui/views/Swap/hooks/token.tsx"
     ]
   },
@@ -103407,7 +104606,6 @@
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/quote.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/p-retry/index.js",
       "node_modules/react/index.js",
@@ -103415,7 +104613,18 @@
       "src/stats.ts",
       "src/ui/state/swap.ts",
       "src/ui/utils/index.ts",
+      "src/ui/views/Swap/hooks/swapReport.tsx",
       "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/views/Swap/hooks/swapReport.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/index.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/react/index.js",
+      "src/stats.ts",
+      "src/ui/utils/ga-event.ts"
     ]
   },
   "src/ui/views/Swap/hooks/token.tsx": {
