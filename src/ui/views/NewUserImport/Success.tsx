@@ -22,6 +22,8 @@ import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useDocumentVisibility, useMemoizedFn, useRequest } from 'ahooks';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/ui/query/queryKey';
 import { GnosisChainList } from './GnosisChainList';
 import {
   AccountItemAddress,
@@ -53,45 +55,6 @@ const ScrollBarDiv = styled.div`
     background: var(--r-neutral-foot, #6a7587);
   }
 `;
-
-type ActionUserSettings = { isOnToolbar?: boolean };
-type ActionWithUserSettingsEvent = typeof browser.action & {
-  // Chrome 130+, not in the polyfill types yet
-  onUserSettingsChanged?: {
-    addListener(cb: (settings: ActionUserSettings) => void): void;
-    removeListener(cb: (settings: ActionUserSettings) => void): void;
-  };
-};
-
-// undefined while loading; false when unknown (e.g. MV2 has no browser.action)
-const useIsPinnedToToolbar = () => {
-  const [isPinned, setIsPinned] = useState<boolean>();
-
-  useEffect(() => {
-    const action = browser.action as ActionWithUserSettingsEvent | undefined;
-    if (!action?.getUserSettings) {
-      setIsPinned(false);
-      return;
-    }
-
-    action
-      .getUserSettings()
-      .then((settings) => setIsPinned(!!settings.isOnToolbar))
-      .catch(() => setIsPinned(false));
-
-    const onChanged = (settings: ActionUserSettings) => {
-      if (typeof settings.isOnToolbar === 'boolean') {
-        setIsPinned(settings.isOnToolbar);
-      }
-    };
-    action.onUserSettingsChanged?.addListener(onChanged);
-    return () => {
-      action.onUserSettingsChanged?.removeListener(onChanged);
-    };
-  }, []);
-
-  return isPinned;
-};
 
 const AccountItem = ({
   account,
@@ -354,7 +317,19 @@ export const ImportOrCreatedSuccess = () => {
 
   const addMore = !!accounts && accounts?.filter((e) => e.address).length > 1;
 
-  const isPinned = useIsPinnedToToolbar();
+  // undefined while loading; false when unknown (e.g. MV2 has no browser.action)
+  const { data: isPinned } = useQuery({
+    queryKey: createQueryKey('actionUserSettings'),
+    queryFn: async () => {
+      if (!browser.action?.getUserSettings) {
+        return false;
+      }
+      return browser.action
+        .getUserSettings()
+        .then((settings) => !!settings.isOnToolbar)
+        .catch(() => false);
+    },
+  });
 
   return (
     <>
