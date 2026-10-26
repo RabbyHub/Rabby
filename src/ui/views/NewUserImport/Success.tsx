@@ -54,6 +54,45 @@ const ScrollBarDiv = styled.div`
   }
 `;
 
+type ActionUserSettings = { isOnToolbar?: boolean };
+type ActionWithUserSettingsEvent = typeof browser.action & {
+  // Chrome 130+, not in the polyfill types yet
+  onUserSettingsChanged?: {
+    addListener(cb: (settings: ActionUserSettings) => void): void;
+    removeListener(cb: (settings: ActionUserSettings) => void): void;
+  };
+};
+
+// undefined while loading; false when unknown (e.g. MV2 has no browser.action)
+const useIsPinnedToToolbar = () => {
+  const [isPinned, setIsPinned] = useState<boolean>();
+
+  useEffect(() => {
+    const action = browser.action as ActionWithUserSettingsEvent | undefined;
+    if (!action?.getUserSettings) {
+      setIsPinned(false);
+      return;
+    }
+
+    action
+      .getUserSettings()
+      .then((settings) => setIsPinned(!!settings.isOnToolbar))
+      .catch(() => setIsPinned(false));
+
+    const onChanged = (settings: ActionUserSettings) => {
+      if (typeof settings.isOnToolbar === 'boolean') {
+        setIsPinned(settings.isOnToolbar);
+      }
+    };
+    action.onUserSettingsChanged?.addListener(onChanged);
+    return () => {
+      action.onUserSettingsChanged?.removeListener(onChanged);
+    };
+  }, []);
+
+  return isPinned;
+};
+
 const AccountItem = ({
   account,
   autoFocus,
@@ -315,6 +354,8 @@ export const ImportOrCreatedSuccess = () => {
 
   const addMore = !!accounts && accounts?.filter((e) => e.address).length > 1;
 
+  const isPinned = useIsPinnedToToolbar();
+
   return (
     <>
       <Card className="flex flex-col pt-[40px]">
@@ -401,44 +442,46 @@ export const ImportOrCreatedSuccess = () => {
           )
         ) : null}
       </Card>
-      <div
-        className={clsx(
-          'fixed top-[40px] right-[90px]',
-          'w-[242px] h-[300px]',
-          'py-12 px-12',
-          'bg-r-neutral-card-1 rounded-[12px]'
-        )}
-      >
-        <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
-        <div className="flex flex-col gap-[11px]">
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step1')}
-              </span>
+      {isPinned === false ? (
+        <div
+          className={clsx(
+            'fixed top-[40px] right-[90px]',
+            'w-[242px] h-[300px]',
+            'py-12 px-12',
+            'bg-r-neutral-card-1 rounded-[12px]'
+          )}
+        >
+          <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
+          <div className="flex flex-col gap-[11px]">
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
+                <span className="text-[12px] font-semibold text-r-neutral-title1">
+                  {t('page.newUserImport.readyToUse.guides.step1')}
+                </span>
+              </div>
+              <img
+                src={UserGuide1}
+                alt="user-guide-1"
+                className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
+              />
             </div>
-            <img
-              src={UserGuide1}
-              alt="user-guide-1"
-              className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step2')}
-              </span>
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
+                <span className="text-[12px] font-semibold text-r-neutral-title1">
+                  {t('page.newUserImport.readyToUse.guides.step2')}
+                </span>
+              </div>
+              <img
+                src={UserGuide2}
+                alt="user-guide-2"
+                className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
+              />
             </div>
-            <img
-              src={UserGuide2}
-              alt="user-guide-2"
-              className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
-            />
           </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };
