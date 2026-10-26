@@ -817,6 +817,32 @@ describe('historyDbService queryRecent order', () => {
     expect(rows.map((item) => item.id)).toEqual(['0xnewer', '0x5c', '0xed']);
   });
 
+  test('keeps index order within the last second of a full page', async () => {
+    // The index stores same-second rows by ascending _id, so equals() yields
+    // a before b unless it is reversed like the page.
+    const lastSecondRows = [row('0xa', 100), row('0xb', 100)];
+    let reversed = false;
+    const lastSecondCollection = {
+      reverse: jest.fn(() => {
+        reversed = !reversed;
+        return lastSecondCollection;
+      }),
+      and: jest.fn(() => lastSecondCollection),
+      toArray: jest.fn(async () =>
+        reversed ? [...lastSecondRows].reverse() : lastSecondRows
+      ),
+    };
+    mockHistoryWhereClause.equals.mockReturnValueOnce(lastSecondCollection);
+    mockHistoryCollection.toArray.mockResolvedValueOnce([row('0xb', 100)]);
+
+    const rows = await historyDbService.queryRecent({
+      address: OWNER,
+      limit: 1,
+    });
+
+    expect(rows.map((item) => item.id)).toEqual(['0xb', '0xa']);
+  });
+
   test('does not read further when a page is not full', async () => {
     mockHistoryCollection.toArray.mockResolvedValueOnce([
       row('0xed', 100, 117),

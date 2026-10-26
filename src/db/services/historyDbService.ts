@@ -190,6 +190,8 @@ class HistoryDbService {
       const lastSecond = await db.history
         .where('[owner_addr+time_at]')
         .equals([owner, lastRow.time_at])
+        // Same order as the page, so rows that tie in the sort below keep it.
+        .reverse()
         .and(isShown)
         .toArray();
       rows = rows
