@@ -17,7 +17,6 @@ import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
-import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
@@ -32,9 +31,6 @@ import {
 import { findChain } from '@/utils/chain';
 import { Chain } from '@/types/chain';
 import styled from 'styled-components';
-import stats from '@/stats';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { ga4 } from '@/utils/ga4';
 import browser from 'webextension-polyfill';
 import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
 import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
@@ -139,17 +135,6 @@ export const ImportOrCreatedSuccess = () => {
   const isSeedPhrase = React.useMemo(() => hd === KEYRING_CLASS.MNEMONIC, [hd]);
 
   const documentVisibility = useDocumentVisibility();
-  const hasReportedRef = useRef(false);
-  const isExistedKeyring = useImportMnemonicsStore(
-    (state) => state.isExistedKeyring
-  );
-  const finalMnemonics = useImportMnemonicsStore(
-    (state) => state.finalMnemonics
-  );
-  const stashKeyringId = useImportMnemonicsStore(
-    (state) => state.stashKeyringId
-  );
-  const hasMnemonicImportContext = Boolean(finalMnemonics || stashKeyringId);
 
   const { value: accounts } = useAsync(async () => {
     if (documentVisibility === 'visible') {
@@ -250,46 +235,6 @@ export const ImportOrCreatedSuccess = () => {
       closeConnect();
     };
   }, []);
-
-  useEffect(() => {
-    const account = accounts?.[0];
-    if (!account || hasReportedRef.current) {
-      return;
-    }
-    hasReportedRef.current = true;
-
-    const mnemonicSource =
-      account.type === KEYRING_CLASS.MNEMONIC
-        ? isCreated
-          ? 'New'
-          : hasMnemonicImportContext && isExistedKeyring
-          ? 'Add'
-          : hasMnemonicImportContext && !isExistedKeyring
-          ? 'Import'
-          : undefined
-        : undefined;
-
-    if (Object.values(KEYRING_CLASS.HARDWARE).includes(account.type as any)) {
-      stats.report('importHardware', {
-        type: account.type,
-      });
-    }
-
-    matomoRequestEvent({
-      category: 'User',
-      action: 'importAddress',
-      label: mnemonicSource
-        ? `${account.type}_${mnemonicSource}`
-        : account.type,
-    });
-
-    ga4.fireEvent(
-      `Import_${account.type}${mnemonicSource ? `_${mnemonicSource}` : ''}`,
-      {
-        event_category: 'Import Address',
-      }
-    );
-  }, [accounts, hasMnemonicImportContext, isCreated, isExistedKeyring]);
 
   const { data: chainList } = useRequest(
     async () => {

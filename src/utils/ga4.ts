@@ -134,16 +134,6 @@ class Analytics {
       ...additionalParams,
     });
   }
-
-  // Fire an error event.
-  async fireErrorEvent(error, additionalParams = {}) {
-    // Note: 'error' is a reserved event name and cannot be used
-    // see https://developers.google.com/analytics/devguides/collection/protocol/ga4/reference?client_type=gtag#reserved_names
-    return this.fireEvent('extension_error', {
-      ...error,
-      ...additionalParams,
-    });
-  }
 }
 
 export const ga4 = new Analytics(appIsDev);

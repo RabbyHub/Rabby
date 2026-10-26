@@ -1,7 +1,6 @@
 import pRetry, { AbortError } from 'p-retry';
 import { buildTx as buildBridgeTx } from '@rabby-wallet/rabby-bridge';
 import type { BridgeTx } from '@rabby-wallet/rabby-bridge';
-import stats from '@/stats';
 import { findChain } from '@/utils/chain';
 import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
@@ -12,33 +11,6 @@ import {
   getBridgePayTokenRawAmount,
   getBridgeSlippageRatio,
 } from './bridgeQuote';
-
-export const getBridgeQuoteStatsParams = (
-  quote: SelectedBridgeQuote,
-  fromToken: TokenItem,
-  toToken: TokenItem,
-  status: 'success' | 'fail'
-) => ({
-  aggregatorIds: quote.aggregator.id,
-  bridgeId: quote.bridge_id,
-  fromChainId: fromToken.chain,
-  fromTokenId: fromToken.id,
-  toTokenId: toToken.id,
-  toChainId: toToken.chain,
-  status,
-});
-
-export const reportBridgeQuoteResult = (
-  quote: SelectedBridgeQuote,
-  fromToken: TokenItem,
-  toToken: TokenItem,
-  status: 'success' | 'fail'
-) => {
-  stats.report(
-    'bridgeQuoteResult',
-    getBridgeQuoteStatsParams(quote, fromToken, toToken, status)
-  );
-};
 
 export const buildBridgeQuoteTxParams = ({
   userAddress,

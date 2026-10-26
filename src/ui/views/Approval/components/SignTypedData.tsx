@@ -9,8 +9,6 @@ import { cloneDeep } from 'lodash';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/ui/query/queryKey';
 import { underline2Camelcase } from '@/background/utils';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { getKRCategoryByType } from '@/utils/transaction';
 import {
   ALIAS_ADDRESS,
   CHAINS,
@@ -55,7 +53,6 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useSignStore } from '@/ui/state/sign';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
-import stats from '@/stats';
 import {
   parseAction,
   formatSecurityEngineContext,
@@ -68,7 +65,6 @@ import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
-import { ga4 } from '@/utils/ga4';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { getCexInfo } from '@/ui/state/exchange';
 import {
@@ -148,8 +144,6 @@ const SignTypedData = ({
   approvalId?: string;
 }) => {
   const currentAccount = params.isGnosis ? params.account! : account;
-  const renderStartAt = useRef(0);
-  const actionType = useRef('');
   const evaluationVersion = useRef(0);
   const renderSecurityVersion = evaluationVersion.current;
   const securityStateRef = useRef<{ canSign: boolean; evaluation: unknown }>({
@@ -617,46 +611,7 @@ const SignTypedData = ({
     return () => modal.destroy();
   }, [finishedSafeMessage, requestKey, securityEvaluation, securityBlocked]);
 
-  const report = async (
-    action:
-      | 'createSignText'
-      | 'startSignText'
-      | 'cancelSignText'
-      | 'completeSignText',
-    extra?: Record<string, any>
-  ) => {
-    if (currentAccount) {
-      matomoRequestEvent({
-        category: 'SignText',
-        action: action,
-        label: [
-          getKRCategoryByType(currentAccount.type),
-          currentAccount.brandName,
-        ].join('|'),
-        transport: 'beacon',
-      });
-
-      if (action === 'createSignText') {
-        ga4.fireEvent('Init_SignText', {
-          event_category: 'SignText',
-        });
-      } else if (action === 'startSignText') {
-        ga4.fireEvent('Submit_SignText', {
-          event_category: 'SignText',
-        });
-      }
-
-      await wallet.reportStats(action, {
-        type: currentAccount.brandName,
-        category: getKRCategoryByType(currentAccount.type),
-        method: underline2Camelcase(params.method),
-        ...extra,
-      });
-    }
-  };
-
   const handleCancel = () => {
-    report('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -704,7 +659,6 @@ const SignTypedData = ({
 
       return;
     }
-    report('startSignText');
     resolveWithSecurityGate({});
   };
 
@@ -950,7 +904,6 @@ const SignTypedData = ({
         return;
       }
       logId.current = typedDataActionData.log_id;
-      actionType.current = typedDataActionData.action?.type || '';
       const multi = typedDataActionData.action?.type === 'multi_actions';
       const actionsToParse = multi
         ? (typedDataActionData.action!.data as MultiAction)
@@ -1086,24 +1039,10 @@ const SignTypedData = ({
   );
 
   useEffect(() => {
-    renderStartAt.current = Date.now();
     init();
     securityEngine.init();
     checkWachMode();
-    report('createSignText');
   }, []);
-
-  useEffect(() => {
-    if (!isLoading) {
-      const duration = Date.now() - renderStartAt.current;
-      stats.report('signPageRenderTime', {
-        type: 'typedata',
-        actionType: actionType.current,
-        chain: chain?.serverId || '',
-        duration,
-      });
-    }
-  }, [isLoading]);
 
   return (
     <SecurityEngineScopeProvider scope={actionSecurityGroups[0]?.scope}>

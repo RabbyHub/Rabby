@@ -76,7 +76,6 @@ import {
   PerpTopTokenV3,
   PerpTopTokenCategory,
 } from '@rabby-wallet/rabby-api/dist/types';
-import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import {
   parsePortfolioResponseStrict,

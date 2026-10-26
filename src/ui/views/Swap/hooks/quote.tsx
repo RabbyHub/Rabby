@@ -14,7 +14,6 @@ import React, { useRef } from 'react';
 import pRetry from 'p-retry';
 import { useRabbySelector } from '@/ui/store';
 import { useSwapStore } from '@/ui/state/swap';
-import stats from '@/stats';
 import { findChainByEnum } from '@/utils/chain';
 import { ChainGas } from '@/background/service/preference';
 import {
@@ -409,13 +408,6 @@ export const useQuoteMethods = () => {
           })
         : null;
       try {
-        stats.report('swapRequestQuote', {
-          dex: dexId,
-          chain,
-          fromToken: payToken.id,
-          toToken: receiveToken.id,
-        });
-
         const getData = () =>
           getQuote(
             isSwapWrapToken(payToken.id, receiveToken.id, chain)
@@ -442,14 +434,6 @@ export const useQuoteMethods = () => {
           );
 
         const data = await getData();
-
-        stats.report('swapQuoteResult', {
-          dex: dexId,
-          chain,
-          fromToken: payToken.id,
-          toToken: receiveToken.id,
-          status: data ? 'success' : 'fail',
-        });
 
         let preExecResult;
         if (data) {
@@ -608,14 +592,6 @@ export const useQuoteMethods = () => {
         return quote;
       } catch (error) {
         console.error('getQuote error ', error);
-
-        stats.report('swapQuoteResult', {
-          dex: dexId,
-          chain,
-          fromToken: payToken.id,
-          toToken: receiveToken.id,
-          status: 'fail',
-        });
 
         const quote: TDexQuoteData = {
           data: null,

@@ -58,7 +58,6 @@ import { buildFingerprint } from '@/ui/component/MiniSignV2/domain/ctx';
 import { getBridgeQuoteKey, isSameBridgeQuote } from '../utils/bridgeQuote';
 import {
   buildBridgeTokenSideParams,
-  reportBridgeQuoteResult,
   requestBridgeQuoteTx,
 } from '../utils/submit';
 
@@ -203,12 +202,6 @@ export const BridgeContent = () => {
           quote: selectedBridgeQuote,
           openapi: wallet.openapi,
         });
-        reportBridgeQuoteResult(
-          selectedBridgeQuote,
-          fromToken,
-          toToken,
-          tx ? 'success' : 'fail'
-        );
         const promise = wallet.bridgeToken(
           {
             ...buildBridgeTokenSideParams({
@@ -241,12 +234,6 @@ export const BridgeContent = () => {
         message.error(error?.message || String(error));
         setQuotesList((pre) =>
           pre?.filter((item) => !isSameBridgeQuote(item, selectedBridgeQuote))
-        );
-        reportBridgeQuoteResult(
-          selectedBridgeQuote,
-          fromToken,
-          toToken,
-          'fail'
         );
         console.error(error);
       } finally {
@@ -339,12 +326,6 @@ export const BridgeContent = () => {
           quote: selectedBridgeQuote,
           openapi: wallet.openapi,
         });
-        reportBridgeQuoteResult(
-          selectedBridgeQuote,
-          fromToken,
-          toToken,
-          tx ? 'success' : 'fail'
-        );
 
         if (
           expectedBuildKey &&
@@ -388,12 +369,6 @@ export const BridgeContent = () => {
           pre?.filter((item) => !isSameBridgeQuote(item, selectedBridgeQuote))
         );
         // message.error(error?.message || String(error));
-        reportBridgeQuoteResult(
-          selectedBridgeQuote,
-          fromToken,
-          toToken,
-          'fail'
-        );
         console.error(error);
       } finally {
         // setFetchingBridgeQuote(false);

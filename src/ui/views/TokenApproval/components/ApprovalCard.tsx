@@ -3,16 +3,13 @@ import { TokenWithChain } from '@/ui/component';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import {
   numberWithCommasIsLtOne,
   splitNumberByStep,
   useWallet,
 } from 'ui/utils';
-import { connectStore, useRabbySelector } from '@/ui/store';
-import { getKRCategoryByType } from '@/utils/transaction';
-import { getChain } from '@/utils';
+import { connectStore } from '@/ui/store';
 
 interface ApprovalCardProps {
   data: TokenApproval;
@@ -24,19 +21,9 @@ const ellipsis = (text: string) => {
 const ApprovalCard = ({ data }: ApprovalCardProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
 
   const tokenApprove = async (item: TokenApproval['spenders'][0]) => {
     try {
-      matomoRequestEvent({
-        category: 'Security',
-        action: 'startDeclineTokenApproval',
-        label: [
-          getChain(data.chain)?.name,
-          getKRCategoryByType(currentAccount?.type),
-          currentAccount?.brandName,
-        ].join('|'),
-      });
       wallet.approveToken(data.chain, data.id, item.id, 0, {
         ga: {
           category: 'Security',

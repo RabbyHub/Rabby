@@ -141,7 +141,6 @@ describe('Unlock approval binding', () => {
       qs: { parse: () => ({}) },
       'styled-components': styledMock,
       ahooks,
-      '@/utils/ga4': { ga4: { fireEvent: jest.fn() } },
     };
     runInNewContext(compiled, {
       exports,

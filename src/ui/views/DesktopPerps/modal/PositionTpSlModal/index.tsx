@@ -1,10 +1,8 @@
 import { MarketData, usePerpsStore } from '@/ui/state/perps';
-import stats from '@/stats';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { useMemoizedFn } from 'ahooks';
 import { Modal, Tooltip } from 'antd';
-import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import React, {
   useEffect,
@@ -17,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import perpsToast from '../../components/PerpsToast';
 import type { PositionFormatData } from '../../components/UserInfoHistory/PositionsInfo';
 import { usePerpsProPosition } from '../../hooks/usePerpsProPosition';
-import { getStatsReportSide } from '../../utils';
 import {
   PositionTpSlOrder,
   TpSlCommand,
@@ -73,9 +70,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
     (s) => s.perps.orderConfirmations
   );
   const tpslIntroShown = useRabbySelector((s) => s.perps.tpslIntroShown);
-  const currentPerpsAccount = useRabbySelector(
-    (s) => s.perps.currentPerpsAccount
-  );
   const {
     handlePlacePartialTpSl,
     handleModifyPartialTpSl,
@@ -166,33 +160,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
   const refreshOrders = () =>
     dispatch.perps.fetchPositionOpenOrdersHttp({ dex });
 
-  const reportCreate = (scope: TpSlScope, leg: TpSlCommandLeg) => {
-    const size = leg.size || position.size;
-    const isTp = leg.kind === 'takeProfit';
-    stats.report('perpsTradeHistory', {
-      created_at: new Date().getTime(),
-      user_addr: currentPerpsAccount?.address || '',
-      trade_type:
-        scope === 'partial'
-          ? isTp
-            ? 'partial position take profit'
-            : 'partial position stop loss'
-          : isTp
-          ? 'position take profit'
-          : 'position stop loss',
-      leverage: position.leverage.toString(),
-      trade_side: getStatsReportSide(position.direction === 'Short', true),
-      margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-      coin: position.coin,
-      size,
-      price: leg.triggerPrice,
-      trade_usd_value: new BigNumber(leg.triggerPrice).times(size).toFixed(2),
-      service_provider: 'hyperliquid',
-      app_version: process.env.release || '0',
-      address_type: currentPerpsAccount?.type || '',
-    });
-  };
-
   const execute = useMemoizedFn(async (command: TpSlCommand) => {
     if (inFlightRef.current) return;
     if (
@@ -268,10 +235,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
             );
           }
         }
-        succeeded
-          .filter((leg) => leg.action === 'create')
-          .forEach((leg) => reportCreate('partial', leg));
-
         if (succeeded.length > 0) {
           if (succeeded.length === legs.length) {
             perpsToast.success({
@@ -323,10 +286,6 @@ const PositionTpSlContent: React.FC<ContentProps> = ({
             slTriggerPx: slCreate?.triggerPrice || '',
           })
         );
-        if (ok) {
-          if (tpCreate) reportCreate('position', tpCreate);
-          if (slCreate) reportCreate('position', slCreate);
-        }
       } else if (ok) {
         perpsToast.success({
           title: t('page.perps.toast.success'),

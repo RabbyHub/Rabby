@@ -12,7 +12,6 @@ import openapiService, {
   BridgeHistory,
 } from './openapi';
 import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
-import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
@@ -1299,22 +1298,6 @@ class TxHistory {
         [key]: target,
       },
     });
-    const chain = findChain({
-      id: +target.chainId,
-    });
-    if (chain) {
-      stats.report('completeTransaction', {
-        chainId: chain.serverId,
-        success,
-        preExecSuccess: target?.explain
-          ? target.explain?.pre_exec.success && target.explain?.calcSuccess
-          : true,
-        createdBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
-        source: target?.$ctx?.ga?.source || '',
-        trigger: target?.$ctx?.ga?.trigger || '',
-        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-      });
-    }
     this.clearBefore({ address, chainId, nonce });
   }
 

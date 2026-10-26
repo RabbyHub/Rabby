@@ -15,8 +15,7 @@ import { PositionFormatData } from '../components/UserInfoHistory/PositionsInfo'
 import { formatTpOrSlPrice, validatePriceInput } from '../../Perps/utils';
 import { PositionSizeInputAndSlider } from '../components/TradingPanel/components/PositionSizeInputAndSlider';
 import { PositionSize } from '../types';
-import stats from '@/stats';
-import { formatPerpsCoin, getStatsReportSide } from '../utils';
+import { formatPerpsCoin } from '../utils';
 import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
 import { ReactComponent as RcIconReverseArrowDown } from '@/ui/assets/perps/icon-reverse-arrow-down.svg';
 import { useOrderConfirm } from './OrderConfirmProvider';
@@ -42,9 +41,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
 
-  const currentPerpsAccount = useRabbySelector(
-    (store) => store.perps.currentPerpsAccount
-  );
   const sizeDisplayUnit = useRabbySelector(
     (store) => store.perps.sizeDisplayUnit
   );
@@ -153,23 +149,8 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         limitPx: price,
         reduceOnly: true,
       });
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type: 'close limit',
-        leverage: position.leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, true),
-        margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-        coin: position.coin,
-        size,
-        price,
-        trade_usd_value: new BigNumber(price).times(size).toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
-      });
     } else if (type === 'market') {
-      const res = await handleCloseWithMarketOrder({
+      await handleCloseWithMarketOrder({
         coin: position.coin,
         dex: marketData.dexId ?? '',
         isBuy,
@@ -177,26 +158,8 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         midPx: marketPrice,
         reduceOnly: true,
       });
-      if (res) {
-        const { totalSz, avgPx } = res;
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: currentPerpsAccount?.address || '',
-          trade_type: 'close market',
-          leverage: position.leverage.toString(),
-          trade_side: getStatsReportSide(isBuy, true),
-          margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-          coin: position.coin,
-          size: totalSz,
-          price: avgPx,
-          trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: currentPerpsAccount?.type || '',
-        });
-      }
     } else if (type === 'reverse') {
-      const res = await handleCloseWithMarketOrder({
+      await handleCloseWithMarketOrder({
         coin: position.coin,
         dex: marketData.dexId ?? '',
         isBuy,
@@ -206,24 +169,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
         midPx: marketPrice,
         reduceOnly: false,
       });
-      if (res) {
-        const { totalSz, avgPx } = res;
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: currentPerpsAccount?.address || '',
-          trade_type: 'reverse market',
-          leverage: position.leverage.toString(),
-          trade_side: getStatsReportSide(isBuy, false),
-          margin_mode: position.type === 'cross' ? 'cross' : 'isolated',
-          coin: position.coin,
-          size: totalSz,
-          price: avgPx,
-          trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: currentPerpsAccount?.type || '',
-        });
-      }
     }
   });
 

@@ -1,6 +1,3 @@
-import stats from '@/stats';
-import { useRbiSource } from '@/ui/utils/ga-event';
-import { useEffect } from 'react';
 import * as Sentry from '@sentry/browser';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import type {
@@ -13,18 +10,6 @@ const CALLDATA_DECODE_REPORT_DEXES = new Set<DEX_ENUM>([
   DEX_ENUM.MAGPIE,
   DEX_ENUM.PANCAKESWAP,
 ]);
-
-export const useSwapStatsReport = () => {
-  const rbiSource = useRbiSource();
-
-  useEffect(() => {
-    if (rbiSource) {
-      stats.report('enterSwapDescPage', {
-        refer: rbiSource,
-      });
-    }
-  }, [rbiSource]);
-};
 
 type SwapSdkVerificationReportParams = Pick<
   VerifySdkParams,

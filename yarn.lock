@@ -1666,13 +1666,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@debank/festats@npm:1.0.1":
-  version: 1.0.1
-  resolution: "@debank/festats@npm:1.0.1"
-  checksum: 10c0/c35cd32e3340401c1f9eb2393661d5a86851db41f5ad2e4d900ff746382622a0b3bb65a6c7fae4fae990ec81fa40381061898912356fe66324d9ab6a739e2cef
-  languageName: node
-  linkType: hard
-
 "@discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -20575,7 +20568,6 @@ __metadata:
     "@bitboxswiss/bitbox-api": "npm:0.1.1"
     "@coinbase/wallet-sdk": "npm:3.8.0-beta.3"
     "@debank/common": "npm:0.3.60"
-    "@debank/festats": "npm:1.0.1"
     "@dnd-kit/core": "npm:5.0.1"
     "@dnd-kit/sortable": "npm:6.0.0"
     "@dnd-kit/utilities": "npm:3.0.2"

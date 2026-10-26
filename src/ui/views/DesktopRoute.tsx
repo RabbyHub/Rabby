@@ -20,12 +20,6 @@ import { useContactBookStore } from '@/ui/state/contactBook';
 import { DesktopSmallSwap } from './DesktopSmallSwap';
 import { DesktopManageApprovals } from './DesktopManageApprovals';
 
-declare global {
-  interface Window {
-    _paq: any;
-  }
-}
-
 const Main = () => {
   const location = useLocation();
   const isPerpsRoute = location.pathname === '/desktop/perps';
