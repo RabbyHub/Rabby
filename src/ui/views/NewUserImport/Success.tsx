@@ -22,6 +22,8 @@ import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useDocumentVisibility, useMemoizedFn, useRequest } from 'ahooks';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/ui/query/queryKey';
 import { GnosisChainList } from './GnosisChainList';
 import {
   AccountItemAddress,
@@ -315,6 +317,20 @@ export const ImportOrCreatedSuccess = () => {
 
   const addMore = !!accounts && accounts?.filter((e) => e.address).length > 1;
 
+  // undefined while loading; false when unknown (e.g. MV2 has no browser.action)
+  const { data: isPinned } = useQuery({
+    queryKey: createQueryKey('actionUserSettings'),
+    queryFn: async () => {
+      if (!browser.action?.getUserSettings) {
+        return false;
+      }
+      return browser.action
+        .getUserSettings()
+        .then((settings) => !!settings.isOnToolbar)
+        .catch(() => false);
+    },
+  });
+
   return (
     <>
       <Card className="flex flex-col pt-[40px]">
@@ -401,44 +417,46 @@ export const ImportOrCreatedSuccess = () => {
           )
         ) : null}
       </Card>
-      <div
-        className={clsx(
-          'fixed top-[40px] right-[90px]',
-          'w-[242px] h-[300px]',
-          'py-12 px-12',
-          'bg-r-neutral-card-1 rounded-[12px]'
-        )}
-      >
-        <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
-        <div className="flex flex-col gap-[11px]">
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step1')}
-              </span>
+      {isPinned === false ? (
+        <div
+          className={clsx(
+            'fixed top-[40px] right-[90px]',
+            'w-[242px] h-[300px]',
+            'py-12 px-12',
+            'bg-r-neutral-card-1 rounded-[12px]'
+          )}
+        >
+          <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
+          <div className="flex flex-col gap-[11px]">
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
+                <span className="text-[12px] font-semibold text-r-neutral-title1">
+                  {t('page.newUserImport.readyToUse.guides.step1')}
+                </span>
+              </div>
+              <img
+                src={UserGuide1}
+                alt="user-guide-1"
+                className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
+              />
             </div>
-            <img
-              src={UserGuide1}
-              alt="user-guide-1"
-              className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step2')}
-              </span>
+            <div className="flex flex-col">
+              <div className="flex items-center">
+                <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
+                <span className="text-[12px] font-semibold text-r-neutral-title1">
+                  {t('page.newUserImport.readyToUse.guides.step2')}
+                </span>
+              </div>
+              <img
+                src={UserGuide2}
+                alt="user-guide-2"
+                className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
+              />
             </div>
-            <img
-              src={UserGuide2}
-              alt="user-guide-2"
-              className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
-            />
           </div>
         </div>
-      </div>
+      ) : null}
     </>
   );
 };
