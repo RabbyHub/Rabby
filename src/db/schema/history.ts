@@ -14,6 +14,9 @@ export interface TxHistoryItemRow
   approve_token?: TokenItem;
   cate_item?: TxHistoryResult['cate_dict'][string];
   is_small_tx?: boolean;
+  // Position of the tx in its block. The history APIs return it, but
+  // TxHistoryItem does not declare it.
+  idx?: number;
 
   _id: string;
   _updated_at: number;
