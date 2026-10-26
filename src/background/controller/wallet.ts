@@ -756,7 +756,6 @@ export class WalletController extends BaseController {
           new Error(
             'postGasStationOrder failed, params: ' +
               JSON.stringify({
-                userAddr: account.address,
                 fromChainId: others.chainServerId,
                 fromTxId: txId,
                 toChainId: toChainId,

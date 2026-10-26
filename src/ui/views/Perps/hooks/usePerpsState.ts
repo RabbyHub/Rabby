@@ -72,7 +72,6 @@ export const usePerpsInitial = () => {
         wallet.createPerpsAgentWallet(currentPerpsAccount?.address);
         console.error('Failed to set builder fee');
         capturePerpsError('set builder fee error, no max builder fee', null, {
-          address: currentPerpsAccount?.address,
           accountType: currentPerpsAccount?.type,
         });
       }
@@ -272,9 +271,7 @@ export const usePerpsState = ({
       if (!res) {
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
         console.error('Failed to set builder fee');
-        capturePerpsError('set builder fee error, no max builder fee', null, {
-          address,
-        });
+        capturePerpsError('set builder fee error, no max builder fee', null);
       }
     } catch (error) {
       console.error('Failed to set builder fee:', error);
@@ -541,9 +538,7 @@ export const usePerpsState = ({
         dispatch.perps.setAccountNeedApproveAgent(true);
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
         capturePerpsError('ensure login approve sign failed', e, {
-          address: account.address,
           accountType: account.type,
-          agentAddress,
         });
       }
     }
@@ -611,7 +606,6 @@ export const usePerpsState = ({
       // todo fixme maybe no need show toast in prod
       message.error('message' in error ? error.message : String(error));
       capturePerpsError('failed to handle action approve status', error, {
-        address: currentPerpsAccount?.address,
         accountType: currentPerpsAccount?.type,
       });
       throw error;
@@ -772,7 +766,6 @@ export const usePerpsState = ({
         content: error.message || 'Login failed',
       });
       capturePerpsError('login failed', error, {
-        address: account.address,
         accountType: account.type,
       });
     }
@@ -873,7 +866,6 @@ export const usePerpsState = ({
           content: error.message || 'Withdraw failed',
         });
         capturePerpsError('withdraw failed', error, {
-          address: currentPerpsAccount?.address,
           accountType: currentPerpsAccount?.type,
           amount,
         });

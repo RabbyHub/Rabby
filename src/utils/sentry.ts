@@ -9,6 +9,78 @@ export const sanitizeSentryBreadcrumbUrl = (value: string) => {
   return withoutQueryOrFragment.replace(/0x[a-f\d]{40,64}/gi, '[redacted]');
 };
 
+// Extension pages route through the hash, so keep the route path but drop
+// the query on both sides of it: routes like /settings/address-detail carry
+// the account in `?address=`.
+export const sanitizeSentryPageUrl = (value: string) => {
+  const hashIndex = value.indexOf('#');
+  if (hashIndex === -1) {
+    return sanitizeSentryBreadcrumbUrl(value);
+  }
+
+  const page = sanitizeSentryBreadcrumbUrl(value.slice(0, hashIndex));
+  const route = sanitizeSentryBreadcrumbUrl(value.slice(hashIndex + 1));
+  return route ? `${page}#${route}` : page;
+};
+
+// Exactly 40 hex digits, so 64-digit tx hashes stay readable. Calldata and
+// signatures embed addresses without a 0x of their own, so longer hex goes too.
+const ADDRESS_PATTERN = /\b0x[a-f\d]{40}\b/giu;
+const LONG_HEX_PATTERN = /\b0x[a-f\d]{65,}\b/giu;
+
+const redactAddressText = (value: string) =>
+  value
+    .replace(LONG_HEX_PATTERN, '[redacted-hex]')
+    .replace(ADDRESS_PATTERN, '[redacted-address]');
+
+const redactAddresses = (
+  value: unknown,
+  copies: Map<object, unknown>
+): unknown => {
+  if (typeof value === 'string') {
+    return redactAddressText(value);
+  }
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+  if (copies.has(value)) {
+    return copies.get(value);
+  }
+
+  if (Array.isArray(value)) {
+    const copy: unknown[] = [];
+    copies.set(value, copy);
+    value.forEach((item) => copy.push(redactAddresses(item, copies)));
+    return copy;
+  }
+
+  const copy: Record<string, unknown> = {};
+  copies.set(value, copy);
+  Object.entries(value).forEach(([key, item]) => {
+    copy[redactAddressText(key)] = redactAddresses(item, copies);
+  });
+  return copy;
+};
+
+/**
+ * Returns a copy of the event with every wallet address replaced, wherever it
+ * sits: message, exception text, extra, tags, breadcrumbs or request.
+ * sdkProcessingMetadata is SDK-internal (never sent, read after beforeSend)
+ * and passes through untouched.
+ */
+export const redactSentryEventAddresses = <
+  T extends { sdkProcessingMetadata?: unknown }
+>(
+  event: T
+): T => {
+  const { sdkProcessingMetadata, ...sent } = event;
+  const redacted = redactAddresses(sent, new Map()) as T;
+  if (sdkProcessingMetadata !== undefined) {
+    redacted.sdkProcessingMetadata = sdkProcessingMetadata;
+  }
+  return redacted;
+};
+
 // Applied in beforeSend only, never as the SDK's own `ignoreErrors`: the SDK
 // filter runs before beforeSend, so it would drop hardware signing failures
 // before the bypass below can keep them. shouldIgnoreSentryError takes the

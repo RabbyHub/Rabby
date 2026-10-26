@@ -158,6 +158,81 @@ describe('Sentry configuration', () => {
     ]);
   });
 
+  test('identifies users by an anonymous id instead of the IP', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    expect(client.getOptions()._metadata?.sdk?.settings?.infer_ip).toBe(
+      'never'
+    );
+
+    scope.captureException(new Error('first failure'));
+    scope.captureException(new Error('second failure'));
+    await client.flush(2000);
+
+    const { sentryUserId } = await chrome.storage.local.get('sentryUserId');
+    expect(sentryUserId).toEqual(expect.any(String));
+    expect(events).toHaveLength(2);
+    events.forEach((event) => {
+      expect(event.user).toEqual({ id: sentryUserId });
+    });
+    await client.close(2000);
+  });
+
+  test('redacts wallet addresses anywhere in the event', async () => {
+    const address = '0x9bba7ebC9c69db92950def377d732b91bb22d02f';
+    const txHash = `0x${'ab'.repeat(32)}`;
+    const calldata = `0xa9059cbb${'0'.repeat(24)}${address.slice(
+      2
+    )}${'0'.repeat(63)}1`;
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.setTag('owner', address);
+    scope.setExtra('payload', {
+      from: address,
+      tx: { data: calldata, hash: txHash },
+      [address]: 'balance',
+    });
+    scope.captureException(new Error(`User or API Wallet ${address} failed`));
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    const sent = JSON.stringify(events[0]);
+    expect(sent.toLowerCase()).not.toContain(address.slice(2).toLowerCase());
+    expect(sent).toContain('[redacted-address]');
+    expect(sent).toContain('[redacted-hex]');
+    expect(events[0].extra.payload.tx.hash).toBe(txHash);
+    await client.close(2000);
+  });
+
+  test('keeps the route but drops queries from the page URL and Referer', async () => {
+    const address = '0x9bba7ebc9c69db92950def377d732b91bb22d02f';
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.captureEvent({
+      message: 'page failure',
+      request: {
+        url: `chrome-extension://abc/index.html#/settings/address-detail?address=${address}`,
+        headers: {
+          Referer: `chrome-extension://abc/popup.html?x=1#/send-token?to=${address}`,
+          'User-Agent': 'test-agent',
+        },
+      },
+    });
+    await client.flush(2000);
+
+    expect(events[0].request).toEqual({
+      url: 'chrome-extension://abc/index.html#/settings/address-detail',
+      headers: {
+        Referer: 'chrome-extension://abc/popup.html#/send-token',
+        'User-Agent': 'test-agent',
+      },
+    });
+    await client.close(2000);
+  });
+
   test('drops sensitive UI breadcrumbs and sanitizes request URLs', () => {
     expect(config.beforeBreadcrumb?.({ category: 'console' })).toBeNull();
     expect(config.beforeBreadcrumb?.({ category: 'ui.click' })).toBeNull();

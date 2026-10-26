@@ -1063,7 +1063,6 @@ export const useDepositWithdraw = (
         content: error.message || 'Withdraw failed',
       });
       capturePerpsError('withdraw failed', error, {
-        address: currentPerpsAccount?.address,
         accountType: currentPerpsAccount?.type,
         amount,
       });
