@@ -2,17 +2,10 @@ import stats from '@/stats';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useEffect } from 'react';
 import * as Sentry from '@sentry/browser';
-import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 import type {
   VerifySdkParams,
   VerifySdkResult,
 } from '@rabby-wallet/rabby-swap';
-
-const CALLDATA_DECODE_REPORT_DEXES = new Set<DEX_ENUM>([
-  DEX_ENUM.UNI,
-  DEX_ENUM.MAGPIE,
-  DEX_ENUM.PANCAKESWAP,
-]);
 
 export const useSwapStatsReport = () => {
   const rbiSource = useRbiSource();
@@ -55,9 +48,6 @@ export const reportSwapSdkVerification = ({
   } else if (!result.spenderPass) {
     category = 'spender';
   } else if (decodeFailure) {
-    // Only report decoders covered by the current validation round. Return here
-    // so an ignored decode failure cannot fall through to a calldata report.
-    if (!CALLDATA_DECODE_REPORT_DEXES.has(dexId)) return;
     category = 'decode';
   } else if (!result.callDataPass) {
     category = 'calldata';

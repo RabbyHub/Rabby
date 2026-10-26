@@ -472,27 +472,9 @@ export const useQuoteMethods = () => {
             chainId: getSwapChainId(chain),
           });
 
-          const {
-            isSdkDataPass,
-            routerPass,
-            spenderPass,
-            callDataPass,
-            receiverPass,
-          } = sdkResult;
-          const skipCalldataValidation =
-            dexId === DEX_ENUM.UNI || dexId === DEX_ENUM.MAGPIE;
-          // Keep contract whitelists enforced; Uni/Magpie calldata and recipient
-          // failures are logged without blocking the quote.
-          const effectiveSdkPass = skipCalldataValidation
-            ? routerPass && spenderPass
-            : isSdkDataPass;
-          if (skipCalldataValidation && (!callDataPass || !receiverPass)) {
-            console.warn(
-              '[swap-calldata-check]',
-              `${dexId} | ${chain}: calldata validation failed (ignored)`,
-              { sdkResult, quote: data }
-            );
-          }
+          // Every DEX parser is covered. A decode miss fails closed in the SDK,
+          // so calldata and receiver results gate the quote for all of them.
+          const effectiveSdkPass = sdkResult.isSdkDataPass;
 
           reportSwapSdkVerification({
             chain,
