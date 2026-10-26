@@ -188,10 +188,12 @@ describe('Sentry configuration', () => {
     const events: any[] = [];
     const { client, scope } = createRecordingClient(events);
 
+    const paddedWord = `0x${'0'.repeat(24)}${address.slice(2)}`;
     scope.setTag('owner', address);
     scope.setExtra('payload', {
       from: address,
       tx: { data: calldata, hash: txHash },
+      topics: [paddedWord],
       [address]: 'balance',
     });
     scope.captureException(new Error(`User or API Wallet ${address} failed`));
@@ -202,7 +204,10 @@ describe('Sentry configuration', () => {
     expect(sent.toLowerCase()).not.toContain(address.slice(2).toLowerCase());
     expect(sent).toContain('[redacted-address]');
     expect(sent).toContain('[redacted-hex]');
-    expect(events[0].extra.payload.tx.hash).toBe(txHash);
+    // A tx hash resolves to its sender on any explorer.
+    expect(sent).not.toContain(txHash.slice(2));
+    expect(events[0].extra.payload.tx.hash).toBe('[redacted-hex]');
+    expect(events[0].extra.payload.topics).toEqual(['[redacted-hex]']);
     await client.close(2000);
   });
 

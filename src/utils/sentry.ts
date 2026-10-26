@@ -23,10 +23,11 @@ export const sanitizeSentryPageUrl = (value: string) => {
   return route ? `${page}#${route}` : page;
 };
 
-// Exactly 40 hex digits, so 64-digit tx hashes stay readable. Calldata and
-// signatures embed addresses without a 0x of their own, so longer hex goes too.
+// Longer hex is redacted too: padded address words (log topics, bytes32,
+// eth_call results) and calldata embed addresses, and a tx hash resolves to
+// its sender on any explorer.
 const ADDRESS_PATTERN = /\b0x[a-f\d]{40}\b/giu;
-const LONG_HEX_PATTERN = /\b0x[a-f\d]{65,}\b/giu;
+const LONG_HEX_PATTERN = /\b0x[a-f\d]{41,}\b/giu;
 
 const redactAddressText = (value: string) =>
   value

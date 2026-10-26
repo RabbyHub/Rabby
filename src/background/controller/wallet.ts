@@ -757,7 +757,6 @@ export class WalletController extends BaseController {
             'postGasStationOrder failed, params: ' +
               JSON.stringify({
                 fromChainId: others.chainServerId,
-                fromTxId: txId,
                 toChainId: toChainId,
                 toTokenAmount,
                 fromTokenId: others.tokenId,
