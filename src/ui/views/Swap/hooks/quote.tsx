@@ -6,7 +6,6 @@ import {
   DEX_ENUM,
   getRouter as getSwapRouter,
   getSpender,
-  verifySdk,
 } from '@rabby-wallet/rabby-swap';
 import { QuoteResult, getQuote } from '@rabby-wallet/rabby-swap/dist/quote';
 import BigNumber from 'bignumber.js';
@@ -22,7 +21,7 @@ import {
   getSwapNativeTokenAddress,
   isSwapWrapToken,
 } from '../utils';
-import { reportSwapSdkVerification } from './swapReport';
+import { verifyAndReportSwapSdk } from './swapReport';
 
 export interface validSlippageParams {
   chain: CHAINS_ENUM;
@@ -453,7 +452,7 @@ export const useQuoteMethods = () => {
 
         let preExecResult;
         if (data) {
-          const sdkResult = verifySdk({
+          const sdkResult = verifyAndReportSwapSdk({
             chain,
             dexId,
             slippage,
@@ -475,14 +474,6 @@ export const useQuoteMethods = () => {
           // Every DEX parser is covered. A decode miss fails closed in the SDK,
           // so calldata and receiver results gate the quote for all of them.
           const effectiveSdkPass = sdkResult.isSdkDataPass;
-
-          reportSwapSdkVerification({
-            chain,
-            dexId,
-            payTokenId: payToken.id,
-            receiveTokenId: receiveToken.id,
-            result: sdkResult,
-          });
 
           if (inSufficient) {
             const quote: TDexQuoteData = {
