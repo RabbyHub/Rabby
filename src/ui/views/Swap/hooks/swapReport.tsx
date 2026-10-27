@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import * as Sentry from '@sentry/browser';
 import type { VerifySdkParams } from '@rabby-wallet/rabby-swap';
 import { verifySdk } from '@rabby-wallet/rabby-swap';
-import sdkPackage from '@rabby-wallet/rabby-swap/package.json';
 import { getSwapVerificationFailures, sdkCheckKeys } from '../sdkVerification';
 import type { SwapVerificationResult } from '../sdkVerification';
 
@@ -78,7 +77,6 @@ const reportSwapSdkVerificationUnsafe = ({
     swap_dex: dexId,
     swap_chain: chain,
     swap_verify_category: category,
-    swap_sdk_version: sdkPackage.version,
     swap_verify_reasons: primaryReasons,
     swap_token_pair: `${payTokenId}/${receiveTokenId}`,
   };
