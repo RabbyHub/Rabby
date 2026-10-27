@@ -119,12 +119,6 @@
       "node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js"
     ]
   },
-  "node_modules/@ant-design/icons/es/components/IconFont.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    }
-  },
   "node_modules/@ant-design/icons/es/components/twoTonePrimaryColor.js": {
     "enable": true,
     "require": [
@@ -5750,39 +5744,6 @@
       "node_modules/@ant-design/icons/node_modules/lodash/toString.js"
     ]
   },
-  "node_modules/@ant-design/react-slick/es/inner-slider.js": {
-    "enable": true,
-    "global": {
-      "addEventListener": "r",
-      "attachEvent": "r",
-      "clearInterval": "r",
-      "clearTimeout": "r",
-      "detachEvent": "r",
-      "document": "r",
-      "event": "r",
-      "ontouchmove": "rw",
-      "removeEventListener": "r",
-      "setInterval": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/@ant-design/react-slick/es/slider.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "matchMedia": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/@ant-design/react-slick/es/utils/innerSliderUtils.js": {
-    "enable": true,
-    "global": {
-      "addEventListener": "r",
-      "attachEvent": "r",
-      "console": "r",
-      "document": "r"
-    }
-  },
   "node_modules/@babel/runtime/helpers/arrayWithoutHoles.js": {
     "enable": true,
     "require": [
@@ -6093,7 +6054,6 @@
       "navigator": "r"
     },
     "require": [
-      "node_modules/@bitboxswiss/bitbox-api/dist/internal/constants.js",
       "node_modules/@bitboxswiss/bitbox-api/dist/internal/hww.js",
       "node_modules/@bitboxswiss/bitbox-api/dist/internal/noise-config.js",
       "node_modules/@bitboxswiss/bitbox-api/dist/internal/transport-bridge.js"
@@ -7253,67 +7213,19 @@
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/index.js": {
     "enable": true,
     "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/AsyncSubject.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/BehaviorSubject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/config.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Notification.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/bindCallback.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/bindNodeCallback.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/combineLatest.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/concat.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/ConnectableObservable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/defer.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/empty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/forkJoin.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/from.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/fromEvent.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/fromEventPattern.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/generate.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/iif.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/interval.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/merge.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/never.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/of.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/onErrorResumeNext.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/pairs.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/partition.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/race.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/range.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/throwError.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/timer.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/using.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/zip.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/groupBy.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/ReplaySubject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduled/scheduled.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Scheduler.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/animationFrame.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/asap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/queue.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/VirtualTimeScheduler.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/symbol/observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/ArgumentOutOfRangeError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/EmptyError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/identity.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isObservable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/noop.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/ObjectUnsubscribedError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/pipe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/TimeoutError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/UnsubscriptionError.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/AsyncSubject.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
+      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/BehaviorSubject.js": {
@@ -7321,13 +7233,6 @@
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/ObjectUnsubscribedError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/InnerSubscriber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
@@ -7357,13 +7262,6 @@
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/config.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/hostReportError.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/ReplaySubject.js": {
@@ -7433,71 +7331,17 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/ConnectableObservable.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/refCount.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/SubscribeOnObservable.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/asap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isNumeric.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/bindCallback.js": {
     "enable": true,
     "global": {
       "console": "r"
-    },
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/AsyncSubject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/canReportError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js"
-    ]
+    }
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/bindNodeCallback.js": {
     "enable": true,
     "global": {
       "console": "r"
-    },
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/AsyncSubject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/canReportError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/combineLatest.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/fromArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/concat.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/of.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatAll.js"
-    ]
+    }
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/defer.js": {
     "enable": true,
@@ -7511,16 +7355,6 @@
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/forkJoin.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/from.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isObject.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/from.js": {
@@ -7539,45 +7373,11 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToArray.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/fromEvent.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isFunction.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/fromEventPattern.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isFunction.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/generate.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/identity.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/iif.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/defer.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/empty.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/interval.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isNumeric.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/merge.js": {
@@ -7589,60 +7389,12 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/never.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/noop.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/of.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/fromArray.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduled/scheduleArray.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/onErrorResumeNext.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/empty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/from.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/pairs.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/partition.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/filter.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/not.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeTo.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/race.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/fromArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/range.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/throwError.js": {
@@ -7660,14 +7412,6 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/using.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/empty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/from.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/zip.js": {
     "enable": true,
     "require": [
@@ -7679,132 +7423,10 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/audit.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/auditTime.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/timer.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/audit.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/buffer.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferCount.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferTime.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferToggle.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferWhen.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/catchError.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/combineAll.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/combineLatest.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/combineLatest.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/combineLatest.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/from.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concat.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/concat.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatAll.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeAll.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatMap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeMap.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatMapTo.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatMap.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/count.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/debounce.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/debounceTime.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
@@ -7818,87 +7440,10 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/delayWhen.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/dematerialize.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/distinct.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/distinctUntilChanged.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/distinctUntilKeyChanged.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/distinctUntilChanged.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/elementAt.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/filter.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/take.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throwIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/ArgumentOutOfRangeError.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/endWith.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/concat.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/of.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/every.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/exhaust.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/exhaustMap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/from.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/expand.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
@@ -7909,105 +7454,11 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/finalize.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/find.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/findIndex.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/find.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/first.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/filter.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/take.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throwIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/EmptyError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/identity.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/groupBy.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/ignoreElements.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/isEmpty.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/last.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/filter.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeLast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throwIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/EmptyError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/identity.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mapTo.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/materialize.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Notification.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/max.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/reduce.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/merge.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/merge.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeAll.js": {
@@ -8026,131 +7477,11 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeMapTo.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeMap.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeScan.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/min.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/reduce.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/multicast.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/ConnectableObservable.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/observeOn.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Notification.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/onErrorResumeNext.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/pairwise.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/partition.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/filter.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/not.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/pluck.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publish.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/multicast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publishBehavior.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/BehaviorSubject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/multicast.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publishLast.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/AsyncSubject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/multicast.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publishReplay.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/multicast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/ReplaySubject.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/race.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/race.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/reduce.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/scan.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeLast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/pipe.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/refCount.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/repeat.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/empty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/repeatWhen.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
@@ -8161,112 +7492,11 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/retryWhen.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/sample.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/sampleTime.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/scan.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/sequenceEqual.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/share.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/multicast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/refCount.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/shareReplay.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/ReplaySubject.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/single.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/EmptyError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skip.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skipLast.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/ArgumentOutOfRangeError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skipUntil.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skipWhile.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/startWith.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/concat.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/subscribeOn.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/SubscribeOnObservable.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchAll.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchMap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/identity.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchMap.js": {
@@ -8278,41 +7508,12 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchMapTo.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchMap.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/take.js": {
     "enable": true,
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/empty.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/ArgumentOutOfRangeError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeLast.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/empty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/ArgumentOutOfRangeError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeUntil.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeWhile.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
     ]
   },
@@ -8323,39 +7524,6 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isFunction.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/noop.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throttle.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throttleTime.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throttle.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throwIfEmpty.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/EmptyError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timeInterval.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/defer.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/scan.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timeout.js": {
@@ -8374,85 +7542,6 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isDate.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timestamp.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/toArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/reduce.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/window.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/innerSubscribe.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowCount.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowTime.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isNumeric.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isScheduler.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowToggle.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subscription.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowWhen.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Subject.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/withLatestFrom.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/OuterSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/zip.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/zip.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/zipAll.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/observable/zip.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduled/scheduleArray.js": {
@@ -8510,33 +7599,7 @@
     "global": {
       "cancelAnimationFrame": "r",
       "requestAnimationFrame": "r"
-    },
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncAction.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AnimationFrameScheduler.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncScheduler.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsapAction.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncAction.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/Immediate.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsapScheduler.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncScheduler.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
+    }
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncAction.js": {
     "enable": true,
@@ -8568,28 +7631,6 @@
     "require": [
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncScheduler.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/VirtualTimeScheduler.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncAction.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsyncScheduler.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/tslib/tslib.es6.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/animationFrame.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AnimationFrameAction.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AnimationFrameScheduler.js"
-    ]
-  },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/asap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsapAction.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/AsapScheduler.js"
     ]
   },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/scheduler/async.js": {
@@ -8636,12 +7677,6 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isArray.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/isObservable.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/pipe.js": {
     "enable": true,
     "require": [
@@ -8680,14 +7715,6 @@
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/hostReportError.js"
     ]
   },
-  "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeToResult.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/InnerSubscriber.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/Observable.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/subscribeTo.js"
-    ]
-  },
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/util/toSubscriber.js": {
     "enable": true,
     "require": [
@@ -8699,109 +7726,19 @@
   "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/operators/index.js": {
     "enable": true,
     "require": [
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/audit.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/auditTime.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/buffer.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferCount.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferTime.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferToggle.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/bufferWhen.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/catchError.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/combineAll.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/combineLatest.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concat.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatAll.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatMap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/concatMapTo.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/count.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/debounce.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/debounceTime.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/defaultIfEmpty.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/delay.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/delayWhen.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/dematerialize.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/distinct.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/distinctUntilChanged.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/distinctUntilKeyChanged.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/elementAt.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/endWith.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/every.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/exhaust.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/exhaustMap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/expand.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/filter.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/finalize.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/find.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/findIndex.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/first.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/groupBy.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/ignoreElements.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/isEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/last.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/map.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mapTo.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/materialize.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/max.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/merge.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeAll.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeMap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeMapTo.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/mergeScan.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/min.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/multicast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/observeOn.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/onErrorResumeNext.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/pairwise.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/partition.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/pluck.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publish.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publishBehavior.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publishLast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/publishReplay.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/race.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/reduce.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/refCount.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/repeat.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/repeatWhen.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/retry.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/retryWhen.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/sample.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/sampleTime.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/scan.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/sequenceEqual.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/share.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/shareReplay.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/single.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skip.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skipLast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skipUntil.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/skipWhile.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/startWith.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/subscribeOn.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchAll.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchMap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/switchMapTo.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/take.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeLast.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeUntil.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/takeWhile.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/tap.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throttle.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throttleTime.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/throwIfEmpty.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timeInterval.js",
       "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timeout.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timeoutWith.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timestamp.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/toArray.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/window.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowCount.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowTime.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowToggle.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/windowWhen.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/withLatestFrom.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/zip.js",
-      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/zipAll.js"
+      "node_modules/@coinbase/wallet-sdk/node_modules/rxjs/_esm5/internal/operators/timeoutWith.js"
     ]
   },
   "node_modules/@ctrl/tinycolor/dist/module/conversion.js": {
@@ -11765,7 +10702,6 @@
       "node_modules/@ethereumjs/tx/dist/esm/capabilities/eip2718.js",
       "node_modules/@ethereumjs/tx/dist/esm/capabilities/eip2930.js",
       "node_modules/@ethereumjs/tx/dist/esm/capabilities/legacy.js",
-      "node_modules/@ethereumjs/tx/dist/esm/constants.js",
       "node_modules/@ethereumjs/tx/dist/esm/types.js",
       "node_modules/@ethereumjs/tx/dist/esm/util.js",
       "node_modules/@ethereumjs/util/dist/esm/index.js"
@@ -12353,6 +11289,7 @@
     "require": [
       "node_modules/@ethersproject/abstract-provider/lib.esm/_version.js",
       "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
+      "node_modules/@ethersproject/bytes/lib.esm/index.js",
       "node_modules/@ethersproject/logger/lib.esm/index.js",
       "node_modules/@ethersproject/properties/lib.esm/index.js"
     ]
@@ -12444,8 +11381,7 @@
     "require": [
       "node_modules/@ethersproject/constants/lib.esm/addresses.js",
       "node_modules/@ethersproject/constants/lib.esm/bignumbers.js",
-      "node_modules/@ethersproject/constants/lib.esm/hashes.js",
-      "node_modules/@ethersproject/constants/lib.esm/strings.js"
+      "node_modules/@ethersproject/constants/lib.esm/hashes.js"
     ]
   },
   "node_modules/@ethersproject/contracts/lib.esm/index.js": {
@@ -12766,7 +11702,6 @@
       "node_modules/@ethersproject/providers/lib.esm/fallback-provider.js",
       "node_modules/@ethersproject/providers/lib.esm/formatter.js",
       "node_modules/@ethersproject/providers/lib.esm/infura-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/ipc-provider.js",
       "node_modules/@ethersproject/providers/lib.esm/json-rpc-batch-provider.js",
       "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js",
       "node_modules/@ethersproject/providers/lib.esm/nodesmith-provider.js",
@@ -16028,7 +14963,6 @@
       "node_modules/@ledgerhq/context-module/lib/esm/src/modules/multichain/pki/model/KeyId.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/modules/multichain/pki/model/KeyUsage.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/model/ClearSignContext.js",
-      "node_modules/@ledgerhq/context-module/lib/esm/src/shared/model/SignatureTags.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/network/di/networkTypes.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/utils/HexStringUtils.js",
       "node_modules/@ledgerhq/context-module/node_modules/inversify/lib/esm/index.js",
@@ -16128,7 +15062,6 @@
     "enable": true,
     "require": [
       "node_modules/@ledgerhq/context-module/lib/esm/src/config/di/configTypes.js",
-      "node_modules/@ledgerhq/context-module/lib/esm/src/shared/model/SignatureTags.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/network/di/networkTypes.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/utils/HexStringUtils.js",
       "node_modules/@ledgerhq/context-module/node_modules/inversify/lib/esm/index.js",
@@ -16450,7 +15383,6 @@
     "enable": true,
     "require": [
       "node_modules/@ledgerhq/context-module/lib/esm/src/config/di/configTypes.js",
-      "node_modules/@ledgerhq/context-module/lib/esm/src/shared/model/SignatureTags.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/network/di/networkTypes.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/utils/HexStringUtils.js",
       "node_modules/@ledgerhq/context-module/lib/esm/src/shared/utils/KeyUsageMapper.js",
@@ -16998,7 +15930,6 @@
   "node_modules/@ledgerhq/context-module/node_modules/ethers/lib.esm/utils/errors.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/context-module/node_modules/ethers/lib.esm/_version.js",
       "node_modules/@ledgerhq/context-module/node_modules/ethers/lib.esm/utils/properties.js"
     ]
   },
@@ -17104,12 +16035,6 @@
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ByteArrayParser.js"
     ]
   },
-  "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/AppBuilderError.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js"
-    ]
-  },
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ByteArrayBuilder.js": {
     "enable": true,
     "global": {
@@ -17144,9 +16069,9 @@
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/BackupStorageCommand.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/model/CommandResult.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js"
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js",
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/Error.js"
     ]
   },
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/CloseAppCommand.js": {
@@ -17161,9 +16086,9 @@
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/DeleteLanguagePackCommand.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/model/CommandResult.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js"
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js",
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/Error.js"
     ]
   },
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetAppAndVersionCommand.js": {
@@ -17180,23 +16105,22 @@
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetAppStorageInfoCommand.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/model/CommandResult.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js"
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js",
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/Error.js"
     ]
   },
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetBackgroundImageSizeCommand.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/model/CommandResult.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js"
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js",
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/Error.js"
     ]
   },
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetBatteryStatusCommand.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/model/CommandResult.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js"
     ]
@@ -17218,17 +16142,17 @@
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/ListAppsCommand.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/model/CommandResult.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js"
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js",
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/Error.js"
     ]
   },
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/ListLanguagePackCommand.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/model/CommandResult.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js"
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/utils/GlobalCommandError.js",
+      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/Error.js"
     ]
   },
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/LoadCertificateCommand.js": {
@@ -17319,7 +16243,6 @@
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetAppAndVersionCommand.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/GetOsVersionCommand.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/model/UserInteractionRequired.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/Const.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/Errors.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/GetDeviceStatus/types.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/xstate-utils/XStateDeviceAction.js",
@@ -17351,7 +16274,6 @@
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/GoToDashboard/types.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/xstate-utils/XStateDeviceAction.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/DeviceSessionState.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/utils/AppName.js",
       "node_modules/purify-ts/esm/index.js"
     ]
   },
@@ -17413,7 +16335,6 @@
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/CloseAppCommand.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/os/OpenAppCommand.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/model/UserInteractionRequired.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/Const.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/GetDeviceStatus/GetDeviceStatusDeviceAction.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/OpenAppDeviceAction/types.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/xstate-utils/XStateDeviceAction.js",
@@ -17457,7 +16378,6 @@
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/model/UserInteractionRequired.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/os/WaitForAppAndVersion/types.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-action/xstate-utils/XStateDeviceAction.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/utils/AppName.js",
       "node_modules/purify-ts/esm/index.js"
     ]
   },
@@ -17572,7 +16492,6 @@
     "require": [
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ApduParser.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/AppBuilderError.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ByteArrayBuilder.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/apdu/utils/ByteArrayParser.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/command/Errors.js",
@@ -17926,8 +16845,6 @@
     "require": [
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device/DeviceModel.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/index.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/data/ApduResponseConst.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/data/DeviceSessionRefresherConst.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/DeviceSessionEventDispatcher.js"
     ]
   },
@@ -17963,7 +16880,6 @@
     "enable": true,
     "require": [
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device/DeviceModel.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/data/DeviceSessionRefresherConst.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/DeviceSessionEventDispatcher.js",
       "node_modules/rxjs/dist/esm5/internal/observable/timer.js",
       "node_modules/rxjs/dist/esm5/internal/operators/distinctUntilChanged.js",
@@ -17997,9 +16913,7 @@
     "enable": true,
     "require": [
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/ApduResponse.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/data/FramerConst.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/utils/FramerUtils.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/data/ApduResponseConst.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/Errors.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/Frame.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/FrameHeader.js",
@@ -18012,7 +16926,6 @@
   "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/service/DefaultApduSenderService.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/data/FramerConst.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/api/device-session/utils/FramerUtils.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/Errors.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/device-session/model/Frame.js",
@@ -18208,7 +17121,6 @@
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/manager-api/data/ManagerApiDto.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/manager-api/di/managerApiTypes.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/manager-api/model/Application.js",
-      "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/manager-api/model/Const.js",
       "node_modules/@ledgerhq/device-management-kit/lib/esm/src/internal/manager-api/model/Errors.js",
       "node_modules/@ledgerhq/device-management-kit/node_modules/inversify/lib/esm/index.js",
       "node_modules/purify-ts/esm/index.js"
@@ -19034,7 +17946,6 @@
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/ParseTransactionTask.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/ProvideTransactionContextsTask.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/SendSignTransactionTask.js",
-      "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/shared/EthAppVersions.js",
       "node_modules/purify-ts/esm/index.js",
       "node_modules/xstate/actors/dist/xstate-actors.esm.js",
       "node_modules/xstate/dist/log-3d9d72a9.esm.js",
@@ -19057,7 +17968,6 @@
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/BuildEIP712ContextTask.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/ProvideEIP712ContextTask.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/SignTypedDataLegacyTask.js",
-      "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/shared/EthAppVersions.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/shared/utils/normalizeChainId.js",
       "node_modules/purify-ts/esm/index.js",
       "node_modules/xstate/actors/dist/xstate-actors.esm.js",
@@ -19102,8 +18012,7 @@
       "node_modules/@ledgerhq/device-management-kit/lib/esm/index.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/api/model/ClearSigningType.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/command/GetChallengeCommand.js",
-      "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/EthereumApplicationResolver.js",
-      "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/shared/EthAppVersions.js"
+      "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/EthereumApplicationResolver.js"
     ]
   },
   "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/BuildEIP712ContextTask.js": {
@@ -19115,7 +18024,6 @@
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/command/GetChallengeCommand.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/EthereumApplicationResolver.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/app-binder/task/BuildFullContextsTask.js",
-      "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/shared/EthAppVersions.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/lib/esm/internal/typed-data/model/Types.js",
       "node_modules/purify-ts/esm/index.js"
     ]
@@ -19730,7 +18638,6 @@
   "node_modules/@ledgerhq/device-signer-kit-ethereum/node_modules/ethers/lib.esm/utils/errors.js": {
     "enable": true,
     "require": [
-      "node_modules/@ledgerhq/device-signer-kit-ethereum/node_modules/ethers/lib.esm/_version.js",
       "node_modules/@ledgerhq/device-signer-kit-ethereum/node_modules/ethers/lib.esm/utils/properties.js"
     ]
   },
@@ -19829,7 +18736,6 @@
     },
     "require": [
       "node_modules/@ledgerhq/device-management-kit/lib/esm/index.js",
-      "node_modules/@ledgerhq/device-transport-kit-web-hid/lib/esm/api/data/WebHidConfig.js",
       "node_modules/@ledgerhq/device-transport-kit-web-hid/lib/esm/api/model/Errors.js",
       "node_modules/@sentry/minimal/esm/index.js",
       "node_modules/purify-ts/esm/index.js"
@@ -19844,7 +18750,6 @@
     },
     "require": [
       "node_modules/@ledgerhq/device-management-kit/lib/esm/index.js",
-      "node_modules/@ledgerhq/device-transport-kit-web-hid/lib/esm/api/data/WebHidConfig.js",
       "node_modules/@ledgerhq/device-transport-kit-web-hid/lib/esm/api/model/Errors.js",
       "node_modules/@ledgerhq/device-transport-kit-web-hid/lib/esm/api/transport/WebHidApduSender.js",
       "node_modules/@ledgerhq/device-transport-kit-web-hid/node_modules/uuid/dist/esm-browser/v4.js",
@@ -23574,14 +22479,6 @@
       "node_modules/@noble/hashes/esm/utils.js"
     ]
   },
-  "node_modules/@noble/curves/esm/abstract/hash-to-curve.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/esm/abstract/modular.js",
-      "node_modules/@noble/curves/esm/utils.js",
-      "node_modules/@noble/hashes/esm/utils.js"
-    ]
-  },
   "node_modules/@noble/curves/esm/abstract/modular.js": {
     "enable": true,
     "require": [
@@ -23612,7 +22509,6 @@
     "require": [
       "node_modules/@noble/curves/esm/abstract/curve.js",
       "node_modules/@noble/curves/esm/abstract/edwards.js",
-      "node_modules/@noble/curves/esm/abstract/hash-to-curve.js",
       "node_modules/@noble/curves/esm/abstract/modular.js",
       "node_modules/@noble/curves/esm/abstract/montgomery.js",
       "node_modules/@noble/curves/esm/utils.js",
@@ -23624,9 +22520,7 @@
     "enable": true,
     "require": [
       "node_modules/@noble/curves/esm/_shortw_utils.js",
-      "node_modules/@noble/curves/esm/abstract/hash-to-curve.js",
       "node_modules/@noble/curves/esm/abstract/modular.js",
-      "node_modules/@noble/curves/esm/abstract/weierstrass.js",
       "node_modules/@noble/hashes/esm/sha2.js"
     ]
   },
@@ -23725,6 +22619,12 @@
       "crypto": "r"
     }
   },
+  "node_modules/@noble/hashes/esm/_blake.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@noble/hashes/esm/utils.js"
+    ]
+  },
   "node_modules/@noble/hashes/esm/_md.js": {
     "enable": true,
     "require": [
@@ -23735,6 +22635,7 @@
     "enable": true,
     "require": [
       "node_modules/@noble/hashes/esm/_blake.js",
+      "node_modules/@noble/hashes/esm/_md.js",
       "node_modules/@noble/hashes/esm/_u64.js",
       "node_modules/@noble/hashes/esm/utils.js"
     ]
@@ -30789,12 +29690,6 @@
       "console": "r"
     }
   },
-  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/ethers/node_modules/@ethersproject/strings/node_modules/bn.js/lib/bn.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    }
-  },
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/ethers/node_modules/@ethersproject/transactions/lib.esm/index.js": {
     "enable": true,
     "global": {
@@ -30843,12 +29738,6 @@
     "enable": true,
     "global": {
       "console": "r"
-    }
-  },
-  "node_modules/@rabby-wallet/gnosis-sdk/node_modules/ethers/node_modules/@ethersproject/web/node_modules/bn.js/lib/bn.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
     }
   },
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/ethers/node_modules/@ethersproject/wordlists/node_modules/@ethersproject/base64/lib.esm/base64.js": {
@@ -39762,24 +38651,6 @@
       "node_modules/buffer/index.js"
     ]
   },
-  "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/CachedKeyDecoder.mjs": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/utils/utf8.mjs"
-    ]
-  },
-  "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/Decoder.mjs": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/CachedKeyDecoder.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/DecodeError.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/ExtensionCodec.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/utils/int.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/utils/prettyByte.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/utils/typedArrays.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/utils/utf8.mjs"
-    ]
-  },
   "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/Encoder.mjs": {
     "enable": true,
     "require": [
@@ -39796,19 +38667,6 @@
       "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/timestamp.mjs"
     ]
   },
-  "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/decode.mjs": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/Decoder.mjs"
-    ]
-  },
-  "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/decodeAsync.mjs": {
-    "enable": true,
-    "require": [
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/Decoder.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/utils/stream.mjs"
-    ]
-  },
   "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/encode.mjs": {
     "enable": true,
     "require": [
@@ -39818,15 +38676,7 @@
   "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/index.mjs": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/decode.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/decodeAsync.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/DecodeError.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/Decoder.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/encode.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/Encoder.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/ExtData.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/ExtensionCodec.mjs",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/timestamp.mjs"
+      "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/encode.mjs"
     ]
   },
   "node_modules/@rabby-wallet/hyperliquid-sdk/node_modules/@msgpack/msgpack/dist.esm/timestamp.mjs": {
@@ -40299,7 +39149,6 @@
       "process": "r"
     },
     "require": [
-      "node_modules/@rabby-wallet/rabby-api/dist/const.js",
       "node_modules/@rabby-wallet/rabby-api/dist/utils.js",
       "node_modules/@rabby-wallet/rabby-api/node_modules/lodash/lodash.js",
       "node_modules/axios-rate-limit/src/index.js",
@@ -41162,7 +40011,6 @@
   "node_modules/@rabby-wallet/staking-sdk/dist/core/read/erc20.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/staking-sdk/dist/core/abi/erc20.js",
       "node_modules/@rabby-wallet/staking-sdk/dist/core/utils/address.js"
     ]
   },
@@ -41200,7 +40048,6 @@
     "enable": true,
     "require": [
       "node_modules/@rabby-wallet/staking-sdk/dist/addresses/index.js",
-      "node_modules/@rabby-wallet/staking-sdk/dist/core/abi/erc20.js",
       "node_modules/@rabby-wallet/staking-sdk/dist/core/abi/erc4626.js",
       "node_modules/@rabby-wallet/staking-sdk/dist/core/abi/univ2.js",
       "node_modules/@rabby-wallet/staking-sdk/dist/core/abi/univ3.js",
@@ -41484,7 +40331,6 @@
       "console": "r"
     },
     "require": [
-      "node_modules/@rabby-wallet/wc-utils/dist/esm/constants.js",
       "node_modules/@walletconnect/encoding/dist/esm/index.js",
       "node_modules/@walletconnect/jsonrpc-utils/dist/esm/index.js"
     ]
@@ -41629,14 +40475,18 @@
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/constants/address.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/constants/number.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/constants/unit.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/base.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/abi/decodeAbiParameters.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/abi/encodeAbiParameters.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/abi/encodeFunctionData.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/abi/encodePacked.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/address/getAddress.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/address/getContractAddress.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/address/isAddress.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/chain/defineChain.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/concat.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/isHex.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/pad.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/encoding/fromBytes.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/encoding/fromHex.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/encoding/toBytes.js",
@@ -41644,6 +40494,7 @@
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/hash/keccak256.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/signature/hashMessage.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/signature/hashTypedData.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/signature/recoverAddress.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/typedData.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/abitype/dist/esm/human-readable/parseAbi.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/abitype/dist/esm/human-readable/parseAbiParameters.js",
@@ -41658,13 +40509,6 @@
     "require": [
       "node_modules/abitype/dist/esm/narrow.js"
     ]
-  },
-  "node_modules/@safe-global/api-kit/node_modules/isows/_esm/utils.js": {
-    "enable": true,
-    "global": {
-      "WebSocket": "r",
-      "global": "r"
-    }
   },
   "node_modules/@safe-global/api-kit/node_modules/semver/classes/comparator.js": {
     "enable": true,
@@ -47794,16 +46638,9 @@
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/base.js"
     ]
   },
-  "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/base.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/version.js"
-    ]
-  },
   "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/blob.js": {
     "enable": true,
     "require": [
-      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/constants/kzg.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/base.js"
     ]
   },
@@ -48203,6 +47040,18 @@
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/abi/getAbiItem.js"
     ]
   },
+  "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/abi/encodePacked.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/abi.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/address.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/address/isAddress.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/concat.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/pad.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/encoding/toHex.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/regex.js"
+    ]
+  },
   "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/abi/formatAbiItem.js": {
     "enable": true,
     "require": [
@@ -48253,6 +47102,19 @@
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/encoding/toBytes.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/hash/keccak256.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/lru.js"
+    ]
+  },
+  "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/address/getContractAddress.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/address/getAddress.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/concat.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/isBytes.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/pad.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/slice.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/encoding/toBytes.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/encoding/toRlp.js",
+      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/hash/keccak256.js"
     ]
   },
   "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/address/isAddress.js": {
@@ -48339,7 +47201,6 @@
   "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/blob/toBlobs.js": {
     "enable": true,
     "require": [
-      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/constants/blob.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/blob.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/cursor.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/data/size.js",
@@ -48727,15 +47588,6 @@
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/stringify.js"
     ]
   },
-  "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/rpc/socket.js": {
-    "enable": true,
-    "global": {
-      "clearInterval": "r",
-      "console": "r",
-      "setInterval": "r",
-      "setTimeout": "r"
-    }
-  },
   "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/signature/hashMessage.js": {
     "enable": true,
     "require": [
@@ -48817,7 +47669,6 @@
   "node_modules/@safe-global/api-kit/node_modules/viem/_esm/utils/transaction/assertTransaction.js": {
     "enable": true,
     "require": [
-      "node_modules/@safe-global/api-kit/node_modules/viem/_esm/constants/kzg.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/constants/number.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/address.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/_esm/errors/base.js",
@@ -48992,13 +47843,6 @@
       "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/utils.js"
     ]
   },
-  "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/hash-to-curve.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js",
-      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/utils.js"
-    ]
-  },
   "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js": {
     "enable": true,
     "require": [
@@ -49024,18 +47868,8 @@
     "enable": true,
     "require": [
       "node_modules/@noble/hashes/esm/sha2.js",
-      "node_modules/@noble/hashes/esm/utils.js",
       "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/_shortw_utils.js",
-      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/hash-to-curve.js",
-      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js",
-      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/utils.js",
-      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/weierstrass.js"
-    ]
-  },
-  "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/abitype/dist/esm/errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/abitype/dist/esm/version.js"
+      "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js"
     ]
   },
   "node_modules/@safe-global/api-kit/node_modules/viem/node_modules/abitype/dist/esm/human-readable/errors/abiItem.js": {
@@ -59417,7 +58251,6 @@
       "node_modules/@sentry/core/build/esm/utils/browser.js",
       "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
       "node_modules/@sentry/core/build/esm/utils/is.js",
-      "node_modules/@sentry/core/build/esm/utils/stacktrace.js",
       "node_modules/@sentry/core/build/esm/utils/url.js"
     ]
   },
@@ -59635,7 +58468,6 @@
       "node_modules/@sentry/core/build/esm/tracing/dynamicSamplingContext.js",
       "node_modules/@sentry/core/build/esm/tracing/spans/beforeSendSpan.js",
       "node_modules/@sentry/core/build/esm/tracing/spans/extractGenAiSpans.js",
-      "node_modules/@sentry/core/build/esm/transports/base.js",
       "node_modules/@sentry/core/build/esm/utils/clientreport.js",
       "node_modules/@sentry/core/build/esm/utils/data-collection/resolveDataCollectionOptions.js",
       "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
@@ -59806,31 +58638,6 @@
       "node_modules/@sentry/core/build/esm/utils/object.js"
     ]
   },
-  "node_modules/@sentry/core/build/esm/integrations/http/get-request-url.js": {
-    "enable": true,
-    "global": {
-      "URL": "r"
-    }
-  },
-  "node_modules/@sentry/core/build/esm/integrations/http/patch-request-to-capture-body.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    }
-  },
-  "node_modules/@sentry/core/build/esm/integrations/http/record-request-session.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/@sentry/core/build/esm/integrations/http/server-subscription.js": {
-    "enable": true,
-    "global": {
-      "__SENTRY_TRACING__": "r"
-    }
-  },
   "node_modules/@sentry/core/build/esm/logs/envelope.js": {
     "enable": true,
     "require": [
@@ -59970,12 +58777,6 @@
       "node_modules/@sentry/core/build/esm/utils/is.js"
     ]
   },
-  "node_modules/@sentry/core/build/esm/utils/anr.js": {
-    "enable": true,
-    "global": {
-      "setInterval": "r"
-    }
-  },
   "node_modules/@sentry/core/build/esm/utils/baggage.js": {
     "enable": false
   },
@@ -60000,12 +58801,6 @@
     "require": [
       "node_modules/@sentry/core/build/esm/utils/data-collection/filtering-snippets.js"
     ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/data-collection/filterQueryParams.js": {
-    "enable": true,
-    "global": {
-      "URLSearchParams": "r"
-    }
   },
   "node_modules/@sentry/core/build/esm/utils/data-collection/resolveDataCollectionOptions.js": {
     "enable": true,
@@ -60069,12 +58864,6 @@
     "require": [
       "node_modules/@sentry/core/build/esm/utils/is.js"
     ]
-  },
-  "node_modules/@sentry/core/build/esm/utils/flushIfServerless.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/@sentry/core/build/esm/utils/hasSpansEnabled.js": {
     "enable": false,
@@ -60179,15 +58968,6 @@
       "node_modules/@sentry/core/build/esm/utils/randomSafeContext.js"
     ]
   },
-  "node_modules/@sentry/core/build/esm/utils/request.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "TextEncoder": "r",
-      "URL": "r",
-      "setTimeout": "r"
-    }
-  },
   "node_modules/@sentry/core/build/esm/utils/scopeData.js": {
     "enable": true,
     "require": [
@@ -60225,7 +59005,6 @@
     },
     "require": [
       "node_modules/@sentry/core/build/esm/semanticAttributes.js",
-      "node_modules/@sentry/core/build/esm/tracing/spanstatus.js",
       "node_modules/@sentry/core/build/esm/tracing/utils.js",
       "node_modules/@sentry/core/build/esm/utils/debug-logger.js",
       "node_modules/@sentry/core/build/esm/utils/propagationContext.js",
@@ -60275,23 +59054,10 @@
       "node_modules/@sentry/core/build/esm/semanticAttributes.js"
     ]
   },
-  "node_modules/@sentry/core/build/esm/utils/tunnel.js": {
-    "enable": true,
-    "global": {
-      "Response": "r",
-      "fetch": "r"
-    }
-  },
   "node_modules/@sentry/core/build/esm/utils/url.js": {
     "enable": true,
     "global": {
       "URL": "r"
-    }
-  },
-  "node_modules/@sentry/core/build/esm/utils/vercelWaitUntil.js": {
-    "enable": true,
-    "global": {
-      "EdgeRuntime": "r"
     }
   },
   "node_modules/@sentry/core/build/esm/utils/weakRef.js": {
@@ -60357,13 +59123,6 @@
       "node_modules/@sentry/utils/esm/time.js"
     ]
   },
-  "node_modules/@sentry/hub/esm/sessionflusher.js": {
-    "enable": true,
-    "global": {
-      "clearInterval": "r",
-      "setInterval": "r"
-    }
-  },
   "node_modules/@sentry/minimal/esm/index.js": {
     "enable": true,
     "require": [
@@ -60401,13 +59160,6 @@
     "require": [
       "node_modules/@sentry/core/build/esm/utils/is.js"
     ]
-  },
-  "node_modules/@sentry/react/build/esm/reactrouter-compat-utils/instrumentation.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/@sentry/react/build/esm/sdk.js": {
     "enable": true,
@@ -63779,7 +62531,10 @@
     "enable": true,
     "require": [
       "node_modules/@uniswap/router-sdk/dist/esm/src/entities/mixedRoute/route.js",
-      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/protocol.js"
+      "node_modules/@uniswap/router-sdk/dist/esm/src/entities/protocol.js",
+      "node_modules/@uniswap/v2-sdk/dist/esm/src/entities/route.js",
+      "node_modules/@uniswap/v3-sdk/dist/esm/src/entities/route.js",
+      "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/route.js"
     ]
   },
   "node_modules/@uniswap/router-sdk/dist/esm/src/utils/encodeMixedRouteToPath.js": {
@@ -64509,7 +63264,8 @@
   "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js": {
     "enable": true,
     "require": [
-      "node_modules/@ethersproject/constants/lib.esm/index.js",
+      "node_modules/@ethersproject/constants/lib.esm/addresses.js",
+      "node_modules/@ethersproject/constants/lib.esm/bignumbers.js",
       "node_modules/@uniswap/v3-sdk/dist/esm/src/utils/encodeSqrtRatioX96.js",
       "node_modules/jsbi/dist/jsbi-umd.js"
     ]
@@ -64584,7 +63340,6 @@
     "enable": true,
     "require": [
       "node_modules/@uniswap/v4-sdk/dist/esm/src/entities/pool.js",
-      "node_modules/@uniswap/v4-sdk/dist/esm/src/internalConstants.js",
       "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/currencyMap.js",
       "node_modules/@uniswap/v4-sdk/dist/esm/src/utils/v4Planner.js"
     ]
@@ -64643,7 +63398,6 @@
       "node_modules/@walletconnect/crypto/dist/esm/browser/aes.js",
       "node_modules/@walletconnect/crypto/dist/esm/browser/hmac.js",
       "node_modules/@walletconnect/crypto/dist/esm/browser/sha2.js",
-      "node_modules/@walletconnect/crypto/dist/esm/constants/index.js",
       "node_modules/@walletconnect/crypto/dist/esm/helpers/index.js",
       "node_modules/@walletconnect/randombytes/dist/esm/browser/index.js"
     ]
@@ -64652,19 +63406,6 @@
     "enable": true,
     "require": [
       "node_modules/@walletconnect/crypto/dist/esm/lib/browser.js"
-    ]
-  },
-  "node_modules/@walletconnect/crypto/dist/esm/constants/default.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@walletconnect/crypto/dist/esm/constants/length.js"
-    ]
-  },
-  "node_modules/@walletconnect/crypto/dist/esm/constants/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@walletconnect/crypto/dist/esm/constants/default.js",
-      "node_modules/@walletconnect/crypto/dist/esm/constants/operations.js"
     ]
   },
   "node_modules/@walletconnect/crypto/dist/esm/helpers/env.js": {
@@ -64676,14 +63417,14 @@
   "node_modules/@walletconnect/crypto/dist/esm/helpers/index.js": {
     "enable": true,
     "require": [
-      "node_modules/@walletconnect/crypto/dist/esm/helpers/env.js",
-      "node_modules/@walletconnect/crypto/dist/esm/helpers/pkcs7.js"
+      "node_modules/@walletconnect/crypto/dist/esm/helpers/env.js"
     ]
   },
   "node_modules/@walletconnect/crypto/dist/esm/lib/browser.js": {
     "enable": true,
     "require": [
-      "node_modules/@walletconnect/crypto/dist/esm/constants/index.js",
+      "node_modules/@walletconnect/crypto/dist/esm/constants/default.js",
+      "node_modules/@walletconnect/crypto/dist/esm/constants/operations.js",
       "node_modules/@walletconnect/environment/dist/cjs/index.js"
     ]
   },
@@ -64764,7 +63505,6 @@
   "node_modules/@walletconnect/jsonrpc-utils/dist/esm/index.js": {
     "enable": true,
     "require": [
-      "node_modules/@walletconnect/jsonrpc-utils/dist/esm/constants.js",
       "node_modules/@walletconnect/jsonrpc-utils/dist/esm/env.js",
       "node_modules/@walletconnect/jsonrpc-utils/dist/esm/error.js",
       "node_modules/@walletconnect/jsonrpc-utils/dist/esm/format.js",
@@ -64984,19 +63724,6 @@
       "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/PublicKey.js"
     ]
   },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/AesGcm.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
-  },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Base64.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "TextEncoder": "r"
-    }
-  },
   "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Bytes.js": {
     "enable": true,
     "global": {
@@ -65044,12 +63771,6 @@
       "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Json.js"
     ]
   },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Keystore.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
-  },
   "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/PublicKey.js": {
     "enable": true,
     "require": [
@@ -65058,13 +63779,6 @@
       "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Hex.js",
       "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Json.js"
     ]
-  },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/RpcTransport.js": {
-    "enable": true,
-    "global": {
-      "Request": "r",
-      "fetch": "r"
-    }
   },
   "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Secp256k1.js": {
     "enable": true,
@@ -65079,22 +63793,9 @@
     "enable": true,
     "require": [
       "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Errors.js",
-      "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Hex.js"
+      "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Hex.js",
+      "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Json.js"
     ]
-  },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/WebAuthnP256.js": {
-    "enable": true,
-    "global": {
-      "document": "r",
-      "location": "r",
-      "navigator": "r"
-    }
-  },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/WebCryptoP256.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
   },
   "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/internal/bytes.js": {
     "enable": true,
@@ -65102,31 +63803,11 @@
       "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Bytes.js"
     ]
   },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/internal/errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/version.js"
-    ]
-  },
   "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/internal/hex.js": {
     "enable": true,
     "require": [
       "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/Hex.js"
     ]
-  },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/internal/promise.js": {
-    "enable": true,
-    "global": {
-      "AbortController": "r",
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/@walletconnect/utils/node_modules/ox/_esm/core/internal/webauthn.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
   },
   "node_modules/@walletconnect/utils/node_modules/ox/node_modules/@noble/curves/esm/_shortw_utils.js": {
     "enable": true,
@@ -65184,12 +63865,6 @@
     "require": [
       "node_modules/@walletconnect/window-getters/dist/cjs/index.js"
     ]
-  },
-  "node_modules/@xobotyi/scrollbar-width/dist/index.esm.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    }
   },
   "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js": {
     "enable": true,
@@ -66315,12 +64990,6 @@
       "node_modules/abitype/dist/cjs/regex.js"
     ]
   },
-  "node_modules/abitype/dist/esm/errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/abitype/dist/esm/version.js"
-    ]
-  },
   "node_modules/abitype/dist/esm/human-readable/errors/abiItem.js": {
     "enable": true,
     "require": [
@@ -67349,20 +66018,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/antd/es/affix/index.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "process": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/antd/es/affix/utils.js": {
-    "enable": true,
-    "global": {
-      "innerHeight": "r"
-    }
-  },
   "node_modules/antd/es/alert/ErrorBoundary.js": {
     "enable": true,
     "require": [
@@ -67399,24 +66054,6 @@
       "node_modules/rc-motion/es/index.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/antd/es/anchor/Anchor.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    }
-  },
-  "node_modules/antd/es/auto-complete/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/avatar/avatar.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/antd/es/back-top/index.js": {
     "enable": true,
@@ -67495,18 +66132,6 @@
       "node_modules/antd/es/_util/colors.js"
     ]
   },
-  "node_modules/antd/es/breadcrumb/Breadcrumb.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/breadcrumb/BreadcrumbItem.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
   "node_modules/antd/es/button/LoadingIcon.js": {
     "enable": true,
     "require": [
@@ -67565,12 +66190,6 @@
     "require": [
       "node_modules/antd/es/date-picker/locale/en_US.js"
     ]
-  },
-  "node_modules/antd/es/cascader/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/antd/es/checkbox/Checkbox.js": {
     "enable": true,
@@ -67683,18 +66302,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/antd/es/date-picker/generatePicker/generateRangePicker.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/date-picker/generatePicker/generateSinglePicker.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
   "node_modules/antd/es/date-picker/locale/en_US.js": {
     "enable": true,
     "require": [
@@ -67702,18 +66309,6 @@
       "node_modules/antd/es/time-picker/locale/en_US.js",
       "node_modules/rc-picker/es/locale/en_US.js"
     ]
-  },
-  "node_modules/antd/es/descriptions/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/divider/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/antd/es/drawer/index.js": {
     "enable": true,
@@ -68328,12 +66923,6 @@
       "node_modules/antd/es/locale/default.js"
     ]
   },
-  "node_modules/antd/es/mentions/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
   "node_modules/antd/es/menu/MenuContext.js": {
     "enable": true,
     "require": [
@@ -68645,18 +67234,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/antd/es/progress/progress.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/progress/utils.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
   "node_modules/antd/es/radio/context.js": {
     "enable": true,
     "require": [
@@ -68714,24 +67291,6 @@
       "node_modules/antd/es/radio/radio.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/antd/es/rate/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/result/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/segmented/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/antd/es/select/index.js": {
     "enable": true,
@@ -68952,19 +67511,6 @@
       "node_modules/rc-util/es/omit.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/antd/es/statistic/Countdown.js": {
-    "enable": true,
-    "global": {
-      "clearInterval": "r",
-      "setInterval": "r"
-    }
-  },
-  "node_modules/antd/es/steps/useLegacyItems.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/antd/es/switch/index.js": {
     "enable": true,
@@ -69198,18 +67744,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/antd/es/tag/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/time-picker/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
   "node_modules/antd/es/tooltip/index.js": {
     "enable": true,
     "global": {
@@ -69229,24 +67763,6 @@
       "node_modules/rc-util/es/hooks/useMergedState.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/antd/es/transfer/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/transfer/list.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r"
-    }
-  },
-  "node_modules/antd/es/tree-select/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/antd/es/tree/DirectoryTree.js": {
     "enable": true,
@@ -69320,92 +67836,6 @@
       "node_modules/classnames/index.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/antd/es/typography/Base/Ellipsis.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/typography/Base/EllipsisTooltip.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/typography/Base/index.js": {
-    "enable": true,
-    "global": {
-      "IntersectionObserver": "r",
-      "clearTimeout": "r",
-      "getComputedStyle": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/antd/es/typography/Link.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/typography/Text.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/typography/Title.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/typography/Typography.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/upload/Dragger.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/upload/Upload.js": {
-    "enable": true,
-    "global": {
-      "Blob": "r",
-      "File": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/upload/UploadList/ListItem.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/antd/es/upload/UploadList/index.js": {
-    "enable": true,
-    "global": {
-      "Blob": "r",
-      "File": "r",
-      "FileReader": "r",
-      "document": "r",
-      "open": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/antd/es/upload/utils.js": {
-    "enable": true,
-    "global": {
-      "FileReader": "r",
-      "Image": "r",
-      "URL": "r",
-      "document": "r"
-    }
   },
   "node_modules/antd/lib/_util/ActionButton.js": {
     "enable": true,
@@ -70861,6 +69291,18 @@
       "node_modules/util/util.js"
     ]
   },
+  "node_modules/async-function/require.mjs": {
+    "enable": true,
+    "require": [
+      "node_modules/async-function/index.js"
+    ]
+  },
+  "node_modules/async-generator-function/require.mjs": {
+    "enable": true,
+    "require": [
+      "node_modules/async-generator-function/index.js"
+    ]
+  },
   "node_modules/async-mutex/lib/Mutex.js": {
     "enable": true,
     "require": [
@@ -72136,14 +70578,6 @@
       "node_modules/d3-interpolate/src/number.js"
     ]
   },
-  "node_modules/d3-interpolate/src/transform/parse.js": {
-    "enable": true,
-    "global": {
-      "DOMMatrix": "r",
-      "WebKitCSSMatrix": "r",
-      "document": "r"
-    }
-  },
   "node_modules/d3-interpolate/src/value.js": {
     "enable": true,
     "require": [
@@ -72442,25 +70876,7 @@
     "require": [
       "node_modules/d3-shape/src/constant.js",
       "node_modules/d3-shape/src/path.js",
-      "node_modules/d3-shape/src/symbol/asterisk.js",
-      "node_modules/d3-shape/src/symbol/circle.js",
-      "node_modules/d3-shape/src/symbol/cross.js",
-      "node_modules/d3-shape/src/symbol/diamond.js",
-      "node_modules/d3-shape/src/symbol/diamond2.js",
-      "node_modules/d3-shape/src/symbol/plus.js",
-      "node_modules/d3-shape/src/symbol/square.js",
-      "node_modules/d3-shape/src/symbol/square2.js",
-      "node_modules/d3-shape/src/symbol/star.js",
-      "node_modules/d3-shape/src/symbol/times.js",
-      "node_modules/d3-shape/src/symbol/triangle.js",
-      "node_modules/d3-shape/src/symbol/triangle2.js",
-      "node_modules/d3-shape/src/symbol/wye.js"
-    ]
-  },
-  "node_modules/d3-shape/src/symbol/asterisk.js": {
-    "enable": true,
-    "require": [
-      "node_modules/d3-shape/src/math.js"
+      "node_modules/d3-shape/src/symbol/circle.js"
     ]
   },
   "node_modules/d3-shape/src/symbol/circle.js": {
@@ -72481,25 +70897,7 @@
       "node_modules/d3-shape/src/math.js"
     ]
   },
-  "node_modules/d3-shape/src/symbol/diamond2.js": {
-    "enable": true,
-    "require": [
-      "node_modules/d3-shape/src/math.js"
-    ]
-  },
-  "node_modules/d3-shape/src/symbol/plus.js": {
-    "enable": true,
-    "require": [
-      "node_modules/d3-shape/src/math.js"
-    ]
-  },
   "node_modules/d3-shape/src/symbol/square.js": {
-    "enable": true,
-    "require": [
-      "node_modules/d3-shape/src/math.js"
-    ]
-  },
-  "node_modules/d3-shape/src/symbol/square2.js": {
     "enable": true,
     "require": [
       "node_modules/d3-shape/src/math.js"
@@ -72511,19 +70909,7 @@
       "node_modules/d3-shape/src/math.js"
     ]
   },
-  "node_modules/d3-shape/src/symbol/times.js": {
-    "enable": true,
-    "require": [
-      "node_modules/d3-shape/src/math.js"
-    ]
-  },
   "node_modules/d3-shape/src/symbol/triangle.js": {
-    "enable": true,
-    "require": [
-      "node_modules/d3-shape/src/math.js"
-    ]
-  },
-  "node_modules/d3-shape/src/symbol/triangle2.js": {
     "enable": true,
     "require": [
       "node_modules/d3-shape/src/math.js"
@@ -72572,7 +70958,6 @@
   "node_modules/d3-time/src/minute.js": {
     "enable": true,
     "require": [
-      "node_modules/d3-time/src/duration.js",
       "node_modules/d3-time/src/interval.js"
     ]
   },
@@ -72585,7 +70970,6 @@
   "node_modules/d3-time/src/second.js": {
     "enable": true,
     "require": [
-      "node_modules/d3-time/src/duration.js",
       "node_modules/d3-time/src/interval.js"
     ]
   },
@@ -73037,57 +71421,6 @@
       "node_modules/minimalistic-assert/index.js",
       "node_modules/minimalistic-crypto-utils/lib/utils.js"
     ]
-  },
-  "node_modules/es-toolkit/dist/compat/function/defer.mjs": {
-    "enable": true,
-    "global": {
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/es-toolkit/dist/compat/function/delay.mjs": {
-    "enable": true,
-    "global": {
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/es-toolkit/dist/compat/object/mergeWith.mjs": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    }
-  },
-  "node_modules/es-toolkit/dist/compat/predicate/isEmpty.mjs": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    }
-  },
-  "node_modules/es-toolkit/dist/function/debounce.mjs": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/es-toolkit/dist/object/clone.mjs": {
-    "enable": true,
-    "global": {
-      "File": "r"
-    }
-  },
-  "node_modules/es-toolkit/dist/object/cloneDeepWith.mjs": {
-    "enable": true,
-    "global": {
-      "Blob": "r",
-      "Buffer": "r",
-      "File": "r"
-    }
-  },
-  "node_modules/es-toolkit/dist/predicate/isBuffer.mjs": {
-    "enable": true,
-    "global": {
-      "Buffer": "r"
-    }
   },
   "node_modules/es-toolkit/dist/predicate/isEqual.mjs": {
     "enable": true,
@@ -74516,19 +72849,7 @@
       "_ethers": "rw"
     },
     "require": [
-      "node_modules/@ethersproject/abstract-signer/lib.esm/index.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/fixednumber.js",
-      "node_modules/@ethersproject/constants/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/index.js",
-      "node_modules/@ethersproject/wallet/lib.esm/index.js",
-      "node_modules/@ethersproject/wordlists/lib.esm/wordlist.js",
-      "node_modules/@ethersproject/wordlists/lib.esm/wordlists.js",
-      "node_modules/ethers/lib.esm/_version.js",
-      "node_modules/ethers/lib.esm/ethers.js",
-      "node_modules/ethers/lib.esm/utils.js",
-      "node_modules/ethers/node_modules/@ethersproject/contracts/lib.esm/index.js"
+      "node_modules/ethers/lib.esm/ethers.js"
     ]
   },
   "node_modules/ethers/lib.esm/utils.js": {
@@ -74708,14 +73029,20 @@
       "node_modules/function-bind/implementation.js"
     ]
   },
+  "node_modules/generator-function/require.mjs": {
+    "enable": true,
+    "require": [
+      "node_modules/generator-function/index.js"
+    ]
+  },
   "node_modules/get-intrinsic/index.js": {
     "enable": true,
     "global": {
       "eval": "r"
     },
     "require": [
-      "node_modules/async-function/index.js",
-      "node_modules/async-generator-function/index.js",
+      "node_modules/async-function/require.mjs",
+      "node_modules/async-generator-function/require.mjs",
       "node_modules/call-bind-apply-helpers/functionApply.js",
       "node_modules/call-bind-apply-helpers/functionCall.js",
       "node_modules/es-define-property/index.js",
@@ -74728,7 +73055,7 @@
       "node_modules/es-errors/uri.js",
       "node_modules/es-object-atoms/index.js",
       "node_modules/function-bind/index.js",
-      "node_modules/generator-function/index.js",
+      "node_modules/generator-function/require.mjs",
       "node_modules/get-proto/index.js",
       "node_modules/get-proto/Object.getPrototypeOf.js",
       "node_modules/get-proto/Reflect.getPrototypeOf.js",
@@ -77256,7 +75583,7 @@
     "enable": true,
     "require": [
       "node_modules/call-bound/index.js",
-      "node_modules/generator-function/index.js",
+      "node_modules/generator-function/require.mjs",
       "node_modules/get-proto/index.js",
       "node_modules/has-tostringtag/shams.js",
       "node_modules/safe-regex-test/index.js"
@@ -80492,12 +78819,6 @@
       "node_modules/ox/_esm/core/Errors.js"
     ]
   },
-  "node_modules/ox/_esm/core/internal/errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ox/_esm/core/version.js"
-    ]
-  },
   "node_modules/ox/_esm/core/internal/hex.js": {
     "enable": true,
     "require": [
@@ -80616,22 +78937,6 @@
       "node_modules/ox/_esm/tempo/TempoAddress.js",
       "node_modules/ox/_esm/tempo/TokenId.js"
     ]
-  },
-  "node_modules/ox/_esm/tempo/VirtualMaster.js": {
-    "enable": true,
-    "global": {
-      "navigator": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/ox/_esm/tempo/internal/virtualMasterPool.js": {
-    "enable": true,
-    "global": {
-      "Blob": "r",
-      "URL": "r",
-      "Worker": "r",
-      "process": "r"
-    }
   },
   "node_modules/ox/_esm/webauthn/Authentication.js": {
     "enable": true,
@@ -81433,7 +79738,6 @@
   "node_modules/purify-ts/esm/List.js": {
     "enable": true,
     "require": [
-      "node_modules/purify-ts/esm/Function.js",
       "node_modules/purify-ts/esm/Maybe.js",
       "node_modules/purify-ts/esm/Tuple.js"
     ]
@@ -81463,7 +79767,6 @@
       "node_modules/purify-ts/esm/Codec.js",
       "node_modules/purify-ts/esm/Either.js",
       "node_modules/purify-ts/esm/EitherAsync.js",
-      "node_modules/purify-ts/esm/Function.js",
       "node_modules/purify-ts/esm/List.js",
       "node_modules/purify-ts/esm/Maybe.js",
       "node_modules/purify-ts/esm/MaybeAsync.js",
@@ -81601,18 +79904,6 @@
       "node_modules/rc-util/es/Dom/contains.js",
       "node_modules/resize-observer-polyfill/dist/ResizeObserver.es.js"
     ]
-  },
-  "node_modules/rc-cascader/es/Cascader.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/rc-cascader/es/hooks/useSearchConfig.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/rc-checkbox/es/index.js": {
     "enable": true,
@@ -82182,14 +80473,6 @@
       "node_modules/rc-input/es/BaseInput.js",
       "node_modules/rc-input/es/Input.js"
     ]
-  },
-  "node_modules/rc-mentions/es/Mentions.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "process": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/rc-menu/es/Divider.js": {
     "enable": true,
@@ -82814,68 +81097,6 @@
       "node_modules/rc-pagination/es/Pagination.js"
     ]
   },
-  "node_modules/rc-picker/es/Picker.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/rc-picker/es/PickerPanel.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/rc-picker/es/RangePicker.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "process": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/rc-picker/es/hooks/useHoverValue.js": {
-    "enable": true,
-    "global": {
-      "cancelAnimationFrame": "r",
-      "requestAnimationFrame": "r"
-    }
-  },
-  "node_modules/rc-picker/es/hooks/usePickerInput.js": {
-    "enable": true,
-    "global": {
-      "document": "r",
-      "requestAnimationFrame": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/rc-picker/es/utils/uiUtil.js": {
-    "enable": true,
-    "global": {
-      "addEventListener": "r",
-      "cancelAnimationFrame": "r",
-      "removeEventListener": "r",
-      "requestAnimationFrame": "r"
-    }
-  },
-  "node_modules/rc-progress/es/Circle.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/rc-progress/es/Line.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/rc-progress/es/hooks/useId.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
   "node_modules/rc-resize-observer/es/Collection.js": {
     "enable": true,
     "require": [
@@ -82931,18 +81152,6 @@
     "require": [
       "node_modules/resize-observer-polyfill/dist/ResizeObserver.es.js"
     ]
-  },
-  "node_modules/rc-segmented/es/MotionThumb.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/rc-segmented/es/index.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
   },
   "node_modules/rc-select/es/BaseSelect.js": {
     "enable": true,
@@ -84035,18 +82244,6 @@
       "node_modules/rc-tooltip/es/Tooltip.js"
     ]
   },
-  "node_modules/rc-tree-select/es/TreeSelect.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/rc-tree-select/es/hooks/useDataEntities.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
   "node_modules/rc-tree/es/DropIndicator.js": {
     "enable": true,
     "require": [
@@ -84311,20 +82508,6 @@
     "require": [
       "node_modules/@babel/runtime/helpers/esm/objectSpread2.js"
     ]
-  },
-  "node_modules/rc-upload/es/AjaxUploader.js": {
-    "enable": true,
-    "global": {
-      "File": "r"
-    }
-  },
-  "node_modules/rc-upload/es/request.js": {
-    "enable": true,
-    "global": {
-      "Blob": "r",
-      "FormData": "r",
-      "XMLHttpRequest": "r"
-    }
   },
   "node_modules/rc-util/es/Children/toArray.js": {
     "enable": true,
@@ -84998,7 +83181,6 @@
     "require": [
       "node_modules/react-i18next/dist/es/defaults.js",
       "node_modules/react-i18next/dist/es/i18nInstance.js",
-      "node_modules/react-i18next/dist/es/initReactI18next.js",
       "node_modules/react/index.js"
     ]
   },
@@ -85012,7 +83194,6 @@
     "enable": true,
     "require": [
       "node_modules/react-i18next/dist/es/context.js",
-      "node_modules/react-i18next/dist/es/defaults.js",
       "node_modules/react-i18next/dist/es/I18nextProvider.js",
       "node_modules/react-i18next/dist/es/initReactI18next.js",
       "node_modules/react-i18next/dist/es/Trans.js",
@@ -85058,7 +83239,6 @@
     "require": [
       "node_modules/react-i18next/dist/es/context.js",
       "node_modules/react-i18next/dist/es/useSSR.js",
-      "node_modules/react-i18next/dist/es/utils.js",
       "node_modules/react/index.js"
     ]
   },
@@ -85066,7 +83246,6 @@
     "enable": true,
     "require": [
       "node_modules/react-i18next/dist/es/useTranslation.js",
-      "node_modules/react-i18next/dist/es/utils.js",
       "node_modules/react/index.js"
     ]
   },
@@ -85434,31 +83613,6 @@
       "node_modules/prop-types/index.js"
     ]
   },
-  "node_modules/react-universal-interface/lib/createEnhancer.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/react-universal-interface/lib/render.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/react-universal-interface/lib/wrapInStatefulComponent.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    }
-  },
-  "node_modules/react-use/esm/factory/createBreakpoint.js": {
-    "enable": true,
-    "global": {
-      "innerWidth": "r"
-    }
-  },
   "node_modules/react-use/esm/factory/createGlobalState.js": {
     "enable": true,
     "require": [
@@ -85467,13 +83621,6 @@
       "node_modules/react-use/esm/useIsomorphicLayoutEffect.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/factory/createHTMLMediaHook.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
   },
   "node_modules/react-use/esm/misc/util.js": {
     "enable": true,
@@ -85508,12 +83655,6 @@
       "node_modules/tslib/tslib.es6.mjs"
     ]
   },
-  "node_modules/react-use/esm/useBattery.js": {
-    "enable": true,
-    "global": {
-      "navigator": "r"
-    }
-  },
   "node_modules/react-use/esm/useClickAway.js": {
     "enable": true,
     "global": {
@@ -85523,19 +83664,6 @@
       "node_modules/react-use/esm/misc/util.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useCopyToClipboard.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/react-use/esm/useCounter.js": {
-    "enable": true,
-    "global": {
-      "console": "r"
-    }
   },
   "node_modules/react-use/esm/useCss.js": {
     "enable": true,
@@ -85548,13 +83676,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/react-use/esm/useCustomCompareEffect.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
-  },
   "node_modules/react-use/esm/useDebounce.js": {
     "enable": true,
     "require": [
@@ -85562,70 +83683,11 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/react-use/esm/useDeepCompareEffect.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/react-use/esm/useDrop.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    }
-  },
   "node_modules/react-use/esm/useEffectOnce.js": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useFavicon.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    }
-  },
-  "node_modules/react-use/esm/useGeolocation.js": {
-    "enable": true,
-    "global": {
-      "navigator": "r"
-    }
-  },
-  "node_modules/react-use/esm/useGetSetState.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/react-use/esm/useHash.js": {
-    "enable": true,
-    "global": {
-      "location": "r"
-    }
-  },
-  "node_modules/react-use/esm/useHoverDirty.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/react-use/esm/useIdle.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "document": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/react-use/esm/useIntersection.js": {
-    "enable": true,
-    "global": {
-      "IntersectionObserver": "r"
-    }
   },
   "node_modules/react-use/esm/useInterval.js": {
     "enable": true,
@@ -85644,48 +83706,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/react-use/esm/useLocalStorage.js": {
-    "enable": true,
-    "global": {
-      "localStorage": "r"
-    }
-  },
-  "node_modules/react-use/esm/useLocation.js": {
-    "enable": true,
-    "global": {
-      "Event": "r",
-      "dispatchEvent": "r",
-      "history": "r",
-      "location": "r"
-    }
-  },
-  "node_modules/react-use/esm/useLockBodyScroll.js": {
-    "enable": true,
-    "global": {
-      "document": "r",
-      "event": "r",
-      "navigator": "r"
-    }
-  },
-  "node_modules/react-use/esm/useLogger.js": {
-    "enable": true,
-    "global": {
-      "console": "r"
-    }
-  },
-  "node_modules/react-use/esm/useLongPress.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/react-use/esm/useMeasure.js": {
-    "enable": true,
-    "global": {
-      "ResizeObserver": "r"
-    }
-  },
   "node_modules/react-use/esm/useMedia.js": {
     "enable": true,
     "global": {
@@ -85695,12 +83715,6 @@
       "node_modules/react-use/esm/misc/util.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useMediaDevices.js": {
-    "enable": true,
-    "global": {
-      "navigator": "r"
-    }
   },
   "node_modules/react-use/esm/useMount.js": {
     "enable": true,
@@ -85714,63 +83728,11 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/react-use/esm/useMouse.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "document": "r",
-      "pageXOffset": "r",
-      "pageYOffset": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/react-use/esm/useNetworkState.js": {
-    "enable": true,
-    "global": {
-      "navigator": "r"
-    }
-  },
-  "node_modules/react-use/esm/useOrientation.js": {
-    "enable": true,
-    "global": {
-      "orientation": "r",
-      "screen": "r"
-    }
-  },
-  "node_modules/react-use/esm/usePageLeave.js": {
-    "enable": true,
-    "global": {
-      "document": "r",
-      "event": "r"
-    }
-  },
-  "node_modules/react-use/esm/usePermission.js": {
-    "enable": true,
-    "global": {
-      "navigator": "r"
-    }
-  },
   "node_modules/react-use/esm/usePrevious.js": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useRaf.js": {
-    "enable": true,
-    "global": {
-      "cancelAnimationFrame": "r",
-      "clearTimeout": "r",
-      "requestAnimationFrame": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/react-use/esm/useRafLoop.js": {
-    "enable": true,
-    "global": {
-      "cancelAnimationFrame": "r",
-      "requestAnimationFrame": "r"
-    }
   },
   "node_modules/react-use/esm/useRafState.js": {
     "enable": true,
@@ -85782,15 +83744,6 @@
       "node_modules/react-use/esm/useUnmount.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useScratch.js": {
-    "enable": true,
-    "global": {
-      "cancelAnimationFrame": "r",
-      "requestAnimationFrame": "r",
-      "scrollX": "r",
-      "scrollY": "r"
-    }
   },
   "node_modules/react-use/esm/useScroll.js": {
     "enable": true,
@@ -85804,86 +83757,11 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/react-use/esm/useScrollbarWidth.js": {
-    "enable": true,
-    "global": {
-      "cancelAnimationFrame": "r",
-      "requestAnimationFrame": "r"
-    }
-  },
-  "node_modules/react-use/esm/useScrolling.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/react-use/esm/useSearchParam.js": {
-    "enable": true,
-    "global": {
-      "URLSearchParams": "r",
-      "location": "r"
-    }
-  },
-  "node_modules/react-use/esm/useSessionStorage.js": {
-    "enable": true,
-    "global": {
-      "sessionStorage": "r"
-    }
-  },
   "node_modules/react-use/esm/useSetState.js": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useShallowCompareEffect.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/react-use/esm/useSize.js": {
-    "enable": true,
-    "global": {
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/react-use/esm/useSlider.js": {
-    "enable": true,
-    "global": {
-      "cancelAnimationFrame": "r",
-      "document": "r",
-      "requestAnimationFrame": "r"
-    }
-  },
-  "node_modules/react-use/esm/useSpeech.js": {
-    "enable": true,
-    "global": {
-      "SpeechSynthesisUtterance": "r",
-      "speechSynthesis": "r"
-    }
-  },
-  "node_modules/react-use/esm/useStartTyping.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    }
-  },
-  "node_modules/react-use/esm/useThrottle.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
-  },
-  "node_modules/react-use/esm/useThrottleFn.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/react-use/esm/useTimeoutFn.js": {
     "enable": true,
@@ -85895,24 +83773,11 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/react-use/esm/useTitle.js": {
-    "enable": true,
-    "global": {
-      "document": "r"
-    }
-  },
   "node_modules/react-use/esm/useToggle.js": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useTween.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "process": "r"
-    }
   },
   "node_modules/react-use/esm/useUnmount.js": {
     "enable": true,
@@ -85920,34 +83785,6 @@
       "node_modules/react-use/esm/useEffectOnce.js",
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/esm/useUnmountPromise.js": {
-    "enable": true,
-    "global": {
-      "console": "r"
-    }
-  },
-  "node_modules/react-use/esm/useVibrate.js": {
-    "enable": true,
-    "global": {
-      "clearInterval": "r",
-      "navigator": "r",
-      "setInterval": "r"
-    }
-  },
-  "node_modules/react-use/esm/useWindowScroll.js": {
-    "enable": true,
-    "global": {
-      "pageXOffset": "r",
-      "pageYOffset": "r"
-    }
-  },
-  "node_modules/react-use/esm/useWindowSize.js": {
-    "enable": true,
-    "global": {
-      "innerHeight": "r",
-      "innerWidth": "r"
-    }
   },
   "node_modules/react-use/lib/useAsync.js": {
     "enable": true,
@@ -85970,13 +83807,6 @@
     "require": [
       "node_modules/react/index.js"
     ]
-  },
-  "node_modules/react-use/node_modules/throttle-debounce/esm/index.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/react-virtuoso/dist/index.mjs": {
     "enable": true,
@@ -88303,13 +86133,6 @@
       "node_modules/tslib/tslib.es6.mjs"
     ]
   },
-  "node_modules/rxjs/dist/esm5/internal/scheduler/animationFrameProvider.js": {
-    "enable": true,
-    "global": {
-      "cancelAnimationFrame": "r",
-      "requestAnimationFrame": "r"
-    }
-  },
   "node_modules/rxjs/dist/esm5/internal/scheduler/async.js": {
     "enable": true,
     "require": [
@@ -88326,12 +86149,6 @@
     "require": [
       "node_modules/tslib/tslib.es6.mjs"
     ]
-  },
-  "node_modules/rxjs/dist/esm5/internal/scheduler/performanceTimestampProvider.js": {
-    "enable": true,
-    "global": {
-      "performance": "r"
-    }
   },
   "node_modules/rxjs/dist/esm5/internal/scheduler/timeoutProvider.js": {
     "enable": true,
@@ -88634,13 +86451,6 @@
       "node_modules/gopd/index.js",
       "node_modules/has-property-descriptors/index.js"
     ]
-  },
-  "node_modules/set-harmonic-interval/lib/index.esm.js": {
-    "enable": true,
-    "global": {
-      "clearInterval": "r",
-      "setInterval": "r"
-    }
   },
   "node_modules/sha.js/hash.js": {
     "enable": true,
@@ -89120,13 +86930,6 @@
       "node_modules/react/index.js",
       "node_modules/shallowequal/index.js"
     ]
-  },
-  "node_modules/throttle-debounce/esm/index.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/through2/through2.js": {
     "enable": true,
@@ -92595,16 +90398,9 @@
       "node_modules/viem/_esm/errors/base.js"
     ]
   },
-  "node_modules/viem/_esm/errors/base.js": {
-    "enable": true,
-    "require": [
-      "node_modules/viem/_esm/errors/version.js"
-    ]
-  },
   "node_modules/viem/_esm/errors/blob.js": {
     "enable": true,
     "require": [
-      "node_modules/viem/_esm/constants/kzg.js",
       "node_modules/viem/_esm/errors/base.js"
     ]
   },
@@ -93208,18 +91004,6 @@
       "node_modules/viem/node_modules/ox/_esm/tempo/TxEnvelopeTempo.js"
     ]
   },
-  "node_modules/viem/_esm/tempo/internal/concurrent.js": {
-    "enable": true,
-    "global": {
-      "queueMicrotask": "r"
-    }
-  },
-  "node_modules/viem/_esm/tempo/internal/utils.js": {
-    "enable": true,
-    "global": {
-      "structuredClone": "r"
-    }
-  },
   "node_modules/viem/_esm/utils/abi/decodeAbiParameters.js": {
     "enable": true,
     "require": [
@@ -93475,7 +91259,6 @@
   "node_modules/viem/_esm/utils/blob/toBlobs.js": {
     "enable": true,
     "require": [
-      "node_modules/viem/_esm/constants/blob.js",
       "node_modules/viem/_esm/errors/blob.js",
       "node_modules/viem/_esm/utils/cursor.js",
       "node_modules/viem/_esm/utils/data/size.js",
@@ -93886,15 +91669,6 @@
       "node_modules/viem/_esm/utils/stringify.js"
     ]
   },
-  "node_modules/viem/_esm/utils/rpc/socket.js": {
-    "enable": true,
-    "global": {
-      "clearInterval": "r",
-      "console": "r",
-      "setInterval": "r",
-      "setTimeout": "r"
-    }
-  },
   "node_modules/viem/_esm/utils/signature/hashMessage.js": {
     "enable": true,
     "require": [
@@ -93976,7 +91750,6 @@
   "node_modules/viem/_esm/utils/transaction/assertTransaction.js": {
     "enable": true,
     "require": [
-      "node_modules/viem/_esm/constants/kzg.js",
       "node_modules/viem/_esm/constants/number.js",
       "node_modules/viem/_esm/errors/address.js",
       "node_modules/viem/_esm/errors/base.js",
@@ -94157,13 +91930,6 @@
       "node_modules/viem/node_modules/@noble/curves/esm/abstract/utils.js"
     ]
   },
-  "node_modules/viem/node_modules/@noble/curves/esm/abstract/hash-to-curve.js": {
-    "enable": true,
-    "require": [
-      "node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js",
-      "node_modules/viem/node_modules/@noble/curves/esm/abstract/utils.js"
-    ]
-  },
   "node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js": {
     "enable": true,
     "require": [
@@ -94189,12 +91955,8 @@
     "enable": true,
     "require": [
       "node_modules/@noble/hashes/esm/sha2.js",
-      "node_modules/@noble/hashes/esm/utils.js",
       "node_modules/viem/node_modules/@noble/curves/esm/_shortw_utils.js",
-      "node_modules/viem/node_modules/@noble/curves/esm/abstract/hash-to-curve.js",
-      "node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js",
-      "node_modules/viem/node_modules/@noble/curves/esm/abstract/utils.js",
-      "node_modules/viem/node_modules/@noble/curves/esm/abstract/weierstrass.js"
+      "node_modules/viem/node_modules/@noble/curves/esm/abstract/modular.js"
     ]
   },
   "node_modules/viem/node_modules/@noble/curves/nist.js": {
@@ -94377,12 +92139,6 @@
       "node_modules/viem/node_modules/abitype/dist/cjs/human-readable/runtime/cache.js",
       "node_modules/viem/node_modules/abitype/dist/cjs/human-readable/runtime/signatures.js",
       "node_modules/viem/node_modules/abitype/dist/cjs/regex.js"
-    ]
-  },
-  "node_modules/viem/node_modules/abitype/dist/esm/errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/viem/node_modules/abitype/dist/esm/version.js"
     ]
   },
   "node_modules/viem/node_modules/abitype/dist/esm/human-readable/errors/abiItem.js": {
@@ -95070,12 +92826,6 @@
       "node_modules/viem/node_modules/ox/_esm/core/PublicKey.js"
     ]
   },
-  "node_modules/viem/node_modules/ox/_esm/core/AesGcm.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
-  },
   "node_modules/viem/node_modules/ox/_esm/core/Authorization.js": {
     "enable": true,
     "require": [
@@ -95151,12 +92901,6 @@
       "node_modules/viem/node_modules/ox/_esm/core/Json.js"
     ]
   },
-  "node_modules/viem/node_modules/ox/_esm/core/Keystore.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
-  },
   "node_modules/viem/node_modules/ox/_esm/core/PublicKey.js": {
     "enable": true,
     "require": [
@@ -95174,13 +92918,6 @@
       "node_modules/viem/node_modules/ox/_esm/core/Hex.js",
       "node_modules/viem/node_modules/ox/_esm/core/internal/cursor.js"
     ]
-  },
-  "node_modules/viem/node_modules/ox/_esm/core/RpcTransport.js": {
-    "enable": true,
-    "global": {
-      "Request": "r",
-      "fetch": "r"
-    }
   },
   "node_modules/viem/node_modules/ox/_esm/core/Secp256k1.js": {
     "enable": true,
@@ -95212,12 +92949,6 @@
     "require": [
       "node_modules/viem/node_modules/ox/_esm/core/Errors.js"
     ]
-  },
-  "node_modules/viem/node_modules/ox/_esm/core/WebCryptoP256.js": {
-    "enable": true,
-    "global": {
-      "crypto": "r"
-    }
   },
   "node_modules/viem/node_modules/ox/_esm/core/Withdrawal.js": {
     "enable": true,
@@ -95255,25 +92986,11 @@
       "node_modules/viem/node_modules/ox/_esm/core/Errors.js"
     ]
   },
-  "node_modules/viem/node_modules/ox/_esm/core/internal/errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/viem/node_modules/ox/_esm/core/version.js"
-    ]
-  },
   "node_modules/viem/node_modules/ox/_esm/core/internal/hex.js": {
     "enable": true,
     "require": [
       "node_modules/viem/node_modules/ox/_esm/core/Hex.js"
     ]
-  },
-  "node_modules/viem/node_modules/ox/_esm/core/internal/promise.js": {
-    "enable": true,
-    "global": {
-      "AbortController": "r",
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/viem/node_modules/ox/_esm/core/internal/webauthn.js": {
     "enable": true,
@@ -95525,12 +93242,6 @@
       "node_modules/viem/node_modules/ox/node_modules/abitype/dist/cjs/human-readable/runtime/cache.js",
       "node_modules/viem/node_modules/ox/node_modules/abitype/dist/cjs/human-readable/runtime/signatures.js",
       "node_modules/viem/node_modules/ox/node_modules/abitype/dist/cjs/regex.js"
-    ]
-  },
-  "node_modules/viem/node_modules/ox/node_modules/abitype/dist/esm/errors.js": {
-    "enable": true,
-    "require": [
-      "node_modules/viem/node_modules/ox/node_modules/abitype/dist/esm/version.js"
     ]
   },
   "node_modules/viem/node_modules/ox/node_modules/abitype/dist/esm/human-readable/errors/abiItem.js": {
@@ -96547,7 +94258,6 @@
   "src/background/webapi/window.ts": {
     "enable": true,
     "require": [
-      "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/events/events.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/constant/index.ts"
@@ -99405,7 +97115,6 @@
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "src/db/constants.ts",
       "src/db/index.ts",
       "src/db/services/syncDbService.ts",
       "src/ui/utils/index.ts",
@@ -99730,7 +97439,7 @@
       "src/utils/transaction.ts",
       "src/utils/user-data-tracking.ts",
       "src/utils/walletconnect-error.ts",
-      "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ prefetchOrder: 0 preloadOrder: 0 namespace object"
+      "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ referencedExports: default, default, default prefetchOrder: 0 preloadOrder: 0 namespace object"
     ]
   },
   "src/ui/query/resources/token.ts": {
@@ -100159,7 +97868,6 @@
     "require": [
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
-      "src/db/constants.ts",
       "src/db/services/syncDbService.ts",
       "src/db/services/tokenDbService.ts",
       "src/ui/store.ts",
@@ -100190,7 +97898,6 @@
     "require": [
       "node_modules/immer/dist/immer.esm.mjs",
       "node_modules/react/index.js",
-      "src/db/constants.ts",
       "src/db/index.ts",
       "src/db/services/syncDbService.ts",
       "src/ui/utils/index.ts",
@@ -102871,7 +100578,6 @@
       "src/constant/index.ts",
       "src/constant/perps.ts",
       "src/constant/timeout.ts",
-      "src/db/constants.ts",
       "src/db/hooks/history.ts",
       "src/db/index.ts",
       "src/db/services/syncDbService.ts",
@@ -103149,7 +100855,6 @@
       "node_modules/react/index.js",
       "node_modules/web3-eth-abi/lib/index.js",
       "src/constant/gas-account.ts",
-      "src/db/constants.ts",
       "src/db/services/syncDbService.ts",
       "src/db/services/tokenDbService.ts",
       "src/types/chain.ts",
@@ -105031,7 +102736,7 @@
       "src/eventBus.ts"
     ]
   },
-  "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ prefetchOrder: 0 preloadOrder: 0 namespace object": {
+  "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ referencedExports: default, default, default prefetchOrder: 0 preloadOrder: 0 namespace object": {
     "enable": true,
     "require": [
       "changeLogs/0170.md",
