@@ -320,12 +320,26 @@ const matchesAny = (patterns: SentryIgnorePattern[], candidates: string[]) =>
     )
   );
 
+// antd's validateFields rejects with { values, errorFields, outOfDate }. The
+// form already shows the problem, and `values` holds every field as typed —
+// private keys and passwords included — so it is never worth reporting.
+const isFormValidationRejection = (error: unknown) =>
+  error !== null &&
+  typeof error === 'object' &&
+  !(error instanceof Error) &&
+  Array.isArray((error as { errorFields?: unknown }).errorFields) &&
+  'values' in error;
+
 export const shouldIgnoreSentryError = (
   error: unknown,
   // Text Sentry generated for the event ("Non-Error promise rejection captured
   // with keys: ..."), which never appears on the thrown value itself.
   eventText: string[] = []
 ) => {
+  if (isFormValidationRejection(error)) {
+    return true;
+  }
+
   const parts = collectErrorText(error);
   const text = parts.join('\n') || String(error || '');
   const candidates = [

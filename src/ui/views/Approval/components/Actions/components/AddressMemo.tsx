@@ -53,14 +53,15 @@ const AddressMemo = ({ address }: { address: string }) => {
           <Form
             form={form}
             onFinish={async () => {
-              form
-                .validateFields()
-                .then((values) => {
-                  return update(address, values.memo);
-                })
-                .then(() => {
-                  destroy();
-                });
+              let values;
+              try {
+                values = await form.validateFields();
+              } catch {
+                // The form shows the error itself.
+                return;
+              }
+              await update(address, values.memo);
+              destroy();
             }}
             initialValues={{
               memo: alias,

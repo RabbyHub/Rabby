@@ -182,14 +182,15 @@ export const AccountItem = memo(
             <Form
               form={form}
               onFinish={async () => {
-                form
-                  .validateFields()
-                  .then((values) => {
-                    return setAlias(values.memo);
-                  })
-                  .then(() => {
-                    destroy();
-                  });
+                let values;
+                try {
+                  values = await form.validateFields();
+                } catch {
+                  // The form shows the error itself.
+                  return;
+                }
+                await setAlias(values.memo);
+                destroy();
               }}
               initialValues={{
                 memo: alias,
