@@ -74,6 +74,7 @@ import { Transaction as ViemTempoTransaction } from 'viem/tempo';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
 import {
+  findInvalidTypedDataValue,
   findShadowedBuiltinType,
   parseTypedDataJson,
 } from '@/background/utils/typedDataTypes';
@@ -424,6 +425,13 @@ const signTypedDataVlidation = ({
   if (shadowedType) {
     throw ethErrors.rpc.invalidParams(
       `types should not redefine built-in type: ${shadowedType}`
+    );
+  }
+  const invalidValue = findInvalidTypedDataValue(jsonData);
+  if (invalidValue) {
+    const { type, path, expected } = invalidValue;
+    throw ethErrors.rpc.invalidParams(
+      `${type} field ${path} should be ${expected}`
     );
   }
   if (!permissionService.isInternalOrigin(session!.origin)) {
