@@ -58,6 +58,11 @@ export function useRbiSource() {
   return state?.rbisource || rbisource;
 }
 
+// Only the hash route path is reported: routes like /settings/address-detail
+// carry the account in `?address=`.
+export const getPageViewPath = (hash: string) =>
+  hash.replace(/^#/, '').split('?', 1)[0];
+
 export const reportWebPageView = (pathname: string) => {
   ga4.fireEvent('RabbyWeb_PageView', {
     event_category: 'RabbyWeb_Active',
