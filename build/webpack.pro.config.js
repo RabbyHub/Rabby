@@ -1,7 +1,13 @@
 const webpack = require('webpack');
-const TerserPlugin = require('terser-webpack-plugin');
+const MinimizerPlugin = require('minimizer-webpack-plugin');
 const sentrySourceMap = !!process.env.sourcemap || false;
 const SecSDK = require('warden-for-js').WardenPlugin;
+// Terser workers are threads inside the webpack process, so each one adds its
+// own copy of the asset it minifies to the build's memory. Memory-limited CI
+// runners lower this via TERSER_PARALLEL; unset keeps Terser's default.
+const terserParallel = process.env.TERSER_PARALLEL
+  ? Number(process.env.TERSER_PARALLEL)
+  : true;
 
 const config = {
   mode: 'production',
@@ -23,10 +29,14 @@ const config = {
   optimization: {
     minimize: true,
     minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          compress: {
-            pure_funcs: ['console.log', 'console.debug', 'console.info'],
+      new MinimizerPlugin({
+        parallel: terserParallel,
+        minify: {
+          implementation: MinimizerPlugin.terserMinify,
+          options: {
+            compress: {
+              pure_funcs: ['console.log', 'console.debug', 'console.info'],
+            },
           },
         },
       }),
