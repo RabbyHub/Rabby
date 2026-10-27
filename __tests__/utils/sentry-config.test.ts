@@ -274,6 +274,31 @@ describe('Sentry configuration', () => {
     await client.close(2000);
   });
 
+  // Shape of rc-field-form's validateFields rejection: `values` is every field
+  // as typed, so a private-key or password form would hand Sentry the secret.
+  test('drops antd form validation rejections', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.captureException({
+      values: {
+        privateKey:
+          '4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f36231',
+        password: 'hunter2',
+      },
+      errorFields: [{ name: ['privateKey'], errors: ['Invalid private key'] }],
+      outOfDate: false,
+    });
+    // Not a validation rejection: no errorFields.
+    scope.captureException({ message: 'boom', values: [1, 2] });
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    expect(events[0].exception.values[0].value).toBe('boom');
+    expect(JSON.stringify(events)).not.toContain('hunter2');
+    await client.close(2000);
+  });
+
   test('uploads only the error fields of a plain-object rejection', async () => {
     const events: any[] = [];
     const { client, scope } = createRecordingClient(events);

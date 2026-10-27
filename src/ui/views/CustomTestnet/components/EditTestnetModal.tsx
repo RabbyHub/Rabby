@@ -79,7 +79,12 @@ export const EditCustomTestnetModal = ({
   );
 
   const handleSubmit = async () => {
-    await form.validateFields();
+    try {
+      await form.validateFields();
+    } catch {
+      // The form shows the error itself.
+      return;
+    }
     const values = form.getFieldsValue();
     const res = await runAddTestnet(values);
     if ('error' in res) {

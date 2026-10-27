@@ -47,7 +47,6 @@ const AddChain = ({
 
   const { loading, runAsync: runAddChain } = useRequest(
     async () => {
-      await form.validateFields();
       const values = form.getFieldsValue();
 
       const res = await wallet.addCustomTestnet(values);
@@ -75,6 +74,12 @@ const AddChain = ({
   );
 
   const handleConfirm = async () => {
+    try {
+      await form.validateFields();
+    } catch {
+      // The form shows the error; the approval stays pending.
+      return;
+    }
     await runAddChain();
     resolveApproval();
   };
