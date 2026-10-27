@@ -65,6 +65,8 @@ export const AccountList: React.FC<Props> = ({
     brand,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
+  const [hoverEnabled, setHoverEnabled] = React.useState(false);
+  const firstPointerRef = useRef<{ x: number; y: number }>();
 
   useEffect(() => {
     currentAccountsRef.current = currentAccounts;
@@ -273,7 +275,24 @@ export const AccountList: React.FC<Props> = ({
         scroll={{ y: 'calc(100vh - 352px)' }}
         dataSource={list}
         rowKey={(record) => record.address || record.index}
-        className={clsx('AccountList', isWin32 && 'is-win32')}
+        className={clsx(
+          'AccountList',
+          isWin32 && 'is-win32',
+          hoverEnabled && 'hover-enabled'
+        )}
+        onRow={() => ({
+          // ignore synthetic moves from rows remounting under a still cursor
+          onMouseMove: hoverEnabled
+            ? undefined
+            : (e) => {
+                const p = firstPointerRef.current;
+                if (!p) {
+                  firstPointerRef.current = { x: e.screenX, y: e.screenY };
+                } else if (p.x !== e.screenX || p.y !== e.screenY) {
+                  setHoverEnabled(true);
+                }
+              },
+        })}
         loading={
           !preventLoading && loading
             ? {
