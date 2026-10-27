@@ -1,6 +1,7 @@
 import type { BrowserOptions } from '@sentry/browser';
 import browser from 'webextension-polyfill';
 import { v4 as uuidv4 } from 'uuid';
+import { pick } from 'lodash';
 
 import { getSentryEnv } from '@/utils/env';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
@@ -9,13 +10,24 @@ import {
   applySigningContext,
   collectSentryEventText,
   getSigningContext,
-  redactSentryEventAddresses,
   sanitizeSentryBreadcrumbUrl,
   sanitizeSentryPageUrl,
+  scrubSentryEvent,
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
 
 const SENTRY_USER_ID_KEY = 'sentryUserId';
+
+// Fields of a plain-object rejection that describe the error itself.
+const SERIALIZED_ERROR_FIELDS = [
+  'name',
+  'message',
+  'shortMessage',
+  'details',
+  'reason',
+  'code',
+  'stack',
+];
 
 let sentryUserIdPromise: Promise<string | undefined> | undefined;
 
@@ -142,11 +154,12 @@ export const getSentryConfig = (): BrowserOptions => {
           });
         }
 
-        // 把原始对象的所有字段附加到 extra 里，方便查看
+        // 只附加描述错误本身的字段；data、params 等其余字段可能带用户数据，
+        // 不上传（这也覆盖了 SDK 自己对整个对象生成的 __serialized__）
         if (!getSigningContext(originalException)) {
           event.extra = {
             ...event.extra,
-            __serialized__: obj,
+            __serialized__: pick(obj, SERIALIZED_ERROR_FIELDS),
           };
         }
       }
@@ -168,7 +181,7 @@ export const getSentryConfig = (): BrowserOptions => {
         };
       }
 
-      return redactSentryEventAddresses(event);
+      return scrubSentryEvent(event);
     },
     // No `ignoreErrors` on purpose: the SDK applies it before beforeSend runs,
     // which would drop hardware signing failures with a generic transport

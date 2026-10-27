@@ -211,6 +211,88 @@ describe('Sentry configuration', () => {
     await client.close(2000);
   });
 
+  test('redacts private keys, mnemonics and extended keys anywhere in the event', async () => {
+    // BIP39 / BIP32 test vectors and a well-known example key, not real funds.
+    const mnemonic =
+      'legal winner thank year wave sausage worth useful legal winner thank yellow';
+    const privateKey =
+      '4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318';
+    const xprv =
+      'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi';
+    const sentence =
+      'the request was rejected because the user closed the popup window before it loaded';
+    const maxAllowance =
+      '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.setExtra('wallet', {
+      privateKey: 'anything at all',
+      password: 'hunter2',
+      seedPhrase: ['legal', 'winner'],
+      passphraseEnabled: true,
+      note: `pasted ${mnemonic} here`,
+      keyHex: privateKey,
+      exported: xprv,
+    });
+    scope.addBreadcrumb({
+      category: 'custom',
+      message: `import failed: 0x${privateKey}`,
+    });
+    scope.captureException(
+      new Error(
+        `bad key ${privateKey} for ${mnemonic}; ${sentence}; allowance ${maxAllowance}`
+      )
+    );
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    const sent = JSON.stringify(events[0]);
+    [
+      privateKey,
+      xprv,
+      'hunter2',
+      'anything at all',
+      'sausage worth useful',
+    ].forEach((secret) => expect(sent).not.toContain(secret));
+    expect(events[0].extra.wallet).toEqual({
+      privateKey: '[redacted]',
+      password: '[redacted]',
+      seedPhrase: '[redacted]',
+      passphraseEnabled: true,
+      note: 'pasted [redacted-mnemonic] here',
+      keyHex: '[redacted-hex]',
+      exported: '[redacted-key]',
+    });
+    expect(events[0].breadcrumbs.at(-1).message).toBe(
+      'import failed: [redacted-hex]'
+    );
+    // Ordinary prose and decimal amounts are left alone.
+    expect(events[0].exception.values[0].value).toBe(
+      `bad key [redacted-hex] for [redacted-mnemonic]; ${sentence}; allowance ${maxAllowance}`
+    );
+    await client.close(2000);
+  });
+
+  test('uploads only the error fields of a plain-object rejection', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.captureException({
+      message: 'rejected',
+      code: 4001,
+      data: { note: 'request payload' },
+      params: [{ to: 'somewhere' }],
+    });
+    await client.flush(2000);
+
+    expect(events[0].extra.__serialized__).toEqual({
+      message: 'rejected',
+      code: 4001,
+    });
+    await client.close(2000);
+  });
+
   test('keeps the route but drops queries from the page URL and Referer', async () => {
     const address = '0x9bba7ebc9c69db92950def377d732b91bb22d02f';
     const events: any[] = [];
