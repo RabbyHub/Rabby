@@ -6,7 +6,6 @@ import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
 import {
   useDebounce,
   useInfiniteScroll,
-  useMount,
   useRequest,
   useScroll,
   useTitle,
@@ -19,10 +18,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
 import { DappSearchResult } from './components/DappSearchResult';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ConnectedSite } from '@/background/service/permission';
 import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
-import { ga4 } from '@/utils/ga4';
 import { ChainSelectorButton } from '../DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton';
 const { Search } = Input;
 
@@ -140,17 +137,6 @@ export const DappSearchPage = () => {
     async (d) => {
       if (!d?.next) {
         ref.current?.scrollTo(0, 0);
-        if (debouncedSearchValue) {
-          matomoRequestEvent({
-            category: 'DappsSearch',
-            action: 'Dapps_Search_Begin',
-            label: debouncedSearchValue,
-          });
-
-          ga4.fireEvent('Dapps_Search_Begin', {
-            event_category: 'DappsSearch',
-          });
-        }
       }
       const limit = d?.page?.limit || 30;
       const start = d?.next || 0;
@@ -203,17 +189,6 @@ export const DappSearchPage = () => {
   const { t } = useTranslation();
 
   const scroll = useScroll(ref);
-
-  useMount(() => {
-    matomoRequestEvent({
-      category: 'DappsSearch',
-      action: 'Dapps_Search_Enter',
-    });
-
-    ga4.fireEvent('Dapps_Search_Enter', {
-      event_category: 'DappsSearch',
-    });
-  });
 
   useReloadPageOnCurrentAccountChanged();
 

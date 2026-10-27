@@ -1,11 +1,8 @@
 import { NFTApprovalContract } from '@/background/service/openapi';
-import { connectStore, useRabbySelector } from '@/ui/store';
+import { connectStore } from '@/ui/store';
 import { ellipsis } from '@/ui/utils/address';
-import { getKRCategoryByType } from '@/utils/transaction';
 import { Button } from 'antd';
 import React from 'react';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { getChain } from '@/utils';
 import { getAmountText } from '../utils';
 
 interface NFTContractListItemProps {
@@ -14,8 +11,6 @@ interface NFTContractListItemProps {
 }
 
 const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
-  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
-
   return (
     <div className="list-item">
       <div className="list-item-body">
@@ -40,15 +35,6 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
           shape="round"
           size="small"
           onClick={() => {
-            matomoRequestEvent({
-              category: 'Security',
-              action: 'startDeclineNFTApproval',
-              label: [
-                getChain(item.chain)?.name,
-                getKRCategoryByType(currentAccount?.type),
-                currentAccount?.brandName,
-              ].join('|'),
-            });
             onDecline(item);
           }}
         >

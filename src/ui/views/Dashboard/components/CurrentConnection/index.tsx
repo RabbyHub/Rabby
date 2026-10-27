@@ -1,7 +1,5 @@
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { getOriginFromUrl } from '@/utils';
-import { ga4 } from '@/utils/ga4';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
@@ -183,9 +181,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const handleRemove = async (origin: string) => {
     await wallet.removeConnectedSite(origin);
-    ga4.fireEvent('Click_DisconnectDapp', {
-      event_category: 'Front Page Click',
-    });
     getCurrentSite();
     message.success({
       icon: <i />,
@@ -263,15 +258,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
       return;
     }
     setVisible(true);
-    matomoRequestEvent({
-      category: 'Front Page Click',
-      action: 'Click',
-      label: 'Change Chain',
-    });
-
-    ga4.fireEvent('Click_ChangeChain', {
-      event_category: 'Front Page Click',
-    });
   });
 
   const dispatch = useRabbyDispatch();
@@ -366,17 +352,6 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                 value={site?.chain || CHAINS_ENUM.ETH}
                 onChange={handleChangeDefaultChain}
                 showModal={visible}
-                onAfterOpen={() => {
-                  matomoRequestEvent({
-                    category: 'Front Page Click',
-                    action: 'Click',
-                    label: 'Change Chain',
-                  });
-
-                  ga4.fireEvent('Click_ChangeChain', {
-                    event_category: 'Front Page Click',
-                  });
-                }}
                 showRPCStatus
               />
             </>

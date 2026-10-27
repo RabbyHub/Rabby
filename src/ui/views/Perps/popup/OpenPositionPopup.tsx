@@ -29,10 +29,8 @@ import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { MarginInput } from '../components/MarginInput';
 import { LeverageInput } from '../components/LeverageInput';
 import { format } from 'path';
-import { formatPerpsCoin, getStatsReportSide } from '../../DesktopPerps/utils';
+import { formatPerpsCoin } from '../../DesktopPerps/utils';
 import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
-import stats from '@/stats';
-import { useRabbySelector } from '@/ui/store';
 import { MarginModePopup } from './MarginModePopup';
 import './OpenPositionPopup.less';
 
@@ -111,9 +109,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
   onSwapPress,
 }) => {
   const { t } = useTranslation();
-  const perpsAccount = useRabbySelector(
-    (state) => state.perps.currentPerpsAccount
-  );
   const [isReviewMode, setIsReviewMode] = React.useState(false);
 
   const [orderTypeFlashing, setOrderTypeFlashing] = React.useState(false);
@@ -376,62 +371,6 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
       orderType,
       limitPx: orderType === 'limit' ? limitPx : undefined,
     });
-    if (res) {
-      const { totalSz, avgPx } = res;
-      const isBuy = direction === 'Long';
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: perpsAccount?.address || '',
-        trade_type:
-          orderType === 'limit'
-            ? 'popup open position limit'
-            : 'popup open position',
-        leverage: leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, false),
-        margin_mode: marginMode,
-        coin,
-        size: totalSz,
-        price: avgPx,
-        trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: perpsAccount?.type || '',
-      });
-      if (tpTriggerPx) {
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: perpsAccount?.address || '',
-          trade_type: 'popup open position tp',
-          leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, true),
-          margin_mode: marginMode,
-          coin,
-          size: totalSz,
-          price: tpTriggerPx,
-          trade_usd_value: new BigNumber(tpTriggerPx).times(totalSz).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: perpsAccount?.type || '',
-        });
-      }
-      if (slTriggerPx) {
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: perpsAccount?.address || '',
-          trade_type: 'popup open position sl',
-          leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, true),
-          margin_mode: 'isolated',
-          coin,
-          size: totalSz,
-          price: slTriggerPx,
-          trade_usd_value: new BigNumber(slTriggerPx).times(totalSz).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: perpsAccount?.type || '',
-        });
-      }
-    }
     setLoading(false);
     onConfirm();
     return res;

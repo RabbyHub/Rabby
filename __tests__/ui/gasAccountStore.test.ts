@@ -39,7 +39,6 @@ const serviceState = (): GasAccountServiceStore => ({
   accountId: account.address,
   account,
   hasAnyAccountClaimedGift: false,
-  hasEverLoggedIn: true,
   pendingHardwareAccount: undefined,
   autoLoginAccount: undefined,
   accountsWithGasAccountBalance: [{ ...account, balance: 12 }],

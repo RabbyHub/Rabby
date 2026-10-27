@@ -1,13 +1,11 @@
 import eventBus from '@/eventBus';
-import stats from '@/stats';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
 import * as Sentry from '@sentry/browser';
 import { message } from 'antd';
 import { Account } from 'background/service/preference';
-import { EVENTS, KEYRING_CATEGORY_MAP, WALLETCONNECT_STATUS_MAP } from 'consts';
+import { EVENTS, WALLETCONNECT_STATUS_MAP } from 'consts';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import LedgerSVG from 'ui/assets/walletlogo/ledger.svg';
@@ -24,7 +22,6 @@ import {
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
 import { isLedgerLockError } from '@/ui/utils/ledger';
-import { ga4 } from '@/utils/ga4';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
@@ -147,30 +144,7 @@ const LedgerHardwareWaiting = ({
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
           return;
         }
-
-        const explain = signingTx?.explain;
-
-        wallet.reportStats('signTransaction', {
-          type: account.brandName,
-          chainId: chain?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[account.type],
-          preExecSuccess: explain
-            ? explain?.calcSuccess && explain?.pre_exec.success
-            : true,
-          createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: params?.$ctx?.ga?.source || '',
-          trigger: params?.$ctx?.ga?.trigger || '',
-          networkType: chain?.isTestnet
-            ? 'Custom Network'
-            : 'Integrated Network',
-        });
       }
-    } else {
-      stats.report('startSignText', {
-        type: account.brandName,
-        category: KEYRING_CATEGORY_MAP[account.type],
-        method: params?.extra?.signTextMethod,
-      });
     }
     eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
       setErrorMessage(data);
@@ -212,15 +186,6 @@ const LedgerHardwareWaiting = ({
           setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
           return;
         }
-        matomoRequestEvent({
-          category: 'Transaction',
-          action: 'Submit',
-          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-        });
-
-        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
-          event_category: 'Transaction',
-        });
 
         setSignFinishedData({
           data: sig,

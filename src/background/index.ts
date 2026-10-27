@@ -2,7 +2,6 @@ import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
 import { getOriginFromUrl, transformFunctionsToZero } from '@/utils';
 import { appIsDev, isManifestV3 } from '@/utils/env';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
   Message,
   sendReadyMessageToTabs,
@@ -32,13 +31,12 @@ import {
   EVENTS_IN_BG,
   INTERNAL_REQUEST_ORIGIN,
   IS_FIREFOX,
-  KEYRING_CATEGORY_MAP,
   KEYRING_TYPE,
 } from 'consts';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { ethErrors } from 'eth-rpc-errors';
-import { groupBy, isNull, omit, pick } from 'lodash';
+import { isNull, omit, pick } from 'lodash';
 import 'reflect-metadata';
 import browser from 'webextension-polyfill';
 import BigNumber from 'bignumber.js';
@@ -326,80 +324,10 @@ restoreAppState().catch((e) => {
   });
 });
 {
-  let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
     walletController.syncMainnetChainList();
     contactBookService.detectWhiteListCex();
     perpsService.unlockAgentWallets();
-
-    if (interval) {
-      clearInterval(interval);
-    }
-    const sendEvent = async () => {
-      const time = preferenceService.getSendLogTime();
-      if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
-        return;
-      }
-      const customTestnetLength = customTestnetService.getList()?.length;
-      if (customTestnetLength) {
-        matomoRequestEvent({
-          category: 'Custom Network',
-          action: 'Custom Network Status',
-          value: customTestnetLength,
-        });
-
-        ga4.fireEvent('Has_CustomNetwork', {
-          event_category: 'Custom Network',
-        });
-      }
-      const chains = preferenceService.getSavedChains();
-      matomoRequestEvent({
-        category: 'User',
-        action: 'pinnedChains',
-        label: chains.join(','),
-      });
-      const accounts = await walletController.getAccounts();
-      const list = await Promise.all(
-        accounts.map(async (account) => {
-          const category = KEYRING_CATEGORY_MAP[account.type];
-          const action = account.brandName;
-          const balance = await walletController.getAddressCacheBalance(
-            account.address
-          );
-          const label = (balance?.total_usd_value || 0) <= 0;
-          return {
-            category,
-            action,
-            label: label ? 'empty' : 'notEmpty',
-          };
-        })
-      );
-      const groups = groupBy(list, (item) => {
-        return `${item.category}_${item.action}_${item.label}`;
-      });
-      Object.values(groups).forEach((group) => {
-        matomoRequestEvent({
-          category: 'UserAddress',
-          action: group[0].category,
-          label: [group[0].action, group[0].label, group.length].join('|'),
-          value: group.length,
-        });
-
-        ga4.fireEvent(`${group[0].category}_${group[0].label}`, {
-          event_category: 'UserAddress',
-        });
-      });
-      preferenceService.updateSendLogTime(Date.now());
-    };
-    sendEvent();
-    interval = setInterval(sendEvent, 5 * 60 * 1000);
-  });
-
-  keyringService.on('lock', () => {
-    if (interval) {
-      clearInterval(interval);
-      interval = null;
-    }
   });
 
   keyringService.on(
@@ -652,11 +580,6 @@ function startEnableUser() {
   if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
     return;
   }
-  matomoRequestEvent({
-    category: 'User',
-    action: 'enable',
-  });
-
   browser.action.getUserSettings().then((res) => {
     ga4.fireEvent(`User_Enable_${res.isOnToolbar ? 'Pin' : 'unPin'}`, {
       event_category: 'User Enable',

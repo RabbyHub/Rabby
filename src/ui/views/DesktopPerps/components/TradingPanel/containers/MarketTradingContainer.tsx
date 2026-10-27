@@ -12,10 +12,8 @@ import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { EditMarketSlippage } from '../components/EditMarketSlippage';
 import { TradingButtons } from '../components/TradingButtons';
-import BigNumber from 'bignumber.js';
 import { formatPercent } from '@/ui/views/Perps/utils';
-import stats from '@/stats';
-import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
+import { formatPerpsCoin } from '../../../utils';
 import { resolveTpSlTrigger } from '../../../tpslTrigger';
 import { calcAmountFromPercentage } from '../utils';
 import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
@@ -38,7 +36,7 @@ interface MarketOrderSnapshot {
   size: string;
 }
 
-/** TP/SL triggers resolved for one side, shared by the submit and its stats. */
+/** TP/SL triggers resolved for one side. */
 interface TpSlTriggers {
   tpTriggerPx?: string;
   slTriggerPx?: string;
@@ -56,7 +54,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
 
   // Get data from perpsState
   const {
-    currentPerpsAccount,
     selectedCoin,
     positionSize,
     setPositionSize,
@@ -66,7 +63,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     szDecimals,
     pxDecimals,
     leverage,
-    leverageType,
     availableBalance,
     quoteAsset,
     reduceOnly,
@@ -154,67 +150,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     }
   );
 
-  const reportOrderStats = (
-    isBuy: boolean,
-    totalSz: string,
-    avgPx: string,
-    triggers: TpSlTriggers
-  ) => {
-    stats.report('perpsTradeHistory', {
-      created_at: new Date().getTime(),
-      user_addr: currentPerpsAccount?.address || '',
-      trade_type: 'market',
-      leverage: leverage.toString(),
-      trade_side: getStatsReportSide(isBuy, reduceOnly),
-      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-      coin: selectedCoin,
-      size: totalSz,
-      price: avgPx,
-      trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
-      service_provider: 'hyperliquid',
-      app_version: process.env.release || '0',
-      address_type: currentPerpsAccount?.type || '',
-    });
-
-    if (tpslConfig.enabled) {
-      const { tpTriggerPx, slTriggerPx } = triggers;
-      if (tpTriggerPx) {
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: currentPerpsAccount?.address || '',
-          trade_type: 'take profit in market',
-          leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, reduceOnly),
-          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-          coin: selectedCoin,
-          size: totalSz,
-          price: tpTriggerPx,
-          trade_usd_value: new BigNumber(tpTriggerPx).times(totalSz).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: currentPerpsAccount?.type || '',
-        });
-      }
-      if (slTriggerPx) {
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: currentPerpsAccount?.address || '',
-          trade_type: 'stop loss in market',
-          leverage: leverage.toString(),
-          trade_side: getStatsReportSide(!isBuy, reduceOnly),
-          margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-          coin: selectedCoin,
-          size: totalSz,
-          price: slTriggerPx,
-          trade_usd_value: new BigNumber(slTriggerPx).times(totalSz).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: currentPerpsAccount?.type || '',
-        });
-      }
-    }
-  };
-
   // Get direction-specific trade size: percentage mode recalculates per direction
   const getDirectionTradeSize = (isBuy: boolean): string => {
     if (positionSize.inputSource === 'slider') {
@@ -282,7 +217,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     // the ones the dialog is showing at the moment the user confirms.
     const triggers = getTpSlTriggerPrices(isBuy);
 
-    const res = await handleOpenMarketOrder({
+    await handleOpenMarketOrder({
       coin: selectedCoin,
       dex: currentMarketData?.dexId ?? '',
       isBuy,
@@ -295,11 +230,6 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       reduceOnly,
       slippage: marketSlippage,
     });
-
-    if (res) {
-      const { totalSz, avgPx } = res;
-      reportOrderStats(isBuy, totalSz, avgPx, triggers);
-    }
   };
 
   // `runAsync` (not `run`) so the confirmation dialog can await the submission

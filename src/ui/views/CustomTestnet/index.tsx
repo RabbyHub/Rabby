@@ -17,7 +17,6 @@ import './style.less';
 import { Emtpy } from './components/Empty';
 import { useHistory } from 'react-router-dom';
 import { sortBy } from 'lodash';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import clsx from 'clsx';
 
@@ -65,10 +64,6 @@ export const CustomTestnet = ({
         },
       });
     }
-    matomoRequestEvent({
-      category: 'Custom Network',
-      action: 'Click Add Network',
-    });
   };
 
   const { data: list, runAsync: runGetCustomTestnetList } = useRequest(
@@ -191,11 +186,6 @@ export const CustomTestnet = ({
         </Button>
       </Footer>
       <EditCustomTestnetModal
-        ctx={{
-          ga: {
-            source: 'setting',
-          },
-        }}
         visible={state.isShowModal}
         data={state.current}
         isEdit={state.isEdit}

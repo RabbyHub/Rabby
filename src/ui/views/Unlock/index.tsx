@@ -29,7 +29,6 @@ import { useMemoizedFn, useUnmount } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
-import { ga4 } from '@/utils/ga4';
 import { useWalletStatusStore } from '@/ui/state/walletStatus';
 
 const InputFormStyled = styled(Form.Item)`
@@ -185,9 +184,6 @@ const Unlock = () => {
     const unlockType = pendingUnlockTypeRef.current;
     pendingUnlockTypeRef.current = null;
     if (unlockType) {
-      ga4.fireEvent(`Unlock_Act_${unlockType}`, {
-        event_category: 'Unlock_Wallet',
-      });
       await dispatch.preference.setUnlockPreferredMethod(
         unlockType === 'Biometrics' ? 'biometric' : 'password'
       );

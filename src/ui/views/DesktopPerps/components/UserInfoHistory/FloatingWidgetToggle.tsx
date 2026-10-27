@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { useWallet } from 'ui/utils';
-import { ga4 } from '@/utils/ga4';
 import { perpsToast } from '../PerpsToast';
 import './FloatingWidgetToggle.less';
 
@@ -93,9 +92,6 @@ export const FloatingWidgetToggle = () => {
     try {
       await wallet.setPerpsWidgetEnabled(nextEnabled);
       setEnabled(nextEnabled);
-      ga4.fireEvent(`PerpsFloating_${nextEnabled ? 'On' : 'Off'}`, {
-        event_category: 'Settings Snapshot',
-      });
 
       if (nextEnabled) {
         perpsToast.success({

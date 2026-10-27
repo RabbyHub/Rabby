@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { query2obj } from './url';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ga4 } from '@/utils/ga4';
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -59,31 +58,9 @@ export function useRbiSource() {
   return state?.rbisource || rbisource;
 }
 
-export const reportWebPageView = (pathname: string, search: string) => {
-  matomoRequestEvent({
-    category: 'RabbyWeb_Active',
-    action: 'RabbyWeb_PageView',
-    label: pathname,
-  });
-
+export const reportWebPageView = (pathname: string) => {
   ga4.fireEvent('RabbyWeb_PageView', {
     event_category: 'RabbyWeb_Active',
     event_label: pathname,
-  });
-
-  const utmSource =
-    new URLSearchParams(search).get('utm_source') === 'debank'
-      ? 'debank'
-      : 'rabby';
-
-  matomoRequestEvent({
-    category: 'RabbyWeb_Active',
-    action: 'RabbyWeb_Source',
-    label: utmSource,
-  });
-
-  ga4.fireEvent('RabbyWeb_Source', {
-    event_category: 'RabbyWeb_Active',
-    event_label: utmSource,
   });
 };
