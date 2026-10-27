@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const TerserPlugin = require('terser-webpack-plugin');
+const MinimizerPlugin = require('minimizer-webpack-plugin');
 const sentrySourceMap = !!process.env.sourcemap || false;
 const SecSDK = require('warden-for-js').WardenPlugin;
 // Terser workers are threads inside the webpack process, so each one adds its
@@ -29,11 +29,14 @@ const config = {
   optimization: {
     minimize: true,
     minimizer: [
-      new TerserPlugin({
+      new MinimizerPlugin({
         parallel: terserParallel,
-        terserOptions: {
-          compress: {
-            pure_funcs: ['console.log', 'console.debug', 'console.info'],
+        minify: {
+          implementation: MinimizerPlugin.terserMinify,
+          options: {
+            compress: {
+              pure_funcs: ['console.log', 'console.debug', 'console.info'],
+            },
           },
         },
       }),

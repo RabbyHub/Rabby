@@ -18659,7 +18659,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"minimizer-webpack-plugin@npm:^5.6.1":
+"minimizer-webpack-plugin@npm:5.13.0, minimizer-webpack-plugin@npm:^5.6.1":
   version: 5.13.0
   resolution: "minimizer-webpack-plugin@npm:5.13.0"
   dependencies:
@@ -20769,6 +20769,7 @@ __metadata:
     loglevel: "npm:1.7.1"
     lottie-react: "npm:2.4.0"
     lru-cache: "npm:6.0.0"
+    minimizer-webpack-plugin: "npm:5.13.0"
     multiformats: "npm:13.3.2"
     nanoid: "npm:3.3.6"
     p-queue: "npm:7.3.0"
@@ -20810,7 +20811,6 @@ __metadata:
     styled-components: "npm:5.3.5"
     tailwind-merge: "npm:3.6.0"
     tailwindcss: "npm:4.3.0"
-    terser-webpack-plugin: "npm:5.5.0"
     tinycolor2: "npm:1.6.0"
     ts-import-plugin: "npm:1.6.7"
     ts-jest: "npm:29.1.1"
@@ -22566,7 +22566,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^4.0.0, schema-utils@npm:^4.2.0, schema-utils@npm:^4.3.0":
+"schema-utils@npm:^4.0.0, schema-utils@npm:^4.2.0":
   version: 4.3.3
   resolution: "schema-utils@npm:4.3.3"
   dependencies:
@@ -23904,27 +23904,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"terser-webpack-plugin@npm:5.5.0":
-  version: 5.5.0
-  resolution: "terser-webpack-plugin@npm:5.5.0"
-  dependencies:
-    "@jridgewell/trace-mapping": "npm:^0.3.25"
-    jest-worker: "npm:^27.4.5"
-    schema-utils: "npm:^4.3.0"
-    terser: "npm:^5.31.1"
-  peerDependencies:
-    webpack: ^5.1.0
-  peerDependenciesMeta:
-    "@swc/core":
-      optional: true
-    esbuild:
-      optional: true
-    uglify-js:
-      optional: true
-  checksum: 10c0/ea2277cc6c80981fd8ce170016b1cd92d33cdf89d50e81ad387218dd46db55b8d69c8f736a35d7deb238962dbe003dd084f0a2494cbbd55f46a9c9d3e90e583a
-  languageName: node
-  linkType: hard
-
 "terser@npm:^4.6.3":
   version: 4.8.1
   resolution: "terser@npm:4.8.1"
@@ -23935,20 +23914,6 @@ __metadata:
   bin:
     terser: bin/terser
   checksum: 10c0/1ec2620e58df0ea787ac579daf097df0fee2dd402f37acb4de0df1135f0598a29212e5f03042a9c2dc7e1bf1248b1dd9d9ea0724d34331a2017f32da8783b3d7
-  languageName: node
-  linkType: hard
-
-"terser@npm:^5.31.1":
-  version: 5.46.2
-  resolution: "terser@npm:5.46.2"
-  dependencies:
-    "@jridgewell/source-map": "npm:^0.3.3"
-    acorn: "npm:^8.15.0"
-    commander: "npm:^2.20.0"
-    source-map-support: "npm:~0.5.20"
-  bin:
-    terser: bin/terser
-  checksum: 10c0/476f1820160c42e6b2f611410115b00321c4666d421f12db87f13810f8789de45cb254e3ad5178650696d0ba6b706f5a0a239272255d6d1be95816c660f8cbbb
   languageName: node
   linkType: hard
 
