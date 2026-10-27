@@ -13,8 +13,14 @@ jobs:
   build-pro:
     name: build pro
     runs-on: ubuntu-latest
+    # TEMP experiment: compare Terser worker counts on the hosted runner
+    strategy:
+      fail-fast: false
+      matrix:
+        terser_parallel: ['', '2', '1']
     env:
       NODE_OPTIONS: '--max_old_space_size=4096'
+      TERSER_PARALLEL: ${{ matrix.terser_parallel }}
     steps:
       - name: checkout
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -38,13 +44,17 @@ jobs:
         run: yarn install --immutable
 
       - name: build
-        run: yarn build:pro
+        run: |
+          set -o pipefail
+          echo "[mem] nproc=$(nproc) $(free -m | awk '/Mem:/{print "total="$2"MB"}') $(free -m | awk '/Swap:/{print "swap_total="$2"MB"}') TERSER_PARALLEL='${TERSER_PARALLEL}'"
+          (while true; do echo "[mem] $(date +%T) $(free -m | awk '/Mem:/{print "used="$3"MB avail="$7"MB"}') $(free -m | awk '/Swap:/{print "swap_used="$3"MB"}') top=$(ps -eo rss=,comm= --sort=-rss | head -1 | awk '{print $2":"int($1/1024)"MB"}')"; sleep 10; done) &
+          /usr/bin/time -v yarn build:pro 2>&1 | grep -v 'Skipping instrumentation'
 
       - name: Upload artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'pull_request' }}
         with:
-          name: Rabby_${{github.sha}}
+          name: Rabby_${{github.sha}}_p${{ matrix.terser_parallel }}
           path: dist
           retention-days: 7
 
@@ -52,6 +62,6 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ github.event_name == 'push' }}
         with:
-          name: Rabby_${{github.ref_name}}
+          name: Rabby_${{github.ref_name}}_p${{ matrix.terser_parallel }}
           path: dist
           retention-days: 7
