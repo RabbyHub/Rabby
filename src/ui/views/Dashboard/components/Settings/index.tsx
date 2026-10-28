@@ -62,6 +62,9 @@ import { ReactComponent as RcIconRemovedToken } from 'ui/assets/settings/removed
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
+import { ReactComponent as RcIconExtraFeeProtectionCC } from 'ui/assets/dashboard/settings/extra-fee-protection-cc.svg';
+import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
+import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 
 import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
@@ -1091,11 +1094,20 @@ const SettingsInner = ({
           ),
         },
         {
-          leftIcon: RcIconWarning,
+          leftIcon: RcIconExtraFeeProtectionCC,
           leftIconClassName: 'text-r-neutral-body',
-          content: t('page.dashboard.settings.settings.extraFeeProtection'),
-          description: t(
-            'page.dashboard.settings.settings.extraFeeProtectionDesc'
+          content: (
+            <span className="flex items-center gap-[4px]">
+              {t('page.dashboard.settings.settings.extraFeeProtection')}
+              <TooltipV6
+                overlayClassName="rectangle"
+                title={t(
+                  'page.dashboard.settings.settings.extraFeeProtectionDesc'
+                )}
+              >
+                <RcIconInfoCC className="w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
+              </TooltipV6>
+            </span>
           ),
           rightIcon: (
             <Switch
