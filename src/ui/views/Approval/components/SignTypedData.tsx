@@ -484,7 +484,7 @@ const SignTypedData = ({
   const engineResults = isMultiActions ? [] : evaluationResults[0] || [];
   const multiActionEngineResultList = isMultiActions ? evaluationResults : [];
   securityStateRef.current = {
-    canSign: !securityBlocked && !isWatch,
+    canSign: !securityBlocked && !isWatch && !extraFeeBlocked,
     evaluation: securityEvaluation,
   };
   canSignCurrentRef.current = () => {
