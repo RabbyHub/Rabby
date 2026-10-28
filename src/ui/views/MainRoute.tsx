@@ -89,6 +89,7 @@ import {
 } from './MetamaskModeDapps';
 import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
+import { getPageViewPath } from '../utils/ga-event';
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
 import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
 import WhitelistInput from './WhitelistInput';
@@ -106,7 +107,7 @@ import { ManageApprovals } from './ManageApprovals';
 import { ManageBatchRevokeApprovals } from './ManageBatchApprovals';
 
 const LogPageView = () => {
-  const path = window.location.hash.replace(/#/, '');
+  const path = getPageViewPath(window.location.hash);
 
   useEffect(() => {
     ga4.firePageViewEvent({
