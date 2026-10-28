@@ -291,7 +291,9 @@
           "biometricUnlockHint": "使用生物識別在此裝置上解鎖。",
           "currency": "貨幣",
           "searchCurrency": "搜尋貨幣",
-          "dataAnalysis": "資料分析"
+          "dataAnalysis": "資料分析",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "阻止 Chrome 擴充功能發起惡意簽名收取額外手續費"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "有可用更新",
@@ -1589,6 +1591,7 @@
       "mainnet": "主網",
       "imKeyNotConnected": "imKey 未連接",
       "imKeyConnected": "imKey 已連接",
+      "extraFeeProtectionBlocked": "此簽名已被 Extra Fee Protection 攔截，如需簽名，請先到設定頁停用此功能。",
       "gasless": {
         "unavailable": "Gas 餘額不足",
         "notEnough": "Gas 餘額不足",

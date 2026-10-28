@@ -177,6 +177,12 @@ describe('SignTypedData security lifecycle', () => {
       },
       lodash: { cloneDeep: (data: any) => JSON.parse(JSON.stringify(data)) },
       '@/background/utils': { underline2Camelcase: (value: string) => value },
+      '@/ui/store': {
+        useRabbySelector: (selector: any) => selector({ preference: {} }),
+      },
+      '@/utils/extraFeeProtection': jest.requireActual(
+        '@/utils/extraFeeProtection'
+      ),
       consts: {
         ALIAS_ADDRESS: {},
         CHAINS: { ETH: { serverId: 'eth' } },
