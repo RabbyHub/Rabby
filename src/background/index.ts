@@ -8,11 +8,6 @@ import {
   setMessageErrorReporter,
 } from '@/utils/message';
 import { getSentryConfig } from '@/utils/sentry-config';
-import {
-  getSigningContext,
-  isSigningCarrierReported,
-  takeSigningCarrier,
-} from '@/utils/sentry';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import * as Sentry from '@sentry/browser';
 import fetchAdapter from '@/services/openapi/fetchAdapter';
@@ -93,6 +88,7 @@ const PERPS_WIDGET_RPC_ALLOWLIST = new Set<string>([
   'openPerpsWidgetProfile',
 ]);
 import rpcCache from './utils/rpcCache';
+import { reportMessageError } from './utils/messageErrorReporter';
 import { storage } from './webapi';
 import { metamaskModeService } from './service/metamaskModeService';
 import { ga4 } from '@/utils/ga4';
@@ -118,46 +114,7 @@ let appStoreLoaded = false;
 
 Sentry.init(getSentryConfig());
 
-// Errors thrown by pm.listen callbacks are caught in Message.onRequest and
-// forwarded to the calling page as the response, so they never reach this
-// context's global handlers. Business failures (user rejections, RPC errors)
-// carry an rpc error code and must stay report-free; only programming errors
-// are captured here.
-//
-// The allowlist is deliberately restricted to native engine error subtypes
-// (TypeError/ReferenceError/RangeError) rather than any uncoded Error. The
-// background throws hundreds of plain `new Error(...)` intentionally — mostly
-// i18n business validations like "no current account" / "invalid chain id" —
-// which have no rpc code either, so broadening to all uncoded Error instances
-// would flood Sentry with those expected states. The engine practically never
-// raises these subtypes for business logic, so they are a clean bug signal.
-setMessageErrorReporter((error) => {
-  const signingCarrier = takeSigningCarrier(error);
-  if (signingCarrier) {
-    if (!isSigningCarrierReported(signingCarrier)) {
-      Sentry.captureException(signingCarrier);
-    }
-    return true;
-  }
-
-  // rpcFlow normally captures signing failures first. Capturing the same Error
-  // here is deduplicated by Sentry and also covers direct wallet-controller calls.
-  if (getSigningContext(error)) {
-    Sentry.captureException(error);
-    return true;
-  }
-
-  if (
-    (error instanceof TypeError ||
-      error instanceof ReferenceError ||
-      error instanceof RangeError) &&
-    (error as { code?: unknown }).code === undefined
-  ) {
-    Sentry.captureException(error);
-    return true;
-  }
-  return false;
-});
+setMessageErrorReporter(reportMessageError);
 
 async function restoreAppState() {
   await onInstall();

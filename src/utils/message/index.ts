@@ -26,9 +26,11 @@ export class MessageDisconnectedError extends Error {
   }
 }
 
-/** Returns true when the error was actually captured, so the response can
- * be flagged and the receiving page's Sentry skips its duplicate copy. */
-type MessageErrorReporter = (error: unknown) => boolean;
+/** Gets the request that failed, so it can tell which method threw. Returns
+ * true when the reporter owns the report (it captured the error, or withheld
+ * it on purpose), so the response can be flagged and the receiving page's
+ * Sentry skips its own copy. */
+type MessageErrorReporter = (error: unknown, request: unknown) => boolean;
 
 /**
  * Message also runs in dapp pages / content-scripts, so it must not depend on
@@ -243,7 +245,7 @@ abstract class Message extends EventEmitter {
         e.data && (err.data = e.data);
 
         try {
-          if (messageErrorReporter?.(e)) {
+          if (messageErrorReporter?.(e, data)) {
             err.reportedFromBackground = true;
           }
         } catch (reportError) {
