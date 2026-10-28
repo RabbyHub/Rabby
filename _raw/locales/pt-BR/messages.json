@@ -504,6 +504,7 @@
       "cancelConnection": "Cancelar conexão",
       "detectedMultipleRequestsFromThisDapp": "Detectado múltiplas solicitações deste Dapp",
       "imKeyConnected": "imKey está conectado",
+      "extraFeeProtectionBlocked": "A Extra Fee Protection bloqueou esta solicitação de assinatura. Se ainda quiser assinar, desative-a nas Configurações",
       "cancelTransaction": "Cancelar Transação",
       "blockDappFromSendingRequests": "Bloquear Dapp de enviar solicitações por 1 min",
       "cancelCurrentConnection": "Cancelar conexão atual",
@@ -1363,7 +1364,9 @@
           "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda",
-          "dataAnalysis": "Análise de Dados"
+          "dataAnalysis": "Análise de Dados",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Bloqueia solicitações de assinatura que permitem que extensões do navegador cobrem taxas extras"
         },
         "aboutUs": "Sobre nós",
         "currentVersion": "Versão Atual",

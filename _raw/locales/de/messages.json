@@ -506,6 +506,7 @@
       },
       "keystoneNotConnected": "Keystone ist nicht verbunden",
       "imKeyConnected": "imKey ist verbunden",
+      "extraFeeProtectionBlocked": "Extra Fee Protection hat diese Signaturanfrage blockiert. Wenn du trotzdem signieren möchtest, deaktiviere die Funktion in den Einstellungen",
       "keystoneConnected": "Keystone ist verbunden",
       "imKeyNotConnected": "imKey ist nicht verbunden",
       "iGotIt": "Ich hab's."
@@ -1363,7 +1364,9 @@
           "perpsFloatWidget": "Perps-Floating-Widget",
           "currency": "Währung",
           "searchCurrency": "Währung suchen",
-          "dataAnalysis": "Datenanalyse"
+          "dataAnalysis": "Datenanalyse",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Blockiert Signaturanfragen, mit denen Browser-Erweiterungen zusätzliche Gebühren erheben können"
         },
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",

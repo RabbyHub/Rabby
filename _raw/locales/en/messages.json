@@ -693,7 +693,8 @@
       "cancelConnection": "Cancel connection",
       "cancelCurrentConnection": "Cancel current connection",
       "imKeyNotConnected": "imKey is not connected",
-      "imKeyConnected": "imKey is connected"
+      "imKeyConnected": "imKey is connected",
+      "extraFeeProtectionBlocked": "Extra Fee Protection blocked this signature request. If you still want to sign, turn it off in Settings"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",
@@ -2828,7 +2829,9 @@
           "biometricUnlockHint": "Use biometrics to unlock on this device.",
           "biometricUnlockUnsupported": "This device does not support biometric unlock.",
           "perpsFloatWidget": "Perps Floating Widget",
-          "dataAnalysis": "Data Analysis"
+          "dataAnalysis": "Data Analysis",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Blocks signature requests that allow browser extensions to charge extra fees"
         },
         "removedToken": {
           "title": "Removed Tokens",

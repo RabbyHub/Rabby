@@ -2830,7 +2830,9 @@ const SignTx = ({
               hasUnProcessSecurityResult={hasUnProcessSecurityResult}
               securityBlocked={securityBlocked}
               onSubmit={runHandleGnosisSign}
+              // the tooltip is forced open while disabled; hide it with the drawer
               enableTooltip={
+                gnosisFooterBarVisible &&
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
               }
               tooltipContent={

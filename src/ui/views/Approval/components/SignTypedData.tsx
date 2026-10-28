@@ -27,6 +27,11 @@ import {
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { FooterBar } from './FooterBar/FooterBar';
+import { useRabbySelector } from '@/ui/store';
+import {
+  detectExtraFeeTypedData,
+  isExtraFeeProtectionOn,
+} from '@/utils/extraFeeProtection';
 import {
   SecurityEngineScopeProvider,
   useSecurityEngineStore,
@@ -246,6 +251,15 @@ const SignTypedData = ({
     }
     return [null, null];
   }, [data, isSignTypedDataV1]);
+  const extraFeeProtectionOn = useRabbySelector((state) =>
+    isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
+  );
+  const extraFeeBlocked =
+    extraFeeProtectionOn &&
+    detectExtraFeeTypedData(rawMessage, session.origin) !== null;
+  const extraFeeBlockedReason = extraFeeBlocked ? (
+    <div>{t('page.signFooterBar.extraFeeProtectionBlocked')}</div>
+  ) : null;
   const normalizedSignTypedData = useMemo(
     () => normalizePolygonMetaTransactionTypedData(signTypedData),
     [signTypedData]
@@ -470,7 +484,7 @@ const SignTypedData = ({
   const engineResults = isMultiActions ? [] : evaluationResults[0] || [];
   const multiActionEngineResultList = isMultiActions ? evaluationResults : [];
   securityStateRef.current = {
-    canSign: !securityBlocked && !isWatch,
+    canSign: !securityBlocked && !isWatch && !extraFeeBlocked,
     evaluation: securityEvaluation,
   };
   canSignCurrentRef.current = () => {
@@ -1137,16 +1151,21 @@ const SignTypedData = ({
               hasUnProcessSecurityResult={hasUnProcessSecurityResult}
               securityBlocked={securityBlocked}
               onSubmit={handleGnosisSign}
+              // the tooltip is forced open while disabled; hide it with the drawer
               enableTooltip={
-                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+                gnosisFooterBarVisible &&
+                (extraFeeBlocked ||
+                  currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring)
               }
               tooltipContent={
-                currentGnosisAdmin?.type ===
+                extraFeeBlockedReason ||
+                (currentGnosisAdmin?.type ===
                 KEYRING_TYPE.WatchAddressKeyring ? (
                   <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
-                ) : null
+                ) : null)
               }
               disabledProcess={
+                extraFeeBlocked ||
                 securityBlocked ||
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
               }
@@ -1182,10 +1201,12 @@ const SignTypedData = ({
           securityLevel={securityLevel}
           hasUnProcessSecurityResult={hasUnProcessSecurityResult}
           onSubmit={() => handleAllow()}
-          enableTooltip={isWatch}
-          tooltipContent={cantProcessReason}
+          enableTooltip={isWatch || extraFeeBlocked}
+          tooltipContent={extraFeeBlockedReason || cantProcessReason}
           securityBlocked={securityBlocked}
-          disabledProcess={isLoading || isWatch || securityBlocked}
+          disabledProcess={
+            isLoading || isWatch || securityBlocked || extraFeeBlocked
+          }
           isTestnet={chain?.isTestnet}
           onIgnoreAllRules={handleIgnoreAllRules}
         />
