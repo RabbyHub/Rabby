@@ -1212,9 +1212,11 @@ const SignTypedData = ({
               hasUnProcessSecurityResult={hasUnProcessSecurityResult}
               securityBlocked={securityBlocked}
               onSubmit={handleGnosisSign}
+              // the tooltip is forced open while disabled; hide it with the drawer
               enableTooltip={
-                extraFeeBlocked ||
-                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+                gnosisFooterBarVisible &&
+                (extraFeeBlocked ||
+                  currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring)
               }
               tooltipContent={
                 extraFeeBlockedReason ||
