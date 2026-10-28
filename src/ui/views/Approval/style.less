@@ -2421,7 +2421,8 @@
   color: @color-comment-1 !important ;
 }
 .sign-tx-forbidden-tooltip {
-  max-width: 360px !important;
+  // fit inside the 20px viewportOffset on both sides
+  max-width: ~'min(360px, calc(100vw - 40px))' !important;
 }
 
 .connect-detect-popup {
