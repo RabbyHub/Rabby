@@ -83,6 +83,8 @@ import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
+import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
+import { isExtraFeeProtectionOn } from '@/utils/extraFeeProtection';
 import { useCurrency } from '@/ui/hooks/useCurrency';
 import { useExtensionUpdateSettingsCard } from '@/ui/hooks/useExtensionUpdateSettingsCard';
 import {
@@ -668,6 +670,9 @@ const SettingsInner = ({
   const isEnabledDappAccount = useRabbySelector(
     (state) => state.preference.isEnabledDappAccount
   );
+  const isExtraFeeProtectionEnabled = useRabbySelector((state) =>
+    isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
+  );
   const biometricUnlockEnabled = useRabbySelector(
     (state) => state.preference.biometricUnlockEnabled
   );
@@ -720,6 +725,37 @@ const SettingsInner = ({
     //   setIsShowNonWhitelistedTxPwdModal(true);
     // }
     onPopupToggleShow('nonWhitelistedTxPwdModal');
+  });
+
+  const handleToggleExtraFeeProtection = useMemoizedFn(async () => {
+    matomoRequestEvent({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'ExtraFeeProtection',
+    });
+
+    ga4.fireEvent('Extra_Fee_Protection', {
+      event_category: 'Click More',
+    });
+
+    reportSettings('ExtraFeeProtection');
+
+    if (!isExtraFeeProtectionEnabled) {
+      await dispatch.preference.enableExtraFeeProtection();
+      return;
+    }
+    try {
+      await AuthenticationModalPromise({
+        title: t('page.dashboard.settings.settings.extraFeeProtection'),
+        confirmText: t('global.confirm'),
+        cancelText: t('global.Cancel'),
+        validationHandler: (password: string) =>
+          dispatch.preference.disableExtraFeeProtection(password),
+        wallet,
+      });
+    } catch (e) {
+      // cancelled: protection stays on
+    }
   });
 
   const handleEnableDappAccount = useMemoizedFn(() => {
@@ -1051,6 +1087,20 @@ const SettingsInner = ({
             <Switch
               checked={isEnabledPwdForNonWhitelistedTx}
               onChange={handleTogglePwdForNonWhitelistedTx}
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconWarning,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.settings.extraFeeProtection'),
+          description: t(
+            'page.dashboard.settings.settings.extraFeeProtectionDesc'
+          ),
+          rightIcon: (
+            <Switch
+              checked={isExtraFeeProtectionEnabled}
+              onChange={handleToggleExtraFeeProtection}
             />
           ),
         },

@@ -495,6 +495,7 @@
       "connecting": "Kết nối...",
       "beginSigning": "Bắt đầu quá trình ký",
       "imKeyConnected": "imKey đã được kết nối",
+      "extraFeeProtectionBlocked": "Chữ ký này đã bị Extra Fee Protection chặn. Để ký, hãy tắt tính năng này trong Cài đặt trước.",
       "testnet": "Mạng thử nghiệm",
       "resend": "Thử lại",
       "cancelConnection": "Hủy kết nối",
@@ -1467,7 +1468,9 @@
           "perpsFloatWidget": "Tiện ích nổi Perps",
           "currency": "Tiền tệ",
           "searchCurrency": "Tìm kiếm tiền tệ",
-          "dataAnalysis": "Phân tích dữ liệu"
+          "dataAnalysis": "Phân tích dữ liệu",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Chặn chữ ký độc hại từ tiện ích Chrome thu thêm phí"
         },
         "1Hour": "1 giờ",
         "7Days": "7 ngày",

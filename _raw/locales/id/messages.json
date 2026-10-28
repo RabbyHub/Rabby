@@ -507,6 +507,7 @@
       "resend": "Coba lagi",
       "cancelConnection": "Batalkan koneksi",
       "imKeyConnected": "imKey terhubung",
+      "extraFeeProtectionBlocked": "Tanda tangan ini diblokir oleh Extra Fee Protection. Untuk menandatanganinya, nonaktifkan fitur ini di Pengaturan terlebih dahulu.",
       "imKeyNotConnected": "imKey tidak terhubung",
       "iGotIt": "Saya Mengerti"
     },
@@ -1467,7 +1468,9 @@
           "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
-          "dataAnalysis": "Analisis Data"
+          "dataAnalysis": "Analisis Data",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Blokir tanda tangan berbahaya dari ekstensi Chrome yang memungut biaya tambahan"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",

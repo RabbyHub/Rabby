@@ -506,6 +506,7 @@
       },
       "keystoneNotConnected": "Keystone ist nicht verbunden",
       "imKeyConnected": "imKey ist verbunden",
+      "extraFeeProtectionBlocked": "Diese Signatur wurde von Extra Fee Protection blockiert. Um sie zu signieren, deaktiviere die Funktion zuerst in den Einstellungen.",
       "keystoneConnected": "Keystone ist verbunden",
       "imKeyNotConnected": "imKey ist nicht verbunden",
       "iGotIt": "Ich hab's."
@@ -1363,7 +1364,9 @@
           "perpsFloatWidget": "Perps-Floating-Widget",
           "currency": "Währung",
           "searchCurrency": "Währung suchen",
-          "dataAnalysis": "Datenanalyse"
+          "dataAnalysis": "Datenanalyse",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Blockiert bösartige Signaturen von Chrome-Erweiterungen, die zusätzliche Gebühren erheben"
         },
         "aboutUs": "Über uns",
         "currentVersion": "Aktuelle Version",

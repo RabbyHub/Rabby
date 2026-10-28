@@ -1072,7 +1072,9 @@
           "biometricUnlock": "Déverrouiller par biométrie",
           "currency": "Devise",
           "searchCurrency": "Rechercher une devise",
-          "dataAnalysis": "Analyse des données"
+          "dataAnalysis": "Analyse des données",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Bloque les signatures malveillantes d'extensions Chrome qui prélèvent des frais supplémentaires"
         },
         "supportedChains": "Réseaux intégrés",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -2040,6 +2042,7 @@
         "signWithHardwareWalletToUse": "Vous devez signer avec {{brand}} pour utiliser"
       },
       "imKeyConnected": "imKey est connecté",
+      "extraFeeProtectionBlocked": "Cette signature a été bloquée par Extra Fee Protection. Pour la signer, désactivez d'abord la fonctionnalité dans les Paramètres.",
       "imKeyNotConnected": "imKey n'est pas connecté",
       "iGotIt": "J’ai compris"
     },

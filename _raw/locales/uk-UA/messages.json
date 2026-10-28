@@ -508,6 +508,7 @@
       "cancelConnection": "Скасувати з'єднання",
       "cancelCurrentConnection": "Скасувати поточне підключення",
       "imKeyConnected": "imKey підключено",
+      "extraFeeProtectionBlocked": "Цей підпис заблоковано Extra Fee Protection. Щоб підписати його, спочатку вимкніть цю функцію в налаштуваннях.",
       "blockDappFromSendingRequests": "Заблокувати запит Dapp на 1 хвилину",
       "iGotIt": "Зрозуміло"
     },
@@ -1366,7 +1367,9 @@
           "biometricUnlockHint": "Використовуйте біометрію для розблокування на цьому пристрої.",
           "currency": "Валюта",
           "searchCurrency": "Пошук валюти",
-          "dataAnalysis": "Аналіз даних"
+          "dataAnalysis": "Аналіз даних",
+          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtectionDesc": "Блокує шкідливі підписи від розширень Chrome, які стягують додаткові комісії"
         },
         "aboutUs": "Про нас",
         "currentVersion": "Поточна версія",
