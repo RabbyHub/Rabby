@@ -87,6 +87,7 @@ const TYPED_DATA_RULES: Rule<TypedData>[] = [
       'https://app.hyperliquid.xyz',
       'https://hyperliquid.xyz',
       'https://app.hyperliquid-testnet.xyz',
+      'https://app.trade.xyz',
     ],
     match: (d) =>
       d.domain.name === 'HyperliquidSignTransaction' &&
@@ -143,6 +144,7 @@ const TEXT_RULES: Rule<string[]>[] = [
       'https://app.lighter.xyz',
       'https://lighter.xyz',
       'https://testnet.app.lighter.xyz',
+      'https://robinhoodchain.lighter.xyz',
     ],
     match: (lines) =>
       lines[0] === 'Approve Integrator' &&

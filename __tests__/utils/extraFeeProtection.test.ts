@@ -345,6 +345,15 @@ describe('origin', () => {
     expect(detectTextAt(f.lighterApproveIntegratorText, LIGHTER)).toBe(
       'lighter'
     );
+    expect(
+      detectTypedAt(f.hyperliquidApproveBuilderFee, 'https://app.trade.xyz')
+    ).toBe('hyperliquid');
+    expect(
+      detectTextAt(
+        f.lighterApproveIntegratorText,
+        'https://robinhoodchain.lighter.xyz'
+      )
+    ).toBe('lighter');
     // third-party sites are not checked
     expect(
       detectTypedAt(f.hyperliquidApproveBuilderFee, THIRD_PARTY)
