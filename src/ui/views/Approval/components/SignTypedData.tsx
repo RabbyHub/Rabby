@@ -256,8 +256,7 @@ const SignTypedData = ({
   );
   const extraFeeBlocked =
     extraFeeProtectionOn &&
-    session.origin !== INTERNAL_REQUEST_ORIGIN &&
-    detectExtraFeeTypedData(rawMessage) !== null;
+    detectExtraFeeTypedData(rawMessage, session.origin) !== null;
   const extraFeeBlockedReason = extraFeeBlocked ? (
     <div>{t('page.signFooterBar.extraFeeProtectionBlocked')}</div>
   ) : null;

@@ -1,9 +1,22 @@
 import {
-  detectExtraFeeTypedData,
-  detectExtraFeeText,
+  detectExtraFeeTypedData as detectTypedAt,
+  detectExtraFeeText as detectTextAt,
   isExtraFeeProtectionOn,
 } from '@/utils/extraFeeProtection';
 import * as f from '../fixtures/extraFeeProtection';
+
+const HYPERLIQUID = 'https://app.hyperliquid.xyz';
+const ASTER = 'https://www.asterdex.com';
+const LIGHTER = 'https://app.lighter.xyz';
+const THIRD_PARTY = 'https://example.com';
+
+// rule cases run on the protocol's own official origin
+const detectExtraFeeTypedData = (data: any) =>
+  detectTypedAt(
+    data,
+    data?.domain?.name === 'AsterSignTransaction' ? ASTER : HYPERLIQUID
+  );
+const detectExtraFeeText = (text: string) => detectTextAt(text, LIGHTER);
 
 const hl = (maxFeeRate: unknown) => ({
   ...f.hyperliquidApproveBuilderFee,
@@ -223,6 +236,41 @@ describe('detectExtraFeeText', () => {
   it('ignores unrelated text', () => {
     expect(detectExtraFeeText('Approve Integrator')).toBeNull();
     expect(detectExtraFeeText('hello')).toBeNull();
+  });
+});
+
+describe('origin', () => {
+  it('only checks official origins of the matching protocol', () => {
+    expect(detectTypedAt(f.hyperliquidApproveBuilderFee, HYPERLIQUID)).toBe(
+      'hyperliquid'
+    );
+    expect(detectTypedAt(f.asterApproveBuilder, ASTER)).toBe('aster');
+    expect(detectTextAt(f.lighterApproveIntegratorText, LIGHTER)).toBe(
+      'lighter'
+    );
+    // third-party sites are not checked
+    expect(
+      detectTypedAt(f.hyperliquidApproveBuilderFee, THIRD_PARTY)
+    ).toBeNull();
+    expect(detectTypedAt(f.asterApproveBuilder, THIRD_PARTY)).toBeNull();
+    expect(
+      detectTextAt(f.lighterApproveIntegratorText, THIRD_PARTY)
+    ).toBeNull();
+    // another protocol's official site does not count
+    expect(detectTypedAt(f.hyperliquidApproveBuilderFee, ASTER)).toBeNull();
+    // exact origin only, no lookalike hosts
+    expect(
+      detectTypedAt(
+        f.hyperliquidApproveBuilderFee,
+        'https://app.hyperliquid.xyz.evil.com'
+      )
+    ).toBeNull();
+    expect(
+      detectTypedAt(
+        f.hyperliquidApproveBuilderFee,
+        'http://app.hyperliquid.xyz'
+      )
+    ).toBeNull();
   });
 });
 
