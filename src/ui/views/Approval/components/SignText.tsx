@@ -98,8 +98,7 @@ const SignText = ({
   );
   const extraFeeBlocked =
     extraFeeProtectionOn &&
-    params.session.origin !== INTERNAL_REQUEST_ORIGIN &&
-    detectExtraFeeText(signText) !== null;
+    detectExtraFeeText(signText, params.session.origin) !== null;
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLedger, setIsLedger] = useState(false);

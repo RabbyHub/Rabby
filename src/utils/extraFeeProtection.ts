@@ -2,6 +2,9 @@
 // integrator fee, which extensions like Pocket Universe inject into dapps to
 // charge users on every later order.
 //
+// Only requests from the protocol's official frontend origins are checked;
+// the same signature from any other site is left alone.
+//
 // To cover a new protocol, add one rule to TYPED_DATA_RULES or TEXT_RULES.
 // Once a rule matches, only a fee that parses strictly as zero is allowed;
 // a missing or malformed fee counts as a fee (fail closed).
@@ -10,6 +13,7 @@ export type ExtraFeeProtocol = 'hyperliquid' | 'aster' | 'lighter';
 
 interface Rule<T> {
   protocol: ExtraFeeProtocol;
+  origins: string[];
   match: (data: T) => boolean;
   hasFee: (data: T) => boolean;
 }
@@ -49,6 +53,11 @@ const isNonEmptyString = (v: unknown) => typeof v === 'string' && v !== '';
 const TYPED_DATA_RULES: Rule<TypedData>[] = [
   {
     protocol: 'hyperliquid',
+    origins: [
+      'https://app.hyperliquid.xyz',
+      'https://hyperliquid.xyz',
+      'https://app.hyperliquid-testnet.xyz',
+    ],
     match: (d) =>
       d.domain.name === 'HyperliquidSignTransaction' &&
       d.primaryType === 'HyperliquidTransaction:ApproveBuilderFee',
@@ -63,6 +72,7 @@ const TYPED_DATA_RULES: Rule<TypedData>[] = [
   },
   {
     protocol: 'aster',
+    origins: ['https://www.asterdex.com', 'https://asterdex.com'],
     match: (d) =>
       d.domain.name === 'AsterSignTransaction' &&
       (ASTER_BUILDER_TYPES.includes(d.primaryType) ||
@@ -98,6 +108,11 @@ const lighterHex = (lines: string[], key: string) => {
 const TEXT_RULES: Rule<string[]>[] = [
   {
     protocol: 'lighter',
+    origins: [
+      'https://app.lighter.xyz',
+      'https://lighter.xyz',
+      'https://testnet.app.lighter.xyz',
+    ],
     match: (lines) =>
       lines[0] === 'Approve Integrator' &&
       lines.includes('Only sign this message for a trusted client!'),
@@ -111,8 +126,14 @@ const TEXT_RULES: Rule<string[]>[] = [
 const isObject = (v: unknown): v is Record<string, any> =>
   typeof v === 'object' && v !== null;
 
+const detect = <T>(rules: Rule<T>[], data: T, origin: string) =>
+  rules.find(
+    (r) => r.origins.includes(origin) && r.match(data) && r.hasFee(data)
+  )?.protocol ?? null;
+
 export const detectExtraFeeTypedData = (
-  typedData: unknown
+  typedData: unknown,
+  origin: string
 ): ExtraFeeProtocol | null => {
   if (
     !isObject(typedData) ||
@@ -122,18 +143,17 @@ export const detectExtraFeeTypedData = (
   ) {
     return null;
   }
-  const data = typedData as TypedData;
-  return (
-    TYPED_DATA_RULES.find((r) => r.match(data) && r.hasFee(data))?.protocol ??
-    null
-  );
+  return detect(TYPED_DATA_RULES, typedData as TypedData, origin);
 };
 
-export const detectExtraFeeText = (text: string): ExtraFeeProtocol | null => {
-  const lines = text.split(/\r?\n/).map((l) => l.trim());
-  return (
-    TEXT_RULES.find((r) => r.match(lines) && r.hasFee(lines))?.protocol ?? null
+export const detectExtraFeeText = (
+  text: string,
+  origin: string
+): ExtraFeeProtocol | null =>
+  detect(
+    TEXT_RULES,
+    text.split(/\r?\n/).map((l) => l.trim()),
+    origin
   );
-};
 
 export const isExtraFeeProtectionOn = (value?: boolean) => value !== false;
