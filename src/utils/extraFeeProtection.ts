@@ -19,6 +19,7 @@ interface Rule<T> {
 }
 
 type TypedData = {
+  types?: Record<string, any>;
   domain: Record<string, any>;
   primaryType: string;
   message: Record<string, any>;
@@ -26,11 +27,21 @@ type TypedData = {
 
 const DECIMAL = /^\d+(\.\d+)?$/;
 
-const getIgnoreCase = (obj: Record<string, any>, key: string) => {
-  const found = Object.keys(obj).find(
-    (k) => k.toLowerCase() === key.toLowerCase()
+// EIP-712 only signs the fields declared in types[primaryType] and ignores any
+// other key in message, so rules read those exact names. Returns null when
+// the declaration is missing or a signed field has an unsigned case-variant
+// twin in message (e.g. `builder: ''` next to `Builder`): callers fail closed.
+const signedFields = (d: TypedData): string[] | null => {
+  const declared = d.types?.[d.primaryType];
+  if (!Array.isArray(declared)) return null;
+  const names = declared
+    .map((f) => f?.name)
+    .filter((n): n is string => typeof n === 'string');
+  const keys = Object.keys(d.message).map((k) => k.toLowerCase());
+  const ambiguous = names.some(
+    (n) => keys.filter((k) => k === n.toLowerCase()).length > 1
   );
-  return found === undefined ? undefined : obj[found];
+  return ambiguous ? null : names;
 };
 
 const ASTER_BUILDER_TYPES = ['ApproveBuilder', 'UpdateBuilder'];
@@ -40,13 +51,25 @@ const isZeroDecimal = (fee: unknown) => {
   return typeof fee === 'string' && DECIMAL.test(fee) && Number(fee) === 0;
 };
 
-// MaxFeeRate must be present; any other *MaxFeeRate (e.g. a spot rate) must
-// also be zero.
-const asterFeeIsZero = (message: Record<string, any>) =>
-  getIgnoreCase(message, 'MaxFeeRate') !== undefined &&
-  Object.keys(message)
-    .filter((k) => /maxfeerate$/i.test(k))
-    .every((k) => isZeroDecimal(message[k]));
+// MaxFeeRate must be signed; any other signed *MaxFeeRate (e.g. a spot rate)
+// must also be zero.
+const asterFeeIsZero = (d: TypedData) => {
+  const fields = signedFields(d);
+  if (!fields) return false;
+  const feeFields = fields.filter((n) => /maxfeerate$/i.test(n));
+  return (
+    feeFields.some((n) => n.toLowerCase() === 'maxfeerate') &&
+    feeFields.every((n) => isZeroDecimal(d.message[n]))
+  );
+};
+
+const asterAgentHasBuilder = (d: TypedData) => {
+  const fields = signedFields(d);
+  if (!fields) return true;
+  return fields
+    .filter((n) => /^(spot)?builder$/i.test(n))
+    .some((n) => isNonEmptyString(d.message[n]));
+};
 
 const isNonEmptyString = (v: unknown) => typeof v === 'string' && v !== '';
 
@@ -76,10 +99,8 @@ const TYPED_DATA_RULES: Rule<TypedData>[] = [
     match: (d) =>
       d.domain.name === 'AsterSignTransaction' &&
       (ASTER_BUILDER_TYPES.includes(d.primaryType) ||
-        (d.primaryType === 'ApproveAgent' &&
-          (isNonEmptyString(getIgnoreCase(d.message, 'Builder')) ||
-            isNonEmptyString(getIgnoreCase(d.message, 'SpotBuilder'))))),
-    hasFee: (d) => !asterFeeIsZero(d.message),
+        (d.primaryType === 'ApproveAgent' && asterAgentHasBuilder(d))),
+    hasFee: (d) => !asterFeeIsZero(d),
   },
 ];
 

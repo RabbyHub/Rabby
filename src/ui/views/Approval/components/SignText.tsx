@@ -99,6 +99,9 @@ const SignText = ({
   const extraFeeBlocked =
     extraFeeProtectionOn &&
     detectExtraFeeText(signText, params.session.origin) !== null;
+  // read after awaits: protection can be turned on while a sign is pending
+  const extraFeeBlockedRef = useRef(extraFeeBlocked);
+  extraFeeBlockedRef.current = extraFeeBlocked;
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLedger, setIsLedger] = useState(false);
@@ -255,7 +258,7 @@ const SignText = ({
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
-    if (activeApprovalPopup()) {
+    if (activeApprovalPopup() || extraFeeBlockedRef.current) {
       return;
     }
 
@@ -266,6 +269,7 @@ const SignText = ({
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (extraFeeBlockedRef.current) return;
     }
 
     if (
@@ -526,7 +530,7 @@ const SignText = ({
     if (!safeInfo || !account) {
       return;
     }
-    if (activeApprovalPopup()) {
+    if (activeApprovalPopup() || extraFeeBlockedRef.current) {
       return;
     }
 
@@ -548,6 +552,7 @@ const SignText = ({
       );
     }
 
+    if (extraFeeBlockedRef.current) return;
     const typedData = generateTypedData({
       safeAddress: safeInfo.address,
       safeVersion: safeInfo.version,

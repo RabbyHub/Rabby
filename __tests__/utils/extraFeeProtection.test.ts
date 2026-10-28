@@ -23,6 +23,19 @@ const hl = (maxFeeRate: unknown) => ({
   message: { ...f.hyperliquidApproveBuilderFee.message, maxFeeRate },
 });
 
+// Replace the message and declare exactly its keys as the signed fields.
+const withMessage = (data: any, message: Record<string, any>) => ({
+  ...data,
+  types: {
+    ...data.types,
+    [data.primaryType]: Object.keys(message).map((name) => ({
+      name,
+      type: 'string',
+    })),
+  },
+  message,
+});
+
 const aster = (MaxFeeRate: unknown) => ({
   ...f.asterApproveBuilder,
   message: { ...f.asterApproveBuilder.message, MaxFeeRate },
@@ -69,10 +82,9 @@ describe('detectExtraFeeTypedData', () => {
   it('reads aster fee key case-insensitively', () => {
     const { MaxFeeRate, ...rest } = f.asterApproveBuilder.message;
     expect(
-      detectExtraFeeTypedData({
-        ...f.asterApproveBuilder,
-        message: { ...rest, maxfeerate: MaxFeeRate },
-      })
+      detectExtraFeeTypedData(
+        withMessage(f.asterApproveBuilder, { ...rest, maxfeerate: MaxFeeRate })
+      )
     ).toBe('aster');
   });
 
@@ -99,10 +111,8 @@ describe('detectExtraFeeTypedData', () => {
       MaxFeeRate,
       ...plain
     } = f.asterApproveAgentWithBuilder.message;
-    const agent = (message: Record<string, any>) => ({
-      ...f.asterApproveAgentWithBuilder,
-      message,
-    });
+    const agent = (message: Record<string, any>) =>
+      withMessage(f.asterApproveAgentWithBuilder, message);
     expect(detectExtraFeeTypedData(agent(plain))).toBeNull();
     // builder without a fee field still blocks
     expect(detectExtraFeeTypedData(agent({ ...plain, Builder }))).toBe('aster');
@@ -130,16 +140,48 @@ describe('detectExtraFeeTypedData', () => {
 
   it('blocks aster when any *MaxFeeRate field is non-zero', () => {
     expect(
-      detectExtraFeeTypedData({
-        ...f.asterApproveAgentWithBuilder,
-        message: {
+      detectExtraFeeTypedData(
+        withMessage(f.asterApproveAgentWithBuilder, {
           ...f.asterApproveAgentWithBuilder.message,
           SpotBuilder: '0x1111111111111111111111111111111111111111',
           MaxFeeRate: '0',
           SpotMaxFeeRate: '0.01',
-        },
+        })
+      )
+    ).toBe('aster');
+  });
+
+  it('ignores unsigned case-variant decoys in aster messages', () => {
+    // EIP-712 ignores undeclared keys, so a decoy must not hide the signed one
+    for (const fixture of [
+      f.asterApproveAgentWithBuilder,
+      f.asterApproveAgentWithSpotBuilder,
+    ]) {
+      expect(
+        detectExtraFeeTypedData({
+          ...fixture,
+          message: { builder: '', spotBuilder: '', ...fixture.message },
+        })
+      ).toBe('aster');
+      expect(
+        detectExtraFeeTypedData({
+          ...fixture,
+          message: { maxFeeRate: '0', ...fixture.message },
+        })
+      ).toBe('aster');
+    }
+    // undeclared builder or fee keys are not signed and do not count
+    expect(
+      detectExtraFeeTypedData({
+        ...f.asterApproveBuilder,
+        message: { ...f.asterApproveBuilder.message, SpotMaxFeeRate: '0.01' },
       })
     ).toBe('aster');
+  });
+
+  it('fails closed on aster typed data without a type declaration', () => {
+    const { types, ...noTypes } = f.asterApproveAgentWithBuilder;
+    expect(detectExtraFeeTypedData(noTypes)).toBe('aster');
   });
 
   it('allows aster DelBuilder', () => {
