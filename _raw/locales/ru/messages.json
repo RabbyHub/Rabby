@@ -494,7 +494,7 @@
       "cancelCurrentConnection": "Отменить текущее подключение",
       "imKeyNotConnected": "imKey не подключен",
       "imKeyConnected": "imKey подключен",
-      "extraFeeProtectionBlocked": "Эта подпись заблокирована Extra Fee Protection. Чтобы подписать её, сначала отключите эту функцию в настройках.",
+      "extraFeeProtectionBlocked": "Extra Fee Protection заблокировала этот запрос подписи. Если вы всё же хотите подписать, отключите её в настройках",
       "gasAccount": {
         "gotIt": "Понял",
         "deposit": "Депозит",
@@ -1367,7 +1367,7 @@
           "searchCurrency": "Поиск валюты",
           "dataAnalysis": "Анализ данных",
           "extraFeeProtection": "Extra Fee Protection",
-          "extraFeeProtectionDesc": "Блокирует вредоносные подписи от расширений Chrome, взимающих дополнительные комиссии"
+          "extraFeeProtectionDesc": "Блокирует запросы подписи, позволяющие расширениям браузера взимать дополнительные комиссии"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",

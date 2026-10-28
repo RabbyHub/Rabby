@@ -1074,7 +1074,7 @@
           "searchCurrency": "Rechercher une devise",
           "dataAnalysis": "Analyse des données",
           "extraFeeProtection": "Extra Fee Protection",
-          "extraFeeProtectionDesc": "Bloque les signatures malveillantes d'extensions Chrome qui prélèvent des frais supplémentaires"
+          "extraFeeProtectionDesc": "Bloque les demandes de signature permettant à des extensions de navigateur de prélever des frais supplémentaires"
         },
         "supportedChains": "Réseaux intégrés",
         "testnetBackendServiceUrl": "URL du service backend testnet",
@@ -2042,7 +2042,7 @@
         "signWithHardwareWalletToUse": "Vous devez signer avec {{brand}} pour utiliser"
       },
       "imKeyConnected": "imKey est connecté",
-      "extraFeeProtectionBlocked": "Cette signature a été bloquée par Extra Fee Protection. Pour la signer, désactivez d'abord la fonctionnalité dans les Paramètres.",
+      "extraFeeProtectionBlocked": "Extra Fee Protection a bloqué cette demande de signature. Si vous souhaitez quand même signer, désactivez-la dans les Paramètres",
       "imKeyNotConnected": "imKey n'est pas connecté",
       "iGotIt": "J’ai compris"
     },

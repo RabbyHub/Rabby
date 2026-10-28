@@ -507,7 +507,7 @@
       "cancelConnection": "Bağlantıyı iptal et",
       "imKeyNotConnected": "imKey bağlantısı yok",
       "imKeyConnected": "imKey bağlı",
-      "extraFeeProtectionBlocked": "Bu imza Extra Fee Protection tarafından engellendi. İmzalamak için önce Ayarlar'dan bu özelliği kapatın.",
+      "extraFeeProtectionBlocked": "Extra Fee Protection bu imza isteğini engelledi. Yine de imzalamak istiyorsanız Ayarlar'dan kapatın",
       "blockDappFromSendingRequests": "Dapp'in 1 dakika boyunca istek göndermesini engelle",
       "iGotIt": "Anladım"
     },
@@ -1366,7 +1366,7 @@
           "searchCurrency": "Para birimi ara",
           "dataAnalysis": "Veri Analizi",
           "extraFeeProtection": "Extra Fee Protection",
-          "extraFeeProtectionDesc": "Ek ücret alan Chrome uzantılarının kötü amaçlı imzalarını engeller"
+          "extraFeeProtectionDesc": "Tarayıcı uzantılarının ek ücret almasına izin veren imza isteklerini engeller"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",

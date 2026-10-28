@@ -503,7 +503,7 @@
       "cancelCurrentConnection": "현재 연결 취소",
       "testnet": "테스트넷",
       "imKeyConnected": "imKey에 연결되었습니다",
-      "extraFeeProtectionBlocked": "이 서명은 Extra Fee Protection에 의해 차단되었습니다. 서명하려면 먼저 설정에서 이 기능을 끄세요.",
+      "extraFeeProtectionBlocked": "Extra Fee Protection이 이 서명 요청을 차단했습니다. 그래도 서명하려면 설정에서 이 기능을 끄세요",
       "submitTx": "거래 제출",
       "cancelAll": "모든 {{count}} 요청을 Dapp에서 취소합니다.",
       "resend": "재시도",
@@ -1470,7 +1470,7 @@
           "searchCurrency": "통화 검색",
           "dataAnalysis": "데이터 분석",
           "extraFeeProtection": "Extra Fee Protection",
-          "extraFeeProtectionDesc": "추가 수수료를 부과하는 Chrome 확장 프로그램의 악성 서명을 차단합니다"
+          "extraFeeProtectionDesc": "브라우저 확장 프로그램이 추가 수수료를 부과할 수 있게 하는 서명 요청을 차단합니다"
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
