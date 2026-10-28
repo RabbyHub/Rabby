@@ -79,8 +79,10 @@ const SignText = ({
   approvalId?: string;
 }) => {
   const currentAccount = params.isGnosis ? params.account! : account;
+  // read after awaits: protection can be turned on while a sign is pending
+  const extraFeeBlockedRef = useRef(false);
   const [, resolveApproval, rejectApproval] = useApproval(
-    bindApproval(approvalId, 'SignText')
+    bindApproval(approvalId, 'SignText', () => !extraFeeBlockedRef.current)
   );
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -93,8 +95,6 @@ const SignText = ({
   const extraFeeBlocked =
     extraFeeProtectionOn &&
     detectExtraFeeText(signText, params.session.origin) !== null;
-  // read after awaits: protection can be turned on while a sign is pending
-  const extraFeeBlockedRef = useRef(extraFeeBlocked);
   extraFeeBlockedRef.current = extraFeeBlocked;
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -323,7 +323,8 @@ const SignText = ({
     },
     {
       onSuccess(res) {
-        if (res?.isFinished) {
+        // a stored Safe signature must not bypass the protection
+        if (res?.isFinished && !extraFeeBlockedRef.current) {
           const modal = Modal.info({
             maskClosable: false,
             closable: false,
@@ -619,9 +620,11 @@ const SignText = ({
             // securityLevel={securityLevel}
             // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             onSubmit={handleGnosisSign}
+            // the tooltip is forced open while disabled; hide it with the drawer
             enableTooltip={
-              extraFeeBlocked ||
-              currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              gnosisFooterBarVisible &&
+              (extraFeeBlocked ||
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring)
             }
             tooltipContent={
               extraFeeBlocked ? (

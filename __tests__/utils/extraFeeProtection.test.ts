@@ -54,6 +54,26 @@ describe('detectExtraFeeTypedData', () => {
     expect(detectExtraFeeTypedData(hl('0.000%'))).toBeNull();
   });
 
+  it('does not round a tiny fee down to zero', () => {
+    const tiny = '0.' + '0'.repeat(400) + '1';
+    expect(detectExtraFeeTypedData(hl(tiny + '%'))).toBe('hyperliquid');
+    expect(detectExtraFeeTypedData(aster(tiny))).toBe('aster');
+  });
+
+  it('reads the signed hyperliquid fee field, not an unsigned decoy', () => {
+    const { maxFeeRate, ...rest } = f.hyperliquidApproveBuilderFee.message;
+    const declared = withMessage(f.hyperliquidApproveBuilderFee, {
+      ...rest,
+      MaxFeeRate: maxFeeRate,
+    });
+    expect(
+      detectExtraFeeTypedData({
+        ...declared,
+        message: { maxFeeRate: '0%', ...declared.message },
+      })
+    ).toBe('hyperliquid');
+  });
+
   it('blocks hyperliquid malformed fee', () => {
     for (const v of ['0.1', '1e-3%', '', undefined, 0.1, '-0.1%']) {
       expect(detectExtraFeeTypedData(hl(v))).toBe('hyperliquid');
@@ -182,6 +202,13 @@ describe('detectExtraFeeTypedData', () => {
   it('fails closed on aster typed data without a type declaration', () => {
     const { types, ...noTypes } = f.asterApproveAgentWithBuilder;
     expect(detectExtraFeeTypedData(noTypes)).toBe('aster');
+    // malformed declaration
+    expect(
+      detectExtraFeeTypedData({
+        ...f.asterApproveAgentWithBuilder,
+        types: { ApproveAgent: ['Builder', 'MaxFeeRate'] },
+      })
+    ).toBe('aster');
   });
 
   it('allows aster DelBuilder', () => {
@@ -231,6 +258,34 @@ describe('detectExtraFeeText', () => {
     expect(
       detectExtraFeeText(
         f.lighterApproveIntegratorText.replace(/^max spot maker fee: .*\n/m, '')
+      )
+    ).toBe('lighter');
+  });
+
+  it('fails closed on repeated lighter lines', () => {
+    // a second integrator line must not inherit the collector exemption
+    expect(
+      detectExtraFeeText(
+        f.lighterOfficialApproveIntegratorText.replace(
+          'integrator account index: 0x0000fffffffcbb5c',
+          'integrator account index: 0x0000fffffffcbb5c\nintegrator account index: 0x0000000000000def'
+        )
+      )
+    ).toBe('lighter');
+    const zero = '0x0000000000000000';
+    const allZero = f.lighterApproveIntegratorText.replace(
+      /^(max (?:perps|spot) (?:taker|maker) fee: ).*$/gm,
+      (_, prefix) => prefix + zero
+    );
+    expect(detectExtraFeeText(allZero)).toBeNull();
+    expect(
+      detectExtraFeeText(
+        allZero.replace(
+          'max spot maker fee: ' + zero,
+          'max spot maker fee: ' +
+            zero +
+            '\nmax spot maker fee: 0x0000000000002710'
+        )
       )
     ).toBe('lighter');
   });

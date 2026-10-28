@@ -25,18 +25,19 @@ type TypedData = {
   message: Record<string, any>;
 };
 
-const DECIMAL = /^\d+(\.\d+)?$/;
+// Zero written as digits only (no Number() rounding: '0.000…01' is not zero).
+const ZERO_DECIMAL = /^0+(\.0+)?$/;
 
 // EIP-712 only signs the fields declared in types[primaryType] and ignores any
 // other key in message, so rules read those exact names. Returns null when
-// the declaration is missing or a signed field has an unsigned case-variant
-// twin in message (e.g. `builder: ''` next to `Builder`): callers fail closed.
+// the declaration is missing or malformed, or a signed field has an unsigned
+// case-variant twin in message (e.g. `builder: ''` next to `Builder`):
+// callers fail closed.
 const signedFields = (d: TypedData): string[] | null => {
   const declared = d.types?.[d.primaryType];
   if (!Array.isArray(declared)) return null;
-  const names = declared
-    .map((f) => f?.name)
-    .filter((n): n is string => typeof n === 'string');
+  const names = declared.map((f) => f?.name);
+  if (!names.every((n): n is string => typeof n === 'string')) return null;
   const keys = Object.keys(d.message).map((k) => k.toLowerCase());
   const ambiguous = names.some(
     (n) => keys.filter((k) => k === n.toLowerCase()).length > 1
@@ -48,7 +49,13 @@ const ASTER_BUILDER_TYPES = ['ApproveBuilder', 'UpdateBuilder'];
 
 const isZeroDecimal = (fee: unknown) => {
   if (typeof fee === 'number') return fee === 0;
-  return typeof fee === 'string' && DECIMAL.test(fee) && Number(fee) === 0;
+  return typeof fee === 'string' && ZERO_DECIMAL.test(fee);
+};
+
+// Value of the signed field named `name` (any case); undefined if not signed.
+const signedValue = (d: TypedData, fields: string[], name: string) => {
+  const field = fields.find((n) => n.toLowerCase() === name.toLowerCase());
+  return field === undefined ? undefined : d.message[field];
 };
 
 // MaxFeeRate must be signed; any other signed *MaxFeeRate (e.g. a spot rate)
@@ -85,11 +92,12 @@ const TYPED_DATA_RULES: Rule<TypedData>[] = [
       d.domain.name === 'HyperliquidSignTransaction' &&
       d.primaryType === 'HyperliquidTransaction:ApproveBuilderFee',
     hasFee: (d) => {
-      const fee = d.message.maxFeeRate;
+      const fields = signedFields(d);
+      const fee = fields && signedValue(d, fields, 'maxFeeRate');
       return !(
         typeof fee === 'string' &&
-        /^\d+(\.\d+)?%$/.test(fee) &&
-        Number(fee.slice(0, -1)) === 0
+        fee.endsWith('%') &&
+        ZERO_DECIMAL.test(fee.slice(0, -1))
       );
     },
   },
@@ -120,10 +128,12 @@ const LIGHTER_FEE_COLLECTORS: Record<string, string> = {
   '466324': '18971', // Robinhood Chain, api.rh.lighter.xyz
 };
 
+// A key must appear on exactly one line; a missing, repeated or non-hex value
+// is undefined, so the collector exemption fails and the fee check blocks.
 const lighterHex = (lines: string[], key: string) => {
-  const line = lines.find((l) => l.startsWith(`${key}:`));
-  const value = line?.slice(key.length + 1).trim();
-  return value && /^0x[0-9a-fA-F]+$/.test(value) ? BigInt(value) : undefined;
+  const found = lines.filter((l) => l.startsWith(`${key}:`));
+  const value = found.length === 1 ? found[0].slice(key.length + 1).trim() : '';
+  return /^0x[0-9a-fA-F]+$/.test(value) ? BigInt(value) : undefined;
 };
 
 const TEXT_RULES: Rule<string[]>[] = [
