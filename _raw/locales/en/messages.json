@@ -694,7 +694,7 @@
       "cancelCurrentConnection": "Cancel current connection",
       "imKeyNotConnected": "imKey is not connected",
       "imKeyConnected": "imKey is connected",
-      "extraFeeProtectionBlocked": "This signature was blocked by Extra Fee Protection. To sign it, disable the feature in Settings first."
+      "extraFeeProtectionBlocked": "Extra Fee Protection blocked this signature request. If you still want to sign, turn it off in Settings"
     },
     "signTypedData": {
       "signTypeDataOnChain": "Sign {{chain}} Typed Data",
@@ -2831,7 +2831,7 @@
           "perpsFloatWidget": "Perps Floating Widget",
           "dataAnalysis": "Data Analysis",
           "extraFeeProtection": "Extra Fee Protection",
-          "extraFeeProtectionDesc": "Block malicious signatures from Chrome extensions that charge extra fees"
+          "extraFeeProtectionDesc": "Blocks signature requests that allow browser extensions to charge extra fees"
         },
         "removedToken": {
           "title": "Removed Tokens",

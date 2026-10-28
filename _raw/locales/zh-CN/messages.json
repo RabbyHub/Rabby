@@ -293,7 +293,7 @@
           "biometricUnlockHint": "使用生物识别在此设备上解锁。",
           "dataAnalysis": "数据分析",
           "extraFeeProtection": "Extra Fee Protection",
-          "extraFeeProtectionDesc": "阻止 Chrome 插件发起恶意签名收取额外的手续费"
+          "extraFeeProtectionDesc": "拦截允许浏览器插件收取额外手续费的签名请求"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "有可用更新",
@@ -1622,7 +1622,7 @@
         "depositTips": "要完成 GasAccount 充值，此交易将被丢弃。充值完成后，你需要重新发起交易。"
       },
       "iGotIt": "我明白了",
-      "extraFeeProtectionBlocked": "本次签名被 Extra Fee Protection 拦截，如果需要签名请先到设置页禁用该功能"
+      "extraFeeProtectionBlocked": "Extra Fee Protection 已拦截此签名请求。如仍需签名，请在设置中关闭该功能"
     },
     "signText": {
       "createKey": {

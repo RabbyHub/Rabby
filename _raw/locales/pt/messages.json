@@ -501,7 +501,7 @@
       "detectedMultipleRequestsFromThisDapp": "Detectados múltiplos pedidos deste Dapp",
       "cancelConnection": "Cancelar ligação",
       "imKeyConnected": "imKey está ligado",
-      "extraFeeProtectionBlocked": "Esta assinatura foi bloqueada pela Extra Fee Protection. Para assiná-la, desative primeiro a funcionalidade nas Definições.",
+      "extraFeeProtectionBlocked": "A Extra Fee Protection bloqueou este pedido de assinatura. Se ainda assim quiser assinar, desative-a nas Definições",
       "imKeyNotConnected": "imKey não está ligado",
       "submitTx": "Enviar Transação",
       "cancelAll": "Cancelar todas as {{count}} solicitações do Dapp",
@@ -1470,7 +1470,7 @@
           "searchCurrency": "Pesquisar moeda",
           "dataAnalysis": "Análise de Dados",
           "extraFeeProtection": "Extra Fee Protection",
-          "extraFeeProtectionDesc": "Bloqueia assinaturas maliciosas de extensões do Chrome que cobram taxas extras"
+          "extraFeeProtectionDesc": "Bloqueia pedidos de assinatura que permitem a extensões do navegador cobrar taxas extras"
         },
         "cancel": "Cancelar",
         "7Days": "7 dias",
