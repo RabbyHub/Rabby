@@ -6,6 +6,7 @@ import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import {
   findInvalidTypedDataValue,
   findShadowedBuiltinType,
+  isTypeGraphTooLarge,
   parseTypedDataJson,
 } from '@/background/utils/typedDataTypes';
 
@@ -451,5 +452,218 @@ describe('findInvalidTypedDataValue', () => {
       const data = { ...base, domain: { ...base.domain, name: 1 } };
       expect(find(data)).toBe('domain.name');
     });
+  });
+});
+
+describe('isTypeGraphTooLarge', () => {
+  type Types = Record<string, { name: string; type: string }[]>;
+
+  // Expands the type signature without sharing, throwing on the limits.
+  const referenceSignature = (primaryType: string, types: Types) => {
+    let expansions = 0;
+    const sign = (name: string, depth: number): string => {
+      expansions += 1;
+      if (expansions > 4096) throw new Error('too many expansions');
+      if (depth > 900) throw new Error('recursion limit');
+      if (!Object.prototype.hasOwnProperty.call(types, name)) return name;
+      const members = types[name].map(({ type }) => {
+        const dim = type.endsWith('[]') ? '[]' : '';
+        const member = dim ? type.slice(0, -2) : type;
+        return Object.prototype.hasOwnProperty.call(types, member)
+          ? sign(member, depth + 1) + dim
+          : type;
+      });
+      const signature = `${name}(${members.join(',')})`;
+      if (signature.length > 100 * 1024) throw new Error('too long');
+      return signature;
+    };
+    return sign(primaryType, 1);
+  };
+  const referenceFails = (primaryType: string, types: Types) => {
+    try {
+      referenceSignature(primaryType, types);
+      return false;
+    } catch (e) {
+      return true;
+    }
+  };
+
+  // D0(uint256 value), Dn(Dn-1 a, Dn-1 b): Dn expands 2^(n+1) - 1 types.
+  const diamond = (levels: number) => {
+    const types: Types = { D0: [{ name: 'value', type: 'uint256' }] };
+    for (let i = 1; i <= levels; i++) {
+      types[`D${i}`] = [
+        { name: 'a', type: `D${i - 1}` },
+        { name: 'b', type: `D${i - 1}` },
+      ];
+    }
+    return types;
+  };
+  // C0(uint256 value), Cn(Cn-1 next): Cn is n + 1 levels deep.
+  const chain = (levels: number, prefix = 'C') => {
+    const types: Types = {
+      [`${prefix}0`]: [{ name: 'value', type: 'uint256' }],
+    };
+    for (let i = 1; i < levels; i++) {
+      types[`${prefix}${i}`] = [{ name: 'next', type: `${prefix}${i - 1}` }];
+    }
+    return types;
+  };
+  const TokenPermissions = [
+    { name: 'token', type: 'address' },
+    { name: 'amount', type: 'uint256' },
+  ];
+  const permitWitness = (witnessType: string, types: Types): Types => ({
+    EIP712Domain,
+    TokenPermissions,
+    PermitWitnessTransferFrom: [
+      { name: 'permitted', type: 'TokenPermissions' },
+      { name: 'spender', type: 'address' },
+      { name: 'nonce', type: 'uint256' },
+      { name: 'deadline', type: 'uint256' },
+      { name: 'witness', type: witnessType },
+    ],
+    ...types,
+  });
+  const expectSameAsReference = (primaryType: string, types: Types) => {
+    const tooLarge = isTypeGraphTooLarge(primaryType, types);
+    expect(tooLarge).toBe(referenceFails(primaryType, types));
+    return tooLarge;
+  };
+
+  it('rejects a 12-level diamond', () => {
+    const types = permitWitness('D12', diamond(12));
+    expect(expectSameAsReference('PermitWitnessTransferFrom', types)).toBe(
+      true
+    );
+  });
+
+  it('accepts a standard Permit2 witness', () => {
+    const types = permitWitness('Witness', {
+      Witness: [
+        { name: 'recipient', type: 'address' },
+        { name: 'minAmountOut', type: 'uint256' },
+      ],
+    });
+    expect(expectSameAsReference('PermitWitnessTransferFrom', types)).toBe(
+      false
+    );
+  });
+
+  it('accepts a seaport order', () => {
+    const types: Types = {
+      EIP712Domain,
+      OrderComponents: [
+        { name: 'offerer', type: 'address' },
+        { name: 'offer', type: 'OfferItem[]' },
+        { name: 'consideration', type: 'ConsiderationItem[]' },
+        { name: 'counter', type: 'uint256' },
+      ],
+      OfferItem: [
+        { name: 'token', type: 'address' },
+        { name: 'startAmount', type: 'uint256' },
+      ],
+      ConsiderationItem: [
+        { name: 'token', type: 'address' },
+        { name: 'recipient', type: 'address' },
+      ],
+    };
+    expect(expectSameAsReference('OrderComponents', types)).toBe(false);
+  });
+
+  it.each([
+    [0, false],
+    [1, true],
+  ])('allows exactly 4096 expansions (%i over)', (over, tooLarge) => {
+    // Root + 2 * D10 (2047 each) + Leaf = 4096 expansions.
+    const types: Types = {
+      ...diamond(10),
+      Leaf: [{ name: 'value', type: 'uint256' }],
+      Root: [
+        { name: 'a', type: 'D10' },
+        { name: 'b', type: 'D10' },
+        { name: 'c', type: 'Leaf' },
+        ...Array.from({ length: over }, (_, i) => ({
+          name: `extra${i}`,
+          type: 'Leaf',
+        })),
+      ],
+    };
+    expect(expectSameAsReference('Root', types)).toBe(tooLarge);
+  });
+
+  it.each([
+    ['D12[]', true],
+    ['D12[2]', false],
+    ['D12[][]', false],
+  ])('expands %s only after removing one trailing []', (type, tooLarge) => {
+    const types: Types = {
+      ...diamond(12),
+      Root: [{ name: 'value', type }],
+    };
+    expect(expectSameAsReference('Root', types)).toBe(tooLarge);
+  });
+
+  it('rejects a signature over 100 KiB', () => {
+    const name = `S${'x'.repeat(40)}`;
+    const types: Types = {
+      [name]: [{ name: 'value', type: 'uint256' }],
+      Root: Array.from({ length: 3000 }, (_, i) => ({
+        name: `f${i}`,
+        type: name,
+      })),
+    };
+    expect(isTypeGraphTooLarge('Root', types)).toBe(true);
+    expect(referenceFails('Root', types)).toBe(true);
+    types.Root = types.Root.slice(0, 1000);
+    expect(expectSameAsReference('Root', types)).toBe(false);
+  });
+
+  it.each([
+    ['self', { Mail: [{ name: 'replies', type: 'Mail[]' }] }],
+    [
+      'mutual',
+      {
+        Mail: [{ name: 'from', type: 'Person' }],
+        Person: [{ name: 'last', type: 'Mail' }],
+      },
+    ],
+  ])('rejects a %s reference', (_, types: Types) => {
+    expect(expectSameAsReference('Mail', types)).toBe(true);
+  });
+
+  it('allows 100 levels of structs and rejects 101', () => {
+    expect(isTypeGraphTooLarge('C99', chain(100))).toBe(false);
+    expect(isTypeGraphTooLarge('C100', chain(101))).toBe(true);
+  });
+
+  it('counts the depth of a type also reached on a deeper path', () => {
+    // Root reaches C59 directly and again under 60 levels of B.
+    const types: Types = {
+      ...chain(60),
+      ...chain(60, 'B'),
+      Root: [
+        { name: 'a', type: 'C59' },
+        { name: 'b', type: 'B59' },
+      ],
+    };
+    types.B0 = [{ name: 'value', type: 'C59' }];
+    expect(isTypeGraphTooLarge('Root', types)).toBe(true);
+  });
+
+  it.each([
+    [undefined, { Mail: [] }],
+    ['Mail', undefined],
+    ['Mail', { EIP712Domain }],
+  ])('accepts primaryType %p with types %p', (primaryType, types) => {
+    expect(isTypeGraphTooLarge(primaryType, types)).toBe(false);
+  });
+
+  it('checks a wide graph in linear time', () => {
+    const types = diamond(2000);
+    const start = Date.now();
+    expect(isTypeGraphTooLarge('D99', types)).toBe(true);
+    expect(isTypeGraphTooLarge('D2000', types)).toBe(true);
+    expect(Date.now() - start).toBeLessThan(500);
   });
 });

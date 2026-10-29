@@ -12,6 +12,73 @@ export const findShadowedBuiltinType = (types: unknown): string | undefined => {
   return Object.keys(types).find((name) => BUILTIN_TYPE_REG.test(name));
 };
 
+// Size limits for the type graph of a request.
+const MAX_TYPE_EXPANSIONS = 4096;
+const MAX_TYPE_SIGNATURE_LENGTH = 100 * 1024;
+const MAX_TYPE_DEPTH = 100;
+
+/**
+ * Reports whether the type graph of `primaryType` is too large: it expands
+ * too many types, has too long a signature, nests too deeply or refers back
+ * to itself. A member type is expanded only if it names a struct after
+ * removing one trailing `[]`, so `A[2]` and `A[][]` stay as written.
+ */
+export const isTypeGraphTooLarge = (
+  primaryType: unknown,
+  types: unknown
+): boolean => {
+  if (typeof primaryType !== 'string' || !types || typeof types !== 'object') {
+    return false;
+  }
+  const isStruct = (name: string) =>
+    Object.prototype.hasOwnProperty.call(types, name);
+  // `height` is the number of struct levels below and including a type.
+  const sizes = new Map<
+    string,
+    { expansions: number; length: number; height: number }
+  >();
+  const expanding = new Set<string>();
+
+  const expand = (name: string, depth: number) => {
+    const cached = sizes.get(name);
+    if (cached) return cached;
+    if (depth > MAX_TYPE_DEPTH || expanding.has(name)) {
+      return { expansions: Infinity, length: Infinity, height: Infinity };
+    }
+    expanding.add(name);
+    const fields = (types as Record<string, unknown>)[name];
+    const members = Array.isArray(fields) ? fields : [];
+    let expansions = 1;
+    let height = 1;
+    let length = name.length + 2 + Math.max(members.length - 1, 0);
+    for (const field of members) {
+      const type = field?.type;
+      if (typeof type !== 'string') continue;
+      const memberType = type.endsWith('[]') ? type.slice(0, -2) : type;
+      if (isStruct(memberType)) {
+        const member = expand(memberType, depth + 1);
+        expansions += member.expansions;
+        length += member.length + type.length - memberType.length;
+        height = Math.max(height, member.height + 1);
+      } else {
+        length += type.length;
+      }
+    }
+    expanding.delete(name);
+    const size = { expansions, length, height };
+    sizes.set(name, size);
+    return size;
+  };
+
+  if (!isStruct(primaryType)) return false;
+  const { expansions, length, height } = expand(primaryType, 1);
+  return (
+    expansions > MAX_TYPE_EXPANSIONS ||
+    length > MAX_TYPE_SIGNATURE_LENGTH ||
+    height > MAX_TYPE_DEPTH
+  );
+};
+
 // The signer coerces some values instead of rejecting them, so what is
 // displayed is not what is signed: `bool` is encoded as `Boolean(value)` (the
 // string "false" signs true), `string` encodes a number as its bytes (123
