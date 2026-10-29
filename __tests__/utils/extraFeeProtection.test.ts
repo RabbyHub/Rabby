@@ -158,17 +158,19 @@ describe('detectExtraFeeTypedData', () => {
     ).toBeNull();
   });
 
-  it('blocks aster when any *MaxFeeRate field is non-zero', () => {
-    expect(
-      detectExtraFeeTypedData(
-        withMessage(f.asterApproveAgentWithBuilder, {
-          ...f.asterApproveAgentWithBuilder.message,
-          SpotBuilder: '0x1111111111111111111111111111111111111111',
-          MaxFeeRate: '0',
-          SpotMaxFeeRate: '0.01',
-        })
-      )
-    ).toBe('aster');
+  it('blocks aster when any Max*FeeRate field is non-zero', () => {
+    for (const spotFee of ['SpotMaxFeeRate', 'MaxSpotFeeRate']) {
+      expect(
+        detectExtraFeeTypedData(
+          withMessage(f.asterApproveAgentWithBuilder, {
+            ...f.asterApproveAgentWithBuilder.message,
+            SpotBuilder: '0x1111111111111111111111111111111111111111',
+            MaxFeeRate: '0',
+            [spotFee]: '0.01',
+          })
+        )
+      ).toBe('aster');
+    }
   });
 
   it('ignores unsigned case-variant decoys in aster messages', () => {
