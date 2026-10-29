@@ -71,6 +71,7 @@ import { assertProviderRequest } from '@/background/utils/assertProviderRequest'
 import {
   findInvalidTypedDataValue,
   findShadowedBuiltinType,
+  isTypeGraphTooLarge,
   parseTypedDataJson,
 } from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
@@ -398,6 +399,9 @@ const signTypedDataVlidation = ({
     throw ethErrors.rpc.invalidParams(
       `types should not redefine built-in type: ${shadowedType}`
     );
+  }
+  if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
+    throw ethErrors.rpc.invalidParams('types graph is too large to parse');
   }
   const invalidValue = findInvalidTypedDataValue(jsonData);
   if (invalidValue) {
