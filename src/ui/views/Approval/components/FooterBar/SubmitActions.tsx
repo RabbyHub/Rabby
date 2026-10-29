@@ -100,6 +100,8 @@ export const SubmitActions: React.FC<Props> = ({
           overlayClassName="rectangle sign-tx-forbidden-tooltip"
           // keep a 20px gap to the window edges (patched dom-align)
           align={{ viewportOffset: [20, -20, -20, 20] }}
+          // below Popup / Modal (1000) so an open drawer covers the always-on tooltip
+          zIndex={999}
           title={tooltipContent}
           // rc-tooltip shows an empty popup for an empty title, unlike antd
           visible={
