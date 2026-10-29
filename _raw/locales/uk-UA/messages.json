@@ -508,7 +508,7 @@
       "cancelConnection": "Скасувати з'єднання",
       "cancelCurrentConnection": "Скасувати поточне підключення",
       "imKeyConnected": "imKey підключено",
-      "extraFeeProtectionBlocked": "Extra Fee Protection заблокувала цей запит на підпис. Якщо ви все ж хочете підписати, вимкніть її в налаштуваннях",
+      "extraFeeProtectionBlocked": "Захист від додаткових комісій заблокував цей запит на підпис. Якщо ви все ж хочете підписати, вимкніть його в налаштуваннях",
       "blockDappFromSendingRequests": "Заблокувати запит Dapp на 1 хвилину",
       "iGotIt": "Зрозуміло"
     },
@@ -1368,7 +1368,7 @@
           "currency": "Валюта",
           "searchCurrency": "Пошук валюти",
           "dataAnalysis": "Аналіз даних",
-          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtection": "Захист від додаткових комісій",
           "extraFeeProtectionDesc": "Блокує запити на підпис, які дозволяють розширенням браузера стягувати додаткові комісії"
         },
         "aboutUs": "Про нас",

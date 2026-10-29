@@ -495,7 +495,7 @@
       "connecting": "Kết nối...",
       "beginSigning": "Bắt đầu quá trình ký",
       "imKeyConnected": "imKey đã được kết nối",
-      "extraFeeProtectionBlocked": "Extra Fee Protection đã chặn yêu cầu chữ ký này. Nếu vẫn muốn ký, hãy tắt tính năng này trong Cài đặt",
+      "extraFeeProtectionBlocked": "Bảo vệ phí bổ sung đã chặn yêu cầu chữ ký này. Nếu vẫn muốn ký, hãy tắt tính năng này trong Cài đặt",
       "testnet": "Mạng thử nghiệm",
       "resend": "Thử lại",
       "cancelConnection": "Hủy kết nối",
@@ -1469,7 +1469,7 @@
           "currency": "Tiền tệ",
           "searchCurrency": "Tìm kiếm tiền tệ",
           "dataAnalysis": "Phân tích dữ liệu",
-          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtection": "Bảo vệ phí bổ sung",
           "extraFeeProtectionDesc": "Chặn các yêu cầu chữ ký cho phép tiện ích trình duyệt thu thêm phí"
         },
         "1Hour": "1 giờ",

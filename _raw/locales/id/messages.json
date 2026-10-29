@@ -507,7 +507,7 @@
       "resend": "Coba lagi",
       "cancelConnection": "Batalkan koneksi",
       "imKeyConnected": "imKey terhubung",
-      "extraFeeProtectionBlocked": "Extra Fee Protection memblokir permintaan tanda tangan ini. Jika tetap ingin menandatangani, nonaktifkan di Pengaturan",
+      "extraFeeProtectionBlocked": "Perlindungan Biaya Tambahan memblokir permintaan tanda tangan ini. Jika tetap ingin menandatangani, nonaktifkan di Pengaturan",
       "imKeyNotConnected": "imKey tidak terhubung",
       "iGotIt": "Saya Mengerti"
     },
@@ -1469,7 +1469,7 @@
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
           "dataAnalysis": "Analisis Data",
-          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtection": "Perlindungan Biaya Tambahan",
           "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },
         "7Days": "7 hari",

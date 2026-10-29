@@ -58,12 +58,12 @@ const signedValue = (d: TypedData, fields: string[], name: string) => {
   return field === undefined ? undefined : d.message[field];
 };
 
-// MaxFeeRate must be signed; any other signed *MaxFeeRate (e.g. a spot rate)
-// must also be zero.
+// MaxFeeRate must be signed; any other signed Max*FeeRate (e.g. a spot rate
+// such as SpotMaxFeeRate or MaxSpotFeeRate) must also be zero.
 const asterFeeIsZero = (d: TypedData) => {
   const fields = signedFields(d);
   if (!fields) return false;
-  const feeFields = fields.filter((n) => /maxfeerate$/i.test(n));
+  const feeFields = fields.filter((n) => /max\w*feerate$/i.test(n));
   return (
     feeFields.some((n) => n.toLowerCase() === 'maxfeerate') &&
     feeFields.every((n) => isZeroDecimal(d.message[n]))

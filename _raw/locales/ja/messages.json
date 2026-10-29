@@ -503,7 +503,7 @@
       "cancelAll": "すべての {{count}} 件の要求をDappからキャンセルします",
       "imKeyNotConnected": "imKeyは接続されていません",
       "imKeyConnected": "imKey が接続されています",
-      "extraFeeProtectionBlocked": "Extra Fee Protection がこの署名リクエストをブロックしました。署名する場合は、設定でオフにしてください",
+      "extraFeeProtectionBlocked": "追加手数料保護がこの署名リクエストをブロックしました。署名する場合は、設定でオフにしてください",
       "blockDappFromSendingRequests": "Dappが1分間リクエストを送信するのをブロック。",
       "cancelCurrentConnection": "現在の接続をキャンセル",
       "cancelTransaction": "トランザクションをキャンセル",
@@ -1365,7 +1365,7 @@
           "currency": "通貨",
           "searchCurrency": "通貨を検索",
           "dataAnalysis": "データ分析",
-          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtection": "追加手数料保護",
           "extraFeeProtectionDesc": "ブラウザ拡張機能による追加手数料の徴収を許可する署名リクエストをブロックします"
         },
         "aboutUs": "私たちについて",
