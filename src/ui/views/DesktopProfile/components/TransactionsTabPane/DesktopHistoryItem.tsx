@@ -51,7 +51,7 @@ export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
       {isScam && (
         <TooltipWithMagnetArrow
           title={t('page.transactions.txHistory.scamToolTip')}
-          className="rectangle w-[max-content] max-w-[340px]"
+          className="rectangle w-[max-content]"
         >
           <div
             className="tag-scam absolute top-0 text-[12px] leading-[14px] text-r-neutral-foot left-0 px-[6px] py-[3px] bg-r-neutral-card2"
