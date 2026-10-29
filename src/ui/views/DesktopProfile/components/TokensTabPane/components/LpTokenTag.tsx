@@ -28,7 +28,6 @@ export const LpTokenTag = ({
   className,
   size = 16,
   protocolName,
-  inModal,
 }: {
   iconClassName?: string;
   className?: string;
@@ -39,10 +38,6 @@ export const LpTokenTag = ({
   return (
     <Tooltip
       overlayClassName="rectangle"
-      overlayStyle={{ maxWidth: inModal ? 260 : 400 }}
-      overlayInnerStyle={{
-        borderRadius: '12px',
-      }}
       className={className}
       style={{ width: size, height: size }}
       overlay={<Overlay protocolName={protocolName} />}

@@ -395,7 +395,7 @@ textarea {
       Tooltip
 ---------------------*/
 .ant-tooltip:not(.disable-ant-overwrite) {
-  max-width: 360px;
+  max-width: 300px;
   &.ant-tooltip-placement-top,
   &.ant-tooltip-placement-topLeft,
   &.ant-tooltip-placement-topRight {
@@ -403,14 +403,16 @@ textarea {
   }
   .ant-tooltip-inner {
     font-size: 12px;
-    border-radius: 14px;
-    padding: 6px 12px;
+    border-radius: 6px;
+    padding: 8px 12px;
     background-color: black;
   }
+  // A square rotated 45deg, centered on the body edge: half its diagonal
+  // sticks out, so a side of 8 * sqrt(2) shows an 8px tip (Figma).
   .ant-tooltip-arrow-content {
     background-color: black;
-    width: 8px;
-    height: 8px;
+    width: 11.3137px;
+    height: 11.3137px;
     &::before {
       display: none;
     }
@@ -419,10 +421,6 @@ textarea {
     display: none;
   }
   &.rectangle {
-    max-width: 350px;
-    .ant-tooltip-inner {
-      border-radius: 2px;
-    }
     .ant-tooltip-arrow {
       display: block;
     }
@@ -456,9 +454,12 @@ textarea {
       z-index: 2;
       transform: translateY(calc(-100% + 1px)) translateX(-50%);
     }
+    // keeps its own smaller arrow
     .ant-tooltip-arrow-content {
       background-color: var(--r-neutral-bg-1);
       border: 1px solid var(--r-neutral-line);
+      width: 8px;
+      height: 8px;
     }
   }
   &.hide-arrow {
@@ -468,9 +469,6 @@ textarea {
   }
 
   &.rounded-tooltip {
-    .ant-tooltip-inner {
-      border-radius: 2px !important;
-    }
     .ant-tooltip-arrow {
       display: block !important;
     }

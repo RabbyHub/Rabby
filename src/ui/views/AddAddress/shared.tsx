@@ -79,7 +79,7 @@ const AddressItem = ({ data }: { data: WalletBrandItem }) => {
           placement="topLeft"
           visible={!!data.tipI18nKey && visible}
           arrowPointAtCenter
-          overlayClassName="rectangle w-[max-content] max-w-[355px]"
+          overlayClassName="rectangle w-[max-content]"
         >
           {leftNode}
         </Tooltip>

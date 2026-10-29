@@ -310,9 +310,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                   {site.isMetamaskMode ? (
                     <TooltipWithMagnetArrow
                       placement="top"
-                      overlayClassName={clsx(
-                        'rectangle max-w-[360px] w-[360px]'
-                      )}
+                      overlayClassName="rectangle"
                       align={{
                         offset: [0, 4],
                       }}
@@ -393,7 +391,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                 {site.isMetamaskMode ? (
                   <TooltipWithMagnetArrow
                     placement="top"
-                    overlayClassName={clsx('rectangle max-w-[360px] w-[360px]')}
+                    overlayClassName="rectangle"
                     align={{
                       offset: [0, 4],
                     }}

@@ -144,7 +144,7 @@ const Row = ({
         <TooltipWithMagnetArrow
           inApproval
           title={tip}
-          overlayClassName="rectangle w-[max-content] max-w-[355px]"
+          overlayClassName="rectangle w-[max-content]"
         >
           <img src={IconQuestionMark} className="icon icon-tip ml-6 inline" />
         </TooltipWithMagnetArrow>
