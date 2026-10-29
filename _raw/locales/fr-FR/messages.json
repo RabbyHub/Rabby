@@ -1073,7 +1073,7 @@
           "currency": "Devise",
           "searchCurrency": "Rechercher une devise",
           "dataAnalysis": "Analyse des données",
-          "extraFeeProtection": "Extra Fee Protection",
+          "extraFeeProtection": "Protection contre les frais supplémentaires",
           "extraFeeProtectionDesc": "Bloque les demandes de signature permettant à des extensions de navigateur de prélever des frais supplémentaires"
         },
         "supportedChains": "Réseaux intégrés",
@@ -2042,7 +2042,7 @@
         "signWithHardwareWalletToUse": "Vous devez signer avec {{brand}} pour utiliser"
       },
       "imKeyConnected": "imKey est connecté",
-      "extraFeeProtectionBlocked": "Extra Fee Protection a bloqué cette demande de signature. Si vous souhaitez quand même signer, désactivez-la dans les Paramètres",
+      "extraFeeProtectionBlocked": "La protection contre les frais supplémentaires a bloqué cette demande de signature. Si vous souhaitez quand même signer, désactivez-la dans les Paramètres",
       "imKeyNotConnected": "imKey n'est pas connecté",
       "iGotIt": "J’ai compris"
     },
