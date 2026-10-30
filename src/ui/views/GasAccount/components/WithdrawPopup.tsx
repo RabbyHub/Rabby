@@ -235,10 +235,7 @@ const Selector = ({
                 {t('page.gasAccount.withdrawPopup.withdrawalLimit')}
                 <Tooltip
                   overlayClassName={clsx('rectangle')}
-                  placement="topRight"
-                  arrowPointAtCenter
-                  // antd shifts by 20px, but the arrow center sits 24px from the popup edge
-                  align={{ offset: [24, -4] }}
+                  placement="topLeft"
                   title={
                     isSelectChain
                       ? t('page.gasAccount.withdrawPopup.riskMessageFromChain')
@@ -246,6 +243,7 @@ const Selector = ({
                           'page.gasAccount.withdrawPopup.riskMessageFromAddress'
                         )
                   }
+                  align={{ targetOffset: [0, 0] }}
                 >
                   <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
                 </Tooltip>
