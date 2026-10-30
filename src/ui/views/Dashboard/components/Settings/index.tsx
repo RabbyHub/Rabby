@@ -62,6 +62,9 @@ import { ReactComponent as RcIconRemovedToken } from 'ui/assets/settings/removed
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
+import { ReactComponent as RcIconExtraFeeProtectionCC } from 'ui/assets/dashboard/settings/extra-fee-protection-cc.svg';
+import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
+import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 
 import IconIntro from 'ui/assets/dashboard/dapp-account-intro.png';
 
@@ -83,6 +86,8 @@ import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
+import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
+import { isExtraFeeProtectionOn } from '@/utils/extraFeeProtection';
 import { useCurrency } from '@/ui/hooks/useCurrency';
 import { useExtensionUpdateSettingsCard } from '@/ui/hooks/useExtensionUpdateSettingsCard';
 import {
@@ -668,6 +673,9 @@ const SettingsInner = ({
   const isEnabledDappAccount = useRabbySelector(
     (state) => state.preference.isEnabledDappAccount
   );
+  const isExtraFeeProtectionEnabled = useRabbySelector((state) =>
+    isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
+  );
   const biometricUnlockEnabled = useRabbySelector(
     (state) => state.preference.biometricUnlockEnabled
   );
@@ -720,6 +728,37 @@ const SettingsInner = ({
     //   setIsShowNonWhitelistedTxPwdModal(true);
     // }
     onPopupToggleShow('nonWhitelistedTxPwdModal');
+  });
+
+  const handleToggleExtraFeeProtection = useMemoizedFn(async () => {
+    matomoRequestEvent({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'ExtraFeeProtection',
+    });
+
+    ga4.fireEvent('Extra_Fee_Protection', {
+      event_category: 'Click More',
+    });
+
+    reportSettings('ExtraFeeProtection');
+
+    if (!isExtraFeeProtectionEnabled) {
+      await dispatch.preference.enableExtraFeeProtection();
+      return;
+    }
+    try {
+      await AuthenticationModalPromise({
+        title: t('page.dashboard.settings.settings.extraFeeProtection'),
+        confirmText: t('global.confirm'),
+        cancelText: t('global.Cancel'),
+        validationHandler: (password: string) =>
+          dispatch.preference.disableExtraFeeProtection(password),
+        wallet,
+      });
+    } catch (e) {
+      // cancelled: protection stays on
+    }
   });
 
   const handleEnableDappAccount = useMemoizedFn(() => {
@@ -1051,6 +1090,29 @@ const SettingsInner = ({
             <Switch
               checked={isEnabledPwdForNonWhitelistedTx}
               onChange={handleTogglePwdForNonWhitelistedTx}
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconExtraFeeProtectionCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: (
+            <span className="flex items-center gap-[4px]">
+              {t('page.dashboard.settings.settings.extraFeeProtection')}
+              <TooltipV6
+                overlayClassName="rectangle"
+                title={t(
+                  'page.dashboard.settings.settings.extraFeeProtectionDesc'
+                )}
+              >
+                <RcIconInfoCC className="w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
+              </TooltipV6>
+            </span>
+          ),
+          rightIcon: (
+            <Switch
+              checked={isExtraFeeProtectionEnabled}
+              onChange={handleToggleExtraFeeProtection}
             />
           ),
         },

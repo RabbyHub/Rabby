@@ -180,6 +180,12 @@ describe('SignTypedData security lifecycle', () => {
       '@/background/utils': { underline2Camelcase: (value: string) => value },
       '@/utils/matomo-request': { matomoRequestEvent: noop },
       '@/utils/transaction': { getKRCategoryByType: (value: string) => value },
+      '@/ui/store': {
+        useRabbySelector: (selector: any) => selector({ preference: {} }),
+      },
+      '@/utils/extraFeeProtection': jest.requireActual(
+        '@/utils/extraFeeProtection'
+      ),
       consts: {
         ALIAS_ADDRESS: {},
         CHAINS: { ETH: { serverId: 'eth' } },

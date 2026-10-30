@@ -34,6 +34,11 @@ import {
 } from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { FooterBar } from './FooterBar/FooterBar';
+import { useRabbySelector } from '@/ui/store';
+import {
+  detectExtraFeeText,
+  isExtraFeeProtectionOn,
+} from '@/utils/extraFeeProtection';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TextActions';
 import { WaitingSignMessageComponent } from './map';
@@ -80,14 +85,23 @@ const SignText = ({
   const currentAccount = params.isGnosis ? params.account! : account;
   const renderStartAt = useRef(0);
   const actionType = useRef('');
+  // read after awaits: protection can be turned on while a sign is pending
+  const extraFeeBlockedRef = useRef(false);
   const [, resolveApproval, rejectApproval] = useApproval(
-    bindApproval(approvalId, 'SignText')
+    bindApproval(approvalId, 'SignText', () => !extraFeeBlockedRef.current)
   );
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
   const [hexData, from] = data;
   const signText = hex2Text(hexData);
+  const extraFeeProtectionOn = useRabbySelector((state) =>
+    isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
+  );
+  const extraFeeBlocked =
+    extraFeeProtectionOn &&
+    detectExtraFeeText(signText, params.session.origin) !== null;
+  extraFeeBlockedRef.current = extraFeeBlocked;
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLedger, setIsLedger] = useState(false);
@@ -244,7 +258,7 @@ const SignText = ({
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
-    if (activeApprovalPopup()) {
+    if (activeApprovalPopup() || extraFeeBlockedRef.current) {
       return;
     }
 
@@ -255,6 +269,7 @@ const SignText = ({
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (extraFeeBlockedRef.current) return;
     }
 
     if (
@@ -355,7 +370,8 @@ const SignText = ({
     },
     {
       onSuccess(res) {
-        if (res?.isFinished) {
+        // a stored Safe signature must not bypass the protection
+        if (res?.isFinished && !extraFeeBlockedRef.current) {
           const modal = Modal.info({
             maskClosable: false,
             closable: false,
@@ -515,7 +531,7 @@ const SignText = ({
     if (!safeInfo || !account) {
       return;
     }
-    if (activeApprovalPopup()) {
+    if (activeApprovalPopup() || extraFeeBlockedRef.current) {
       return;
     }
 
@@ -537,6 +553,7 @@ const SignText = ({
       );
     }
 
+    if (extraFeeBlockedRef.current) return;
     const typedData = generateTypedData({
       safeAddress: safeInfo.address,
       safeVersion: safeInfo.version,
@@ -668,15 +685,22 @@ const SignText = ({
             // securityLevel={securityLevel}
             // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             onSubmit={handleGnosisSign}
+            // the tooltip is forced open while disabled; hide it with the drawer
             enableTooltip={
-              currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              gnosisFooterBarVisible &&
+              (extraFeeBlocked ||
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring)
             }
             tooltipContent={
-              currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring ? (
+              extraFeeBlocked ? (
+                <div>{t('page.signFooterBar.extraFeeProtectionBlocked')}</div>
+              ) : currentGnosisAdmin?.type ===
+                KEYRING_TYPE.WatchAddressKeyring ? (
                 <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
               ) : null
             }
             disabledProcess={
+              extraFeeBlocked ||
               currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
             }
             // isSubmitting={isSubmittingGnosis}
@@ -694,11 +718,22 @@ const SignText = ({
           originLogo={params.session.icon}
           gnosisAccount={isGnosis ? params.account : undefined}
           account={currentAccount}
-          enableTooltip={isWatch}
-          tooltipContent={cantProcessReason}
+          enableTooltip={isWatch || extraFeeBlocked}
+          tooltipContent={
+            extraFeeBlocked ? (
+              <div>{t('page.signFooterBar.extraFeeProtectionBlocked')}</div>
+            ) : (
+              cantProcessReason
+            )
+          }
           onCancel={handleCancel}
           onSubmit={() => handleAllow()}
-          disabledProcess={isLoading || isWatch || hasUnProcessSecurityResult}
+          disabledProcess={
+            isLoading ||
+            isWatch ||
+            hasUnProcessSecurityResult ||
+            extraFeeBlocked
+          }
           engineResults={engineResults}
           onIgnoreAllRules={handleIgnoreAllRules}
         />

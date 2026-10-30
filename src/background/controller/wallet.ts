@@ -209,6 +209,10 @@ import {
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
 import {
+  disableExtraFeeProtection,
+  enableExtraFeeProtection,
+} from './walletUtils/extraFeeProtection';
+import {
   assertApprovalSigningBinding,
   waitForApprovalSigning,
 } from './walletUtils/approvalSigning';
@@ -2601,6 +2605,9 @@ export class WalletController extends BaseController {
       isEnabledPwdForNonWhitelistedTx: enabled,
     });
   };
+
+  enableExtraFeeProtection = enableExtraFeeProtection;
+  disableExtraFeeProtection = disableExtraFeeProtection;
 
   enableDappAccount = (enabled: boolean) => {
     preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });

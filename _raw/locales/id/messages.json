@@ -507,6 +507,7 @@
       "resend": "Coba lagi",
       "cancelConnection": "Batalkan koneksi",
       "imKeyConnected": "imKey terhubung",
+      "extraFeeProtectionBlocked": "Perlindungan Biaya Tambahan memblokir permintaan tanda tangan ini. Jika tetap ingin menandatangani, nonaktifkan di Pengaturan",
       "imKeyNotConnected": "imKey tidak terhubung",
       "iGotIt": "Saya Mengerti"
     },
@@ -1467,7 +1468,9 @@
           "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
-          "dataAnalysis": "Analisis Data"
+          "dataAnalysis": "Analisis Data",
+          "extraFeeProtection": "Perlindungan Biaya Tambahan",
+          "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",

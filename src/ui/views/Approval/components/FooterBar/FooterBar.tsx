@@ -265,6 +265,21 @@ export const FooterBar: React.FC<Props> = ({
     !isWatchAddr &&
     !!props.isGasNotEnough;
 
+  const processDisabled = isApprovalProcessDisabled({
+    securityBlocked,
+    hasUnprocessedSecurityResult:
+      !!securityLevel && !!hasUnProcessSecurityResult,
+    payGasByGasAccount,
+    gasAccountCanPay,
+    useGasLess,
+    disabledProcess: props.disabledProcess,
+  });
+  const tooltipEnabled =
+    payGasByGasAccount || useGasLess ? false : props.enableTooltip;
+  // Keep the disabled reason tooltip open instead of showing it on hover.
+  const showDisabledReason =
+    processDisabled && !!tooltipEnabled && !!props.tooltipContent;
+
   if (!account) {
     return null;
   }
@@ -289,22 +304,9 @@ export const FooterBar: React.FC<Props> = ({
           account={account}
           gasLess={useGasLess && !payGasByGasAccount}
           {...props}
-          disabledProcess={isApprovalProcessDisabled({
-            securityBlocked,
-            hasUnprocessedSecurityResult:
-              !!securityLevel && !!hasUnProcessSecurityResult,
-            payGasByGasAccount,
-            gasAccountCanPay,
-            useGasLess,
-            disabledProcess: props.disabledProcess,
-          })}
-          enableTooltip={
-            payGasByGasAccount
-              ? false
-              : useGasLess
-              ? false
-              : props.enableTooltip
-          }
+          disabledProcess={processDisabled}
+          enableTooltip={tooltipEnabled}
+          tooltipVisible={showDisabledReason}
           gasLessThemeColor={
             isDarkTheme ? gasLessConfig?.dark_color : gasLessConfig?.theme_color
           }
