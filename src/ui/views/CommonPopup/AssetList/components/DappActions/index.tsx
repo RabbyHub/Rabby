@@ -1,12 +1,17 @@
 import {
   ExplainTxResponse,
+  PortfolioItem,
   Tx,
   WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import React, { useCallback, useMemo } from 'react';
 import styled from 'styled-components';
 import { message } from 'antd';
-import { useDappAction } from './hook';
+import {
+  findTypedWithdrawAction,
+  useDappAction,
+  useDappActionRequest,
+} from './hook';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useCommonPopupView, useWallet } from '@/ui/utils';
@@ -27,6 +32,7 @@ const Wrapper = styled.div`
 interface ActionButtonProps {
   className?: string;
   text: string;
+  disabled?: boolean;
   onClick: () => void;
 }
 
@@ -36,7 +42,12 @@ export const enum ActionType {
   Queue = 'queue',
 }
 
-const ActionButton = ({ text, onClick, className }: ActionButtonProps) => {
+const ActionButton = ({
+  text,
+  onClick,
+  className,
+  disabled,
+}: ActionButtonProps) => {
   return (
     <div
       className={`
@@ -45,9 +56,10 @@ const ActionButton = ({ text, onClick, className }: ActionButtonProps) => {
         h-[24px] leading-[24px]
         border-[0.5px] border-r-blue-default rounded-[6px]
         hover:bg-r-blue-light1
+        ${disabled ? 'opacity-60 pointer-events-none' : ''}
         ${className}
       `}
-      onClick={onClick}
+      onClick={disabled ? undefined : onClick}
     >
       {text}
     </div>
@@ -94,13 +106,13 @@ const DappActionHeader = ({
 };
 
 const DappActions = ({
-  data,
+  portfolio,
   chain,
   protocolLogo,
   protocolName,
   type,
 }: {
-  data?: WithdrawAction[];
+  portfolio: PortfolioItem;
   chain?: string;
   protocolLogo?: string;
   protocolName?: string;
@@ -120,34 +132,19 @@ const DappActions = ({
     account: currentAccount!,
   });
 
-  const targetAction = useMemo(() => {
-    if (type === 'withdraw') {
-      return data?.find(
-        (item) =>
-          item.type === ActionType.Withdraw || item.type === ActionType.Queue
-      );
-    } else {
-      return data?.find((item) => item.type === ActionType.Claim);
-    }
-  }, [data, type]);
-
-  const isQueueWithdraw = useMemo(
-    () => targetAction?.type === ActionType.Queue,
-    [targetAction?.type]
-  );
-
   const { valid: show, action } = useDappAction(
-    targetAction,
+    findTypedWithdrawAction(portfolio.withdraw_actions, type),
     chain,
     protocolName
   );
+  const { pending, run } = useDappActionRequest(portfolio, action);
 
   const simulationRef = React.useRef<{
     usdValueChange?: number;
   }>({});
 
   const onPreExecChange = useCallback(
-    (r: ExplainTxResponse) => {
+    (r: ExplainTxResponse, isQueueWithdraw: boolean) => {
       const totalReceiveUsdValue = r?.balance_change?.receive_token_list?.reduce(
         (acc, token) => {
           return acc + (Number(token.usd_value) || 0);
@@ -179,7 +176,7 @@ const DappActions = ({
         disableSignBtn: false,
       });
     },
-    [isQueueWithdraw]
+    [updateConfig]
   );
 
   const canDirectSign = useMemo(
@@ -188,12 +185,16 @@ const DappActions = ({
   );
 
   const handleSubmit = useCallback(
-    async (action: () => Promise<Tx[]>, title?: string) => {
+    async (txs: Tx[], actionType: WithdrawAction['type']) => {
+      const isQueueWithdraw = actionType === ActionType.Queue;
+      const title = t(
+        `component.DappActions.${isQueueWithdraw ? 'withdraw' : actionType}`
+      );
       simulationRef.current = {};
 
       const now = Date.now();
       const base = {
-        tx_type: targetAction?.type || '',
+        tx_type: actionType,
         chain: chain || '',
         user_addr: currentAccount?.address || '',
         address_type: currentAccount?.type || '',
@@ -209,9 +210,6 @@ const DappActions = ({
             typeof s.usdValueChange === 'number' ? s.usdValueChange : '',
         } as const;
       };
-
-      const txs = await action();
-      if (!txs?.length) return;
 
       const runFallback = async () => {
         let lastHash = '';
@@ -250,7 +248,8 @@ const DappActions = ({
           ),
           showSimulateChange: true,
           disableSignBtn: false,
-          onPreExecChange,
+          onPreExecChange: (r: ExplainTxResponse) =>
+            onPreExecChange(r, isQueueWithdraw),
           onRedirectToDeposit: () => {
             setVisible(false);
           },
@@ -305,13 +304,9 @@ const DappActions = ({
       openUI,
       protocolLogo,
       chain,
-      isQueueWithdraw,
       t,
       onPreExecChange,
       protocolName,
-      targetAction?.type,
-      type,
-      chain,
       currentAccount?.address,
       setVisible,
       wallet,
@@ -325,19 +320,9 @@ const DappActions = ({
   return (
     <Wrapper>
       <ActionButton
-        text={
-          type === 'withdraw'
-            ? t('component.DappActions.withdraw')
-            : t('component.DappActions.claim')
-        }
-        onClick={() =>
-          handleSubmit(
-            action,
-            type === 'withdraw'
-              ? t('component.DappActions.withdraw')
-              : t('component.DappActions.claim')
-          )
-        }
+        disabled={pending}
+        text={t(`component.DappActions.${type}`)}
+        onClick={() => run(type, handleSubmit)}
       />
     </Wrapper>
   );
