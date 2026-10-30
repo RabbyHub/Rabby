@@ -27,8 +27,6 @@ const GlobalStyle = createGlobalStyle`
   .dapp-search-card-tooltip {
     .ant-tooltip-inner {
       background-color: var(--r-neutral-black, #000) !important;
-      border-radius: 6px;
-      padding: 12px !important;
     }
 
     .ant-tooltip-arrow-content {
@@ -86,7 +84,7 @@ export const DappCard = ({
               {data.collected_list?.length ? (
                 <Tooltip
                   getPopupContainer={() => ref.current || document.body}
-                  overlayClassName="rectangle max-w-[360px] dapp-search-card-tooltip"
+                  overlayClassName="rectangle dapp-search-card-tooltip"
                   title={
                     <div>
                       <div className="text-[12px] leading-[14px] text-r-neutral-title2 mb-[6px]">

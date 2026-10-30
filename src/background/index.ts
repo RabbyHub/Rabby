@@ -37,6 +37,7 @@ import browser from 'webextension-polyfill';
 import BigNumber from 'bignumber.js';
 import { providerController, walletController } from './controller';
 import createSubscription from './controller/provider/subscriptionManager';
+import getOwnMethod from './utils/getOwnMethod';
 import {
   bridgeService,
   contactBookService,
@@ -511,11 +512,15 @@ browser.runtime.onConnect.addListener((port) => {
     // for background push to respective page
     req.session!.setPortMessage(pm);
 
+    const subscriptionMethod = getOwnMethod(
+      subscriptionManager.methods,
+      data?.method
+    );
     if (
-      subscriptionManager.methods[data?.method] &&
+      subscriptionMethod &&
       permissionService.getConnectedSite(session!.origin)?.isConnected
     ) {
-      return subscriptionManager.methods[data.method].call(null, req);
+      return subscriptionMethod.call(null, req);
     }
 
     return providerController(req);

@@ -11,6 +11,7 @@ import {
 
 import rpcFlow from './rpcFlow';
 import internalMethod from './internalMethod';
+import getOwnMethod from 'background/utils/getOwnMethod';
 import { Account } from '@/background/service/preference';
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 
@@ -74,8 +75,9 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
 
   req.account = account;
 
-  if (internalMethod[method]) {
-    return internalMethod[method](req);
+  const internalMethodHandler = getOwnMethod(internalMethod, method);
+  if (internalMethodHandler) {
+    return internalMethodHandler.call(internalMethod, req);
   }
 
   if (!IGNORE_CHECK.includes(method)) {
