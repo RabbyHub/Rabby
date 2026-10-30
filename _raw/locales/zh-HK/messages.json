@@ -293,7 +293,7 @@
           "searchCurrency": "搜尋貨幣",
           "dataAnalysis": "資料分析",
           "extraFeeProtection": "額外費用保護",
-          "extraFeeProtectionDesc": "阻止 Chrome 擴充功能發起惡意簽名收取額外的手續費"
+          "extraFeeProtectionDesc": "阻止瀏覽器擴充功能發起惡意簽名收取額外的手續費"
         },
         "testnetBackendServiceUrl": "測試網後端服務 URL",
         "updateAvailable": "有可用更新",
