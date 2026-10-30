@@ -15,6 +15,7 @@ const mockHistoryCollection = {
 };
 const mockHistoryWhereClause = {
   between: jest.fn(),
+  equals: jest.fn(),
 };
 const mockHistoryTable = {
   where: jest.fn(),
@@ -48,6 +49,7 @@ import { last } from 'lodash';
 beforeEach(() => {
   mockHistoryTable.where.mockReturnValue(mockHistoryWhereClause);
   mockHistoryWhereClause.between.mockReturnValue(mockHistoryCollection);
+  mockHistoryWhereClause.equals.mockReturnValue(mockHistoryCollection);
   mockHistoryCollection.reverse.mockReturnValue(mockHistoryCollection);
   mockHistoryCollection.and.mockReturnValue(mockHistoryCollection);
   mockHistoryCollection.limit.mockReturnValue(mockHistoryCollection);
@@ -751,6 +753,105 @@ describe('historyDbService 90-day retention', () => {
 
     await historyDbService.sync({ openapi, address: ADDRESS });
     expect(deleteExpired).toHaveBeenCalledWith(ADDRESS);
+  });
+});
+
+describe('historyDbService queryRecent order', () => {
+  const OWNER = '0x00000000000000000000000000000000000000ab';
+  const row = (id: string, time_at: number, idx?: number) => ({
+    id,
+    time_at,
+    idx,
+  });
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('orders txs of one second by their position in the block', async () => {
+    // The index yields same-second rows by hash: approve 0xed before swap 0x5c.
+    mockHistoryCollection.toArray.mockResolvedValueOnce([
+      row('0xnewer', 200, 3),
+      row('0xed', 100, 117),
+      row('0x5c', 100, 228),
+      row('0xolder', 50, 9),
+    ]);
+
+    const rows = await historyDbService.queryRecent({ address: OWNER });
+
+    expect(rows.map((item) => item.id)).toEqual([
+      '0xnewer',
+      '0x5c',
+      '0xed',
+      '0xolder',
+    ]);
+  });
+
+  test('keeps index order within a second when idx is missing', async () => {
+    mockHistoryCollection.toArray.mockResolvedValueOnce([
+      row('0xb', 100),
+      row('0xa', 100),
+    ]);
+
+    const rows = await historyDbService.queryRecent({ address: OWNER });
+
+    expect(rows.map((item) => item.id)).toEqual(['0xb', '0xa']);
+  });
+
+  test('reads the rest of the last second when a page is full', async () => {
+    mockHistoryCollection.toArray
+      .mockResolvedValueOnce([row('0xnewer', 200, 3), row('0xed', 100, 117)])
+      .mockResolvedValueOnce([row('0xed', 100, 117), row('0x5c', 100, 228)]);
+
+    const rows = await historyDbService.queryRecent({
+      address: OWNER,
+      isFilterScam: true,
+      limit: 2,
+    });
+
+    expect(mockHistoryWhereClause.equals).toHaveBeenCalledWith([OWNER, 100]);
+    expect(mockHistoryCollection.and).toHaveBeenCalledTimes(2);
+    expect(mockHistoryCollection.and.mock.calls[1][0]).toBe(
+      mockHistoryCollection.and.mock.calls[0][0]
+    );
+    expect(rows.map((item) => item.id)).toEqual(['0xnewer', '0x5c', '0xed']);
+  });
+
+  test('keeps index order within the last second of a full page', async () => {
+    // The index stores same-second rows by ascending _id, so equals() yields
+    // a before b unless it is reversed like the page.
+    const lastSecondRows = [row('0xa', 100), row('0xb', 100)];
+    let reversed = false;
+    const lastSecondCollection = {
+      reverse: jest.fn(() => {
+        reversed = !reversed;
+        return lastSecondCollection;
+      }),
+      and: jest.fn(() => lastSecondCollection),
+      toArray: jest.fn(async () =>
+        reversed ? [...lastSecondRows].reverse() : lastSecondRows
+      ),
+    };
+    mockHistoryWhereClause.equals.mockReturnValueOnce(lastSecondCollection);
+    mockHistoryCollection.toArray.mockResolvedValueOnce([row('0xb', 100)]);
+
+    const rows = await historyDbService.queryRecent({
+      address: OWNER,
+      limit: 1,
+    });
+
+    expect(rows.map((item) => item.id)).toEqual(['0xb', '0xa']);
+  });
+
+  test('does not read further when a page is not full', async () => {
+    mockHistoryCollection.toArray.mockResolvedValueOnce([
+      row('0xed', 100, 117),
+    ]);
+
+    await historyDbService.queryRecent({ address: OWNER, limit: 2 });
+
+    expect(mockHistoryWhereClause.equals).not.toHaveBeenCalled();
+    expect(mockHistoryCollection.toArray).toHaveBeenCalledTimes(1);
   });
 });
 
