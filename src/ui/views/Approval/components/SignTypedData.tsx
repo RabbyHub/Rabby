@@ -262,8 +262,9 @@ const SignTypedData = ({
     reportNormalizeTypeDataFailures(normalizeFailures, {
       origin: session.origin,
       method,
+      rawTypedData: data[1],
     });
-  }, [normalizeFailures]);
+  }, [data, method, normalizeFailures, session.origin]);
   const extraFeeProtectionOn = useRabbySelector((state) =>
     isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
   );
