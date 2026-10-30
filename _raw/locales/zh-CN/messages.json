@@ -293,7 +293,7 @@
           "biometricUnlockHint": "使用生物识别在此设备上解锁。",
           "dataAnalysis": "数据分析",
           "extraFeeProtection": "额外费用保护",
-          "extraFeeProtectionDesc": "阻止浏览器插件发起恶意签名收取额外的手续费"
+          "extraFeeProtectionDesc": "阻止浏览器插件发起签名收取额外的手续费"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "有可用更新",
