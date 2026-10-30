@@ -55,12 +55,11 @@ export const describePerpsError = (error: unknown): string => {
  * so putting params in it splits one bug across every coin the users traded.
  * Everything variable belongs in `extra`.
  *
- * Diagnostics go out unscrubbed, matching every other report in the extension
- * (`sendDefaultPii` is on, so events already carry the user's IP): a Perps
- * failure is only actionable if it can be traced back to the account that hit
- * it. redactSensitiveText is deliberately not used here — it exists for
- * hardware-signing errors, whose device ids and passphrase state are a
- * different kind of secret from a public on-chain address.
+ * Never pass the account's address in `extra` (send `accountType` instead).
+ * beforeSend also redacts any wallet address that still reaches the event,
+ * error text included. redactSensitiveText is deliberately not used here — it
+ * exists for hardware-signing errors, whose device ids and passphrase state
+ * are a different kind of secret.
  *
  * Because the original text now reaches the message, these reports finally go
  * through RABBY_SENTRY_IGNORE_ERRORS like every other report — network noise

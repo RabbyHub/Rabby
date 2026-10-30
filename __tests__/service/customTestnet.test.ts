@@ -8,8 +8,6 @@ jest.mock('@/ui/utils/token', () => ({
   customTestnetTokenToTokenItem: jest.fn((token) => token),
 }));
 
-jest.mock('@/utils/ga4', () => ({ ga4: {} }));
-jest.mock('@/utils/matomo-request', () => ({ matomoRequestEvent: jest.fn() }));
 jest.mock('@/background/utils', () => ({ createPersistStore: jest.fn() }));
 jest.mock('@/background/utils/http', () => ({ http: {} }));
 jest.mock('@/background/utils/ipfs', () => ({

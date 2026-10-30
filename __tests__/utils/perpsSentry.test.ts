@@ -106,19 +106,17 @@ describe('perps error reporting', () => {
     expect(event.extra.res).toEqual({ ok: false });
   });
 
-  // Diagnostics are reported as-is. A Perps failure is only actionable if it
-  // can be traced back to the account that hit it, and events already carry
-  // the user's IP (sendDefaultPii). redactSensitiveText is not applied here —
-  // it exists for hardware-signing errors, a different kind of secret.
+  // Diagnostics are passed through as-is; wallet addresses are redacted later,
+  // in beforeSend, for every event (see sentry-config.test).
+  // redactSensitiveText is not applied here — it exists for hardware-signing
+  // errors, a different kind of secret.
   describe('diagnostics reach Sentry intact', () => {
-    it('keeps the account the failure belongs to', () => {
+    it('keeps the account type and request data', () => {
       const { extra } = capture('withdraw failed', new Error('rejected'), {
-        address: ADDRESS,
         accountType: 'Ledger Hardware',
         amount: 152,
       });
 
-      expect(extra.address).toBe(ADDRESS);
       expect(extra.accountType).toBe('Ledger Hardware');
       expect(extra.amount).toBe(152);
     });

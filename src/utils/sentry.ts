@@ -1,5 +1,6 @@
 import type { SigningContext } from '@/background/service/keyring/signing-diagnostics';
 import { KEYRING_IMPORT_EXPIRED } from '@/constant/message';
+import { wordlist as bip39EnglishWordlist } from '@scure/bip39/wordlists/english';
 
 export type SentryIgnorePattern = string | RegExp;
 
@@ -7,6 +8,137 @@ export const sanitizeSentryBreadcrumbUrl = (value: string) => {
   const withoutQueryOrFragment = value.split(/[?#]/, 1)[0];
 
   return withoutQueryOrFragment.replace(/0x[a-f\d]{40,64}/gi, '[redacted]');
+};
+
+// Extension pages route through the hash, so keep the route path but drop
+// the query on both sides of it: routes like /settings/address-detail carry
+// the account in `?address=`.
+export const sanitizeSentryPageUrl = (value: string) => {
+  const hashIndex = value.indexOf('#');
+  if (hashIndex === -1) {
+    return sanitizeSentryBreadcrumbUrl(value);
+  }
+
+  const page = sanitizeSentryBreadcrumbUrl(value.slice(0, hashIndex));
+  const route = sanitizeSentryBreadcrumbUrl(value.slice(hashIndex + 1));
+  return route ? `${page}#${route}` : page;
+};
+
+// Longer hex is redacted too: padded address words (log topics, bytes32,
+// eth_call results) and calldata embed addresses, and a tx hash resolves to
+// its sender on any explorer. Unprefixed hex of that length is a private key,
+// seed or keystore ciphertext as often as anything else; it must contain a
+// letter so long decimal amounts (uint256 allowances) survive.
+const ADDRESS_PATTERN = /\b0x[a-f\d]{40}\b/giu;
+const LONG_HEX_PATTERN = /\b0x[a-f\d]{41,}\b/giu;
+const UNPREFIXED_HEX_PATTERN = /\b(?=[a-f\d]*[a-f])[a-f\d]{40,}\b/giu;
+// BIP32 extended keys: a private one is a whole wallet, a public one links
+// every address derived from it.
+const EXTENDED_KEY_PATTERN = /\b[tuvxyz](?:prv|pub)[1-9A-HJ-NP-Za-km-z]{100,}\b/gu;
+// Runs of 12+ words that could be a mnemonic; only the words that are all on
+// the BIP39 list (3-8 letters each) are redacted.
+const WORD_RUN_PATTERN = /\b[a-z]{3,8}(?:\s+[a-z]{3,8}){11,}\b/giu;
+const MNEMONIC_MIN_WORDS = 12;
+const BIP39_WORDS = new Set(bip39EnglishWordlist);
+// Values under these keys are dropped whatever they look like; booleans and
+// numbers are kept since they can't hold a secret.
+const SENSITIVE_KEY_PATTERN = /mnemonic|seed|private[_-]?key|secret|password|passphrase|keystore|vault/iu;
+
+const redactMnemonics = (value: string) =>
+  value.replace(WORD_RUN_PATTERN, (run) => {
+    // Odd indexes are the whitespace between words.
+    const parts = run.split(/(\s+)/u);
+    let result = '';
+    let stretchStart = -1;
+    const flush = (end: number) => {
+      if (stretchStart === -1) return;
+      const stretch = parts.slice(stretchStart, end);
+      result +=
+        (stretch.length + 1) / 2 >= MNEMONIC_MIN_WORDS
+          ? '[redacted-mnemonic]'
+          : stretch.join('');
+      stretchStart = -1;
+    };
+    parts.forEach((part, index) => {
+      if (index % 2 === 1) {
+        if (stretchStart === -1) result += part;
+        return;
+      }
+      if (BIP39_WORDS.has(part.toLowerCase())) {
+        if (stretchStart === -1) stretchStart = index;
+        return;
+      }
+      if (stretchStart !== -1) {
+        // The separator before this word belongs outside the stretch.
+        flush(index - 1);
+        result += parts[index - 1];
+      }
+      result += part;
+    });
+    flush(parts.length);
+    return result;
+  });
+
+const redactSecretText = (value: string) =>
+  redactMnemonics(
+    value
+      .replace(EXTENDED_KEY_PATTERN, '[redacted-key]')
+      .replace(LONG_HEX_PATTERN, '[redacted-hex]')
+      .replace(ADDRESS_PATTERN, '[redacted-address]')
+      .replace(UNPREFIXED_HEX_PATTERN, '[redacted-hex]')
+  );
+
+const redactSecrets = (
+  value: unknown,
+  copies: Map<object, unknown>
+): unknown => {
+  if (typeof value === 'string') {
+    return redactSecretText(value);
+  }
+  if (!value || typeof value !== 'object') {
+    return value;
+  }
+  if (copies.has(value)) {
+    return copies.get(value);
+  }
+
+  if (Array.isArray(value)) {
+    const copy: unknown[] = [];
+    copies.set(value, copy);
+    value.forEach((item) => copy.push(redactSecrets(item, copies)));
+    return copy;
+  }
+
+  const copy: Record<string, unknown> = {};
+  copies.set(value, copy);
+  Object.entries(value).forEach(([key, item]) => {
+    copy[redactSecretText(key)] =
+      SENSITIVE_KEY_PATTERN.test(key) &&
+      typeof item !== 'boolean' &&
+      typeof item !== 'number'
+        ? '[redacted]'
+        : redactSecrets(item, copies);
+  });
+  return copy;
+};
+
+/**
+ * Returns a copy of the event with wallet addresses and secrets replaced,
+ * wherever they sit: message, exception text, extra, tags, breadcrumbs or
+ * request. Covers 0x hex (addresses, tx hashes, calldata), unprefixed hex
+ * (private keys, seeds), BIP32 extended keys, BIP39 mnemonics and values
+ * under secret-looking keys. sdkProcessingMetadata is SDK-internal (never
+ * sent, read after beforeSend) and passes through untouched.
+ */
+export const scrubSentryEvent = <T extends { sdkProcessingMetadata?: unknown }>(
+  event: T
+): T => {
+  const { sdkProcessingMetadata, ...sent } = event;
+  const redacted = redactSecrets(sent, new Map()) as T;
+  if (sdkProcessingMetadata !== undefined) {
+    redacted.sdkProcessingMetadata = sdkProcessingMetadata;
+  }
+  return redacted;
 };
 
 // Applied in beforeSend only, never as the SDK's own `ignoreErrors`: the SDK
@@ -188,12 +320,26 @@ const matchesAny = (patterns: SentryIgnorePattern[], candidates: string[]) =>
     )
   );
 
+// antd's validateFields rejects with { values, errorFields, outOfDate }. The
+// form already shows the problem, and `values` holds every field as typed —
+// private keys and passwords included — so it is never worth reporting.
+const isFormValidationRejection = (error: unknown) =>
+  error !== null &&
+  typeof error === 'object' &&
+  !(error instanceof Error) &&
+  Array.isArray((error as { errorFields?: unknown }).errorFields) &&
+  'values' in error;
+
 export const shouldIgnoreSentryError = (
   error: unknown,
   // Text Sentry generated for the event ("Non-Error promise rejection captured
   // with keys: ..."), which never appears on the thrown value itself.
   eventText: string[] = []
 ) => {
+  if (isFormValidationRejection(error)) {
+    return true;
+  }
+
   const parts = collectErrorText(error);
   const text = parts.join('\n') || String(error || '');
   const candidates = [

@@ -2,8 +2,6 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { findChain } from '@/utils/chain';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { getKRCategoryByType } from '@/utils/transaction';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
@@ -42,7 +40,6 @@ import {
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TextActions';
 import { WaitingSignMessageComponent } from './map';
-import stats from '@/stats';
 import {
   parseAction,
   formatSecurityEngineContext,
@@ -54,7 +51,6 @@ import { generateTypedData } from '@safe-global/protocol-kit';
 import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
 import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
-import { ga4 } from '@/utils/ga4';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignStore } from '@/ui/state/sign';
 import { tokenizeSignMessageText } from './signMessageHighlighter';
@@ -83,8 +79,6 @@ const SignText = ({
   approvalId?: string;
 }) => {
   const currentAccount = params.isGnosis ? params.account! : account;
-  const renderStartAt = useRef(0);
-  const actionType = useRef('');
   // read after awaits: protection can be turned on while a sign is pending
   const extraFeeBlockedRef = useRef(false);
   const [, resolveApproval, rejectApproval] = useApproval(
@@ -210,47 +204,7 @@ const SignText = ({
 
   const isViewGnosisSafe = params?.$ctx?.isViewGnosisSafe;
 
-  const report = async (
-    action:
-      | 'createSignText'
-      | 'startSignText'
-      | 'cancelSignText'
-      | 'completeSignText',
-    extra?: Record<string, any>
-  ) => {
-    if (!currentAccount) {
-      return;
-    }
-    matomoRequestEvent({
-      category: 'SignText',
-      action: action,
-      label: [
-        getKRCategoryByType(currentAccount.type),
-        currentAccount.brandName,
-      ].join('|'),
-      transport: 'beacon',
-    });
-
-    if (action === 'createSignText') {
-      ga4.fireEvent('Init_SignText', {
-        event_category: 'SignText',
-      });
-    } else if (action === 'startSignText') {
-      ga4.fireEvent('Submit_SignText', {
-        event_category: 'SignText',
-      });
-    }
-
-    await wallet.reportStats(action, {
-      type: currentAccount.brandName,
-      category: getKRCategoryByType(currentAccount.type),
-      method: 'personalSign',
-      ...extra,
-    });
-  };
-
   const handleCancel = () => {
-    report('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -289,7 +243,6 @@ const SignText = ({
 
       return;
     }
-    report('startSignText');
     resolveApproval({});
   };
 
@@ -417,7 +370,6 @@ const SignText = ({
     ) {
       rejectApproval('This address can not sign text message', false, true);
     }
-    actionType.current = textActionData?.action?.type || '';
     const parsed = parseAction({
       type: 'text',
       data: textActionData.action,
@@ -481,12 +433,7 @@ const SignText = ({
   }, [rules]);
 
   useEffect(() => {
-    renderStartAt.current = Date.now();
     checkWachMode();
-  }, []);
-
-  useEffect(() => {
-    report('createSignText');
   }, []);
 
   useEffect(() => {
@@ -599,18 +546,6 @@ const SignText = ({
     }
     return;
   };
-
-  useEffect(() => {
-    if (!isLoading) {
-      const duration = Date.now() - renderStartAt.current;
-      stats.report('signPageRenderTime', {
-        type: 'text',
-        actionType: actionType.current,
-        chain: '',
-        duration,
-      });
-    }
-  }, [isLoading]);
 
   return (
     <>

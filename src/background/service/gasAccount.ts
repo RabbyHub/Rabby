@@ -1,7 +1,6 @@
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { createPersistStore } from 'background/utils';
-import dayjs from 'dayjs';
 
 export type GasAccountRecord = {
   chain_id: string;
@@ -18,10 +17,6 @@ export type GasAccountServiceStore = {
     brandName: string;
   };
   hasAnyAccountClaimedGift: boolean; // 全局标记：是否有任何账号已经领取过gift
-  hasEverLoggedIn: boolean;
-  currentBalanceAccountId?: string;
-  currentHasBalance?: boolean;
-  ga4ActiveEventTime?: number;
   pendingHardwareAccount?: {
     address: string;
     type: string;
@@ -86,8 +81,6 @@ class GasAccountService {
     sig: undefined,
     accountId: undefined,
     hasAnyAccountClaimedGift: false,
-    hasEverLoggedIn: false,
-    ga4ActiveEventTime: 0,
   };
 
   init = async () => {
@@ -95,14 +88,9 @@ class GasAccountService {
       name: 'gasAccount',
       template: {
         hasAnyAccountClaimedGift: false,
-        hasEverLoggedIn: false,
-        ga4ActiveEventTime: 0,
       },
     });
     this.store = store || this.store;
-    if (this.store.sig && this.store.accountId) {
-      this.store.hasEverLoggedIn = true;
-    }
     this.store.pendingHardwareAccount = undefined;
     this.store.autoLoginAccount = undefined;
     this.store.accountsWithGasAccountBalance = [];
@@ -130,8 +118,6 @@ class GasAccountService {
       this.store.sig = undefined;
       this.store.accountId = undefined;
       this.store.account = undefined;
-      this.store.currentBalanceAccountId = undefined;
-      this.store.currentHasBalance = undefined;
 
       eventBus.emit(EVENTS.broadcastToUI, {
         method: EVENTS.GAS_ACCOUNT.LOG_OUT,
@@ -164,27 +150,6 @@ class GasAccountService {
       method: EVENTS.GAS_ACCOUNT.LOG_IN,
     });
   };
-
-  markLoggedIn() {
-    if (this.store.hasEverLoggedIn) {
-      return false;
-    }
-
-    this.store.hasEverLoggedIn = true;
-    return true;
-  }
-
-  getCurrentBalanceState() {
-    return {
-      accountId: this.store.currentBalanceAccountId,
-      hasBalance: this.store.currentHasBalance,
-    };
-  }
-
-  setCurrentBalanceState(accountId?: string, hasBalance?: boolean) {
-    this.store.currentBalanceAccountId = accountId;
-    this.store.currentHasBalance = hasBalance;
-  }
 
   handleRemovedAccount(address: string, type: string, brandName?: string) {
     const removedAccount = { address, type, brandName };
@@ -245,16 +210,6 @@ class GasAccountService {
         method: EVENTS.GAS_ACCOUNT.DISCOVERY_UPDATED,
       });
     }
-  }
-
-  hasTrackedGa4ActiveToday() {
-    return dayjs(this.store.ga4ActiveEventTime || 0)
-      .utc()
-      .isSame(dayjs().utc(), 'day');
-  }
-
-  markGa4ActiveTracked(timestamp = Date.now()) {
-    this.store.ga4ActiveEventTime = timestamp;
   }
 
   /**

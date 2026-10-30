@@ -138,7 +138,6 @@
   "fetch": [
     "^node_modules/@bitboxswiss/bitbox-api",
     "^node_modules/@coinbase/wallet-sdk",
-    "^node_modules/@debank/festats",
     "^node_modules/@ethereumjs/util",
     "^node_modules/@ethersproject/web",
     "^node_modules/@imkey/web3-provider",

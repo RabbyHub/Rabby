@@ -15,7 +15,6 @@ import {
 import { getDefaultRateGuideLastExposure } from '@/utils/rateGuidance';
 import { __DEV__, appIsDev } from '@/utils/env';
 import { ensurePrefix } from '@/utils/string';
-import { ga4 } from '@/utils/ga4';
 import { KEYRING_CLASS } from '@/constant';
 import { pick } from 'lodash';
 import {
@@ -271,10 +270,6 @@ export function useRateModal() {
             text: feedbackContent,
             usage: 'rating',
           });
-          needFeedbackText &&
-            ga4.fireEvent('Rate_SubmitAdvice', {
-              event_category: 'Rate Rabby',
-            });
         }
       } catch (error) {
         Sentry.captureException(error, {
@@ -292,7 +287,6 @@ export function useRateModal() {
   );
 
   const openAppRateUrl = useCallback(() => {
-    ga4.fireEvent('Rate_JumpWebStore', { event_category: 'Rate Rabby' });
     openTrustedExternalWebsiteInTab('chromeStoreReviewsUrl');
   }, [rateModalState.userStar]);
 

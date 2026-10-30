@@ -140,7 +140,12 @@ export const PasswordCard: React.FC<Props> = ({ onSubmit, step, onBack }) => {
     if (!agreeTerm) {
       return;
     }
-    await form.validateFields();
+    try {
+      await form.validateFields();
+    } catch {
+      // The form shows the error; the rejection carries both passwords.
+      return;
+    }
     await wallet.setUserDataTrackingOptOut(false);
     onSubmit?.(form.getFieldsValue().password);
   });

@@ -5,11 +5,8 @@ import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
 import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { copyAddress } from '@/ui/utils/clipboard';
-import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { OfflineChainNotify } from '@/ui/views/Dashboard/components/OfflineChainNotify';
 import { findChain, findChainByEnum, getChainList } from '@/utils/chain';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { getKRCategoryByType } from '@/utils/transaction';
 import { useRequest } from 'ahooks';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
@@ -73,7 +70,6 @@ const useAccount = () => {
 const Receive = () => {
   const wallet = useWallet();
   const history = useHistory();
-  const rbisource = useRbiSource();
   const [isShowAccount, setIsShowAccount] = useState(true);
   const [isShowAddTestnetModal, setIsShowAddTestnetModal] = useState(false);
   const { isDarkTheme } = useThemeMode();
@@ -151,16 +147,6 @@ const Receive = () => {
   const restChainCount = displayChains.length - shownChains.length;
 
   const handleCopyAddress = () => {
-    matomoRequestEvent({
-      category: 'Receive',
-      action: 'copyAddress',
-      label: [
-        chain,
-        getKRCategoryByType(account?.type),
-        account?.brandName,
-        filterRbiSource('Receive', rbisource) && rbisource,
-      ].join('|'),
-    });
     copyAddress(account.address!);
   };
 
@@ -175,20 +161,6 @@ const Receive = () => {
   useEffect(() => {
     init();
   }, []);
-  useEffect(() => {
-    if (account?.address) {
-      matomoRequestEvent({
-        category: 'Receive',
-        action: 'getQRCode',
-        label: [
-          chain,
-          getKRCategoryByType(account?.type),
-          account?.brandName,
-          filterRbiSource('Receive', rbisource) && rbisource,
-        ].join('|'),
-      });
-    }
-  }, [account?.address]);
   useEffect(() => {
     if (account?.type !== KEYRING_CLASS.WATCH) {
       return;
@@ -422,11 +394,6 @@ const Receive = () => {
         />
       </div>
       <EditCustomTestnetModal
-        ctx={{
-          ga: {
-            source: 'receive',
-          },
-        }}
         visible={isShowAddTestnetModal}
         onCancel={() => {
           setIsShowAddTestnetModal(false);

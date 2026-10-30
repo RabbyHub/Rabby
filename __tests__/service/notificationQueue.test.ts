@@ -46,11 +46,6 @@ jest.mock('@/background/service/preference', () => ({
   },
 }));
 
-jest.mock('@/stats', () => ({
-  __esModule: true,
-  default: { report: jest.fn() },
-}));
-
 jest.mock('@/utils/chain', () => ({ findChain: jest.fn() }));
 
 jest.mock('@/utils/env', () => ({ isManifestV3: false }));

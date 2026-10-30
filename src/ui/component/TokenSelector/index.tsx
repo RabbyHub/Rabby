@@ -23,7 +23,6 @@ import {
 import { getTokenSymbol } from 'ui/utils/token';
 import './style.less';
 import BigNumber from 'bignumber.js';
-import stats from '@/stats';
 import { CHAINS_ENUM, Chain } from '@debank/common';
 import { findChain, findChainByServerID } from '@/utils/chain';
 
@@ -397,16 +396,6 @@ const TokenSelector = ({
       type,
     ]
   );
-
-  useEffect(() => {
-    if (query && isSwapType && displayList.length === 0) {
-      stats.report('swapTokenSearchFailure', {
-        chainId: chainServerId || '',
-        searchType: type === 'swapFrom' ? 'fromToken' : 'toToken',
-        keyword: query,
-      });
-    }
-  }, [type, query, isSwapType, displayList, chainServerId]);
 
   const isSwapTo = type === 'swapTo';
   const isBridgeTo = type === 'bridgeTo';

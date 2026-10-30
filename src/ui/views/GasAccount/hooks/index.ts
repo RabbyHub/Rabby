@@ -141,14 +141,13 @@ export const useGasAccountInfo = ({
   const { refreshId } = useGasAccountRefresh();
   const invalidateSession = useCallback(() => {
     dispatch.gasAccount.setGasAccountSig({});
-    wallet.setGasAccountBalanceState();
     dispatch.gasAccount.discoverRuntimeState(undefined).catch((error) => {
       console.error(
         '[gasAccount] rediscover after invalid session failed',
         error
       );
     });
-  }, [dispatch, wallet]);
+  }, [dispatch]);
 
   const { value, loading, error } = useAsync(async () => {
     if (!enabled || !sig || !accountId) return undefined;
@@ -177,33 +176,6 @@ export const useGasAccountInfo = ({
       invalidateSession();
     }
   }, [accountId, enabled, error?.message, invalidateSession, sig]);
-
-  useEffect(() => {
-    if (!enabled) {
-      return;
-    }
-    if (!sig || !accountId) {
-      wallet.setGasAccountBalanceState();
-      return;
-    }
-
-    const responseAccount = value?.account;
-    if (!responseAccount?.id || !isSameAddress(responseAccount.id, accountId)) {
-      return;
-    }
-
-    wallet.setGasAccountBalanceState(
-      accountId,
-      Number(responseAccount.balance || 0) > 0
-    );
-  }, [
-    wallet,
-    enabled,
-    sig,
-    accountId,
-    value?.account?.id,
-    value?.account?.balance,
-  ]);
 
   return { loading, value };
 };

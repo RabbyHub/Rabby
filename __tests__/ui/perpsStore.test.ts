@@ -44,11 +44,6 @@ jest.mock('@/ui/views/DesktopPerps/utils', () => ({
   showDepositAndWithdrawToast: jest.fn(),
 }));
 
-jest.mock('@/stats', () => ({
-  __esModule: true,
-  default: {},
-}));
-
 jest.mock('@/ui/wallet', () => ({
   wallet: {
     getMarketSlippage: jest.fn(),

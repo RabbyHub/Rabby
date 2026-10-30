@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import stats from '@/stats';
 import Player from './Player';
 import Reader from './Reader';
 import {
@@ -7,7 +6,6 @@ import {
   CHAINS_ENUM,
   EVENTS,
   HARDWARE_KEYRING_TYPES,
-  KEYRING_CATEGORY_MAP,
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_TYPES,
 } from 'consts';
@@ -225,31 +223,7 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
             setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
             return;
           }
-
-          const explain = signingTx?.explain;
-
-          wallet.reportStats('signTransaction', {
-            type: account.brandName,
-            chainId: chainInfo?.serverId || '',
-            category: KEYRING_CATEGORY_MAP[account.type],
-            preExecSuccess: explain
-              ? explain?.calcSuccess && explain?.pre_exec.success
-              : true,
-            createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-            source: params?.$ctx?.ga?.source || '',
-            trigger: params?.$ctx?.ga?.trigger || '',
-            signMethod,
-            networkType: chainInfo?.isTestnet
-              ? 'Custom Network'
-              : 'Integrated Network',
-          });
         }
-      } else {
-        stats.report('startSignText', {
-          type: account.brandName,
-          category: KEYRING_CATEGORY_MAP[account.type],
-          method: params?.extra?.signTextMethod,
-        });
       }
       setErrorMessage('');
       setStatus(QRHARDWARE_STATUS.SIGN);
@@ -263,10 +237,6 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
   };
 
   const handleSubmit = async () => {
-    // cache signMethod in statsData
-    await wallet.setStatsData({
-      signMethod,
-    });
     wallet.submitQRHardwareSignature(
       signPayload!.requestId,
       scanMessage!,

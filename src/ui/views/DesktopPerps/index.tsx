@@ -87,7 +87,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
   const location = useLocation();
   useMount(() => {
-    reportWebPageView(location.pathname, location.search);
+    reportWebPageView(location.pathname);
   });
 
   return (
