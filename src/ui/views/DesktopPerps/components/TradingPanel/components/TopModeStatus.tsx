@@ -340,7 +340,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
           <Tooltip
             title={orderTypeTooltip}
             placement="topRight"
-            overlayClassName="rectangle max-w-[320px]"
+            overlayClassName="rectangle"
           >
             <RcIconInfo className="ml-auto w-[16px] h-[16px] text-rb-neutral-secondary" />
           </Tooltip>
