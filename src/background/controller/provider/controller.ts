@@ -69,8 +69,11 @@ import { Transaction as ViemTempoTransaction } from 'viem/tempo';
 import { ProviderRequest } from './type';
 import { assertProviderRequest } from '@/background/utils/assertProviderRequest';
 import {
+  findInvalidTypedDataValue,
   findShadowedBuiltinType,
+  isTypeGraphTooLarge,
   parseTypedDataJson,
+  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
 import {
@@ -389,15 +392,19 @@ const signTypedDataVlidation = ({
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
   if (parsed.hasProtoKey) {
-    throw ethErrors.rpc.invalidParams('data should not contain __proto__ key');
+    throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   const jsonData = parsed.json;
   const shadowedType = findShadowedBuiltinType(jsonData?.types);
   if (shadowedType) {
-    throw ethErrors.rpc.invalidParams(
-      `types should not redefine built-in type: ${shadowedType}`
-    );
+    throw ethErrors.rpc.invalidParams('invalid typed data');
   }
+  if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
+    throw ethErrors.rpc.invalidParams('invalid typed data');
+  }
+  reportInvalidTypedDataValue(findInvalidTypedDataValue(jsonData), {
+    rawTypedData: data,
+  });
   if (!permissionService.isInternalOrigin(session!.origin)) {
     const currentChain = permissionService.getConnectedSite(session!.origin)
       ?.chain;

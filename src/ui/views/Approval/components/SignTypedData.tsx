@@ -46,8 +46,11 @@ import { getActionSecurityGate } from './SecurityEngine/actionSecurity';
 import Actions from './TypedDataActions';
 import {
   cleanEIP712Payload,
+  getNormalizeTypeDataVersion,
   isDeepJSON,
   normalizeTypeData,
+  NormalizeTypeDataFailure,
+  reportNormalizeTypeDataFailures,
 } from './TypedDataActions/utils';
 import {
   Level,
@@ -227,10 +230,11 @@ const SignTypedData = ({
     () => /^eth_signTypedData(_v1)?$/.test(method),
     [method]
   );
-  const [signTypedData, rawMessage]: (null | Record<
-    string,
-    any
-  >)[] = useMemo(() => {
+  const [signTypedData, rawMessage, normalizeFailures]: [
+    Record<string, any> | null,
+    Record<string, any> | null,
+    NormalizeTypeDataFailure[]
+  ] = useMemo(() => {
     if (!isSignTypedDataV1) {
       try {
         const v = JSON.parse(data[1]);
@@ -242,15 +246,23 @@ const SignTypedData = ({
         }
 
         const displayData = cloneDeep(v2);
-        const normalized = normalizeTypeData(v2);
-        return [normalized, displayData];
+        const { typedData, failures } = normalizeTypeData(
+          v2,
+          getNormalizeTypeDataVersion(method)
+        );
+        return [typedData, displayData, failures];
       } catch (error) {
         console.error('parse signTypedData error: ', error);
-        return [null, null];
+        return [null, null, []];
       }
     }
-    return [null, null];
-  }, [data, isSignTypedDataV1]);
+    return [null, null, []];
+  }, [data, isSignTypedDataV1, method]);
+  useEffect(() => {
+    reportNormalizeTypeDataFailures(normalizeFailures, {
+      rawTypedData: data[1],
+    });
+  }, [data, normalizeFailures]);
   const extraFeeProtectionOn = useRabbySelector((state) =>
     isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
   );
