@@ -6,6 +6,7 @@ import {
   preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
+import getOwnMethod from 'background/utils/getOwnMethod';
 import {
   EVENTS,
   INTERNAL_REQUEST_ORIGIN,
@@ -55,6 +56,7 @@ const flow = new PromiseFlow<{
     session: Exclude<ProviderRequest, void>;
   };
   mapMethod: string;
+  controllerMethod: (...args: any[]) => any;
   approvalRes: any;
 }>();
 const flowContext = flow
@@ -71,7 +73,8 @@ const flowContext = flow
         data: ctx.request.data,
       });
     }
-    if (!providerController[ctx.mapMethod]) {
+    const controllerMethod = getOwnMethod(providerController, ctx.mapMethod);
+    if (!controllerMethod) {
       // TODO: make rpc whitelist
       if (method.startsWith('eth_') || method === 'net_version') {
         return providerController.ethRpc(ctx.request);
@@ -82,6 +85,7 @@ const flowContext = flow
         data: ctx.request.data,
       });
     }
+    ctx.controllerMethod = controllerMethod;
 
     return next();
   })
@@ -486,7 +490,7 @@ const flowContext = flow
           }
 
           return Promise.resolve(
-            providerController[mapMethod]({
+            ctx.controllerMethod.call(providerController, {
               ...request,
               approvalRes: _approvalRes,
             })
