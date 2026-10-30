@@ -169,3 +169,31 @@ describe('rpcFlow: inline (onApproval) requests fail closed instead of queuing o
     expect(mockNotificationService.requestApproval).toHaveBeenCalled();
   });
 });
+
+describe('rpcFlow method dispatch', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    state.isUnlocked = true;
+    state.currentApproval = null;
+    state.hasPermission = true;
+  });
+
+  test.each([
+    'constructor',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    '__proto__',
+  ])('rejects inherited property %s as method not found', async (method) => {
+    const request = {
+      ...baseRequest(),
+      data: { method, params: [] },
+    };
+
+    await expect(rpcFlow(request as any)).rejects.toMatchObject({
+      code: -32601,
+    });
+    expect(mockNotificationService.requestApproval).not.toHaveBeenCalled();
+    expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+  });
+});
