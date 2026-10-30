@@ -13,10 +13,7 @@ import { openInTab, useCommonPopupView, useWallet } from '@/ui/utils';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import DappActionsForPopup from './components/DappActions/DappActionsForPopup';
-import {
-  useDappAction,
-  useGetDappActions,
-} from './components/DappActions/hook';
+import { useGetDappActions } from './components/DappActions/hook';
 import { ProtocolLowValueItem } from './ProtocolLowValueItem';
 import BigNumber from 'bignumber.js';
 import { useExpandList } from '@/ui/utils/portfolio/expandList';
@@ -72,7 +69,7 @@ const PoolItem = ({
       {!!item.withdrawActions?.length &&
         !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
           <DappActionsForPopup
-            data={item.withdrawActions}
+            portfolio={item._originPortfolio}
             chain={chain}
             protocolLogo={protocolLogo}
             protocolName={protocolName}

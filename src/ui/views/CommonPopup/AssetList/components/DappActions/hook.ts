@@ -1,7 +1,13 @@
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import { Tx, WithdrawAction } from '@rabby-wallet/rabby-api/dist/types';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  PortfolioItem,
+  Tx,
+  WithdrawAction,
+} from '@rabby-wallet/rabby-api/dist/types';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { message } from 'antd';
+import { findLast } from 'lodash';
 import {
   BLACKLIST_METHODS,
   WHITELIST_ADDRESS,
@@ -93,6 +99,70 @@ export const getMethodDesc = (fncName: string) => {
   return `function ${normalizedName.split(')(')[0] + ')'}`;
 };
 
+const getPortfolioPositionId = (item: PortfolioItem) =>
+  `${item.pool?.id || ''}${item.position_index || ''}`;
+
+export const findTypedWithdrawAction = (
+  actions: WithdrawAction[] | undefined,
+  type: 'withdraw' | 'claim'
+) =>
+  actions?.find(
+    (item) =>
+      item.type === type ||
+      (type === 'withdraw' && item.type === ActionType.Queue)
+  );
+
+export const useDappActionRequest = (
+  portfolio: PortfolioItem,
+  buildTxs: (action: WithdrawAction) => Promise<Tx[]>
+) => {
+  const wallet = useWallet();
+  const currentAccount = useCurrentAccount();
+  const pendingRef = useRef(false);
+  const [pending, setPending] = useState(false);
+
+  const run = async (
+    type: 'withdraw' | 'claim',
+    submit: (txs: Tx[], actionType: WithdrawAction['type']) => Promise<void>
+  ) => {
+    if (pendingRef.current) return;
+    pendingRef.current = true;
+    setPending(true);
+    try {
+      const protocolId = portfolio.pool?.project_id;
+      const positionId = getPortfolioPositionId(portfolio);
+      if (!protocolId || !positionId || !currentAccount?.address) {
+        throw new Error('Portfolio protocol refresh is unavailable');
+      }
+      const res = await wallet.openapi.getProtocol({
+        addr: currentAccount.address,
+        id: protocolId,
+      });
+      // DisplayedProject keeps the last portfolio when ids collide.
+      const freshPortfolio = findLast(
+        res?.portfolio_item_list,
+        (item) => getPortfolioPositionId(item) === positionId
+      );
+      const action = findTypedWithdrawAction(
+        freshPortfolio?.withdraw_actions,
+        type
+      );
+      if (!action || freshPortfolio?.proxy_detail?.proxy_contract_id) {
+        throw new Error('Withdraw action is unavailable');
+      }
+      await submit(await buildTxs(action), action.type);
+    } catch (error) {
+      console.error('Dapp action preparation failed', error);
+      message.error('Failed to prepare the transaction. Please try again.');
+    } finally {
+      pendingRef.current = false;
+      setPending(false);
+    }
+  };
+
+  return { pending, run };
+};
+
 export const buildActionCalldata = (func: string, strParams?: string[]) => {
   const normalizedFunc = getMethodDesc(func);
   const abi = parseAbiItem(normalizedFunc) as AbiFunction;
@@ -120,6 +190,38 @@ export const useDappAction = (
     });
   }, [chain]);
 
+  const validate = useCallback(
+    async (source: WithdrawAction, abi: AbiFunction) => {
+      if (
+        !chain ||
+        (source.need_approve?.to &&
+          !isWhitelistSpender(source.need_approve.to, chain)) ||
+        isBlacklistMethodName(abi.name)
+      ) {
+        return false;
+      }
+      const addresses =
+        source.str_params?.filter(
+          (item, index) => !!item && abi.inputs[index]?.type === 'address'
+        ) || [];
+      if (!addresses.length) return true;
+      const results = await Promise.all(
+        addresses.map(async (addr) => {
+          if (
+            currentAccount?.address &&
+            isSameAddress(currentAccount.address, addr)
+          ) {
+            return true;
+          }
+          if (isWhitelistAddress(addr)) return true;
+          return isErc20Contract(addr, chain);
+        })
+      );
+      return results.every((item) => item);
+    },
+    [chain, currentAccount?.address, isErc20Contract]
+  );
+
   useEffect(() => {
     if (!data || !chain) {
       setValid(false);
@@ -128,226 +230,185 @@ export const useDappAction = (
 
     let isMounted = true;
 
-    try {
-      const { abi } = buildActionCalldata(data.func, data.str_params);
-      const isAddressArray = abi.inputs.map((item) => item.type === 'address');
-      const addresses = data.str_params
-        ? data.str_params
-            ?.map((item, index) =>
-              isAddressArray[index] ? (item as string) : ''
-            )
-            ?.filter((item) => !!item)
-        : [];
-
-      const validate = async (addr: string) => {
-        if (
-          currentAccount?.address &&
-          isSameAddress(currentAccount.address, addr)
-        )
-          return true;
-        if (isWhitelistAddress(addr)) return true;
-        const isErc20 = await isErc20Contract(addr, chain);
-        return isErc20;
-      };
-
-      const run = async () => {
-        if (
-          data?.need_approve?.to &&
-          !isWhitelistSpender(data.need_approve?.to, chain)
-        ) {
-          if (isMounted) {
-            setValid(false);
-          }
-          return;
-        }
-        if (isBlacklistMethodName(abi.name)) {
-          if (isMounted) {
-            setValid(false);
-          }
-          return;
-        }
-        if (!addresses?.length) {
-          if (isMounted) {
-            setValid(true);
-          }
-          return;
-        }
-        const results = await Promise.all(
-          addresses.map((addr) => validate(addr))
-        );
-        const passed = results.every((item) => item);
+    const run = async () => {
+      try {
+        const { abi } = buildActionCalldata(data.func, data.str_params);
+        const passed = await validate(data, abi);
         if (isMounted) {
           setValid(passed);
         }
-      };
-
-      run();
-    } catch (error) {
-      // ignore error and hide actions
-      if (isMounted) {
-        setValid(false);
+      } catch (error) {
+        // ignore error and hide actions
+        if (isMounted) {
+          setValid(false);
+        }
       }
-    }
+    };
+
+    run();
 
     return () => {
       isMounted = false;
     };
-  }, [chain, currentAccount?.address, data, isErc20Contract]);
+  }, [chain, data, validate]);
 
-  const buildApproveTxs = useCallback(async (): Promise<Tx[]> => {
-    const resTxs: Tx[] = [];
-    if (
-      !data ||
-      !valid ||
-      !currentAccount?.address ||
-      !chainInfo?.id ||
-      !data?.need_approve?.to ||
-      !data?.need_approve?.token_id ||
-      !data?.need_approve?.str_raw_amount
-    ) {
-      return [];
-    }
-
-    let tokenApproved = false;
-    let allowance = '0';
-    if (data?.need_approve.to === chainInfo?.nativeTokenAddress) {
-      tokenApproved = true;
-    } else {
-      try {
-        allowance = await wallet.getERC20Allowance(
-          chainInfo.serverId,
-          data?.need_approve?.token_id,
-          data?.need_approve?.to
-        );
-        tokenApproved = new BigNumber(allowance).gte(
-          new BigNumber(data.need_approve.str_raw_amount || '0')
-        );
-      } catch (error) {
-        // ignore error, default to not approved
+  const buildApproveTxs = useCallback(
+    async (source: WithdrawAction): Promise<Tx[]> => {
+      const resTxs: Tx[] = [];
+      if (
+        !currentAccount?.address ||
+        !chainInfo?.id ||
+        !source?.need_approve?.to ||
+        !source?.need_approve?.token_id ||
+        !source?.need_approve?.str_raw_amount
+      ) {
+        return [];
       }
-    }
-    let shouldTwoStepApprove = false;
-    if (
-      chainInfo?.enum === CHAINS_ENUM.ETH &&
-      isSameAddress(data?.need_approve?.to, ETH_USDT_CONTRACT) &&
-      Number(allowance) !== 0 &&
-      !tokenApproved
-    ) {
-      shouldTwoStepApprove = true;
-    }
-    if (shouldTwoStepApprove) {
-      const res = await wallet.approveToken(
-        chainInfo.serverId,
-        data?.need_approve?.token_id,
-        data?.need_approve?.to,
-        0,
-        {
-          ga: {
-            category: 'Security',
-            source: 'tokenApproval',
-          },
-        },
-        undefined,
-        undefined,
-        true
-      );
-      resTxs.push(res.params[0]);
-    }
-    if (!tokenApproved) {
-      const res = await wallet.approveToken(
-        chainInfo.serverId,
-        data?.need_approve?.token_id,
-        data?.need_approve?.to,
-        data?.need_approve?.str_raw_amount || '0',
-        {
-          ga: {
-            category: 'Security',
-            source: 'tokenApproval',
-          },
-        },
-        undefined,
-        undefined,
-        true
-      );
-      resTxs.push(res.params[0]);
-    }
 
-    return resTxs;
-  }, [
-    data,
-    valid,
-    currentAccount?.address,
-    chainInfo?.id,
-    chainInfo?.nativeTokenAddress,
-    chainInfo?.enum,
-    chainInfo?.serverId,
-    wallet,
-  ]);
-
-  const action = useCallback(async (): Promise<Tx[]> => {
-    if (!data || !valid || !currentAccount?.address || !chainInfo?.id) {
-      return [];
-    }
-
-    let calldata: `0x${string}`;
-    let methodName = '';
-    let expectedParamCount: number | undefined;
-    try {
-      const built = buildActionCalldata(data.func, data.str_params);
-      expectedParamCount = built.abi.inputs.length;
-      methodName = built.abi.name;
-      calldata = built.calldata;
-    } catch (error) {
-      const errorName =
-        error instanceof Error && error.name ? error.name : 'UnknownError';
-
-      Sentry.captureException(
-        new Error(`DappAction parameter encoding failed: ${errorName}`),
-        {
-          tags: {
-            feature: 'dapp_action',
-            error_stage: 'encode_params',
-            protocol_name: protocolName || 'unknown',
-            chain_id: String(chainInfo.id),
-            chain_server_id: chainInfo.serverId,
-            action_type: data.type,
-            original_error_name: errorName,
-          },
-          fingerprint: ['dapp-action', 'encode-params', errorName],
-          extra: {
-            function_signature: data.func,
-            expected_param_count: expectedParamCount,
-            actual_param_count: data.str_params?.length || 0,
-          },
+      let tokenApproved = false;
+      let allowance = '0';
+      if (source.need_approve.to === chainInfo?.nativeTokenAddress) {
+        tokenApproved = true;
+      } else {
+        try {
+          allowance = await wallet.getERC20Allowance(
+            chainInfo.serverId,
+            source.need_approve.token_id,
+            source.need_approve.to
+          );
+          tokenApproved = new BigNumber(allowance).gte(
+            new BigNumber(source.need_approve.str_raw_amount || '0')
+          );
+        } catch (error) {
+          // ignore error, default to not approved
         }
-      );
-      return [];
-    }
+      }
+      let shouldTwoStepApprove = false;
+      if (
+        chainInfo?.enum === CHAINS_ENUM.ETH &&
+        isSameAddress(source.need_approve.to, ETH_USDT_CONTRACT) &&
+        Number(allowance) !== 0 &&
+        !tokenApproved
+      ) {
+        shouldTwoStepApprove = true;
+      }
+      if (shouldTwoStepApprove) {
+        const res = await wallet.approveToken(
+          chainInfo.serverId,
+          source.need_approve.token_id,
+          source.need_approve.to,
+          0,
+          {
+            ga: {
+              category: 'Security',
+              source: 'tokenApproval',
+            },
+          },
+          undefined,
+          undefined,
+          true
+        );
+        resTxs.push(res.params[0]);
+      }
+      if (!tokenApproved) {
+        const res = await wallet.approveToken(
+          chainInfo.serverId,
+          source.need_approve.token_id,
+          source.need_approve.to,
+          source.need_approve.str_raw_amount || '0',
+          {
+            ga: {
+              category: 'Security',
+              source: 'tokenApproval',
+            },
+          },
+          undefined,
+          undefined,
+          true
+        );
+        resTxs.push(res.params[0]);
+      }
 
-    const tx = {
-      chainId: chainInfo.id,
-      from: currentAccount.address,
-      to: data.contract_id,
-      value: '0x0',
-      data: calldata,
-    } as any;
+      return resTxs;
+    },
+    [
+      currentAccount?.address,
+      chainInfo?.id,
+      chainInfo?.nativeTokenAddress,
+      chainInfo?.enum,
+      chainInfo?.serverId,
+      wallet,
+    ]
+  );
 
-    if (isBlacklistMethodName(methodName)) {
-      return [];
-    }
+  const action = useCallback(
+    async (source: WithdrawAction): Promise<Tx[]> => {
+      if (!source || !chain || !currentAccount?.address || !chainInfo?.id) {
+        throw new Error('Withdraw action context is unavailable');
+      }
 
-    const approve_txs = await buildApproveTxs();
+      let calldata: `0x${string}`;
+      let abi: AbiFunction;
+      let expectedParamCount: number | undefined;
+      try {
+        const built = buildActionCalldata(source.func, source.str_params);
+        expectedParamCount = built.abi.inputs.length;
+        abi = built.abi;
+        calldata = built.calldata;
+      } catch (error) {
+        const errorName =
+          error instanceof Error && error.name ? error.name : 'UnknownError';
 
-    return [...approve_txs, tx];
-  }, [
-    data,
-    valid,
-    currentAccount?.address,
-    chainInfo?.id,
-    chainInfo?.serverId,
-    buildApproveTxs,
-    protocolName,
-  ]);
+        Sentry.captureException(
+          new Error(`DappAction parameter encoding failed: ${errorName}`),
+          {
+            tags: {
+              feature: 'dapp_action',
+              error_stage: 'encode_params',
+              protocol_name: protocolName || 'unknown',
+              chain_id: String(chainInfo.id),
+              chain_server_id: chainInfo.serverId,
+              action_type: source.type,
+              original_error_name: errorName,
+            },
+            fingerprint: ['dapp-action', 'encode-params', errorName],
+            extra: {
+              function_signature: source.func,
+              expected_param_count: expectedParamCount,
+              actual_param_count: source.str_params?.length || 0,
+            },
+          }
+        );
+        throw error;
+      }
+
+      const passed = await validate(source, abi);
+      if (!passed) {
+        throw new Error('Withdraw action validation failed');
+      }
+
+      const tx = {
+        chainId: chainInfo.id,
+        from: currentAccount.address,
+        to: source.contract_id,
+        value: '0x0',
+        data: calldata,
+      } as any;
+
+      const approve_txs = await buildApproveTxs(source);
+
+      return [...approve_txs, tx];
+    },
+    [
+      chain,
+      currentAccount?.address,
+      chainInfo?.id,
+      chainInfo?.serverId,
+      buildApproveTxs,
+      protocolName,
+      validate,
+    ]
+  );
 
   return {
     valid,
