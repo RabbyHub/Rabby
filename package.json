@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.94.13",
+  "version": "0.94.14",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "node build/clean.js",
