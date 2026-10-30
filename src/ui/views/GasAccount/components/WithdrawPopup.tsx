@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Popup, Item, Empty } from '@/ui/component';
 import { Button, message, Skeleton, Tooltip } from 'antd';
+import TooltipV6 from '@/ui/component/Tooltip/TooltipV6';
 import { PopupProps } from '@/ui/component/Popup';
 import { noop } from 'lodash';
 import clsx from 'clsx';
@@ -233,9 +234,9 @@ const Selector = ({
               </div>
               <div className="flex items-center flex-row gap-4">
                 {t('page.gasAccount.withdrawPopup.withdrawalLimit')}
-                <Tooltip
-                  overlayClassName={clsx('rectangle')}
-                  placement="topLeft"
+                <TooltipV6
+                  overlayClassName="rectangle"
+                  placement="top"
                   title={
                     isSelectChain
                       ? t('page.gasAccount.withdrawPopup.riskMessageFromChain')
@@ -243,10 +244,9 @@ const Selector = ({
                           'page.gasAccount.withdrawPopup.riskMessageFromAddress'
                         )
                   }
-                  align={{ targetOffset: [0, 0] }}
                 >
                   <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-                </Tooltip>
+                </TooltipV6>
               </div>
             </div>
           </div>
@@ -474,9 +474,9 @@ const WithdrawContent = ({
         })}
         {gasAccountInfo?.non_withdrawable_balance &&
         gasAccountInfo.non_withdrawable_balance > 0 ? (
-          <Tooltip
-            overlayClassName={clsx('rectangle')}
-            placement="topLeft"
+          <TooltipV6
+            overlayClassName="rectangle"
+            placement="top"
             title={
               <span>
                 {formatUsdValue(
@@ -490,10 +490,9 @@ const WithdrawContent = ({
                 2. Gas Rewards
               </span>
             }
-            align={{ targetOffset: [12, 0] }}
           >
             <RcIconHelp className="text-rabby-neutral-foot w-14 h-14" />
-          </Tooltip>
+          </TooltipV6>
         ) : null}
       </div>
 
