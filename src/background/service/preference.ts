@@ -140,6 +140,7 @@ export interface PreferenceStore {
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
 
   isEnabledPwdForNonWhitelistedTx?: boolean;
+  isExtraFeeProtectionEnabled?: boolean;
   isEnabledDappAccount?: boolean;
   biometricUnlockEnabled?: boolean;
   biometricUnlockCredentialId?: string;
@@ -243,6 +244,7 @@ class PreferenceService {
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
         isEnabledPwdForNonWhitelistedTx: false,
+        isExtraFeeProtectionEnabled: true,
         isEnabledDappAccount: false,
         biometricUnlockEnabled: false,
         biometricUnlockCredentialId: '',

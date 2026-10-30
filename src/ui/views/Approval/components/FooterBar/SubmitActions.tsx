@@ -7,7 +7,7 @@ import { ReactComponent as IconClose } from 'ui/assets/close-16-cc.svg';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
 import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useDebounce } from 'react-use';
 
@@ -23,6 +23,7 @@ export const SubmitActions: React.FC<Props> = ({
   onCancel,
   tooltipContent,
   enableTooltip,
+  tooltipVisible,
   gasLess,
   gasLessThemeColor,
   isGasNotEnough,
@@ -95,11 +96,18 @@ export const SubmitActions: React.FC<Props> = ({
           </button>
         </div>
       ) : (
-        <TooltipWithMagnetArrow
+        <TooltipV6
           overlayClassName="rectangle sign-tx-forbidden-tooltip"
-          title={enableTooltip ? tooltipContent : null}
-          inApproval
-          viewportOffset={[20, -20, -20, 20]}
+          // keep a 20px gap to the window edges (patched dom-align)
+          align={{ viewportOffset: [20, -20, -20, 20] }}
+          // below Popup / Modal (1000) so an open drawer covers the always-on tooltip
+          zIndex={999}
+          title={tooltipContent}
+          // rc-tooltip shows an empty popup for an empty title, unlike antd
+          visible={
+            tooltipVisible ||
+            (enableTooltip && tooltipContent ? undefined : false)
+          }
         >
           <GasLessAnimatedWrapper>
             <ButtonStyled
@@ -127,7 +135,7 @@ export const SubmitActions: React.FC<Props> = ({
               {t('page.signFooterBar.signAndSubmitButton')}
             </ButtonStyled>
           </GasLessAnimatedWrapper>
-        </TooltipWithMagnetArrow>
+        </TooltipV6>
       )}
     </ActionsContainer>
   );

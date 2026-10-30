@@ -40,6 +40,7 @@ export interface PreferenceState {
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
   isEnabledPwdForNonWhitelistedTx?: boolean;
+  isExtraFeeProtectionEnabled?: boolean;
   isEnabledDappAccount?: boolean;
   biometricUnlockEnabled?: boolean;
   biometricUnlockCredentialId?: string;
@@ -100,6 +101,8 @@ export type PreferenceActions = {
     value: AddressSortStore[Key];
   }) => Promise<void>;
   enablePwdForNonWhitelistedTx: (value: boolean) => Promise<void>;
+  enableExtraFeeProtection: () => Promise<void>;
+  disableExtraFeeProtection: (password: string) => Promise<void>;
   enableDappAccount: (value: boolean) => Promise<void>;
   setBiometricUnlock: (payload: {
     enabled: boolean;
@@ -138,6 +141,7 @@ export const getDefaultPreferenceState = (): PreferenceState => ({
   reserveGasOnSendToken: false,
   isHideEcologyNoticeDict: {},
   isEnabledPwdForNonWhitelistedTx: false,
+  isExtraFeeProtectionEnabled: true,
   isEnabledDappAccount: false,
   biometricUnlockEnabled: false,
   biometricUnlockCredentialId: '',
@@ -302,6 +306,14 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
   async enablePwdForNonWhitelistedTx(value) {
     await wallet.enablePwdForNonWhitelistedTx(value);
     void get().getPreference('isEnabledPwdForNonWhitelistedTx');
+  },
+  async enableExtraFeeProtection() {
+    await wallet.enableExtraFeeProtection();
+    void get().getPreference('isExtraFeeProtectionEnabled');
+  },
+  async disableExtraFeeProtection(password) {
+    await wallet.disableExtraFeeProtection(password);
+    void get().getPreference('isExtraFeeProtectionEnabled');
   },
   async enableDappAccount(value) {
     await wallet.enableDappAccount(value);

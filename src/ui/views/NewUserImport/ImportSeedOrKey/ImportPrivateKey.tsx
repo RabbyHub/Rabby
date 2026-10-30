@@ -101,6 +101,7 @@ export const ImportPrivateKey = () => {
       <div className="flex-1">
         <Form form={form} className="mt-[20px]">
           <Form.Item
+            className="mb-0"
             name="privateKey"
             rules={[
               {

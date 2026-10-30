@@ -494,6 +494,7 @@
       "cancelCurrentConnection": "Отменить текущее подключение",
       "imKeyNotConnected": "imKey не подключен",
       "imKeyConnected": "imKey подключен",
+      "extraFeeProtectionBlocked": "Защита от дополнительных комиссий заблокировала этот запрос подписи. Если вы всё же хотите подписать, отключите её в настройках",
       "gasAccount": {
         "gotIt": "Понял",
         "deposit": "Депозит",
@@ -1364,7 +1365,9 @@
           "biometricUnlockHint": "Используйте биометрию для разблокировки на этом устройстве.",
           "currency": "Валюта",
           "searchCurrency": "Поиск валюты",
-          "dataAnalysis": "Анализ данных"
+          "dataAnalysis": "Анализ данных",
+          "extraFeeProtection": "Защита от дополнительных комиссий",
+          "extraFeeProtectionDesc": "Блокирует запросы подписи, позволяющие расширениям браузера взимать дополнительные комиссии"
         },
         "aboutUs": "О нас",
         "currentVersion": "Текущая версия",

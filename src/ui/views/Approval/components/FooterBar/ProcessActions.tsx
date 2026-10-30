@@ -4,13 +4,14 @@ import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
+import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 
 export const ProcessActions: React.FC<Props> = ({
   onSubmit,
   onCancel,
   disabledProcess,
   tooltipContent,
+  tooltipVisible,
   gasLess,
   gasLessThemeColor,
   isGasNotEnough,
@@ -19,11 +20,15 @@ export const ProcessActions: React.FC<Props> = ({
   const { t } = useTranslation();
   return (
     <ActionsContainer onCancel={onCancel}>
-      <TooltipWithMagnetArrow
-        inApproval
+      <TooltipV6
         overlayClassName="rectangle sign-tx-forbidden-tooltip"
+        // keep a 20px gap to the window edges (patched dom-align)
+        align={{ viewportOffset: [20, -20, -20, 20] }}
+        // below Popup / Modal (1000) so an open drawer covers the always-on tooltip
+        zIndex={999}
         title={tooltipContent}
-        viewportOffset={[20, -20, -20, 20]}
+        // rc-tooltip shows an empty popup for an empty title, unlike antd
+        visible={tooltipVisible || (tooltipContent ? undefined : false)}
       >
         <GasLessAnimatedWrapper className="absolute left-0 right-0 w-[246px]">
           <Button
@@ -55,7 +60,7 @@ export const ProcessActions: React.FC<Props> = ({
             {children ? children : t('page.signFooterBar.beginSigning')}
           </Button>
         </GasLessAnimatedWrapper>
-      </TooltipWithMagnetArrow>
+      </TooltipV6>
     </ActionsContainer>
   );
 };
