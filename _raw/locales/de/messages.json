@@ -4917,7 +4917,9 @@
     },
     "DappActions": {
       "queueDescription": "Die aktuelle Auszahlung wird in eine Warteschlange aufgenommen. Nach der Verarbeitung kann der Betrag auf Ihre Wallet ausgezahlt werden.",
-      "manage": "Verwalten"
+      "manage": "Verwalten",
+      "claimAllRewards": "Belohnungen aus {{count}} Positionen",
+      "claimAllDescription": "Es werden {{count}} Claim-Transaktionen gesendet, eine pro Position"
     },
     "DesktopChainSelector": {
       "allChains": "Alle Netzwerke"

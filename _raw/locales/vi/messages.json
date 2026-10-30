@@ -4914,7 +4914,9 @@
     },
     "DappActions": {
       "queueDescription": "Rút tiền hiện tại sẽ vào hàng chờ. Khi được xử lý, nó có thể được rút về ví của bạn.",
-      "manage": "Quản lý"
+      "manage": "Quản lý",
+      "claimAllRewards": "Phần thưởng từ {{count}} vị thế",
+      "claimAllDescription": "Sẽ gửi {{count}} giao dịch nhận thưởng, mỗi vị thế một giao dịch"
     },
     "DesktopChainSelector": {
       "allChains": "Tất cả các chuỗi"

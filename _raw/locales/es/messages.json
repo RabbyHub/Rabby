@@ -4917,7 +4917,9 @@
     },
     "DappActions": {
       "queueDescription": "El retiro actual entrará en una cola de espera. Una vez procesado, podrás retirarlo a tu wallet.",
-      "manage": "Administrar"
+      "manage": "Administrar",
+      "claimAllRewards": "Recompensas de {{count}} posiciones",
+      "claimAllDescription": "Se enviarán {{count}} transacciones de reclamo, una por posición"
     },
     "DesktopChainSelector": {
       "allChains": "Todas las redes"

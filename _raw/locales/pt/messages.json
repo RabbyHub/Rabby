@@ -4914,7 +4914,9 @@
     },
     "DappActions": {
       "queueDescription": "O levantamento atual entrará numa fila de espera. Após o processamento, poderá ser transferido para a sua carteira.",
-      "manage": "Gerir"
+      "manage": "Gerir",
+      "claimAllRewards": "Recompensas de {{count}} posições",
+      "claimAllDescription": "Serão enviadas {{count}} transações de resgate, uma por posição"
     },
     "DesktopChainSelector": {
       "allChains": "Todas as redes"

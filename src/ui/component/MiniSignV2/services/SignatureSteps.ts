@@ -735,7 +735,10 @@ export class SignatureSteps {
     );
 
     if (config?.onPreExecChange && txsCalc.length) {
-      config?.onPreExecChange(txsCalc[txsCalc.length - 1].preExecResult);
+      config?.onPreExecChange(
+        txsCalc[txsCalc.length - 1].preExecResult,
+        txsCalc.map((item) => item.preExecResult)
+      );
     }
 
     const gaslessTask = computeGasless({
