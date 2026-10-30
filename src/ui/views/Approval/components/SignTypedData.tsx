@@ -261,11 +261,9 @@ const SignTypedData = ({
   }, [data, isSignTypedDataV1, method]);
   useEffect(() => {
     reportNormalizeTypeDataFailures(normalizeFailures, {
-      origin: session.origin,
-      method,
       rawTypedData: data[1],
     });
-  }, [data, method, normalizeFailures, session.origin]);
+  }, [data, normalizeFailures]);
   const normalizedSignTypedData = useMemo(
     () => normalizePolygonMetaTransactionTypedData(signTypedData),
     [signTypedData]

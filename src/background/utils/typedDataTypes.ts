@@ -192,28 +192,15 @@ export const findInvalidTypedDataValue = (
   );
 };
 
-const MAX_REPORTED_PATH_LENGTH = 300;
-
 export const reportInvalidTypedDataValue = (
   invalidValue: InvalidTypedDataValue | undefined,
-  context: { origin: string; method: string; rawTypedData: string }
+  context: { rawTypedData: string }
 ) => {
   if (!invalidValue) return;
   try {
-    const { type, path, expected } = invalidValue;
     Sentry.captureMessage('eip712-sec: typed data value type mismatch', {
-      level: 'warning',
-      tags: {
-        typed_data_value_type: type,
-        method: context.method,
-      },
-      fingerprint: ['typed-data-value-mismatch', type],
       extra: {
-        origin: context.origin,
-        method: context.method,
         rawTypedData: context.rawTypedData,
-        path: path.slice(0, MAX_REPORTED_PATH_LENGTH),
-        expected,
       },
     });
   } catch (e) {

@@ -228,51 +228,19 @@ export function normalizeTypeData(
   return { typedData, failures };
 }
 
-// Type names and paths come from the dApp; cap them so one request can't
-// produce an oversized report.
-const MAX_REPORT_TAG_LENGTH = 64;
-const MAX_REPORT_TEXT_LENGTH = 300;
-const MAX_REPORTED_FAILURES = 10;
-
-const describeNormalizeError = (error: unknown) => {
-  if (error === undefined) return undefined;
-  const text =
-    error instanceof Error ? `${error.name}: ${error.message}` : String(error);
-  return text.slice(0, MAX_REPORT_TEXT_LENGTH);
-};
-
 /**
  * Reports a request whose typed data did not normalize, to learn how often it
  * happens before such a request is rejected.
  */
 export const reportNormalizeTypeDataFailures = (
   failures: NormalizeTypeDataFailure[],
-  context: { origin: string; method: string; rawTypedData: string }
+  context: { rawTypedData: string }
 ) => {
   if (!failures.length) return;
   try {
-    const [first] = failures;
-    const type = first.type.slice(0, MAX_REPORT_TAG_LENGTH);
     Sentry.captureMessage('eip712-sec: typed data normalize failed', {
-      level: 'warning',
-      tags: {
-        typed_data_normalize_reason: first.reason,
-        typed_data_normalize_type: type,
-      },
-      fingerprint: ['typed-data-normalize', first.reason, type],
       extra: {
-        origin: context.origin,
-        method: context.method,
         rawTypedData: context.rawTypedData,
-        failureCount: failures.length,
-        failures: failures
-          .slice(0, MAX_REPORTED_FAILURES)
-          .map(({ reason, path, type, error }) => ({
-            reason,
-            path: path.slice(0, MAX_REPORT_TEXT_LENGTH),
-            type: type.slice(0, MAX_REPORT_TAG_LENGTH),
-            error: describeNormalizeError(error),
-          })),
       },
     });
   } catch (e) {

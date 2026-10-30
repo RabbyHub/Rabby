@@ -408,7 +408,6 @@ const v1SignTypedDataVlidation = ({
 
 const signTypedDataVlidation = ({
   data: {
-    method,
     params: [from, data],
   },
   session,
@@ -421,21 +420,17 @@ const signTypedDataVlidation = ({
     throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
   }
   if (parsed.hasProtoKey) {
-    throw ethErrors.rpc.invalidParams('data should not contain __proto__ key');
+    throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   const jsonData = parsed.json;
   const shadowedType = findShadowedBuiltinType(jsonData?.types);
   if (shadowedType) {
-    throw ethErrors.rpc.invalidParams(
-      `types should not redefine built-in type: ${shadowedType}`
-    );
+    throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
-    throw ethErrors.rpc.invalidParams('types graph is too large to parse');
+    throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   reportInvalidTypedDataValue(findInvalidTypedDataValue(jsonData), {
-    origin: session!.origin,
-    method,
     rawTypedData: data,
   });
   if (!permissionService.isInternalOrigin(session!.origin)) {

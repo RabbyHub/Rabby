@@ -462,8 +462,6 @@ describe('findInvalidTypedDataValue', () => {
 
 describe('reportInvalidTypedDataValue', () => {
   const context = {
-    origin: 'https://example.com',
-    method: 'eth_signTypedData_v4',
     rawTypedData: JSON.stringify({
       message: { contents: 'x'.repeat(1000) },
     }),
@@ -481,35 +479,17 @@ describe('reportInvalidTypedDataValue', () => {
     expect(captureMessage).not.toHaveBeenCalled();
   });
 
-  it('reports the mismatch and original typed data', () => {
+  it('reports only the original typed data', () => {
     reportInvalidTypedDataValue(invalidValue, context);
     expect(captureMessage).toHaveBeenCalledTimes(1);
     expect(captureMessage).toHaveBeenCalledWith(
       'eip712-sec: typed data value type mismatch',
-      expect.objectContaining({
-        level: 'warning',
-        tags: {
-          typed_data_value_type: 'bool',
-          method: context.method,
-        },
-        fingerprint: ['typed-data-value-mismatch', 'bool'],
+      {
         extra: {
-          ...context,
-          path: invalidValue.path,
-          expected: invalidValue.expected,
+          rawTypedData: context.rawTypedData,
         },
-      })
+      }
     );
-  });
-
-  it('caps the path without truncating the raw typed data', () => {
-    reportInvalidTypedDataValue(
-      { ...invalidValue, path: 'p'.repeat(1000) },
-      context
-    );
-    const [, options] = captureMessage.mock.calls[0];
-    expect(options.extra.path).toHaveLength(300);
-    expect(options.extra.rawTypedData).toBe(context.rawTypedData);
   });
 
   it('does not throw when reporting fails', () => {

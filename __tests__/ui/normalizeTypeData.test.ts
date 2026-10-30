@@ -202,8 +202,6 @@ describe('getNormalizeTypeDataVersion', () => {
 
 describe('reportNormalizeTypeDataFailures', () => {
   const context = {
-    origin: 'https://example.com',
-    method: 'eth_signTypedData_v4',
     rawTypedData: JSON.stringify({
       message: { contents: 'x'.repeat(1000) },
     }),
@@ -216,7 +214,7 @@ describe('reportNormalizeTypeDataFailures', () => {
     expect(captureMessage).not.toHaveBeenCalled();
   });
 
-  it('reports the failures and raw typed data of one request in one event', () => {
+  it('reports only the original typed data', () => {
     reportNormalizeTypeDataFailures(
       [
         {
@@ -232,38 +230,12 @@ describe('reportNormalizeTypeDataFailures', () => {
     expect(captureMessage).toHaveBeenCalledTimes(1);
     expect(captureMessage).toHaveBeenCalledWith(
       'eip712-sec: typed data normalize failed',
-      expect.objectContaining({
-        tags: {
-          typed_data_normalize_reason: 'field',
-          typed_data_normalize_type: 'uint256',
-        },
-        fingerprint: ['typed-data-normalize', 'field', 'uint256'],
+      {
         extra: {
-          ...context,
-          failureCount: 2,
-          failures: [
-            {
-              reason: 'field',
-              path: 'message.amount',
-              type: 'uint256',
-              error: 'TypeError: bad value',
-            },
-            { reason: 'digest', path: '', type: 'Mail', error: undefined },
-          ],
+          rawTypedData: context.rawTypedData,
         },
-      })
+      }
     );
-  });
-
-  it('caps diagnostic text without truncating the raw typed data', () => {
-    reportNormalizeTypeDataFailures(
-      [{ reason: 'field', path: 'p'.repeat(1000), type: 't'.repeat(1000) }],
-      context
-    );
-    const [, options] = captureMessage.mock.calls[0];
-    expect(options.tags.typed_data_normalize_type).toHaveLength(64);
-    expect(options.extra.failures[0].path).toHaveLength(300);
-    expect(options.extra.rawTypedData).toBe(context.rawTypedData);
   });
 
   it('does not throw when reporting fails', () => {
