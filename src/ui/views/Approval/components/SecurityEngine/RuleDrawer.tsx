@@ -295,7 +295,7 @@ const RuleDrawer = ({
             {valueTooltip ? (
               <TooltipWithMagnetArrow
                 inApproval
-                className="rectangle w-[max-content] max-w-[355px]"
+                className="rectangle w-[max-content]"
                 title={valueTooltip}
               >
                 <img src={IconQuestionMark} className="inline-block ml-[3px]" />

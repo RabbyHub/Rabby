@@ -154,7 +154,7 @@ export const SubRow = ({
         <TooltipWithMagnetArrow
           inApproval
           title={tip}
-          overlayClassName="rectangle w-[max-content] max-w-[355px]"
+          overlayClassName="rectangle w-[max-content]"
         >
           <img
             src={IconQuestionMark}

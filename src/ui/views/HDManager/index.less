@@ -157,7 +157,15 @@
       color: var(--r-neutral-foot);
     }
   }
+  // Only highlight rows after a real mouse move (see hoverEnabled in
+  // AccountList): a cursor left still over the table, e.g. in a tab opened
+  // from the popup, matches :hover and antd's row-hover class without any
+  // user action. Both selectors must beat antd's #fafafa defaults.
+  .ant-table-tbody > tr > td.ant-table-cell-row-hover,
   .ant-table-tbody > tr.ant-table-row:hover > td {
+    background-color: var(--r-neutral-card-1);
+  }
+  &.hover-enabled .ant-table-tbody > tr.ant-table-row:hover > td {
     background-color: var(--r-blue-light-1);
   }
   .ant-table-cell-scrollbar {

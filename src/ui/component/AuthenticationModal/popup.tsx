@@ -11,8 +11,6 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox, Field } from 'ui/component';
 import { WrappedComponentProps, wrapModalPromise } from '../Modal/WrapPromise';
-import { getUiType } from '@/ui/utils';
-const isTab = getUiType().isTab;
 
 const AuthFormItemWrapper = styled.div`
   .ant-form-item-has-error {
@@ -193,8 +191,15 @@ const AuthenticationPopup = ({
   useEffect(() => {
     setTimeout(() => {
       setVisible(true);
-      inputRef.current?.focus();
     });
+  }, []);
+
+  // Focus after the open animation: the drawer focuses its own panel on open
+  // (stealing autoFocus), and focusing mid-animation breaks layout in Firefox tab.
+  const handleAfterOpenChange = useCallback((open: boolean) => {
+    if (open) {
+      inputRef.current?.focus({ preventScroll: true });
+    }
   }, []);
 
   return (
@@ -214,6 +219,7 @@ const AuthenticationPopup = ({
       push={false}
       key={String(visible)}
       forceRender={force}
+      afterOpenChange={handleAfterOpenChange}
     >
       {description && <Description>{description}</Description>}
       {checklist.length > 0 && (
@@ -264,7 +270,6 @@ const AuthenticationPopup = ({
               }
               type="password"
               size="large"
-              autoFocus={!isTab}
               ref={inputRef}
               spellCheck={false}
             />

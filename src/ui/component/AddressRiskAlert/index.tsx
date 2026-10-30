@@ -57,9 +57,6 @@ interface AddressRiskAlertProps {
 
 const StyledTooltipGlobalStyle = createGlobalStyle`
   .alias-tooltip {
-    .ant-tooltip-inner {
-      border-radius: 2px !important;
-    }
     .ant-tooltip-arrow {
       display: block !important;
     }

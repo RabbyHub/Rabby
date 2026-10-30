@@ -32,6 +32,13 @@ export const initializeUIStore = () => {
         });
         break;
       }
+      case 'isExtraFeeProtectionEnabled': {
+        preferenceActions.setField({
+          isExtraFeeProtectionEnabled:
+            payload.partials.isExtraFeeProtectionEnabled,
+        });
+        break;
+      }
       case 'biometricUnlockEnabled': {
         preferenceActions.setField({
           biometricUnlockEnabled: payload.partials.biometricUnlockEnabled,

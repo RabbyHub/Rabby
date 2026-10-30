@@ -78,7 +78,7 @@ export const HardwareWallets: React.FC<{
                   key={wallet.brand}
                   title={t(wallet.tipI18nKey)}
                   placement="topLeft"
-                  overlayClassName="rectangle w-[max-content] max-w-[355px]"
+                  overlayClassName="rectangle w-[max-content]"
                 >
                   <div>{row}</div>
                 </Tooltip>
