@@ -247,13 +247,13 @@ const describeNormalizeError = (error: unknown) => {
  */
 export const reportNormalizeTypeDataFailures = (
   failures: NormalizeTypeDataFailure[],
-  context: { origin: string; method: string }
+  context: { origin: string; method: string; rawTypedData: string }
 ) => {
   if (!failures.length) return;
   try {
     const [first] = failures;
     const type = first.type.slice(0, MAX_REPORT_TAG_LENGTH);
-    Sentry.captureMessage('typed data normalize failed', {
+    Sentry.captureMessage('eip712-sec: typed data normalize failed', {
       level: 'warning',
       tags: {
         typed_data_normalize_reason: first.reason,
@@ -263,6 +263,7 @@ export const reportNormalizeTypeDataFailures = (
       extra: {
         origin: context.origin,
         method: context.method,
+        rawTypedData: context.rawTypedData,
         failureCount: failures.length,
         failures: failures
           .slice(0, MAX_REPORTED_FAILURES)

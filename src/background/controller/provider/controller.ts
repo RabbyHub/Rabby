@@ -78,6 +78,7 @@ import {
   findShadowedBuiltinType,
   isTypeGraphTooLarge,
   parseTypedDataJson,
+  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
 import {
@@ -407,6 +408,7 @@ const v1SignTypedDataVlidation = ({
 
 const signTypedDataVlidation = ({
   data: {
+    method,
     params: [from, data],
   },
   session,
@@ -431,13 +433,11 @@ const signTypedDataVlidation = ({
   if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
     throw ethErrors.rpc.invalidParams('types graph is too large to parse');
   }
-  const invalidValue = findInvalidTypedDataValue(jsonData);
-  if (invalidValue) {
-    const { type, path, expected } = invalidValue;
-    throw ethErrors.rpc.invalidParams(
-      `${type} field ${path} should be ${expected}`
-    );
-  }
+  reportInvalidTypedDataValue(findInvalidTypedDataValue(jsonData), {
+    origin: session!.origin,
+    method,
+    rawTypedData: data,
+  });
   if (!permissionService.isInternalOrigin(session!.origin)) {
     const currentChain = permissionService.getConnectedSite(session!.origin)
       ?.chain;

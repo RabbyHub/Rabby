@@ -204,6 +204,9 @@ describe('reportNormalizeTypeDataFailures', () => {
   const context = {
     origin: 'https://example.com',
     method: 'eth_signTypedData_v4',
+    rawTypedData: JSON.stringify({
+      message: { contents: 'x'.repeat(1000) },
+    }),
   };
 
   beforeEach(() => captureMessage.mockClear());
@@ -213,7 +216,7 @@ describe('reportNormalizeTypeDataFailures', () => {
     expect(captureMessage).not.toHaveBeenCalled();
   });
 
-  it('reports the failures of one request in one event', () => {
+  it('reports the failures and raw typed data of one request in one event', () => {
     reportNormalizeTypeDataFailures(
       [
         {
@@ -228,7 +231,7 @@ describe('reportNormalizeTypeDataFailures', () => {
     );
     expect(captureMessage).toHaveBeenCalledTimes(1);
     expect(captureMessage).toHaveBeenCalledWith(
-      'typed data normalize failed',
+      'eip712-sec: typed data normalize failed',
       expect.objectContaining({
         tags: {
           typed_data_normalize_reason: 'field',
@@ -252,7 +255,7 @@ describe('reportNormalizeTypeDataFailures', () => {
     );
   });
 
-  it('caps text that comes from the dApp', () => {
+  it('caps diagnostic text without truncating the raw typed data', () => {
     reportNormalizeTypeDataFailures(
       [{ reason: 'field', path: 'p'.repeat(1000), type: 't'.repeat(1000) }],
       context
@@ -260,6 +263,7 @@ describe('reportNormalizeTypeDataFailures', () => {
     const [, options] = captureMessage.mock.calls[0];
     expect(options.tags.typed_data_normalize_type).toHaveLength(64);
     expect(options.extra.failures[0].path).toHaveLength(300);
+    expect(options.extra.rawTypedData).toBe(context.rawTypedData);
   });
 
   it('does not throw when reporting fails', () => {

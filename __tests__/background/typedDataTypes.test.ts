@@ -1,14 +1,19 @@
 /**
  * @jest-environment node
  */
+jest.mock('@sentry/browser', () => ({ captureMessage: jest.fn() }));
 // eth-sig-util's hashing fails under jsdom, whose Uint8Array is not Node's.
+import * as Sentry from '@sentry/browser';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import {
   findInvalidTypedDataValue,
   findShadowedBuiltinType,
   isTypeGraphTooLarge,
   parseTypedDataJson,
+  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
+
+const captureMessage = Sentry.captureMessage as jest.Mock;
 
 const EIP712Domain = [
   { name: 'name', type: 'string' },
@@ -203,7 +208,7 @@ describe('findInvalidTypedDataValue', () => {
   });
 
   it.each(['false', 'true', '', 0, 1, null, {}, []])(
-    'rejects %p in a bool field',
+    'flags %p in a bool field',
     (approved) => {
       expect(find({ ...base, message: { contents: 'hi', approved } })).toBe(
         'message.approved'
@@ -294,14 +299,14 @@ describe('findInvalidTypedDataValue', () => {
     ],
   ];
 
-  it.each(cases)('rejects a non-boolean in %s', (_, data, path) => {
+  it.each(cases)('flags a non-boolean in %s', (_, data, path) => {
     expect(find(data)).toBe(path);
     const fixed = JSON.parse(JSON.stringify(data).replace(/"false"/g, 'false'));
     expect(find(fixed)).toBeUndefined();
     expect(hash(data)).not.toBe(hash(fixed));
   });
 
-  it('rejects a bool field resolved through an inherited key', () => {
+  it('flags a bool field resolved through an inherited key', () => {
     // The signer reads `message.constructor` from the prototype and signs true.
     const data = {
       ...base,
@@ -384,7 +389,7 @@ describe('findInvalidTypedDataValue', () => {
       '',
       null,
       true,
-    ])('rejects %p', (to) => {
+    ])('flags %p', (to) => {
       expect(find(withTo(to))).toBe('message.to');
     });
 
@@ -406,7 +411,7 @@ describe('findInvalidTypedDataValue', () => {
       );
     });
 
-    it('rejects an invalid address in the domain', () => {
+    it('flags an invalid address in the domain', () => {
       const data = {
         ...base,
         domain: { ...base.domain, verifyingContract: 'c'.repeat(40) },
@@ -414,7 +419,7 @@ describe('findInvalidTypedDataValue', () => {
       expect(find(data)).toBe('domain.verifyingContract');
     });
 
-    it('rejects an invalid address in an address[]', () => {
+    it('flags an invalid address in an address[]', () => {
       const data = {
         ...base,
         types: { EIP712Domain, Mail: [{ name: 'to', type: 'address[]' }] },
@@ -434,7 +439,7 @@ describe('findInvalidTypedDataValue', () => {
       expect(find(withContents(contents))).toBeUndefined();
     });
 
-    it.each([123, 0, null, true, {}, []])('rejects %p', (contents) => {
+    it.each([123, 0, null, true, {}, []])('flags %p', (contents) => {
       expect(find(withContents(contents))).toBe('message.contents');
     });
 
@@ -448,10 +453,72 @@ describe('findInvalidTypedDataValue', () => {
       expect(hash(withContents(null))).toBe(hash(withContents('')));
     });
 
-    it('rejects an invalid string in the domain', () => {
+    it('flags an invalid string in the domain', () => {
       const data = { ...base, domain: { ...base.domain, name: 1 } };
       expect(find(data)).toBe('domain.name');
     });
+  });
+});
+
+describe('reportInvalidTypedDataValue', () => {
+  const context = {
+    origin: 'https://example.com',
+    method: 'eth_signTypedData_v4',
+    rawTypedData: JSON.stringify({
+      message: { contents: 'x'.repeat(1000) },
+    }),
+  };
+  const invalidValue = {
+    path: 'message.approved',
+    type: 'bool',
+    expected: 'a boolean',
+  };
+
+  beforeEach(() => captureMessage.mockClear());
+
+  it('does not report without an invalid value', () => {
+    reportInvalidTypedDataValue(undefined, context);
+    expect(captureMessage).not.toHaveBeenCalled();
+  });
+
+  it('reports the mismatch and original typed data', () => {
+    reportInvalidTypedDataValue(invalidValue, context);
+    expect(captureMessage).toHaveBeenCalledTimes(1);
+    expect(captureMessage).toHaveBeenCalledWith(
+      'eip712-sec: typed data value type mismatch',
+      expect.objectContaining({
+        level: 'warning',
+        tags: {
+          typed_data_value_type: 'bool',
+          method: context.method,
+        },
+        fingerprint: ['typed-data-value-mismatch', 'bool'],
+        extra: {
+          ...context,
+          path: invalidValue.path,
+          expected: invalidValue.expected,
+        },
+      })
+    );
+  });
+
+  it('caps the path without truncating the raw typed data', () => {
+    reportInvalidTypedDataValue(
+      { ...invalidValue, path: 'p'.repeat(1000) },
+      context
+    );
+    const [, options] = captureMessage.mock.calls[0];
+    expect(options.extra.path).toHaveLength(300);
+    expect(options.extra.rawTypedData).toBe(context.rawTypedData);
+  });
+
+  it('does not throw when reporting fails', () => {
+    captureMessage.mockImplementationOnce(() => {
+      throw new Error('sentry down');
+    });
+    expect(() =>
+      reportInvalidTypedDataValue(invalidValue, context)
+    ).not.toThrow();
   });
 });
 
