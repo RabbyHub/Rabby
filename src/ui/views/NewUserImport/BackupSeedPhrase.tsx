@@ -13,12 +13,8 @@ import { ReactComponent as RcIconCopy } from '@/ui/assets/component/icon-copy-cc
 import { useMemoizedFn } from 'ahooks';
 import { useWallet } from '@/ui/utils';
 import { query2obj } from '@/ui/utils/url';
-import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
-import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
-import UserGuide2 from '@/ui/assets/new-user-import/guide-2.png';
-import { ReactComponent as UserGuide1Icon } from '@/ui/assets/new-user-import/guide1.svg';
-import { ReactComponent as UserGuide2Icon } from '@/ui/assets/new-user-import/guide2.svg';
 import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
+import { PinGuideTips } from './PinGuideTips';
 
 export const BackupSeedPhrase = () => {
   const { t } = useTranslation();
@@ -119,44 +115,7 @@ export const BackupSeedPhrase = () => {
           {t('page.newAddress.seedPhrase.saved')}
         </Button>
       </Card>
-      <div
-        className={clsx(
-          'fixed top-[40px] right-[90px]',
-          'w-[242px] h-[300px]',
-          'py-12 px-12',
-          'bg-r-neutral-card-1 rounded-[12px]'
-        )}
-      >
-        <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
-        <div className="flex flex-col gap-[11px]">
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step1')}
-              </span>
-            </div>
-            <img
-              src={UserGuide1}
-              alt="user-guide-1"
-              className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step2')}
-              </span>
-            </div>
-            <img
-              src={UserGuide2}
-              alt="user-guide-2"
-              className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
-            />
-          </div>
-        </div>
-      </div>
+      <PinGuideTips />
     </>
   );
 };
