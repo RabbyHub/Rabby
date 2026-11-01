@@ -1,5 +1,4 @@
 import { Button, DrawerProps, Input, InputRef, Skeleton, Tooltip } from 'antd';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import {
   GasAccountCheckResult,
@@ -482,11 +481,6 @@ const GasSelectorHeader = ({
       setCustomNonce(Number(nonce));
       setIsSelectCustom(true);
     }
-    matomoRequestEvent({
-      category: 'Transaction',
-      action: 'EditGas',
-      label: chain?.serverId,
-    });
     setTimeout(
       () => {
         customerInputRef.current?.focus();

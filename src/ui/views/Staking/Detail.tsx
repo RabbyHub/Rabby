@@ -60,7 +60,6 @@ import {
   createStakingReadContractClient,
   getStakingMainTxHash,
 } from './utils/tx';
-import { getStakingRawAssetsUsdValue, reportStakingTx } from './utils/report';
 import { shouldShowStakingPortfolio } from './utils/portfolioVisibility';
 import './style.less';
 
@@ -403,22 +402,6 @@ const StakingDetail = () => {
         const hash = getStakingMainTxHash(hashes);
 
         if (hash) {
-          reportStakingTx({
-            account,
-            pool: visualPool,
-            txId: hash,
-            txType: 'claim',
-            poolAddress: univ3Entry.pool,
-            usdValue: getStakingRawAssetsUsdValue(
-              claimTargets.flatMap((item) =>
-                item.rewards.map((asset) => ({
-                  token: asset.token,
-                  rawAmount: asset.rawAmount,
-                }))
-              )
-            ),
-          });
-
           addPendingAction({
             hash,
             action: 'claim',

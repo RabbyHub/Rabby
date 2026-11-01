@@ -10,8 +10,7 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
 import { TradingButtons } from '../components/TradingButtons';
 import { OrderInfoGrid } from '../components/OrderInfoGrid';
-import stats from '@/stats';
-import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
+import { formatPerpsCoin } from '../../../utils';
 import { BigNumber } from 'bignumber.js';
 import { calcAmountFromPercentage } from '../utils';
 import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
@@ -74,7 +73,6 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
 
   // Get data from perpsState
   const {
-    currentPerpsAccount,
     selectedCoin,
     positionSize,
     setPositionSize,
@@ -83,8 +81,6 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     midPrice,
     szDecimals,
     pxDecimals,
-    leverage,
-    leverageType,
     availableBalance,
     quoteAsset,
     reduceOnly,
@@ -257,21 +253,6 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
       reduceOnly: order.reduceOnly,
       durationMins: order.durationMins,
       randomizeDelay: order.randomizeDelay,
-    });
-    stats.report('perpsTradeHistory', {
-      created_at: new Date().getTime(),
-      user_addr: currentPerpsAccount?.address || '',
-      trade_type: 'twap',
-      leverage: leverage.toString(),
-      trade_side: getStatsReportSide(order.isBuy, order.reduceOnly),
-      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-      coin: selectedCoin,
-      size: order.size,
-      price: markPrice,
-      trade_usd_value: new BigNumber(markPrice).times(order.size).toFixed(2),
-      service_provider: 'hyperliquid',
-      app_version: process.env.release || '0',
-      address_type: currentPerpsAccount?.type || '',
     });
   });
 

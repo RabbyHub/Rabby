@@ -504,6 +504,7 @@
       "blockDappFromSendingRequests": "Bloquear Dapp para que no envíe solicitudes durante 1 min",
       "cancelCurrentTransaction": "Cancelar la transacción actual",
       "imKeyConnected": "imKey está conectado",
+      "extraFeeProtectionBlocked": "La protección contra comisiones adicionales bloqueó esta solicitud de firma. Si aun así quieres firmar, desactívala en Ajustes",
       "cancelAll": "Cancelar todas las {{count}} solicitudes de Dapp",
       "cancelConnection": "Cancelar conexión",
       "cancelTransaction": "Cancelar Transacción",
@@ -1363,7 +1364,9 @@
           "perpsFloatWidget": "Widget flotante de Perps",
           "currency": "Moneda",
           "searchCurrency": "Buscar moneda",
-          "dataAnalysis": "Análisis de datos"
+          "dataAnalysis": "Análisis de datos",
+          "extraFeeProtection": "Protección contra comisiones adicionales",
+          "extraFeeProtectionDesc": "Bloquea las solicitudes de firma que permiten a extensiones del navegador cobrar comisiones adicionales"
         },
         "aboutUs": "Acerca de nosotros",
         "currentVersion": "Versión actual",

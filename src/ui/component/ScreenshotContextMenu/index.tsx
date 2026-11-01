@@ -263,11 +263,22 @@ export const ScreenshotContextMenu = () => {
       handleCapture();
     };
 
-    browser.runtime.onMessage.addListener(onMessage);
+    // Reading `runtime.onMessage` throws once the extension context is
+    // invalidated (extension reloaded or updated while this page is open).
+    // Screenshot feedback is optional, so never let that crash the app root.
+    try {
+      browser.runtime.onMessage.addListener(onMessage);
+    } catch (e) {
+      console.error('[ScreenshotContextMenu] failed to listen to runtime', e);
+    }
     window.addEventListener(SCREENSHOT_FEEDBACK_ENTRY_CLICKED, handleCapture);
 
     return () => {
-      browser.runtime.onMessage.removeListener(onMessage);
+      try {
+        browser.runtime.onMessage.removeListener(onMessage);
+      } catch (e) {
+        // Same invalidated context; there is no listener left to remove.
+      }
       window.removeEventListener(
         SCREENSHOT_FEEDBACK_ENTRY_CLICKED,
         handleCapture

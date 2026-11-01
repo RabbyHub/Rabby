@@ -158,6 +158,193 @@ describe('Sentry configuration', () => {
     ]);
   });
 
+  test('identifies users by an anonymous id instead of the IP', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    expect(client.getOptions()._metadata?.sdk?.settings?.infer_ip).toBe(
+      'never'
+    );
+
+    scope.captureException(new Error('first failure'));
+    scope.captureException(new Error('second failure'));
+    await client.flush(2000);
+
+    const { sentryUserId } = await chrome.storage.local.get('sentryUserId');
+    expect(sentryUserId).toEqual(expect.any(String));
+    expect(events).toHaveLength(2);
+    events.forEach((event) => {
+      expect(event.user).toEqual({ id: sentryUserId });
+    });
+    await client.close(2000);
+  });
+
+  test('redacts wallet addresses anywhere in the event', async () => {
+    const address = '0x9bba7ebC9c69db92950def377d732b91bb22d02f';
+    const txHash = `0x${'ab'.repeat(32)}`;
+    const calldata = `0xa9059cbb${'0'.repeat(24)}${address.slice(
+      2
+    )}${'0'.repeat(63)}1`;
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    const paddedWord = `0x${'0'.repeat(24)}${address.slice(2)}`;
+    scope.setTag('owner', address);
+    scope.setExtra('payload', {
+      from: address,
+      tx: { data: calldata, hash: txHash },
+      topics: [paddedWord],
+      [address]: 'balance',
+    });
+    scope.captureException(new Error(`User or API Wallet ${address} failed`));
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    const sent = JSON.stringify(events[0]);
+    expect(sent.toLowerCase()).not.toContain(address.slice(2).toLowerCase());
+    expect(sent).toContain('[redacted-address]');
+    expect(sent).toContain('[redacted-hex]');
+    // A tx hash resolves to its sender on any explorer.
+    expect(sent).not.toContain(txHash.slice(2));
+    expect(events[0].extra.payload.tx.hash).toBe('[redacted-hex]');
+    expect(events[0].extra.payload.topics).toEqual(['[redacted-hex]']);
+    await client.close(2000);
+  });
+
+  test('redacts private keys, mnemonics and extended keys anywhere in the event', async () => {
+    // BIP39 / BIP32 test vectors and a well-known example key, not real funds.
+    const mnemonic =
+      'legal winner thank year wave sausage worth useful legal winner thank yellow';
+    const privateKey =
+      '4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f362318';
+    const xprv =
+      'xprv9s21ZrQH143K3QTDL4LXw2F7HEK3wJUD2nW2nRk4stbPy6cq3jPPqjiChkVvvNKmPGJxWUtg6LnF5kejMRNNU3TGtRBeJgk33yuGBxrMPHi';
+    const sentence =
+      'the request was rejected because the user closed the popup window before it loaded';
+    const maxAllowance =
+      '115792089237316195423570985008687907853269984665640564039457584007913129639935';
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.setExtra('wallet', {
+      privateKey: 'anything at all',
+      password: 'hunter2',
+      seedPhrase: ['legal', 'winner'],
+      passphraseEnabled: true,
+      note: `pasted ${mnemonic} here`,
+      keyHex: privateKey,
+      exported: xprv,
+    });
+    scope.addBreadcrumb({
+      category: 'custom',
+      message: `import failed: 0x${privateKey}`,
+    });
+    scope.captureException(
+      new Error(
+        `bad key ${privateKey} for ${mnemonic}; ${sentence}; allowance ${maxAllowance}`
+      )
+    );
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    const sent = JSON.stringify(events[0]);
+    [
+      privateKey,
+      xprv,
+      'hunter2',
+      'anything at all',
+      'sausage worth useful',
+    ].forEach((secret) => expect(sent).not.toContain(secret));
+    expect(events[0].extra.wallet).toEqual({
+      privateKey: '[redacted]',
+      password: '[redacted]',
+      seedPhrase: '[redacted]',
+      passphraseEnabled: true,
+      note: 'pasted [redacted-mnemonic] here',
+      keyHex: '[redacted-hex]',
+      exported: '[redacted-key]',
+    });
+    expect(events[0].breadcrumbs.at(-1).message).toBe(
+      'import failed: [redacted-hex]'
+    );
+    // Ordinary prose and decimal amounts are left alone.
+    expect(events[0].exception.values[0].value).toBe(
+      `bad key [redacted-hex] for [redacted-mnemonic]; ${sentence}; allowance ${maxAllowance}`
+    );
+    await client.close(2000);
+  });
+
+  // Shape of rc-field-form's validateFields rejection: `values` is every field
+  // as typed, so a private-key or password form would hand Sentry the secret.
+  test('drops antd form validation rejections', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.captureException({
+      values: {
+        privateKey:
+          '4c0883a69102937d6231471b5dbb6204fe5129617082792ae468d01a3f36231',
+        password: 'hunter2',
+      },
+      errorFields: [{ name: ['privateKey'], errors: ['Invalid private key'] }],
+      outOfDate: false,
+    });
+    // Not a validation rejection: no errorFields.
+    scope.captureException({ message: 'boom', values: [1, 2] });
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    expect(events[0].exception.values[0].value).toBe('boom');
+    expect(JSON.stringify(events)).not.toContain('hunter2');
+    await client.close(2000);
+  });
+
+  test('uploads only the error fields of a plain-object rejection', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.captureException({
+      message: 'rejected',
+      code: 4001,
+      data: { note: 'request payload' },
+      params: [{ to: 'somewhere' }],
+    });
+    await client.flush(2000);
+
+    expect(events[0].extra.__serialized__).toEqual({
+      message: 'rejected',
+      code: 4001,
+    });
+    await client.close(2000);
+  });
+
+  test('keeps the route but drops queries from the page URL and Referer', async () => {
+    const address = '0x9bba7ebc9c69db92950def377d732b91bb22d02f';
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.captureEvent({
+      message: 'page failure',
+      request: {
+        url: `chrome-extension://abc/index.html#/settings/address-detail?address=${address}`,
+        headers: {
+          Referer: `chrome-extension://abc/popup.html?x=1#/send-token?to=${address}`,
+          'User-Agent': 'test-agent',
+        },
+      },
+    });
+    await client.flush(2000);
+
+    expect(events[0].request).toEqual({
+      url: 'chrome-extension://abc/index.html#/settings/address-detail',
+      headers: {
+        Referer: 'chrome-extension://abc/popup.html#/send-token',
+        'User-Agent': 'test-agent',
+      },
+    });
+    await client.close(2000);
+  });
+
   test('drops sensitive UI breadcrumbs and sanitizes request URLs', () => {
     expect(config.beforeBreadcrumb?.({ category: 'console' })).toBeNull();
     expect(config.beforeBreadcrumb?.({ category: 'ui.click' })).toBeNull();

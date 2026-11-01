@@ -320,7 +320,7 @@ export const BridgeShowMore = ({
                     offset: [10, 0],
                   }}
                   placement={'topRight'}
-                  overlayClassName="rectangle max-w-[360px]"
+                  overlayClassName="rectangle"
                   title={
                     <div className="flex flex-col gap-4 py-[5px] text-13">
                       <div>
@@ -419,7 +419,7 @@ export const BridgeShowMore = ({
             name={
               <Tooltip
                 placement={'topLeft'}
-                overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+                overlayClassName="rectangle"
                 title={t('page.swap.preferMEVTip')}
               >
                 <span>{t('page.swap.preferMEV')}</span>
@@ -432,7 +432,7 @@ export const BridgeShowMore = ({
               arrowPointAtCenter
               // Arrow center: 13px right inset + half its 22px container.
               align={{ offset: [24, -4] }}
-              overlayClassName={clsx('rectangle', 'max-w-[312px]')}
+              overlayClassName="rectangle"
               title={t('page.swap.preferMEVTip')}
             >
               <PreferMEVGuardSwitch

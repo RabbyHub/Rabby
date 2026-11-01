@@ -5,6 +5,7 @@ import { last } from 'lodash';
 import Dexie from 'dexie';
 import { transformToHistory } from '@/utils/history';
 import { syncDbService } from './syncDbService';
+import type { TxHistoryItemRow } from '../schema/history';
 import {
   HISTORY_RETENTION_SECONDS,
   HISTORY_TX_COUNT_CHECK_INTERVAL,
@@ -21,6 +22,14 @@ export type HistoryOpenapi = Pick<
 
 export const getHistoryRetentionStart = () =>
   Date.now() / 1000 - HISTORY_RETENTION_SECONDS;
+
+// Txs mined in one block share time_at, and the time index breaks that tie by
+// _id, i.e. by tx hash. idx is the tx's position in its block, so ordering by
+// it puts an approve below the swap that followed it in the same block.
+const compareHistoryNewestFirst = (
+  a: Pick<TxHistoryItemRow, 'time_at' | 'idx'>,
+  b: Pick<TxHistoryItemRow, 'time_at' | 'idx'>
+) => b.time_at - a.time_at || (b.idx ?? 0) - (a.idx ?? 0);
 
 const localSyncLocks = new Map<string, Promise<unknown>>();
 
@@ -146,7 +155,7 @@ class HistoryDbService {
     });
   }
 
-  queryRecent({
+  async queryRecent({
     address,
     isFilterScam,
     serverChainId,
@@ -158,19 +167,39 @@ class HistoryDbService {
     limit?: number;
   }) {
     const owner = address.toLowerCase();
+    const isShown = (item: TxHistoryItemRow) => {
+      if (isFilterScam && (item.is_scam || item.is_small_tx)) {
+        return false;
+      }
+      return !serverChainId || item.chain === serverChainId;
+    };
     const collection = db.history
       .where('[owner_addr+time_at]')
       .between([owner, getHistoryRetentionStart()], [owner, Dexie.maxKey])
       .reverse()
-      .and((item) => {
-        if (isFilterScam && (item.is_scam || item.is_small_tx)) {
-          return false;
-        }
-        return !serverChainId || item.chain === serverChainId;
-      });
+      .and(isShown);
     // The index already yields newest first, so a limit reads only the rows
     // shown; limit() counts rows that pass the filter above.
-    return (limit ? collection.limit(limit) : collection).toArray();
+    let rows = await (limit ? collection.limit(limit) : collection).toArray();
+
+    // Within a second the index yields hash order, so a full page may hold
+    // only some of its last second's txs, and the rest would land above them
+    // on the next page. Read that whole second so it sorts as one.
+    const lastRow = last(rows);
+    if (limit && lastRow && rows.length >= limit) {
+      const lastSecond = await db.history
+        .where('[owner_addr+time_at]')
+        .equals([owner, lastRow.time_at])
+        // Same order as the page, so rows that tie in the sort below keep it.
+        .reverse()
+        .and(isShown)
+        .toArray();
+      rows = rows
+        .filter((item) => item.time_at !== lastRow.time_at)
+        .concat(lastSecond);
+    }
+
+    return rows.sort(compareHistoryNewestFirst);
   }
 
   async deleteExpired(address: string) {

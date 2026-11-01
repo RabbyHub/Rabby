@@ -11,7 +11,6 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useAsyncFn, usePrevious } from 'react-use';
 import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
@@ -58,7 +57,6 @@ import { PageHeader } from 'ui/component';
 // import { ReactComponent as RcIconSwitchCC } from '@/ui/assets/send-token/switch-cc.svg';
 
 import './style.less';
-import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { findChain, findChainByEnum, findChainByID } from '@/utils/chain';
 import { Chain } from '@debank/common';
@@ -1187,17 +1185,6 @@ const SendToken = () => {
       }
       try {
         await persistPageStateCache();
-        matomoRequestEvent({
-          category: 'Send',
-          action: 'createTx',
-          label: [
-            chain.name,
-            getKRCategoryByType(currentAccount?.type),
-            currentAccount?.brandName,
-            'token',
-            filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
-          ].join('|'),
-        });
 
         !isGnosisSafe &&
           wallet.addCacheHistoryData(

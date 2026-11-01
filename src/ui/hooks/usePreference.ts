@@ -123,9 +123,10 @@ export function useThemeModeOnMain() {
       root.classList.remove(darkModeClassName);
     }
 
-    requestAnimationFrame(() => {
-      root.classList.remove('no-transitions');
-    });
+    // Flush styles before re-enabling transitions; removing the class in a rAF
+    // runs before the frame's style recalc, so every background still animates.
+    void root.offsetHeight;
+    root.classList.remove('no-transitions');
   }, [themeMode, isDarkOnSystem, location.pathname]);
 }
 

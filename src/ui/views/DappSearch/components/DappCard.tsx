@@ -1,8 +1,6 @@
 import FallbackImage from '@/ui/component/FallbackSiteLogo';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { openInTab } from '@/ui/utils';
-import { ga4 } from '@/utils/ga4';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BasicDappInfo } from '@rabby-wallet/rabby-api/dist/types';
 import { Divider, Tooltip } from 'antd';
 import Paragraph from 'antd/lib/typography/Paragraph';
@@ -29,8 +27,6 @@ const GlobalStyle = createGlobalStyle`
   .dapp-search-card-tooltip {
     .ant-tooltip-inner {
       background-color: var(--r-neutral-black, #000) !important;
-      border-radius: 6px;
-      padding: 12px !important;
     }
 
     .ant-tooltip-arrow-content {
@@ -66,20 +62,6 @@ export const DappCard = ({
       ref={ref}
       onClick={() => {
         openInTab(`https://${data.id}`, false);
-        matomoRequestEvent({
-          category: 'DappsSearch',
-          action:
-            size === 'small'
-              ? 'Dapps_Search_Open_Favorite'
-              : 'Dapps_Search_Open',
-        });
-
-        ga4.fireEvent(
-          size === 'small' ? 'Dapps_Search_Open_Favorite' : 'Dapps_Search_Open',
-          {
-            event_category: 'DappsSearch',
-          }
-        );
       }}
     >
       <div className="flex items-center ">
@@ -102,7 +84,7 @@ export const DappCard = ({
               {data.collected_list?.length ? (
                 <Tooltip
                   getPopupContainer={() => ref.current || document.body}
-                  overlayClassName="rectangle max-w-[360px] dapp-search-card-tooltip"
+                  overlayClassName="rectangle dapp-search-card-tooltip"
                   title={
                     <div>
                       <div className="text-[12px] leading-[14px] text-r-neutral-title2 mb-[6px]">

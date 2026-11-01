@@ -117,7 +117,6 @@ describe('SignTypedData security lifecycle', () => {
         parseCommon: jest.fn().mockResolvedValue(response(['a', 'b'])),
         postActionLog: jest.fn(),
       },
-      reportStats: jest.fn().mockResolvedValue(undefined),
       ruleEnableStatusChange: jest.fn().mockResolvedValue(undefined),
       getApproval: jest.fn().mockResolvedValue({
         id: 'approval',
@@ -178,8 +177,12 @@ describe('SignTypedData security lifecycle', () => {
       },
       lodash: { cloneDeep: (data: any) => JSON.parse(JSON.stringify(data)) },
       '@/background/utils': { underline2Camelcase: (value: string) => value },
-      '@/utils/matomo-request': { matomoRequestEvent: noop },
-      '@/utils/transaction': { getKRCategoryByType: (value: string) => value },
+      '@/ui/store': {
+        useRabbySelector: (selector: any) => selector({ preference: {} }),
+      },
+      '@/utils/extraFeeProtection': jest.requireActual(
+        '@/utils/extraFeeProtection'
+      ),
       consts: {
         ALIAS_ADDRESS: {},
         CHAINS: { ETH: { serverId: 'eth' } },
@@ -250,7 +253,9 @@ describe('SignTypedData security lifecycle', () => {
       './TypedDataActions/utils': {
         cleanEIP712Payload: (data: any) => data,
         isDeepJSON: () => false,
-        normalizeTypeData: (data: any) => data,
+        getNormalizeTypeDataVersion: () => 'V4',
+        normalizeTypeData: (data: any) => ({ typedData: data, failures: [] }),
+        reportNormalizeTypeDataFailures: () => undefined,
       },
       '@rabby-wallet/rabby-security-engine/dist/rules': {
         Level,
@@ -296,7 +301,6 @@ describe('SignTypedData security lifecycle', () => {
         useEnterPassphraseModal: () => enterPassphrase,
       },
       clsx: { __esModule: true, default: () => '' },
-      '@/stats': { __esModule: true, default: { report: noop } },
       '@rabby-wallet/rabby-action': {
         parseAction: ({ data }: any) => ({ ...data }),
         formatSecurityEngineContext: formatContext,
@@ -317,7 +321,6 @@ describe('SignTypedData security lifecycle', () => {
       },
       './TxComponents/GnosisDrawer': { __esModule: true, default: empty },
       '@safe-global/protocol-kit': { generateTypedData: noop },
-      '@/utils/ga4': { ga4: { fireEvent: noop } },
       'ui/assets/walletlogo/safe.svg': '',
       '@/ui/state/exchange': { getCexInfo: async () => ({}) },
       '@/ui/utils/ledger-dmk': { requestLedgerHIDPermission: noop },
