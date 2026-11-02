@@ -1,5 +1,5 @@
 import { formatPrice, useWallet } from '@/ui/utils';
-import { CurvePoint } from '@/ui/views/Dashboard/components/BalanceView/CurveView';
+import type { CurvePoint } from '@/ui/views/Dashboard/components/BalanceView/CurveView';
 import { patchCurveData } from '@/utils/curve';
 import { useRequest } from 'ahooks';
 import dayjs from 'dayjs';

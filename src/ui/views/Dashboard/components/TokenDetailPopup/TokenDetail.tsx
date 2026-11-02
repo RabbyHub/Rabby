@@ -25,7 +25,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { UnknownTag } from '@/ui/component';
 import TokenChainAndContract from './TokenInfo';
-import { TokenCharts } from '@/ui/component/TokenChart';
+import { TokenCharts } from '@/ui/component/TokenChart/lazy';
 import { ScamTokenTips } from './ScamTokenTips';
 import { useGetHandleTokenSelectInTokenDetails } from '@/ui/component/TokenSelector/context';
 import { Account } from '@/background/service/preference';

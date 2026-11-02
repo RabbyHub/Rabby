@@ -5,7 +5,7 @@ import {
 import { TxHistoryItemRow } from '@/db/schema/history';
 import { Chain } from '@/types/chain';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import { TokenCharts } from '@/ui/component/TokenChart';
+import { TokenCharts } from '@/ui/component/TokenChart/lazy';
 import { getAddressScanLink } from '@/utils';
 import { findChain } from '@/utils/chain';
 import { transformToHistory } from '@/utils/history';

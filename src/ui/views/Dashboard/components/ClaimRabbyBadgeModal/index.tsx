@@ -19,7 +19,7 @@ import { Button, Input, Skeleton } from 'antd';
 
 import clsx from 'clsx';
 
-import Lottie from 'lottie-react';
+import { LazyLottie } from '@/ui/component/LazyLottie';
 
 import { CurrentAccount } from '@/ui/component/CurrentAccout';
 import { openInTab, useWallet } from '@/ui/utils';
@@ -452,7 +452,12 @@ const ClaimSuccess = ({ num }: { num: number }) => {
         <img src={ImgLink} className="ml-4 w-20 h-20" />
       </Button>
       <div className="confetti">
-        <Lottie animationData={animationData} loop height={360} width={360} />
+        <LazyLottie
+          animationData={animationData}
+          loop
+          height={360}
+          width={360}
+        />
       </div>
     </ClaimSuccessWrapper>
   );
