@@ -257,7 +257,8 @@
     "postcss@^8.3.5": "8.4.32",
     "rc-tooltip": "5.3.1",
     "rc-picker": "2.6.9",
-    "rc-trigger": "5.3.4"
+    "rc-trigger": "5.3.4",
+    "viem@^2.21.8": "2.47.6"
   },
   "engines": {
     "node": ">=22"
