@@ -1,6 +1,7 @@
 import openapiService from '@/background/service/openapi';
 import {
   clearBlockedAddressCache,
+  getTxAddressesToCheck,
   hasBlockedAddress,
 } from '@/background/service/blockedAddress';
 
@@ -68,5 +69,48 @@ describe('hasBlockedAddress', () => {
     expect(await hasBlockedAddress([bad])).toBe(false);
     expect(await hasBlockedAddress([bad])).toBe(true);
     expect(isBlockedAddress).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe('getTxAddressesToCheck', () => {
+  const token = '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359';
+  const word = (addr: string) => addr.slice(2).padStart(64, '0');
+  const amount = '1'.padStart(64, '0');
+
+  test('adds the ERC-20 transfer receiver from calldata', () => {
+    const data = `0xa9059cbb${word(bad)}${amount}`;
+    expect(getTxAddressesToCheck({ from: user, to: token, data })).toEqual([
+      user,
+      token,
+      bad,
+    ]);
+  });
+
+  test('adds both addresses of an NFT safeTransferFrom', () => {
+    const data = `0x42842E0E${word(user)}${word(bad)}${amount}`;
+    expect(getTxAddressesToCheck({ from: user, to: token, data })).toEqual([
+      user,
+      token,
+      user,
+      bad,
+    ]);
+  });
+
+  test('leaves approvals alone so a blocked spender can be revoked', () => {
+    const data = `0x095ea7b3${word(bad)}${'0'.padStart(64, '0')}`;
+    expect(getTxAddressesToCheck({ from: user, to: token, data })).toEqual([
+      user,
+      token,
+    ]);
+  });
+
+  test('ignores truncated or missing calldata', () => {
+    expect(
+      getTxAddressesToCheck({ from: user, to: token, data: '0xa9059cbb00' })
+    ).toEqual([user, token]);
+    expect(getTxAddressesToCheck({ from: user, to: token })).toEqual([
+      user,
+      token,
+    ]);
   });
 });

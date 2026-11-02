@@ -108,6 +108,8 @@ describe('ethSendTransaction blocked address check', () => {
   test.each([
     ['sender', from, {}],
     ['receiver', to, {}],
+    // `data` is an ERC-20 transfer to 0x…dead: the receiver only lives in calldata.
+    ['ERC-20 calldata receiver', `0x${'dead'.padStart(40, '0')}`, {}],
     [
       'batched call target',
       other,

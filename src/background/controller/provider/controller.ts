@@ -89,7 +89,10 @@ import {
   TxWithTempoExtras,
 } from '@/utils/tempo';
 import { fixKeyringAccountOnSigned } from '../walletUtils/fix';
-import { hasBlockedAddress } from '@/background/service/blockedAddress';
+import {
+  getTxAddressesToCheck,
+  hasBlockedAddress,
+} from '@/background/service/blockedAddress';
 import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
 import {
   attachSigningContext,
@@ -671,10 +674,11 @@ class ProviderController extends BaseController {
     // Started now, awaited right before signing, so it overlaps the tx build.
     const isBlockedPromise = hasBlockedAddress([
       txParams.from,
-      approvalRes.from,
-      approvalRes.to,
+      ...getTxAddressesToCheck(approvalRes),
       ...(Array.isArray((approvalRes as any).calls)
-        ? (approvalRes as any).calls.map((call) => call?.to)
+        ? (approvalRes as any).calls.flatMap((call) =>
+            getTxAddressesToCheck(call || {})
+          )
         : []),
     ]);
     const isSend = !!txParams.isSend;
