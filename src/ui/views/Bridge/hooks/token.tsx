@@ -4,7 +4,10 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { getQuoteList as getBridgeQuoteList } from '@rabby-wallet/rabby-bridge';
+import {
+  buildTx as buildBridgeTx,
+  getQuoteList as getBridgeQuoteList,
+} from '@rabby-wallet/rabby-bridge';
 import {
   useCallback,
   useEffect,
@@ -33,6 +36,7 @@ import {
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getRabbyFeeInfo } from '@/ui/views/Swap/hooks/fee';
+import { captureBuiltBridgeQuotes } from '../utils/quoteCapture';
 
 export const enableInsufficientQuote = true;
 
@@ -562,25 +566,26 @@ export const useBridge = () => {
       const getQUoteV2 = async (alternativeToken?: TokenItem) =>
         await Promise.allSettled(
           aggregatorsList.map(async (bridgeAggregator) => {
+            const quoteParams = {
+              userAddress: userAddress || '',
+              fromChainId: alternativeToken?.chain || fromToken.chain,
+              fromTokenId: alternativeToken?.id || fromToken.id,
+              fromTokenRawAmount: alternativeToken
+                ? new BigNumber(amount)
+                    .times(fromToken.price)
+                    .div(alternativeToken.price)
+                    .times(10 ** alternativeToken.decimals)
+                    .toFixed(0, 1)
+                    .toString()
+                : getBridgePayTokenRawAmount(amount, fromToken.decimals),
+              toChainId: toToken.chain,
+              toTokenId: toToken.id,
+              slippage: formatBridgeSlippageRatio(slippageObj.slippage),
+              feeRate: Number(feeRate),
+            };
             const data = await getBridgeQuoteList(
               bridgeAggregator.id,
-              {
-                userAddress,
-                fromChainId: alternativeToken?.chain || fromToken.chain,
-                fromTokenId: alternativeToken?.id || fromToken.id,
-                fromTokenRawAmount: alternativeToken
-                  ? new BigNumber(amount)
-                      .times(fromToken.price)
-                      .div(alternativeToken.price)
-                      .times(10 ** alternativeToken.decimals)
-                      .toFixed(0, 1)
-                      .toString()
-                  : getBridgePayTokenRawAmount(amount, fromToken.decimals),
-                toChainId: toToken.chain,
-                toTokenId: toToken.id,
-                slippage: formatBridgeSlippageRatio(slippageObj.slippage),
-                feeRate: Number(feeRate),
-              },
+              quoteParams,
               wallet.openapi
             ).catch((e) => {
               console.error(e);
@@ -594,6 +599,29 @@ export const useBridge = () => {
                   status: 'fail',
                 });
               }
+            });
+
+            void captureBuiltBridgeQuotes({
+              aggregatorId: bridgeAggregator.id,
+              source: alternativeToken ? 'recommend' : 'primary',
+              request: quoteParams,
+              context: {
+                amount,
+                fromTokenSymbol: (alternativeToken || fromToken).symbol,
+                toTokenSymbol: toToken.symbol,
+                alternativeTokenId: alternativeToken?.id,
+              },
+              quotes: data || [],
+              buildTx: (quote) =>
+                buildBridgeTx(
+                  bridgeAggregator.id,
+                  {
+                    ...quoteParams,
+                    bridgeId: quote.bridge_id,
+                    quoteKey: quote.quote_key || {},
+                  },
+                  wallet.openapi
+                ),
             });
 
             if (alternativeToken) {

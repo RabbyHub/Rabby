@@ -90,6 +90,7 @@ import {
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
+import { BridgeQuoteCapturePanel } from '@/ui/views/Bridge/Component/BridgeQuoteCapturePanel';
 import { useOpenapiStore } from '@/ui/state/openapi';
 import { appIsDebugPkg, appIsDev } from '@/utils/env';
 import {
@@ -650,6 +651,9 @@ const SettingsInner = ({
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
   const [dataAnalysisPending, setDataAnalysisPending] = useState(false);
 
+  const [bridgeQuoteCaptureVisible, setBridgeQuoteCaptureVisible] = useState(
+    false
+  );
   const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
     () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
   );
@@ -1313,6 +1317,11 @@ const SettingsInner = ({
       label: 'Debug Kits (Not present on production)',
       items: [
         {
+          leftIcon: RcIconSettingsCodeCC,
+          content: <span>Bridge Quote Capture</span>,
+          onClick: () => setBridgeQuoteCaptureVisible(true),
+        },
+        {
           leftIcon: RcIconServerCC,
           content: (
             <span>{t('page.dashboard.settings.backendServiceUrl')}</span>
@@ -1650,6 +1659,7 @@ const SettingsInner = ({
   const handleClose: DrawerProps['onClose'] = (e) => {
     setShowOpenApiModal(false);
     setShowResetAccountModal(false);
+    setBridgeQuoteCaptureVisible(false);
     onClose && onClose(e);
   };
 
@@ -1747,6 +1757,12 @@ const SettingsInner = ({
         }}
         onCancel={() => setIsShowDappAccountModal(false)}
       />
+      {process.env.DEBUG ? (
+        <BridgeQuoteCapturePanel
+          visible={bridgeQuoteCaptureVisible}
+          onClose={() => setBridgeQuoteCaptureVisible(false)}
+        />
+      ) : null}
       <OpenApiModal
         visible={showOpenApiModal}
         value={openapiStore.host}
