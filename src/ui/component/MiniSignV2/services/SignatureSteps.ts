@@ -1160,13 +1160,12 @@ export class SignatureSteps {
   static toCtxFromPrepared(params: {
     prepared: PreparedContext;
     txs: Tx[];
-    fingerprint?: string;
     open: boolean;
     switchGasAccount?: boolean;
   }): SignerCtx {
-    const { prepared, txs, fingerprint, open, switchGasAccount } = params;
+    const { prepared, txs, open, switchGasAccount } = params;
     return {
-      fingerprint: fingerprint ?? buildFingerprint(txs),
+      fingerprint: buildFingerprint(txs),
       open,
       mode: 'ui',
       txs,
@@ -1180,7 +1179,6 @@ export class SignatureSteps {
     wallet: WalletControllerType;
     account: Account;
     txs: Tx[];
-    fingerprint?: string;
     enableSecurityEngine?: boolean;
     gasSelection?: GasSelectionOptions;
     autoSwitchGasAccount?: boolean;
@@ -1190,7 +1188,6 @@ export class SignatureSteps {
       wallet,
       account,
       txs,
-      fingerprint,
       enableSecurityEngine,
       gasSelection,
       config,
@@ -1229,7 +1226,6 @@ export class SignatureSteps {
     return SignatureSteps.toCtxFromPrepared({
       prepared,
       txs,
-      fingerprint,
       open: false,
       switchGasAccount,
     });
@@ -1239,7 +1235,6 @@ export class SignatureSteps {
     wallet: WalletControllerType;
     account: Account;
     txs: Tx[];
-    fingerprint?: string;
     enableSecurityEngine?: boolean;
     gasSelection?: GasSelectionOptions;
     existing?: SignerCtx | Promise<SignerCtx>;
@@ -1254,7 +1249,7 @@ export class SignatureSteps {
       config,
       existing,
     } = params;
-    const fp = params.fingerprint ?? buildFingerprint(txs);
+    const fp = buildFingerprint(txs);
     let ctx: SignerCtx;
     const existingCtx = existing && (await existing);
     if (!existingCtx || existingCtx.fingerprint !== fp) {
@@ -1262,7 +1257,6 @@ export class SignatureSteps {
         wallet,
         account,
         txs,
-        fingerprint: fp,
         enableSecurityEngine,
         gasSelection,
         config,
