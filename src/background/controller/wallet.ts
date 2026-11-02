@@ -6595,6 +6595,7 @@ export class WalletController extends BaseController {
       RPCService.removeCustomRPC(chain.enum);
     }
     customTestnetService.remove(chainId);
+    syncChainService.disconnectSitesWithUnsupportedChain();
   };
   getCustomTestnetList = customTestnetService.getList;
 
