@@ -50,6 +50,19 @@ describe('hasBlockedAddress', () => {
     expect(isBlockedAddress).toHaveBeenCalledTimes(2);
   });
 
+  test('a failed lookup does not hide another blocked address', async () => {
+    expect(await hasBlockedAddress([bad])).toBe(true);
+    isBlockedAddress.mockRejectedValueOnce(new Error('429'));
+    expect(await hasBlockedAddress([bad, user])).toBe(true);
+    // Uncached: both lookups in one call, the receiver one failing.
+    clearBlockedAddressCache();
+    isBlockedAddress.mockImplementation(async (addr: string) => {
+      if (addr === user) throw new Error('429');
+      return { is_blocked: addr === bad };
+    });
+    expect(await hasBlockedAddress([bad, user])).toBe(true);
+  });
+
   test('lets signing through on failure and does not cache it', async () => {
     isBlockedAddress.mockRejectedValueOnce(new Error('429'));
     expect(await hasBlockedAddress([bad])).toBe(false);

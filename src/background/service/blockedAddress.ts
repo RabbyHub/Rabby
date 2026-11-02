@@ -33,13 +33,12 @@ export const hasBlockedAddress = async (addresses: unknown[]) => {
         .map((addr) => addr.toLowerCase())
     ),
   ];
-  try {
-    const res = await Promise.all(unique.map(isBlockedAddress));
-    return res.some(Boolean);
-  } catch (e) {
-    // Same as SignTx: don't block signing when the check itself fails.
-    return false;
-  }
+  // Same as SignTx, a failed lookup lets that address through. Handled per
+  // address so it never hides another address already known to be blocked.
+  const res = await Promise.all(
+    unique.map((address) => isBlockedAddress(address).catch(() => false))
+  );
+  return res.some(Boolean);
 };
 
 export const clearBlockedAddressCache = () => cache.reset();
