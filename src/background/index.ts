@@ -77,6 +77,35 @@ import {
   BACKGROUND_READY_EVENT,
   BACKGROUND_READY_MESSAGE,
 } from '@/utils/message/constants';
+import { EXTENSION_MESSAGES, PERPS_WIDGET_SCRIPT } from '@/constant/message';
+
+/**
+ * Injects the perps widget into the sending tab's top frame when the widget is
+ * enabled. Only our own content script can ask, and only for its own tab.
+ */
+const injectPerpsWidget = async (sender: chrome.runtime.MessageSender) => {
+  const tabId = sender.tab?.id;
+  if (
+    sender.id !== chrome.runtime.id ||
+    tabId == null ||
+    sender.frameId !== 0
+  ) {
+    return false;
+  }
+  if (!preferenceService.getPerpsWidgetEnabled()) return false;
+  if (isManifestV3) {
+    await chrome.scripting.executeScript({
+      target: { tabId, frameIds: [0] },
+      files: [PERPS_WIDGET_SCRIPT],
+    });
+  } else {
+    await browser.tabs.executeScript(tabId, {
+      file: `/${PERPS_WIDGET_SCRIPT}`,
+      frameId: 0,
+    });
+  }
+  return true;
+};
 
 /** Controller methods the perps widget content-script may call via runtime.sendMessage */
 const PERPS_WIDGET_RPC_ALLOWLIST = new Set<string>([
@@ -243,6 +272,16 @@ async function restoreAppState() {
     }
     // Native chrome.runtime.onMessage requires explicit `sendResponse(...)` + `return true`
     // on async paths — returning a Promise would let Chrome close the channel immediately.
+    if (message?.type === EXTENSION_MESSAGES.INJECT_PERPS_WIDGET) {
+      injectPerpsWidget(sender).then(
+        (injected) => sendResponse(injected),
+        (err) => {
+          console.warn('[perps-widget] inject failed', err);
+          sendResponse(false);
+        }
+      );
+      return true;
+    }
     if (message?.type === 'controller' && typeof message.method === 'string') {
       if (!PERPS_WIDGET_RPC_ALLOWLIST.has(message.method)) return;
       const params = Array.isArray(message.params) ? message.params : [];
