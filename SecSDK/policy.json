@@ -5358,9 +5358,9 @@
     "require": [
       "node_modules/@ant-design/colors/dist/index.esm.js",
       "node_modules/@ant-design/icons/es/components/Context.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/camelCase.js",
       "node_modules/@babel/runtime/helpers/esm/objectSpread2.js",
       "node_modules/@babel/runtime/helpers/esm/typeof.js",
+      "node_modules/lodash/camelCase.js",
       "node_modules/rc-util/es/Dom/dynamicCSS.js",
       "node_modules/rc-util/es/warning.js",
       "node_modules/react/index.js"
@@ -5608,140 +5608,13 @@
     "require": [
       "node_modules/@ant-design/colors/dist/index.esm.js",
       "node_modules/@ant-design/icons/lib/components/Context.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/camelCase.js",
       "node_modules/@babel/runtime/helpers/interopRequireDefault.js",
       "node_modules/@babel/runtime/helpers/objectSpread2.js",
       "node_modules/@babel/runtime/helpers/typeof.js",
+      "node_modules/lodash/camelCase.js",
       "node_modules/rc-util/lib/Dom/dynamicCSS.js",
       "node_modules/rc-util/lib/warning.js",
       "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_Symbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_baseGetTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_getRawTag.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_objectToString.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_baseToString.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_arrayMap.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_Symbol.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/isArray.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/isSymbol.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_castSlice.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_baseSlice.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_createCaseFirst.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_castSlice.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_hasUnicode.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_stringToArray.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/toString.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_createCompounder.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_arrayReduce.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/deburr.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/words.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_deburrLetter.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_basePropertyOf.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_freeGlobal.js": {
-    "enable": true,
-    "global": {
-      "global": "r"
-    }
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_getRawTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_root.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/_stringToArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_asciiToArray.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_hasUnicode.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_unicodeToArray.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/camelCase.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_createCompounder.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/capitalize.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/capitalize.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/toString.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/upperFirst.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/deburr.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_deburrLetter.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/toString.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/isSymbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_baseGetTag.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/toString.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_baseToString.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/upperFirst.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_createCaseFirst.js"
-    ]
-  },
-  "node_modules/@ant-design/icons/node_modules/lodash/words.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ant-design/icons/node_modules/lodash/_asciiWords.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_hasUnicodeWord.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/_unicodeWords.js",
-      "node_modules/@ant-design/icons/node_modules/lodash/toString.js"
     ]
   },
   "node_modules/@babel/runtime/helpers/arrayWithoutHoles.js": {
@@ -21755,8 +21628,8 @@
     "require": [
       "node_modules/@metamask/superstruct/dist/index.cjs",
       "node_modules/@metamask/utils/dist/assert.cjs",
-      "node_modules/@metamask/utils/node_modules/lodash/lodash.js",
-      "node_modules/@noble/hashes/sha3.js"
+      "node_modules/@noble/hashes/sha3.js",
+      "node_modules/lodash/lodash.js"
     ]
   },
   "node_modules/@metamask/utils/dist/index.cjs": {
@@ -21824,19 +21697,6 @@
       "node_modules/@metamask/utils/dist/assert.cjs",
       "node_modules/@metamask/utils/node_modules/semver/index.js"
     ]
-  },
-  "node_modules/@metamask/utils/node_modules/lodash/lodash.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r",
-      "_": "rw",
-      "__core-js_shared__": "r",
-      "clearTimeout": "r",
-      "define": "r",
-      "global": "r",
-      "process": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/@metamask/utils/node_modules/semver/classes/comparator.js": {
     "enable": true,
@@ -26059,7 +25919,7 @@
       "node_modules/@metamask/superstruct/dist/index.cjs",
       "node_modules/@noble/hashes/sha3.js",
       "node_modules/@rabby-wallet/eth-simple-keyring/node_modules/@metamask/eth-sig-util/node_modules/@metamask/utils/dist/assert.cjs",
-      "node_modules/@rabby-wallet/eth-simple-keyring/node_modules/lodash/lodash.js"
+      "node_modules/lodash/lodash.js"
     ]
   },
   "node_modules/@rabby-wallet/eth-simple-keyring/node_modules/@metamask/eth-sig-util/node_modules/@metamask/utils/dist/index.cjs": {
@@ -26140,19 +26000,6 @@
     "global": {
       "TextDecoder": "r",
       "TextEncoder": "r"
-    }
-  },
-  "node_modules/@rabby-wallet/eth-simple-keyring/node_modules/lodash/lodash.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r",
-      "_": "rw",
-      "__core-js_shared__": "r",
-      "clearTimeout": "r",
-      "define": "r",
-      "global": "r",
-      "process": "r",
-      "setTimeout": "r"
     }
   },
   "node_modules/@rabby-wallet/eth-simple-keyring/node_modules/semver/classes/comparator.js": {
@@ -39143,10 +38990,10 @@
     },
     "require": [
       "node_modules/@rabby-wallet/rabby-api/dist/utils.js",
-      "node_modules/@rabby-wallet/rabby-api/node_modules/lodash/lodash.js",
       "node_modules/axios-rate-limit/src/index.js",
       "node_modules/axios/index.js",
-      "node_modules/eth-rpc-errors/dist/index.js"
+      "node_modules/eth-rpc-errors/dist/index.js",
+      "node_modules/lodash/lodash.js"
     ]
   },
   "node_modules/@rabby-wallet/rabby-api/dist/plugins/web-sign.js": {
@@ -39168,22 +39015,9 @@
     },
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
-      "node_modules/@rabby-wallet/rabby-api/node_modules/lodash/lodash.js",
+      "node_modules/lodash/lodash.js",
       "node_modules/qss/dist/qss.m.js"
     ]
-  },
-  "node_modules/@rabby-wallet/rabby-api/node_modules/lodash/lodash.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r",
-      "_": "rw",
-      "__core-js_shared__": "r",
-      "clearTimeout": "r",
-      "define": "r",
-      "global": "r",
-      "process": "r",
-      "setTimeout": "r"
-    }
   },
   "node_modules/@rabby-wallet/rabby-bridge/dist/chains.js": {
     "enable": true,
@@ -65195,7 +65029,7 @@
       "node_modules/ahooks/es/useUnmount/index.js",
       "node_modules/ahooks/es/utils/index.js",
       "node_modules/ahooks/es/utils/isDev.js",
-      "node_modules/ahooks/node_modules/lodash/debounce.js",
+      "node_modules/lodash/debounce.js",
       "node_modules/react/index.js",
       "node_modules/tslib/tslib.es6.mjs"
     ]
@@ -65441,7 +65275,7 @@
   "node_modules/ahooks/es/useRequest/src/plugins/useDebouncePlugin.js": {
     "enable": true,
     "require": [
-      "node_modules/ahooks/node_modules/lodash/debounce.js",
+      "node_modules/lodash/debounce.js",
       "node_modules/react/index.js",
       "node_modules/tslib/tslib.es6.mjs"
     ]
@@ -65491,7 +65325,7 @@
   "node_modules/ahooks/es/useRequest/src/plugins/useThrottlePlugin.js": {
     "enable": true,
     "require": [
-      "node_modules/ahooks/node_modules/lodash/throttle.js",
+      "node_modules/lodash/throttle.js",
       "node_modules/react/index.js",
       "node_modules/tslib/tslib.es6.mjs"
     ]
@@ -65779,84 +65613,6 @@
     "global": {
       "define": "r"
     }
-  },
-  "node_modules/ahooks/node_modules/lodash/_Symbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/_baseGetTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_getRawTag.js",
-      "node_modules/ahooks/node_modules/lodash/_objectToString.js",
-      "node_modules/ahooks/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/_baseTrim.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_trimmedEndIndex.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/_freeGlobal.js": {
-    "enable": true,
-    "global": {
-      "global": "r"
-    }
-  },
-  "node_modules/ahooks/node_modules/lodash/_getRawTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/_root.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/debounce.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/isObject.js",
-      "node_modules/ahooks/node_modules/lodash/now.js",
-      "node_modules/ahooks/node_modules/lodash/toNumber.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/isSymbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_baseGetTag.js",
-      "node_modules/ahooks/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/now.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/throttle.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/debounce.js",
-      "node_modules/ahooks/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/ahooks/node_modules/lodash/toNumber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ahooks/node_modules/lodash/_baseTrim.js",
-      "node_modules/ahooks/node_modules/lodash/isObject.js",
-      "node_modules/ahooks/node_modules/lodash/isSymbol.js"
-    ]
   },
   "node_modules/antd/es/_util/ActionButton.js": {
     "enable": true,
@@ -67509,8 +67265,8 @@
       "node_modules/antd/es/_util/reactNode.js",
       "node_modules/antd/es/_util/type.js",
       "node_modules/antd/es/config-provider/context.js",
-      "node_modules/antd/node_modules/lodash/debounce.js",
       "node_modules/classnames/index.js",
+      "node_modules/lodash/debounce.js",
       "node_modules/rc-util/es/omit.js",
       "node_modules/react/index.js"
     ]
@@ -67596,8 +67352,8 @@
       "node_modules/antd/es/table/hooks/useFilter/FilterWrapper.js",
       "node_modules/antd/es/table/hooks/useFilter/index.js",
       "node_modules/antd/es/tree/index.js",
-      "node_modules/antd/node_modules/lodash/isEqual.js",
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isEqual.js",
       "node_modules/react/index.js"
     ]
   },
@@ -68660,484 +68416,6 @@
     "require": [
       "node_modules/@babel/runtime/helpers/interopRequireWildcard.js",
       "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_DataView.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getNative.js",
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_Hash.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_hashClear.js",
-      "node_modules/antd/node_modules/lodash/_hashDelete.js",
-      "node_modules/antd/node_modules/lodash/_hashGet.js",
-      "node_modules/antd/node_modules/lodash/_hashHas.js",
-      "node_modules/antd/node_modules/lodash/_hashSet.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_ListCache.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_listCacheClear.js",
-      "node_modules/antd/node_modules/lodash/_listCacheDelete.js",
-      "node_modules/antd/node_modules/lodash/_listCacheGet.js",
-      "node_modules/antd/node_modules/lodash/_listCacheHas.js",
-      "node_modules/antd/node_modules/lodash/_listCacheSet.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_Map.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getNative.js",
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_MapCache.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_mapCacheClear.js",
-      "node_modules/antd/node_modules/lodash/_mapCacheDelete.js",
-      "node_modules/antd/node_modules/lodash/_mapCacheGet.js",
-      "node_modules/antd/node_modules/lodash/_mapCacheHas.js",
-      "node_modules/antd/node_modules/lodash/_mapCacheSet.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_Promise.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getNative.js",
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_Set.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getNative.js",
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_SetCache.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_MapCache.js",
-      "node_modules/antd/node_modules/lodash/_setCacheAdd.js",
-      "node_modules/antd/node_modules/lodash/_setCacheHas.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_Stack.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_ListCache.js",
-      "node_modules/antd/node_modules/lodash/_stackClear.js",
-      "node_modules/antd/node_modules/lodash/_stackDelete.js",
-      "node_modules/antd/node_modules/lodash/_stackGet.js",
-      "node_modules/antd/node_modules/lodash/_stackHas.js",
-      "node_modules/antd/node_modules/lodash/_stackSet.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_Symbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_Uint8Array.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_WeakMap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getNative.js",
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_arrayLikeKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseTimes.js",
-      "node_modules/antd/node_modules/lodash/_isIndex.js",
-      "node_modules/antd/node_modules/lodash/isArguments.js",
-      "node_modules/antd/node_modules/lodash/isArray.js",
-      "node_modules/antd/node_modules/lodash/isBuffer.js",
-      "node_modules/antd/node_modules/lodash/isTypedArray.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_assocIndexOf.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/eq.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseGetAllKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_arrayPush.js",
-      "node_modules/antd/node_modules/lodash/isArray.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseGetTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getRawTag.js",
-      "node_modules/antd/node_modules/lodash/_objectToString.js",
-      "node_modules/antd/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseIsArguments.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseGetTag.js",
-      "node_modules/antd/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseIsEqual.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseIsEqualDeep.js",
-      "node_modules/antd/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseIsEqualDeep.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_equalArrays.js",
-      "node_modules/antd/node_modules/lodash/_equalByTag.js",
-      "node_modules/antd/node_modules/lodash/_equalObjects.js",
-      "node_modules/antd/node_modules/lodash/_getTag.js",
-      "node_modules/antd/node_modules/lodash/_Stack.js",
-      "node_modules/antd/node_modules/lodash/isArray.js",
-      "node_modules/antd/node_modules/lodash/isBuffer.js",
-      "node_modules/antd/node_modules/lodash/isTypedArray.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseIsNative.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_isMasked.js",
-      "node_modules/antd/node_modules/lodash/_toSource.js",
-      "node_modules/antd/node_modules/lodash/isFunction.js",
-      "node_modules/antd/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseIsTypedArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseGetTag.js",
-      "node_modules/antd/node_modules/lodash/isLength.js",
-      "node_modules/antd/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_isPrototype.js",
-      "node_modules/antd/node_modules/lodash/_nativeKeys.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_baseTrim.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_trimmedEndIndex.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_coreJsData.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_equalArrays.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_arraySome.js",
-      "node_modules/antd/node_modules/lodash/_cacheHas.js",
-      "node_modules/antd/node_modules/lodash/_SetCache.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_equalByTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_equalArrays.js",
-      "node_modules/antd/node_modules/lodash/_mapToArray.js",
-      "node_modules/antd/node_modules/lodash/_setToArray.js",
-      "node_modules/antd/node_modules/lodash/_Symbol.js",
-      "node_modules/antd/node_modules/lodash/_Uint8Array.js",
-      "node_modules/antd/node_modules/lodash/eq.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_equalObjects.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getAllKeys.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_freeGlobal.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r",
-      "__core-js_shared__": "r",
-      "global": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/antd/node_modules/lodash/_getAllKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseGetAllKeys.js",
-      "node_modules/antd/node_modules/lodash/_getSymbols.js",
-      "node_modules/antd/node_modules/lodash/keys.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_getMapData.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_isKeyable.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_getNative.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseIsNative.js",
-      "node_modules/antd/node_modules/lodash/_getValue.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_getRawTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_getSymbols.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_arrayFilter.js",
-      "node_modules/antd/node_modules/lodash/stubArray.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_getTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseGetTag.js",
-      "node_modules/antd/node_modules/lodash/_DataView.js",
-      "node_modules/antd/node_modules/lodash/_Map.js",
-      "node_modules/antd/node_modules/lodash/_Promise.js",
-      "node_modules/antd/node_modules/lodash/_Set.js",
-      "node_modules/antd/node_modules/lodash/_toSource.js",
-      "node_modules/antd/node_modules/lodash/_WeakMap.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_hashClear.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_hashGet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_hashHas.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_hashSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_isMasked.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_coreJsData.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_listCacheDelete.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_listCacheGet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_listCacheHas.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_listCacheSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_mapCacheClear.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_Hash.js",
-      "node_modules/antd/node_modules/lodash/_ListCache.js",
-      "node_modules/antd/node_modules/lodash/_Map.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_mapCacheDelete.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_mapCacheGet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_mapCacheHas.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_mapCacheSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_nativeCreate.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_getNative.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_nativeKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_overArg.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_nodeUtil.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_root.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_stackClear.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_ListCache.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/_stackSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_ListCache.js",
-      "node_modules/antd/node_modules/lodash/_Map.js",
-      "node_modules/antd/node_modules/lodash/_MapCache.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/debounce.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/antd/node_modules/lodash/isObject.js",
-      "node_modules/antd/node_modules/lodash/now.js",
-      "node_modules/antd/node_modules/lodash/toNumber.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/isArguments.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseIsArguments.js",
-      "node_modules/antd/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/isArrayLike.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/isFunction.js",
-      "node_modules/antd/node_modules/lodash/isLength.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/isBuffer.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_root.js",
-      "node_modules/antd/node_modules/lodash/stubFalse.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/isEqual.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseIsEqual.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/isFunction.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseGetTag.js",
-      "node_modules/antd/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/isSymbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseGetTag.js",
-      "node_modules/antd/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/isTypedArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseIsTypedArray.js",
-      "node_modules/antd/node_modules/lodash/_baseUnary.js",
-      "node_modules/antd/node_modules/lodash/_nodeUtil.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/keys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_arrayLikeKeys.js",
-      "node_modules/antd/node_modules/lodash/_baseKeys.js",
-      "node_modules/antd/node_modules/lodash/isArrayLike.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/now.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/antd/node_modules/lodash/toNumber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/node_modules/lodash/_baseTrim.js",
-      "node_modules/antd/node_modules/lodash/isObject.js",
-      "node_modules/antd/node_modules/lodash/isSymbol.js"
     ]
   },
   "node_modules/asn1.js/lib/asn1.js": {
@@ -73129,14 +72407,14 @@
       "node_modules/gridplus-sdk/node_modules/elliptic/lib/elliptic.js",
       "node_modules/gridplus-sdk/node_modules/ethers/lib.commonjs/index.js",
       "node_modules/gridplus-sdk/node_modules/js-sha3/src/sha3.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/inRange.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isEmpty.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isInteger.js",
       "node_modules/gridplus-sdk/node_modules/secp256k1/elliptic.js",
       "node_modules/gridplus-sdk/node_modules/uuid/dist/commonjs-browser/index.js",
       "node_modules/hash.js/lib/hash.js",
       "node_modules/hash.js/lib/hash/ripemd.js",
-      "node_modules/hash.js/lib/hash/sha.js"
+      "node_modules/hash.js/lib/hash/sha.js",
+      "node_modules/lodash/inRange.js",
+      "node_modules/lodash/isEmpty.js",
+      "node_modules/lodash/isInteger.js"
     ]
   },
   "node_modules/gridplus-sdk/node_modules/@ethereumjs/util/dist/account.js": {
@@ -74788,246 +74066,6 @@
       "node_modules/process/browser.js"
     ]
   },
-  "node_modules/gridplus-sdk/node_modules/lodash/_DataView.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_getNative.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_Map.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_getNative.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_Promise.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_getNative.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_Set.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_getNative.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_Symbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_WeakMap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_getNative.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_baseGetTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_getRawTag.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_objectToString.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_baseIsArguments.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseGetTag.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_baseIsNative.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_isMasked.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_toSource.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isFunction.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_baseIsTypedArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseGetTag.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isLength.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_baseKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_isPrototype.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_nativeKeys.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_baseTrim.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_trimmedEndIndex.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_coreJsData.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_freeGlobal.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r",
-      "__core-js_shared__": "r",
-      "global": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_getNative.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseIsNative.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_getValue.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_getRawTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_getTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseGetTag.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_DataView.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_Map.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_Promise.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_Set.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_toSource.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_WeakMap.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_isMasked.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_coreJsData.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_nativeKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_overArg.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_nodeUtil.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/_root.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/inRange.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseInRange.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/toFinite.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/toNumber.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isArguments.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseIsArguments.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isArrayLike.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/isFunction.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isLength.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isBuffer.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_root.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/stubFalse.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isEmpty.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseKeys.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_getTag.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_isPrototype.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isArguments.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isArray.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isArrayLike.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isBuffer.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isTypedArray.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isFunction.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseGetTag.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isInteger.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/toInteger.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isSymbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseGetTag.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/isTypedArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseIsTypedArray.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseUnary.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/_nodeUtil.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/toFinite.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/toNumber.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/toInteger.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/toFinite.js"
-    ]
-  },
-  "node_modules/gridplus-sdk/node_modules/lodash/toNumber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/gridplus-sdk/node_modules/lodash/_baseTrim.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isObject.js",
-      "node_modules/gridplus-sdk/node_modules/lodash/isSymbol.js"
-    ]
-  },
   "node_modules/gridplus-sdk/node_modules/secp256k1/elliptic.js": {
     "enable": true,
     "require": [
@@ -76141,6 +75179,12 @@
       "node_modules/lodash/_createBaseEach.js"
     ]
   },
+  "node_modules/lodash/_baseEvery.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseEach.js"
+    ]
+  },
   "node_modules/lodash/_baseExtremum.js": {
     "enable": true,
     "require": [
@@ -76287,6 +75331,13 @@
       "node_modules/lodash/isObject.js"
     ]
   },
+  "node_modules/lodash/_baseMap.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseEach.js",
+      "node_modules/lodash/isArrayLike.js"
+    ]
+  },
   "node_modules/lodash/_baseMatches.js": {
     "enable": true,
     "require": [
@@ -76307,10 +75358,32 @@
       "node_modules/lodash/hasIn.js"
     ]
   },
+  "node_modules/lodash/_baseOrderBy.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_arrayMap.js",
+      "node_modules/lodash/_baseGet.js",
+      "node_modules/lodash/_baseIteratee.js",
+      "node_modules/lodash/_baseMap.js",
+      "node_modules/lodash/_baseSortBy.js",
+      "node_modules/lodash/_baseUnary.js",
+      "node_modules/lodash/_compareMultiple.js",
+      "node_modules/lodash/identity.js",
+      "node_modules/lodash/isArray.js"
+    ]
+  },
   "node_modules/lodash/_basePropertyDeep.js": {
     "enable": true,
     "require": [
       "node_modules/lodash/_baseGet.js"
+    ]
+  },
+  "node_modules/lodash/_baseRest.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_overRest.js",
+      "node_modules/lodash/_setToString.js",
+      "node_modules/lodash/identity.js"
     ]
   },
   "node_modules/lodash/_baseSetToString.js": {
@@ -76321,6 +75394,12 @@
       "node_modules/lodash/identity.js"
     ]
   },
+  "node_modules/lodash/_baseSome.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseEach.js"
+    ]
+  },
   "node_modules/lodash/_baseToString.js": {
     "enable": true,
     "require": [
@@ -76328,6 +75407,12 @@
       "node_modules/lodash/_Symbol.js",
       "node_modules/lodash/isArray.js",
       "node_modules/lodash/isSymbol.js"
+    ]
+  },
+  "node_modules/lodash/_baseTrim.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_trimmedEndIndex.js"
     ]
   },
   "node_modules/lodash/_baseUniq.js": {
@@ -76359,6 +75444,12 @@
       "node_modules/lodash/toString.js"
     ]
   },
+  "node_modules/lodash/_castSlice.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseSlice.js"
+    ]
+  },
   "node_modules/lodash/_cloneArrayBuffer.js": {
     "enable": true,
     "require": [
@@ -76387,6 +75478,18 @@
     "enable": true,
     "require": [
       "node_modules/lodash/_cloneArrayBuffer.js"
+    ]
+  },
+  "node_modules/lodash/_compareAscending.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/isSymbol.js"
+    ]
+  },
+  "node_modules/lodash/_compareMultiple.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_compareAscending.js"
     ]
   },
   "node_modules/lodash/_copyObject.js": {
@@ -76431,6 +75534,39 @@
       "node_modules/lodash/isArrayLike.js"
     ]
   },
+  "node_modules/lodash/_createCaseFirst.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_castSlice.js",
+      "node_modules/lodash/_hasUnicode.js",
+      "node_modules/lodash/_stringToArray.js",
+      "node_modules/lodash/toString.js"
+    ]
+  },
+  "node_modules/lodash/_createCompounder.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_arrayReduce.js",
+      "node_modules/lodash/deburr.js",
+      "node_modules/lodash/words.js"
+    ]
+  },
+  "node_modules/lodash/_createFind.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseIteratee.js",
+      "node_modules/lodash/isArrayLike.js",
+      "node_modules/lodash/keys.js"
+    ]
+  },
+  "node_modules/lodash/_createRange.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseRange.js",
+      "node_modules/lodash/_isIterateeCall.js",
+      "node_modules/lodash/toFinite.js"
+    ]
+  },
   "node_modules/lodash/_createSet.js": {
     "enable": true,
     "require": [
@@ -76443,6 +75579,12 @@
     "enable": true,
     "require": [
       "node_modules/lodash/isPlainObject.js"
+    ]
+  },
+  "node_modules/lodash/_deburrLetter.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_basePropertyOf.js"
     ]
   },
   "node_modules/lodash/_defineProperty.js": {
@@ -76630,6 +75772,15 @@
       "node_modules/lodash/isArray.js"
     ]
   },
+  "node_modules/lodash/_isIterateeCall.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_isIndex.js",
+      "node_modules/lodash/eq.js",
+      "node_modules/lodash/isArrayLike.js",
+      "node_modules/lodash/isObject.js"
+    ]
+  },
   "node_modules/lodash/_isKey.js": {
     "enable": true,
     "require": [
@@ -76769,6 +75920,14 @@
       "node_modules/lodash/_MapCache.js"
     ]
   },
+  "node_modules/lodash/_stringToArray.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_asciiToArray.js",
+      "node_modules/lodash/_hasUnicode.js",
+      "node_modules/lodash/_unicodeToArray.js"
+    ]
+  },
   "node_modules/lodash/_stringToPath.js": {
     "enable": true,
     "require": [
@@ -76781,10 +75940,75 @@
       "node_modules/lodash/isSymbol.js"
     ]
   },
+  "node_modules/lodash/camelCase.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_createCompounder.js",
+      "node_modules/lodash/capitalize.js"
+    ]
+  },
+  "node_modules/lodash/capitalize.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/toString.js",
+      "node_modules/lodash/upperFirst.js"
+    ]
+  },
   "node_modules/lodash/cloneDeep.js": {
     "enable": true,
     "require": [
       "node_modules/lodash/_baseClone.js"
+    ]
+  },
+  "node_modules/lodash/debounce.js": {
+    "enable": true,
+    "global": {
+      "clearTimeout": "r",
+      "setTimeout": "r"
+    },
+    "require": [
+      "node_modules/lodash/isObject.js",
+      "node_modules/lodash/now.js",
+      "node_modules/lodash/toNumber.js"
+    ]
+  },
+  "node_modules/lodash/deburr.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_deburrLetter.js",
+      "node_modules/lodash/toString.js"
+    ]
+  },
+  "node_modules/lodash/every.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_arrayEvery.js",
+      "node_modules/lodash/_baseEvery.js",
+      "node_modules/lodash/_baseIteratee.js",
+      "node_modules/lodash/_isIterateeCall.js",
+      "node_modules/lodash/isArray.js"
+    ]
+  },
+  "node_modules/lodash/find.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_createFind.js",
+      "node_modules/lodash/findIndex.js"
+    ]
+  },
+  "node_modules/lodash/findIndex.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseFindIndex.js",
+      "node_modules/lodash/_baseIteratee.js",
+      "node_modules/lodash/toInteger.js"
+    ]
+  },
+  "node_modules/lodash/flatMap.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseFlatten.js",
+      "node_modules/lodash/map.js"
     ]
   },
   "node_modules/lodash/flatten.js": {
@@ -76813,6 +76037,14 @@
       "node_modules/lodash/_hasPath.js"
     ]
   },
+  "node_modules/lodash/inRange.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseInRange.js",
+      "node_modules/lodash/toFinite.js",
+      "node_modules/lodash/toNumber.js"
+    ]
+  },
   "node_modules/lodash/isArguments.js": {
     "enable": true,
     "require": [
@@ -76827,11 +76059,37 @@
       "node_modules/lodash/isLength.js"
     ]
   },
+  "node_modules/lodash/isBoolean.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseGetTag.js",
+      "node_modules/lodash/isObjectLike.js"
+    ]
+  },
   "node_modules/lodash/isBuffer.js": {
     "enable": true,
     "require": [
       "node_modules/lodash/_root.js",
       "node_modules/lodash/stubFalse.js"
+    ]
+  },
+  "node_modules/lodash/isEmpty.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseKeys.js",
+      "node_modules/lodash/_getTag.js",
+      "node_modules/lodash/_isPrototype.js",
+      "node_modules/lodash/isArguments.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isArrayLike.js",
+      "node_modules/lodash/isBuffer.js",
+      "node_modules/lodash/isTypedArray.js"
+    ]
+  },
+  "node_modules/lodash/isEqual.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseIsEqual.js"
     ]
   },
   "node_modules/lodash/isFunction.js": {
@@ -76841,12 +76099,31 @@
       "node_modules/lodash/isObject.js"
     ]
   },
+  "node_modules/lodash/isInteger.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/toInteger.js"
+    ]
+  },
   "node_modules/lodash/isMap.js": {
     "enable": true,
     "require": [
       "node_modules/lodash/_baseIsMap.js",
       "node_modules/lodash/_baseUnary.js",
       "node_modules/lodash/_nodeUtil.js"
+    ]
+  },
+  "node_modules/lodash/isNaN.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/isNumber.js"
+    ]
+  },
+  "node_modules/lodash/isNumber.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseGetTag.js",
+      "node_modules/lodash/isObjectLike.js"
     ]
   },
   "node_modules/lodash/isPlainObject.js": {
@@ -76863,6 +76140,14 @@
       "node_modules/lodash/_baseIsSet.js",
       "node_modules/lodash/_baseUnary.js",
       "node_modules/lodash/_nodeUtil.js"
+    ]
+  },
+  "node_modules/lodash/isString.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseGetTag.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isObjectLike.js"
     ]
   },
   "node_modules/lodash/isSymbol.js": {
@@ -76909,6 +76194,31 @@
       "setTimeout": "r"
     }
   },
+  "node_modules/lodash/map.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_arrayMap.js",
+      "node_modules/lodash/_baseIteratee.js",
+      "node_modules/lodash/_baseMap.js",
+      "node_modules/lodash/isArray.js"
+    ]
+  },
+  "node_modules/lodash/mapValues.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseAssignValue.js",
+      "node_modules/lodash/_baseForOwn.js",
+      "node_modules/lodash/_baseIteratee.js"
+    ]
+  },
+  "node_modules/lodash/max.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseExtremum.js",
+      "node_modules/lodash/_baseGt.js",
+      "node_modules/lodash/identity.js"
+    ]
+  },
   "node_modules/lodash/maxBy.js": {
     "enable": true,
     "require": [
@@ -76923,12 +76233,26 @@
       "node_modules/lodash/_MapCache.js"
     ]
   },
+  "node_modules/lodash/min.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseExtremum.js",
+      "node_modules/lodash/_baseLt.js",
+      "node_modules/lodash/identity.js"
+    ]
+  },
   "node_modules/lodash/minBy.js": {
     "enable": true,
     "require": [
       "node_modules/lodash/_baseExtremum.js",
       "node_modules/lodash/_baseIteratee.js",
       "node_modules/lodash/_baseLt.js"
+    ]
+  },
+  "node_modules/lodash/now.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_root.js"
     ]
   },
   "node_modules/lodash/omit.js": {
@@ -76953,6 +76277,58 @@
       "node_modules/lodash/_toKey.js"
     ]
   },
+  "node_modules/lodash/range.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_createRange.js"
+    ]
+  },
+  "node_modules/lodash/some.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_arraySome.js",
+      "node_modules/lodash/_baseIteratee.js",
+      "node_modules/lodash/_baseSome.js",
+      "node_modules/lodash/_isIterateeCall.js",
+      "node_modules/lodash/isArray.js"
+    ]
+  },
+  "node_modules/lodash/sortBy.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseFlatten.js",
+      "node_modules/lodash/_baseOrderBy.js",
+      "node_modules/lodash/_baseRest.js",
+      "node_modules/lodash/_isIterateeCall.js"
+    ]
+  },
+  "node_modules/lodash/throttle.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/debounce.js",
+      "node_modules/lodash/isObject.js"
+    ]
+  },
+  "node_modules/lodash/toFinite.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/toNumber.js"
+    ]
+  },
+  "node_modules/lodash/toInteger.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/toFinite.js"
+    ]
+  },
+  "node_modules/lodash/toNumber.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_baseTrim.js",
+      "node_modules/lodash/isObject.js",
+      "node_modules/lodash/isSymbol.js"
+    ]
+  },
   "node_modules/lodash/toString.js": {
     "enable": true,
     "require": [
@@ -76964,6 +76340,21 @@
     "require": [
       "node_modules/lodash/_baseIteratee.js",
       "node_modules/lodash/_baseUniq.js"
+    ]
+  },
+  "node_modules/lodash/upperFirst.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_createCaseFirst.js"
+    ]
+  },
+  "node_modules/lodash/words.js": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/_asciiWords.js",
+      "node_modules/lodash/_hasUnicodeWord.js",
+      "node_modules/lodash/_unicodeWords.js",
+      "node_modules/lodash/toString.js"
     ]
   },
   "node_modules/loglevel/lib/loglevel.js": {
@@ -83348,88 +82739,10 @@
       "document": "r"
     },
     "require": [
+      "node_modules/lodash/debounce.js",
+      "node_modules/lodash/throttle.js",
       "node_modules/react-dom/index.js",
-      "node_modules/react-resize-detector/node_modules/lodash/debounce.js",
-      "node_modules/react-resize-detector/node_modules/lodash/throttle.js",
       "node_modules/react/index.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/_Symbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/_baseGetTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_getRawTag.js",
-      "node_modules/react-resize-detector/node_modules/lodash/_objectToString.js",
-      "node_modules/react-resize-detector/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/_baseTrim.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_trimmedEndIndex.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/_freeGlobal.js": {
-    "enable": true,
-    "global": {
-      "global": "r"
-    }
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/_getRawTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/_root.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/debounce.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/isObject.js",
-      "node_modules/react-resize-detector/node_modules/lodash/now.js",
-      "node_modules/react-resize-detector/node_modules/lodash/toNumber.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/isSymbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_baseGetTag.js",
-      "node_modules/react-resize-detector/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/now.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/throttle.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/debounce.js",
-      "node_modules/react-resize-detector/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/react-resize-detector/node_modules/lodash/toNumber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/react-resize-detector/node_modules/lodash/_baseTrim.js",
-      "node_modules/react-resize-detector/node_modules/lodash/isObject.js",
-      "node_modules/react-resize-detector/node_modules/lodash/isSymbol.js"
     ]
   },
   "node_modules/react-router-dom/esm/react-router-dom.js": {
@@ -84010,6 +83323,13 @@
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/get.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isEqual.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNaN.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/max.js",
       "node_modules/react-smooth/es6/index.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/LabelList.js",
@@ -84019,20 +83339,17 @@
       "node_modules/recharts/es6/util/ChartUtils.js",
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/Global.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/get.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isEqual.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNaN.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/max.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/cartesian/Bar.js": {
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isEqual.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNil.js",
       "node_modules/react-smooth/es6/index.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/cartesian/ErrorBar.js",
@@ -84044,11 +83361,7 @@
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/Global.js",
       "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/es6/util/types.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isEqual.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js"
+      "node_modules/recharts/es6/util/types.js"
     ]
   },
   "node_modules/recharts/es6/cartesian/Brush.js": {
@@ -84062,15 +83375,15 @@
     "require": [
       "node_modules/classnames/index.js",
       "node_modules/d3-scale/src/band.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/range.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/Text.js",
       "node_modules/recharts/es6/container/Layer.js",
       "node_modules/recharts/es6/util/ChartUtils.js",
       "node_modules/recharts/es6/util/CssPrefixUtils.js",
       "node_modules/recharts/es6/util/DataUtils.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/range.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/cartesian/CartesianAxis.js": {
@@ -84080,6 +83393,8 @@
     },
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/get.js",
+      "node_modules/lodash/isFunction.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/cartesian/getTicks.js",
       "node_modules/recharts/es6/component/Label.js",
@@ -84088,9 +83403,7 @@
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/ReactUtils.js",
       "node_modules/recharts/es6/util/ShallowEqual.js",
-      "node_modules/recharts/es6/util/types.js",
-      "node_modules/recharts/node_modules/lodash/get.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js"
+      "node_modules/recharts/es6/util/types.js"
     ]
   },
   "node_modules/recharts/es6/cartesian/ErrorBar.js": {
@@ -84105,6 +83418,7 @@
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isFunction.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/Label.js",
       "node_modules/recharts/es6/container/Layer.js",
@@ -84113,14 +83427,14 @@
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/IfOverflowMatches.js",
       "node_modules/recharts/es6/util/LogUtils.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/cartesian/ReferenceDot.js": {
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isFunction.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/Label.js",
       "node_modules/recharts/es6/container/Layer.js",
@@ -84129,14 +83443,15 @@
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/IfOverflowMatches.js",
       "node_modules/recharts/es6/util/LogUtils.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/cartesian/ReferenceLine.js": {
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/some.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/Label.js",
       "node_modules/recharts/es6/container/Layer.js",
@@ -84144,20 +83459,18 @@
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/IfOverflowMatches.js",
       "node_modules/recharts/es6/util/LogUtils.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/some.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/cartesian/getTicks.js": {
     "enable": true,
     "require": [
+      "node_modules/lodash/isFunction.js",
       "node_modules/recharts/es6/util/CartesianUtils.js",
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/DOMUtils.js",
       "node_modules/recharts/es6/util/getEveryNthWithCondition.js",
-      "node_modules/recharts/es6/util/Global.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js"
+      "node_modules/recharts/es6/util/Global.js"
     ]
   },
   "node_modules/recharts/es6/chart/AreaChart.js": {
@@ -84182,6 +83495,16 @@
     },
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/every.js",
+      "node_modules/lodash/find.js",
+      "node_modules/lodash/get.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isBoolean.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/range.js",
+      "node_modules/lodash/sortBy.js",
+      "node_modules/lodash/throttle.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/cartesian/Brush.js",
       "node_modules/recharts/es6/cartesian/CartesianAxis.js",
@@ -84204,17 +83527,7 @@
       "node_modules/recharts/es6/util/PolarUtils.js",
       "node_modules/recharts/es6/util/ReactUtils.js",
       "node_modules/recharts/es6/util/ShallowEqual.js",
-      "node_modules/recharts/es6/util/types.js",
-      "node_modules/recharts/node_modules/lodash/every.js",
-      "node_modules/recharts/node_modules/lodash/find.js",
-      "node_modules/recharts/node_modules/lodash/get.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isBoolean.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/range.js",
-      "node_modules/recharts/node_modules/lodash/sortBy.js",
-      "node_modules/recharts/node_modules/lodash/throttle.js"
+      "node_modules/recharts/es6/util/types.js"
     ]
   },
   "node_modules/recharts/es6/component/DefaultLegendContent.js": {
@@ -84231,50 +83544,50 @@
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/sortBy.js",
       "node_modules/react/index.js",
-      "node_modules/recharts/es6/util/DataUtils.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/sortBy.js"
+      "node_modules/recharts/es6/util/DataUtils.js"
     ]
   },
   "node_modules/recharts/es6/component/Label.js": {
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/isObject.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/Text.js",
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/PolarUtils.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/component/LabelList.js": {
     "enable": true,
     "require": [
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/isObject.js",
+      "node_modules/lodash/last.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/Label.js",
       "node_modules/recharts/es6/container/Layer.js",
       "node_modules/recharts/es6/util/ChartUtils.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js",
-      "node_modules/recharts/node_modules/lodash/last.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/component/Legend.js": {
     "enable": true,
     "require": [
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/uniqBy.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/DefaultLegendContent.js",
-      "node_modules/recharts/es6/util/DataUtils.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/uniqBy.js"
+      "node_modules/recharts/es6/util/DataUtils.js"
     ]
   },
   "node_modules/recharts/es6/component/ResponsiveContainer.js": {
@@ -84291,12 +83604,12 @@
     "enable": true,
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isNil.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/DOMUtils.js",
       "node_modules/recharts/es6/util/Global.js",
       "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
       "node_modules/reduce-css-calc/dist/index.js"
     ]
   },
@@ -84307,14 +83620,14 @@
     },
     "require": [
       "node_modules/classnames/index.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/uniqBy.js",
       "node_modules/react-smooth/es6/index.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/component/DefaultTooltipContent.js",
       "node_modules/recharts/es6/util/DataUtils.js",
-      "node_modules/recharts/es6/util/Global.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/uniqBy.js"
+      "node_modules/recharts/es6/util/Global.js"
     ]
   },
   "node_modules/recharts/es6/container/Layer.js": {
@@ -84357,13 +83670,13 @@
       "node_modules/d3-shape/src/curve/natural.js",
       "node_modules/d3-shape/src/curve/step.js",
       "node_modules/d3-shape/src/line.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/upperFirst.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/es6/util/types.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/upperFirst.js"
+      "node_modules/recharts/es6/util/types.js"
     ]
   },
   "node_modules/recharts/es6/shape/Dot.js": {
@@ -84406,20 +83719,20 @@
       "node_modules/d3-shape/src/symbol/star.js",
       "node_modules/d3-shape/src/symbol/triangle.js",
       "node_modules/d3-shape/src/symbol/wye.js",
+      "node_modules/lodash/upperFirst.js",
       "node_modules/react/index.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/upperFirst.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/util/CartesianUtils.js": {
     "enable": true,
     "require": [
+      "node_modules/lodash/every.js",
+      "node_modules/lodash/mapValues.js",
       "node_modules/recharts/es6/cartesian/Bar.js",
       "node_modules/recharts/es6/util/ChartUtils.js",
       "node_modules/recharts/es6/util/DataUtils.js",
-      "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/every.js",
-      "node_modules/recharts/node_modules/lodash/mapValues.js"
+      "node_modules/recharts/es6/util/ReactUtils.js"
     ]
   },
   "node_modules/recharts/es6/util/ChartUtils.js": {
@@ -84433,23 +83746,23 @@
       "node_modules/d3-shape/src/offset/wiggle.js",
       "node_modules/d3-shape/src/order/none.js",
       "node_modules/d3-shape/src/stack.js",
+      "node_modules/lodash/flatMap.js",
+      "node_modules/lodash/get.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isEqual.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNaN.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/isString.js",
+      "node_modules/lodash/max.js",
+      "node_modules/lodash/min.js",
+      "node_modules/lodash/sortBy.js",
+      "node_modules/lodash/upperFirst.js",
       "node_modules/recharts-scale/es6/index.js",
       "node_modules/recharts/es6/cartesian/ErrorBar.js",
       "node_modules/recharts/es6/component/Legend.js",
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/ReactUtils.js",
-      "node_modules/recharts/node_modules/lodash/flatMap.js",
-      "node_modules/recharts/node_modules/lodash/get.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isEqual.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNaN.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/isString.js",
-      "node_modules/recharts/node_modules/lodash/max.js",
-      "node_modules/recharts/node_modules/lodash/min.js",
-      "node_modules/recharts/node_modules/lodash/sortBy.js",
-      "node_modules/recharts/node_modules/lodash/upperFirst.js",
       "node_modules/victory-vendor/es/d3-scale.js"
     ]
   },
@@ -84467,11 +83780,11 @@
   "node_modules/recharts/es6/util/DataUtils.js": {
     "enable": true,
     "require": [
-      "node_modules/recharts/node_modules/lodash/get.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isNaN.js",
-      "node_modules/recharts/node_modules/lodash/isNumber.js",
-      "node_modules/recharts/node_modules/lodash/isString.js"
+      "node_modules/lodash/get.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isNaN.js",
+      "node_modules/lodash/isNumber.js",
+      "node_modules/lodash/isString.js"
     ]
   },
   "node_modules/recharts/es6/util/DetectReferenceElementsDomain.js": {
@@ -84508,1023 +83821,30 @@
   "node_modules/recharts/es6/util/PolarUtils.js": {
     "enable": true,
     "require": [
-      "node_modules/recharts/node_modules/lodash/isNil.js"
+      "node_modules/lodash/isNil.js"
     ]
   },
   "node_modules/recharts/es6/util/ReactUtils.js": {
     "enable": true,
     "require": [
+      "node_modules/lodash/get.js",
+      "node_modules/lodash/isArray.js",
+      "node_modules/lodash/isFunction.js",
+      "node_modules/lodash/isNil.js",
+      "node_modules/lodash/isObject.js",
+      "node_modules/lodash/isString.js",
       "node_modules/react-is/index.js",
       "node_modules/react/index.js",
       "node_modules/recharts/es6/util/DataUtils.js",
       "node_modules/recharts/es6/util/ShallowEqual.js",
-      "node_modules/recharts/es6/util/types.js",
-      "node_modules/recharts/node_modules/lodash/get.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isNil.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js",
-      "node_modules/recharts/node_modules/lodash/isString.js"
+      "node_modules/recharts/es6/util/types.js"
     ]
   },
   "node_modules/recharts/es6/util/types.js": {
     "enable": true,
     "require": [
-      "node_modules/react/index.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_DataView.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getNative.js",
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_Hash.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_hashClear.js",
-      "node_modules/recharts/node_modules/lodash/_hashDelete.js",
-      "node_modules/recharts/node_modules/lodash/_hashGet.js",
-      "node_modules/recharts/node_modules/lodash/_hashHas.js",
-      "node_modules/recharts/node_modules/lodash/_hashSet.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_ListCache.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_listCacheClear.js",
-      "node_modules/recharts/node_modules/lodash/_listCacheDelete.js",
-      "node_modules/recharts/node_modules/lodash/_listCacheGet.js",
-      "node_modules/recharts/node_modules/lodash/_listCacheHas.js",
-      "node_modules/recharts/node_modules/lodash/_listCacheSet.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_Map.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getNative.js",
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_MapCache.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_mapCacheClear.js",
-      "node_modules/recharts/node_modules/lodash/_mapCacheDelete.js",
-      "node_modules/recharts/node_modules/lodash/_mapCacheGet.js",
-      "node_modules/recharts/node_modules/lodash/_mapCacheHas.js",
-      "node_modules/recharts/node_modules/lodash/_mapCacheSet.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_Promise.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getNative.js",
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_Set.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getNative.js",
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_SetCache.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_MapCache.js",
-      "node_modules/recharts/node_modules/lodash/_setCacheAdd.js",
-      "node_modules/recharts/node_modules/lodash/_setCacheHas.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_Stack.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_ListCache.js",
-      "node_modules/recharts/node_modules/lodash/_stackClear.js",
-      "node_modules/recharts/node_modules/lodash/_stackDelete.js",
-      "node_modules/recharts/node_modules/lodash/_stackGet.js",
-      "node_modules/recharts/node_modules/lodash/_stackHas.js",
-      "node_modules/recharts/node_modules/lodash/_stackSet.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_Symbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_Uint8Array.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_WeakMap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getNative.js",
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_arrayIncludes.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIndexOf.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_arrayLikeKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseTimes.js",
-      "node_modules/recharts/node_modules/lodash/_isIndex.js",
-      "node_modules/recharts/node_modules/lodash/isArguments.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isBuffer.js",
-      "node_modules/recharts/node_modules/lodash/isTypedArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_assocIndexOf.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/eq.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseAssignValue.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_defineProperty.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseEach.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseForOwn.js",
-      "node_modules/recharts/node_modules/lodash/_createBaseEach.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseEvery.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseEach.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseExtremum.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isSymbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseFlatten.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayPush.js",
-      "node_modules/recharts/node_modules/lodash/_isFlattenable.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseFor.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_createBaseFor.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseForOwn.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseFor.js",
-      "node_modules/recharts/node_modules/lodash/keys.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseGet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_castPath.js",
-      "node_modules/recharts/node_modules/lodash/_toKey.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseGetAllKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayPush.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseGetTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getRawTag.js",
-      "node_modules/recharts/node_modules/lodash/_objectToString.js",
-      "node_modules/recharts/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIndexOf.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseFindIndex.js",
-      "node_modules/recharts/node_modules/lodash/_baseIsNaN.js",
-      "node_modules/recharts/node_modules/lodash/_strictIndexOf.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIsArguments.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIsEqual.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsEqualDeep.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIsEqualDeep.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_equalArrays.js",
-      "node_modules/recharts/node_modules/lodash/_equalByTag.js",
-      "node_modules/recharts/node_modules/lodash/_equalObjects.js",
-      "node_modules/recharts/node_modules/lodash/_getTag.js",
-      "node_modules/recharts/node_modules/lodash/_Stack.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isBuffer.js",
-      "node_modules/recharts/node_modules/lodash/isTypedArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIsMatch.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsEqual.js",
-      "node_modules/recharts/node_modules/lodash/_Stack.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIsNative.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_isMasked.js",
-      "node_modules/recharts/node_modules/lodash/_toSource.js",
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIsTypedArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/isLength.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseIteratee.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseMatches.js",
-      "node_modules/recharts/node_modules/lodash/_baseMatchesProperty.js",
-      "node_modules/recharts/node_modules/lodash/identity.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/property.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_isPrototype.js",
-      "node_modules/recharts/node_modules/lodash/_nativeKeys.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseMap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseEach.js",
-      "node_modules/recharts/node_modules/lodash/isArrayLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseMatches.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsMatch.js",
-      "node_modules/recharts/node_modules/lodash/_getMatchData.js",
-      "node_modules/recharts/node_modules/lodash/_matchesStrictComparable.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseMatchesProperty.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsEqual.js",
-      "node_modules/recharts/node_modules/lodash/_isKey.js",
-      "node_modules/recharts/node_modules/lodash/_isStrictComparable.js",
-      "node_modules/recharts/node_modules/lodash/_matchesStrictComparable.js",
-      "node_modules/recharts/node_modules/lodash/_toKey.js",
-      "node_modules/recharts/node_modules/lodash/get.js",
-      "node_modules/recharts/node_modules/lodash/hasIn.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseOrderBy.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayMap.js",
-      "node_modules/recharts/node_modules/lodash/_baseGet.js",
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js",
-      "node_modules/recharts/node_modules/lodash/_baseMap.js",
-      "node_modules/recharts/node_modules/lodash/_baseSortBy.js",
-      "node_modules/recharts/node_modules/lodash/_baseUnary.js",
-      "node_modules/recharts/node_modules/lodash/_compareMultiple.js",
-      "node_modules/recharts/node_modules/lodash/identity.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_basePropertyDeep.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGet.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseRest.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_overRest.js",
-      "node_modules/recharts/node_modules/lodash/_setToString.js",
-      "node_modules/recharts/node_modules/lodash/identity.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseSetToString.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_defineProperty.js",
-      "node_modules/recharts/node_modules/lodash/constant.js",
-      "node_modules/recharts/node_modules/lodash/identity.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseSome.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseEach.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseToString.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayMap.js",
-      "node_modules/recharts/node_modules/lodash/_Symbol.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isSymbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseTrim.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_trimmedEndIndex.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_baseUniq.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayIncludes.js",
-      "node_modules/recharts/node_modules/lodash/_arrayIncludesWith.js",
-      "node_modules/recharts/node_modules/lodash/_cacheHas.js",
-      "node_modules/recharts/node_modules/lodash/_createSet.js",
-      "node_modules/recharts/node_modules/lodash/_SetCache.js",
-      "node_modules/recharts/node_modules/lodash/_setToArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_castPath.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_isKey.js",
-      "node_modules/recharts/node_modules/lodash/_stringToPath.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/toString.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_castSlice.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseSlice.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_compareAscending.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isSymbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_compareMultiple.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_compareAscending.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_coreJsData.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_createBaseEach.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isArrayLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_createCaseFirst.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_castSlice.js",
-      "node_modules/recharts/node_modules/lodash/_hasUnicode.js",
-      "node_modules/recharts/node_modules/lodash/_stringToArray.js",
-      "node_modules/recharts/node_modules/lodash/toString.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_createFind.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js",
-      "node_modules/recharts/node_modules/lodash/isArrayLike.js",
-      "node_modules/recharts/node_modules/lodash/keys.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_createRange.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseRange.js",
-      "node_modules/recharts/node_modules/lodash/_isIterateeCall.js",
-      "node_modules/recharts/node_modules/lodash/toFinite.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_createSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_Set.js",
-      "node_modules/recharts/node_modules/lodash/_setToArray.js",
-      "node_modules/recharts/node_modules/lodash/noop.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_defineProperty.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getNative.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_equalArrays.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arraySome.js",
-      "node_modules/recharts/node_modules/lodash/_cacheHas.js",
-      "node_modules/recharts/node_modules/lodash/_SetCache.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_equalByTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_equalArrays.js",
-      "node_modules/recharts/node_modules/lodash/_mapToArray.js",
-      "node_modules/recharts/node_modules/lodash/_setToArray.js",
-      "node_modules/recharts/node_modules/lodash/_Symbol.js",
-      "node_modules/recharts/node_modules/lodash/_Uint8Array.js",
-      "node_modules/recharts/node_modules/lodash/eq.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_equalObjects.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getAllKeys.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_freeGlobal.js": {
-    "enable": true,
-    "global": {
-      "Buffer": "r",
-      "__core-js_shared__": "r",
-      "global": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/recharts/node_modules/lodash/_getAllKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetAllKeys.js",
-      "node_modules/recharts/node_modules/lodash/_getSymbols.js",
-      "node_modules/recharts/node_modules/lodash/keys.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_getMapData.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_isKeyable.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_getMatchData.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_isStrictComparable.js",
-      "node_modules/recharts/node_modules/lodash/keys.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_getNative.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsNative.js",
-      "node_modules/recharts/node_modules/lodash/_getValue.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_getRawTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_Symbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_getSymbols.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayFilter.js",
-      "node_modules/recharts/node_modules/lodash/stubArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_getTag.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/_DataView.js",
-      "node_modules/recharts/node_modules/lodash/_Map.js",
-      "node_modules/recharts/node_modules/lodash/_Promise.js",
-      "node_modules/recharts/node_modules/lodash/_Set.js",
-      "node_modules/recharts/node_modules/lodash/_toSource.js",
-      "node_modules/recharts/node_modules/lodash/_WeakMap.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_hasPath.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_castPath.js",
-      "node_modules/recharts/node_modules/lodash/_isIndex.js",
-      "node_modules/recharts/node_modules/lodash/_toKey.js",
-      "node_modules/recharts/node_modules/lodash/isArguments.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isLength.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_hashClear.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_hashGet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_hashHas.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_hashSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_nativeCreate.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_isFlattenable.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_Symbol.js",
-      "node_modules/recharts/node_modules/lodash/isArguments.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_isIterateeCall.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_isIndex.js",
-      "node_modules/recharts/node_modules/lodash/eq.js",
-      "node_modules/recharts/node_modules/lodash/isArrayLike.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_isKey.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isSymbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_isMasked.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_coreJsData.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_isStrictComparable.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_listCacheDelete.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_listCacheGet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_listCacheHas.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_listCacheSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_assocIndexOf.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_mapCacheClear.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_Hash.js",
-      "node_modules/recharts/node_modules/lodash/_ListCache.js",
-      "node_modules/recharts/node_modules/lodash/_Map.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_mapCacheDelete.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_mapCacheGet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_mapCacheHas.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_mapCacheSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getMapData.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_memoizeCapped.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/memoize.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_nativeCreate.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_getNative.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_nativeKeys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_overArg.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_nodeUtil.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_overRest.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_apply.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_root.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_freeGlobal.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_setToString.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseSetToString.js",
-      "node_modules/recharts/node_modules/lodash/_shortOut.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_stackClear.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_ListCache.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_stackSet.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_ListCache.js",
-      "node_modules/recharts/node_modules/lodash/_Map.js",
-      "node_modules/recharts/node_modules/lodash/_MapCache.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_stringToArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_asciiToArray.js",
-      "node_modules/recharts/node_modules/lodash/_hasUnicode.js",
-      "node_modules/recharts/node_modules/lodash/_unicodeToArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_stringToPath.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_memoizeCapped.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/_toKey.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isSymbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/debounce.js": {
-    "enable": true,
-    "global": {
-      "clearTimeout": "r",
-      "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isObject.js",
-      "node_modules/recharts/node_modules/lodash/now.js",
-      "node_modules/recharts/node_modules/lodash/toNumber.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/every.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayEvery.js",
-      "node_modules/recharts/node_modules/lodash/_baseEvery.js",
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js",
-      "node_modules/recharts/node_modules/lodash/_isIterateeCall.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/find.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_createFind.js",
-      "node_modules/recharts/node_modules/lodash/findIndex.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/findIndex.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseFindIndex.js",
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js",
-      "node_modules/recharts/node_modules/lodash/toInteger.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/flatMap.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseFlatten.js",
-      "node_modules/recharts/node_modules/lodash/map.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/get.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGet.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/hasIn.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseHasIn.js",
-      "node_modules/recharts/node_modules/lodash/_hasPath.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isArguments.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsArguments.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isArrayLike.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isFunction.js",
-      "node_modules/recharts/node_modules/lodash/isLength.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isBoolean.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isBuffer.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_root.js",
-      "node_modules/recharts/node_modules/lodash/stubFalse.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isEqual.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsEqual.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isFunction.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isNaN.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/isNumber.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isNumber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isString.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isSymbol.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseGetTag.js",
-      "node_modules/recharts/node_modules/lodash/isObjectLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/isTypedArray.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIsTypedArray.js",
-      "node_modules/recharts/node_modules/lodash/_baseUnary.js",
-      "node_modules/recharts/node_modules/lodash/_nodeUtil.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/keys.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayLikeKeys.js",
-      "node_modules/recharts/node_modules/lodash/_baseKeys.js",
-      "node_modules/recharts/node_modules/lodash/isArrayLike.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/map.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arrayMap.js",
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js",
-      "node_modules/recharts/node_modules/lodash/_baseMap.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/mapValues.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseAssignValue.js",
-      "node_modules/recharts/node_modules/lodash/_baseForOwn.js",
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/max.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseExtremum.js",
-      "node_modules/recharts/node_modules/lodash/_baseGt.js",
-      "node_modules/recharts/node_modules/lodash/identity.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/memoize.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_MapCache.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/min.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseExtremum.js",
-      "node_modules/recharts/node_modules/lodash/_baseLt.js",
-      "node_modules/recharts/node_modules/lodash/identity.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/now.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_root.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/property.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseProperty.js",
-      "node_modules/recharts/node_modules/lodash/_basePropertyDeep.js",
-      "node_modules/recharts/node_modules/lodash/_isKey.js",
-      "node_modules/recharts/node_modules/lodash/_toKey.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/range.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_createRange.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/some.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_arraySome.js",
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js",
-      "node_modules/recharts/node_modules/lodash/_baseSome.js",
-      "node_modules/recharts/node_modules/lodash/_isIterateeCall.js",
-      "node_modules/recharts/node_modules/lodash/isArray.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/sortBy.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseFlatten.js",
-      "node_modules/recharts/node_modules/lodash/_baseOrderBy.js",
-      "node_modules/recharts/node_modules/lodash/_baseRest.js",
-      "node_modules/recharts/node_modules/lodash/_isIterateeCall.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/throttle.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/debounce.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/toFinite.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/toNumber.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/toInteger.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/toFinite.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/toNumber.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseTrim.js",
-      "node_modules/recharts/node_modules/lodash/isObject.js",
-      "node_modules/recharts/node_modules/lodash/isSymbol.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/toString.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseToString.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/uniqBy.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_baseIteratee.js",
-      "node_modules/recharts/node_modules/lodash/_baseUniq.js"
-    ]
-  },
-  "node_modules/recharts/node_modules/lodash/upperFirst.js": {
-    "enable": true,
-    "require": [
-      "node_modules/recharts/node_modules/lodash/_createCaseFirst.js"
+      "node_modules/lodash/isObject.js",
+      "node_modules/react/index.js"
     ]
   },
   "node_modules/reduce-css-calc/dist/index.js": {
