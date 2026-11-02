@@ -181,12 +181,14 @@ export class SignatureManager {
     );
   }
 
+  // Entries pass the fingerprint they already built from request.txs: it
+  // copies the whole calldata, so it is built once per entry, not per step.
   private ensureContext(
     request: SignatureRequest,
     wallet: WalletControllerType,
-    opId?: number
+    opId?: number,
+    fingerprint = this.getFingerprint(request.txs)
   ) {
-    const fingerprint = this.getFingerprint(request.txs);
     this.bindManualGasMethodToFingerprint(fingerprint);
 
     this.dispatch({ type: 'SET_CONFIG', payload: request.config });
@@ -220,6 +222,7 @@ export class SignatureManager {
       .prepare({
         wallet,
         txs: request.txs,
+        fingerprint,
         config: request.config,
         enableSecurityEngine: request.enableSecurityEngine,
         gasSelection: request.gasSelection,
@@ -367,7 +370,7 @@ export class SignatureManager {
     this.close({ preserveManualGasMethod: true });
     this.bindManualGasMethodToFingerprint(fingerprint);
 
-    return this.ensureContext(request, wallet);
+    return this.ensureContext(request, wallet, undefined, fingerprint);
   }
 
   public async openUI(request: SignatureRequest, wallet: WalletControllerType) {
@@ -378,7 +381,7 @@ export class SignatureManager {
 
     const prepared =
       this.pendingCtx.get(fingerprint) ||
-      this.ensureContext(request, wallet, opId);
+      this.ensureContext(request, wallet, opId, fingerprint);
 
     const skeleton = this.withManualGasMethod(
       this.createSkeletonCtx(request.txs, fingerprint),
@@ -390,6 +393,7 @@ export class SignatureManager {
       const ctx = await signatureService.openUI({
         wallet,
         txs: request.txs,
+        fingerprint,
         config: request.config,
         enableSecurityEngine: request.enableSecurityEngine,
         gasSelection: request.gasSelection,
@@ -742,7 +746,7 @@ export class SignatureManager {
     try {
       const prepared =
         this.pendingCtx.get(fingerprint) ||
-        this.ensureContext(request, wallet, this.run?.id);
+        this.ensureContext(request, wallet, this.run?.id, fingerprint);
       await prepared;
 
       if (this.isPreExecResultFailed()) {

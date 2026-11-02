@@ -18,6 +18,8 @@ import BigNumber from 'bignumber.js';
 type PrepareParams = {
   wallet: WalletControllerType;
   txs: Tx[];
+  // buildFingerprint(txs) when the caller already has it
+  fingerprint?: string;
   config: SignerConfig;
   enableSecurityEngine?: boolean;
   gasSelection?: GasSelectionOptions;
@@ -49,6 +51,7 @@ export const signatureService = {
   prepare: async ({
     wallet,
     txs,
+    fingerprint,
     config,
     enableSecurityEngine,
     gasSelection,
@@ -57,6 +60,7 @@ export const signatureService = {
       wallet,
       account: config.account,
       txs,
+      fingerprint,
       enableSecurityEngine,
       gasSelection,
       config,
@@ -65,6 +69,7 @@ export const signatureService = {
   openUI: async ({
     wallet,
     txs,
+    fingerprint,
     config,
     enableSecurityEngine,
     gasSelection,
@@ -74,6 +79,7 @@ export const signatureService = {
       wallet,
       account: config.account,
       txs,
+      fingerprint,
       enableSecurityEngine,
       gasSelection,
       existing: prepared,
