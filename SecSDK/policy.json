@@ -10286,90 +10286,6 @@
       "node_modules/@emotion/memoize/dist/emotion-memoize.esm.js"
     ]
   },
-  "node_modules/@eth-optimism/contracts/dist/contract-artifacts.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/chugsplash/interfaces/iL1ChugSplashDeployer.sol/iL1ChugSplashDeployer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/chugsplash/L1ChugSplashProxy.sol/L1ChugSplashProxy.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/deployment/AddressDictator.sol/AddressDictator.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/deployment/ChugSplashDictator.sol/ChugSplashDictator.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/IL1CrossDomainMessenger.sol/IL1CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/IL1ERC20Bridge.sol/IL1ERC20Bridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/IL1StandardBridge.sol/IL1StandardBridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/L1CrossDomainMessenger.sol/L1CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/L1StandardBridge.sol/L1StandardBridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/CanonicalTransactionChain.sol/CanonicalTransactionChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/ChainStorageContainer.sol/ChainStorageContainer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/ICanonicalTransactionChain.sol/ICanonicalTransactionChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/IChainStorageContainer.sol/IChainStorageContainer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/IStateCommitmentChain.sol/IStateCommitmentChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/StateCommitmentChain.sol/StateCommitmentChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/teleportr/TeleportrDeposit.sol/TeleportrDeposit.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/verification/BondManager.sol/BondManager.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/verification/IBondManager.sol/IBondManager.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/IL2CrossDomainMessenger.sol/IL2CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/IL2ERC20Bridge.sol/IL2ERC20Bridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/L2CrossDomainMessenger.sol/L2CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/L2StandardBridge.sol/L2StandardBridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/L2StandardTokenFactory.sol/L2StandardTokenFactory.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/iOVM_L1BlockNumber.sol/iOVM_L1BlockNumber.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/iOVM_L2ToL1MessagePasser.sol/iOVM_L2ToL1MessagePasser.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_DeployerWhitelist.sol/OVM_DeployerWhitelist.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_ETH.sol/OVM_ETH.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_GasPriceOracle.sol/OVM_GasPriceOracle.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_L2ToL1MessagePasser.sol/OVM_L2ToL1MessagePasser.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_SequencerFeeVault.sol/OVM_SequencerFeeVault.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/WETH9.sol/WETH9.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/teleportr/TeleportrDisburser.sol/TeleportrDisburser.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/bridge/CrossDomainEnabled.sol/CrossDomainEnabled.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/bridge/ICrossDomainMessenger.sol/ICrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/bridge/Lib_CrossDomainUtils.sol/Lib_CrossDomainUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/codec/Lib_OVMCodec.sol/Lib_OVMCodec.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/constants/Lib_DefaultValues.sol/Lib_DefaultValues.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/constants/Lib_PredeployAddresses.sol/Lib_PredeployAddresses.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/resolver/Lib_AddressManager.sol/Lib_AddressManager.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/resolver/Lib_AddressResolver.sol/Lib_AddressResolver.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/resolver/Lib_ResolvedDelegateProxy.sol/Lib_ResolvedDelegateProxy.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/rlp/Lib_RLPReader.sol/Lib_RLPReader.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/rlp/Lib_RLPWriter.sol/Lib_RLPWriter.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/trie/Lib_MerkleTrie.sol/Lib_MerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/trie/Lib_SecureMerkleTrie.sol/Lib_SecureMerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_Buffer.sol/Lib_Buffer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_Bytes32Utils.sol/Lib_Bytes32Utils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_BytesUtils.sol/Lib_BytesUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_MerkleTree.sol/Lib_MerkleTree.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/standards/AddressAliasHelper.sol/AddressAliasHelper.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/standards/IL2StandardERC20.sol/IL2StandardERC20.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/standards/L2StandardERC20.sol/L2StandardERC20.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-helpers/FailingReceiver.sol/FailingReceiver.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-helpers/TestERC20.sol/TestERC20.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/bridge/TestLib_CrossDomainUtils.sol/TestLib_CrossDomainUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/codec/TestLib_OVMCodec.sol/TestLib_OVMCodec.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/rlp/TestLib_RLPReader.sol/TestLib_RLPReader.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/rlp/TestLib_RLPWriter.sol/TestLib_RLPWriter.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/standards/TestLib_AddressAliasHelper.sol/TestLib_AddressAliasHelper.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/trie/TestLib_MerkleTrie.sol/TestLib_MerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/trie/TestLib_SecureMerkleTrie.sol/TestLib_SecureMerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_Buffer.sol/TestLib_Buffer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_Bytes32Utils.sol/TestLib_Bytes32Utils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_BytesUtils.sol/TestLib_BytesUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_MerkleTree.sol/TestLib_MerkleTree.json"
-    ]
-  },
-  "node_modules/@eth-optimism/contracts/dist/contract-defs.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@eth-optimism/contracts/dist/contract-artifacts.js",
-      "node_modules/ethers/lib.esm/index.js"
-    ]
-  },
-  "node_modules/@eth-optimism/contracts/dist/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@eth-optimism/contracts/dist/contract-defs.js",
-      "node_modules/@eth-optimism/contracts/dist/predeploys.js"
-    ]
-  },
   "node_modules/@ethereumjs/common/dist/cjs/common.js": {
     "enable": true,
     "require": [
@@ -11369,14 +11285,6 @@
       "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js"
     ]
   },
-  "node_modules/@ethersproject/constants/lib.esm/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/constants/lib.esm/addresses.js",
-      "node_modules/@ethersproject/constants/lib.esm/bignumbers.js",
-      "node_modules/@ethersproject/constants/lib.esm/hashes.js"
-    ]
-  },
   "node_modules/@ethersproject/contracts/lib.esm/index.js": {
     "enable": true,
     "global": {
@@ -11577,26 +11485,6 @@
       "node_modules/@ethersproject/properties/lib.esm/_version.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/alchemy-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/websocket-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/ankr-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/base-provider.js": {
     "enable": true,
     "global": {
@@ -11624,45 +11512,12 @@
       "node_modules/bech32/index.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/cloudflare-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/etherscan-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/bytes/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/base-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/transactions/lib.esm/index.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/fallback-provider.js": {
     "enable": true,
     "global": {
       "clearTimeout": "r",
       "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/abstract-provider/lib.esm/index.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/bytes/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/base-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/random/lib.esm/shuffle.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/providers/lib.esm/formatter.js": {
     "enable": true,
@@ -11680,52 +11535,11 @@
       "node_modules/@ethersproject/transactions/lib.esm/index.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/abstract-provider/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/networks/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/alchemy-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/ankr-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/base-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/cloudflare-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/etherscan-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/fallback-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/infura-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-batch-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/nodesmith-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/pocket-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/quicknode-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/web3-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/websocket-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/infura-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/websocket-provider.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/json-rpc-batch-provider.js": {
     "enable": true,
     "global": {
       "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js": {
     "enable": true,
@@ -11746,39 +11560,6 @@
       "node_modules/@ethersproject/web/lib.esm/index.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/nodesmith-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/pocket-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/quicknode-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/web3-provider.js": {
     "enable": true,
     "require": [
@@ -11793,25 +11574,13 @@
     "global": {
       "console": "r",
       "setInterval": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/ws.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/providers/lib.esm/ws.js": {
     "enable": true,
     "global": {
       "WebSocket": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/random/lib.esm/index.js": {
     "enable": true,
@@ -72829,67 +72598,11 @@
       "node_modules/secp256k1/elliptic.js"
     ]
   },
-  "node_modules/ethers/lib.esm/ethers.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/abstract-signer/lib.esm/index.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/fixednumber.js",
-      "node_modules/@ethersproject/constants/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/index.js",
-      "node_modules/@ethersproject/wallet/lib.esm/index.js",
-      "node_modules/@ethersproject/wordlists/lib.esm/wordlist.js",
-      "node_modules/@ethersproject/wordlists/lib.esm/wordlists.js",
-      "node_modules/ethers/lib.esm/_version.js",
-      "node_modules/ethers/lib.esm/utils.js",
-      "node_modules/ethers/node_modules/@ethersproject/contracts/lib.esm/index.js"
-    ]
-  },
   "node_modules/ethers/lib.esm/index.js": {
     "enable": true,
     "global": {
       "_ethers": "rw"
-    },
-    "require": [
-      "node_modules/ethers/lib.esm/ethers.js"
-    ]
-  },
-  "node_modules/ethers/lib.esm/utils.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
-      "node_modules/@ethersproject/abi/lib.esm/coders/abstract-coder.js",
-      "node_modules/@ethersproject/abi/lib.esm/fragments.js",
-      "node_modules/@ethersproject/abi/lib.esm/interface.js",
-      "node_modules/@ethersproject/address/lib.esm/index.js",
-      "node_modules/@ethersproject/base64/lib.esm/index.js",
-      "node_modules/@ethersproject/basex/lib.esm/index.js",
-      "node_modules/@ethersproject/bytes/lib.esm/index.js",
-      "node_modules/@ethersproject/hash/lib.esm/id.js",
-      "node_modules/@ethersproject/hash/lib.esm/message.js",
-      "node_modules/@ethersproject/hash/lib.esm/namehash.js",
-      "node_modules/@ethersproject/hash/lib.esm/typed-data.js",
-      "node_modules/@ethersproject/hdnode/lib.esm/index.js",
-      "node_modules/@ethersproject/json-wallets/lib.esm/inspect.js",
-      "node_modules/@ethersproject/keccak256/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/random/lib.esm/random.js",
-      "node_modules/@ethersproject/random/lib.esm/shuffle.js",
-      "node_modules/@ethersproject/rlp/lib.esm/index.js",
-      "node_modules/@ethersproject/sha2/lib.esm/sha2.js",
-      "node_modules/@ethersproject/sha2/lib.esm/types.js",
-      "node_modules/@ethersproject/signing-key/lib.esm/index.js",
-      "node_modules/@ethersproject/solidity/lib.esm/index.js",
-      "node_modules/@ethersproject/strings/lib.esm/bytes32.js",
-      "node_modules/@ethersproject/strings/lib.esm/idna.js",
-      "node_modules/@ethersproject/strings/lib.esm/utf8.js",
-      "node_modules/@ethersproject/transactions/lib.esm/index.js",
-      "node_modules/@ethersproject/units/lib.esm/index.js",
-      "node_modules/@ethersproject/wallet/lib.esm/index.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
+    }
   },
   "node_modules/ethers/lib/utils.js": {
     "enable": true,
@@ -93924,13 +93637,11 @@
     "enable": true,
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
-      "node_modules/@eth-optimism/contracts/dist/index.js",
       "node_modules/@ethereumjs/common/dist/esm/index.js",
       "node_modules/@ethereumjs/rlp/dist/esm/index.js",
       "node_modules/@ethereumjs/tx/dist/esm/index.js",
       "node_modules/@ethereumjs/util/dist/esm/index.js",
       "node_modules/@ethereumjs/wallet/dist/esm/index.js",
-      "node_modules/@ethersproject/abi/lib.esm/fragments.js",
       "node_modules/@ethersproject/providers/lib.esm/web3-provider.js",
       "node_modules/@keystonehq/bc-ur-registry-eth/dist/index.js",
       "node_modules/@keystonehq/hw-app-eth/lib/index.js",
@@ -100735,7 +100446,6 @@
     "require": [
       "node_modules/@ant-design/icons/es/icons/InfoCircleFilled.js",
       "node_modules/@ant-design/icons/es/icons/Loading3QuartersOutlined.js",
-      "node_modules/@eth-optimism/contracts-ts/dist/constants.js",
       "node_modules/ahooks/es/useInfiniteScroll/index.js",
       "node_modules/ahooks/es/useInterval/index.js",
       "node_modules/ahooks/es/useMemoizedFn/index.js",
@@ -100766,6 +100476,7 @@
       "node_modules/viem/_esm/utils/chain/defineChain.js",
       "node_modules/viem/_esm/utils/encoding/fromHex.js",
       "node_modules/viem/_esm/utils/unit/parseEther.js",
+      "node_modules/viem/node_modules/abitype/dist/esm/human-readable/parseAbi.js",
       "src/constant/index.ts",
       "src/ui/assets/checked.svg",
       "src/ui/assets/icon-unchecked-cc.svg",
