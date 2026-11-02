@@ -26498,13 +26498,6 @@
       "node_modules/hdkey/lib/hdkey.js"
     ]
   },
-  "node_modules/@rabby-wallet/eth-trezor-keyring/dist/trezor-bridge.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@trezor/connect-web/lib/index.js",
-      "node_modules/events/events.js"
-    ]
-  },
   "node_modules/@rabby-wallet/eth-trezor-keyring/node_modules/@ethereumjs/common/dist/common.js": {
     "enable": true,
     "global": {
@@ -93954,7 +93947,6 @@
       "node_modules/@rabby-wallet/eth-lattice-keyring/index.js",
       "node_modules/@rabby-wallet/eth-simple-keyring/index.js",
       "node_modules/@rabby-wallet/eth-trezor-keyring/dist/index.js",
-      "node_modules/@rabby-wallet/eth-trezor-keyring/dist/trezor-bridge.js",
       "node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/index.js",
       "node_modules/@rabby-wallet/eth-watch-keyring/dist/index.js",
       "node_modules/@rabby-wallet/gnosis-sdk/dist/api.js",
@@ -94047,11 +94039,8 @@
       "node_modules/web3-eth-abi/lib/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "node_modules/zod/v4/classic/schemas.js",
-      "src/background/service/keyring/eth-bitbox02-keyring/bitbox02-bridge.ts",
       "src/background/service/keyring/eth-bitbox02-keyring/bitbox02-offscreen-bridge.ts",
-      "src/background/service/keyring/eth-imkey-keyring/imkey-bridge.ts",
       "src/background/service/keyring/eth-imkey-keyring/imkey-offscreen-bridge.ts",
-      "src/background/service/keyring/eth-onekey-keyring/onekey-bridge.ts",
       "src/background/service/keyring/eth-onekey-keyring/onekey-offscreen-bridge.ts",
       "src/background/service/keyring/eth-trezor-keyring/trezor-offscreen-bridge.ts",
       "src/constant/offscreen-communication.ts"
@@ -94093,15 +94082,6 @@
       "src/utils/chain.ts"
     ]
   },
-  "src/background/service/keyring/eth-bitbox02-keyring/bitbox02-bridge.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/@bitboxswiss/bitbox-api/dist/index.js",
-      "node_modules/@ethereumjs/util/dist/esm/index.js",
-      "node_modules/hdkey/lib/hdkey.js",
-      "node_modules/webextension-polyfill/dist/browser-polyfill.js"
-    ]
-  },
   "src/background/service/keyring/eth-bitbox02-keyring/bitbox02-offscreen-bridge.ts": {
     "enable": true,
     "require": [
@@ -94110,24 +94090,11 @@
       "src/constant/offscreen-communication.ts"
     ]
   },
-  "src/background/service/keyring/eth-imkey-keyring/imkey-bridge.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/@imkey/web3-provider/dist/imkey-web3-provider.umd.js"
-    ]
-  },
   "src/background/service/keyring/eth-imkey-keyring/imkey-offscreen-bridge.ts": {
     "enable": true,
     "require": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/constant/offscreen-communication.ts"
-    ]
-  },
-  "src/background/service/keyring/eth-onekey-keyring/onekey-bridge.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/@onekeyfe/hd-core/dist/index.js",
-      "node_modules/@onekeyfe/hd-web-sdk/build/onekey-js-sdk.js"
     ]
   },
   "src/background/service/keyring/eth-onekey-keyring/onekey-offscreen-bridge.ts": {
