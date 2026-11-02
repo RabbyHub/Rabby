@@ -187,7 +187,6 @@ export const usePerpsActions = () => {
         ) {
           capturePerpsError('setUserAbstraction failed', error, {
             abstraction,
-            address: currentPerpsAccount?.address,
             accountType: currentPerpsAccount?.type,
           });
         }

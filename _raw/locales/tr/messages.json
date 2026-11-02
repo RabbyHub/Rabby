@@ -507,6 +507,7 @@
       "cancelConnection": "Bağlantıyı iptal et",
       "imKeyNotConnected": "imKey bağlantısı yok",
       "imKeyConnected": "imKey bağlı",
+      "extraFeeProtectionBlocked": "Ek Ücret Koruması bu imza isteğini engelledi. Yine de imzalamak istiyorsanız Ayarlar'dan kapatın",
       "blockDappFromSendingRequests": "Dapp'in 1 dakika boyunca istek göndermesini engelle",
       "iGotIt": "Anladım"
     },
@@ -1363,7 +1364,9 @@
           "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
           "currency": "Para Birimi",
           "searchCurrency": "Para birimi ara",
-          "dataAnalysis": "Veri Analizi"
+          "dataAnalysis": "Veri Analizi",
+          "extraFeeProtection": "Ek Ücret Koruması",
+          "extraFeeProtectionDesc": "Tarayıcı uzantılarının ek ücret almasına izin veren imza isteklerini engeller"
         },
         "aboutUs": "Hakkımızda",
         "currentVersion": "Mevcut Sürüm",

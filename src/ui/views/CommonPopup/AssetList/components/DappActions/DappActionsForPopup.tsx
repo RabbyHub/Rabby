@@ -14,8 +14,6 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import stats from '@/stats';
-import { last } from 'lodash';
 
 const Wrapper = styled.div`
   display: flex;
@@ -131,10 +129,6 @@ const DappActionsForPopup = ({
     [withdrawAction?.type]
   );
 
-  const simulationRef = React.useRef<{
-    usdValueChange?: number;
-  }>({});
-
   const { valid: showWithdraw, action: actionWithdraw } = useDappAction(
     withdrawAction,
     chain,
@@ -148,15 +142,6 @@ const DappActionsForPopup = ({
 
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse) => {
-      const totalReceiveUsdValue = r?.balance_change?.receive_token_list?.reduce(
-        (acc, token) => {
-          return acc + (Number(token.usd_value) || 0);
-        },
-        0
-      );
-      simulationRef.current = {
-        usdValueChange: totalReceiveUsdValue,
-      };
       if (!r.pre_exec.success) {
         updateConfig({
           disableSignBtn: true,
@@ -188,45 +173,17 @@ const DappActionsForPopup = ({
   );
 
   const handleSubmit = useCallback(
-    async (action: () => Promise<Tx[]>, title?: string, type?: ActionType) => {
-      simulationRef.current = {};
-
-      const now = Date.now();
-      const base = {
-        tx_type: type || '',
-        chain: chain || '',
-        user_addr: currentAccount?.address || '',
-        address_type: currentAccount?.type || '',
-        protocol_name: protocolName || '',
-        create_at: now,
-        app_version: process.env.release || '0',
-      } as const;
-
-      const getSimulationFields = () => {
-        const s = simulationRef.current;
-        return {
-          simulation_result:
-            typeof s.usdValueChange === 'number' ? s.usdValueChange : '',
-        } as const;
-      };
-
+    async (action: () => Promise<Tx[]>, title?: string) => {
       const txs = await action();
       if (!txs?.length) return;
 
       const runFallback = async () => {
-        let lastHash = '';
         for (const tx of txs) {
-          lastHash = await wallet.sendRequest<string>({
+          await wallet.sendRequest<string>({
             method: 'eth_sendTransaction',
             params: [tx],
           });
         }
-        stats.report('defiDirectTx', {
-          ...base,
-          sign_method: 'full',
-          tx_id: lastHash || '',
-          ...getSimulationFields(),
-        });
         setVisible(false);
       };
 
@@ -259,14 +216,7 @@ const DappActionsForPopup = ({
           },
         } as const;
         try {
-          const hashes = await openUI(signerConfig);
-          const hash = last(hashes);
-          stats.report('defiDirectTx', {
-            ...base,
-            sign_method: 'simple',
-            tx_id: typeof hash === 'string' ? hash : '',
-            ...getSimulationFields(),
-          });
+          await openUI(signerConfig);
           setVisible(false);
           return;
         } catch (error) {
@@ -303,7 +253,6 @@ const DappActionsForPopup = ({
       openUI,
       protocolLogo,
       chain,
-      protocolName,
       isQueueWithdraw,
       t,
       onPreExecChange,
@@ -323,11 +272,7 @@ const DappActionsForPopup = ({
           text={t('component.DappActions.withdraw')}
           className={`${showClaim ? 'w-[216px]' : 'flex-1'}`}
           onClick={() =>
-            handleSubmit(
-              actionWithdraw,
-              t('component.DappActions.withdraw'),
-              isQueueWithdraw ? ActionType.Queue : ActionType.Withdraw
-            )
+            handleSubmit(actionWithdraw, t('component.DappActions.withdraw'))
           }
         />
       )}
@@ -336,11 +281,7 @@ const DappActionsForPopup = ({
           text={t('component.DappActions.claim')}
           className={`${showWithdraw ? 'w-[108px]' : 'flex-1'}`}
           onClick={() =>
-            handleSubmit(
-              actionClaim,
-              t('component.DappActions.claim'),
-              ActionType.Claim
-            )
+            handleSubmit(actionClaim, t('component.DappActions.claim'))
           }
         />
       )}

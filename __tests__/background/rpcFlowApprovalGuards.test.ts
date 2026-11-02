@@ -19,8 +19,6 @@ const mockKeyringService = {
 const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
-  setStatsData: jest.fn(),
-  getStatsData: jest.fn(() => undefined),
   unLock: jest.fn(),
 };
 const mockPermissionService = {
@@ -74,10 +72,6 @@ jest.mock('@/background/service/signTxPreparation', () => ({
   cancelAllSignTxPreparations: jest.fn(),
 }));
 jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
-jest.mock('@/stats', () => ({
-  __esModule: true,
-  default: { report: jest.fn() },
-}));
 jest.mock('@/eventBus', () => ({
   __esModule: true,
   default: { emit: jest.fn(), addEventListener: jest.fn() },
@@ -167,5 +161,33 @@ describe('rpcFlow: inline (onApproval) requests fail closed instead of queuing o
     mockNotificationService.requestApproval.mockResolvedValueOnce({});
     await rpcFlow(baseRequest() as any).catch(() => undefined);
     expect(mockNotificationService.requestApproval).toHaveBeenCalled();
+  });
+});
+
+describe('rpcFlow method dispatch', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    state.isUnlocked = true;
+    state.currentApproval = null;
+    state.hasPermission = true;
+  });
+
+  test.each([
+    'constructor',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    '__proto__',
+  ])('rejects inherited property %s as method not found', async (method) => {
+    const request = {
+      ...baseRequest(),
+      data: { method, params: [] },
+    };
+
+    await expect(rpcFlow(request as any)).rejects.toMatchObject({
+      code: -32601,
+    });
+    expect(mockNotificationService.requestApproval).not.toHaveBeenCalled();
+    expect(ethSignTypedDataV4).not.toHaveBeenCalled();
   });
 });

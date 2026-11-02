@@ -15,8 +15,6 @@ import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInpu
 import { TradingButtons } from '../components/TradingButtons';
 import { OrderInfoGrid } from '../components/OrderInfoGrid';
 import { BigNumber } from 'bignumber.js';
-import stats from '@/stats';
-import { getStatsReportSide } from '../../../utils';
 import { calcAmountFromPercentage } from '../utils';
 import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
 import perpsToast from '../../PerpsToast';
@@ -50,8 +48,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
 
   // Get data from perpsState
   const {
-    currentPerpsAccount,
-    leverageType,
     selectedCoin,
     positionSize,
     setPositionSize,
@@ -332,23 +328,6 @@ export const TakeOrStopLimitTradingContainer: React.FC<TakeOrStopLimitTradingCon
       limitPx: order.limitPx,
       reduceOnly: order.reduceOnly,
       tpsl: takeOrStop,
-    });
-    stats.report('perpsTradeHistory', {
-      created_at: new Date().getTime(),
-      user_addr: currentPerpsAccount?.address || '',
-      trade_type: takeOrStop === 'tp' ? 'take profit limit' : 'stop loss limit',
-      leverage: leverage.toString(),
-      trade_side: getStatsReportSide(order.isBuy, order.reduceOnly),
-      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-      coin: selectedCoin,
-      size: order.size,
-      price: order.limitPx,
-      trade_usd_value: new BigNumber(order.limitPx)
-        .times(order.size)
-        .toFixed(2),
-      service_provider: 'hyperliquid',
-      app_version: process.env.release || '0',
-      address_type: currentPerpsAccount?.type || '',
     });
   });
 

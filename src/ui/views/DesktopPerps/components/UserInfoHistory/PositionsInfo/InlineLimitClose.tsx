@@ -21,8 +21,6 @@ import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { formatPerpsCoin, formatPerpsValueWithUsdc } from '../../../utils';
 import { ReactComponent as RcIconPerpsDelete } from '@/ui/assets/perps/IconPerpsDelete.svg';
 import { PositionFormatData } from './index';
-import stats from '@/stats';
-import { getStatsReportSide } from '../../../utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { ThousandsNativeInput } from '../../ThousandsNativeInput';
@@ -42,9 +40,6 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
   marketData,
 }) => {
   const { t } = useTranslation();
-  const currentPerpsAccount = useRabbySelector(
-    (store) => store.perps.currentPerpsAccount
-  );
   const sizeDisplayUnit = useRabbySelector(
     (state) => state.perps.sizeDisplayUnit
   );
@@ -200,24 +195,6 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         limitPx: limitPrice,
         reduceOnly: true,
       });
-
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type: 'close limit',
-        leverage: record.leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, true),
-        margin_mode: record.type === 'cross' ? 'cross' : 'isolated',
-        coin: record.coin,
-        size: effectiveSize,
-        price: limitPrice,
-        trade_usd_value: new BigNumber(limitPrice)
-          .times(effectiveSize)
-          .toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
-      });
     },
     {
       manual: true,
@@ -229,7 +206,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     async () => {
       const isBuy = record.direction === 'Short';
       const size = new BigNumber(positionSize).toFixed(szDecimals);
-      const res = await handleCloseWithMarketOrder({
+      await handleCloseWithMarketOrder({
         coin: record.coin,
         dex: marketData.dexId ?? '',
         isBuy,
@@ -237,24 +214,6 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         midPx: String(midPrice),
         reduceOnly: true,
       });
-      if (res) {
-        const { totalSz, avgPx } = res;
-        stats.report('perpsTradeHistory', {
-          created_at: new Date().getTime(),
-          user_addr: currentPerpsAccount?.address || '',
-          trade_type: 'close market',
-          leverage: record.leverage.toString(),
-          trade_side: getStatsReportSide(isBuy, true),
-          margin_mode: record.type === 'cross' ? 'cross' : 'isolated',
-          coin: record.coin,
-          size: totalSz,
-          price: avgPx,
-          trade_usd_value: new BigNumber(avgPx).times(totalSz).toFixed(2),
-          service_provider: 'hyperliquid',
-          app_version: process.env.release || '0',
-          address_type: currentPerpsAccount?.type || '',
-        });
-      }
     },
     {
       manual: true,

@@ -30,9 +30,7 @@ function loadSubmitActions(): React.ComponentType<any> {
     'ui/assets/close-16-cc.svg': { ReactComponent: () => null },
     './ActionsContainer': { ActionsContainer: childrenOnly },
     './GasLessComponents': { GasLessAnimatedWrapper: childrenOnly },
-    '@/ui/component/Tooltip/TooltipWithMagnetArrow': {
-      TooltipWithMagnetArrow: childrenOnly,
-    },
+    '@/ui/component/Tooltip/TooltipV6': { TooltipV6: childrenOnly },
   };
   const compiled = transpileModule(
     readFileSync(

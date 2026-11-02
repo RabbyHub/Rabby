@@ -1843,25 +1843,6 @@
   }
 }
 
-.text-explain-tooltip {
-  max-width: 340px;
-  left: 50% !important;
-  margin-left: -170px;
-  .ant-tooltip-inner {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    font-size: 12px;
-    border-radius: 2px;
-    width: 100%;
-    white-space: nowrap;
-    background-color: fade(@color-title, 80%);
-  }
-  .ant-tooltip-arrow {
-    display: none;
-  }
-}
-
 .view-raw-detail {
   .ant-tabs-nav {
     margin-bottom: 16px;
@@ -2421,7 +2402,8 @@
   color: @color-comment-1 !important ;
 }
 .sign-tx-forbidden-tooltip {
-  max-width: 360px !important;
+  // fit inside the 20px viewportOffset on both sides
+  max-width: ~'min(360px, calc(100vw - 40px))' !important;
 }
 
 .connect-detect-popup {

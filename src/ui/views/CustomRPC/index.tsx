@@ -1,7 +1,6 @@
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useCustomRPCStore } from '@/ui/state/customRPC';
 import { findChain, findChainByEnum, getTestnetChainList } from '@/utils/chain';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { CHAINS_ENUM } from '@debank/common';
 import { Button, Switch, message } from 'antd';
 import type { RPCItem } from 'background/service/rpc';
@@ -142,11 +141,6 @@ const RPCItemComp = ({
 
   const handleDelete = async () => {
     await deleteCustomRPC(item.id);
-    matomoRequestEvent({
-      category: 'CustomRPC',
-      action: 'delete',
-      label: item.id,
-    });
     message.success({
       duration: 0.5,
       icon: <i />,
@@ -252,11 +246,6 @@ const CustomRPC = () => {
     setChainSelectorVisible(false);
     setRPCModalVisible(false);
     setEditRPC(null);
-    matomoRequestEvent({
-      category: 'CustomRPC',
-      action: 'add',
-      label: selectedChain,
-    });
   };
 
   const handleCancelEditCustomRPC = () => {

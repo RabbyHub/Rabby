@@ -6,6 +6,7 @@ import {
   preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
+import getOwnMethod from 'background/utils/getOwnMethod';
 import {
   EVENTS,
   INTERNAL_REQUEST_ORIGIN,
@@ -18,7 +19,6 @@ import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
-import stats from '@/stats';
 import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
@@ -26,7 +26,6 @@ import { gnosisController } from './gnosisController';
 import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
 import BigNumber from 'bignumber.js';
-import { ga4 } from '@/utils/ga4';
 import {
   buildSignTx,
   normalizeTxParams,
@@ -57,6 +56,7 @@ const flow = new PromiseFlow<{
     session: Exclude<ProviderRequest, void>;
   };
   mapMethod: string;
+  controllerMethod: (...args: any[]) => any;
   approvalRes: any;
 }>();
 const flowContext = flow
@@ -73,7 +73,8 @@ const flowContext = flow
         data: ctx.request.data,
       });
     }
-    if (!providerController[ctx.mapMethod]) {
+    const controllerMethod = getOwnMethod(providerController, ctx.mapMethod);
+    if (!controllerMethod) {
       // TODO: make rpc whitelist
       if (method.startsWith('eth_') || method === 'net_version') {
         return providerController.ethRpc(ctx.request);
@@ -84,6 +85,7 @@ const flowContext = flow
         data: ctx.request.data,
       });
     }
+    ctx.controllerMethod = controllerMethod;
 
     return next();
   })
@@ -187,11 +189,6 @@ const flowContext = flow
           });
           ctx.request.account =
             defaultAccount || preferenceService.getCurrentAccount();
-
-          ga4.fireEvent('Dapp_Connected', {
-            event_category: 'Dapp Usage',
-            event_label: origin,
-          });
         } catch (e) {
           console.error(e);
           connectOrigins.delete(origin);
@@ -493,7 +490,7 @@ const flowContext = flow
           }
 
           return Promise.resolve(
-            providerController[mapMethod]({
+            ctx.controllerMethod.call(providerController, {
               ...request,
               approvalRes: _approvalRes,
             })
@@ -574,7 +571,6 @@ const flowContext = flow
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
       const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
-      reportStatsData();
       if (rest?.safeMessage) {
         const safeMessage: {
           safeAddress: string;
@@ -601,55 +597,11 @@ const flowContext = flow
   })
   .callback();
 
-function reportStatsData() {
-  const statsData = notificationService.getStatsData();
-
-  if (!statsData || statsData.reported) return;
-
-  if (statsData?.signed) {
-    const sData: any = {
-      type: statsData?.type,
-      chainId: statsData?.chainId,
-      category: statsData?.category,
-      success: statsData?.signedSuccess,
-      preExecSuccess: statsData?.preExecSuccess,
-      createdBy: statsData?.createdBy,
-      source: statsData?.source,
-      trigger: statsData?.trigger,
-      networkType: statsData?.networkType,
-    };
-    if (statsData.signMethod) {
-      sData.signMethod = statsData.signMethod;
-    }
-    stats.report('signedTransaction', sData);
-  }
-  if (statsData?.submit) {
-    stats.report('submitTransaction', {
-      type: statsData?.type,
-      chainId: statsData?.chainId,
-      category: statsData?.category,
-      success: statsData?.submitSuccess,
-      preExecSuccess: statsData?.preExecSuccess,
-      createdBy: statsData?.createdBy,
-      source: statsData?.source,
-      trigger: statsData?.trigger,
-      networkType: statsData?.networkType || '',
-    });
-  }
-
-  statsData.reported = true;
-
-  notificationService.setStatsData(statsData);
-}
-
 export default (request: ProviderRequest) => {
   const ctx: any = {
     request: { ...request, requestedApproval: false },
   };
-  notificationService.setStatsData();
   return flowContext(ctx).finally(() => {
-    reportStatsData();
-
     if (ctx.request.requestedApproval) {
       flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow

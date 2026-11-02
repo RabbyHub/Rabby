@@ -29,8 +29,7 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
 import { TradingButtons } from '../components/TradingButtons';
 import { BigNumber } from 'bignumber.js';
-import stats from '@/stats';
-import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
+import { formatPerpsCoin } from '../../../utils';
 import { resolveTriggerComparator } from '../../../tpslTrigger';
 import { calcAmountFromPercentage } from '../utils';
 import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
@@ -93,8 +92,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
 
   // Get data from perpsState
   const {
-    currentPerpsAccount,
-    leverageType,
     selectedCoin,
     positionSize,
     setPositionSize,
@@ -514,63 +511,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         reduceOnly,
         orderType: limitOrderType,
       });
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type: 'limit',
-        leverage: leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, reduceOnly),
-        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-        coin: selectedCoin,
-        size: tradeSize,
-        price: orderLimitPrice,
-        trade_usd_value: new BigNumber(orderLimitPrice)
-          .times(tradeSize)
-          .toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
-      });
-      if (tpslConfig.enabled) {
-        const tpTrigger = snapshot.tpTriggerPx;
-        tpTrigger &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'take profit in limit',
-            leverage: leverage.toString(),
-            trade_side: getStatsReportSide(!isBuy, reduceOnly),
-            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-            coin: selectedCoin,
-            size: tradeSize,
-            price: tpTrigger,
-            trade_usd_value: new BigNumber(tpTrigger)
-              .times(tradeSize)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-        const slTrigger = snapshot.slTriggerPx;
-        slTrigger &&
-          stats.report('perpsTradeHistory', {
-            created_at: new Date().getTime(),
-            user_addr: currentPerpsAccount?.address || '',
-            trade_type: 'stop market in limit',
-            leverage: leverage.toString(),
-            trade_side: getStatsReportSide(!isBuy, reduceOnly),
-            margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-            coin: selectedCoin,
-            size: tradeSize,
-            price: slTrigger,
-            trade_usd_value: new BigNumber(slTrigger)
-              .times(tradeSize)
-              .toFixed(2),
-            service_provider: 'hyperliquid',
-            app_version: process.env.release || '0',
-            address_type: currentPerpsAccount?.type || '',
-          });
-      }
     }
   );
 

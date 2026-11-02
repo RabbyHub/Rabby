@@ -10,7 +10,6 @@ import {
 import {
   CHAINS,
   EVENTS,
-  KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_ICONS,
   WALLETCONNECT_STATUS_MAP,
@@ -20,9 +19,7 @@ import {
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
 import { Account } from 'background/service/preference';
-import stats from '@/stats';
 import eventBus from '@/eventBus';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -30,7 +27,6 @@ import { pickKeyringThemeIcon } from '@/utils/account';
 import { id } from 'ethers/lib/utils';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
-import { ga4 } from '@/utils/ga4';
 import { useAsync } from 'react-use';
 import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -163,30 +159,7 @@ export const PrivatekeyWaiting = ({
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
           return;
         }
-
-        const explain = signingTx?.explain;
-
-        wallet.reportStats('signTransaction', {
-          type: account.brandName,
-          chainId: chain?.serverId || '',
-          category: KEYRING_CATEGORY_MAP[account.type],
-          preExecSuccess: explain
-            ? explain?.calcSuccess && explain?.pre_exec.success
-            : true,
-          createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-          source: params?.$ctx?.ga?.source || '',
-          trigger: params?.$ctx?.ga?.trigger || '',
-          networkType: chain?.isTestnet
-            ? 'Custom Network'
-            : 'Integrated Network',
-        });
       }
-    } else {
-      stats.report('startSignText', {
-        type: account.brandName,
-        category: KEYRING_CATEGORY_MAP[account.type],
-        method: params?.extra?.signTextMethod,
-      });
     }
 
     eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
@@ -222,15 +195,6 @@ export const PrivatekeyWaiting = ({
           console.error(e);
           return;
         }
-        matomoRequestEvent({
-          category: 'Transaction',
-          action: 'Submit',
-          label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-        });
-
-        ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
-          event_category: 'Transaction',
-        });
 
         setSignFinishedData({
           data: sig,

@@ -10,7 +10,6 @@ import type {
 import { CHAINS_ENUM, DARK_MODE_TYPE } from '@/constant';
 import { changeLanguage } from '@/i18n';
 import { wallet } from '@/ui/wallet';
-import { ga4 } from '@/utils/ga4';
 import {
   getDefaultRateGuideLastExposure,
   LAST_EXPOSURE_VERSIONED_KEY,
@@ -41,6 +40,7 @@ export interface PreferenceState {
   reserveGasOnSendToken: boolean;
   isHideEcologyNoticeDict: Record<string | number, boolean>;
   isEnabledPwdForNonWhitelistedTx?: boolean;
+  isExtraFeeProtectionEnabled?: boolean;
   isEnabledDappAccount?: boolean;
   biometricUnlockEnabled?: boolean;
   biometricUnlockCredentialId?: string;
@@ -101,6 +101,8 @@ export type PreferenceActions = {
     value: AddressSortStore[Key];
   }) => Promise<void>;
   enablePwdForNonWhitelistedTx: (value: boolean) => Promise<void>;
+  enableExtraFeeProtection: () => Promise<void>;
+  disableExtraFeeProtection: (password: string) => Promise<void>;
   enableDappAccount: (value: boolean) => Promise<void>;
   setBiometricUnlock: (payload: {
     enabled: boolean;
@@ -139,6 +141,7 @@ export const getDefaultPreferenceState = (): PreferenceState => ({
   reserveGasOnSendToken: false,
   isHideEcologyNoticeDict: {},
   isEnabledPwdForNonWhitelistedTx: false,
+  isExtraFeeProtectionEnabled: true,
   isEnabledDappAccount: false,
   biometricUnlockEnabled: false,
   biometricUnlockCredentialId: '',
@@ -279,10 +282,6 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
     set({ themeMode });
     await wallet.setThemeMode(themeMode);
     void get().getPreference('themeMode');
-    ga4.fireEvent(
-      `ThemeMode_${themeMode === DARK_MODE_TYPE.dark ? 'Dark' : 'Light'}`,
-      { event_category: 'Settings Snapshot' }
-    );
   },
   async setIsReserveGasOnSendToken(reserveGasOnSendToken) {
     set({ reserveGasOnSendToken });
@@ -307,16 +306,18 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
   async enablePwdForNonWhitelistedTx(value) {
     await wallet.enablePwdForNonWhitelistedTx(value);
     void get().getPreference('isEnabledPwdForNonWhitelistedTx');
-    ga4.fireEvent(`PwdForNonWhitelistedTx_${value ? 'On' : 'Off'}`, {
-      event_category: 'Settings Snapshot',
-    });
+  },
+  async enableExtraFeeProtection() {
+    await wallet.enableExtraFeeProtection();
+    void get().getPreference('isExtraFeeProtectionEnabled');
+  },
+  async disableExtraFeeProtection(password) {
+    await wallet.disableExtraFeeProtection(password);
+    void get().getPreference('isExtraFeeProtectionEnabled');
   },
   async enableDappAccount(value) {
     await wallet.enableDappAccount(value);
     void get().getPreference('isEnabledDappAccount');
-    ga4.fireEvent(`DappAccount_${value ? 'On' : 'Off'}`, {
-      event_category: 'Settings Snapshot',
-    });
   },
   async setBiometricUnlock(payload) {
     await wallet.setBiometricUnlock(payload);
@@ -325,9 +326,6 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
       biometricUnlockCredentialId: payload.credentialId || '',
       biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
       biometricUnlockIv: payload.iv || '',
-    });
-    ga4.fireEvent(`Unlock_Biometrics_${payload.enabled ? 'On' : 'Off'}`, {
-      event_category: 'Settings Snapshot',
     });
   },
   async setUnlockPreferredMethod(unlockPreferredMethod) {

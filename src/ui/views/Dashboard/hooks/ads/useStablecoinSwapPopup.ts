@@ -1,6 +1,5 @@
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { DEFAULT_SWAP_TO_TOKEN_ITEM_BY_CHAIN_SERVER_ID } from '@/constant/dex-swap';
-import { ga4 } from '@/utils/ga4';
 import { useMemoizedFn } from 'ahooks';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -54,7 +53,6 @@ const STABLECOIN_SWAP_ROUTE = `/dex-swap?${new URLSearchParams({
 
 const STABLECOIN_SWAP_POPUP_DISMISSED_KEY =
   'rabby:dashboard:ad:stablecoin-swap-popup:dismissed';
-const STABLECOIN_SWAP_AD_ID = 'stablecoin_swap_zero_fee';
 
 export const useStablecoinSwapPopup = () => {
   const history = useHistory();
@@ -65,7 +63,6 @@ export const useStablecoinSwapPopup = () => {
   const payTokenIndexRef = useRef(0);
   const receiveTokenIndexRef = useRef(1);
   const nextTokenSideRef = useRef<'pay' | 'receive'>('receive');
-  const impressionReportedRef = useRef(false);
   const [payTokenIndex, setPayTokenIndex] = useState(0);
   const [receiveTokenIndex, setReceiveTokenIndex] = useState(1);
   const [previousPayTokenIndex, setPreviousPayTokenIndex] = useState<
@@ -74,18 +71,6 @@ export const useStablecoinSwapPopup = () => {
   const [previousReceiveTokenIndex, setPreviousReceiveTokenIndex] = useState<
     number | null
   >(null);
-
-  useEffect(() => {
-    if (!visible || impressionReportedRef.current) {
-      return;
-    }
-
-    impressionReportedRef.current = true;
-    ga4.fireEvent('Ad_Impression', {
-      event_category: 'Dashboard Ad',
-      event_label: STABLECOIN_SWAP_AD_ID,
-    });
-  }, [visible]);
 
   useEffect(() => {
     if (!visible) {
@@ -127,18 +112,7 @@ export const useStablecoinSwapPopup = () => {
     setVisible(false);
   });
 
-  const onHover = useMemoizedFn(() => {
-    ga4.fireEvent('Ad_Hover', {
-      event_category: 'Dashboard Ad',
-      event_label: STABLECOIN_SWAP_AD_ID,
-    });
-  });
-
   const onSwap = useMemoizedFn(() => {
-    ga4.fireEvent('Ad_Click', {
-      event_category: 'Dashboard Ad',
-      event_label: STABLECOIN_SWAP_AD_ID,
-    });
     history.push(STABLECOIN_SWAP_ROUTE);
   });
 
@@ -162,7 +136,6 @@ export const useStablecoinSwapPopup = () => {
   return {
     visible,
     onClose,
-    onHover,
     onSwap,
     supportedStablecoinIcons: SUPPORTED_STABLECOIN_ICONS,
     payToken: SUPPORTED_STABLECOINS[payTokenIndex],

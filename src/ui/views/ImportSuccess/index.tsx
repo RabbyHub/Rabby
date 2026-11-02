@@ -2,14 +2,12 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { Button } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
 import { getUiType, bindApproval, useApproval } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
-import stats from '@/stats';
 import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
@@ -22,7 +20,6 @@ import './index.less';
 import { useMedia } from 'react-use';
 import { connectStore, useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
-import { ga4 } from '@/utils/ga4';
 import { UI_TYPE } from '@/constant/ui';
 import { RcCreateAddressSuccessIcon } from '@/ui/assets/add-address';
 import {
@@ -143,25 +140,6 @@ const ImportSuccess = ({
     if (!accounts?.[0]) {
       return;
     }
-    if (
-      Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type as any)
-    ) {
-      stats.report('importHardware', {
-        type: accounts[0].type,
-      });
-    }
-    if (accounts[0]) {
-      matomoRequestEvent({
-        category: 'User',
-        action: 'importAddress',
-        label: accounts[0].type,
-      });
-
-      ga4.fireEvent(`Import_${accounts[0].type}`, {
-        event_category: 'Import Address',
-      });
-    }
-
     dispatch.account.getCurrentAccountAsync();
   }, [accounts, dispatch]);
 

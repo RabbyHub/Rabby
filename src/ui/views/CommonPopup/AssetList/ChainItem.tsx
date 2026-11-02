@@ -21,9 +21,6 @@ export interface Props {
 
 const StyledTooltipGlobalStyle = createGlobalStyle`
   .app-chain-tooltip {
-    .ant-tooltip-inner {
-      border-radius: 2px !important;
-    }
     .ant-tooltip-arrow {
       display: block !important;
     }

@@ -22,8 +22,6 @@ import {
 import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
-import { useRbiSource } from '@/ui/utils/ga-event';
-import stats from '@/stats';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { EVENTS, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain, findChainByEnum } from '@/utils/chain';
@@ -1240,16 +1238,6 @@ export const useTokenPair = (userAddress: string) => {
     searchObj?.isMax,
     payToken,
   ]);
-
-  const rbiSource = useRbiSource();
-
-  useEffect(() => {
-    if (rbiSource) {
-      stats.report('enterSwapDescPage', {
-        refer: rbiSource,
-      });
-    }
-  }, [rbiSource]);
 
   const clearExpiredTimer = useCallback(() => {
     if (expiredTimer.current) {

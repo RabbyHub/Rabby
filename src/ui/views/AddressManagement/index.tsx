@@ -394,7 +394,8 @@ const AddressManagement = () => {
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
   const isCoinbase =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.Coinbase;
-  const hasStatusBar = isWalletConnect || isLedger || isGridPlus || isCoinbase;
+  const hasStatusBar =
+    isWalletConnect || isLedger || isKeystone || isGridPlus || isCoinbase;
   const showBackupWarning =
     currentAccountIndex !== -1 &&
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.MNEMONIC &&
