@@ -9,6 +9,7 @@ const tsImportPluginFactory = require('ts-import-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 // const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const {
   resolveManifestFilename,
   resolveManifestVersion,
@@ -45,6 +46,15 @@ const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 const BUILD_ENV = process.env.RABBY_BUILD_ENV || '';
 const disableStyleSourceMap =
   !!process.env.sourcemap || BUILD_ENV === 'sourcemap';
+// The global stylesheets src/ui/index.tsx imports (Tailwind, CSS variables,
+// antd and its overrides) ship as ui.css. Component styles stay with
+// style-loader, which appends them after ui.css as their modules run, so the
+// cascade order is the same as when style-loader injected everything.
+const GLOBAL_STYLES = paths.rootResolve('src/ui/style');
+const extractGlobalStyles = (loaders) => [
+  { include: GLOBAL_STYLES, use: [MiniCssExtractPlugin.loader, ...loaders] },
+  { use: ['style-loader', ...loaders] },
+];
 const DEXIE_IMPORT_WRAPPER =
   BUILD_ENV === 'pro' || BUILD_ENV === 'sourcemap'
     ? 'import-wrapper-prod.mjs'
@@ -164,8 +174,7 @@ const config = {
       },
       {
         test: /\.less$/,
-        use: [
-          'style-loader',
+        oneOf: extractGlobalStyles([
           {
             loader: 'css-loader',
             options: {
@@ -205,14 +214,11 @@ const config = {
               injector: 'append',
             },
           },
-        ],
+        ]),
       },
       {
         test: /\.css$/,
-        use: [
-          {
-            loader: 'style-loader',
-          },
+        oneOf: extractGlobalStyles([
           {
             loader: 'css-loader',
             options: {
@@ -226,7 +232,7 @@ const config = {
               ...(disableStyleSourceMap ? { sourceMap: false } : {}),
             },
           },
-        ],
+        ]),
       },
       {
         test: /\.svg$/,
@@ -374,6 +380,14 @@ const config = {
       ],
     }),
     tsStyledComponentPlugin,
+    // ui.css, see GLOBAL_STYLES. webpack.hot.config.js keeps style-loader
+    // for HMR.
+    new MiniCssExtractPlugin({
+      // importModule runs the style modules on a build-time webpack runtime,
+      // where Warden's require guard (pro/debug builds) has no policy and
+      // throws. Warden skips child compilers, which this mode uses instead.
+      experimentalUseImportModule: false,
+    }),
   ],
   resolve: {
     alias: {
