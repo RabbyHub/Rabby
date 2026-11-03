@@ -216,6 +216,7 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
+import { hasBlockedAddress } from '../service/blockedAddress';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -491,6 +492,7 @@ export class WalletController extends BaseController {
   isBooted = () => keyringService.isBooted();
   getSignTxPreparation = getSignTxPreparation;
   getSignTxPreparationGas = getSignTxPreparationGas;
+  hasBlockedAddress = hasBlockedAddress;
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 

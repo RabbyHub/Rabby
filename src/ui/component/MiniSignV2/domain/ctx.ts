@@ -50,6 +50,8 @@ export type SignerCtx = {
   };
   gasFeeTooHigh?: boolean;
   disabledProcess?: boolean;
+  // tx from/to hit the blocked-address list; signing must be refused
+  isBlocked?: boolean;
 } & PreparedContext;
 
 export const buildFingerprint = (txs: Tx[]) =>
