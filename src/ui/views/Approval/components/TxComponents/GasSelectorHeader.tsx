@@ -95,8 +95,10 @@ interface GasSelectorProps {
   isHardware: boolean;
   isCancel: boolean;
   isSpeedUp: boolean;
+  // gas is the level being priced, so a 1559 estimate can use its own tip
   gasCalcMethod: (
-    price: number
+    price: number,
+    gas?: GasLevel | null
   ) => Promise<{
     gasCostUsd: BigNumber;
     gasCostAmount: BigNumber;
@@ -328,9 +330,39 @@ const GasSelectorHeader = ({
     }
   };
 
+  // Memoized: useExplainGas re-runs on every new method, and its result
+  // re-renders this component.
+  const explainSelectedGas = useCallback(
+    (price: number) =>
+      gasCalcMethod(
+        price,
+        selectedGas && {
+          ...selectedGas,
+          priority_price:
+            is1559 && maxPriorityFee !== undefined
+              ? maxPriorityFee * 1e9
+              : selectedGas.priority_price,
+        }
+      ),
+    [gasCalcMethod, selectedGas, is1559, maxPriorityFee]
+  );
+
+  const explainLevelGas = useMemo(() => {
+    const byLevel = (level: string) => (price: number) =>
+      gasCalcMethod(
+        price,
+        gasList.find((e) => e.level === level)
+      );
+    return {
+      slow: byLevel('slow'),
+      normal: byLevel('normal'),
+      fast: byLevel('fast'),
+    };
+  }, [gasCalcMethod, gasList]);
+
   const modalExplainGas = useExplainGas({
     price: selectedGas?.price || 0,
-    method: gasCalcMethod,
+    method: explainSelectedGas,
     value: {
       gasCostAmount: new BigNumber(gas.gasCostAmount),
       gasCostUsd: new BigNumber(gas.gasCostUsd),
@@ -339,7 +371,7 @@ const GasSelectorHeader = ({
 
   const gasSlowUsd = useExplainGas({
     price: gasList.find((e) => e.level === 'slow')?.price || 0,
-    method: gasCalcMethod,
+    method: explainLevelGas.slow,
     value: {
       gasCostAmount: new BigNumber(gas.gasCostAmount),
       gasCostUsd: new BigNumber(gas.gasCostUsd),
@@ -348,7 +380,7 @@ const GasSelectorHeader = ({
 
   const gasNormalUsd = useExplainGas({
     price: gasList.find((e) => e.level === 'normal')?.price || 0,
-    method: gasCalcMethod,
+    method: explainLevelGas.normal,
     value: {
       gasCostAmount: new BigNumber(gas.gasCostAmount),
       gasCostUsd: new BigNumber(gas.gasCostUsd),
@@ -357,7 +389,7 @@ const GasSelectorHeader = ({
 
   const gasFastUsd = useExplainGas({
     price: gasList.find((e) => e.level === 'fast')?.price || 0,
-    method: gasCalcMethod,
+    method: explainLevelGas.fast,
     value: {
       gasCostAmount: new BigNumber(gas.gasCostAmount),
       gasCostUsd: new BigNumber(gas.gasCostUsd),

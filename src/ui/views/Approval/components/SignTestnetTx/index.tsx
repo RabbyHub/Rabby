@@ -50,7 +50,7 @@ import * as Sentry from '@sentry/browser';
 import { getCexInfo } from '@/ui/state/exchange';
 import {
   applyCustomNetworkGas,
-  getCustomNetworkEffectiveGasPrice,
+  getCustomNetworkGasCost,
   hasValidCustomNetworkGasFields,
   resolveCustomGasPriorityFee,
 } from './gas';
@@ -942,30 +942,22 @@ export const SignTestnetTx = ({
               error: null,
               success: true,
               gasCostUsd: 0,
-              gasCostAmount: new BigNumber(
-                selectedGas
-                  ? getCustomNetworkEffectiveGasPrice(selectedGas, support1559)
-                  : 0
-              )
-                .multipliedBy(gasUsed || 0)
-                .div(1e18),
+              gasCostAmount: selectedGas
+                ? getCustomNetworkGasCost({
+                    gas: selectedGas,
+                    gasUsed,
+                    support1559,
+                  })
+                : new BigNumber(0),
             }}
-            gasCalcMethod={async (price) => {
-              const level =
-                gasList?.find((item) => item.price === price) || selectedGas;
-              const effectivePrice = level
-                ? getCustomNetworkEffectiveGasPrice(
-                    { ...level, price },
-                    support1559
-                  )
-                : price;
-              return {
-                gasCostAmount: new BigNumber(effectivePrice || 0)
-                  .multipliedBy(gasUsed || 0)
-                  .div(1e18),
-                gasCostUsd: new BigNumber(0),
-              };
-            }}
+            gasCalcMethod={async (price, level) => ({
+              gasCostAmount: getCustomNetworkGasCost({
+                gas: { ...(level || selectedGas), price },
+                gasUsed,
+                support1559,
+              }),
+              gasCostUsd: new BigNumber(0),
+            })}
             recommendGasLimit={gasUsed || ''}
             recommendNonce={recommendNonce || ''}
             chainId={chainId}

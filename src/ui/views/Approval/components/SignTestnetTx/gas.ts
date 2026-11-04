@@ -1,5 +1,6 @@
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { intToHex } from '@ethereumjs/util';
+import BigNumber from 'bignumber.js';
 import { omit } from 'lodash';
 
 const HEX_QUANTITY_RE = /^0x[0-9a-fA-F]+$/;
@@ -68,9 +69,12 @@ export const resolveCustomGasPriorityFee = ({
   return clampPriorityFee(priorityFee, price);
 };
 
+type PricedGas = Pick<GasLevel, 'price'> &
+  Partial<Pick<GasLevel, 'priority_price' | 'base_fee'>>;
+
 /** Gas price the chain is expected to charge, used for the displayed cost. */
 export const getCustomNetworkEffectiveGasPrice = (
-  gas: Pick<GasLevel, 'price' | 'priority_price' | 'base_fee'>,
+  gas: PricedGas,
   support1559: boolean
 ) => {
   if (!support1559 || typeof gas.base_fee !== 'number') {
@@ -82,6 +86,23 @@ export const getCustomNetworkEffectiveGasPrice = (
   );
   return Math.min(gas.price, gas.base_fee + priorityFee);
 };
+
+/**
+ * Expected cost in native token units. Pass the level actually being priced:
+ * levels with the same max fee can carry different tips.
+ */
+export const getCustomNetworkGasCost = ({
+  gas,
+  gasUsed,
+  support1559,
+}: {
+  gas: PricedGas;
+  gasUsed?: string | number;
+  support1559: boolean;
+}) =>
+  new BigNumber(getCustomNetworkEffectiveGasPrice(gas, support1559))
+    .multipliedBy(gasUsed || 0)
+    .div(1e18);
 
 /** Fail closed: a tx must carry exactly one complete set of fee fields. */
 export const hasValidCustomNetworkGasFields = (

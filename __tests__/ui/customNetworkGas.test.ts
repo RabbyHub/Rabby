@@ -1,6 +1,7 @@
 import {
   applyCustomNetworkGas,
   getCustomNetworkEffectiveGasPrice,
+  getCustomNetworkGasCost,
   hasValidCustomNetworkGasFields,
   resolveCustomGasPriorityFee,
 } from '@/ui/views/Approval/components/SignTestnetTx/gas';
@@ -128,6 +129,52 @@ describe('getCustomNetworkEffectiveGasPrice', () => {
         true
       )
     ).toBe(16 * GWEI);
+  });
+});
+
+describe('getCustomNetworkGasCost', () => {
+  const gasUsed = 21000;
+  // same max fee as the market normal level, different tip
+  const market = {
+    price: 16 * GWEI,
+    priority_price: GWEI,
+    base_fee: 10 * GWEI,
+  };
+  const requested = { ...market, priority_price: 5 * GWEI };
+
+  test('prices the requested tip, not a market level with the same cap', () => {
+    const cost = getCustomNetworkGasCost({
+      gas: requested,
+      gasUsed,
+      support1559: true,
+    });
+
+    expect(cost.toString()).toBe(String((15 * GWEI * gasUsed) / 1e18));
+    expect(
+      getCustomNetworkGasCost({ gas: market, gasUsed, support1559: true }).eq(
+        cost
+      )
+    ).toBe(false);
+  });
+
+  test('caps the estimate at the max fee', () => {
+    const cost = getCustomNetworkGasCost({
+      gas: { ...requested, price: 12 * GWEI },
+      gasUsed,
+      support1559: true,
+    });
+
+    expect(cost.toString()).toBe(String((12 * GWEI * gasUsed) / 1e18));
+  });
+
+  test('charges the full price on legacy networks', () => {
+    const cost = getCustomNetworkGasCost({
+      gas: requested,
+      gasUsed,
+      support1559: false,
+    });
+
+    expect(cost.toString()).toBe(String((16 * GWEI * gasUsed) / 1e18));
   });
 });
 
