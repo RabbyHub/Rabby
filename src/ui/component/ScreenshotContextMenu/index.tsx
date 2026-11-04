@@ -191,7 +191,7 @@ export const ScreenshotContextMenu = () => {
   const [screenshot, setScreenshot] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [description, setDescription] = useState('');
-  const [includeAddress, setIncludeAddress] = useState(true);
+  const [includeAddress, setIncludeAddress] = useState(false);
   const { t } = useTranslation();
 
   const { loading: submitting, run: submitFeedback } = useRequest(
@@ -229,7 +229,7 @@ export const ScreenshotContextMenu = () => {
 
     setScreenshot(dataUrl);
     setDescription('');
-    setIncludeAddress(true);
+    setIncludeAddress(false);
     setModalVisible(true);
   }, []);
 
@@ -290,7 +290,7 @@ export const ScreenshotContextMenu = () => {
     if (!modalVisible) {
       setScreenshot('');
       setDescription('');
-      setIncludeAddress(true);
+      setIncludeAddress(false);
     }
   }, [modalVisible]);
 
