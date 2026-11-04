@@ -3,7 +3,11 @@ const webpack = require('webpack');
 // for extension local test, can build each time
 const config = {
   mode: 'development',
-  devtool: 'inline-cheap-module-source-map',
+  // separate .map files: inline maps roughly double every bundle in memory
+  devtool: 'cheap-module-source-map',
+  output: {
+    pathinfo: false,
+  },
   watch: true,
   watchOptions: {
     ignored: [
@@ -14,7 +18,11 @@ const config = {
       '**/tmp/**',
     ],
     followSymlinks: false,
-    poll: 1000,
+    // native file events by default; set WEBPACK_POLL=1000 where they don't
+    // arrive (network drives, some VMs)
+    ...(process.env.WEBPACK_POLL && {
+      poll: Number(process.env.WEBPACK_POLL),
+    }),
   },
   plugins: [
     new webpack.DefinePlugin({
