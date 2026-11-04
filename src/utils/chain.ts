@@ -21,13 +21,22 @@ export const getMainnetListFromLocal = () => {
   });
 };
 
-getMainnetListFromLocal().then((list) => {
-  if (list.length) {
-    updateChainStore({
-      mainnetList: list,
-    });
-  }
-});
+const localMainnetListLoaded = getMainnetListFromLocal()
+  .then((list) => {
+    if (list.length) {
+      updateChainStore({
+        mainnetList: list,
+      });
+    }
+  })
+  .catch((e) => {
+    console.error('load local mainnet chain list error: ', e);
+  });
+
+/**
+ * @description resolves once the cached mainnet list, if any, is in the store
+ */
+export const waitForLocalMainnetList = () => localMainnetListLoaded;
 
 const store = {
   mainnetList: defaultSuppordChain
