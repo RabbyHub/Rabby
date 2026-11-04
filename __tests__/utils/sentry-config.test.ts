@@ -211,6 +211,84 @@ describe('Sentry configuration', () => {
     await client.close(2000);
   });
 
+  test('keeps token contract ids in structured fields but not holder addresses', async () => {
+    const user = '0x9bba7ebC9c69db92950def377d732b91bb22d02f';
+    const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+    const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.setTag('token_id', usdc);
+    scope.setExtra('order', {
+      fromTokenId: usdc,
+      quote: { pay_token_id: usdc, receive_token_id: weth },
+      // A loose /token/ match would keep these.
+      tokenOwner: user,
+      token_holder: user,
+      // Only a single, exact address is kept.
+      to_token_id: `${usdc},${weth}`,
+      token_address: `0x${'0'.repeat(24)}${usdc.slice(2)}`,
+      tokenId: 'eth',
+    });
+    scope.captureException(
+      new Error(`swap failed {"fromTokenId":"${usdc}","owner":"${user}"}`)
+    );
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    expect(events[0].tags.token_id).toBe(usdc);
+    expect(events[0].extra.order).toEqual({
+      fromTokenId: usdc,
+      quote: { pay_token_id: usdc, receive_token_id: weth },
+      tokenOwner: '[redacted-address]',
+      token_holder: '[redacted-address]',
+      to_token_id: '[redacted-address],[redacted-address]',
+      token_address: '[redacted-hex]',
+      tokenId: 'eth',
+    });
+    // Free text can't say which hex is a token, so all of it is redacted.
+    expect(events[0].exception.values[0].value).toBe(
+      'swap failed {"fromTokenId":"[redacted-address]","owner":"[redacted-address]"}'
+    );
+    expect(JSON.stringify(events[0]).toLowerCase()).not.toContain(
+      user.slice(2).toLowerCase()
+    );
+    await client.close(2000);
+  });
+
+  // Shape of the postSwap report in SwapService: a fixed title, the failure as
+  // its cause, the quote in extra.
+  test('filters wrapped errors by their cause and keeps quote token ids', async () => {
+    const usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+    const weth = '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2';
+    const quote = {
+      pay_token_id: usdc,
+      pay_token_amount: 100,
+      receive_token_id: weth,
+      receive_token_amount: 0.03,
+      slippage: 0.005,
+    };
+    const axiosError = Object.assign(
+      new Error('Request failed with status code 502'),
+      { name: 'AxiosError', code: 'ERR_BAD_RESPONSE' }
+    );
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+
+    scope.setExtras({ quote, dex_id: 'uniswap3' });
+    // Network noise, dropped by the ignore list through the cause.
+    scope.captureException(new Error('postSwap failed', { cause: axiosError }));
+    scope.captureException(
+      new Error('postSwap failed', { cause: new TypeError('bad quote') })
+    );
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    expect(events[0].exception.values.at(-1).value).toBe('postSwap failed');
+    expect(events[0].extra).toMatchObject({ quote, dex_id: 'uniswap3' });
+    await client.close(2000);
+  });
+
   test('redacts private keys, mnemonics and extended keys anywhere in the event', async () => {
     // BIP39 / BIP32 test vectors and a well-known example key, not real funds.
     const mnemonic =

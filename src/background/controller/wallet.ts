@@ -756,19 +756,18 @@ export class WalletController extends BaseController {
       try {
         await postGasStationOrder();
       } catch (error) {
-        Sentry.captureException(
-          new Error(
-            'postGasStationOrder failed, params: ' +
-              JSON.stringify({
-                fromChainId: others.chainServerId,
-                toChainId: toChainId,
-                toTokenAmount,
-                fromTokenId: others.tokenId,
-                fromTokenAmount: fromTokenAmount,
-                fromUsdValue,
-              })
-          )
-        );
+        // Params go in extra, not the message: beforeSend keeps a token id
+        // only in a structured field, and a fixed title groups one issue.
+        Sentry.captureException(new Error('postGasStationOrder failed'), {
+          extra: {
+            fromChainId: others.chainServerId,
+            toChainId: toChainId,
+            toTokenAmount,
+            fromTokenId: others.tokenId,
+            fromTokenAmount: fromTokenAmount,
+            fromUsdValue,
+          },
+        });
       }
     }
   };
