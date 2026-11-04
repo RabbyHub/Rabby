@@ -482,7 +482,7 @@ export const SignTestnetTx = ({
       }
 
       if (support1559 && gas.level === 'custom') {
-        gas = {
+        const customGas: GasLevel = {
           ...gas,
           priority_price: resolveCustomGasPriorityFee({
             price: gas.price,
@@ -495,6 +495,11 @@ export const SignTestnetTx = ({
             marketPriorityFee: gas.priority_price,
           }),
         };
+        gas = customGas;
+        // the gas selector reads the custom level from gasList, keep its tip
+        setGasList(
+          gasList.map((item) => (item.level === 'custom' ? customGas : item))
+        );
       }
 
       setSelectedGas(gas);
