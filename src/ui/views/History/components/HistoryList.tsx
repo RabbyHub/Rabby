@@ -147,6 +147,10 @@ export const HistoryList = ({
                   rowsRef.current
                 )
               }
+              // Virtuoso sizes rows by offsetHeight, which leaves out margins.
+              // Keep the 12px row gap inside each row (padding, or flow-root
+              // for the card's own margin) so the measured height matches the
+              // layout; otherwise the list jumps by 12px at the bottom.
               itemContent={(_, row) => {
                 if (row.kind === 'bridge') {
                   const fromId = row.item.from_tx?.tx_id?.toLowerCase();
@@ -156,7 +160,7 @@ export const HistoryList = ({
                       item.acceleratedHash?.toLowerCase() === fromId
                   );
                   return (
-                    <div className="mb-12">
+                    <div className="pb-12">
                       <BridgeHistoryCard
                         data={row.item}
                         local={local}
@@ -167,11 +171,13 @@ export const HistoryList = ({
                   );
                 }
                 return (
-                  <HistoryItem
-                    data={row.item}
-                    key={row.key}
-                    onViewInputData={setFocusingHistoryItem}
-                  />
+                  <div className="flow-root">
+                    <HistoryItem
+                      data={row.item}
+                      key={row.key}
+                      onViewInputData={setFocusingHistoryItem}
+                    />
+                  </div>
                 );
               }}
               endReached={noMore ? undefined : loadMore}
