@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "Tidak ada riwayat transaksi dalam 90 hari",
         "descThreeMonths": "Tidak ada riwayat transaksi dalam 90 hari pada <2>rantai yang didukung</2>"
       },
+      "noMore": {
+        "title": "Tidak ada transaksi lagi.",
+        "titleInLast90Days": "Tidak ada transaksi lagi dalam 90 hari terakhir."
+      },
       "explain": {
         "unknown": "Interaksi kontrak",
         "cancel": "Transaksi menunggu dibatalkan",

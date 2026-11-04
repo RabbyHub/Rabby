@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "Keine Transaktionshistorie in 90 Tagen",
         "descThreeMonths": "Keine Transaktionshistorie in 90 Tagen auf <2>unterstützten Chains</2>"
       },
+      "noMore": {
+        "title": "Keine weiteren Transaktionen.",
+        "titleInLast90Days": "Keine weiteren Transaktionen in den letzten 90 Tagen."
+      },
       "explain": {
         "approve": "{{amount}} {{symbol}} für {{project}} genehmigen",
         "unknown": "Smart Contract-Interaktion",
