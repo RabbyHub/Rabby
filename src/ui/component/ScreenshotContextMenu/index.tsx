@@ -10,6 +10,7 @@ import {
   SCREENSHOT_FEEDBACK_ENTRY_CLICKED,
 } from '@/constant/screenshot';
 import clsx from 'clsx';
+import Checkbox from '@/ui/component/Checkbox';
 import { useScreenshotFeedbacks } from './hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -132,22 +133,16 @@ const getScreenshotFeedbackUserAgentData = async () => {
   try {
     const highEntropyValues =
       (await userAgentData.getHighEntropyValues?.([
-        'architecture',
-        'bitness',
         'fullVersionList',
-        'model',
         'platform',
         'platformVersion',
         'uaFullVersion',
       ])) || {};
 
     return {
-      architecture: highEntropyValues.architecture,
-      bitness: highEntropyValues.bitness,
       brands: userAgentData.brands,
       fullVersionList: highEntropyValues.fullVersionList,
       mobile: userAgentData.mobile,
-      model: highEntropyValues.model,
       platform: highEntropyValues.platform || userAgentData.platform,
       platformVersion: highEntropyValues.platformVersion,
       uaFullVersion: highEntropyValues.uaFullVersion,
@@ -187,6 +182,7 @@ const getScreenshotFeedbackPageInfo = async () => {
 type SubmitScreenshotFeedbackParams = {
   description: string;
   screenshot: string;
+  includeAddress: boolean;
 };
 
 export const ScreenshotContextMenu = () => {
@@ -195,6 +191,7 @@ export const ScreenshotContextMenu = () => {
   const [screenshot, setScreenshot] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [description, setDescription] = useState('');
+  const [includeAddress, setIncludeAddress] = useState(false);
   const { t } = useTranslation();
 
   const { loading: submitting, run: submitFeedback } = useRequest(
@@ -205,6 +202,7 @@ export const ScreenshotContextMenu = () => {
         content: params.description,
         image: imageUrl,
         pageInfo: await getScreenshotFeedbackPageInfo(),
+        includeAddress: params.includeAddress,
       });
     },
     {
@@ -231,6 +229,7 @@ export const ScreenshotContextMenu = () => {
 
     setScreenshot(dataUrl);
     setDescription('');
+    setIncludeAddress(false);
     setModalVisible(true);
   }, []);
 
@@ -246,8 +245,9 @@ export const ScreenshotContextMenu = () => {
     submitFeedback({
       description: description.trim(),
       screenshot,
+      includeAddress,
     });
-  }, [description, screenshot, submitFeedback, submitting]);
+  }, [description, includeAddress, screenshot, submitFeedback, submitting]);
 
   useEffect(() => {
     const uiType = getUiType();
@@ -290,6 +290,7 @@ export const ScreenshotContextMenu = () => {
     if (!modalVisible) {
       setScreenshot('');
       setDescription('');
+      setIncludeAddress(false);
     }
   }, [modalVisible]);
 
@@ -317,7 +318,7 @@ export const ScreenshotContextMenu = () => {
             {screenshot ? (
               <div className="rounded-[8px] border-[1px] border-rabby-neutral-line mb-[16px]">
                 <img
-                  className="w-full h-[254px] object-contain"
+                  className="w-full h-[240px] object-contain"
                   src={screenshot}
                   alt="Rabby popup screenshot"
                 />
@@ -331,6 +332,45 @@ export const ScreenshotContextMenu = () => {
               className="resize-none bg-r-neutral-bg-2 text-r-neutral-title1 min-h-0 flex-1"
               onChange={(event) => setDescription(event.target.value)}
             />
+            <div className="flex items-center justify-center mt-[8px]">
+              <Checkbox
+                checked={includeAddress}
+                type="square"
+                onChange={setIncludeAddress}
+                unCheckBackground="transparent"
+                width="12px"
+                height="12px"
+                checkBoxClassName={clsx(
+                  'rounded-[2px] border border-solid',
+                  !includeAddress
+                    ? 'border-rabby-neutral-foot'
+                    : 'border-rabby-blue-default'
+                )}
+                checkIcon={
+                  includeAddress ? (
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                      <rect
+                        width="14"
+                        height="14"
+                        rx="2"
+                        fill="var(--r-blue-default, #4c65ff)"
+                      />
+                      <path
+                        d="M3 7L5.66667 10L11 4"
+                        stroke="white"
+                        strokeWidth="1.25"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  ) : null
+                }
+              >
+                <span className="text-rabby-neutral-body text-[12px] leading-[14px] font-normal">
+                  {t('component.screenshotModal.includeAddress')}
+                </span>
+              </Checkbox>
+            </div>
           </main>
           <footer
             className={clsx(
