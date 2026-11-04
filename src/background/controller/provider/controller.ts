@@ -729,12 +729,17 @@ class ProviderController extends BaseController {
       throw new Error('not support 7702');
     }
 
+    // Custom networks pick the tx type from chain and keyring support alone,
+    // so an equal maxFee and tip stays type-2 there. Integrated chains keep
+    // the legacy fallback; a chain we cannot find is treated as integrated.
+    const isCustomNetwork = !!chainForTx?.isTestnet;
     if (
       is1559 &&
       approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas &&
       !eip7702Revoke &&
       !is7702 &&
-      !isTempoTx
+      !isTempoTx &&
+      !isCustomNetwork
     ) {
       // fallback to legacy transaction if maxFeePerGas is equal to maxPriorityFeePerGas
       approvalRes.gasPrice = approvalRes.maxFeePerGas;

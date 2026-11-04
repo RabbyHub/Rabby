@@ -261,11 +261,18 @@ const GasSelectorHeader = ({
 
   const loadCustomGasData = useCallback(
     async (custom?: number): Promise<GasLevel> => {
-      const list = await wallet.gasMarketV2({
-        chain,
-        customGas: custom && custom > 0 ? custom : undefined,
-        tx,
-      });
+      const customGas = custom && custom > 0 ? custom : undefined;
+      // custom networks are unknown to the Rabby gas market API
+      const list: GasLevel[] = chain.isTestnet
+        ? await wallet.getCustomTestnetGasMarket({
+            chainId: chain.id,
+            custom: customGas,
+          })
+        : await wallet.gasMarketV2({
+            chain,
+            customGas,
+            tx,
+          });
       return list.find((item) => item.level === 'custom')!;
     },
     []
@@ -1179,7 +1186,8 @@ const GasSelectorHeader = ({
               </div>
             </>
           )}
-          {isReal1559 && isHardware && (
+          {/* custom networks never fall back to legacy, every 1559 tx is type-2 */}
+          {(isReal1559 || (is1559 && chain.isTestnet)) && isHardware && (
             <div className="hardware-1559-tip">
               {t('page.signTx.hardwareSupport1559Alert')}
             </div>
