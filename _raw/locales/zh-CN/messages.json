@@ -47,6 +47,10 @@
         "noTxInThreeMonth": "90 天内无交易记录",
         "descThreeMonths": "90 天内在<2>支持的链</2>上无交易记录"
       },
+      "noMore": {
+        "title": "没有更多交易记录",
+        "titleInLast90Days": "近 90 天没有更多交易记录"
+      },
       "explain": {
         "approve": "授权 {{project}} 使用 {{amount}} {{symbol}}",
         "cancel": "取消了待处理交易",

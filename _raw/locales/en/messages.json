@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "No Transaction history in 90 Days",
         "descThreeMonths": "No Transaction history in 90 Days on <2>supported chains</2>"
       },
+      "noMore": {
+        "title": "No more transactions.",
+        "titleInLast90Days": "No more transactions in the last 90 days."
+      },
       "explain": {
         "approve": "Approve {{amount}} {{symbol}} for {{project}}",
         "unknown": "Contract Interaction",

@@ -2582,6 +2582,10 @@
         "noTxInThreeMonth": "Aucun historique de transactions depuis 90 jours",
         "descThreeMonths": "Aucun historique de transactions depuis 90 jours sur <2>les chaînes prises en charge</2>"
       },
+      "noMore": {
+        "title": "Aucune autre transaction.",
+        "titleInLast90Days": "Aucune autre transaction au cours des 90 derniers jours."
+      },
       "explain": {
         "approve": "Approuver {{amount}} {{symbol}} pour {{project}}",
         "cancel": "A annulé une transaction en attente",

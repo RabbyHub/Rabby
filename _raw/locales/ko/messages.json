@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "90일 이내 거래 내역 없음",
         "descThreeMonths": "90일 이내 <2>지원되는 체인</2>의 거래 내역 없음"
       },
+      "noMore": {
+        "title": "더 이상 거래 내역이 없습니다.",
+        "titleInLast90Days": "최근 90일간 더 이상 거래 내역이 없습니다."
+      },
       "explain": {
         "unknown": "계약 상호작용",
         "cancel": "보류 중인 거래가 취소되었습니다.",
