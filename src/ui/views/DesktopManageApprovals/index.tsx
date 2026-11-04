@@ -20,7 +20,7 @@ export const DesktopManageApprovals = () => {
   });
   const location = useLocation();
   useMount(() => {
-    reportWebPageView(location.pathname, location.search);
+    reportWebPageView(location.pathname);
   });
   return (
     <div className="h-full w-full overflow-auto bg-r-neutral-bg-2">

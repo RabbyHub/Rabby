@@ -13,8 +13,6 @@ import { tokenAmountBn } from '@/ui/utils/token';
 import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { QuoteProvider } from '../hooks';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { ga4 } from '@/utils/ga4';
 import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 
 const StyledInput = styled(Input)`
@@ -237,30 +235,6 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             disabledTips={t('page.swap.insufficient-balance')}
             getContainer={getContainer}
             onStartSelectChain={onStartSelectChain}
-            onOpenTokenModal={() => {
-              if (!isFrom) {
-                matomoRequestEvent({
-                  category: 'TokenSelect',
-                  action: 'Swap_To_Token',
-                });
-
-                ga4.fireEvent('Swap_To_Token', {
-                  event_category: 'TokenSelect',
-                });
-              }
-            }}
-            onSelectRecentToken={() => {
-              if (!isFrom) {
-                matomoRequestEvent({
-                  category: 'TokenSelect',
-                  action: 'Swap_To_Token_Recent',
-                });
-
-                ga4.fireEvent('Swap_To_Token_Recent', {
-                  event_category: 'TokenSelect',
-                });
-              }
-            }}
           />
         </div>
 

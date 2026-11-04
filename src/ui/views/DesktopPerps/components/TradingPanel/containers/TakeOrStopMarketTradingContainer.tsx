@@ -13,9 +13,6 @@ import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
 import { TradingButtons } from '../components/TradingButtons';
 import { OrderInfoGrid } from '../components/OrderInfoGrid';
-import stats from '@/stats';
-import { getStatsReportSide } from '../../../utils';
-import { BigNumber } from 'bignumber.js';
 import { calcAmountFromPercentage } from '../utils';
 import { useDirectionMaxGate } from '../hooks/useDirectionMaxGate';
 import perpsToast from '../../PerpsToast';
@@ -47,7 +44,6 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
 
   // Get data from perpsState
   const {
-    currentPerpsAccount,
     selectedCoin,
     positionSize,
     setPositionSize,
@@ -56,8 +52,6 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
     midPrice,
     szDecimals,
     pxDecimals,
-    leverage,
-    leverageType,
     availableBalance,
     quoteAsset,
     reduceOnly,
@@ -198,24 +192,6 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
       triggerPx: order.triggerPx,
       reduceOnly: order.reduceOnly,
       tpsl: takeOrStop,
-    });
-    stats.report('perpsTradeHistory', {
-      created_at: new Date().getTime(),
-      user_addr: currentPerpsAccount?.address || '',
-      trade_type:
-        takeOrStop === 'tp' ? 'take profit market' : 'stop loss market',
-      leverage: leverage.toString(),
-      trade_side: getStatsReportSide(order.isBuy, order.reduceOnly),
-      margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-      coin: selectedCoin,
-      size: order.size,
-      price: order.triggerPx,
-      trade_usd_value: new BigNumber(order.triggerPx)
-        .times(order.size)
-        .toFixed(2),
-      service_provider: 'hyperliquid',
-      app_version: process.env.release || '0',
-      address_type: currentPerpsAccount?.type || '',
     });
   });
 

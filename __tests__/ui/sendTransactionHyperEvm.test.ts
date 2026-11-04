@@ -58,15 +58,12 @@ jest.mock('@rabby-wallet/rabby-action', () => ({
 jest.mock('@/ui/state/exchange', () => ({
   getCexInfo: jest.fn().mockResolvedValue(undefined),
 }));
-jest.mock('@/stats', () => ({ __esModule: true, default: {} }));
 jest.mock('@/eventBus', () => ({ __esModule: true, default: {} }));
 
 const account = { address: '0xsender', type: 'Simple Key Pair' } as any;
 const createWallet = (mode: boolean | null = true, estimated = 8_300_000) => ({
   addSigningTx: jest.fn().mockResolvedValue('signing-id'),
   updateSigningTx: jest.fn().mockResolvedValue(undefined),
-  reportStats: jest.fn(),
-  getStatsData: jest.fn().mockResolvedValue({}),
   requestETHRpc: jest.fn().mockResolvedValue(mode),
   getRecommendGas: jest.fn().mockResolvedValue({
     gas: estimated,

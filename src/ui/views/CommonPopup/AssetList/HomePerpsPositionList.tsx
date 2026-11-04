@@ -26,7 +26,6 @@ import {
 import { UI_TYPE } from '@/constant/ui';
 import { PerpsDisplayCoinName } from '../../Perps/components/PerpsDisplayCoinName';
 import { obj2query } from '@/ui/utils/url';
-import { ga4 } from '@/utils/ga4';
 import { Tooltip } from 'antd';
 
 const isDesktop = UI_TYPE.isDesktop;
@@ -96,9 +95,6 @@ export const HomePerpsPositionList: React.FC<{
                     coin: assetPosition.position.coin,
                   })}`
                 );
-                ga4.fireEvent('Perps_CardToPerps_Web', {
-                  event_category: 'Rabby Perps',
-                });
               } else {
                 wallet.setPerpsCurrentAccount(currentAccount);
                 wallet.switchDesktopPerpsAccount(currentAccount!);
@@ -107,9 +103,6 @@ export const HomePerpsPositionList: React.FC<{
                     coin: assetPosition.position.coin,
                   })}`
                 );
-                ga4.fireEvent('Perps_CardToPerps', {
-                  event_category: 'Rabby Perps',
-                });
                 window.close();
               }
             }}

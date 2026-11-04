@@ -1,8 +1,14 @@
+import * as Sentry from '@sentry/browser';
 import i18n from '@/i18n';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { getActionTypeText as getTransactionActionTypeText } from '../Actions/utils';
 import { decodeSingle, encodeSingle } from '@metamask/abi-utils';
-import { TypedDataUtils, SignTypedDataVersion } from '@metamask/eth-sig-util';
+import {
+  TypedDataUtils,
+  SignTypedDataVersion,
+  MessageTypes,
+  TypedMessage,
+} from '@metamask/eth-sig-util';
 import { filterPrimaryType } from '../SignTypedDataExplain/parseSignTypedDataMessage';
 
 export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
@@ -66,114 +72,181 @@ export const getActionTypeText = (data: ParsedTypedDataActionData | null) => {
   return t('page.signTx.unknownAction');
 };
 
-export function normalizeTypeData(data: {
+type TypedDataPayload = {
   primaryType: string;
   types: Record<string, any>;
   domain: Record<string, any>;
   message: Record<string, any>;
-}) {
-  try {
-    return parseSignTypedData(data);
-  } catch (e) {
-    return data;
-  }
-}
-function parseSignTypedData(typedData: {
-  primaryType: string;
-  types: Record<string, any>;
-  domain: Record<string, any>;
-  message: Record<string, any>;
-}) {
-  const { domain, message, types, primaryType } = typedData;
+};
 
-  function parseAndDecode(data: any, dataType: string, name: string) {
-    if (dataType.endsWith('[]')) {
-      const elementType = dataType.slice(0, -2);
-      const decodedArray: any[] = [];
-      for (const element of data) {
-        decodedArray.push(parseAndDecode(element, elementType, ''));
+export type NormalizeTypeDataVersion =
+  | SignTypedDataVersion.V3
+  | SignTypedDataVersion.V4;
+
+export type NormalizeTypeDataFailure = {
+  // `field`: a value could not be re-encoded and keeps its original form.
+  // `digest`: the result does not hash to what the original does.
+  reason: 'field' | 'digest';
+  path: string;
+  type: string;
+  error?: unknown;
+};
+
+// Like the signer, `T[2]`, `T[]` and `T[2][]` are arrays of what precedes the
+// last brackets.
+const ARRAY_TYPE_REG = /^(.*)\[\d*\]$/;
+
+export const getNormalizeTypeDataVersion = (
+  method: string
+): NormalizeTypeDataVersion =>
+  /v3$/i.test(method) ? SignTypedDataVersion.V3 : SignTypedDataVersion.V4;
+
+/**
+ * Re-encodes each value the way the signer does and keeps only the declared
+ * fields, so the result holds the canonical form of what is signed. The input
+ * is not modified. A value that cannot be re-encoded keeps its original form;
+ * it is listed in `failures`, as is a result whose digest differs.
+ */
+export function normalizeTypeData(
+  data: TypedDataPayload,
+  version: NormalizeTypeDataVersion
+): { typedData: TypedDataPayload; failures: NormalizeTypeDataFailure[] } {
+  const types = Object.assign({ EIP712Domain: [] }, data.types);
+  const failures: NormalizeTypeDataFailure[] = [];
+
+  const normalizeAtom = (value: any, type: string, name: string) => {
+    if (type.startsWith('bytes')) {
+      // bytes type is complex and no need to normalize
+      return value;
+    }
+    const [, encodedValue] = TypedDataUtils.encodeField(
+      types,
+      name,
+      type,
+      value,
+      version
+    );
+    const encoded = encodeSingle(
+      type,
+      type === 'string' ? value : encodedValue
+    );
+    const decoded = decodeSingle(type, encoded);
+    if (type === 'bool') {
+      if (decoded === 0n) return false;
+      if (decoded === 1n) return true;
+    }
+    if (
+      type.startsWith('uint') ||
+      type.startsWith('int') ||
+      type.startsWith('ufixed') ||
+      type.startsWith('fixed')
+    ) {
+      return (decoded as bigint).toString();
+    }
+    return decoded;
+  };
+
+  const normalizeStruct = (value: any, type: string, path: string) => {
+    const normalized: Record<string, any> = {};
+    for (const field of types[type]) {
+      const fieldValue = value[field.name];
+      // V3 skips a missing field.
+      if (version === SignTypedDataVersion.V3 && fieldValue === undefined) {
+        continue;
       }
-      return decodedArray;
-    } else if (types[dataType]) {
-      for (const field of types[dataType]) {
-        const { name, type } = field;
-        data[name] = parseAndDecode(data[name], type, name);
-      }
-      return data;
-    } else {
-      if (dataType.startsWith('bytes')) {
-        // bytes type is complex and no need to normalize
-        return data;
-      }
-      const [t, v] = TypedDataUtils.encodeField(
-        types,
-        name,
-        dataType,
-        data,
-        SignTypedDataVersion.V4
+      normalized[field.name] = normalizeValue(
+        fieldValue,
+        field.type,
+        field.name,
+        `${path}.${field.name}`
       );
-      const encoded = encodeSingle(dataType, dataType === 'string' ? data : v);
-      const decoded = decodeSingle(dataType, encoded);
-      switch (dataType) {
-        case 'address':
-          return decoded;
-        case 'bool':
-          if (decoded === 0n) {
-            return false;
-          } else if (decoded === 1n) {
-            return true;
-          }
-          break;
-        default:
-        // NOTHING
-      }
-      if (
-        dataType.startsWith('uint') ||
-        dataType.startsWith('int') ||
-        dataType.startsWith('ufixed') ||
-        dataType.startsWith('fixed')
-      ) {
-        return (decoded as bigint).toString();
-      }
-      if (dataType === 'string') {
-        return decoded;
-      }
+    }
+    return normalized;
+  };
 
-      return decoded;
+  // Follows the signer's `encodeField`: a name in `types` is a struct first.
+  const normalizeValue = (
+    value: any,
+    type: string,
+    name: string,
+    path: string
+  ): any => {
+    try {
+      if (types[type] !== undefined) {
+        // V4 hashes a missing struct as zero.
+        if (value === null || value === undefined) return value;
+        return normalizeStruct(value, type, path);
+      }
+      const arrayMatch = ARRAY_TYPE_REG.exec(type);
+      if (arrayMatch) {
+        return (value as any[]).map((item, i) =>
+          normalizeValue(item, arrayMatch[1], name, `${path}[${i}]`)
+        );
+      }
+      return normalizeAtom(value, type, name);
+    } catch (error) {
+      failures.push({ reason: 'field', path, type, error });
+      return value;
+    }
+  };
+
+  const typedData = {
+    ...data,
+    domain: normalizeValue(data.domain, 'EIP712Domain', 'domain', 'domain'),
+    message: normalizeValue(
+      data.message,
+      data.primaryType,
+      'message',
+      'message'
+    ),
+  };
+
+  const hash = (payload: TypedDataPayload) =>
+    TypedDataUtils.eip712Hash(
+      payload as TypedMessage<MessageTypes>,
+      version
+    ).toString('hex');
+  let originalHash: string | undefined;
+  try {
+    originalHash = hash(data);
+  } catch (e) {
+    // The signer rejects it as well.
+  }
+  if (originalHash !== undefined) {
+    const digestFailure = {
+      reason: 'digest' as const,
+      path: '',
+      type: String(data.primaryType),
+    };
+    try {
+      if (hash(typedData) !== originalHash) failures.push(digestFailure);
+    } catch (error) {
+      failures.push({ ...digestFailure, error });
     }
   }
 
-  for (const field of types[primaryType]) {
-    typedData.message[field.name] = parseAndDecode(
-      message[field.name],
-      field.type,
-      field.name
-    );
-  }
-
-  for (const field of types.EIP712Domain) {
-    domain[field.name] = parseAndDecode(
-      domain[field.name],
-      field.type,
-      field.name
-    );
-  }
-
-  // Filter out the fields that are not part of the primary type
-  typedData.message = filterPrimaryType({
-    primaryType,
-    types,
-    message: typedData.message,
-  });
-
-  typedData.domain = filterPrimaryType({
-    primaryType: 'EIP712Domain',
-    types,
-    message: domain,
-  });
-
-  return typedData;
+  return { typedData, failures };
 }
+
+/**
+ * Reports a request whose typed data did not normalize, to learn how often it
+ * happens before such a request is rejected.
+ */
+export const reportNormalizeTypeDataFailures = (
+  failures: NormalizeTypeDataFailure[],
+  context: { rawTypedData: string }
+) => {
+  if (!failures.length) return;
+  try {
+    Sentry.captureMessage('eip712-sec: typed data normalize failed', {
+      extra: {
+        rawTypedData: context.rawTypedData,
+      },
+    });
+  } catch (e) {
+    // Reporting must not change what the approval shows.
+  }
+};
 
 export function cleanEIP712Payload(rawPayload: {
   primaryType: string;

@@ -20,8 +20,6 @@ import { useTranslation } from 'react-i18next';
 import { Value } from '@/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import stats from '@/stats';
-import { last } from 'lodash';
 
 const Wrapper = styled.div`
   & > div {
@@ -139,21 +137,8 @@ const DappActions = ({
   );
   const { pending, run } = useDappActionRequest(portfolio, action);
 
-  const simulationRef = React.useRef<{
-    usdValueChange?: number;
-  }>({});
-
   const onPreExecChange = useCallback(
     (r: ExplainTxResponse, isQueueWithdraw: boolean) => {
-      const totalReceiveUsdValue = r?.balance_change?.receive_token_list?.reduce(
-        (acc, token) => {
-          return acc + (Number(token.usd_value) || 0);
-        },
-        0
-      );
-      simulationRef.current = {
-        usdValueChange: totalReceiveUsdValue,
-      };
       if (!r.pre_exec.success) {
         updateConfig({
           disableSignBtn: true,
@@ -190,42 +175,14 @@ const DappActions = ({
       const title = t(
         `component.DappActions.${isQueueWithdraw ? 'withdraw' : actionType}`
       );
-      simulationRef.current = {};
-
-      const now = Date.now();
-      const base = {
-        tx_type: actionType,
-        chain: chain || '',
-        user_addr: currentAccount?.address || '',
-        address_type: currentAccount?.type || '',
-        protocol_name: protocolName || '',
-        app_version: process.env.release || '0',
-        create_at: now,
-      } as const;
-
-      const getSimulationFields = () => {
-        const s = simulationRef.current;
-        return {
-          simulation_result:
-            typeof s.usdValueChange === 'number' ? s.usdValueChange : '',
-        } as const;
-      };
 
       const runFallback = async () => {
-        let lastHash = '';
         for (const tx of txs) {
-          lastHash = await wallet.sendRequest<string>({
+          await wallet.sendRequest<string>({
             method: 'eth_sendTransaction',
             params: [tx],
           });
         }
-        stats.report('defiDirectTx', {
-          ...base,
-          tx_id: lastHash || '',
-          sign_method: 'full',
-          tx_status: 'success',
-          ...getSimulationFields(),
-        });
         setVisible(false);
       };
 
@@ -259,15 +216,7 @@ const DappActions = ({
           },
         } as const;
         try {
-          const hashes = await openUI(signerConfig);
-          const hash = last(hashes);
-          stats.report('defiDirectTx', {
-            ...base,
-            tx_id: typeof hash === 'string' ? hash : '',
-            sign_method: 'simple',
-            tx_status: 'success',
-            ...getSimulationFields(),
-          });
+          await openUI(signerConfig);
           setVisible(false);
           return;
         } catch (error) {
@@ -306,8 +255,6 @@ const DappActions = ({
       chain,
       t,
       onPreExecChange,
-      protocolName,
-      currentAccount?.address,
       setVisible,
       wallet,
     ]

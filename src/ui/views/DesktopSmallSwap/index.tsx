@@ -217,7 +217,7 @@ const DesktopSmallSwapContent: React.FC = () => {
 
   const location = useLocation();
   useMount(() => {
-    reportWebPageView(location.pathname, location.search);
+    reportWebPageView(location.pathname);
   });
 
   return (

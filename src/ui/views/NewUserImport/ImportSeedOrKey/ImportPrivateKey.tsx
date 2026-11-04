@@ -69,7 +69,15 @@ export const ImportPrivateKey = () => {
   }>();
 
   const handleSubmit = useMemoizedFn(async () => {
-    const { privateKey } = await form.validateFields();
+    let privateKey: string;
+    try {
+      ({ privateKey } = await form.validateFields());
+    } catch {
+      // The form shows the error. Enter submits even while the button is
+      // disabled, and the rejection carries the typed key, so never let it
+      // escape as an unhandled rejection.
+      return;
+    }
     setStore({
       privateKey: privateKey,
     });
@@ -93,6 +101,7 @@ export const ImportPrivateKey = () => {
       <div className="flex-1">
         <Form form={form} className="mt-[20px]">
           <Form.Item
+            className="mb-0"
             name="privateKey"
             rules={[
               {

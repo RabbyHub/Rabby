@@ -6,6 +6,7 @@ import notificationService from 'background/service/notification';
 import wallet from '../controller/wallet';
 import { CHAINS, INTERNAL_REQUEST_SESSION, CHAINS_ENUM } from 'consts';
 import { underline2Camelcase } from 'background/utils';
+import getOwnMethod from 'background/utils/getOwnMethod';
 import { findChain } from '@/utils/chain';
 
 interface StateProvider {
@@ -84,11 +85,13 @@ export class EthereumProvider extends EventEmitter {
     if (!chain) {
       throw new Error('chain not found');
     }
-    if (!providerController[mapMethod]) {
+    const controllerMethod = getOwnMethod(providerController, mapMethod);
+    if (!controllerMethod) {
       // TODO: make rpc whitelist
       if (method.startsWith('eth_') || method === 'net_version') {
         return providerController.ethRpc(request, chain.serverId);
       }
+      throw new Error(`method [${method}] doesn't has corresponding handler`);
     }
     switch (data.method) {
       case 'eth_accounts':
@@ -132,7 +135,7 @@ export class EthereumProvider extends EventEmitter {
       case 'eth_chainId':
         return chain.hex;
       default:
-        return providerController[mapMethod](request);
+        return controllerMethod.call(providerController, request);
     }
   };
 

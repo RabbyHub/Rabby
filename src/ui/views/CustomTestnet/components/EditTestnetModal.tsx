@@ -15,7 +15,6 @@ import { PageHeader, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { AddFromChainList } from './AddFromChainList';
 import { CustomTestnetForm } from './CustomTestnetForm';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ConfirmModifyRpcModal } from './ConfirmModifyRpcModal';
 import { useHistory } from 'react-router-dom';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
@@ -50,7 +49,6 @@ export const EditCustomTestnetModal = ({
   onChange,
   height,
   maskStyle,
-  ctx,
 }: {
   isEdit?: boolean;
   data?: TestnetChainBase | null;
@@ -61,11 +59,6 @@ export const EditCustomTestnetModal = ({
   zIndex?: number;
   height?: number;
   maskStyle?: React.CSSProperties;
-  ctx?: {
-    ga?: {
-      source?: string;
-    };
-  };
 }) => {
   const wallet = useWallet();
   const [isShowAddFromChainList, setIsShowAddFromChainList] = useState(false);
@@ -75,17 +68,10 @@ export const EditCustomTestnetModal = ({
   const { getContainer } = usePopupContainer();
 
   const { loading, runAsync: runAddTestnet } = useRequest(
-    (
-      data: TestnetChainBase,
-      ctx?: {
-        ga?: {
-          source?: string;
-        };
-      }
-    ) => {
+    (data: TestnetChainBase) => {
       return isEdit
         ? wallet.updateCustomTestnet(data)
-        : wallet.addCustomTestnet(data, ctx);
+        : wallet.addCustomTestnet(data);
     },
     {
       manual: true,
@@ -93,9 +79,14 @@ export const EditCustomTestnetModal = ({
   );
 
   const handleSubmit = async () => {
-    await form.validateFields();
+    try {
+      await form.validateFields();
+    } catch {
+      // The form shows the error itself.
+      return;
+    }
     const values = form.getFieldsValue();
-    const res = await runAddTestnet(values, ctx);
+    const res = await runAddTestnet(values);
     if ('error' in res) {
       form.setFields([
         {
@@ -164,12 +155,6 @@ export const EditCustomTestnetModal = ({
               )}
               onClick={() => {
                 setIsShowAddFromChainList(true);
-                const source = ctx?.ga?.source || 'setting';
-                matomoRequestEvent({
-                  category: 'Custom Network',
-                  action: 'Click Add From ChanList',
-                  label: source,
-                });
               }}
             >
               <ThemeIcon src={RcIconFlash}></ThemeIcon>
@@ -218,12 +203,6 @@ export const EditCustomTestnetModal = ({
         onSelect={(item) => {
           form.setFieldsValue(item);
           setIsShowAddFromChainList(false);
-          const source = ctx?.ga?.source || 'setting';
-          matomoRequestEvent({
-            category: 'Custom Network',
-            action: 'Choose ChainList Network',
-            label: `${source}_${String(item.id)}`,
-          });
         }}
       />
       <ConfirmModifyRpcModal

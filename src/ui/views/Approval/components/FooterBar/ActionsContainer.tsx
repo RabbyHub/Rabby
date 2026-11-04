@@ -14,6 +14,8 @@ export interface Props {
   disabledProcess: boolean;
   enableTooltip?: boolean;
   tooltipContent?: React.ReactNode;
+  // keep the tooltip open instead of showing it on hover
+  tooltipVisible?: boolean;
   children?: React.ReactNode;
   chain?: Chain;
   gasLess?: boolean;

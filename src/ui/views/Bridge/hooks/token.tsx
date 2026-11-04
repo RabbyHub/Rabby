@@ -18,7 +18,6 @@ import useAsync from 'react-use/lib/useAsync';
 import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
 import { getChainDefaultToken, tokenAmountBn } from '@/ui/utils/token';
 import BigNumber from 'bignumber.js';
-import stats from '@/stats';
 import { isNaN } from 'lodash';
 import { useBridgeSlippage } from './slippage';
 import { useLocation } from 'react-router-dom';
@@ -584,16 +583,6 @@ export const useBridge = () => {
               wallet.openapi
             ).catch((e) => {
               console.error(e);
-              if (isCurrentRequest() && !alternativeToken) {
-                stats.report('bridgeQuoteResult', {
-                  aggregatorIds: bridgeAggregator.id,
-                  fromChainId: fromToken.chain,
-                  fromTokenId: fromToken.id,
-                  toTokenId: toToken.id,
-                  toChainId: toToken.chain,
-                  status: 'fail',
-                });
-              }
             });
 
             if (alternativeToken) {
@@ -609,16 +598,6 @@ export const useBridge = () => {
               await Promise.allSettled(validQuotes.map(upsertQuote));
             }
 
-            if (isCurrentRequest()) {
-              stats.report('bridgeQuoteResult', {
-                aggregatorIds: bridgeAggregator.id,
-                fromChainId: fromToken.chain,
-                fromTokenId: fromToken.id,
-                toTokenId: toToken.id,
-                toChainId: toToken.chain,
-                status: data?.length ? 'success' : 'none',
-              });
-            }
             return data;
           })
         );
@@ -665,15 +644,6 @@ export const useBridge = () => {
 
           setSelectedBridgeQuote(undefined);
         }
-
-        stats.report('bridgeQuoteResult', {
-          aggregatorIds: aggregatorsList.map((e) => e.id).join(','),
-          fromChainId: fromToken.chain,
-          fromTokenId: fromToken.id,
-          toTokenId: toToken.id,
-          toChainId: toToken.chain,
-          status: data ? (data?.length === 0 ? 'none' : 'success') : 'fail',
-        });
 
         setQuotesList((e) => e.filter((item) => !item.loading));
       }

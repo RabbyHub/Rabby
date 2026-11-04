@@ -4,12 +4,7 @@ import type { SelectedBridgeQuote } from '@/ui/views/Bridge/hooks';
 import {
   buildBridgeQuoteTxParams,
   buildBridgeTokenSideParams,
-  getBridgeQuoteStatsParams,
 } from '@/ui/views/Bridge/utils/submit';
-
-jest.mock('@/stats', () => ({
-  report: jest.fn(),
-}));
 
 jest.mock('@/utils/chain', () => ({
   findChain: ({ serverId }: { serverId: string }) =>
@@ -66,25 +61,6 @@ describe('bridge submit helpers', () => {
       toTokenId: '0xto',
       slippage: '0.01',
       quoteKey: { k: 1 },
-    });
-  });
-
-  it('reports quote identity in stats params', () => {
-    expect(
-      getBridgeQuoteStatsParams(
-        quote(),
-        token(),
-        token({ id: '0xto', chain: 'bsc' }),
-        'fail'
-      )
-    ).toEqual({
-      aggregatorIds: 'lifi',
-      bridgeId: 'stargate',
-      fromChainId: 'eth',
-      fromTokenId: '0xtoken',
-      toTokenId: '0xto',
-      toChainId: 'bsc',
-      status: 'fail',
     });
   });
 

@@ -162,7 +162,7 @@ const NFTApproval = () => {
             <Tooltip
               align={{ offset: [55, 0] }}
               placement="top"
-              overlayClassName="rectangle max-w-[250px] hide-arrow"
+              overlayClassName="rectangle hide-arrow"
               title={t(
                 'The total amount of assets affected by approval-related security issues'
               )}
