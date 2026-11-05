@@ -47,6 +47,10 @@
         "noTxInThreeMonth": "過去 90 天沒有交易記錄",
         "descThreeMonths": "過去 90 天在 <2>支援的鏈</2> 上沒有交易記錄"
       },
+      "noMore": {
+        "title": "沒有更多交易記錄",
+        "titleInLast90Days": "過去 90 天沒有更多交易記錄"
+      },
       "explain": {
         "approve": "授權 {{project}} 使用 {{amount}} {{symbol}}",
         "cancel": "取消了待處理交易",
@@ -4996,7 +5000,8 @@
     "screenshotModal": {
       "title": "截圖回饋",
       "placeholder": "描述問題",
-      "placeholderRequired": "描述問題（必填）"
+      "placeholderRequired": "描述問題（必填）",
+      "includeAddress": "附帶我的地址，便於排查問題"
     },
     "feedbackPopup": {
       "title": "Rabby 支援團隊的回覆",

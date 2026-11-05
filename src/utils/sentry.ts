@@ -43,6 +43,25 @@ const BIP39_WORDS = new Set(bip39EnglishWordlist);
 // Values under these keys are dropped whatever they look like; booleans and
 // numbers are kept since they can't hold a secret.
 const SENSITIVE_KEY_PATTERN = /mnemonic|seed|private[_-]?key|secret|password|passphrase|keystore|vault/iu;
+// Keys whose value is a token contract, never a holder, so the address is kept
+// for debugging. Exact names only, compared without case, `_` or `-`: a loose
+// /token/ would also keep tokenOwner, token_holder or tokenRecipient. Only
+// structured fields qualify; the same pair inside free text (a message,
+// stringified JSON) is still redacted, since text can't say which hex is which.
+const TOKEN_CONTRACT_KEYS = new Set([
+  'tokenid',
+  'fromtokenid',
+  'totokenid',
+  'paytokenid',
+  'receivetokenid',
+  'tokenaddress',
+]);
+const EXACT_ADDRESS_PATTERN = /^0x[a-f\d]{40}$/iu;
+
+const isTokenContractField = (key: string, value: unknown) =>
+  typeof value === 'string' &&
+  EXACT_ADDRESS_PATTERN.test(value) &&
+  TOKEN_CONTRACT_KEYS.has(key.toLowerCase().replace(/[_-]/gu, ''));
 
 const redactMnemonics = (value: string) =>
   value.replace(WORD_RUN_PATTERN, (run) => {
@@ -112,6 +131,10 @@ const redactSecrets = (
   const copy: Record<string, unknown> = {};
   copies.set(value, copy);
   Object.entries(value).forEach(([key, item]) => {
+    if (isTokenContractField(key, item)) {
+      copy[key] = item;
+      return;
+    }
     copy[redactSecretText(key)] =
       SENSITIVE_KEY_PATTERN.test(key) &&
       typeof item !== 'boolean' &&
@@ -127,8 +150,10 @@ const redactSecrets = (
  * wherever they sit: message, exception text, extra, tags, breadcrumbs or
  * request. Covers 0x hex (addresses, tx hashes, calldata), unprefixed hex
  * (private keys, seeds), BIP32 extended keys, BIP39 mnemonics and values
- * under secret-looking keys. sdkProcessingMetadata is SDK-internal (never
- * sent, read after beforeSend) and passes through untouched.
+ * under secret-looking keys. The one exemption is a single address under a
+ * token-contract key (TOKEN_CONTRACT_KEYS). sdkProcessingMetadata is
+ * SDK-internal (never sent, read after beforeSend) and passes through
+ * untouched.
  */
 export const scrubSentryEvent = <T extends { sdkProcessingMetadata?: unknown }>(
   event: T

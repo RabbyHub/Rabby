@@ -281,7 +281,8 @@
     "screenshotModal": {
       "title": "Joindre une capture d'écran au feedback",
       "placeholder": "Décrivez le problème",
-      "placeholderRequired": "Décrivez le problème (obligatoire)"
+      "placeholderRequired": "Décrivez le problème (obligatoire)",
+      "includeAddress": "Partager mes adresses pour faciliter le diagnostic"
     },
     "feedbackPopup": {
       "title": "Réponse du support Rabby",
@@ -2581,6 +2582,10 @@
         "title": "Aucune transaction",
         "noTxInThreeMonth": "Aucun historique de transactions depuis 90 jours",
         "descThreeMonths": "Aucun historique de transactions depuis 90 jours sur <2>les chaînes prises en charge</2>"
+      },
+      "noMore": {
+        "title": "Aucune autre transaction.",
+        "titleInLast90Days": "Aucune autre transaction au cours des 90 derniers jours."
       },
       "explain": {
         "approve": "Approuver {{amount}} {{symbol}} pour {{project}}",

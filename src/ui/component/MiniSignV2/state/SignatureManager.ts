@@ -21,7 +21,7 @@ import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import eventBus from '@/eventBus';
 import { findChain } from '@/utils/chain';
 import { t } from 'i18next';
-import { DrawerProps, ModalProps } from 'antd';
+import { DrawerProps, Modal, ModalProps } from 'antd';
 import BigNumber from 'bignumber.js';
 
 const ETH_GAS_USD_LIMIT = 15;
@@ -387,6 +387,10 @@ export class SignatureManager {
     this.dispatch({ type: 'OPEN_UI_SKELETON', fingerprint, ctx: skeleton });
 
     try {
+      // Refuse as soon as prefetch lands, before the security engine runs.
+      const preparedCtx = await prepared;
+      if (!this.isActive(opId, fingerprint)) return preparedCtx;
+      if (this.blockIfNeeded(preparedCtx)) return;
       const ctx = await signatureService.openUI({
         wallet,
         txs: request.txs,
@@ -628,6 +632,18 @@ export class SignatureManager {
     }
   }
 
+  // Close the signer, reject the caller and tell the user, like SignTx does.
+  private blockIfNeeded(ctx?: SignerCtx | null) {
+    if (!ctx?.isBlocked) return false;
+    this.reset();
+    Modal.error({
+      title: t('page.sendToken.blockedTransaction'),
+      content: t('page.sendToken.blockedTransactionContent'),
+      okText: t('page.sendToken.blockedTransactionCancelText'),
+    });
+    return true;
+  }
+
   // private removeSigningTx() {
   //   const signingTxId = notificationService.currentMiniApproval?.signingTxId;
   //   if (signingTxId) {
@@ -744,6 +760,10 @@ export class SignatureManager {
         this.pendingCtx.get(fingerprint) ||
         this.ensureContext(request, wallet, this.run?.id);
       await prepared;
+
+      if (this.blockIfNeeded(this.state.ctx)) {
+        return resultPromise;
+      }
 
       if (this.isPreExecResultFailed()) {
         this.rejectPending(MINI_SIGN_ERROR.PREFETCH_FAILURE);

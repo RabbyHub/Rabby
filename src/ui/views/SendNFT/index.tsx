@@ -11,10 +11,10 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Form, message, Button } from 'antd';
+import { Form, message, Button, Modal } from 'antd';
 import { isValidAddress, toChecksumAddress } from '@ethereumjs/util';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { connectStore } from 'ui/store';
 import {
@@ -259,7 +259,14 @@ const SendNFT = () => {
 
   const getNFTTransferParams = useCallback(
     (amount: number): Record<string, any> | null => {
-      if (!nftItem || !chainInfo || !currentAccount?.address) {
+      // toAddress comes from the URL and can be emptied (e.g. going back from
+      // the blocked-address modal) while the form still holds the old `to`.
+      if (
+        !nftItem ||
+        !chainInfo ||
+        !currentAccount?.address ||
+        !isValidAddress(toAddress)
+      ) {
         // throw new Error('Missing required data for NFT transfer');
         return null;
       }
@@ -559,6 +566,33 @@ const SendNFT = () => {
       });
     }
   }, [toAddress, form]);
+
+  // Same as SendToken: the NFT receiver sits in calldata, so the tx-level
+  // from/to checks never see it.
+  const handleReceiveAddressChanged = useMemoizedFn(async (to: string) => {
+    try {
+      if (!(await wallet.hasBlockedAddress([to]))) return;
+      Modal.error({
+        title: t('page.sendToken.blockedTransaction'),
+        content: t('page.sendToken.blockedTransactionContent'),
+        okText: t('page.sendToken.blockedTransactionCancelText'),
+        onCancel: async () => {
+          await wallet.clearPageStateCache();
+          handleClickBack();
+        },
+        onOk: async () => {
+          await wallet.clearPageStateCache();
+          handleClickBack();
+        },
+      });
+    } catch (e) {
+      // NOTHING
+    }
+  });
+
+  useEffect(() => {
+    if (toAddress) handleReceiveAddressChanged(toAddress);
+  }, [toAddress, handleReceiveAddressChanged]);
 
   // const [gasFeeOpen, setGasFeeOpen] = useState(false);
 

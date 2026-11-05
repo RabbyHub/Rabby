@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "Son 90 günde işlem geçmişi yok",
         "descThreeMonths": "<2>Desteklenen zincirlerde</2> son 90 günde işlem geçmişi yok"
       },
+      "noMore": {
+        "title": "Başka işlem yok.",
+        "titleInLast90Days": "Son 90 günde başka işlem yok."
+      },
       "explain": {
         "approve": "{{project}} için {{amount}} {{symbol}} onayla",
         "unknown": "Sözleşme Etkileşimi",
@@ -4952,7 +4956,8 @@
     "screenshotModal": {
       "title": "Geri bildirim için ekran görüntüsü",
       "placeholder": "Sorunu açıklayın",
-      "placeholderRequired": "Sorunu açıklayın (gerekli)"
+      "placeholderRequired": "Sorunu açıklayın (gerekli)",
+      "includeAddress": "Sorunun giderilmesi için adreslerimi paylaş"
     },
     "feedbackPopup": {
       "title": "Rabby Destek'ten Yanıt",

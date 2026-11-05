@@ -64,6 +64,15 @@ export const HistoryList = ({
 
   const showInitialLoading = loading && isEmpty;
 
+  // Only the local db path keeps 90 days; the api path has no window.
+  // Wait for loading to settle so a running sync doesn't show it early.
+  const noMoreText =
+    noMore && !loading && !loadingMore
+      ? hasLocalHistory
+        ? t('page.transactions.noMore.titleInLast90Days')
+        : t('page.transactions.noMore.title')
+      : undefined;
+
   const [
     focusingHistoryItem,
     setFocusingHistoryItem,
@@ -102,15 +111,24 @@ export const HistoryList = ({
               title={t('page.transactions.empty.title')}
               desc={
                 <span>
-                  <Trans
-                    i18nKey="page.transactions.empty.descThreeMonths"
-                    t={t}
-                  >
-                    No Transaction history in 90 Days on{' '}
-                    <Link className="underline" to="/settings/chain-list">
-                      supported chains
-                    </Link>
-                  </Trans>
+                  {hasLocalHistory ? (
+                    <Trans
+                      i18nKey="page.transactions.empty.descThreeMonths"
+                      t={t}
+                    >
+                      No Transaction history in 90 Days on{' '}
+                      <Link className="underline" to="/settings/chain-list">
+                        supported chains
+                      </Link>
+                    </Trans>
+                  ) : (
+                    <Trans i18nKey="page.transactions.empty.desc" t={t}>
+                      No transactions found on
+                      <Link className="underline" to="/settings/chain-list">
+                        supported chains
+                      </Link>
+                    </Trans>
+                  )}
                 </span>
               }
               className="pt-[108px]"
@@ -129,6 +147,10 @@ export const HistoryList = ({
                   rowsRef.current
                 )
               }
+              // Virtuoso sizes rows by offsetHeight, which leaves out margins.
+              // Keep the 12px row gap inside each row (padding, or flow-root
+              // for the card's own margin) so the measured height matches the
+              // layout; otherwise the list jumps by 12px at the bottom.
               itemContent={(_, row) => {
                 if (row.kind === 'bridge') {
                   const fromId = row.item.from_tx?.tx_id?.toLowerCase();
@@ -138,7 +160,7 @@ export const HistoryList = ({
                       item.acceleratedHash?.toLowerCase() === fromId
                   );
                   return (
-                    <div className="mb-12">
+                    <div className="pb-12">
                       <BridgeHistoryCard
                         data={row.item}
                         local={local}
@@ -149,11 +171,13 @@ export const HistoryList = ({
                   );
                 }
                 return (
-                  <HistoryItem
-                    data={row.item}
-                    key={row.key}
-                    onViewInputData={setFocusingHistoryItem}
-                  />
+                  <div className="flow-root">
+                    <HistoryItem
+                      data={row.item}
+                      key={row.key}
+                      onViewInputData={setFocusingHistoryItem}
+                    />
+                  </div>
                 );
               }}
               endReached={noMore ? undefined : loadMore}
@@ -162,6 +186,17 @@ export const HistoryList = ({
                 Footer: () => {
                   if (loadingMore) {
                     return <Loading count={2} active />;
+                  }
+                  if (noMoreText) {
+                    return (
+                      <div className="flex items-center gap-[8px] pt-[4px] pb-[20px]">
+                        <div className="flex-1 h-[1px] bg-r-neutral-line" />
+                        <div className="text-center text-[12px] leading-[14px] text-r-neutral-foot">
+                          {noMoreText}
+                        </div>
+                        <div className="flex-1 h-[1px] bg-r-neutral-line" />
+                      </div>
+                    );
                   }
                   return null;
                 },

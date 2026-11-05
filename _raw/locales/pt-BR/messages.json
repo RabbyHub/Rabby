@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "Sem histórico de transações em 90 dias",
         "descThreeMonths": "Sem histórico de transações em 90 dias em <2>redes suportadas</2>"
       },
+      "noMore": {
+        "title": "Não há mais transações.",
+        "titleInLast90Days": "Não há mais transações nos últimos 90 dias."
+      },
       "explain": {
         "approve": "Aprovar {{amount}} {{symbol}} para {{project}}",
         "unknown": "Interação com Contrato",
@@ -4952,7 +4956,8 @@
     "screenshotModal": {
       "title": "Captura de tela para feedback",
       "placeholder": "Descreva o problema",
-      "placeholderRequired": "Descreva o problema (obrigatório)"
+      "placeholderRequired": "Descreva o problema (obrigatório)",
+      "includeAddress": "Compartilhar meus endereços para ajudar a resolver o problema"
     },
     "feedbackPopup": {
       "title": "Resposta do Suporte Rabby",

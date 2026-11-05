@@ -1,11 +1,12 @@
 import { supportedChainToChain, updateChainStore } from '@/utils/chain';
 import { isManifestV3 } from '@/utils/env';
 import { Chain } from '@debank/common';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 import browser from 'webextension-polyfill';
 import { ALARMS_SYNC_CHAINS } from '../utils/alarms';
 import { http } from '../utils/http';
 import { SupportedChain } from './openapi';
-import { openapiService } from '.';
+import { openapiService, permissionService, sessionService } from '.';
 import { createPersistStore } from '../utils';
 import dayjs from 'dayjs';
 
@@ -52,6 +53,10 @@ class SyncChainService {
           const chain: Chain = supportedChainToChain(item);
           return chain;
         });
+      // ETH is the fallback chain everywhere, a list without it is broken
+      if (!list.some((item) => item.enum === CHAINS_ENUM.ETH)) {
+        throw new Error('invalid mainnet chain list');
+      }
       updateChainStore({
         mainnetList: list,
       });
@@ -59,9 +64,34 @@ class SyncChainService {
         rabbyMainnetChainList: list,
       });
       this.store.updatedAt = Date.now();
+      this.disconnectSitesWithUnsupportedChain();
     } catch (e) {
       console.error('fetch chain list error: ', e);
     }
+  };
+
+  /**
+   * Disconnect the dapps whose chain was removed from the chain list. They are
+   * told directly, as the permission check already filters them out of
+   * broadcasts.
+   */
+  disconnectSitesWithUnsupportedChain = () => {
+    const ethChain = CHAINS[CHAINS_ENUM.ETH];
+    permissionService
+      .resetSitesWithUnsupportedChain()
+      .filter((site) => site.isConnected)
+      .forEach((site) => {
+        sessionService.broadcastEvent('accountsChanged', [], site.origin, true);
+        sessionService.broadcastEvent(
+          'chainChanged',
+          {
+            chain: ethChain.hex,
+            networkVersion: ethChain.network,
+          },
+          site.origin,
+          true
+        );
+      });
   };
 
   resetTimer = () => {
