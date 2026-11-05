@@ -32,8 +32,8 @@ export const sendReadyMessageToTabs = async () => {
        *  "If the extension has access to inject scripts into Tab, then we can return the url
        *   of Tab (because the extension could just inject a script to message the location.href)."
        */
+      // Include app windows used by installed PWAs after a worker restart.
       url: '<all_urls>',
-      windowType: 'normal',
     })
     .then((result) => {
       return result;
