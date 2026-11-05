@@ -253,6 +253,32 @@ const config = {
         test: /\.md$/,
         use: 'raw-loader',
       },
+      {
+        // Rabby only uses the English BIP39 wordlist. CommonJS consumers of
+        // viem/accounts (e.g. @safe-global/protocol-kit) load viem's CJS
+        // build, which pulls in every language and can't be tree-shaken, so
+        // there the other languages resolve to an empty module. @scure/bip39
+        // rejects the missing list if one is ever used.
+        test: /[\\/]viem[\\/]_cjs[\\/]accounts[\\/]wordlists\.js$/,
+        resolve: {
+          alias: Object.fromEntries(
+            [
+              'czech',
+              'french',
+              'italian',
+              'japanese',
+              'korean',
+              'portuguese',
+              'simplified-chinese',
+              'spanish',
+              'traditional-chinese',
+            ].flatMap((language) => [
+              [`@scure/bip39/wordlists/${language}$`, false],
+              [`@scure/bip39/wordlists/${language}.js$`, false],
+            ])
+          ),
+        },
+      },
     ],
   },
   plugins: [
