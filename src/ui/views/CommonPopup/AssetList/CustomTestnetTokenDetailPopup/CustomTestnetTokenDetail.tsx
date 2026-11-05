@@ -25,7 +25,7 @@ import { CustomizedButton } from './CustomizedButton';
 import './style.less';
 import { getAddressScanLink } from '@/utils';
 import { BlockedTopTips } from '@/ui/views/Dashboard/components/TokenDetailPopup/BlockedTopTips';
-import { TokenCharts } from '@/ui/component/TokenChart';
+import { TokenCharts } from '@/ui/component/TokenChart/lazy';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import TokenChainAndContract from '@/ui/views/Dashboard/components/TokenDetailPopup/TokenInfo';
 import { CustomizedSwitch } from '@/ui/views/Dashboard/components/TokenDetailPopup/CustomizedButton';

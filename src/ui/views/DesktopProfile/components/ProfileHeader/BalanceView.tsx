@@ -41,11 +41,17 @@ import {
   useCommonPopupView,
   useWallet,
 } from 'ui/utils';
-import { CurvePoint, CurveThumbnail } from './CurveThumbnail';
+import type { CurvePoint } from './CurveThumbnail';
+import { lazyComponent } from '@/ui/utils/lazyComponent';
 import { CurveModal } from './CurveModal';
 import { useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { RcIconRefreshCC } from '@/ui/assets/desktop/profile';
+
+// keeps recharts out of the initial bundle
+const CurveThumbnail = lazyComponent(() =>
+  import('./CurveThumbnail').then((m) => m.CurveThumbnail)
+);
 
 const Container = styled.div`
   .balance-view-content {
