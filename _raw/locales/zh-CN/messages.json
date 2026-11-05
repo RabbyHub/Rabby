@@ -4996,7 +4996,8 @@
     "screenshotModal": {
       "title": "截图反馈",
       "placeholder": "描述问题",
-      "placeholderRequired": "描述问题（必填）"
+      "placeholderRequired": "描述问题（必填）",
+      "includeAddress": "附带我的地址，便于排查问题"
     },
     "feedbackPopup": {
       "title": "Rabby Support 的回复",
