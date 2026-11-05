@@ -4957,7 +4957,7 @@
       "title": "Geri bildirim için ekran görüntüsü",
       "placeholder": "Sorunu açıklayın",
       "placeholderRequired": "Sorunu açıklayın (gerekli)",
-      "includeAddress": "Sorunun giderilmesi için adreslerimi paylaş"
+      "includeAddress": "Sorun giderme için adresi paylaş"
     },
     "feedbackPopup": {
       "title": "Rabby Destek'ten Yanıt",

@@ -338,7 +338,7 @@ export const ScreenshotContextMenu = () => {
               {t('component.screenshotModal.title')}
             </h2>
           </header>
-          <main className="min-h-0 flex-1 px-[20px] flex flex-col pb-[16px]">
+          <main className="min-h-0 flex-1 px-[20px] flex flex-col pb-[12px]">
             {screenshot ? (
               <div className="rounded-[8px] border-[1px] border-rabby-neutral-line mb-[16px]">
                 <img
@@ -364,8 +364,9 @@ export const ScreenshotContextMenu = () => {
                 unCheckBackground="transparent"
                 width="12px"
                 height="12px"
+                className="max-w-full [&>.rabby-checkbox\_\_label]:min-w-0"
                 checkBoxClassName={clsx(
-                  'rounded-[2px] border border-solid',
+                  'rounded-[2px] border border-solid shrink-0',
                   !includeAddress
                     ? 'border-rabby-neutral-foot'
                     : 'border-rabby-blue-default'
@@ -390,9 +391,9 @@ export const ScreenshotContextMenu = () => {
                   ) : null
                 }
               >
-                <span className="text-rabby-neutral-body text-[12px] leading-[14px] font-normal">
+                <div className="text-rabby-neutral-body text-[12px] leading-[14px] truncate min-w-0">
                   {t('component.screenshotModal.includeAddress')}
-                </span>
+                </div>
               </Checkbox>
             </div>
           </main>

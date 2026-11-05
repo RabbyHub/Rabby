@@ -4970,7 +4970,7 @@
       "title": "Screenshot to Feedback",
       "placeholder": "Describe the issue",
       "placeholderRequired": "Describe the issue (required)",
-      "includeAddress": "Share my addresses to help troubleshoot"
+      "includeAddress": "Share address for troubleshooting"
     },
     "feedbackPopup": {
       "title": "Response from Rabby Support",
