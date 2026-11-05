@@ -11,7 +11,13 @@
 // Once a rule matches, only a fee that parses strictly as zero is allowed;
 // a missing or malformed fee counts as a fee (fail closed).
 
-export type ExtraFeeProtocol = 'hyperliquid' | 'aster' | 'lighter';
+export type ExtraFeeProtocol =
+  | 'hyperliquid'
+  | 'aster'
+  | 'lighter'
+  | 'aevo'
+  | 'grvt'
+  | 'sodex';
 
 interface Rule<T> {
   protocol: ExtraFeeProtocol;
@@ -34,6 +40,10 @@ const KNOWN_INJECTOR_ADDRESSES = new Set([
 
 const isKnownInjectorAddress = (v: unknown) =>
   typeof v === 'string' && KNOWN_INJECTOR_ADDRESSES.has(v.toLowerCase());
+
+// The same extension's builder ids on venues that don't use addresses.
+const AEVO_KNOWN_INJECTORS = new Set(['builder_9a123be818849b20']);
+const SODEX_KNOWN_INJECTORS = new Set(['230500']);
 
 // That extension's Lighter integrator account per exchange (chainId ->
 // account index); indexes only mean something on their own chainId.
@@ -104,6 +114,23 @@ const asterAgentHasBuilder = (d: TypedData) => {
 
 const isNonEmptyString = (v: unknown) => typeof v === 'string' && v !== '';
 
+// Every named fee field is signed and strictly zero; otherwise it's a fee.
+const signedFeesAreZero = (d: TypedData, names: string[]) => {
+  const fields = signedFields(d);
+  return (
+    !!fields && names.every((n) => isZeroDecimal(signedValue(d, fields, n)))
+  );
+};
+
+const signedFieldMatches = (
+  d: TypedData,
+  name: string,
+  test: (v: unknown) => boolean
+) => {
+  const fields = signedFields(d);
+  return !!fields && test(signedValue(d, fields, name));
+};
+
 const TYPED_DATA_RULES: Rule<TypedData>[] = [
   {
     protocol: 'hyperliquid',
@@ -144,6 +171,42 @@ const TYPED_DATA_RULES: Rule<TypedData>[] = [
       (signedFields(d) ?? [])
         .filter((n) => /^(spot)?builder$/i.test(n))
         .some((n) => isKnownInjectorAddress(d.message[n])),
+  },
+  // The formats below come from the injector's own signing code, not from
+  // the official frontends, so with no official origins these rules only
+  // block approvals to a known injector and never the venue's own fees.
+  {
+    protocol: 'aevo',
+    origins: [],
+    match: (d) =>
+      d.domain.name === 'Aevo Mainnet' && d.primaryType === 'ApproveBuilder',
+    hasFee: (d) => !signedFeesAreZero(d, ['maxFeeRate']),
+    isKnownInjector: (d) =>
+      signedFieldMatches(d, 'builderId', (v) =>
+        AEVO_KNOWN_INJECTORS.has(String(v))
+      ),
+  },
+  {
+    protocol: 'grvt',
+    origins: [],
+    match: (d) =>
+      d.domain.name === 'GRVT Exchange' && d.primaryType === 'AuthorizeBuilder',
+    hasFee: (d) =>
+      !signedFeesAreZero(d, ['maxFutureFeeRate', 'maxSpotFeeRate']),
+    isKnownInjector: (d) =>
+      signedFieldMatches(d, 'builderAccountID', isKnownInjectorAddress),
+  },
+  {
+    protocol: 'sodex',
+    origins: [],
+    match: (d) =>
+      d.domain.name === 'universal' &&
+      d.primaryType === 'ApproveBuilderFeeAction',
+    hasFee: (d) => !signedFeesAreZero(d, ['maxFeeRate']),
+    isKnownInjector: (d) =>
+      signedFieldMatches(d, 'builderID', (v) =>
+        SODEX_KNOWN_INJECTORS.has(String(v))
+      ),
   },
 ];
 
