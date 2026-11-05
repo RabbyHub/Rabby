@@ -228,7 +228,7 @@ const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
   return (
     <>
       <DesktopPageWrap
-        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] mt-[18px] no-scrollbar"
+        className="w-full h-full bg-rb-neutral-bg-1 js-scroll-element px-[20px] pt-[18px]"
         ref={scrollContainerRef}
         style={style}
       >
