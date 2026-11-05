@@ -222,16 +222,40 @@ export const ScreenshotContextMenu = () => {
     }
   );
 
+  const getRememberedShareAddress = useCallback(async () => {
+    try {
+      return (await wallet.getScreenshotShareAddress()) === true;
+    } catch (error) {
+      console.error('Failed to read share address preference', error);
+      return false;
+    }
+  }, [wallet]);
+
+  const handleIncludeAddressChange = useCallback(
+    async (checked: boolean) => {
+      setIncludeAddress(checked);
+      try {
+        await wallet.setScreenshotShareAddress(checked);
+      } catch (error) {
+        console.error('Failed to save share address preference', error);
+      }
+    },
+    [wallet]
+  );
+
   const handleCapture = useCallback(async () => {
     await waitForPaint();
 
-    const dataUrl = await captureScreenshot();
+    const [dataUrl, shareAddress] = await Promise.all([
+      captureScreenshot(),
+      getRememberedShareAddress(),
+    ]);
 
     setScreenshot(dataUrl);
     setDescription('');
-    setIncludeAddress(false);
+    setIncludeAddress(shareAddress);
     setModalVisible(true);
-  }, []);
+  }, [getRememberedShareAddress]);
 
   const handleCancel = useCallback(() => {
     setModalVisible(false);
@@ -336,7 +360,7 @@ export const ScreenshotContextMenu = () => {
               <Checkbox
                 checked={includeAddress}
                 type="square"
-                onChange={setIncludeAddress}
+                onChange={handleIncludeAddressChange}
                 unCheckBackground="transparent"
                 width="12px"
                 height="12px"

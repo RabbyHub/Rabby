@@ -7095,6 +7095,8 @@ export class WalletController extends BaseController {
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
   removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
   clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
+  getScreenshotShareAddress = feedbackService.getScreenshotShareAddress;
+  setScreenshotShareAddress = feedbackService.setScreenshotShareAddress;
   setScreenshotContextMenuVisible =
     feedbackService.setScreenshotContextMenuVisible;
 
