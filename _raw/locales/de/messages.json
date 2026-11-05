@@ -4954,7 +4954,7 @@
       "title": "Screenshot an Feedback anhängen",
       "placeholder": "Beschreiben Sie das Problem",
       "placeholderRequired": "Beschreiben Sie das Problem (erforderlich)",
-      "includeAddress": "Meine Adressen zur Fehlerbehebung teilen"
+      "includeAddress": "Adresse zur Fehlerbehebung teilen"
     },
     "feedbackPopup": {
       "title": "Antwort des Rabby-Supports",

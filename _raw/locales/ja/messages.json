@@ -4954,7 +4954,7 @@
       "title": "フィードバック用スクリーンショット",
       "placeholder": "問題を説明してください",
       "placeholderRequired": "問題を説明してください（必須）",
-      "includeAddress": "問題調査のためにアドレスを共有する"
+      "includeAddress": "トラブルシューティングのためにアドレスを共有"
     },
     "feedbackPopup": {
       "title": "Rabbyサポートからの回答",
