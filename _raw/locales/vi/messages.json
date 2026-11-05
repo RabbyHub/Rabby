@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "Không có lịch sử giao dịch trong 90 ngày",
         "descThreeMonths": "Không có lịch sử giao dịch trong 90 ngày trên <2>các chuỗi được hỗ trợ</2>"
       },
+      "noMore": {
+        "title": "Không còn giao dịch nào.",
+        "titleInLast90Days": "Không còn giao dịch nào trong 90 ngày qua."
+      },
       "explain": {
         "approve": "Phê duyệt {{amount}} {{symbol}} cho {{project}}",
         "unknown": "Tương tác hợp đồng",
