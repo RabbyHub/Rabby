@@ -28,7 +28,7 @@ export type RequestSignPayload = {
 
 const wiredInteractions = new WeakSet<object>();
 
-type PagedAccount ={ address: string; balance: any; index: number };
+type PagedAccount = { address: string; balance: any; index: number };
 
 type GetDeviceReturnType<T extends boolean> = T extends true ? EthLegacy : Eth;
 
