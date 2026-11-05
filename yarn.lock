@@ -7660,6 +7660,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/readable-stream@npm:4.0.14":
+  version: 4.0.14
+  resolution: "@types/readable-stream@npm:4.0.14"
+  dependencies:
+    "@types/node": "npm:*"
+    safe-buffer: "npm:~5.1.1"
+  checksum: 10c0/28dee6f7ce67c5068f9eb6d6f72c4aa49c58d01c96fa343dcf8561b98f59bad559cb4a3d231eeaaed31fdc2b82f42e7ed0a509efc56b25a9c70de514fc341e24
+  languageName: node
+  linkType: hard
+
 "@types/retry@npm:0.12.1":
   version: 0.12.1
   resolution: "@types/retry@npm:0.12.1"
@@ -18689,6 +18699,7 @@ __metadata:
     "@types/react-dom": "npm:18.3.1"
     "@types/react-router-dom": "npm:^5.3.3"
     "@types/react-window": "npm:1.8.5"
+    "@types/readable-stream": "npm:4.0.14"
     "@types/sinon": "npm:10.0.13"
     "@types/styled-components": "npm:5.1.25"
     "@types/use-sync-external-store": "npm:0.0.3"
