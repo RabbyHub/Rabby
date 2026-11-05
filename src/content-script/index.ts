@@ -93,45 +93,13 @@ if (!isManifestV3) {
   injectProviderScript(false);
 }
 
-const getHardcodedBlockedHosts = (): string[] => {
-  const hosts = ['app.hyperliquid.xyz'];
-  try {
-    hosts.push(new URL(browser.runtime.getURL('')).hostname);
-  } catch {
-    // best-effort: skip if the extension origin can't be resolved
-  }
-  return hosts;
-};
-
-(async () => {
-  try {
-    if (window.top !== window) return;
-    // Disabled is the default, so gate on `enabled` first and skip the second
-    // round-trip entirely on the (hot) every-page-load path when it's off.
-    const enabled = (await browser.runtime.sendMessage({
-      type: 'controller',
-      method: 'getPerpsWidgetEnabled',
-      params: [],
-    })) as boolean;
-    if (!enabled) return;
-    const blockedHosts = (await browser.runtime.sendMessage({
-      type: 'controller',
-      method: 'getPerpsWidgetBlockedHosts',
-      params: [],
-    })) as string[];
-    // webpackMode: 'eager' inlines the widget into content-script.js. Without it,
-    // strict-CSP hosts (Google, GitHub) reject the chunk fetched from chrome-extension://.
-    const { bootPerpsWidget } = await import(
-      /* webpackMode: "eager" */ './perps-widget'
-    );
-    await bootPerpsWidget({
-      enabled: true,
-      blockedHosts: [
-        ...getHardcodedBlockedHosts(),
-        ...(Array.isArray(blockedHosts) ? blockedHosts : []),
-      ],
+// The perps widget (React UI included) is not bundled here. When it is
+// enabled, the background injects perps-widget.js into this tab, which also
+// avoids page CSP blocking a chunk fetched from chrome-extension://.
+if (window.top === window) {
+  browser.runtime
+    .sendMessage({ type: EXTENSION_MESSAGES.INJECT_PERPS_WIDGET })
+    .catch((err) => {
+      console.warn('[perps-widget] bootstrap failed', err);
     });
-  } catch (err) {
-    console.warn('[perps-widget] bootstrap failed', err);
-  }
-})();
+}
