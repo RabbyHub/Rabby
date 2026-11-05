@@ -356,7 +356,7 @@ describe('origin', () => {
         'https://robinhoodchain.lighter.xyz'
       )
     ).toBe('lighter');
-    // third-party sites are not checked
+    // third-party sites may charge their own builder fee
     expect(
       detectTypedAt(f.hyperliquidApproveBuilderFee, THIRD_PARTY)
     ).toBeNull();
@@ -377,6 +377,95 @@ describe('origin', () => {
       detectTypedAt(
         f.hyperliquidApproveBuilderFee,
         'http://app.hyperliquid.xyz'
+      )
+    ).toBeNull();
+  });
+});
+
+describe('known injectors on any origin', () => {
+  // known injector fee recipient, mixed case on purpose
+  const INJECTOR = '0x9C87bb379d5ff2fcbf2f83e619f9fccb95a40AD9';
+
+  const lighterWith = (index: string, chainId: string) =>
+    f.lighterApproveIntegratorText
+      .replace(
+        'integrator account index: 0x0000000000000def',
+        `integrator account index: ${index}`
+      )
+      .replace('chainId: 0x0000000000000130', `chainId: ${chainId}`);
+
+  it('blocks a hyperliquid approval to a known injector on a third-party site', () => {
+    const data = {
+      ...f.hyperliquidApproveBuilderFee,
+      message: { ...f.hyperliquidApproveBuilderFee.message, builder: INJECTOR },
+    };
+    expect(detectTypedAt(data, THIRD_PARTY)).toBe('hyperliquid');
+    // revoking it is still allowed
+    expect(
+      detectTypedAt(
+        { ...data, message: { ...data.message, maxFeeRate: '0%' } },
+        THIRD_PARTY
+      )
+    ).toBeNull();
+  });
+
+  it('only trusts the signed builder field', () => {
+    const { builder, ...rest } = f.hyperliquidApproveBuilderFee.message;
+    const declared = withMessage(f.hyperliquidApproveBuilderFee, {
+      ...rest,
+      Builder: builder,
+    });
+    expect(
+      detectTypedAt(
+        { ...declared, message: { builder: INJECTOR, ...declared.message } },
+        THIRD_PARTY
+      )
+    ).toBeNull();
+  });
+
+  it('blocks aster builder approvals to a known injector on a third-party site', () => {
+    expect(
+      detectTypedAt(
+        {
+          ...f.asterApproveBuilder,
+          message: { ...f.asterApproveBuilder.message, Builder: INJECTOR },
+        },
+        THIRD_PARTY
+      )
+    ).toBe('aster');
+    expect(
+      detectTypedAt(
+        {
+          ...f.asterApproveAgentWithSpotBuilder,
+          message: {
+            ...f.asterApproveAgentWithSpotBuilder.message,
+            SpotBuilder: INJECTOR,
+          },
+        },
+        THIRD_PARTY
+      )
+    ).toBe('aster');
+  });
+
+  it('blocks a lighter approval to a known injector on its own exchange only', () => {
+    // mainnet 304 -> 737834, Robinhood Chain 466324 -> 19366
+    expect(
+      detectTextAt(
+        lighterWith('0x00000000000b422a', '0x0000000000000130'),
+        THIRD_PARTY
+      )
+    ).toBe('lighter');
+    expect(
+      detectTextAt(
+        lighterWith('0x0000000000004ba6', '0x0000000000071d94'),
+        THIRD_PARTY
+      )
+    ).toBe('lighter');
+    // an index means nothing on another exchange
+    expect(
+      detectTextAt(
+        lighterWith('0x00000000000b422a', '0x0000000000071d94'),
+        THIRD_PARTY
       )
     ).toBeNull();
   });

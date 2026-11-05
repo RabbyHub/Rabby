@@ -1,9 +1,11 @@
 // Extra Fee Protection: detect signatures that approve a non-zero builder /
-// integrator fee, which extensions like Pocket Universe inject into dapps to
+// integrator fee, which some browser extensions inject into dapps to
 // charge users on every later order.
 //
-// Only requests from the protocol's official frontend origins are checked;
-// the same signature from any other site is left alone.
+// On the protocol's official frontend origins every non-zero approval is
+// blocked. On any other site a third-party frontend may legitimately charge
+// its own builder fee, so only approvals to a known injector's builder /
+// integrator are blocked there.
 //
 // To cover a new protocol, add one rule to TYPED_DATA_RULES or TEXT_RULES.
 // Once a rule matches, only a fee that parses strictly as zero is allowed;
@@ -16,7 +18,29 @@ interface Rule<T> {
   origins: string[];
   match: (data: T) => boolean;
   hasFee: (data: T) => boolean;
+  // The approved builder / integrator is a known injector (any origin).
+  isKnownInjector: (data: T) => boolean;
 }
+
+// Fee recipients of a browser extension known to inject builder
+// fees into these dapps. ponytail: static list, move to a server-pushed list
+// if more injectors or address rotation show up.
+const KNOWN_INJECTOR_ADDRESSES = new Set([
+  '0x9c87bb379d5ff2fcbf2f83e619f9fccb95a40ad9',
+  '0xdd2e29fac34f632c5ad1adc40d38525c6e2500d9',
+  '0x147cf09e7373b8fda6f12021f1b0f98d6da1a566',
+  '0x00bb4f788d4615c995dc8a64a9585f733bb53d49',
+]);
+
+const isKnownInjectorAddress = (v: unknown) =>
+  typeof v === 'string' && KNOWN_INJECTOR_ADDRESSES.has(v.toLowerCase());
+
+// That extension's Lighter integrator account per exchange (chainId ->
+// account index); indexes only mean something on their own chainId.
+const LIGHTER_KNOWN_INJECTORS: Record<string, string> = {
+  '304': '737834',
+  '466324': '19366',
+};
 
 type TypedData = {
   types?: Record<string, any>;
@@ -101,6 +125,12 @@ const TYPED_DATA_RULES: Rule<TypedData>[] = [
         ZERO_DECIMAL.test(fee.slice(0, -1))
       );
     },
+    isKnownInjector: (d) => {
+      const fields = signedFields(d);
+      return (
+        !!fields && isKnownInjectorAddress(signedValue(d, fields, 'builder'))
+      );
+    },
   },
   {
     protocol: 'aster',
@@ -110,6 +140,10 @@ const TYPED_DATA_RULES: Rule<TypedData>[] = [
       (ASTER_BUILDER_TYPES.includes(d.primaryType) ||
         (d.primaryType === 'ApproveAgent' && asterAgentHasBuilder(d))),
     hasFee: (d) => !asterFeeIsZero(d),
+    isKnownInjector: (d) =>
+      (signedFields(d) ?? [])
+        .filter((n) => /^(spot)?builder$/i.test(n))
+        .some((n) => isKnownInjectorAddress(d.message[n])),
   },
 ];
 
@@ -153,6 +187,9 @@ const TEXT_RULES: Rule<string[]>[] = [
       LIGHTER_FEE_COLLECTORS[String(lighterHex(lines, 'chainId'))] !==
         String(lighterHex(lines, 'integrator account index')) &&
       !LIGHTER_FEE_KEYS.every((key) => lighterHex(lines, key) === BigInt(0)),
+    isKnownInjector: (lines) =>
+      LIGHTER_KNOWN_INJECTORS[String(lighterHex(lines, 'chainId'))] ===
+      String(lighterHex(lines, 'integrator account index')),
   },
 ];
 
@@ -161,7 +198,10 @@ const isObject = (v: unknown): v is Record<string, any> =>
 
 const detect = <T>(rules: Rule<T>[], data: T, origin: string) =>
   rules.find(
-    (r) => r.origins.includes(origin) && r.match(data) && r.hasFee(data)
+    (r) =>
+      r.match(data) &&
+      r.hasFee(data) &&
+      (r.origins.includes(origin) || r.isKnownInjector(data))
   )?.protocol ?? null;
 
 export const detectExtraFeeTypedData = (
