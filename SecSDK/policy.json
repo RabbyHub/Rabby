@@ -97375,10 +97375,6 @@
       "src/ui/state/walletStatus.ts",
       "src/ui/store-hooks.ts",
       "src/ui/store.ts",
-      "src/ui/style/cssvars-custom.css",
-      "src/ui/style/cssvars.css",
-      "src/ui/style/index.less",
-      "src/ui/style/tailwind.css",
       "src/ui/style/var-defs.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/biometric.ts",
@@ -97641,30 +97637,6 @@
       "src/ui/state/preference.ts",
       "src/ui/utils/broadcastToUI.ts",
       "src/ui/wallet/index.ts"
-    ]
-  },
-  "src/ui/style/cssvars-custom.css": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/style/cssvars.css": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/style/index.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/style/tailwind.css": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/utils/WalletContext.tsx": {
