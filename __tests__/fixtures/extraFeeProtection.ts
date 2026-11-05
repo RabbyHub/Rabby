@@ -4,6 +4,11 @@
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
 const BUILDER = '0x1111111111111111111111111111111111111111';
 const USER = '0x2222222222222222222222222222222222222222';
+const EIP712_DOMAIN_NO_CONTRACT = [
+  { name: 'name', type: 'string' },
+  { name: 'version', type: 'string' },
+  { name: 'chainId', type: 'uint256' },
+];
 
 // SDK-derived, not captured from site (hyperliquid-python-sdk signing.py)
 export const hyperliquidApproveBuilderFee: Record<string, any> = {
@@ -191,3 +196,79 @@ export const lighterApproveIntegratorText = [
   'chainId: 0x0000000000000130',
   'Only sign this message for a trusted client!',
 ].join('\n');
+
+// Shapes follow the injector's own signing code (not captured from the
+// official frontends). Builders are test values.
+export const aevoApproveBuilder: Record<string, any> = {
+  types: {
+    EIP712Domain: EIP712_DOMAIN_NO_CONTRACT,
+    ApproveBuilder: [
+      { name: 'account', type: 'address' },
+      { name: 'builderId', type: 'string' },
+      { name: 'maxFeeRate', type: 'uint256' },
+      { name: 'nonce', type: 'uint256' },
+    ],
+  },
+  primaryType: 'ApproveBuilder',
+  domain: { name: 'Aevo Mainnet', version: '1', chainId: 1 },
+  message: {
+    account: USER,
+    builderId: 'builder_0000000000000001',
+    maxFeeRate: '500',
+    nonce: '1700000000000',
+  },
+};
+
+export const grvtAuthorizeBuilder: Record<string, any> = {
+  types: {
+    EIP712Domain: EIP712_DOMAIN_NO_CONTRACT,
+    AuthorizeBuilder: [
+      { name: 'mainAccountID', type: 'address' },
+      { name: 'builderAccountID', type: 'address' },
+      { name: 'maxFutureFeeRate', type: 'uint32' },
+      { name: 'maxSpotFeeRate', type: 'uint32' },
+      { name: 'nonce', type: 'uint32' },
+      { name: 'expiration', type: 'int64' },
+    ],
+  },
+  primaryType: 'AuthorizeBuilder',
+  domain: { name: 'GRVT Exchange', version: '0', chainId: 325 },
+  message: {
+    mainAccountID: USER,
+    builderAccountID: BUILDER,
+    maxFutureFeeRate: 1000,
+    maxSpotFeeRate: 1000,
+    nonce: 1,
+    expiration: '1800000000000000000',
+  },
+};
+
+export const sodexApproveBuilderFee: Record<string, any> = {
+  types: {
+    EIP712Domain: [
+      ...EIP712_DOMAIN_NO_CONTRACT,
+      { name: 'verifyingContract', type: 'address' },
+    ],
+    ApproveBuilderFeeAction: [
+      { name: 'chainID', type: 'uint64' },
+      { name: 'nonce', type: 'uint64' },
+      { name: 'accountID', type: 'uint64' },
+      { name: 'builderID', type: 'uint64' },
+      { name: 'maxFeeRate', type: 'uint64' },
+    ],
+  },
+  primaryType: 'ApproveBuilderFeeAction',
+  domain: {
+    name: 'universal',
+    version: '1',
+    chainId: 1,
+    verifyingContract: ZERO_ADDRESS,
+  },
+  message: {
+    chainID: '286623',
+    nonce: '1',
+    accountID: '42',
+    builderID: '1',
+    maxFeeRate: '2000',
+  },
+};

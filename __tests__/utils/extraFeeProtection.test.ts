@@ -471,6 +471,91 @@ describe('known injectors on any origin', () => {
   });
 });
 
+describe('injector-only venues (aevo, grvt, sodex)', () => {
+  const INJECTOR_ADDRESS = '0x9C87bb379d5ff2fcbf2f83e619f9fccb95a40AD9';
+  const AEVO = 'https://app.aevo.xyz';
+
+  const set = (data: any, patch: Record<string, unknown>) => ({
+    ...data,
+    message: { ...data.message, ...patch },
+  });
+
+  const cases = [
+    {
+      protocol: 'aevo',
+      data: f.aevoApproveBuilder,
+      injector: { builderId: 'builder_9a123be818849b20' },
+      zero: { maxFeeRate: '0' },
+    },
+    {
+      protocol: 'grvt',
+      data: f.grvtAuthorizeBuilder,
+      injector: { builderAccountID: INJECTOR_ADDRESS },
+      zero: { maxFutureFeeRate: 0, maxSpotFeeRate: 0 },
+    },
+    {
+      protocol: 'sodex',
+      data: f.sodexApproveBuilderFee,
+      injector: { builderID: '230500' },
+      zero: { maxFeeRate: '0' },
+    },
+  ];
+
+  it.each(cases)(
+    'blocks a $protocol approval to a known injector on any origin',
+    ({ protocol, data, injector }) => {
+      const injected = set(data, injector);
+      expect(detectTypedAt(injected, THIRD_PARTY)).toBe(protocol);
+      expect(detectTypedAt(injected, AEVO)).toBe(protocol);
+    }
+  );
+
+  it.each(cases)(
+    'allows a $protocol zero-fee approval to a known injector',
+    ({ data, injector, zero }) => {
+      expect(
+        detectTypedAt(set(data, { ...injector, ...zero }), THIRD_PARTY)
+      ).toBeNull();
+    }
+  );
+
+  it.each(cases)(
+    "leaves the $protocol venue's own builders alone, even on its site",
+    ({ data }) => {
+      expect(detectTypedAt(data, THIRD_PARTY)).toBeNull();
+      expect(detectTypedAt(data, AEVO)).toBeNull();
+    }
+  );
+
+  it('blocks grvt when only one of its fee fields is zero', () => {
+    const injected = set(f.grvtAuthorizeBuilder, {
+      builderAccountID: INJECTOR_ADDRESS,
+      maxFutureFeeRate: 0,
+    });
+    expect(detectTypedAt(injected, THIRD_PARTY)).toBe('grvt');
+  });
+
+  it('ignores an unsigned injector builder', () => {
+    const { builderId, ...rest } = f.aevoApproveBuilder.message;
+    const declared = withMessage(f.aevoApproveBuilder, {
+      ...rest,
+      BuilderId: builderId,
+    });
+    expect(
+      detectTypedAt(
+        {
+          ...declared,
+          message: {
+            builderId: 'builder_9a123be818849b20',
+            ...declared.message,
+          },
+        },
+        THIRD_PARTY
+      )
+    ).toBeNull();
+  });
+});
+
 it('treats missing preference as enabled', () => {
   expect(isExtraFeeProtectionOn(undefined)).toBe(true);
   expect(isExtraFeeProtectionOn(true)).toBe(true);
