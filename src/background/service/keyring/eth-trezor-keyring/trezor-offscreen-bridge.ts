@@ -12,6 +12,7 @@ import type {
   HardwareSigningMetadata,
   SigningAttempt,
 } from '../signing-diagnostics';
+import { getTrezorSigningDiagnostics } from './signing-error';
 
 export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
   isDeviceConnected = false;
@@ -128,12 +129,26 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
   getHardwareSigningMetadata = () => this.hardwareSigningMetadata;
 
-  getSigningDiagnostics = (_error?: unknown, _attempt?: SigningAttempt) => ({
-    wallet_provider: 'trezor' as const,
-    transport: 'usb' as const,
-    error_category: 'unknown' as const,
+  getSigningDiagnostics = (error?: unknown, _attempt?: SigningAttempt) => ({
+    ...getTrezorSigningDiagnostics(error, this.lastFailureCode),
     provider_metadata: this.hardwareSigningMetadata,
   });
+
+  // The keyring rethrows a failed response with its message only, so keep the
+  // Connect code here for diagnostics.
+  // ponytail: one slot per bridge; the device runs one signing call at a time.
+  private lastFailureCode?: string;
+
+  private sign<T>(action: TrezorAction, params: unknown) {
+    this.lastFailureCode = undefined;
+    return this.invokeAfterInit<T>(action, params).then((response: any) => {
+      if (response?.success === false) {
+        const code = response.payload?.code;
+        this.lastFailureCode = typeof code === 'string' ? code : undefined;
+      }
+      return response as T;
+    });
+  }
 
   dispose: TrezorBridgeInterface['dispose'] = async () => {
     if (!this.disposal) {
@@ -164,13 +179,13 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
   ethereumSignTransaction: TrezorBridgeInterface['ethereumSignTransaction'] = (
     params
-  ) => this.invokeAfterInit(TrezorAction.ethereumSignTransaction, params);
+  ) => this.sign(TrezorAction.ethereumSignTransaction, params);
 
   ethereumSignMessage: TrezorBridgeInterface['ethereumSignMessage'] = (
     params
-  ) => this.invokeAfterInit(TrezorAction.ethereumSignMessage, params);
+  ) => this.sign(TrezorAction.ethereumSignMessage, params);
 
   ethereumSignTypedData: TrezorBridgeInterface['ethereumSignTypedData'] = (
     params
-  ) => this.invokeAfterInit(TrezorAction.ethereumSignTypedData, params);
+  ) => this.sign(TrezorAction.ethereumSignTypedData, params);
 }
