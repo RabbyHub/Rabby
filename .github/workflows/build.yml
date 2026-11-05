@@ -58,3 +58,35 @@ jobs:
           name: Rabby_${{github.ref_name}}
           path: dist
           retention-days: 7
+
+  # build:pro no longer type-checks or lints, so these gate every PR instead
+  ci-checks:
+    name: lint and typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Setup node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22.17.1'
+          cache: yarn
+          cache-dependency-path: yarn.lock
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Use NPM Token with organization read access
+        uses: heisenberg-2077/use-npm-token-action@99c5b17c84a15e44fdcef6712b34b76f8f0493b0 # v1
+        with:
+          token: '${{ secrets.NPM_AUTH_TOKEN }}'
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: lint
+        run: yarn lint
+
+      - name: typecheck
+        run: yarn typecheck

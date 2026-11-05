@@ -94217,7 +94217,8 @@
       "node_modules/lodash/lodash.js",
       "node_modules/nanoid/index.browser.js",
       "src/background/utils/broadcastToUI.ts",
-      "src/background/webapi/index.ts"
+      "src/background/webapi/index.ts",
+      "src/utils/broadcastToUI.ts"
     ]
   },
   "src/background/utils/promiseFlow.ts": {
@@ -96919,6 +96920,7 @@
       "src/ui/hooks/usePreference.ts",
       "src/ui/state/walletStatus.ts",
       "src/ui/store.ts",
+      "src/ui/utils/address.ts",
       "src/ui/utils/clipboard.tsx",
       "src/ui/utils/index.ts",
       "src/ui/utils/token.ts",
@@ -97688,7 +97690,8 @@
   "src/ui/utils/broadcastToUI.ts": {
     "enable": true,
     "require": [
-      "src/eventBus.ts"
+      "src/eventBus.ts",
+      "src/utils/broadcastToUI.ts"
     ]
   },
   "src/ui/utils/clipboard.tsx": {
@@ -99824,6 +99827,22 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/views/CommonPopup/AssetList/components/DappActions/DappActionsForPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/message/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/component/MiniSignV2/state/SignatureManager.ts",
+      "src/ui/component/TokenWithChain/index.tsx",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/hooks/useSigner.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/CommonPopup/AssetList/components/DappActions/hook.ts"
+    ]
+  },
   "src/ui/views/CommonPopup/AssetList/components/DappActions/hook.ts": {
     "enable": true,
     "require": [
@@ -99838,6 +99857,7 @@
       "src/constant/index.ts",
       "src/ui/hooks/backgroundState/useAccount.ts",
       "src/ui/utils/index.ts",
+      "src/ui/views/CommonPopup/AssetList/components/DappActions/DappActionsForPopup.tsx",
       "src/utils/chain.ts"
     ]
   },
@@ -99917,7 +99937,6 @@
       "src/ui/assets/tokenDetail/IconNoFind.svg",
       "src/ui/component/ChainSelector/Modal.tsx",
       "src/ui/component/index.tsx",
-      "src/ui/component/MiniSignV2/state/SignatureManager.ts",
       "src/ui/component/PillsSwitch/NetSwitchTabs.tsx",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/component/TokenWithChain/index.tsx",
@@ -99926,12 +99945,10 @@
       "src/ui/component/WalletConnect/useSessionStatus.ts",
       "src/ui/hooks/backgroundState/useAccount.ts",
       "src/ui/hooks/useAppChain.ts",
-      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/useNFTCollections.ts",
       "src/ui/hooks/usePreference.ts",
       "src/ui/hooks/useRemovedTokens.ts",
       "src/ui/hooks/useSearchToken.ts",
-      "src/ui/hooks/useSigner.tsx",
       "src/ui/hooks/useSortTokens.ts",
       "src/ui/store.ts",
       "src/ui/utils/imKey.ts",
@@ -99947,6 +99964,7 @@
       "src/ui/views/Approval/components/WatchAddressWaiting/Scan.tsx",
       "src/ui/views/Approval/index.tsx",
       "src/ui/views/CommonPopup/AssetList/ChainItem.tsx",
+      "src/ui/views/CommonPopup/AssetList/components/DappActions/DappActionsForPopup.tsx",
       "src/ui/views/CommonPopup/AssetList/components/DappActions/hook.ts",
       "src/ui/views/CommonPopup/AssetList/components/Table.tsx",
       "src/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/AddCustomTestnetTokenPopup.tsx",
@@ -102657,7 +102675,8 @@
     "enable": true,
     "require": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/eventBus.ts"
+      "src/eventBus.ts",
+      "src/utils/broadcastToUI.ts"
     ]
   },
   "webpack:./changeLogs/ lazy ^\\.\\/.*$ include: \\.md$ referencedExports: default, default, default prefetchOrder: 0 preloadOrder: 0 namespace object": {
