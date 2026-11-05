@@ -458,6 +458,8 @@ const maskScreenshotFeedbackPageInfoAddresses = (
 
 const stashKeyrings: Record<string | number, any> = {};
 
+const keystoneMemStoreForwarded = new WeakSet<object>();
+
 // keyring methods the UI may invoke via requestKeyring; anything else is rejected
 const REQUEST_KEYRING_METHOD_ALLOWLIST = new Set([
   'activeAccounts',
@@ -4858,15 +4860,21 @@ export class WalletController extends BaseController {
     const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     const keyring: KeystoneKeyring = this.#getKeyringByType(keyringType);
     if (keyring) {
-      keyring.getInteraction().on(MemStoreDataReady, (request) => {
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-          params: {
-            request,
-          },
+      const interaction = keyring.getInteraction();
+      // Listen once: the keyring now also pushes each new sign request, so a
+      // listener per waiting-page mount would broadcast it many times.
+      if (!keystoneMemStoreForwarded.has(interaction)) {
+        keystoneMemStoreForwarded.add(interaction);
+        interaction.on(MemStoreDataReady, (request) => {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+            params: {
+              request,
+            },
+          });
         });
-      });
-      keyring.getInteraction().emit(AcquireMemeStoreData);
+      }
+      interaction.emit(AcquireMemeStoreData);
     }
   };
 
