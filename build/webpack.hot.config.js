@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const { codeInspectorPlugin } = require('code-inspector-plugin');
 const paths = require('./paths');
+const DedupeIdenticalPackagesPlugin = require('./dedupe-identical-packages');
 const child_process = require('child_process');
 const path = require('path');
 
@@ -167,6 +168,11 @@ const commonPlugins = [
     Buffer: ['buffer', 'Buffer'],
     process: 'process',
     dayjs: 'dayjs',
+  }),
+  // keep in step with webpack.common.config.js
+  new DedupeIdenticalPackagesPlugin({
+    nodeModules: paths.rootResolve('node_modules'),
+    packages: ['bn.js', 'semver', '@noble/hashes'],
   }),
   new webpack.DefinePlugin({
     'process.env.version': JSON.stringify(`version: ${APP_VERSION}`),
