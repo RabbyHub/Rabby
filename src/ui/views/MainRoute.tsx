@@ -1,110 +1,297 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, useEffect } from 'react';
 import { Switch, Route } from 'react-router-dom';
 import { PrivateRoute } from 'ui/component';
-import Welcome from './Welcome';
-import NoAddress from './NoAddress';
-import CreatePassword from './CreatePassword';
-import ImportMode from './ImportMode';
-import ImportPrivateKey from './ImportPrivateKey';
-import ImportJson from './ImportJson';
-import ImportWatchAddress from './ImportWatchAddress';
-import SelectAddress from './SelectAddress';
-import ImportSuccess from './ImportSuccess';
-import ImportGnosis from './ImportGnosisAddress';
-import ConnectLedger from './ImportHardware/LedgerConnect';
-import ConnectTrezor from './ImportHardware/TrezorConnect';
-import ConnectOneKey from './ImportHardware/OneKeyConnect';
-import ConnectedSites from './ConnectedSites';
-import Approval from './Approval';
-import TokenApproval from './TokenApproval';
-import NFTApproval from './NFTApproval';
-import AddAddress from './AddAddress';
-import ChainList from './ChainList';
-import AddressManagement from './AddressManagement';
-import SwitchLang from './SwitchLang';
-import Activities from './Activities';
-import { HistoryPage } from './History';
-import PerpsSingleCoin from './Perps/screen/SingleCoin';
-import { HistoryPage as PerpsHistoryPage } from './Perps/screen/HistoryPage';
-import ExploreMore from './Perps/screen/ExploreMore';
-import Staking from './Staking';
-import StakingDetail from './Staking/Detail';
-import AdvancedSettings from './AdvanceSettings';
-import RequestPermission from './RequestPermission';
-import SendToken from './SendToken';
-import SendNFT from './SendNFT';
-import Receive from './Receive/index';
-import WalletConnectTemplate from './WalletConnect';
-import AddressDetail from './AddressDetail';
-import AddressBackupMnemonics from './AddressBackup/Mnemonics';
-import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
-import Swap from './Swap';
+import './routeStyles';
 import { getUiType, useWallet } from '../utils';
-import CustomRPC from './CustomRPC';
-import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { CommonPopup } from './CommonPopup';
-import ManageAddress from './ManageAddress';
-import { NFTView } from './NFTView';
-import { QRCodeConnect } from './ImportHardware/QRCodeConnect';
-import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
-import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
-import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
-import { DappSearchPage } from './DappSearch';
-import RabbyPoints from './RabbyPoints';
-import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
-import InputMnemonics from './ImportMnemonics/InputMnemonics';
-import CreateMnemonics from './CreateMnemonics';
-import ImportHardware from './ImportHardware';
-import { CustomTestnet } from './CustomTestnet';
-import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
-import { AddNewAddress } from './AddAddress/AddNewAddress';
-import { AddMoreAddressesFromSeedPhrase } from './AddAddress/AddMoreAddressesFromSeedPhrase';
-import { CreateAddressSuccess } from './AddAddress/CreateAddressSuccess';
-import ImportAddressSuccess from './AddAddress/ImportAddressSuccess';
-import { HardwareWallets } from './AddAddress/HardwareWallets';
-import BulkImportPrivateKey from './AddAddress/BulkImportPrivateKey';
-import ImportKeyOrSeed from './AddAddress/ImportKeyOrSeed';
-import { InstitutionalWallets } from './AddAddress/InstitutionalWallets';
-import { Ecology } from './Ecology';
-import { Bridge } from './Bridge';
-import { GasAccount } from './GasAccount';
-import { GnosisQueue } from './GnosisQueue';
-import Perps from './Perps/screen/home';
-import { Guide } from './NewUserImport/Guide';
-import { CreateSeedPhrase } from './NewUserImport/CreateSeedPhrase';
-import { NewUserSetPassword } from './NewUserImport/SetPassword';
-import { NewUserImportGnosisAddress } from './NewUserImport/ImportGnosisAddress';
-import { NewUserImportLedger } from './NewUserImport/ImportLedger';
-import { NewUserImportImKey } from './NewUserImport/ImportImKey';
-import { NewUserImportKeystone } from './NewUserImport/ImportKeystone';
-import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
-import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
-import { ImportOrCreatedSuccess } from './NewUserImport/Success';
-import { ReadyToUse } from './NewUserImport/ReadyToUse';
-import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { KEYRING_CLASS } from '@/constant';
-import {
-  MetamaskModeDappsGuide,
-  MetamaskModeDappsList,
-} from './MetamaskModeDapps';
-import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
 import { getPageViewPath } from '../utils/ga-event';
-import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
-import { SyncToMobile } from '../utils/SyncToMobile/SyncToMobile';
-import WhitelistInput from './WhitelistInput';
 import { PortalHost } from '../component/PortalHost';
 import {
   GlobalSignerPortal,
   GlobalTypedDataSignerPortal,
 } from '../component/MiniSignV2/components';
-import SelectToAddress from './SelectToAddress';
-import { ImportWalletType } from './NewUserImport/ImportWalletType';
-import { ImportHardwareList } from './NewUserImport/importHardwareList';
-import { ImportSeedOrKey } from './NewUserImport/ImportSeedOrKey';
-import { BiometricUnlockSetup } from './BiometricUnlockSetup';
-import { ManageApprovals } from './ManageApprovals';
-import { ManageBatchRevokeApprovals } from './ManageBatchApprovals';
+
+// Each page is its own chunk, loaded the first time its route renders, so the
+// popup and the approval window only load the pages they show.
+function lazyPage<P extends object>(
+  load: () => Promise<React.ComponentType<P>>
+) {
+  // React.lazy's ref-aware props type doesn't line up with a generic P
+  const Page = (React.lazy(() =>
+    load().then((Component) => ({ default: Component }))
+  ) as unknown) as React.ComponentType<P>;
+  const LazyPage = (props: P) => (
+    <Suspense fallback={null}>
+      <Page {...props} />
+    </Suspense>
+  );
+  return LazyPage;
+}
+
+const Welcome = lazyPage(() => import('./Welcome').then((m) => m.default));
+const NoAddress = lazyPage(() => import('./NoAddress').then((m) => m.default));
+const CreatePassword = lazyPage(() =>
+  import('./CreatePassword').then((m) => m.default)
+);
+const ImportMode = lazyPage(() =>
+  import('./ImportMode').then((m) => m.default)
+);
+const ImportPrivateKey = lazyPage(() =>
+  import('./ImportPrivateKey').then((m) => m.default)
+);
+const ImportJson = lazyPage(() =>
+  import('./ImportJson').then((m) => m.default)
+);
+const ImportWatchAddress = lazyPage(() =>
+  import('./ImportWatchAddress').then((m) => m.default)
+);
+const SelectAddress = lazyPage(() =>
+  import('./SelectAddress').then((m) => m.default)
+);
+const ImportSuccess = lazyPage(() =>
+  import('./ImportSuccess').then((m) => m.default)
+);
+const ImportGnosis = lazyPage(() =>
+  import('./ImportGnosisAddress').then((m) => m.default)
+);
+const ConnectLedger = lazyPage(() =>
+  import('./ImportHardware/LedgerConnect').then((m) => m.default)
+);
+const ConnectTrezor = lazyPage(() =>
+  import('./ImportHardware/TrezorConnect').then((m) => m.default)
+);
+const ConnectOneKey = lazyPage(() =>
+  import('./ImportHardware/OneKeyConnect').then((m) => m.default)
+);
+const ConnectedSites = lazyPage(() =>
+  import('./ConnectedSites').then((m) => m.default)
+);
+const Approval = lazyPage(() => import('./Approval').then((m) => m.default));
+const TokenApproval = lazyPage(() =>
+  import('./TokenApproval').then((m) => m.default)
+);
+const NFTApproval = lazyPage(() =>
+  import('./NFTApproval').then((m) => m.default)
+);
+const AddAddress = lazyPage(() =>
+  import('./AddAddress').then((m) => m.default)
+);
+const ChainList = lazyPage(() => import('./ChainList').then((m) => m.default));
+const AddressManagement = lazyPage(() =>
+  import('./AddressManagement').then((m) => m.default)
+);
+const SwitchLang = lazyPage(() =>
+  import('./SwitchLang').then((m) => m.default)
+);
+const Activities = lazyPage(() =>
+  import('./Activities').then((m) => m.default)
+);
+const HistoryPage = lazyPage(() =>
+  import('./History').then((m) => m.HistoryPage)
+);
+const PerpsSingleCoin = lazyPage(() =>
+  import('./Perps/screen/SingleCoin').then((m) => m.default)
+);
+const PerpsHistoryPage = lazyPage(() =>
+  import('./Perps/screen/HistoryPage').then((m) => m.HistoryPage)
+);
+const ExploreMore = lazyPage(() =>
+  import('./Perps/screen/ExploreMore').then((m) => m.default)
+);
+const Staking = lazyPage(() => import('./Staking').then((m) => m.default));
+const StakingDetail = lazyPage(() =>
+  import('./Staking/Detail').then((m) => m.default)
+);
+const AdvancedSettings = lazyPage(() =>
+  import('./AdvanceSettings').then((m) => m.default)
+);
+const RequestPermission = lazyPage(() =>
+  import('./RequestPermission').then((m) => m.default)
+);
+const SendToken = lazyPage(() => import('./SendToken').then((m) => m.default));
+const SendNFT = lazyPage(() => import('./SendNFT').then((m) => m.default));
+const Receive = lazyPage(() =>
+  import('./Receive/index').then((m) => m.default)
+);
+const WalletConnectTemplate = lazyPage(() =>
+  import('./WalletConnect').then((m) => m.default)
+);
+const AddressDetail = lazyPage(() =>
+  import('./AddressDetail').then((m) => m.default)
+);
+const AddressBackupMnemonics = lazyPage(() =>
+  import('./AddressBackup/Mnemonics').then((m) => m.default)
+);
+const AddressBackupPrivateKey = lazyPage(() =>
+  import('./AddressBackup/PrivateKey').then((m) => m.default)
+);
+const Swap = lazyPage(() => import('./Swap').then((m) => m.default));
+const CustomRPC = lazyPage(() => import('./CustomRPC').then((m) => m.default));
+const ImportMyMetaMaskAccount = lazyPage(() =>
+  import('./ImportMyMetaMaskAccount').then((m) => m.ImportMyMetaMaskAccount)
+);
+const ManageAddress = lazyPage(() =>
+  import('./ManageAddress').then((m) => m.default)
+);
+const NFTView = lazyPage(() => import('./NFTView').then((m) => m.NFTView));
+const QRCodeConnect = lazyPage(() =>
+  import('./ImportHardware/QRCodeConnect').then((m) => m.QRCodeConnect)
+);
+const KeystoneConnect = lazyPage(() =>
+  import('./ImportHardware/KeystoneConnect').then((m) => m.KeystoneConnect)
+);
+const ImportCoboArgus = lazyPage(() =>
+  import('./ImportCoboArgus/ImportCoboArgus').then((m) => m.ImportCoboArgus)
+);
+const ImportCoinbase = lazyPage(() =>
+  import('./ImportCoinbase/ImportCoinbase').then((m) => m.ImportCoinbase)
+);
+const DappSearchPage = lazyPage(() =>
+  import('./DappSearch').then((m) => m.DappSearchPage)
+);
+const RabbyPoints = lazyPage(() =>
+  import('./RabbyPoints').then((m) => m.default)
+);
+const ImKeyConnect = lazyPage(() =>
+  import('./ImportHardware/ImKeyConnect').then((m) => m.ImKeyConnect)
+);
+const InputMnemonics = lazyPage(() =>
+  import('./ImportMnemonics/InputMnemonics').then((m) => m.default)
+);
+const CreateMnemonics = lazyPage(() =>
+  import('./CreateMnemonics').then((m) => m.default)
+);
+const ImportHardware = lazyPage(() =>
+  import('./ImportHardware').then((m) => m.default)
+);
+const CustomTestnet = lazyPage(() =>
+  import('./CustomTestnet').then((m) => m.CustomTestnet)
+);
+const AddFromCurrentSeedPhrase = lazyPage(() =>
+  import('./AddFromCurrentSeedPhrase').then((m) => m.AddFromCurrentSeedPhrase)
+);
+const AddNewAddress = lazyPage(() =>
+  import('./AddAddress/AddNewAddress').then((m) => m.AddNewAddress)
+);
+const AddMoreAddressesFromSeedPhrase = lazyPage(() =>
+  import('./AddAddress/AddMoreAddressesFromSeedPhrase').then(
+    (m) => m.AddMoreAddressesFromSeedPhrase
+  )
+);
+const CreateAddressSuccess = lazyPage(() =>
+  import('./AddAddress/CreateAddressSuccess').then(
+    (m) => m.CreateAddressSuccess
+  )
+);
+const ImportAddressSuccess = lazyPage(() =>
+  import('./AddAddress/ImportAddressSuccess').then((m) => m.default)
+);
+const HardwareWallets = lazyPage(() =>
+  import('./AddAddress/HardwareWallets').then((m) => m.HardwareWallets)
+);
+const BulkImportPrivateKey = lazyPage(() =>
+  import('./AddAddress/BulkImportPrivateKey').then((m) => m.default)
+);
+const ImportKeyOrSeed = lazyPage(() =>
+  import('./AddAddress/ImportKeyOrSeed').then((m) => m.default)
+);
+const InstitutionalWallets = lazyPage(() =>
+  import('./AddAddress/InstitutionalWallets').then(
+    (m) => m.InstitutionalWallets
+  )
+);
+const Ecology = lazyPage(() => import('./Ecology').then((m) => m.Ecology));
+const Bridge = lazyPage(() => import('./Bridge').then((m) => m.Bridge));
+const GasAccount = lazyPage(() =>
+  import('./GasAccount').then((m) => m.GasAccount)
+);
+const GnosisQueue = lazyPage(() =>
+  import('./GnosisQueue').then((m) => m.GnosisQueue)
+);
+const Perps = lazyPage(() =>
+  import('./Perps/screen/home').then((m) => m.default)
+);
+const Guide = lazyPage(() =>
+  import('./NewUserImport/Guide').then((m) => m.Guide)
+);
+const CreateSeedPhrase = lazyPage(() =>
+  import('./NewUserImport/CreateSeedPhrase').then((m) => m.CreateSeedPhrase)
+);
+const NewUserSetPassword = lazyPage(() =>
+  import('./NewUserImport/SetPassword').then((m) => m.NewUserSetPassword)
+);
+const NewUserImportGnosisAddress = lazyPage(() =>
+  import('./NewUserImport/ImportGnosisAddress').then(
+    (m) => m.NewUserImportGnosisAddress
+  )
+);
+const NewUserImportLedger = lazyPage(() =>
+  import('./NewUserImport/ImportLedger').then((m) => m.NewUserImportLedger)
+);
+const NewUserImportImKey = lazyPage(() =>
+  import('./NewUserImport/ImportImKey').then((m) => m.NewUserImportImKey)
+);
+const NewUserImportKeystone = lazyPage(() =>
+  import('./NewUserImport/ImportKeystone').then((m) => m.NewUserImportKeystone)
+);
+const NewUserImportOneKey = lazyPage(() =>
+  import('./NewUserImport/ImportOnekey').then((m) => m.NewUserImportOneKey)
+);
+const BackupSeedPhrase = lazyPage(() =>
+  import('./NewUserImport/BackupSeedPhrase').then((m) => m.BackupSeedPhrase)
+);
+const ImportOrCreatedSuccess = lazyPage(() =>
+  import('./NewUserImport/Success').then((m) => m.ImportOrCreatedSuccess)
+);
+const ReadyToUse = lazyPage(() =>
+  import('./NewUserImport/ReadyToUse').then((m) => m.ReadyToUse)
+);
+const NewUserImportHardware = lazyPage(() =>
+  import('./NewUserImport/ImportHardWare').then((m) => m.NewUserImportHardware)
+);
+const MetamaskModeDappsGuide = lazyPage(() =>
+  import('./MetamaskModeDapps').then((m) => m.MetamaskModeDappsGuide)
+);
+const MetamaskModeDappsList = lazyPage(() =>
+  import('./MetamaskModeDapps').then((m) => m.MetamaskModeDappsList)
+);
+const NewUserSelectAddress = lazyPage(() =>
+  import('./NewUserImport/SelectAddress').then((m) => m.NewUserSelectAddress)
+);
+const ConnectApproval = lazyPage(() =>
+  import('./Approval/components/Connect/SelectWalletApproval').then(
+    (m) => m.ConnectApproval
+  )
+);
+const SyncToMobile = lazyPage(() =>
+  import('../utils/SyncToMobile/SyncToMobile').then((m) => m.SyncToMobile)
+);
+const WhitelistInput = lazyPage(() =>
+  import('./WhitelistInput').then((m) => m.default)
+);
+const SelectToAddress = lazyPage(() =>
+  import('./SelectToAddress').then((m) => m.default)
+);
+const ImportWalletType = lazyPage(() =>
+  import('./NewUserImport/ImportWalletType').then((m) => m.ImportWalletType)
+);
+const ImportHardwareList = lazyPage(() =>
+  import('./NewUserImport/importHardwareList').then((m) => m.ImportHardwareList)
+);
+const ImportSeedOrKey = lazyPage(() =>
+  import('./NewUserImport/ImportSeedOrKey').then((m) => m.ImportSeedOrKey)
+);
+const BiometricUnlockSetup = lazyPage(() =>
+  import('./BiometricUnlockSetup').then((m) => m.BiometricUnlockSetup)
+);
+const ManageApprovals = lazyPage(() =>
+  import('./ManageApprovals').then((m) => m.ManageApprovals)
+);
+const ManageBatchRevokeApprovals = lazyPage(() =>
+  import('./ManageBatchApprovals').then((m) => m.ManageBatchRevokeApprovals)
+);
 
 const LogPageView = () => {
   const path = getPageViewPath(window.location.hash);
