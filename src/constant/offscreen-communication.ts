@@ -23,6 +23,7 @@ export enum ImKeyAction {
 }
 
 export enum OneKeyAction {
+  cancel = 'onekey-cancel',
   init = 'onekey-init',
   evmSignTransaction = 'onekey-evm-sign-transaction',
   evmSignMessage = 'onekey-evm-sign-message',
@@ -30,7 +31,7 @@ export enum OneKeyAction {
   searchDevices = 'onekey-search-devices',
   getPassphraseState = 'onekey-get-passphrase-state',
   evmGetPublicKey = 'onekey-evm-get-public-key',
-  getFeatures = 'onekey-get-device-features',
+  getDeviceState = 'onekey-get-device-state',
 }
 
 export enum TrezorAction {

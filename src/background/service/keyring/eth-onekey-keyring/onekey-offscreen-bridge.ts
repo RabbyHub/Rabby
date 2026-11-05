@@ -6,6 +6,17 @@ import {
 } from '@/constant/offscreen-communication';
 
 export default class OneKeyOffscreenBridge implements OneKeyBridgeInterface {
+  cancel: OneKeyBridgeInterface['cancel'] = async (...params) => {
+    const res = await browser.runtime.sendMessage({
+      target: OffscreenCommunicationTarget.onekeyOffscreen,
+      action: OneKeyAction.cancel,
+      params,
+    });
+    if (res?.error) {
+      throw new Error(res.error);
+    }
+  };
+
   init: OneKeyBridgeInterface['init'] = async () => {
     return new Promise((resolve, reject) => {
       browser.runtime
@@ -23,12 +34,13 @@ export default class OneKeyOffscreenBridge implements OneKeyBridgeInterface {
     });
   };
 
-  getFeatures: OneKeyBridgeInterface['getFeatures'] = () => {
+  getDeviceState: OneKeyBridgeInterface['getDeviceState'] = (...params) => {
     return new Promise((resolve, reject) => {
       browser.runtime
         .sendMessage({
           target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.getFeatures,
+          action: OneKeyAction.getDeviceState,
+          params,
         })
         .then((res) => {
           if (res?.error) {
