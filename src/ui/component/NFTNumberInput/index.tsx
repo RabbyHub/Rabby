@@ -69,9 +69,9 @@ const NumberInput = forwardRef<InputRef, Props>(
           ref={inputEl}
         />
         <Tooltip
-          overlayClassName={clsx('rectangle send-nft-tooltip', {
-            is1155: nftItem.is_erc1155,
-          })}
+          overlayClassName="rectangle"
+          placement="bottomRight"
+          arrowPointAtCenter
           title={
             nftItem.is_erc1155
               ? t('component.NFTNumberInput.erc1155Tips', {
