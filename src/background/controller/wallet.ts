@@ -216,6 +216,7 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
+import { hasBlockedAddress } from '../service/blockedAddress';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
@@ -264,12 +265,9 @@ type ScreenshotFeedbackPageInfo = {
   routePath?: string;
   userAgent?: string;
   userAgentData?: {
-    architecture?: string;
-    bitness?: string;
     brands?: { brand: string; version: string }[];
     fullVersionList?: { brand: string; version: string }[];
     mobile?: boolean;
-    model?: string;
     platform?: string;
     platformVersion?: string;
     uaFullVersion?: string;
@@ -321,6 +319,10 @@ type PostUserFeedbackParams = {
   image: string;
   pageInfo?: ScreenshotFeedbackPageInfo;
   totalBalanceText?: string;
+  /**
+   * Addresses are only attached when the user explicitly opts in.
+   */
+  includeAddress?: boolean;
 };
 
 const getSystemNameFromUserAgent = (userAgent?: string, platform?: string) => {
@@ -418,9 +420,7 @@ const getScreenshotFeedbackDeviceInfo = (
   const systemVersion =
     pageInfo?.userAgentData?.platformVersion ||
     getSystemVersionFromUserAgent(userAgent);
-  const deviceModel =
-    pageInfo?.userAgentData?.model ||
-    getDeviceModelFromUserAgent(userAgent, systemName);
+  const deviceModel = getDeviceModelFromUserAgent(userAgent, systemName);
   const manufacturer = inferManufacturer({
     deviceModel,
     systemName,
@@ -432,6 +432,27 @@ const getScreenshotFeedbackDeviceInfo = (
     manufacturer,
     systemName,
     systemVersion,
+  };
+};
+
+// Matches EVM addresses (40 hex) and longer hex strings such as tx hashes
+// (64 hex), since a tx hash also reveals its sender on-chain.
+const SCREENSHOT_FEEDBACK_ADDRESS_REGEX = /0x[0-9a-f]{40,}/gi;
+
+const maskScreenshotFeedbackAddresses = (value?: string) =>
+  value?.replace(SCREENSHOT_FEEDBACK_ADDRESS_REGEX, '0x***');
+
+// Routes such as /settings/address-detail?address=, /send-token?to= and
+// /send-nft?to= carry addresses in the URL.
+const maskScreenshotFeedbackPageInfoAddresses = (
+  pageInfo?: ScreenshotFeedbackPageInfo
+): ScreenshotFeedbackPageInfo | undefined => {
+  if (!pageInfo) return pageInfo;
+
+  return {
+    ...pageInfo,
+    pageUrl: maskScreenshotFeedbackAddresses(pageInfo.pageUrl),
+    routePath: maskScreenshotFeedbackAddresses(pageInfo.routePath),
   };
 };
 
@@ -491,6 +512,7 @@ export class WalletController extends BaseController {
   isBooted = () => keyringService.isBooted();
   getSignTxPreparation = getSignTxPreparation;
   getSignTxPreparationGas = getSignTxPreparationGas;
+  hasBlockedAddress = hasBlockedAddress;
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
@@ -756,19 +778,18 @@ export class WalletController extends BaseController {
       try {
         await postGasStationOrder();
       } catch (error) {
-        Sentry.captureException(
-          new Error(
-            'postGasStationOrder failed, params: ' +
-              JSON.stringify({
-                fromChainId: others.chainServerId,
-                toChainId: toChainId,
-                toTokenAmount,
-                fromTokenId: others.tokenId,
-                fromTokenAmount: fromTokenAmount,
-                fromUsdValue,
-              })
-          )
-        );
+        // Params go in extra, not the message: beforeSend keeps a token id
+        // only in a structured field, and a fixed title groups one issue.
+        Sentry.captureException(new Error('postGasStationOrder failed'), {
+          extra: {
+            fromChainId: others.chainServerId,
+            toChainId: toChainId,
+            toTokenAmount,
+            fromTokenId: others.tokenId,
+            fromTokenAmount: fromTokenAmount,
+            fromUsdValue,
+          },
+        });
       }
     }
   };
@@ -6595,6 +6616,7 @@ export class WalletController extends BaseController {
       RPCService.removeCustomRPC(chain.enum);
     }
     customTestnetService.remove(chainId);
+    syncChainService.disconnectSitesWithUnsupportedChain();
   };
   getCustomTestnetList = customTestnetService.getList;
 
@@ -7073,15 +7095,22 @@ export class WalletController extends BaseController {
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
   removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
   clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
+  getScreenshotShareAddress = feedbackService.getScreenshotShareAddress;
+  setScreenshotShareAddress = feedbackService.setScreenshotShareAddress;
   setScreenshotContextMenuVisible =
     feedbackService.setScreenshotContextMenuVisible;
 
   getScreenshotFeedbackExtra = async ({
-    pageInfo,
+    pageInfo: rawPageInfo,
+    includeAddress,
   }: Pick<
     PostUserFeedbackParams,
-    'pageInfo'
+    'pageInfo' | 'includeAddress'
   >): Promise<ScreenshotFeedbackExtra> => {
+    const shouldIncludeAddress = includeAddress === true;
+    const pageInfo = shouldIncludeAddress
+      ? rawPageInfo
+      : maskScreenshotFeedbackPageInfoAddresses(rawPageInfo);
     const version = process.env.release || '0';
     const manifest = Browser.runtime.getManifest();
     const manifestVersion = manifest.version || version;
@@ -7123,40 +7152,44 @@ export class WalletController extends BaseController {
 
       extra.myCallableAddressCount = accounts.length;
       extra.myUncallableAddressCount = importedAccounts.length;
-      extra.myFirstAddress = accounts[0]?.address;
-      extra.myFirstImportedAddress = importedAccounts[0]?.address;
+      if (shouldIncludeAddress) {
+        extra.myFirstAddress = accounts[0]?.address;
+        extra.myFirstImportedAddress = importedAccounts[0]?.address;
+      }
     } catch (error) {
       console.error('Failed to get screenshot feedback accounts extra', error);
     }
 
-    try {
-      const currentAccount = preferenceService.getCurrentAccount();
+    if (shouldIncludeAddress) {
+      try {
+        const currentAccount = preferenceService.getCurrentAccount();
 
-      extra.myCurrentAddress = currentAccount?.address;
-    } catch (error) {
-      console.error(
-        'Failed to get screenshot feedback current account extra',
-        error
-      );
-    }
-
-    try {
-      const mySceneAddresses: Record<string, string> = {};
-      const perpsAccount = await perpsService.getCurrentAccount();
-
-      if (perpsAccount?.address) {
-        mySceneAddresses.Perps = perpsAccount.address;
+        extra.myCurrentAddress = currentAccount?.address;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback current account extra',
+          error
+        );
       }
-      const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
-      if (gasAccount?.account?.address) {
-        mySceneAddresses.GasAccount = gasAccount?.account?.address;
+
+      try {
+        const mySceneAddresses: Record<string, string> = {};
+        const perpsAccount = await perpsService.getCurrentAccount();
+
+        if (perpsAccount?.address) {
+          mySceneAddresses.Perps = perpsAccount.address;
+        }
+        const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
+        if (gasAccount?.account?.address) {
+          mySceneAddresses.GasAccount = gasAccount?.account?.address;
+        }
+        extra.mySceneAddresses = mySceneAddresses;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback scene account extra',
+          error
+        );
       }
-      extra.mySceneAddresses = mySceneAddresses;
-    } catch (error) {
-      console.error(
-        'Failed to get screenshot feedback scene account extra',
-        error
-      );
     }
 
     try {
@@ -7172,9 +7205,11 @@ export class WalletController extends BaseController {
     content,
     image,
     pageInfo,
+    includeAddress,
   }: PostUserFeedbackParams) => {
     const extra = await this.getScreenshotFeedbackExtra({
       pageInfo,
+      includeAddress,
     });
 
     return openapiService.postUserFeedback({

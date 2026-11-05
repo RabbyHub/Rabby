@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "90日以内の取引履歴がありません",
         "descThreeMonths": "<2>サポートされているチェーン</2>で90日以内の取引履歴がありません"
       },
+      "noMore": {
+        "title": "これ以上の取引はありません。",
+        "titleInLast90Days": "過去90日間の取引はこれ以上ありません。"
+      },
       "explain": {
         "approve": "{{project}}用に{{amount}} {{symbol}}を承認",
         "unknown": "コントラクト操作",
@@ -4949,7 +4953,8 @@
     "screenshotModal": {
       "title": "フィードバック用スクリーンショット",
       "placeholder": "問題を説明してください",
-      "placeholderRequired": "問題を説明してください（必須）"
+      "placeholderRequired": "問題を説明してください（必須）",
+      "includeAddress": "問題調査のためにアドレスを共有する"
     },
     "feedbackPopup": {
       "title": "Rabbyサポートからの回答",

@@ -36,6 +36,14 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
 
   const isEmpty = (data?.length || 0) <= 0 && !loading;
 
+  // Only the local db path keeps 90 days; the api path has no window.
+  const noMoreText =
+    noMore && !loading && !loadingMore
+      ? isSupportAccount
+        ? t('page.transactions.noMore.titleInLast90Days')
+        : t('page.transactions.noMore.title')
+      : undefined;
+
   return (
     <div className="pb-[16px] px-[20px]">
       {loading ? (
@@ -56,7 +64,11 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
           ) : null}
           {isEmpty ? (
             <Empty
-              title={t('page.transactions.empty.noTxInThreeMonth')}
+              title={
+                isSupportAccount
+                  ? t('page.transactions.empty.noTxInThreeMonth')
+                  : t('page.transactions.empty.title')
+              }
               className="pt-[108px]"
             />
           ) : (
@@ -72,6 +84,17 @@ export const TransactionsTabPane: React.FC<TransactionsTabPaneProps> = ({
                 Footer: () => {
                   if (loadingMore) {
                     return <DesktopLoading count={3} active />;
+                  }
+                  if (noMoreText) {
+                    return (
+                      <div className="flex items-center gap-[8px] pt-[16px] pb-[4px]">
+                        <div className="flex-1 h-[1px] bg-rb-neutral-line" />
+                        <div className="text-center text-[13px] leading-[16px] text-rb-neutral-secondary">
+                          {noMoreText}
+                        </div>
+                        <div className="flex-1 h-[1px] bg-rb-neutral-line" />
+                      </div>
+                    );
                   }
                   return null;
                 },

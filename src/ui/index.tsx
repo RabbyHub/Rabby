@@ -5,6 +5,7 @@ import './style/cssvars.css';
 import './style/cssvars-custom.css';
 import './style/index.less';
 import './app';
+import { getUiType } from './utils/uiType';
 
 // in mv2, we need to import the app.tsx file delay to avoid ui render problem
 // setTimeout(() => {
@@ -12,12 +13,19 @@ import './app';
 // }, 0);
 
 // For fix chrome extension render problem in external screen
+// https://issues.chromium.org/issues/40631023 (crbug 971701): only the action
+// popup gets a wrong scale factor on a lower-DPI secondary display, so Tab,
+// desktop and notification windows are left alone.
+// A never-ending animation keeps the popup producing frames. It spins a 1px
+// element (same approach as MetaMask) rather than animating html opacity, which
+// visibly pulsed dark backgrounds every second.
 if (
+  getUiType().isPop &&
   // From testing the following conditions seem to indicate that the popup was opened on a secondary monitor
-  window.screenLeft < 0 ||
-  window.screenTop < 0 ||
-  window.screenLeft > window.screen.width ||
-  window.screenTop > window.screen.height
+  (window.screenLeft < 0 ||
+    window.screenTop < 0 ||
+    window.screenLeft > window.screen.width ||
+    window.screenTop > window.screen.height)
 ) {
   browser.runtime.getPlatformInfo().then((info) => {
     if (info.os === 'mac') {
@@ -25,15 +33,23 @@ if (
       fontFaceSheet.insertRule(`
         @keyframes redraw {
           0% {
-            opacity: 1;
+            transform: rotate(0deg);
           }
           100% {
-            opacity: .99;
+            transform: rotate(1turn);
           }
         }
       `);
       fontFaceSheet.insertRule(`
-        html {
+        body::after {
+          content: '';
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 1px;
+          height: 1px;
+          pointer-events: none;
+          background-color: var(--r-neutral-bg-1);
           animation: redraw 1s linear infinite;
         }
       `);

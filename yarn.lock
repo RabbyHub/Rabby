@@ -4892,16 +4892,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-action@npm:0.1.16":
-  version: 0.1.16
-  resolution: "@rabby-wallet/rabby-action@npm:0.1.16"
+"@rabby-wallet/rabby-action@npm:0.1.17":
+  version: 0.1.17
+  resolution: "@rabby-wallet/rabby-action@npm:0.1.17"
   peerDependencies:
     "@debank/common": "*"
     "@rabby-wallet/rabby-api": "*"
     "@rabby-wallet/rabby-security-engine": "*"
     bignumber.js: "*"
     p-queue: ^7.3.0
-  checksum: 10c0/aee12a1641268b84d459ff320e8cf7a10d17399a4669cdd49434817e4dc9a1cd83a0a5c8797ec81b4ad320e4b59307fe082358a5e02b114b1b15f42c90da7eb7
+  checksum: 10c0/3e2aca3f025e1aaa501a657f55ee6bd9a9fac781fad4297d5c2b1a3a319ee68b6f6512e380047d6ceae20359c56052e47ab1ac930c2fee9fa407f5a803b7b7c1
   languageName: node
   linkType: hard
 
@@ -4932,13 +4932,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-security-engine@npm:2.0.12":
-  version: 2.0.12
-  resolution: "@rabby-wallet/rabby-security-engine@npm:2.0.12"
+"@rabby-wallet/rabby-security-engine@npm:2.0.13":
+  version: 2.0.13
+  resolution: "@rabby-wallet/rabby-security-engine@npm:2.0.13"
   peerDependencies:
     "@debank/common": "*"
     "@rabby-wallet/rabby-api": "*"
-  checksum: 10c0/47473e5bc23b404390bfacfaf0adfc0e3acd6c717b3882423a22425d973fda774685f7547072bf96960fae6bdb7b7eeaf40b20a9921fb56c607cdab4902c2976
+  checksum: 10c0/1a7febc8b00ffb4a66b3cb7fcd36811c30b988d5216d5db8c19ce730951958a563da7ff77428dcc413d9a356434b78ce64d07a99c145b4bed52dc4443b5e8b7b
   languageName: node
   linkType: hard
 
@@ -4954,9 +4954,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-swap@npm:0.0.92":
-  version: 0.0.92
-  resolution: "@rabby-wallet/rabby-swap@npm:0.0.92"
+"@rabby-wallet/rabby-swap@npm:0.0.93":
+  version: 0.0.93
+  resolution: "@rabby-wallet/rabby-swap@npm:0.0.93"
   dependencies:
     "@ethersproject/abi": "npm:^5.7.0"
     "@uniswap/universal-router-sdk": "npm:5.14.0"
@@ -4967,7 +4967,7 @@ __metadata:
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.6.28"
-  checksum: 10c0/b8c8d85b2cfd4a38443996ff2f642cfb0396fbecad07ce5847f0049cc5500efe4028e12ca5ff690eba87db8a13108aa59c59f958a594edbc0a8fcef4f7fddbb4
+  checksum: 10c0/d119f3c56a714daa5075fb0cd6ec99e71c3139137b5b2d20c50dcce9f7419a9d60fb5b538a2c67465f04be857e99a79b88e79ef4e4144a193393b51392699163
   languageName: node
   linkType: hard
 
@@ -20667,11 +20667,11 @@ __metadata:
     "@rabby-wallet/gnosis-sdk": "npm:1.4.10"
     "@rabby-wallet/hyperliquid-sdk": "npm:1.1.19"
     "@rabby-wallet/page-provider": "npm:0.4.11"
-    "@rabby-wallet/rabby-action": "npm:0.1.16"
+    "@rabby-wallet/rabby-action": "npm:0.1.17"
     "@rabby-wallet/rabby-api": "npm:0.9.69"
     "@rabby-wallet/rabby-bridge": "npm:0.0.12"
-    "@rabby-wallet/rabby-security-engine": "npm:2.0.12"
-    "@rabby-wallet/rabby-swap": "npm:0.0.92"
+    "@rabby-wallet/rabby-security-engine": "npm:2.0.13"
+    "@rabby-wallet/rabby-swap": "npm:0.0.93"
     "@rabby-wallet/staking-sdk": "npm:0.1.0"
     "@safe-global/protocol-kit": "npm:5.0.3"
     "@safe-global/sdk-starter-kit": "npm:1.1.1"

@@ -1193,6 +1193,11 @@ export class SignatureSteps {
       config,
       autoSwitchGasAccount = true,
     } = params;
+    // Fired alongside prepareContext so the result is ready before the user acts.
+    const isBlockedPromise = SignatureSteps.checkBlockedAddress({
+      wallet,
+      txs,
+    });
     const prepared = await SignatureSteps.prepareContext({
       wallet,
       account,
@@ -1223,12 +1228,32 @@ export class SignatureSteps {
       }
     }
 
-    return SignatureSteps.toCtxFromPrepared({
-      prepared,
-      txs,
-      open: false,
-      switchGasAccount,
-    });
+    return {
+      ...SignatureSteps.toCtxFromPrepared({
+        prepared,
+        txs,
+        open: false,
+        switchGasAccount,
+      }),
+      isBlocked: await isBlockedPromise,
+    };
+  }
+
+  // Same rule as SignTx: neither sender nor receiver may be blocked.
+  static async checkBlockedAddress(params: {
+    wallet: WalletControllerType;
+    txs: Tx[];
+  }) {
+    const { wallet, txs } = params;
+    try {
+      // Background caches the answer, so the sign-time check reuses it.
+      return await wallet.hasBlockedAddress(
+        txs.flatMap((tx) => [tx.from, tx.to])
+      );
+    } catch (e) {
+      // Same as SignTx: don't block signing when the check itself fails.
+      return false;
+    }
   }
 
   static async openUICore(params: {

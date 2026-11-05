@@ -144,9 +144,16 @@ class SwapService {
         tx,
         tx_id: hash,
       }).catch((err) => {
-        Sentry.captureException(
-          `postSwap error: ${JSON.stringify(err)}| ${JSON.stringify(quoteInfo)}`
-        );
+        // The cause carries the error detail, and the ignore list still sees
+        // it, without putting it in the title. Quote fields go in extra so
+        // beforeSend keeps the token ids readable.
+        Sentry.captureException(new Error('postSwap failed', { cause: err }), {
+          extra: {
+            quote: quoteInfo.quote,
+            dex_id: quoteInfo.dex_id,
+            fee_rate: quoteInfo.fee_rate,
+          },
+        });
       });
     }
   };

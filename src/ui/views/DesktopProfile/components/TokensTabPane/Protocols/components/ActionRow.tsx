@@ -58,7 +58,7 @@ export const ActionRow = ({
           return (
             <DappActions
               key="withdraw"
-              data={portfolio?.withdraw_actions}
+              portfolio={portfolio}
               chain={portfolio?.pool.chain}
               type="withdraw"
               protocolLogo={protocolLogo}
@@ -70,7 +70,7 @@ export const ActionRow = ({
           return (
             <DappActions
               key="claim"
-              data={portfolio?.withdraw_actions}
+              portfolio={portfolio}
               chain={portfolio?.pool.chain}
               type="claim"
               protocolLogo={protocolLogo}

@@ -1,4 +1,8 @@
-import { MarketData, PositionAndOpenOrder } from '@/ui/state/perps';
+import {
+  MarketData,
+  PositionAndOpenOrder,
+  usePerpsStore,
+} from '@/ui/state/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
 import { Button, message, Modal, Table, Tooltip } from 'antd';
@@ -621,6 +625,16 @@ export const PositionsInfo: React.FC = () => {
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
+                  // Reverse opens new opposite exposure; plain closes stay
+                  // available to denied addresses.
+                  if (!usePerpsStore.getState().hasPermission) {
+                    perpsToast.error({
+                      title: t(
+                        'page.perpsPro.tradingPanel.notAvailableInRegion'
+                      ),
+                    });
+                    return;
+                  }
                   setSelectedCoin(record.coin);
                   setClosePositionType('reverse');
                   setClosePositionVisible(true);
