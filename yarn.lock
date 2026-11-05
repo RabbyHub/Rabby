@@ -25336,7 +25336,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"viem@npm:^2.21.8, viem@npm:^2.8.13":
+"viem@npm:^2.8.13":
   version: 2.48.4
   resolution: "viem@npm:2.48.4"
   dependencies:
