@@ -6,9 +6,9 @@ import { Button, Drawer, Modal, Skeleton } from 'antd';
 import { useScroll } from 'react-use';
 import { useSize, useDebounceFn } from 'ahooks';
 import { cloneDeep } from 'lodash';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKey } from '@/ui/query/queryKey';
 import { underline2Camelcase } from '@/background/utils';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { getKRCategoryByType } from '@/utils/transaction';
 import {
   ALIAS_ADDRESS,
   CHAINS,
@@ -27,6 +27,11 @@ import {
 import { WaitingSignMessageComponent } from './map';
 import { Account } from '@/background/service/preference';
 import { FooterBar } from './FooterBar/FooterBar';
+import { useRabbySelector } from '@/ui/store';
+import {
+  detectExtraFeeTypedData,
+  isExtraFeeProtectionOn,
+} from '@/utils/extraFeeProtection';
 import {
   SecurityEngineScopeProvider,
   useSecurityEngineStore,
@@ -41,11 +46,13 @@ import { getActionSecurityGate } from './SecurityEngine/actionSecurity';
 import Actions from './TypedDataActions';
 import {
   cleanEIP712Payload,
+  getNormalizeTypeDataVersion,
   isDeepJSON,
   normalizeTypeData,
+  NormalizeTypeDataFailure,
+  reportNormalizeTypeDataFailures,
 } from './TypedDataActions/utils';
 import {
-  ContextActionData,
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
@@ -54,7 +61,6 @@ import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPop
 import { useSignStore } from '@/ui/state/sign';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import clsx from 'clsx';
-import stats from '@/stats';
 import {
   parseAction,
   formatSecurityEngineContext,
@@ -67,7 +73,6 @@ import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
-import { ga4 } from '@/utils/ga4';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { getCexInfo } from '@/ui/state/exchange';
 import {
@@ -76,7 +81,6 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 import { tokenizeSignTypedDataMessage } from './signMessageHighlighter';
-import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
 
 interface SignTypedDataProps {
@@ -148,8 +152,6 @@ const SignTypedData = ({
   approvalId?: string;
 }) => {
   const currentAccount = params.isGnosis ? params.account! : account;
-  const renderStartAt = useRef(0);
-  const actionType = useRef('');
   const evaluationVersion = useRef(0);
   const renderSecurityVersion = evaluationVersion.current;
   const securityStateRef = useRef<{ canSign: boolean; evaluation: unknown }>({
@@ -174,7 +176,6 @@ const SignTypedData = ({
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const securityEngineCtx = useRef<any>(null);
-  const isUnparsedAction = useRef(false);
   const logId = useRef('');
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
@@ -185,9 +186,6 @@ const SignTypedData = ({
   const tokenDetail = useSignStore((state) => state.tokenDetail);
   const closeTokenDetailPopup = useSignStore(
     (state) => state.closeTokenDetailPopup
-  );
-  const [currentChainId, setCurrentChainId] = useState<number | undefined>(
-    undefined
   );
 
   const isGnosisAccount = currentAccount?.type === KEYRING_TYPE.GnosisKeyring;
@@ -225,15 +223,6 @@ const SignTypedData = ({
   ] = useState<ReactNode | null>();
 
   const { data, session, method, isGnosis } = params;
-  const requestKey = JSON.stringify([
-    approvalId,
-    method,
-    data,
-    session.origin,
-    currentAccount.address,
-    currentAccount.type,
-    currentChainId,
-  ]);
   const [parsedMessage, setParsedMessage] = useState('');
   const [_message, setMessage] = useState('');
 
@@ -241,10 +230,11 @@ const SignTypedData = ({
     () => /^eth_signTypedData(_v1)?$/.test(method),
     [method]
   );
-  const [signTypedData, rawMessage]: (null | Record<
-    string,
-    any
-  >)[] = useMemo(() => {
+  const [signTypedData, rawMessage, normalizeFailures]: [
+    Record<string, any> | null,
+    Record<string, any> | null,
+    NormalizeTypeDataFailure[]
+  ] = useMemo(() => {
     if (!isSignTypedDataV1) {
       try {
         const v = JSON.parse(data[1]);
@@ -256,19 +246,82 @@ const SignTypedData = ({
         }
 
         const displayData = cloneDeep(v2);
-        const normalized = normalizeTypeData(v2);
-        return [normalized, displayData];
+        const { typedData, failures } = normalizeTypeData(
+          v2,
+          getNormalizeTypeDataVersion(method)
+        );
+        return [typedData, displayData, failures];
       } catch (error) {
         console.error('parse signTypedData error: ', error);
-        return [null, null];
+        return [null, null, []];
       }
     }
-    return [null, null];
-  }, [data, isSignTypedDataV1]);
+    return [null, null, []];
+  }, [data, isSignTypedDataV1, method]);
+  useEffect(() => {
+    reportNormalizeTypeDataFailures(normalizeFailures, {
+      rawTypedData: data[1],
+    });
+  }, [data, normalizeFailures]);
+  const extraFeeProtectionOn = useRabbySelector((state) =>
+    isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
+  );
+  const extraFeeBlocked =
+    extraFeeProtectionOn &&
+    detectExtraFeeTypedData(rawMessage, session.origin) !== null;
+  const extraFeeBlockedReason = extraFeeBlocked ? (
+    <div>{t('page.signFooterBar.extraFeeProtectionBlocked')}</div>
+  ) : null;
   const normalizedSignTypedData = useMemo(
     () => normalizePolygonMetaTransactionTypedData(signTypedData),
     [signTypedData]
   );
+  const payloadChainId = normalizedSignTypedData?.domain?.chainId;
+  const currentChainQuery = useQuery({
+    queryKey: createQueryKey(
+      'approvalCurrentChainId',
+      { address: currentAccount.address },
+      {
+        approvalId,
+        origin: session.origin,
+        accountType: currentAccount.type,
+        method,
+        contextChainId: params.$ctx?.chainId,
+        payloadChainId,
+      }
+    ),
+    queryFn: async ({ signal }) => {
+      if (session.origin !== INTERNAL_REQUEST_ORIGIN) {
+        const site = await wallet.getConnectedSite(session.origin);
+        if (signal.aborted) throw new Error('Typed-data chain query aborted');
+        return site ? findChain({ enum: site.chain })?.id ?? null : null;
+      }
+      if (params.$ctx?.chainId) return params.$ctx.chainId;
+      return payloadChainId
+        ? findChain({ id: payloadChainId })?.id ?? null
+        : null;
+    },
+    networkMode: 'always',
+    gcTime: 0,
+    staleTime: 0,
+    retry: false,
+    refetchOnMount: 'always',
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+  });
+  const currentChainId = currentChainQuery.data ?? undefined;
+  const isLoadingCurrentChainId =
+    currentChainQuery.isPending || currentChainQuery.isFetching;
+  const currentChainIdError = currentChainQuery.isError;
+  const requestKey = JSON.stringify([
+    approvalId,
+    method,
+    data,
+    session.origin,
+    currentAccount.address,
+    currentAccount.type,
+    currentChainId,
+  ]);
 
   useEffect(() => {
     try {
@@ -361,26 +414,6 @@ const SignTypedData = ({
     accountAddress: currentAccount.address,
   });
 
-  const getCurrentChainId = async () => {
-    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
-      const site = await wallet.getConnectedSite(params.session.origin);
-      if (site) {
-        return findChain({
-          enum: site.chain,
-        })?.id;
-      }
-    } else if (params.$ctx?.chainId) {
-      return params.$ctx.chainId;
-    } else {
-      return chain?.id;
-    }
-  };
-  useEffect(() => {
-    getCurrentChainId().then((id) => {
-      setCurrentChainId(id);
-    });
-  }, [params.session.origin]);
-
   const {
     value: parsedResponse,
     loading,
@@ -430,6 +463,10 @@ const SignTypedData = ({
     securityEvaluation.revision === securityRevision &&
     securityEvaluation.message === parsedMessage;
   const evaluationReady =
+    // Resolving the site chain changes requestKey. Wait before showing content
+    // so fast testnet/V1 parsing cannot render once with an incomplete context.
+    !isLoadingCurrentChainId &&
+    !currentChainIdError &&
     !loading &&
     !error &&
     !preparationError &&
@@ -450,6 +487,7 @@ const SignTypedData = ({
     'typedData'
   );
   const securityCheckFailed =
+    currentChainIdError ||
     !!error ||
     preparationError ||
     (evaluationIsCurrent && securityEvaluation?.status === 'error');
@@ -458,7 +496,7 @@ const SignTypedData = ({
   const engineResults = isMultiActions ? [] : evaluationResults[0] || [];
   const multiActionEngineResultList = isMultiActions ? evaluationResults : [];
   securityStateRef.current = {
-    canSign: !securityBlocked && !isWatch,
+    canSign: !securityBlocked && !isWatch && !extraFeeBlocked,
     evaluation: securityEvaluation,
   };
   canSignCurrentRef.current = () => {
@@ -487,6 +525,9 @@ const SignTypedData = ({
     setPreparedActions(null);
     setPreparationError(false);
     setSecurityRevision((revision) => revision + 1);
+    if (currentChainIdError) {
+      void currentChainQuery.refetch();
+    }
     retryParse();
   };
 
@@ -596,46 +637,7 @@ const SignTypedData = ({
     return () => modal.destroy();
   }, [finishedSafeMessage, requestKey, securityEvaluation, securityBlocked]);
 
-  const report = async (
-    action:
-      | 'createSignText'
-      | 'startSignText'
-      | 'cancelSignText'
-      | 'completeSignText',
-    extra?: Record<string, any>
-  ) => {
-    if (currentAccount) {
-      matomoRequestEvent({
-        category: 'SignText',
-        action: action,
-        label: [
-          getKRCategoryByType(currentAccount.type),
-          currentAccount.brandName,
-        ].join('|'),
-        transport: 'beacon',
-      });
-
-      if (action === 'createSignText') {
-        ga4.fireEvent('Init_SignText', {
-          event_category: 'SignText',
-        });
-      } else if (action === 'startSignText') {
-        ga4.fireEvent('Submit_SignText', {
-          event_category: 'SignText',
-        });
-      }
-
-      await wallet.reportStats(action, {
-        type: currentAccount.brandName,
-        category: getKRCategoryByType(currentAccount.type),
-        method: underline2Camelcase(params.method),
-        ...extra,
-      });
-    }
-  };
-
   const handleCancel = () => {
-    report('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -683,7 +685,6 @@ const SignTypedData = ({
 
       return;
     }
-    report('startSignText');
     resolveWithSecurityGate({});
   };
 
@@ -736,14 +737,6 @@ const SignTypedData = ({
     return requireData;
   };
 
-  const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
-    addSignMessageOriginFallback(ctx, {
-      isUnparsedAction: isUnparsedAction.current,
-      isInternalOrigin: params.session.origin === INTERNAL_REQUEST_ORIGIN,
-      message: parsedMessage,
-      origin: params.session.origin,
-    });
-
   const getSecurityEngineResult = async ({
     data,
     requireData,
@@ -757,7 +750,7 @@ const SignTypedData = ({
         id: Number(data.chainId),
       })?.serverId;
     }
-    const baseCtx = await formatSecurityEngineContext({
+    const ctx = await formatSecurityEngineContext({
       type: 'typed_data',
       actionData: data,
       requireData,
@@ -769,7 +762,6 @@ const SignTypedData = ({
       },
       origin: params.session.origin,
     });
-    const ctx = withOriginFallback(baseCtx);
     const result = await executeEngine(ctx);
     if (
       !Array.isArray(result) ||
@@ -928,7 +920,6 @@ const SignTypedData = ({
     if (loading || error || parsedResponse?.requestKey !== requestKey) return;
     const prepare = async () => {
       const sender = isSignTypedDataV1 ? params.data[1] : params.data[0];
-      isUnparsedAction.current = typedDataActionData?.action === null;
       if (!typedDataActionData) {
         setPreparedActions({
           requestKey,
@@ -939,7 +930,6 @@ const SignTypedData = ({
         return;
       }
       logId.current = typedDataActionData.log_id;
-      actionType.current = typedDataActionData.action?.type || '';
       const multi = typedDataActionData.action?.type === 'multi_actions';
       const actionsToParse = multi
         ? (typedDataActionData.action!.data as MultiAction)
@@ -1075,24 +1065,10 @@ const SignTypedData = ({
   );
 
   useEffect(() => {
-    renderStartAt.current = Date.now();
     init();
     securityEngine.init();
     checkWachMode();
-    report('createSignText');
   }, []);
-
-  useEffect(() => {
-    if (!isLoading) {
-      const duration = Date.now() - renderStartAt.current;
-      stats.report('signPageRenderTime', {
-        type: 'typedata',
-        actionType: actionType.current,
-        chain: chain?.serverId || '',
-        duration,
-      });
-    }
-  }, [isLoading]);
 
   return (
     <SecurityEngineScopeProvider scope={actionSecurityGroups[0]?.scope}>
@@ -1187,16 +1163,21 @@ const SignTypedData = ({
               hasUnProcessSecurityResult={hasUnProcessSecurityResult}
               securityBlocked={securityBlocked}
               onSubmit={handleGnosisSign}
+              // the tooltip is forced open while disabled; hide it with the drawer
               enableTooltip={
-                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+                gnosisFooterBarVisible &&
+                (extraFeeBlocked ||
+                  currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring)
               }
               tooltipContent={
-                currentGnosisAdmin?.type ===
+                extraFeeBlockedReason ||
+                (currentGnosisAdmin?.type ===
                 KEYRING_TYPE.WatchAddressKeyring ? (
                   <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
-                ) : null
+                ) : null)
               }
               disabledProcess={
+                extraFeeBlocked ||
                 securityBlocked ||
                 currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
               }
@@ -1232,10 +1213,12 @@ const SignTypedData = ({
           securityLevel={securityLevel}
           hasUnProcessSecurityResult={hasUnProcessSecurityResult}
           onSubmit={() => handleAllow()}
-          enableTooltip={isWatch}
-          tooltipContent={cantProcessReason}
+          enableTooltip={isWatch || extraFeeBlocked}
+          tooltipContent={extraFeeBlockedReason || cantProcessReason}
           securityBlocked={securityBlocked}
-          disabledProcess={isLoading || isWatch || securityBlocked}
+          disabledProcess={
+            isLoading || isWatch || securityBlocked || extraFeeBlocked
+          }
           isTestnet={chain?.isTestnet}
           onIgnoreAllRules={handleIgnoreAllRules}
         />

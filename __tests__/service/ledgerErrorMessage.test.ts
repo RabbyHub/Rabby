@@ -192,6 +192,22 @@ describe('getLedgerErrorMessage', () => {
     });
   });
 
+  it('classifies a DMK disconnect during an APDU as disconnected', () => {
+    const keyring = new LedgerBridgeKeyring();
+
+    expect(
+      keyring.getLedgerSigningDiagnostics(
+        Object.assign(new Error('DeviceDisconnectedWhileSendingError'), {
+          cause: { _tag: 'DeviceDisconnectedWhileSendingError' },
+        })
+      )
+    ).toMatchObject({
+      error_category: 'disconnected',
+      provider_reason: 'device_disconnected',
+      provider_error_tag: 'DeviceDisconnectedWhileSendingError',
+    });
+  });
+
   it('classifies an explicit DMK user rejection as user cancellation', () => {
     const keyring = new LedgerBridgeKeyring();
     const diagnostics = keyring.getLedgerSigningDiagnostics({

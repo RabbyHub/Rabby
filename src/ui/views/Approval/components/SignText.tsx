@@ -2,12 +2,9 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { findChain } from '@/utils/chain';
 import { useLedgerDeviceConnected } from '@/ui/utils/ledger';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { getKRCategoryByType } from '@/utils/transaction';
 import { ParseTextResponse } from '@rabby-wallet/rabby-api/dist/types';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
-  ContextActionData,
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
@@ -35,10 +32,14 @@ import {
 } from 'ui/utils';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import { FooterBar } from './FooterBar/FooterBar';
+import { useRabbySelector } from '@/ui/store';
+import {
+  detectExtraFeeText,
+  isExtraFeeProtectionOn,
+} from '@/utils/extraFeeProtection';
 import RuleDrawer from './SecurityEngine/RuleDrawer';
 import Actions from './TextActions';
 import { WaitingSignMessageComponent } from './map';
-import stats from '@/stats';
 import {
   parseAction,
   formatSecurityEngineContext,
@@ -50,10 +51,8 @@ import { generateTypedData } from '@safe-global/protocol-kit';
 import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
 import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
-import { ga4 } from '@/utils/ga4';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { useSignStore } from '@/ui/state/sign';
-import { addSignMessageOriginFallback } from './signMessageOrigin';
 import { tokenizeSignMessageText } from './signMessageHighlighter';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
 
@@ -80,16 +79,23 @@ const SignText = ({
   approvalId?: string;
 }) => {
   const currentAccount = params.isGnosis ? params.account! : account;
-  const renderStartAt = useRef(0);
-  const actionType = useRef('');
+  // read after awaits: protection can be turned on while a sign is pending
+  const extraFeeBlockedRef = useRef(false);
   const [, resolveApproval, rejectApproval] = useApproval(
-    bindApproval(approvalId, 'SignText')
+    bindApproval(approvalId, 'SignText', () => !extraFeeBlockedRef.current)
   );
   const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
   const [hexData, from] = data;
   const signText = hex2Text(hexData);
+  const extraFeeProtectionOn = useRabbySelector((state) =>
+    isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
+  );
+  const extraFeeBlocked =
+    extraFeeProtectionOn &&
+    detectExtraFeeText(signText, params.session.origin) !== null;
+  extraFeeBlockedRef.current = extraFeeBlocked;
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isLedger, setIsLedger] = useState(false);
@@ -101,7 +107,6 @@ const SignText = ({
   const scrollRefSize = useSize(scrollRef);
   const scrollInfo = useScroll(scrollRef);
   const securityEngineCtx = useRef<any>(null);
-  const isUnparsedAction = useRef(false);
   const logId = useRef('');
   const [footerShowShadow, setFooterShowShadow] = useState(false);
   const [engineResults, setEngineResults] = useState<Result[]>([]);
@@ -199,47 +204,7 @@ const SignText = ({
 
   const isViewGnosisSafe = params?.$ctx?.isViewGnosisSafe;
 
-  const report = async (
-    action:
-      | 'createSignText'
-      | 'startSignText'
-      | 'cancelSignText'
-      | 'completeSignText',
-    extra?: Record<string, any>
-  ) => {
-    if (!currentAccount) {
-      return;
-    }
-    matomoRequestEvent({
-      category: 'SignText',
-      action: action,
-      label: [
-        getKRCategoryByType(currentAccount.type),
-        currentAccount.brandName,
-      ].join('|'),
-      transport: 'beacon',
-    });
-
-    if (action === 'createSignText') {
-      ga4.fireEvent('Init_SignText', {
-        event_category: 'SignText',
-      });
-    } else if (action === 'startSignText') {
-      ga4.fireEvent('Submit_SignText', {
-        event_category: 'SignText',
-      });
-    }
-
-    await wallet.reportStats(action, {
-      type: currentAccount.brandName,
-      category: getKRCategoryByType(currentAccount.type),
-      method: 'personalSign',
-      ...extra,
-    });
-  };
-
   const handleCancel = () => {
-    report('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -247,7 +212,7 @@ const SignText = ({
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const handleAllow = async () => {
-    if (activeApprovalPopup()) {
+    if (activeApprovalPopup() || extraFeeBlockedRef.current) {
       return;
     }
 
@@ -258,6 +223,7 @@ const SignText = ({
 
     if (currentAccount?.type === KEYRING_TYPE.HdKeyring) {
       await invokeEnterPassphrase(currentAccount.address);
+      if (extraFeeBlockedRef.current) return;
     }
 
     if (
@@ -277,20 +243,11 @@ const SignText = ({
 
       return;
     }
-    report('startSignText');
     resolveApproval({});
   };
 
-  const withOriginFallback = (ctx: ContextActionData): ContextActionData =>
-    addSignMessageOriginFallback(ctx, {
-      isUnparsedAction: isUnparsedAction.current,
-      isInternalOrigin: session.origin === INTERNAL_REQUEST_ORIGIN,
-      message: signText,
-      origin: session.origin,
-    });
-
   const executeSecurityEngine = async () => {
-    const baseCtx = await formatSecurityEngineContext({
+    const ctx = await formatSecurityEngineContext({
       type: 'text',
       actionData: parsedActionData || ({} as any),
       origin: session.origin,
@@ -302,7 +259,6 @@ const SignText = ({
         hasAddress: wallet.hasAddress,
       },
     });
-    const ctx = withOriginFallback(baseCtx);
     securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -367,7 +323,8 @@ const SignText = ({
     },
     {
       onSuccess(res) {
-        if (res?.isFinished) {
+        // a stored Safe signature must not bypass the protection
+        if (res?.isFinished && !extraFeeBlockedRef.current) {
           const modal = Modal.info({
             maskClosable: false,
             closable: false,
@@ -406,7 +363,6 @@ const SignText = ({
     sender: string
   ) => {
     logId.current = textActionData.log_id;
-    isUnparsedAction.current = textActionData.action === null;
     securityEngine.init();
     if (
       currentAccount?.type &&
@@ -414,7 +370,6 @@ const SignText = ({
     ) {
       rejectApproval('This address can not sign text message', false, true);
     }
-    actionType.current = textActionData?.action?.type || '';
     const parsed = parseAction({
       type: 'text',
       data: textActionData.action,
@@ -422,7 +377,7 @@ const SignText = ({
       sender,
     });
     setParsedActionData(parsed);
-    const baseCtx = await formatSecurityEngineContext({
+    const ctx = await formatSecurityEngineContext({
       type: 'text',
       actionData: parsed,
       origin: params.session.origin,
@@ -434,7 +389,6 @@ const SignText = ({
         hasAddress: wallet.hasAddress,
       },
     });
-    const ctx = withOriginFallback(baseCtx);
     securityEngineCtx.current = ctx;
     const result = await executeEngine(ctx);
     setEngineResults(result);
@@ -479,12 +433,7 @@ const SignText = ({
   }, [rules]);
 
   useEffect(() => {
-    renderStartAt.current = Date.now();
     checkWachMode();
-  }, []);
-
-  useEffect(() => {
-    report('createSignText');
   }, []);
 
   useEffect(() => {
@@ -529,7 +478,7 @@ const SignText = ({
     if (!safeInfo || !account) {
       return;
     }
-    if (activeApprovalPopup()) {
+    if (activeApprovalPopup() || extraFeeBlockedRef.current) {
       return;
     }
 
@@ -551,6 +500,7 @@ const SignText = ({
       );
     }
 
+    if (extraFeeBlockedRef.current) return;
     const typedData = generateTypedData({
       safeAddress: safeInfo.address,
       safeVersion: safeInfo.version,
@@ -596,18 +546,6 @@ const SignText = ({
     }
     return;
   };
-
-  useEffect(() => {
-    if (!isLoading) {
-      const duration = Date.now() - renderStartAt.current;
-      stats.report('signPageRenderTime', {
-        type: 'text',
-        actionType: actionType.current,
-        chain: '',
-        duration,
-      });
-    }
-  }, [isLoading]);
 
   return (
     <>
@@ -682,15 +620,22 @@ const SignText = ({
             // securityLevel={securityLevel}
             // hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             onSubmit={handleGnosisSign}
+            // the tooltip is forced open while disabled; hide it with the drawer
             enableTooltip={
-              currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
+              gnosisFooterBarVisible &&
+              (extraFeeBlocked ||
+                currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring)
             }
             tooltipContent={
-              currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring ? (
+              extraFeeBlocked ? (
+                <div>{t('page.signFooterBar.extraFeeProtectionBlocked')}</div>
+              ) : currentGnosisAdmin?.type ===
+                KEYRING_TYPE.WatchAddressKeyring ? (
                 <div>{t('page.signTx.canOnlyUseImportedAddress')}</div>
               ) : null
             }
             disabledProcess={
+              extraFeeBlocked ||
               currentGnosisAdmin?.type === KEYRING_TYPE.WatchAddressKeyring
             }
             // isSubmitting={isSubmittingGnosis}
@@ -708,11 +653,22 @@ const SignText = ({
           originLogo={params.session.icon}
           gnosisAccount={isGnosis ? params.account : undefined}
           account={currentAccount}
-          enableTooltip={isWatch}
-          tooltipContent={cantProcessReason}
+          enableTooltip={isWatch || extraFeeBlocked}
+          tooltipContent={
+            extraFeeBlocked ? (
+              <div>{t('page.signFooterBar.extraFeeProtectionBlocked')}</div>
+            ) : (
+              cantProcessReason
+            )
+          }
           onCancel={handleCancel}
           onSubmit={() => handleAllow()}
-          disabledProcess={isLoading || isWatch || hasUnProcessSecurityResult}
+          disabledProcess={
+            isLoading ||
+            isWatch ||
+            hasUnProcessSecurityResult ||
+            extraFeeBlocked
+          }
           engineResults={engineResults}
           onIgnoreAllRules={handleIgnoreAllRules}
         />

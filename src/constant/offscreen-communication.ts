@@ -76,4 +76,5 @@ export enum KnownOrigins {
 
 export enum LedgerAction {
   ledgerDeviceDisconnect = 'ledger-device-disconnect',
+  ledgerDeviceConnect = 'ledger-device-connect',
 }

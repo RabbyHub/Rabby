@@ -8,7 +8,6 @@ import {
   usePreferenceStore,
 } from '@/ui/state/preference';
 import { wallet } from '@/ui/wallet';
-import { ga4 } from '@/utils/ga4';
 import {
   getDefaultRateGuideLastExposure,
   LAST_EXPOSURE_VERSIONED_KEY,
@@ -16,12 +15,6 @@ import {
 
 jest.mock('@/i18n', () => ({
   changeLanguage: jest.fn(),
-}));
-
-jest.mock('@/utils/ga4', () => ({
-  ga4: {
-    fireEvent: jest.fn(),
-  },
 }));
 
 jest.mock('@/ui/wallet', () => ({
@@ -191,9 +184,6 @@ describe('preference store', () => {
       .switchThemeMode(DARK_MODE_TYPE.dark);
     expect(usePreferenceStore.getState().themeMode).toBe(DARK_MODE_TYPE.dark);
     expect(wallet.setThemeMode).toHaveBeenCalledWith(DARK_MODE_TYPE.dark);
-    expect(ga4.fireEvent).toHaveBeenCalledWith('ThemeMode_Dark', {
-      event_category: 'Settings Snapshot',
-    });
   });
 
   test('updates biometric and rate-guide state after background writes', async () => {

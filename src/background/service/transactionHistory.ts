@@ -12,7 +12,6 @@ import openapiService, {
   BridgeHistory,
 } from './openapi';
 import { INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM, EVENTS } from 'consts';
-import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
 import { findChain, findChainByID } from '@/utils/chain';
@@ -98,9 +97,11 @@ export interface BridgeTxHistoryItem {
   status: 'pending' | 'fromSuccess' | 'fromFailed' | 'allSuccess' | 'failed';
   hash: string;
   acceleratedHash?: string;
-  estimatedDuration: number; // ms from server
+  isCanceled?: boolean;
+  estimatedDuration: number; // seconds from the quote
   createdAt: number;
   fromTxCompleteTs?: number;
+  toTxId?: string;
   actualToToken?: TokenItem; // actual token, may be not toToken
   actualToAmount?: number; // actual amount
   completedAt?: number;
@@ -463,6 +464,12 @@ class TxHistory {
       .slice(0, 200);
   }
 
+  getBridgeTxHistory(address: string) {
+    return this.store.bridgeTxHistory.filter((item) =>
+      isSameAddress(item.address, address)
+    );
+  }
+
   getRecentPendingTxHistory(address: string, type: keyof InnerTxHistoryMap) {
     const recentItem = this.store[`${type}TxHistory`]
       .filter((item) => {
@@ -540,8 +547,11 @@ class TxHistory {
       if (item.fromChainId === chainId && hashArr.includes(item.hash)) {
         return {
           ...item,
-          status: status === 'success' ? 'fromSuccess' : 'fromFailed',
+          // 取消成功代表原跨链未执行，按源链失败展示。
+          status:
+            status === 'success' && !isCancel ? 'fromSuccess' : 'fromFailed',
           acceleratedHash: completedHash || item.hash,
+          isCanceled: isCancel,
           fromTxCompleteTs: completedAt,
         };
       }
@@ -595,12 +605,19 @@ class TxHistory {
     bridgeTx?: BridgeHistory
   ) {
     this.store.bridgeTxHistory = this.store.bridgeTxHistory.map((item) => {
-      if (item.fromChainId === chainId && item.hash === from_tx_id) {
+      // 加速后调用方可能传入新 hash，两种 hash 都应更新同一条本地记录。
+      if (
+        item.fromChainId === chainId &&
+        (item.hash === from_tx_id || item.acceleratedHash === from_tx_id)
+      ) {
+        // 已取消的跨链不再接受远程完成结果。
+        if (item.isCanceled) return item;
         return {
           ...item,
           status,
           actualToToken: bridgeTx?.to_actual_token,
           actualToAmount: bridgeTx?.actual.receive_token_amount,
+          toTxId: bridgeTx?.to_tx?.tx_id || item.toTxId,
           completedAt: Date.now(),
         };
       }
@@ -1281,22 +1298,6 @@ class TxHistory {
         [key]: target,
       },
     });
-    const chain = findChain({
-      id: +target.chainId,
-    });
-    if (chain) {
-      stats.report('completeTransaction', {
-        chainId: chain.serverId,
-        success,
-        preExecSuccess: target?.explain
-          ? target.explain?.pre_exec.success && target.explain?.calcSuccess
-          : true,
-        createdBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
-        source: target?.$ctx?.ga?.source || '',
-        trigger: target?.$ctx?.ga?.trigger || '',
-        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-      });
-    }
     this.clearBefore({ address, chainId, nonce });
   }
 

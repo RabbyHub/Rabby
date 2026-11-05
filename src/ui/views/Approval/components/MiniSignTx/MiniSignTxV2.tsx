@@ -42,7 +42,6 @@ import { useSignStore } from '@/ui/state/sign';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 import { DrawerProps, ModalProps } from 'antd';
-import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
 import {
   calcTempoMaxGasCostRawAmountIn18,
   isTempoBatchSupportedAccountType,
@@ -128,8 +127,6 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   const errorPopupVisible = !!error && !!ctx?.signInfo?.status;
   const loading =
     status === 'prefetching' || status === 'signing' || !ctx?.txsCalc.length;
-
-  useSetReportGasLevel(ctx?.selectedGas?.level);
 
   useGasAccountInfo();
   const { sig, accountId: gasAccountAddress } = useGasAccountSign();

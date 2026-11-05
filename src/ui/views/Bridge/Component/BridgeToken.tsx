@@ -317,6 +317,9 @@ export const BridgeToken = ({
 
   useLayoutEffect(() => {
     if (isFromToken) {
+      if (value === '') {
+        isReserveMaxRef.current = false;
+      }
       if (
         document?.activeElement !== inputRef.current?.input &&
         !isMaxRef.current

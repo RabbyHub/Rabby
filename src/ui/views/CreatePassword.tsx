@@ -1,15 +1,12 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
-import { Input, Form, Spin, Button, Drawer } from 'antd';
+import { Input, Form, Spin, Button } from 'antd';
 import { openInTab, useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
 import IconCheck from 'ui/assets/check.svg';
 import clsx from 'clsx';
 import { useCss, useToggle } from 'react-use';
-import ReactMarkdown from 'react-markdown';
-import TermOfUse from '@/constant/term-of-use.md';
-import remarkGfm from 'remark-gfm';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -58,8 +55,6 @@ const CreatePassword = () => {
 
   const [agreeTerm, toggleAgreeTerm] = useToggle(true);
 
-  const [visible, toggleVisible] = useToggle(false);
-
   const isInvalidForm = useCallback(
     () =>
       form.getFieldsError().some((e) => e.errors.length > 0) ||
@@ -81,34 +76,6 @@ const CreatePassword = () => {
     openInTab('https://rabby.io/docs/privacy');
   };
 
-  const drawClassName = useCss({
-    '& .ant-drawer-content': {
-      boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
-      borderRadius: '16px 16px 0px 0',
-    },
-    '& .ant-drawer-body': {
-      'h1,h2': {
-        fontSize: '15px',
-        fontWeight: '700',
-        color: 'var(--r-neutral-title1)',
-        margin: '20px 0',
-      },
-      p: {
-        margin: '0 0 10px 0',
-      },
-      li: {
-        marginTop: '4px',
-      },
-      'p,li': {
-        fontSize: '14px',
-        color: 'var(--r-neutral-body)',
-      },
-      'ol, ul': {
-        listStyle: 'disc outside none',
-        paddingLeft: '14px ',
-      },
-    },
-  });
   const spinClass = useCss({
     '&.ant-spin-nested-loading ,& .ant-spin-container': {
       height: '100%',
@@ -255,35 +222,6 @@ const CreatePassword = () => {
           </div>
         </Form>
       </div>
-
-      <Drawer
-        placement="bottom"
-        width={'100%'}
-        visible={visible}
-        onClose={toggleVisible}
-        className={clsx(drawClassName, 'is-support-darkmode')}
-        contentWrapperStyle={{
-          boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
-          borderRadius: '16px 16px 0px 0',
-          height: 580,
-        }}
-      >
-        <header className="text-r-neutral-title1 mb-[20px] text-20 font-medium leading-[20px] text-center">
-          Rabby Term of Use
-        </header>
-        <div
-          className="overflow-scroll"
-          style={{
-            maxHeight: 496,
-          }}
-        >
-          <ReactMarkdown
-            className="markdown-body"
-            children={TermOfUse}
-            remarkPlugins={[remarkGfm]}
-          />
-        </div>
-      </Drawer>
     </Spin>
   );
 };

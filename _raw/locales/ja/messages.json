@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "90日以内の取引履歴がありません",
         "descThreeMonths": "<2>サポートされているチェーン</2>で90日以内の取引履歴がありません"
       },
+      "noMore": {
+        "title": "これ以上の取引はありません。",
+        "titleInLast90Days": "過去90日間の取引はこれ以上ありません。"
+      },
       "explain": {
         "approve": "{{project}}用に{{amount}} {{symbol}}を承認",
         "unknown": "コントラクト操作",
@@ -503,6 +507,7 @@
       "cancelAll": "すべての {{count}} 件の要求をDappからキャンセルします",
       "imKeyNotConnected": "imKeyは接続されていません",
       "imKeyConnected": "imKey が接続されています",
+      "extraFeeProtectionBlocked": "追加手数料保護がこの署名リクエストをブロックしました。署名する場合は、設定でオフにしてください",
       "blockDappFromSendingRequests": "Dappが1分間リクエストを送信するのをブロック。",
       "cancelCurrentConnection": "現在の接続をキャンセル",
       "cancelTransaction": "トランザクションをキャンセル",
@@ -1363,7 +1368,9 @@
           "perpsFloatWidget": "パーペチュアル・フローティングウィジェット",
           "currency": "通貨",
           "searchCurrency": "通貨を検索",
-          "dataAnalysis": "データ分析"
+          "dataAnalysis": "データ分析",
+          "extraFeeProtection": "追加手数料保護",
+          "extraFeeProtectionDesc": "ブラウザ拡張機能による追加手数料の徴収を許可する署名リクエストをブロックします"
         },
         "aboutUs": "私たちについて",
         "currentVersion": "現在のバージョン",
@@ -1407,7 +1414,13 @@
         "biometricUnlockSetupDesc": "バイオメトリックロック解除を有効にするには、パスワードを確認してください。",
         "clearPendingCheckbox": "ローカルの nonce データと署名履歴もリセットする",
         "biometricUnlockSetupTitle": "バイオメトリックロック解除を有効にする",
-        "biometricUnlockEnableFailed": "生体認証のアンロックを有効にできませんでした。"
+        "biometricUnlockEnableFailed": "生体認証のアンロックを有効にできませんでした。",
+        "removedToken": {
+          "title": "削除済みトークン",
+          "description": "削除済みトークンは、すべてのアドレスのポートフォリオで非表示になりますが、引き続き残高の計算に含まれます。",
+          "loadFailed": "トークンの読み込みに失敗しました",
+          "retry": "再試行"
+        }
       },
       "tokenDetail": {
         "blockedTip": "ブロックされたトークンはトークンリストに表示されません",
@@ -1451,7 +1464,19 @@
         "ListedBy": "掲載元",
         "fdvTips": "市場の時価総額は、最大供給量が流通している場合です。完全希薄評価（FDV） = 価格 x 最大供給量。最大供給量が null の場合、FDV = 価格 x 総供給量。最大供給量および総供給量のいずれも定義されていないか無限の場合、FDV は表示されません。",
         "bridgeToEth": "Ethereumチェーンへのブリッジ",
-        "bridge": "ブリッジ"
+        "bridge": "ブリッジ",
+        "removed": {
+          "more": "その他",
+          "removeToken": "トークンを削除",
+          "remove": "削除",
+          "confirmTitle": "このトークンを削除しますか？",
+          "portfolioNotice": "削除後、このトークンはポートフォリオに表示されなくなります。",
+          "restoreNotice": "「設定 >> 削除済みトークン」からいつでも復元できます。",
+          "warning": "削除済みトークンは、すべてのアドレスのポートフォリオで非表示になりますが、引き続き残高の計算に含まれます。",
+          "removeFailed": "トークンの削除に失敗しました",
+          "restore": "削除済みトークンを復元",
+          "restoreFailed": "トークンの復元に失敗しました"
+        }
       },
       "assets": {
         "usdValue": "USD換算額",
@@ -1748,6 +1773,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "パソコンの時刻が同期されていないため、WalletConnect に接続できません。日付と時刻の自動設定を有効にしてから、もう一度お試しください。",
         "connectYour": "ウォレットを接続",
         "viaWalletConnect": "WalletConnect経由",
         "connectedSuccessfully": "接続しました",
@@ -2362,9 +2388,44 @@
         "receivedDifferentTokenFromSource": "ブリッジに失敗しました。ソースチェーンで異なるトークンが返されました。",
         "BridgeStatusUnavailable": "ブリッジのステータスを取得できません。トランザクション履歴で資金が到着しているか確認してください。",
         "swapStatus": "スワップステータス",
-        "sendStatus": "送信状況"
+        "sendStatus": "送信状況",
+        "bridgingEta": "ブリッジ中、完了までの目安: <time>{{time}}</time>",
+        "stillBridging": "ブリッジ処理が継続中です",
+        "sourceFailed": "ブリッジに失敗しました。{{token}} は送信されていません",
+        "refundedLead": "返金済み",
+        "popupProcessing": "ブリッジ処理中",
+        "popupPending": "ブリッジ保留中",
+        "popupFailed": "ブリッジ失敗",
+        "popupRefunded": "ブリッジ返金済み",
+        "popupCompleted": "ブリッジ完了",
+        "popupBridgeDelayed": "ブリッジ遅延",
+        "popupBridgeFailed": "ブリッジに失敗しました",
+        "popupRefundedIn": "{{token}} で返金済み",
+        "processing": "処理中",
+        "refund": "返金済み",
+        "goBack": "戻る",
+        "contactSupport": "サポートに問い合わせる",
+        "succeeded": "成功",
+        "sendFrom": "{{chain}} から送信",
+        "receiveOn": "{{chain}} で受取",
+        "refundOn": "{{chain}} で返金済み",
+        "waitingDestination": "送信先チェーンのトランザクションを待機中",
+        "sendFailed": "送信失敗",
+        "tokenNotSent": "{{token}} は送信されていません"
       },
-      "best-subtitle": "ガス手数料を含む推定総コストと配信速度の組み合わせによって、最適なクォートが決まります。"
+      "best-subtitle": "ガス手数料を含む推定総コストと配信速度の組み合わせによって、最適なクォートが決まります。",
+      "bridge": "ブリッジ",
+      "by": "提供元:",
+      "timeLeft": "残り {{time}}",
+      "refundIn": "{{token}} で返金済み",
+      "viewDetails": "詳細を見る",
+      "duration-sec": "{{duration}} 秒",
+      "duration-hour": "{{duration}} 時間",
+      "duration-hour-min": "{{hours}} 時間 {{minutes}} 分",
+      "duration-day": "{{duration}} 日",
+      "duration-day-hour": "{{days}} 日 {{hours}} 時間",
+      "duration-day-min": "{{days}} 日 {{minutes}} 分",
+      "duration-day-hour-min": "{{days}} 日 {{hours}} 時間 {{minutes}} 分"
     },
     "pendingDetail": {
       "Header": {
@@ -3313,6 +3374,14 @@
           "platformFee": " Openseaプラットフォーム手数料（{{fee}}％）",
           "creatorFeeTips1": "クリエイターの収益は売り手によって支払われます。クリエイター収益の支払いは必須です。"
         },
+        "verifyError": {
+          "unsupportedChain": "このチェーンではまだ NFT 取引に対応していません",
+          "currency": "セキュリティチェックに失敗しました：受け取るトークンが想定と一致しません",
+          "nft": "セキュリティチェックに失敗しました：注文内の NFT が選択したものと一致しません",
+          "amount": "セキュリティチェックに失敗しました：受取額が表示内容と一致しません",
+          "recipient": "セキュリティチェックに失敗しました：受取先があなたのアドレスではありません",
+          "invalid": "セキュリティチェックに失敗しました：注文データが不正です。後でもう一度お試しください"
+        },
         "all": "すべて",
         "hideLowValue": "低価値のNFTを非表示にする",
         "confirmingTx": "トランザクションを確認中",
@@ -4173,6 +4242,53 @@
         "tpTriggerInvalid": "TPトリガー価格は無効であり、設定されません",
         "slTriggerInvalid": "SLトリガー価格は無効であり、設定されません"
       },
+      "positionTpSl": {
+        "title": "利確/損切り",
+        "addTitle": "利確/損切りを追加",
+        "modifyTitle": "利確/損切りを変更",
+        "modifyPositionTitle": "ポジション利確/損切りを変更",
+        "confirmTitle": "利確/損切りを確認",
+        "tabPartial": "利確/損切り",
+        "tabPosition": "ポジション利確/損切り",
+        "entryPrice": "エントリー価格",
+        "markPrice": "マーク価格",
+        "estLiqPrice": "推定清算価格",
+        "takeProfit": "利確",
+        "stopLoss": "損切り",
+        "tpTrigger": "利確トリガー",
+        "slTrigger": "損切りトリガー",
+        "pnl": "PNL",
+        "roi": "ROI",
+        "estimatedPnlHint": "推定損益は <value>{{pnl}} {{quoteAsset}}（ROI：{{roi}}%）</value> になります",
+        "invalidTriggerForMark": "トリガー価格が最新のマーク価格に対して無効です",
+        "amount": "数量",
+        "positionAmount": "ポジション数量 {{amount}} {{unit}}",
+        "introPartialTitle": "利確/損切りとは？",
+        "introPartialDesc": "指定した数量に対して利確と損切りを設定します。ポジションサイズが変わっても、この数量は固定のままです。",
+        "introPositionTitle": "ポジション利確/損切りとは？",
+        "introPositionDesc": "ポジション全体に対して利確と損切りを設定します。数量はポジションサイズの変化に合わせて自動調整されます。",
+        "gotIt": "了解",
+        "whatIsPositionTpSl": "ポジション利確/損切りとは？",
+        "addTpSl": "利確/損切りを追加",
+        "cancelAll": "すべてキャンセル",
+        "positionSizeCoverage": "ポジションサイズの{{percent}}",
+        "triggerPrice": "トリガー価格",
+        "estPnl": "推定損益（{{unit}}）",
+        "price": "価格",
+        "market": "成行",
+        "unfilledAmt": "未約定数量（{{unit}}）",
+        "all": "すべて",
+        "modify": "変更",
+        "cancel": "キャンセル",
+        "add": "追加",
+        "volume": "数量",
+        "estimatedPnl": "推定PNL",
+        "submitted": "利確/損切りを送信しました",
+        "partialSubmitted": "一部の利確/損切り注文が送信されました。更新後に最新の注文が表示されます。",
+        "contextChanged": "ポジションまたはマーク価格が変更されました。もう一度ご確認ください。",
+        "noTp": "利確なし",
+        "noSl": "損切りなし"
+      },
       "accountInfo": {
         "crossAccountLeverage": "クロスアカウント・レバレッジ",
         "availableBalance": "利用可能残高",
@@ -4837,7 +4953,8 @@
     "screenshotModal": {
       "title": "フィードバック用スクリーンショット",
       "placeholder": "問題を説明してください",
-      "placeholderRequired": "問題を説明してください（必須）"
+      "placeholderRequired": "問題を説明してください（必須）",
+      "includeAddress": "トラブルシューティングのためにアドレスを共有"
     },
     "feedbackPopup": {
       "title": "Rabbyサポートからの回答",

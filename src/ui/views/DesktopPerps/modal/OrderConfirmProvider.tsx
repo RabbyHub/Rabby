@@ -70,10 +70,19 @@ export const OrderConfirmProvider: React.FC<{ children: React.ReactNode }> = ({
   const orderConfirmations = useRabbySelector(
     (s) => s.perps.orderConfirmations
   );
+  const accountAddress = useRabbySelector(
+    (s) => s.perps.currentPerpsAccount?.address
+  );
 
   const [pending, setPending] = React.useState<PendingConfirm | null>(null);
   const [dontShowAgain, setDontShowAgain] = React.useState(false);
   const [submitting, setSubmitting] = React.useState(false);
+
+  // Switching address: the pending order was built for the previous account,
+  // and confirming it would place it on the new one.
+  React.useEffect(() => {
+    setPending(null);
+  }, [accountAddress]);
 
   const requestConfirm = useMemoizedFn((params: RequestConfirmParams) => {
     // Scale always confirms; for the rest a missing key means "not yet

@@ -108,11 +108,11 @@ export function fromNow(time: number, currTime?: number) {
     flag++;
   }
   if ((h || flag) && flag < 3) {
-    str += `${flag > 0 ? ' ' : ''}${h} hour`;
+    str += `${flag > 0 ? ' ' : ''}${h}h`;
     flag++;
   }
   if ((m || flag) && flag < 3) {
-    str += `${flag > 0 ? ' ' : ''}${m} min`;
+    str += `${flag > 0 ? ' ' : ''}${m}m`;
     flag++;
   }
   if (str) successTimeView = str;

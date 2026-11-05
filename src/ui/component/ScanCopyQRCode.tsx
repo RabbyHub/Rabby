@@ -11,6 +11,9 @@ import { ReactComponent as RcIconCopy } from 'ui/assets/urlcopy.svg';
 import { ReactComponent as RcIconRefresh } from 'ui/assets/urlrefresh.svg';
 import { ConnectStatus } from './WalletConnect/ConnectStatus';
 import { useSessionStatus } from './WalletConnect/useSessionStatus';
+import { useWalletConnectClockSkew } from './WalletConnect/useWalletConnectClockSkew';
+import { ClockSkewWarning } from './WalletConnect/ClockSkewWarning';
+import { KEYRING_CLASS } from '@/constant';
 import { Account } from '@/background/service/preference';
 import Spin from './Spin';
 import ThemeIcon from './ThemeMode/ThemeIcon';
@@ -23,6 +26,7 @@ interface Props {
   canChangeBridge?: boolean;
   brandName?: string;
   account?: Account;
+  isWalletConnect?: boolean;
 }
 const ScanCopyQRCode: React.FC<Props> = ({
   showURL = false,
@@ -32,6 +36,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
   canChangeBridge = true,
   brandName,
   account,
+  isWalletConnect = account?.type !== KEYRING_CLASS.Coinbase,
 }) => {
   // Disable hover
   // const [isHovering, hoverProps] = useHover();
@@ -41,6 +46,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
   const [copySuccess, setCopySuccess] = useState(false);
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const { status } = useSessionStatus(account);
+  const hasClockSkew = useWalletConnectClockSkew(isWalletConnect);
   const rootRef = React.useRef<HTMLDivElement>(null);
 
   const handleCopyCurrentAddress = () => {
@@ -66,10 +72,14 @@ const ScanCopyQRCode: React.FC<Props> = ({
 
   React.useEffect(() => {
     // refresh when status is not connected
-    if (status && status !== 'CONNECTED') {
+    if (!hasClockSkew && status && status !== 'CONNECTED') {
       refreshFun();
     }
   }, [status]);
+
+  if (hasClockSkew) {
+    return <ClockSkewWarning onRetry={refreshFun} />;
+  }
 
   return (
     <div ref={rootRef}>

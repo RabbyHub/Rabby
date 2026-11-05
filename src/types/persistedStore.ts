@@ -3,6 +3,7 @@ import type { ContactBookStore } from '@/background/service/contactBook';
 import type { CurrencyStore } from '@/background/service/currency';
 import type { ExtensionUpdateStore } from '@/background/service/extensionUpdate';
 import type { CustomRPCServiceStore } from '@/background/service/rpc';
+import type { RemovedTokensServiceStore } from '@/background/service/removedTokens';
 import type { SwapServiceStore } from '@/background/service/swap';
 import type { WhitelistStore } from '@/background/service/whitelist';
 import type { PublicOpenapiStore } from '@/services/openapi';
@@ -14,6 +15,7 @@ export type PersistedStoreMap = {
   pendingExtensionUpdate: ExtensionUpdateStore;
   openapi: PublicOpenapiStore;
   rpc: CustomRPCServiceStore;
+  removedTokens: RemovedTokensServiceStore;
   swap: SwapServiceStore;
   whitelist: WhitelistStore;
 };

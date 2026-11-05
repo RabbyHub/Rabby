@@ -18,11 +18,11 @@ import {
   DEFAULT_GAS_LIMIT_RATIO,
   HARDWARE_KEYRING_TYPES,
   INTERNAL_REQUEST_ORIGIN,
-  KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
   MINIMUM_GAS_LIMIT,
   SAFE_GAS_LIMIT_BUFFER,
+  SUPPORT_1559_KEYRING_TYPE,
 } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -30,7 +30,6 @@ import { normalizeTxParams } from '../SignTx';
 import { isHexString, toChecksumAddress } from '@ethereumjs/util';
 import { WaitingSignComponent } from '../map';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import i18n from '@/i18n';
 import GasSelectorHeader, {
   GasSelectorResponse,
@@ -40,7 +39,6 @@ import { Card } from '../Card';
 import { SignAdvancedSettings } from '../SignAdvancedSettings';
 import clsx from 'clsx';
 import { Modal } from 'antd';
-import { ga4 } from '@/utils/ga4';
 import { TestnetActions } from './Actions';
 import {
   ActionRequireData,
@@ -50,7 +48,12 @@ import {
 } from '@rabby-wallet/rabby-action';
 import * as Sentry from '@sentry/browser';
 import { getCexInfo } from '@/ui/state/exchange';
-import { useSetReportGasLevel } from '@/ui/hooks/useSetReportGasLevel';
+import {
+  applyCustomNetworkGas,
+  getCustomNetworkGasCost,
+  hasValidCustomNetworkGasFields,
+  resolveCustomGasPriorityFee,
+} from './gas';
 
 const checkGasAndNonce = ({
   recommendGasLimitRatio,
@@ -225,6 +228,7 @@ export const SignTestnetTx = ({
     to,
     value,
     maxFeePerGas,
+    maxPriorityFeePerGas,
     isSpeedUp,
     isCancel,
     isSend,
@@ -239,6 +243,9 @@ export const SignTestnetTx = ({
   const wallet = useWallet();
   const chainId = +params?.data?.[0]?.chainId;
   const chain = chainId ? findChain({ id: +chainId }) : undefined;
+  const support1559 =
+    !!chain?.eip?.['1559'] &&
+    SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type as any);
 
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
@@ -394,15 +401,6 @@ export const SignTestnetTx = ({
         )
       );
 
-      matomoRequestEvent({
-        category: 'Transaction',
-        action: 'init',
-        label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-      });
-      ga4.fireEvent(`Init_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
-        event_category: 'Transaction',
-      });
-
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
         setIsGnosisAccount(true);
       }
@@ -425,6 +423,7 @@ export const SignTestnetTx = ({
       }
       let customGasPrice = 0;
       let useDappGasPrice = false;
+      let useCachedCustomGasPrice = false;
       const lastTimeGas = await runGetLastTimeGasSelection();
       if (dappGasPrice) {
         customGasPrice = parseInt(dappGasPrice);
@@ -436,6 +435,7 @@ export const SignTestnetTx = ({
         ) {
           // use cached gasPrice if exist
           customGasPrice = lastTimeGas.gasPrice;
+          useCachedCustomGasPrice = true;
         }
         if (
           isSpeedUp ||
@@ -444,6 +444,7 @@ export const SignTestnetTx = ({
         ) {
           // use gasPrice set by dapp when it's a speedup or cancel tx
           customGasPrice = parseInt(tx.gasPrice!);
+          useCachedCustomGasPrice = false;
         }
       }
       const gasUsed = await runGetGasUsed();
@@ -480,29 +481,33 @@ export const SignTestnetTx = ({
         gas = gasList.find((item) => item.level === 'normal')!;
       }
 
-      wallet.reportStats('createTransaction', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        chainId: chain?.serverId || '',
-        createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-        source: params?.$ctx?.ga?.source || '',
-        trigger: params?.$ctx?.ga?.trigger || '',
-        networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-        swapUseSlider: params?.$ctx?.ga?.swapUseSlider ?? '',
-        gasLevel: gas?.level || 'normal',
-      });
+      if (support1559 && gas.level === 'custom') {
+        const customGas: GasLevel = {
+          ...gas,
+          priority_price: resolveCustomGasPriorityFee({
+            price: gas.price,
+            fromRequest: !useCachedCustomGasPrice,
+            requestPriorityFee:
+              useDappGasPrice && maxPriorityFeePerGas
+                ? parseInt(maxPriorityFeePerGas)
+                : undefined,
+            cachedPriorityFee: lastTimeGas?.maxPriorityFee,
+            marketPriorityFee: gas.priority_price,
+          }),
+        };
+        gas = customGas;
+        // the gas selector reads the custom level from gasList, keep its tip
+        setGasList(
+          gasList.map((item) => (item.level === 'custom' ? customGas : item))
+        );
+      }
 
       setSelectedGas(gas);
-      setTx({
-        ...tx,
-        gasPrice: intToHex(gas.price),
-      });
+      const nextTx = applyCustomNetworkGas({ tx, gas, support1559 });
+      setTx(nextTx);
       await explainTx({
         gasUsed,
-        tx: {
-          ...tx,
-          gasPrice: intToHex(gas.price),
-        },
+        tx: nextTx,
       });
       setIsReady(true);
     } catch (e) {
@@ -668,14 +673,15 @@ export const SignTestnetTx = ({
 
   const handleGasChange = (gas: GasSelectorResponse) => {
     isDappGasPriceRef.current = false;
-    setSelectedGas({
+    const nextGas: GasLevel = {
       level: gas.level,
       front_tx_count: gas.front_tx_count,
       estimated_seconds: gas.estimated_seconds,
       base_fee: gas.base_fee,
       price: Math.round(gas.price),
-      priority_price: gas.priority_price,
-    });
+      priority_price: support1559 ? gas.maxPriorityFee : gas.priority_price,
+    };
+    setSelectedGas(nextGas);
     if (gas.level === 'custom') {
       setGasList(
         (gasList || []).map((item) => {
@@ -688,8 +694,7 @@ export const SignTestnetTx = ({
     const afterNonce = intToHex(gas.nonce);
 
     setTx({
-      ...tx,
-      gasPrice: intToHex(Math.round(gas.price)),
+      ...applyCustomNetworkGas({ tx, gas: nextGas, support1559 }),
       gas: intToHex(gas.gasLimit),
       nonce: afterNonce,
     });
@@ -755,6 +760,15 @@ export const SignTestnetTx = ({
       return;
     }
 
+    if (!hasValidCustomNetworkGasFields(tx, support1559)) {
+      Modal.error({
+        className: 'modal-support-darkmode',
+        title: 'Error',
+        content: 'Invalid gas fee fields',
+      });
+      return;
+    }
+
     if (activeApprovalPopup()) {
       return;
     }
@@ -767,7 +781,13 @@ export const SignTestnetTx = ({
       lastTimeSelect: selectedGas.level === 'custom' ? 'gasPrice' : 'gasLevel',
     };
     if (selectedGas.level === 'custom') {
-      selected.gasPrice = parseInt(tx.gasPrice!);
+      if (support1559) {
+        selected.gasPrice = parseInt(tx.maxFeePerGas!);
+        selected.maxPriorityFee = parseInt(tx.maxPriorityFeePerGas!);
+      } else {
+        selected.gasPrice = parseInt(tx.gasPrice!);
+        selected.maxPriorityFee = null;
+      }
     } else {
       selected.gasLevel = selectedGas.level;
     }
@@ -784,7 +804,12 @@ export const SignTestnetTx = ({
       gas: '',
     };
 
-    (transaction as Tx).gasPrice = tx.gasPrice;
+    if (support1559) {
+      transaction.maxFeePerGas = tx.maxFeePerGas;
+      transaction.maxPriorityFeePerGas = tx.maxPriorityFeePerGas;
+    } else {
+      transaction.gasPrice = tx.gasPrice;
+    }
     const approval = await getApproval();
 
     approval.signingTxId &&
@@ -823,27 +848,6 @@ export const SignTestnetTx = ({
     //   return;
     // }
 
-    await wallet.reportStats('signTransaction', {
-      type: currentAccount.brandName,
-      chainId: chain?.serverId || '',
-      category: KEYRING_CATEGORY_MAP[currentAccount.type],
-      preExecSuccess: true,
-      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-      source: params?.$ctx?.ga?.source || '',
-      trigger: params?.$ctx?.ga?.trigger || '',
-      networkType: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-    });
-
-    matomoRequestEvent({
-      category: 'Transaction',
-      action: 'Submit',
-      label: chain?.isTestnet ? 'Custom Network' : 'Integrated Network',
-    });
-
-    ga4.fireEvent(`Submit_${chain?.isTestnet ? 'Custom' : 'Integrated'}`, {
-      event_category: 'Transaction',
-    });
-
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -869,8 +873,6 @@ export const SignTestnetTx = ({
     nativeTokenBalance,
     recommendGasLimitRatio: 1.5,
   });
-
-  useSetReportGasLevel(selectedGas?.level);
 
   if (!chain) {
     return null;
@@ -940,18 +942,22 @@ export const SignTestnetTx = ({
               error: null,
               success: true,
               gasCostUsd: 0,
-              gasCostAmount: new BigNumber(selectedGas?.price || 0)
-                .multipliedBy(gasUsed || 0)
-                .div(1e18),
+              gasCostAmount: selectedGas
+                ? getCustomNetworkGasCost({
+                    gas: selectedGas,
+                    gasUsed,
+                    support1559,
+                  })
+                : new BigNumber(0),
             }}
-            gasCalcMethod={async (price) => {
-              return {
-                gasCostAmount: new BigNumber(price || 0)
-                  .multipliedBy(gasUsed || 0)
-                  .div(1e18),
-                gasCostUsd: new BigNumber(0),
-              };
-            }}
+            gasCalcMethod={async (price, level) => ({
+              gasCostAmount: getCustomNetworkGasCost({
+                gas: { ...(level || selectedGas), price },
+                gasUsed,
+                support1559,
+              }),
+              gasCostUsd: new BigNumber(0),
+            })}
             recommendGasLimit={gasUsed || ''}
             recommendNonce={recommendNonce || ''}
             chainId={chainId}
@@ -960,7 +966,7 @@ export const SignTestnetTx = ({
             disableNonce={isSpeedUp || isCancel}
             isSpeedUp={isSpeedUp}
             isCancel={isCancel}
-            is1559={false}
+            is1559={support1559}
             isHardware={isHardware}
             manuallyChangeGasLimit={false}
             errors={checkErrors}

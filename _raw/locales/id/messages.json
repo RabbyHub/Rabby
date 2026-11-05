@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "Tidak ada riwayat transaksi dalam 90 hari",
         "descThreeMonths": "Tidak ada riwayat transaksi dalam 90 hari pada <2>rantai yang didukung</2>"
       },
+      "noMore": {
+        "title": "Tidak ada transaksi lagi.",
+        "titleInLast90Days": "Tidak ada transaksi lagi dalam 90 hari terakhir."
+      },
       "explain": {
         "unknown": "Interaksi kontrak",
         "cancel": "Transaksi menunggu dibatalkan",
@@ -507,6 +511,7 @@
       "resend": "Coba lagi",
       "cancelConnection": "Batalkan koneksi",
       "imKeyConnected": "imKey terhubung",
+      "extraFeeProtectionBlocked": "Perlindungan Biaya Tambahan memblokir permintaan tanda tangan ini. Jika tetap ingin menandatangani, nonaktifkan di Pengaturan",
       "imKeyNotConnected": "imKey tidak terhubung",
       "iGotIt": "Saya Mengerti"
     },
@@ -1172,9 +1177,44 @@
         "receivingTo": "Menerima di {{chain}}",
         "sendingFrom": "Mengirim dari {{chain}}",
         "sendStatus": "Kirim Status",
-        "swapStatus": "Status Swap"
+        "swapStatus": "Status Swap",
+        "bridgingEta": "Proses jembatan berlangsung, perkiraan waktu: <time>{{time}}</time>",
+        "stillBridging": "Proses jembatan masih berlangsung",
+        "sourceFailed": "Jembatan gagal, {{token}} Anda tidak terkirim",
+        "refundedLead": "Dikembalikan",
+        "popupProcessing": "Jembatan sedang diproses",
+        "popupPending": "Jembatan tertunda",
+        "popupFailed": "Jembatan gagal",
+        "popupRefunded": "Dana jembatan dikembalikan",
+        "popupCompleted": "Jembatan selesai",
+        "popupBridgeDelayed": "Jembatan terlambat",
+        "popupBridgeFailed": "Jembatan gagal",
+        "popupRefundedIn": "Dikembalikan dalam {{token}}",
+        "processing": "Sedang diproses",
+        "refund": "Dikembalikan",
+        "goBack": "Kembali",
+        "contactSupport": "Hubungi Dukungan",
+        "succeeded": "Berhasil",
+        "sendFrom": "Kirim dari {{chain}}",
+        "receiveOn": "Terima di {{chain}}",
+        "refundOn": "Dikembalikan di {{chain}}",
+        "waitingDestination": "menunggu transaksi di rantai tujuan",
+        "sendFailed": "Pengiriman gagal",
+        "tokenNotSent": "{{token}} Anda tidak terkirim"
       },
-      "best-subtitle": "Penawaran terbaik ditentukan berdasarkan perkiraan total biaya (termasuk biaya gas) dan kecepatan pengiriman."
+      "best-subtitle": "Penawaran terbaik ditentukan berdasarkan perkiraan total biaya (termasuk biaya gas) dan kecepatan pengiriman.",
+      "bridge": "Jembatan",
+      "by": "oleh",
+      "timeLeft": "Tersisa {{time}}",
+      "refundIn": "Dikembalikan dalam {{token}}",
+      "viewDetails": "Lihat Detail",
+      "duration-sec": "{{duration}} dtk",
+      "duration-hour": "{{duration}} jam",
+      "duration-hour-min": "{{hours}} jam {{minutes}} menit",
+      "duration-day": "{{duration}} hari",
+      "duration-day-hour": "{{days}} hari {{hours}} jam",
+      "duration-day-min": "{{days}} hari {{minutes}} menit",
+      "duration-day-hour-min": "{{days}} hari {{hours}} jam {{minutes}} menit"
     },
     "manageAddress": {
       "address-management": "Manajemen Alamat",
@@ -1432,7 +1472,9 @@
           "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
-          "dataAnalysis": "Analisis Data"
+          "dataAnalysis": "Analisis Data",
+          "extraFeeProtection": "Perlindungan Biaya Tambahan",
+          "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },
         "7Days": "7 hari",
         "4Hours": "4 jam",
@@ -1500,7 +1542,13 @@
         "biometricUnlockUnsupported": "Perangkat ini tidak mendukung pembukaan kunci biometrik.",
         "biometricUnlockSetupDesc": "Konfirmasi kata sandi Anda untuk mengaktifkan pembukaan kunci biometrik.",
         "clearPendingCheckbox": "Atur ulang juga data nonce lokal dan catatan tanda tangan saya",
-        "biometricUnlockDisabled": "Biometric unlock dinonaktifkan"
+        "biometricUnlockDisabled": "Biometric unlock dinonaktifkan",
+        "removedToken": {
+          "title": "Token yang Dihapus",
+          "description": "Token yang dihapus akan disembunyikan dari Portofolio di semua alamat Anda, tetapi tetap disertakan dalam perhitungan saldo.",
+          "loadFailed": "Gagal memuat token",
+          "retry": "Coba lagi"
+        }
       },
       "tokenDetail": {
         "txFailed": "Gagal",
@@ -1544,7 +1592,19 @@
         "myBalance": "Saldo Saya",
         "fdvTips": "Kapital pasar jika suplai maksimum beredar. Penilaian Dilusi Penuh (FDV) = Harga x Suplai Maksimum. Jika Suplai Maksimum null, FDV = Harga x Suplai Total. Jika baik Suplai Maksimum maupun Suplai Total tidak terdefinisi atau tidak terbatas, FDV tidak ditampilkan.",
         "bridge": "Jembatan",
-        "bridgeToEth": "Jembatan ke Rantai Ethereum"
+        "bridgeToEth": "Jembatan ke Rantai Ethereum",
+        "removed": {
+          "more": "Lainnya",
+          "removeToken": "Hapus token",
+          "remove": "Hapus",
+          "confirmTitle": "Hapus token ini?",
+          "portfolioNotice": "Token ini tidak akan muncul lagi di Portofolio setelah dihapus.",
+          "restoreNotice": "Anda dapat memulihkannya kapan saja di “Pengaturan >> Token yang Dihapus”.",
+          "warning": "Token yang dihapus akan disembunyikan dari Portofolio di semua alamat Anda, tetapi tetap disertakan dalam perhitungan saldo.",
+          "removeFailed": "Gagal menghapus token",
+          "restore": "Pulihkan token yang dihapus",
+          "restoreFailed": "Gagal memulihkan token"
+        }
       },
       "assets": {
         "portfolio": {
@@ -1850,6 +1910,7 @@
         "haveOneKey": "Belum memiliki OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect tidak dapat terhubung karena waktu komputer Anda tidak sinkron. Aktifkan tanggal dan waktu otomatis, lalu coba lagi.",
         "status": {
           "brandError": "Aplikasi dompet salah.",
           "accountError": "Alamat tidak cocok.",
@@ -3310,6 +3371,14 @@
           "creatorFeeTips1": "Pendapatan kreator akan dibayar oleh penjual. Pendapatan kreator ditegakkan.",
           "creatorFee": "Biaya pencipta ({{fee}}%)"
         },
+        "verifyError": {
+          "unsupportedChain": "Perdagangan NFT belum didukung di chain ini",
+          "currency": "Pemeriksaan keamanan gagal: token pembayaran tidak sesuai dengan yang diharapkan",
+          "nft": "Pemeriksaan keamanan gagal: NFT dalam order tidak sesuai dengan yang Anda pilih",
+          "amount": "Pemeriksaan keamanan gagal: jumlah yang akan Anda terima tidak sesuai dengan yang ditampilkan",
+          "recipient": "Pemeriksaan keamanan gagal: hasil penjualan tidak akan dikirim ke alamat Anda",
+          "invalid": "Pemeriksaan keamanan gagal: data order tidak valid. Silakan coba lagi nanti"
+        },
         "empty": "Tidak ada NFT",
         "all": "Semua",
         "confirmingTx": "Mengonfirmasi transaksi Anda",
@@ -4170,6 +4239,53 @@
         "tpTriggerInvalid": "Harga pemicu TP tidak valid dan tidak akan disetel",
         "slTriggerInvalid": "Harga pemicu SL tidak valid dan tidak akan disetel"
       },
+      "positionTpSl": {
+        "title": "TP/SL",
+        "addTitle": "Tambah TP/SL",
+        "modifyTitle": "Ubah TP/SL",
+        "modifyPositionTitle": "Ubah TP/SL Posisi",
+        "confirmTitle": "Konfirmasi TP/SL",
+        "tabPartial": "TP/SL",
+        "tabPosition": "TP/SL Posisi",
+        "entryPrice": "Harga Masuk",
+        "markPrice": "Harga Mark",
+        "estLiqPrice": "Est. Harga Likuidasi",
+        "takeProfit": "Ambil Untung",
+        "stopLoss": "Stop Loss",
+        "tpTrigger": "Pemicu TP",
+        "slTrigger": "Pemicu SL",
+        "pnl": "PNL",
+        "roi": "ROI",
+        "estimatedPnlHint": "Estimasi PnL Anda adalah <value>{{pnl}} {{quoteAsset}} (ROI: {{roi}}%)</value>",
+        "invalidTriggerForMark": "Harga pemicu tidak valid untuk Harga Mark terbaru",
+        "amount": "Jumlah",
+        "positionAmount": "Jumlah Posisi {{amount}} {{unit}}",
+        "introPartialTitle": "Apa itu TP/SL?",
+        "introPartialDesc": "Atur ambil untung dan stop loss untuk jumlah tertentu. Jumlah ini tetap meski ukuran posisi berubah.",
+        "introPositionTitle": "Apa itu TP/SL Posisi?",
+        "introPositionDesc": "Atur ambil untung dan stop loss untuk seluruh posisi Anda. Jumlah menyesuaikan otomatis saat ukuran posisi berubah.",
+        "gotIt": "Mengerti",
+        "whatIsPositionTpSl": "Apa itu TP/SL Posisi?",
+        "addTpSl": "Tambah TP/SL",
+        "cancelAll": "Batalkan Semua",
+        "positionSizeCoverage": "{{percent}} Ukuran Posisi",
+        "triggerPrice": "Harga Pemicu",
+        "estPnl": "Est. PnL ({{unit}})",
+        "price": "Harga",
+        "market": "Pasar",
+        "unfilledAmt": "Jumlah Belum Terisi ({{unit}})",
+        "all": "Semua",
+        "modify": "Ubah",
+        "cancel": "Batal",
+        "add": "Tambah",
+        "volume": "Jumlah",
+        "estimatedPnl": "Estimasi PNL",
+        "submitted": "TP/SL terkirim",
+        "partialSubmitted": "Sebagian pesanan TP/SL terkirim. Pesanan terbaru ditampilkan setelah refresh.",
+        "contextChanged": "Posisi atau Harga Mark berubah. Silakan tinjau lagi.",
+        "noTp": "tanpa TP",
+        "noSl": "tanpa SL"
+      },
       "accountInfo": {
         "totalBalance": "Total saldo",
         "availableBalance": "Saldo yang Tersedia",
@@ -4834,7 +4950,8 @@
     "screenshotModal": {
       "title": "Tangkapan layar untuk masukan",
       "placeholder": "Jelaskan masalahnya",
-      "placeholderRequired": "Jelaskan masalah (wajib)"
+      "placeholderRequired": "Jelaskan masalah (wajib)",
+      "includeAddress": "Bagikan alamat untuk pemecahan masalah"
     },
     "feedbackPopup": {
       "title": "Respons dari Dukungan Rabby",

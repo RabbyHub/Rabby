@@ -11,6 +11,14 @@ import { DrawerProps } from 'antd';
 
 const isDesktop = getUiType().isDesktop;
 
+/** Keeps detail content intact until Popup's close animation finishes. */
+const TokenDetailContent = React.memo(
+  ({ children }: { visible?: boolean; children: React.ReactNode }) => (
+    <>{children}</>
+  ),
+  (_previous, next) => !next.visible
+);
+
 interface TokenDetailProps {
   visible?: boolean;
   onClose?(): void;
@@ -86,19 +94,22 @@ export const TokenDetailPopup = ({
       push={false}
       getContainer={getContainer}
     >
-      {visible && token && (
-        <TokenDetail
-          account={account}
-          token={token}
-          popupHeight={popupHeight}
-          variant={variant}
-          isAdded={isAdded}
-          onClose={onClose}
-          canClickToken={canClickToken}
-          hideOperationButtons={hideOperationButtons}
-          tipsFromTokenSelect={tipsFromTokenSelect}
-        />
-      )}
+      <TokenDetailContent visible={visible}>
+        {token && (
+          <TokenDetail
+            account={account}
+            token={token}
+            popupHeight={popupHeight}
+            variant={variant}
+            isAdded={isAdded}
+            onClose={onClose}
+            canClickToken={canClickToken}
+            hideOperationButtons={hideOperationButtons}
+            tipsFromTokenSelect={tipsFromTokenSelect}
+            getContainer={getContainer}
+          />
+        )}
+      </TokenDetailContent>
     </Popup>
   );
 };

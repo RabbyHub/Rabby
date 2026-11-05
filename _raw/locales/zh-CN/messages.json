@@ -47,6 +47,10 @@
         "noTxInThreeMonth": "90 天内无交易记录",
         "descThreeMonths": "90 天内在<2>支持的链</2>上无交易记录"
       },
+      "noMore": {
+        "title": "没有更多交易记录",
+        "titleInLast90Days": "近 90 天没有更多交易记录"
+      },
       "explain": {
         "approve": "授权 {{project}} 使用 {{amount}} {{symbol}}",
         "cancel": "取消了待处理交易",
@@ -291,7 +295,9 @@
           "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
           "perpsFloatWidget": "永续合约悬浮窗",
           "biometricUnlockHint": "使用生物识别在此设备上解锁。",
-          "dataAnalysis": "数据分析"
+          "dataAnalysis": "数据分析",
+          "extraFeeProtection": "额外费用保护",
+          "extraFeeProtectionDesc": "阻止浏览器插件通过签名请求收取额外手续费"
         },
         "testnetBackendServiceUrl": "测试网后端服务 URL",
         "updateAvailable": "有可用更新",
@@ -348,7 +354,13 @@
         "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
         "biometricUnlockSetupDesc": "确认你的密码以激活生物识别解锁。",
         "clearPendingCheckbox": "同时重置我的本地 nonce 数据和签名记录",
-        "biometricUnlockSetupTitle": "启用生物识别解锁"
+        "biometricUnlockSetupTitle": "启用生物识别解锁",
+        "removedToken": {
+          "title": "已移除代币",
+          "description": "移除的代币会从你所有地址的投资组合中隐藏，但仍计入余额。",
+          "loadFailed": "加载代币失败",
+          "retry": "重试"
+        }
       },
       "tokenDetail": {
         "blockedTip": "已隐藏的代币将不会显示在代币列表中",
@@ -392,7 +404,19 @@
         "ListedBy": "上架方",
         "fdvTips": "假设最大供应量全部流通时的市值。完全稀释估值（FDV）= 价格 x 最大供应量。如果最大供应量为空，则 FDV = 价格 x 总供应量。如果最大供应量和总供应量均未定义或为无限，则不显示 FDV。",
         "bridge": "跨链",
-        "bridgeToEth": "跨链到 Ethereum"
+        "bridgeToEth": "跨链到 Ethereum",
+        "removed": {
+          "more": "更多",
+          "removeToken": "移除代币",
+          "remove": "移除",
+          "confirmTitle": "移除此代币？",
+          "portfolioNotice": "移除后，此代币将不再显示在你的投资组合中。",
+          "restoreNotice": "你可以随时在“设置 >> 已移除代币”中恢复。",
+          "warning": "移除的代币会从你所有地址的投资组合中隐藏，但仍计入余额。",
+          "removeFailed": "移除代币失败",
+          "restore": "恢复已移除代币",
+          "restoreFailed": "恢复代币失败"
+        }
       },
       "assets": {
         "usdValue": "美元价值",
@@ -718,6 +742,7 @@
         "haveOneKey": "还没有 OneKey 硬件？"
       },
       "walletConnect": {
+        "clockSkewError": "电脑时间与服务器不一致，WalletConnect 无法连接。请开启系统自动设置日期和时间，然后重试。",
         "connectYour": "连接你的",
         "viaWalletConnect": "通过 WalletConnect",
         "connectedSuccessfully": "连接成功",
@@ -1600,7 +1625,8 @@
         "loginTips": "要完成 GasAccount 登录，此交易将被放弃。你需要在登录后重新发起。",
         "depositTips": "要完成 GasAccount 充值，此交易将被丢弃。充值完成后，你需要重新发起交易。"
       },
-      "iGotIt": "我明白了"
+      "iGotIt": "我明白了",
+      "extraFeeProtectionBlocked": "额外费用保护已拦截此签名请求。如仍需签名，请在设置中关闭该功能"
     },
     "signText": {
       "createKey": {
@@ -2638,8 +2664,43 @@
         "receivedDifferentTokenNeedSwap": "你收到了不同的代币，可以将其兑换为你选择的代币。",
         "longTimeNoReceive": "网络繁忙。这可能会比平时花费更长的时间。请耐心等待。",
         "sendStatus": "发送状态",
-        "swapStatus": "交换状态"
-      }
+        "swapStatus": "交换状态",
+        "bridgingEta": "跨链中，预计还需 <time>{{time}}</time>",
+        "stillBridging": "仍在跨链中",
+        "sourceFailed": "跨链失败，你的 {{token}} 未发送",
+        "refundedLead": "已退还",
+        "popupProcessing": "跨链处理中",
+        "popupPending": "跨链待处理",
+        "popupFailed": "跨链失败",
+        "popupRefunded": "跨链资产已退还",
+        "popupCompleted": "跨链已完成",
+        "popupBridgeDelayed": "跨链延迟",
+        "popupBridgeFailed": "跨链失败",
+        "popupRefundedIn": "已退还为 {{token}}",
+        "processing": "处理中",
+        "refund": "已退还",
+        "goBack": "返回",
+        "contactSupport": "联系客服",
+        "succeeded": "成功",
+        "sendFrom": "从 {{chain}} 发送",
+        "receiveOn": "在 {{chain}} 上接收",
+        "refundOn": "已在 {{chain}} 上退还",
+        "waitingDestination": "等待目标链交易",
+        "sendFailed": "发送失败",
+        "tokenNotSent": "你的 {{token}} 未发送"
+      },
+      "bridge": "跨链",
+      "by": "由",
+      "timeLeft": "剩余 {{time}}",
+      "refundIn": "已退还为 {{token}}",
+      "viewDetails": "查看详情",
+      "duration-sec": "{{duration}} 秒",
+      "duration-hour": "{{duration}} 小时",
+      "duration-hour-min": "{{hours}} 小时 {{minutes}} 分钟",
+      "duration-day": "{{duration}} 天",
+      "duration-day-hour": "{{days}} 天 {{hours}} 小时",
+      "duration-day-min": "{{days}} 天 {{minutes}} 分钟",
+      "duration-day-hour-min": "{{days}} 天 {{hours}} 小时 {{minutes}} 分钟"
     },
     "ecology": {
       "sonic": {
@@ -3359,6 +3420,14 @@
           "offer": "报价",
           "creatorFeeTips1": "创作者收益将由卖方支付。创作者收益是强制执行的。",
           "rabbyFee": "Rabby 费用 (0%)"
+        },
+        "verifyError": {
+          "unsupportedChain": "该链暂不支持 NFT 交易",
+          "currency": "安全校验未通过：收款代币与预期不符",
+          "nft": "安全校验未通过：订单中的 NFT 与你选择的不一致",
+          "amount": "安全校验未通过：实际到账金额与页面显示不符",
+          "recipient": "安全校验未通过：收款地址不是你的地址",
+          "invalid": "安全校验未通过：订单数据异常，请稍后重试"
         },
         "empty": "没有 NFT",
         "pending": "待处理",
@@ -4220,6 +4289,53 @@
         "tpTriggerInvalid": "TP 触发价格无效，将不会设置",
         "slTriggerInvalid": "SL 触发价格无效，将不会设置"
       },
+      "positionTpSl": {
+        "title": "止盈/止损",
+        "addTitle": "添加止盈/止损",
+        "modifyTitle": "修改止盈/止损",
+        "modifyPositionTitle": "修改仓位止盈/止损",
+        "confirmTitle": "确认止盈/止损",
+        "tabPartial": "止盈/止损",
+        "tabPosition": "仓位止盈/止损",
+        "entryPrice": "开仓价格",
+        "markPrice": "标记价",
+        "estLiqPrice": "预计强平价",
+        "takeProfit": "止盈",
+        "stopLoss": "止损",
+        "tpTrigger": "止盈触发",
+        "slTrigger": "止损触发",
+        "pnl": "PNL",
+        "roi": "ROI",
+        "estimatedPnlHint": "预计盈亏将为 <value>{{pnl}} {{quoteAsset}}（ROI：{{roi}}%）</value>",
+        "invalidTriggerForMark": "按最新标记价判断，该触发价格无效",
+        "amount": "数量",
+        "positionAmount": "仓位数量 {{amount}} {{unit}}",
+        "introPartialTitle": "什么是止盈/止损？",
+        "introPartialDesc": "为指定数量设置止盈和止损。即使仓位大小发生变化，该数量也保持不变。",
+        "introPositionTitle": "什么是仓位止盈/止损？",
+        "introPositionDesc": "为整个仓位设置止盈和止损。数量会随仓位大小变化自动调整。",
+        "gotIt": "知道了",
+        "whatIsPositionTpSl": "什么是仓位止盈/止损？",
+        "addTpSl": "添加止盈/止损",
+        "cancelAll": "全部取消",
+        "positionSizeCoverage": "{{percent}} 仓位规模",
+        "triggerPrice": "触发价格",
+        "estPnl": "预计盈亏（{{unit}}）",
+        "price": "价格",
+        "market": "市价",
+        "unfilledAmt": "未成交数量（{{unit}}）",
+        "all": "全部",
+        "modify": "修改",
+        "cancel": "取消",
+        "add": "添加",
+        "volume": "数量",
+        "estimatedPnl": "预计盈亏",
+        "submitted": "止盈/止损已提交",
+        "partialSubmitted": "部分止盈/止损订单已提交，刷新后将显示最新订单。",
+        "contextChanged": "仓位或标记价已变化，请重新确认。",
+        "noTp": "无止盈",
+        "noSl": "无止损"
+      },
       "accountInfo": {
         "balance": "余额",
         "availableBalance": "可用余额",
@@ -4884,7 +5000,8 @@
     "screenshotModal": {
       "title": "截图反馈",
       "placeholder": "描述问题",
-      "placeholderRequired": "描述问题（必填）"
+      "placeholderRequired": "描述问题（必填）",
+      "includeAddress": "分享地址以便排查问题"
     },
     "feedbackPopup": {
       "title": "Rabby Support 的回复",

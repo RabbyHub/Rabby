@@ -14,8 +14,6 @@ import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { useRabbySelector } from '@/ui/store';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { findChain } from '@/utils/chain';
-import { ga4 } from '@/utils/ga4';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Chain } from '@debank/common';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
@@ -31,7 +29,6 @@ import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { useCommonPopupView, useWallet } from 'ui/utils';
 import { useQueryProjects } from 'ui/utils/portfolio';
-import { OfflineChainNotify } from '../OfflineChainNotify';
 import { BalanceLabel } from './BalanceLabel';
 import { ChainList } from './ChainList';
 import { CurvePoint, CurveThumbnail } from './CurveView';
@@ -366,13 +363,6 @@ export const BalanceView = ({
     if (shouldShowBalanceLoading) {
       return;
     }
-    matomoRequestEvent({
-      category: 'Front Page Click',
-      action: 'Click_BalanceCard',
-    });
-    ga4.fireEvent('Click_BalanceCard', {
-      event_category: 'Front Page Click',
-    });
     activePopup('AssetList');
     // wallet.openInDesktop('/desktop/profile');
     // window.close();
@@ -550,7 +540,6 @@ export const BalanceView = ({
           </div>
         </div>
       </div>
-      <OfflineChainNotify />
     </div>
   );
 };

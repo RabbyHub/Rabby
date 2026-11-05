@@ -122,6 +122,12 @@ const writeBootstrapReload = (record: BootstrapReloadRecord | null) => {
   }
 };
 
+// Set once this page has issued `runtime.reload()`. The reload is async: the
+// background stops first, which rejects the wallet calls `main` is stuck on, so
+// `main` resumes and would mount the app on a context that is about to be
+// invalidated, before the browser gets round to closing the page.
+let reloadRequested = false;
+
 const reloadFromBootstrapFallback = () => {
   const record: BootstrapReloadRecord = {
     attempts: (readBootstrapReload()?.attempts ?? 0) + 1,
@@ -130,6 +136,7 @@ const reloadFromBootstrapFallback = () => {
   writeBootstrapReload(record);
   try {
     browser.runtime.reload();
+    reloadRequested = true;
   } catch (e) {
     writeBootstrapReload({
       ...record,
@@ -214,6 +221,12 @@ const main = async () => {
     console.error('[main] failed to load locale bundle', locale, e);
   });
   changeLanguage(locale);
+
+  if (reloadRequested) {
+    // Keep the timeout fallback until the browser closes this page. Rendering
+    // here would also report this page's own Reload as a recovery.
+    return;
+  }
 
   bootstrapStatus.step = 'render';
   root?.render(

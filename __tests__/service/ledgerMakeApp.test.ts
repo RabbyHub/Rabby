@@ -19,6 +19,7 @@ let mockRuntimeMessageListener: ((request: any) => void) | undefined;
 const mockRuntimeOnMessageAddListener = jest.fn((listener) => {
   mockRuntimeMessageListener = listener;
 });
+const mockCaptureMessage = jest.fn();
 
 const flushMicrotasks = async () => {
   for (let i = 0; i < 10; i++) {
@@ -90,6 +91,11 @@ jest.mock(
   }),
   { virtual: true }
 );
+
+jest.mock('@sentry/browser', () => ({
+  ...jest.requireActual('@sentry/browser'),
+  captureMessage: (...args: unknown[]) => mockCaptureMessage(...args),
+}));
 
 jest.mock('webextension-polyfill', () => ({
   runtime: {
@@ -935,5 +941,92 @@ describe('LedgerBridgeKeyring makeApp', () => {
     } finally {
       await keyring.cleanUp();
     }
+  });
+});
+
+describe('Ledger reconnect diagnostics', () => {
+  const sendOffscreen = (event: string) =>
+    mockRuntimeMessageListener!({
+      target: 'extension-offscreen',
+      event,
+      productId: 0x5011,
+    });
+
+  const startHangingOperation = async () => {
+    const keyring = new LedgerBridgeKeyring();
+    mockListenToAvailableDevices.mockReturnValue(of([], [{ id: 'ledger' }]));
+    mockDisconnect.mockResolvedValue(undefined);
+    mockConnect.mockResolvedValueOnce('session-1');
+    mockGetDeviceSessionState.mockReturnValue(
+      of({
+        ...connectedState,
+        currentApp: { name: 'BOLOS', version: '1.0.0' },
+      })
+    );
+    mockExecuteDeviceAction.mockReturnValueOnce({
+      observable: new Subject<any>(),
+      cancel: jest.fn(),
+    });
+    const operation = keyring.openEthApp().catch(() => undefined);
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(mockExecuteDeviceAction).toHaveBeenCalledTimes(1);
+    // Wrapped: an async function returning the promise would await it.
+    return { operation };
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Settle any disconnect left pending by earlier tests.
+    sendOffscreen('ledger-device-connect');
+    mockCaptureMessage.mockClear();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('reports a quick reconnect after a disconnect during an operation', async () => {
+    const { operation } = await startHangingOperation();
+
+    sendOffscreen('ledger-device-disconnect');
+    await operation;
+    sendOffscreen('ledger-device-connect');
+
+    expect(mockCaptureMessage).toHaveBeenCalledTimes(1);
+    expect(mockCaptureMessage).toHaveBeenCalledWith(
+      'ledger disconnected during operation',
+      expect.objectContaining({
+        tags: expect.objectContaining({ ledger_reconnect: 'lt_2s' }),
+        extra: expect.objectContaining({ productId: '5011' }),
+      })
+    );
+  });
+
+  it('reports no reconnect when the device stays gone', async () => {
+    const { operation } = await startHangingOperation();
+    jest.useFakeTimers();
+
+    sendOffscreen('ledger-device-disconnect');
+    jest.advanceTimersByTime(10_000);
+    await flushMicrotasks();
+    await operation;
+
+    expect(mockCaptureMessage).toHaveBeenCalledWith(
+      'ledger disconnected during operation',
+      expect.objectContaining({
+        tags: expect.objectContaining({ ledger_reconnect: 'none' }),
+      })
+    );
+  });
+
+  it('ignores disconnects while no Ledger operation is running', () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(Date.now() + 60_000);
+
+    sendOffscreen('ledger-device-disconnect');
+    sendOffscreen('ledger-device-connect');
+    jest.advanceTimersByTime(10_000);
+
+    expect(mockCaptureMessage).not.toHaveBeenCalled();
   });
 });

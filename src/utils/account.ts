@@ -187,8 +187,11 @@ export const filterKeyringData = (
 
     if (Array.isArray(value)) {
       if (isAddress(value[0])) {
-        data[key] = value.filter((item) =>
-          addresses.some((address) => isSameAddress(item, address))
+        // also drop repeated addresses so a dirty vault doesn't sync them out
+        data[key] = value.filter(
+          (item, idx) =>
+            addresses.some((address) => isSameAddress(item, address)) &&
+            value.findIndex((e) => isSameAddress(e, item)) === idx
         );
       }
     } else if (isObject(value)) {

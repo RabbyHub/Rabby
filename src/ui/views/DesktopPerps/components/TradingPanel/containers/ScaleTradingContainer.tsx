@@ -24,9 +24,7 @@ import { EVENTS } from '@/constant';
 import { PerpsCheckbox } from '../components/PerpsCheckbox';
 import { DesktopPerpsInputV2 as DesktopPerpsInput } from '../../DesktopPerpsInputV2';
 import { TradingButton } from '../components/TradingButtons';
-import { BigNumber } from 'bignumber.js';
-import stats from '@/stats';
-import { formatPerpsCoin, getStatsReportSide } from '../../../utils';
+import { formatPerpsCoin } from '../../../utils';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import { OrderConfirmScaleTable } from '../../../modal/OrderConfirmScaleTable';
 
@@ -41,7 +39,6 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
 
   // Get data from perpsState
   const {
-    currentPerpsAccount,
     selectedCoin,
     positionSize,
     setPositionSize,
@@ -52,7 +49,6 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     quoteAsset,
     pxDecimals,
     leverage,
-    leverageType,
     availableBalance,
     reduceOnly,
     setReduceOnly,
@@ -164,25 +160,6 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     reduceOnly,
   ]);
 
-  const scaleAveragePrice = React.useMemo(() => {
-    if (!startPrice || !endPrice) {
-      return midPrice;
-    }
-    const sizeSkewBN = new BigNumber(sizeSkew);
-    if (sizeSkewBN.isEqualTo(1)) {
-      return (Number(startPrice) + Number(endPrice)) / 2;
-    } else {
-      const totalNotional = scaleOrders.reduce((acc, order) => {
-        return acc + Number(order.sz) * Number(order.limitPx);
-      }, 0);
-      const totalSize = scaleOrders.reduce((acc, order) => {
-        return acc + Number(order.sz);
-      }, 0);
-      const averagePrice = totalNotional / totalSize;
-      return averagePrice;
-    }
-  }, [startPrice, endPrice, scaleOrders, midPrice]);
-
   // Form validation
   const validation = React.useMemo(() => {
     let error: string = '';
@@ -272,23 +249,6 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         isBuy,
         totalSize: tradeSize,
         orders: scaleOrders,
-      });
-      stats.report('perpsTradeHistory', {
-        created_at: new Date().getTime(),
-        user_addr: currentPerpsAccount?.address || '',
-        trade_type: 'scale',
-        leverage: leverage.toString(),
-        trade_side: getStatsReportSide(isBuy, reduceOnly),
-        margin_mode: leverageType === 'cross' ? 'cross' : 'isolated',
-        coin: selectedCoin,
-        size: tradeSize,
-        price: scaleAveragePrice,
-        trade_usd_value: new BigNumber(scaleAveragePrice)
-          .times(tradeSize)
-          .toFixed(2),
-        service_provider: 'hyperliquid',
-        app_version: process.env.release || '0',
-        address_type: currentPerpsAccount?.type || '',
       });
     },
     {

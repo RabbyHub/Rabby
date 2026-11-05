@@ -135,9 +135,7 @@ export const usePerpsProState = () => {
       if (!res) {
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
         console.error('Failed to set builder fee');
-        capturePerpsError('set builder fee error, no max builder fee', null, {
-          address,
-        });
+        capturePerpsError('set builder fee error, no max builder fee', null);
       }
     } catch (error) {
       console.error('Failed to set builder fee:', error);
@@ -388,9 +386,7 @@ export const usePerpsProState = () => {
         dispatch.perps.setAccountNeedApproveAgent(true);
         dispatch.perps.setAccountNeedApproveBuilderFee(true);
         capturePerpsError('ensure login approve sign failed', e, {
-          address: account.address,
           accountType: account.type,
-          agentAddress,
         });
       }
     }
@@ -465,7 +461,6 @@ export const usePerpsProState = () => {
         description: 'message' in error ? error.message : String(error),
       });
       capturePerpsError('failed to handle action approve status', error, {
-        address: currentPerpsAccount?.address,
         accountType: currentPerpsAccount?.type,
       });
       throw error;
@@ -631,7 +626,6 @@ export const usePerpsProState = () => {
         description: error.message || 'Login failed',
       });
       capturePerpsError('login failed', error, {
-        address: account.address,
         accountType: account.type,
       });
     }

@@ -1,9 +1,17 @@
 import { useCallback, useMemo, useState } from 'react';
+import {
+  BRIDGE_SLIPPAGE_PERCENT_FALLBACK,
+  resolveBridgeSlippagePercent,
+} from '../utils/bridgeQuote';
 
 export const useBridgeSlippage = () => {
-  const [slippageState, setSlippageState] = useState('1');
+  const [slippageState, setSlippageState] = useState(
+    BRIDGE_SLIPPAGE_PERCENT_FALLBACK
+  );
 
-  const slippage = useMemo(() => slippageState || '1', [slippageState]);
+  const slippage = useMemo(() => resolveBridgeSlippagePercent(slippageState), [
+    slippageState,
+  ]);
   const [slippageChanged, setSlippageChanged] = useState(false);
 
   const [autoSlippage, setAutoSlippage] = useState(true);

@@ -22,7 +22,15 @@ const SortHat = () => {
     void isBootedPromise.catch(() => undefined);
     const approval = await approvalPromise;
     if (isInNotification && !approval) {
-      Browser.runtime.sendMessage({ type: 'closeNotification' });
+      const { id } = await Browser.windows.getCurrent();
+      if (id == null) return;
+      if (!(await wallet.closeNotificationWindow(id))) {
+        // A new request arrived after our empty snapshot. The background kept
+        // this window open for it, so load its approval rather than closing.
+        return loadView();
+      }
+      // A window left over from a background restart may no longer be tracked.
+      // The background has confirmed this id cannot be reused for an approval.
       window.close();
       return;
     }

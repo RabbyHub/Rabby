@@ -22,6 +22,7 @@ import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
   preferenceService,
+  removedTokensService,
   notificationService,
   permissionService,
   sessionService,
@@ -45,11 +46,15 @@ import {
   uninstalledService,
   OfflineChainsService,
   perpsService,
-  miscService,
   feedbackService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import extensionUpdateService from 'background/service/extensionUpdate';
+import {
+  clearWalletConnectTransportError,
+  getWalletConnectTransportErrorCode,
+  reportWalletConnectTransportError,
+} from 'background/utils/walletconnectTransportError';
 import buildinProvider, {
   EthereumProvider,
 } from 'background/utils/buildinProvider';
@@ -102,10 +107,7 @@ import {
   isSameAddress,
   setPopupIcon,
 } from 'background/utils';
-import {
-  handleGasAccountLoginSuccess as syncGasAccountLoginSuccess,
-  trackGasAccountActiveStatus as trackCurrentGasAccountActiveStatus,
-} from '../utils/gasAccountLogin';
+import { handleGasAccountLoginSuccess as syncGasAccountLoginSuccess } from '../utils/gasAccountLogin';
 import {
   discoverGasAccountRuntimeState,
   GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT,
@@ -119,7 +121,6 @@ import KeystoneKeyring, {
   MemStoreDataReady,
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
-import stats, { EventParams } from '@/stats';
 import {
   generateAliasName,
   isFullVersionAccountType,
@@ -183,7 +184,6 @@ import {
 } from '../service/customTestnet';
 import { getKeyringBridge, hasBridge } from '../service/keyring/bridge';
 import { syncChainService } from '../service/syncChain';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { BALANCE_LOADING_CONFS } from '@/constant/timeout';
 import { IExtractFromPromise } from '@/ui/utils/type';
 import { Wallet, thirdparty } from '@ethereumjs/wallet';
@@ -203,6 +203,10 @@ import {
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
 import {
+  disableExtraFeeProtection,
+  enableExtraFeeProtection,
+} from './walletUtils/extraFeeProtection';
+import {
   assertApprovalSigningBinding,
   waitForApprovalSigning,
 } from './walletUtils/approvalSigning';
@@ -212,13 +216,13 @@ import {
   getSignTxPreparationGas,
   getSignTxPreparation,
 } from '../service/signTxPreparation';
+import { hasBlockedAddress } from '../service/blockedAddress';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import pRetry from 'p-retry';
 import Browser, { Windows } from 'webextension-polyfill';
 import { hashSafeMessage } from '@safe-global/protocol-kit';
 import { userGuideService } from '../service/userGuide';
 import { metamaskModeService } from '../service/metamaskModeService';
-import { ga4 } from '@/utils/ga4';
 import { bgRetryTxMethods } from '../utils/errorTxRetry';
 import {
   BridgeTxHistoryItem,
@@ -230,6 +234,13 @@ import {
 import { Seaport } from '@opensea/seaport-js';
 import { OrderComponents } from '@opensea/seaport-js/lib/types';
 import { CROSS_CHAIN_SEAPORT_V1_6_ADDRESS } from '@opensea/seaport-js/lib/constants';
+import {
+  calcMinReceiveAmount,
+  getNFTTradingCurrency,
+  NFTOrderVerifyError,
+  reportNFTOrderVerifyError,
+  verifyAcceptOfferTx,
+} from '@/utils/nftVerify';
 import { buildCreateListingTypedData } from '@/utils/nft';
 import { http } from '../utils/http';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
@@ -254,12 +265,9 @@ type ScreenshotFeedbackPageInfo = {
   routePath?: string;
   userAgent?: string;
   userAgentData?: {
-    architecture?: string;
-    bitness?: string;
     brands?: { brand: string; version: string }[];
     fullVersionList?: { brand: string; version: string }[];
     mobile?: boolean;
-    model?: string;
     platform?: string;
     platformVersion?: string;
     uaFullVersion?: string;
@@ -311,6 +319,10 @@ type PostUserFeedbackParams = {
   image: string;
   pageInfo?: ScreenshotFeedbackPageInfo;
   totalBalanceText?: string;
+  /**
+   * Addresses are only attached when the user explicitly opts in.
+   */
+  includeAddress?: boolean;
 };
 
 const getSystemNameFromUserAgent = (userAgent?: string, platform?: string) => {
@@ -408,9 +420,7 @@ const getScreenshotFeedbackDeviceInfo = (
   const systemVersion =
     pageInfo?.userAgentData?.platformVersion ||
     getSystemVersionFromUserAgent(userAgent);
-  const deviceModel =
-    pageInfo?.userAgentData?.model ||
-    getDeviceModelFromUserAgent(userAgent, systemName);
+  const deviceModel = getDeviceModelFromUserAgent(userAgent, systemName);
   const manufacturer = inferManufacturer({
     deviceModel,
     systemName,
@@ -425,7 +435,30 @@ const getScreenshotFeedbackDeviceInfo = (
   };
 };
 
+// Matches EVM addresses (40 hex) and longer hex strings such as tx hashes
+// (64 hex), since a tx hash also reveals its sender on-chain.
+const SCREENSHOT_FEEDBACK_ADDRESS_REGEX = /0x[0-9a-f]{40,}/gi;
+
+const maskScreenshotFeedbackAddresses = (value?: string) =>
+  value?.replace(SCREENSHOT_FEEDBACK_ADDRESS_REGEX, '0x***');
+
+// Routes such as /settings/address-detail?address=, /send-token?to= and
+// /send-nft?to= carry addresses in the URL.
+const maskScreenshotFeedbackPageInfoAddresses = (
+  pageInfo?: ScreenshotFeedbackPageInfo
+): ScreenshotFeedbackPageInfo | undefined => {
+  if (!pageInfo) return pageInfo;
+
+  return {
+    ...pageInfo,
+    pageUrl: maskScreenshotFeedbackAddresses(pageInfo.pageUrl),
+    routePath: maskScreenshotFeedbackAddresses(pageInfo.routePath),
+  };
+};
+
 const stashKeyrings: Record<string | number, any> = {};
+
+const keystoneMemStoreForwarded = new WeakSet<object>();
 
 // keyring methods the UI may invoke via requestKeyring; anything else is rejected
 const REQUEST_KEYRING_METHOD_ALLOWLIST = new Set([
@@ -481,6 +514,7 @@ export class WalletController extends BaseController {
   isBooted = () => keyringService.isBooted();
   getSignTxPreparation = getSignTxPreparation;
   getSignTxPreparationGas = getSignTxPreparationGas;
+  hasBlockedAddress = hasBlockedAddress;
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
@@ -567,6 +601,7 @@ export class WalletController extends BaseController {
   };
 
   getApproval = notificationService.getApproval;
+  closeNotificationWindow = notificationService.closeNotificationWindow;
   resolveApprovalFor = notificationService.resolveApprovalFor;
   rejectApprovalFor = notificationService.rejectApprovalFor;
 
@@ -723,24 +758,9 @@ export class WalletController extends BaseController {
       ...others
     } = params;
 
-    stats.report('gasTopUpConfirm', {
-      topUpChain: toChainId,
-      topUpAmount: fromUsdValue,
-      topUpToken: gasTokenSymbol,
-      paymentChain: others.chainServerId,
-      paymentToken: paymentTokenSymbol,
-    });
-
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error(t('background.error.noCurrentAccount'));
     const txId = await this.sendToken(others);
-
-    stats.report('gasTopUpTxFinished', {
-      topUpChain: toChainId,
-      topUpAmount: fromUsdValue,
-      paymentChain: others.chainServerId,
-      paymentToken: paymentTokenSymbol,
-    });
 
     const postGasStationOrder = async () =>
       await this.openapi.postGasStationOrder({
@@ -754,37 +774,24 @@ export class WalletController extends BaseController {
         fromUsdValue,
       });
 
-    const reportGasTopUpPostGasStationOrder = () =>
-      stats.report('gasTopUpPostGasStationOrder', {
-        topUpChain: toChainId,
-        topUpAmount: fromUsdValue,
-        paymentChain: others.chainServerId,
-        paymentToken: paymentTokenSymbol,
-      });
-
     try {
       await postGasStationOrder();
-      reportGasTopUpPostGasStationOrder();
     } catch (error) {
       try {
         await postGasStationOrder();
-        reportGasTopUpPostGasStationOrder();
       } catch (error) {
-        Sentry.captureException(
-          new Error(
-            'postGasStationOrder failed, params: ' +
-              JSON.stringify({
-                userAddr: account.address,
-                fromChainId: others.chainServerId,
-                fromTxId: txId,
-                toChainId: toChainId,
-                toTokenAmount,
-                fromTokenId: others.tokenId,
-                fromTokenAmount: fromTokenAmount,
-                fromUsdValue,
-              })
-          )
-        );
+        // Params go in extra, not the message: beforeSend keeps a token id
+        // only in a structured field, and a fixed title groups one issue.
+        Sentry.captureException(new Error('postGasStationOrder failed'), {
+          extra: {
+            fromChainId: others.chainServerId,
+            toChainId: toChainId,
+            toTokenAmount,
+            fromTokenId: others.tokenId,
+            fromTokenAmount: fromTokenAmount,
+            fromUsdValue,
+          },
+        });
       }
     }
   };
@@ -2588,6 +2595,9 @@ export class WalletController extends BaseController {
     });
   };
 
+  enableExtraFeeProtection = enableExtraFeeProtection;
+  disableExtraFeeProtection = disableExtraFeeProtection;
+
   enableDappAccount = (enabled: boolean) => {
     preferenceService.setPreferencePartials({ isEnabledDappAccount: enabled });
     const currentAccount = preferenceService.getCurrentAccount();
@@ -2641,10 +2651,6 @@ export class WalletController extends BaseController {
     preferenceService.setPreferencePartials({
       unlockPreferredMethod: method,
     });
-  };
-
-  updateGa4EventTime = (timestamp: number) => {
-    preferenceService.setPreferencePartials({ ga4EventTime: timestamp });
   };
 
   getLastTimeSendToken = () => preferenceService.getLastTimeSendToken();
@@ -2707,6 +2713,8 @@ export class WalletController extends BaseController {
         return getOpenapiStore() as PersistedStoreMap[Key];
       case 'rpc':
         return RPCService.getCustomRPCStore() as PersistedStoreMap[Key];
+      case 'removedTokens':
+        return removedTokensService.store as PersistedStoreMap[Key];
       case 'swap':
         return swapService.getSwap() as PersistedStoreMap[Key];
       case 'whitelist':
@@ -2772,6 +2780,11 @@ export class WalletController extends BaseController {
       }
       case 'swap':
         swapService.patchStore(patch as PersistedStorePatch<'swap'>);
+        return;
+      case 'removedTokens':
+        removedTokensService.patchStore(
+          patch as PersistedStorePatch<'removedTokens'>
+        );
         return;
       case 'whitelist':
         whitelistService.patchStore(patch as PersistedStorePatch<'whitelist'>);
@@ -2875,28 +2888,6 @@ export class WalletController extends BaseController {
 
     return discoverGasAccountRuntimeState(accounts, options);
   };
-  setGasAccountBalanceState = (accountId?: string, hasBalance?: boolean) => {
-    gasAccountService.setCurrentBalanceState(accountId, hasBalance);
-  };
-
-  trackGasAccountActiveStatus = async () => {
-    const { sig, accountId } = this.getGasAccountSig();
-    return trackCurrentGasAccountActiveStatus(sig, accountId);
-  };
-
-  trackGasAccountActiveStatusOncePerDay = async () => {
-    if (gasAccountService.hasTrackedGa4ActiveToday()) {
-      return false;
-    }
-
-    const tracked = await this.trackGasAccountActiveStatus();
-    if (tracked) {
-      gasAccountService.markGa4ActiveTracked();
-    }
-
-    return tracked;
-  };
-
   handleGasAccountLoginSuccess = async (
     signature: string,
     account: Account,
@@ -3844,6 +3835,9 @@ export class WalletController extends BaseController {
     }
   };
 
+  getWalletConnectTransportErrorCode = () =>
+    getWalletConnectTransportErrorCode();
+
   getWalletConnectStatus = (address: string, brandName: string) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     try {
@@ -3968,17 +3962,14 @@ export class WalletController extends BaseController {
         }
       );
       (keyring as WalletConnectKeyring).on('inited', (uri) => {
+        clearWalletConnectTransportError();
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
           params: { uri },
         });
       });
 
-      keyring.on('transport_error', (data) => {
-        Sentry.captureException(
-          new Error('Transport error: ' + JSON.stringify(data))
-        );
-      });
+      keyring.on('transport_error', reportWalletConnectTransportError);
 
       keyring.on('statusChange', (data) => {
         eventBus.emit(EVENTS.broadcastToUI, {
@@ -4869,15 +4860,21 @@ export class WalletController extends BaseController {
     const keyringType = KEYRING_CLASS.HARDWARE.KEYSTONE;
     const keyring: KeystoneKeyring = this.#getKeyringByType(keyringType);
     if (keyring) {
-      keyring.getInteraction().on(MemStoreDataReady, (request) => {
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
-          params: {
-            request,
-          },
+      const interaction = keyring.getInteraction();
+      // Listen once: the keyring now also pushes each new sign request, so a
+      // listener per waiting-page mount would broadcast it many times.
+      if (!keystoneMemStoreForwarded.has(interaction)) {
+        keystoneMemStoreForwarded.add(interaction);
+        interaction.on(MemStoreDataReady, (request) => {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+            params: {
+              request,
+            },
+          });
         });
-      });
-      keyring.getInteraction().emit(AcquireMemeStoreData);
+      }
+      interaction.emit(AcquireMemeStoreData);
     }
   };
 
@@ -5248,6 +5245,10 @@ export class WalletController extends BaseController {
 
   // getTxExplainCacheByApprovalId = (id: string) =>
   //   transactionHistoryService.getExplainCacheByApprovalId(id);
+  getBridgeTxHistory: typeof transactionHistoryService.getBridgeTxHistory = (
+    address
+  ) => transactionHistoryService.getBridgeTxHistory(address);
+
   getRecentPendingTxHistory: typeof transactionHistoryService.getRecentPendingTxHistory = (
     address,
     type
@@ -5672,15 +5673,20 @@ export class WalletController extends BaseController {
 
   removeBlockedToken = preferenceService.removeBlockedToken;
 
+  getRemovedTokens = removedTokensService.getRemovedTokens;
+
+  isTokenRemoved = removedTokensService.isTokenRemoved;
+
+  addRemovedToken = removedTokensService.addRemovedToken;
+
+  removeRemovedToken = removedTokensService.removeRemovedToken;
+
   getCollectionStarred = preferenceService.getCollectionStarred;
 
   addCollectionStarred = preferenceService.addCollectionStarred;
 
   removeCollectionStarred = preferenceService.removeCollectionStarred;
 
-  reportStats = (name: string, params: EventParams) => {
-    stats.report(name, params);
-  };
   getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;
 
   updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
@@ -6189,14 +6195,6 @@ export class WalletController extends BaseController {
     return await keyring.scanAccount();
   };
 
-  setStatsData = (data: any) => {
-    notificationService.setStatsData(data);
-  };
-
-  getStatsData = () => {
-    return notificationService.getStatsData();
-  };
-
   _currentCoinbaseStashId?: undefined | null | number;
 
   connectCoinbase = async () => {
@@ -6616,30 +6614,7 @@ export class WalletController extends BaseController {
     return hashes;
   };
 
-  addCustomTestnet = async (
-    chain: Parameters<typeof customTestnetService.add>[0],
-    ctx?: {
-      ga?: {
-        source?: string;
-      };
-    }
-  ) => {
-    const source = ctx?.ga?.source || 'setting';
-
-    const res = await customTestnetService.add(chain);
-    if (!('error' in res)) {
-      matomoRequestEvent({
-        category: 'Custom Network',
-        action: 'Success Add Network',
-        label: `${source}_${String(chain.id)}`,
-      });
-
-      ga4.fireEvent('Add_CustomNetwork', {
-        event_category: 'Custom Network',
-      });
-    }
-    return res;
-  };
+  addCustomTestnet = customTestnetService.add;
   updateCustomTestnet = customTestnetService.update;
   removeCustomTestnet = (chainId: number) => {
     const chain = findChain({
@@ -6649,6 +6624,7 @@ export class WalletController extends BaseController {
       RPCService.removeCustomRPC(chain.enum);
     }
     customTestnetService.remove(chainId);
+    syncChainService.disconnectSitesWithUnsupportedChain();
   };
   getCustomTestnetList = customTestnetService.getList;
 
@@ -6982,6 +6958,8 @@ export class WalletController extends BaseController {
   setPerpsMarginModePreference = perpsService.setPerpsMarginModePreference;
   getPerpsTpslModePreferences = perpsService.getTpslModePreferences;
   setPerpsTpslModePreference = perpsService.setTpslModePreference;
+  getPerpsTpslIntroShown = perpsService.getTpslIntroShown;
+  setPerpsTpslIntroShown = perpsService.setTpslIntroShown;
   setPerpsSelectedCoin = perpsService.setSelectedCoin;
   getPerpsSelectedCoin = perpsService.getSelectedCoin;
   getMarketSlippage = perpsService.getMarketSlippage;
@@ -7117,9 +7095,6 @@ export class WalletController extends BaseController {
     });
   };
 
-  setReportGasLevel = miscService.setCurrentGasLevel;
-  getReportGasLevel = miscService.getCurrentGasLevel;
-
   getPendingExtensionVersion = extensionUpdateService.getPendingVersion;
   requestExtensionUpdateCheck = extensionUpdateService.requestUpdateCheck;
   reloadExtensionForUpdate = extensionUpdateService.reloadForUpdate;
@@ -7128,15 +7103,22 @@ export class WalletController extends BaseController {
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
   removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
   clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
+  getScreenshotShareAddress = feedbackService.getScreenshotShareAddress;
+  setScreenshotShareAddress = feedbackService.setScreenshotShareAddress;
   setScreenshotContextMenuVisible =
     feedbackService.setScreenshotContextMenuVisible;
 
   getScreenshotFeedbackExtra = async ({
-    pageInfo,
+    pageInfo: rawPageInfo,
+    includeAddress,
   }: Pick<
     PostUserFeedbackParams,
-    'pageInfo'
+    'pageInfo' | 'includeAddress'
   >): Promise<ScreenshotFeedbackExtra> => {
+    const shouldIncludeAddress = includeAddress === true;
+    const pageInfo = shouldIncludeAddress
+      ? rawPageInfo
+      : maskScreenshotFeedbackPageInfoAddresses(rawPageInfo);
     const version = process.env.release || '0';
     const manifest = Browser.runtime.getManifest();
     const manifestVersion = manifest.version || version;
@@ -7178,40 +7160,44 @@ export class WalletController extends BaseController {
 
       extra.myCallableAddressCount = accounts.length;
       extra.myUncallableAddressCount = importedAccounts.length;
-      extra.myFirstAddress = accounts[0]?.address;
-      extra.myFirstImportedAddress = importedAccounts[0]?.address;
+      if (shouldIncludeAddress) {
+        extra.myFirstAddress = accounts[0]?.address;
+        extra.myFirstImportedAddress = importedAccounts[0]?.address;
+      }
     } catch (error) {
       console.error('Failed to get screenshot feedback accounts extra', error);
     }
 
-    try {
-      const currentAccount = preferenceService.getCurrentAccount();
+    if (shouldIncludeAddress) {
+      try {
+        const currentAccount = preferenceService.getCurrentAccount();
 
-      extra.myCurrentAddress = currentAccount?.address;
-    } catch (error) {
-      console.error(
-        'Failed to get screenshot feedback current account extra',
-        error
-      );
-    }
-
-    try {
-      const mySceneAddresses: Record<string, string> = {};
-      const perpsAccount = await perpsService.getCurrentAccount();
-
-      if (perpsAccount?.address) {
-        mySceneAddresses.Perps = perpsAccount.address;
+        extra.myCurrentAddress = currentAccount?.address;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback current account extra',
+          error
+        );
       }
-      const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
-      if (gasAccount?.account?.address) {
-        mySceneAddresses.GasAccount = gasAccount?.account?.address;
+
+      try {
+        const mySceneAddresses: Record<string, string> = {};
+        const perpsAccount = await perpsService.getCurrentAccount();
+
+        if (perpsAccount?.address) {
+          mySceneAddresses.Perps = perpsAccount.address;
+        }
+        const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
+        if (gasAccount?.account?.address) {
+          mySceneAddresses.GasAccount = gasAccount?.account?.address;
+        }
+        extra.mySceneAddresses = mySceneAddresses;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback scene account extra',
+          error
+        );
       }
-      extra.mySceneAddresses = mySceneAddresses;
-    } catch (error) {
-      console.error(
-        'Failed to get screenshot feedback scene account extra',
-        error
-      );
     }
 
     try {
@@ -7227,9 +7213,11 @@ export class WalletController extends BaseController {
     content,
     image,
     pageInfo,
+    includeAddress,
   }: PostUserFeedbackParams) => {
     const extra = await this.getScreenshotFeedbackExtra({
       pageInfo,
+      includeAddress,
     });
 
     return openapiService.postUserFeedback({
@@ -7393,8 +7381,9 @@ export class WalletController extends BaseController {
     order,
     collectionId,
     innerId,
-    quantity,
+    quantity = 1,
     isIncludeCreatorFee,
+    feeBpsList,
   }: {
     address: string;
     chainId: number;
@@ -7403,80 +7392,144 @@ export class WalletController extends BaseController {
     order: NonNullable<NFTDetail['best_offer_order']>;
     quantity?: number;
     isIncludeCreatorFee?: boolean;
+    /** each fee item shown to the user and counted in the total, in bps */
+    feeBpsList: number[];
   }) => {
-    const chain = findChain({
-      id: chainId,
-    });
-    if (!chain) {
-      throw new Error('chain not found');
-    }
-    const res = await this.openapi.prepareAcceptNFTOffer({
-      chain_id: chain?.serverId,
-      order_hash: order.order_hash,
-      fulfiller: address,
-      collection_id: collectionId,
-      inner_id: innerId,
-      quantity,
-      include_optional_creator_fees: isIncludeCreatorFee,
-    });
-    const fulfillmentData = res.data;
-    const transaction = fulfillmentData.fulfillment_data.transaction;
-    const inputData = transaction.input_data;
-    const FULFILL_BASIC_ORDER_ALIAS = 'fulfillBasicOrder_efficient_6GL6yc';
-    // Extract function name and build parameters array in correct order
-    const rawFunctionName = transaction.function.split('(')[0];
-    const functionName =
-      rawFunctionName === FULFILL_BASIC_ORDER_ALIAS
-        ? 'fulfillBasicOrder'
-        : rawFunctionName;
-    let params: unknown[];
-
-    // Order parameters based on the function being called
-    if (
-      functionName === 'fulfillAdvancedOrder' &&
-      'advancedOrder' in inputData
-    ) {
-      params = [
-        inputData.advancedOrder,
-        inputData.criteriaResolvers || [],
-        inputData.fulfillerConduitKey ||
-          '0x0000000000000000000000000000000000000000000000000000000000000000',
-        inputData.recipient,
-      ];
-    } else if (
-      (functionName === 'fulfillBasicOrder' ||
-        rawFunctionName === FULFILL_BASIC_ORDER_ALIAS) &&
-      'basicOrderParameters' in inputData
-    ) {
-      params = [inputData.basicOrderParameters];
-    } else if (functionName === 'fulfillOrder' && 'order' in inputData) {
-      params = [
-        inputData.order,
-        inputData.fulfillerConduitKey ||
-          '0x0000000000000000000000000000000000000000000000000000000000000000',
-        inputData.recipient,
-      ];
-    } else {
-      // Fallback: try to use values in object order
-      params = Object.values(inputData);
-    }
+    // Name of the Seaport function the backend picked, for failure reports
+    let rawFunctionName: string | undefined;
     try {
-      const encodedData = encodeFunctionData({
-        abi: SeaportABI,
-        functionName: functionName as any,
-        args: params as any,
+      const chain = findChain({
+        id: chainId,
       });
+      if (!chain) {
+        throw new Error('chain not found');
+      }
+      // Derive the minimum the user must receive from what the UI displayed,
+      // before trusting any fulfillment data from the backend.
+      const currency = getNFTTradingCurrency(chainId, 'offer');
+      if (order.price.decimals !== currency.decimals) {
+        throw new NFTOrderVerifyError(
+          'unexpected offer price decimals',
+          'currency'
+        );
+      }
+      const orderNFTQuantity = order.protocol_data.parameters.consideration.find(
+        (item) => isSameAddress(item.token, collectionId)
+      )?.startAmount;
+      if (!orderNFTQuantity || !(BigInt(orderNFTQuantity) > BigInt(0))) {
+        throw new NFTOrderVerifyError('cannot resolve offer quantity');
+      }
+      if (!feeBpsList.every((bps) => Number.isInteger(bps) && bps >= 0)) {
+        throw new NFTOrderVerifyError('invalid fee', 'amount');
+      }
+      const minReceiveAmount = calcMinReceiveAmount({
+        gross:
+          (BigInt(order.price.value) * BigInt(quantity)) /
+          BigInt(orderNFTQuantity),
+        feeBps: feeBpsList.reduce((sum, bps) => sum + bps, 0),
+        // Seaport fractions are exact and OpenSea floors fees, so only an
+        // optional creator fee rounded up can cost the seller, by at most
+        // 1 wei per displayed fee item
+        toleranceWei: BigInt(feeBpsList.length),
+      });
+      const res = await this.openapi.prepareAcceptNFTOffer({
+        chain_id: chain?.serverId,
+        order_hash: order.order_hash,
+        fulfiller: address,
+        collection_id: collectionId,
+        inner_id: innerId,
+        quantity,
+        include_optional_creator_fees: isIncludeCreatorFee,
+      });
+      const fulfillmentData = res.data;
+      const transaction = fulfillmentData.fulfillment_data.transaction;
+      const inputData = transaction.input_data;
+      const FULFILL_BASIC_ORDER_ALIAS = 'fulfillBasicOrder_efficient_6GL6yc';
+      // Extract function name and build parameters array in correct order
+      rawFunctionName = transaction.function.split('(')[0];
+      const functionName =
+        rawFunctionName === FULFILL_BASIC_ORDER_ALIAS
+          ? 'fulfillBasicOrder'
+          : rawFunctionName;
+      let params: unknown[];
 
-      // todo check this
-      return {
+      // Order parameters based on the function being called
+      if (
+        functionName === 'fulfillAdvancedOrder' &&
+        'advancedOrder' in inputData
+      ) {
+        params = [
+          inputData.advancedOrder,
+          inputData.criteriaResolvers || [],
+          inputData.fulfillerConduitKey ||
+            '0x0000000000000000000000000000000000000000000000000000000000000000',
+          inputData.recipient,
+        ];
+      } else if (
+        (functionName === 'fulfillBasicOrder' ||
+          rawFunctionName === FULFILL_BASIC_ORDER_ALIAS) &&
+        'basicOrderParameters' in inputData
+      ) {
+        params = [inputData.basicOrderParameters];
+      } else if (functionName === 'fulfillOrder' && 'order' in inputData) {
+        // fulfillOrder(order, fulfillerConduitKey): proceeds go to msg.sender
+        params = [
+          inputData.order,
+          inputData.fulfillerConduitKey ||
+            '0x0000000000000000000000000000000000000000000000000000000000000000',
+        ];
+      } else if (
+        functionName === 'matchAdvancedOrders' &&
+        'orders' in inputData
+      ) {
+        // OpenSea matches partial offers against an order built for the fulfiller
+        const matchData = inputData as typeof inputData & {
+          criteriaResolvers?: unknown[];
+          fulfillments?: unknown[];
+          recipient?: string;
+        };
+        params = [
+          matchData.orders,
+          matchData.criteriaResolvers || [],
+          matchData.fulfillments || [],
+          matchData.recipient || zeroAddress,
+        ];
+      } else {
+        throw new NFTOrderVerifyError('unsupported function');
+      }
+      let encodedData: `0x${string}`;
+      try {
+        encodedData = encodeFunctionData({
+          abi: SeaportABI,
+          functionName: functionName as any,
+          args: params as any,
+        });
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
+      const tx = {
         chainId,
         from: address,
         to: transaction.to,
         value: transaction.value,
         data: encodedData,
       };
+      verifyAcceptOfferTx({
+        tx,
+        chainId,
+        account: address,
+        nft: { contract: collectionId, tokenId: innerId, quantity },
+        offerer: order.protocol_data.parameters.offerer,
+        minReceiveAmount,
+      });
+      return tx;
     } catch (e) {
-      console.error(e);
+      reportNFTOrderVerifyError(e, {
+        flow: 'acceptOffer',
+        chainId,
+        functionName: rawFunctionName,
+      });
       throw e;
     }
   };

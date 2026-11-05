@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "Sem histórico de transações em 90 dias",
         "descThreeMonths": "Sem histórico de transações nos últimos 90 dias nas <2>redes suportadas</2>"
       },
+      "noMore": {
+        "title": "Não há mais transações.",
+        "titleInLast90Days": "Não há mais transações nos últimos 90 dias."
+      },
       "explain": {
         "unknown": "Interação com Contratos",
         "approve": "Aprovar {{amount}} {{symbol}} para {{project}}",
@@ -501,6 +505,7 @@
       "detectedMultipleRequestsFromThisDapp": "Detectados múltiplos pedidos deste Dapp",
       "cancelConnection": "Cancelar ligação",
       "imKeyConnected": "imKey está ligado",
+      "extraFeeProtectionBlocked": "A Proteção contra taxas extras bloqueou este pedido de assinatura. Se ainda assim quiser assinar, desative-a nas Definições",
       "imKeyNotConnected": "imKey não está ligado",
       "submitTx": "Enviar Transação",
       "cancelAll": "Cancelar todas as {{count}} solicitações do Dapp",
@@ -1172,9 +1177,44 @@
         "receivedDifferentTokenFromSource": "A ponte falhou. Um token diferente foi retornado na rede de origem.",
         "queued": "Em espera",
         "sendStatus": "Estado do envio",
-        "swapStatus": "Estado da troca"
+        "swapStatus": "Estado da troca",
+        "bridgingEta": "Transferência por ponte em curso, tempo estimado: <time>{{time}}</time>",
+        "stillBridging": "Transferência por ponte ainda em curso",
+        "sourceFailed": "A ponte falhou. Os seus {{token}} não foram enviados",
+        "refundedLead": "Reembolsado",
+        "popupProcessing": "Ponte em processamento",
+        "popupPending": "Ponte pendente",
+        "popupFailed": "Falha na ponte",
+        "popupRefunded": "Ponte reembolsada",
+        "popupCompleted": "Ponte concluída",
+        "popupBridgeDelayed": "Ponte atrasada",
+        "popupBridgeFailed": "A ponte falhou",
+        "popupRefundedIn": "Reembolsado em {{token}}",
+        "processing": "A processar",
+        "refund": "Reembolsado",
+        "goBack": "Voltar",
+        "contactSupport": "Contactar o suporte",
+        "succeeded": "Concluído com sucesso",
+        "sendFrom": "Enviar de {{chain}}",
+        "receiveOn": "Receber em {{chain}}",
+        "refundOn": "Reembolsado em {{chain}}",
+        "waitingDestination": "A aguardar a transação de destino",
+        "sendFailed": "Falha no envio",
+        "tokenNotSent": "Os seus {{token}} não foram enviados"
       },
-      "best-subtitle": "A melhor cotação é determinada por uma combinação do custo total estimado (incluindo taxas de gas) e velocidade de entrega."
+      "best-subtitle": "A melhor cotação é determinada por uma combinação do custo total estimado (incluindo taxas de gas) e velocidade de entrega.",
+      "bridge": "Ponte",
+      "by": "por",
+      "timeLeft": "Tempo restante: {{time}}",
+      "refundIn": "Reembolsado em {{token}}",
+      "viewDetails": "Ver detalhes",
+      "duration-sec": "{{duration}} s",
+      "duration-hour": "{{duration}} h",
+      "duration-hour-min": "{{hours}} h {{minutes}} min",
+      "duration-day": "{{duration}} d",
+      "duration-day-hour": "{{days}} d {{hours}} h",
+      "duration-day-min": "{{days}} d {{minutes}} min",
+      "duration-day-hour-min": "{{days}} d {{hours}} h {{minutes}} min"
     },
     "manageAddress": {
       "whitelisted-address": "Endereço na lista branca",
@@ -1432,7 +1472,9 @@
           "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda",
-          "dataAnalysis": "Análise de Dados"
+          "dataAnalysis": "Análise de Dados",
+          "extraFeeProtection": "Proteção contra taxas extras",
+          "extraFeeProtectionDesc": "Bloqueia pedidos de assinatura que permitem a extensões do navegador cobrar taxas extras"
         },
         "cancel": "Cancelar",
         "7Days": "7 dias",
@@ -1500,7 +1542,13 @@
         "clearPendingCheckbox": "Também redefinir meus dados locais de nonce e o registo de assinaturas",
         "biometricUnlockUnsupported": "Este dispositivo não suporta desbloqueio biométrico.",
         "biometricUnlockEnableFailed": "Falha ao ativar o desbloqueio biométrico",
-        "biometricUnlockDisabled": "Desbloqueio biométrico desativado"
+        "biometricUnlockDisabled": "Desbloqueio biométrico desativado",
+        "removedToken": {
+          "title": "Tokens removidos",
+          "description": "Os tokens removidos ficarão ocultos no seu Portefólio em todos os seus endereços, mas continuarão a ser incluídos no cálculo do seu saldo.",
+          "loadFailed": "Não foi possível carregar o token",
+          "retry": "Tentar novamente"
+        }
       },
       "tokenDetail": {
         "txFailed": "Falha",
@@ -1544,7 +1592,19 @@
         "NoSupportedExchanges": "Nenhuma plataforma de negociação suportada",
         "customizedListTitles": "tokens personalizados",
         "bridge": "Ponte",
-        "bridgeToEth": "Ponte para a rede Ethereum"
+        "bridgeToEth": "Ponte para a rede Ethereum",
+        "removed": {
+          "more": "Mais",
+          "removeToken": "Remover token",
+          "remove": "Remover",
+          "confirmTitle": "Remover este token?",
+          "portfolioNotice": "Este token deixará de aparecer no seu Portefólio após a remoção.",
+          "restoreNotice": "Pode restaurá-lo a qualquer momento em «Definições >> Tokens removidos».",
+          "warning": "Os tokens removidos ficarão ocultos no seu Portefólio em todos os seus endereços, mas continuarão a ser incluídos no cálculo do seu saldo.",
+          "removeFailed": "Não foi possível remover o token",
+          "restore": "Restaurar token removido",
+          "restoreFailed": "Não foi possível restaurar o token"
+        }
       },
       "assets": {
         "portfolio": {
@@ -1850,6 +1910,7 @@
         "haveOneKey": "Ainda não tem um OneKey?"
       },
       "walletConnect": {
+        "clockSkewError": "O WalletConnect não consegue ligar-se porque a hora do seu computador não está sincronizada. Ative a definição automática da data e hora e tente novamente.",
         "status": {
           "accountError": "Endereço não corresponde.",
           "accountErrorDesc": "Mude o endereço na sua carteira móvel",
@@ -3310,6 +3371,14 @@
           "creatorFeeTips1": "Os ganhos dos criadores serão pagos pelo vendedor. Os ganhos dos criadores são aplicados.",
           "platform": "Plataforma"
         },
+        "verifyError": {
+          "unsupportedChain": "A negociação de NFT ainda não é suportada nesta rede",
+          "currency": "Falha na verificação de segurança: o token de pagamento não corresponde ao esperado",
+          "nft": "Falha na verificação de segurança: o NFT da ordem não corresponde ao que selecionou",
+          "amount": "Falha na verificação de segurança: o valor a receber não corresponde ao apresentado",
+          "recipient": "Falha na verificação de segurança: os fundos não seriam enviados para o seu endereço",
+          "invalid": "Falha na verificação de segurança: os dados da ordem são inválidos. Tente novamente mais tarde"
+        },
         "pending": "Pendente",
         "empty": "Sem NFTs",
         "confirmingTx": "A confirmar a sua transação",
@@ -4170,6 +4239,53 @@
         "tpTriggerInvalid": "O preço de gatilho do TP é inválido e não será definido",
         "slTriggerInvalid": "O preço de gatilho do SL é inválido e não será definido"
       },
+      "positionTpSl": {
+        "title": "TP/SL",
+        "addTitle": "Adicionar TP/SL",
+        "modifyTitle": "Modificar TP/SL",
+        "modifyPositionTitle": "Modificar TP/SL da posição",
+        "confirmTitle": "Confirmar TP/SL",
+        "tabPartial": "TP/SL",
+        "tabPosition": "TP/SL da posição",
+        "entryPrice": "Preço de entrada",
+        "markPrice": "Preço de marcação",
+        "estLiqPrice": "Preço de liq. est.",
+        "takeProfit": "Take Profit",
+        "stopLoss": "Stop Loss",
+        "tpTrigger": "Gatilho TP",
+        "slTrigger": "Gatilho SL",
+        "pnl": "PNL",
+        "roi": "ROI",
+        "estimatedPnlHint": "O PnL estimado será <value>{{pnl}} {{quoteAsset}} (ROI: {{roi}}%)</value>",
+        "invalidTriggerForMark": "O preço de gatilho é inválido para o último preço de marcação",
+        "amount": "Quantidade",
+        "positionAmount": "Quantidade da posição {{amount}} {{unit}}",
+        "introPartialTitle": "O que é TP/SL?",
+        "introPartialDesc": "Defina take profit e stop loss para uma quantidade específica. Esta quantidade permanece fixa mesmo que o tamanho da sua posição mude.",
+        "introPositionTitle": "O que é TP/SL da posição?",
+        "introPositionDesc": "Defina take profit e stop loss para toda a sua posição. A quantidade é ajustada automaticamente quando o tamanho da posição muda.",
+        "gotIt": "Entendi",
+        "whatIsPositionTpSl": "O que é TP/SL da posição?",
+        "addTpSl": "Adicionar TP/SL",
+        "cancelAll": "Cancelar tudo",
+        "positionSizeCoverage": "{{percent}} do tamanho da posição",
+        "triggerPrice": "Preço de gatilho",
+        "estPnl": "PnL est. ({{unit}})",
+        "price": "Preço",
+        "market": "A mercado",
+        "unfilledAmt": "Quantidade não executada ({{unit}})",
+        "all": "Tudo",
+        "modify": "Modificar",
+        "cancel": "Cancelar",
+        "add": "Adicionar",
+        "volume": "Quantidade",
+        "estimatedPnl": "PNL estimado",
+        "submitted": "TP/SL enviado",
+        "partialSubmitted": "Algumas ordens TP/SL foram enviadas. As ordens mais recentes aparecem após atualizar.",
+        "contextChanged": "A posição ou o preço de marcação mudou. Por favor, revise novamente.",
+        "noTp": "sem TP",
+        "noSl": "sem SL"
+      },
       "accountInfo": {
         "availableBalance": "Saldo disponível",
         "accountEquity": "Capital da conta",
@@ -4834,7 +4950,8 @@
     "screenshotModal": {
       "title": "Captura de ecrã para feedback",
       "placeholder": "Descreva o problema",
-      "placeholderRequired": "Descreva o problema (obrigatório)"
+      "placeholderRequired": "Descreva o problema (obrigatório)",
+      "includeAddress": "Partilhar endereço para resolução de problemas"
     },
     "feedbackPopup": {
       "title": "Resposta do Suporte Rabby",

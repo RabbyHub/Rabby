@@ -40,6 +40,8 @@ import {
 } from '../views/Perps/constants';
 import type {
   ApproveSignatures,
+  PerpsTpslIntroShown,
+  PerpsTpslIntroTab,
   PerpsTpslModePreference,
   PerpsTpslModePreferences,
 } from '@/background/service/perps';
@@ -74,7 +76,6 @@ import {
   PerpTopTokenV3,
   PerpTopTokenCategory,
 } from '@rabby-wallet/rabby-api/dist/types';
-import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import {
   parsePortfolioResponseStrict,
@@ -232,6 +233,8 @@ export interface PerpsState {
   favoritedCoins: string[];
   marginModePreferences: Record<string, 'cross' | 'isolated'>;
   tpslModePreferences: PerpsTpslModePreferences;
+  /** `null` until loaded — the one-time intro card must not show on a guess. */
+  tpslIntroShown: PerpsTpslIntroShown | null;
   chartInterval: string;
   wsActiveAssetCtx: WsActiveAssetCtx | null;
   wsActiveAssetData: WsActiveAssetData | null;
@@ -443,6 +446,7 @@ export const getDefaultPerpsState = (): PerpsState =>
     favoritedCoins: [],
     marginModePreferences: {},
     tpslModePreferences: DEFAULT_POSITION_TPSL_MODE_PREFERENCES,
+    tpslIntroShown: null,
     chartInterval: '15m',
     wsActiveAssetCtx: null,
     wsActiveAssetData: null,
@@ -1293,10 +1297,16 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
   },
 
   async fetchPerpPermission(address: string, rootState: PerpsRootState) {
-    const {
-      has_permission,
-    } = await rootState.app.wallet.openapi.getPerpPermission({ id: address });
-    dispatch.perps.setHasPermission(has_permission);
+    try {
+      const {
+        has_permission,
+      } = await rootState.app.wallet.openapi.getPerpPermission({ id: address });
+      dispatch.perps.setHasPermission(has_permission);
+    } catch (error) {
+      // Fail closed: an unverified address must not keep the default `true`.
+      console.error('[perps] fetch permission failed', error);
+      dispatch.perps.setHasPermission(false);
+    }
   },
 
   async fetchUserAbstraction(address: string) {
@@ -2235,6 +2245,33 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     }
   },
 
+  async initTpslIntroShown(_: void | undefined, rootState: PerpsRootState) {
+    try {
+      const shown = await rootState.app.wallet.getPerpsTpslIntroShown();
+      dispatch.perps.patchState({ tpslIntroShown: shown });
+    } catch (error) {
+      // Stays `null`: an unknown state never shows the card.
+      console.error('Failed to load TP/SL intro state:', error);
+    }
+  },
+
+  async markTpslIntroShown(tab: PerpsTpslIntroTab, rootState: PerpsRootState) {
+    const current = usePerpsStore.getState().tpslIntroShown;
+    dispatch.perps.patchState({
+      tpslIntroShown: {
+        partial: false,
+        position: false,
+        ...(current || {}),
+        [tab]: true,
+      },
+    });
+    try {
+      await rootState.app.wallet.setPerpsTpslIntroShown(tab);
+    } catch (error) {
+      console.error('Failed to save TP/SL intro state:', error);
+    }
+  },
+
   async initMarketSlippage(_: void | undefined, rootState: PerpsRootState) {
     try {
       const slippage = await rootState.app.wallet.getMarketSlippage();
@@ -2430,6 +2467,8 @@ const effectsWithRootState = new Set<keyof PerpsEffectImplementations>([
   'setMarginModePreference',
   'initTpslModePreferences',
   'updateTpslModePreference',
+  'initTpslIntroShown',
+  'markTpslIntroShown',
   'initMarketSlippage',
   'initSkipMarketCloseConfirm',
   'initSoundEnabled',

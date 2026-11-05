@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "90일 이내 거래 내역 없음",
         "descThreeMonths": "90일 이내 <2>지원되는 체인</2>의 거래 내역 없음"
       },
+      "noMore": {
+        "title": "더 이상 거래 내역이 없습니다.",
+        "titleInLast90Days": "최근 90일간 더 이상 거래 내역이 없습니다."
+      },
       "explain": {
         "unknown": "계약 상호작용",
         "cancel": "보류 중인 거래가 취소되었습니다.",
@@ -503,6 +507,7 @@
       "cancelCurrentConnection": "현재 연결 취소",
       "testnet": "테스트넷",
       "imKeyConnected": "imKey에 연결되었습니다",
+      "extraFeeProtectionBlocked": "추가 수수료 보호가 이 서명 요청을 차단했습니다. 그래도 서명하려면 설정에서 이 기능을 끄세요",
       "submitTx": "거래 제출",
       "cancelAll": "모든 {{count}} 요청을 Dapp에서 취소합니다.",
       "resend": "재시도",
@@ -1172,9 +1177,44 @@
         "pending": "대기 중",
         "beReturnFailed": "브리지에 실패했습니다. 귀하의 자산이 반환되었습니다.",
         "sendStatus": "전송 상태",
-        "swapStatus": "스왑 상태"
+        "swapStatus": "스왑 상태",
+        "bridgingEta": "브리지 진행 중, 예상 소요 시간: <time>{{time}}</time>",
+        "stillBridging": "브리지 진행 중",
+        "sourceFailed": "브리지 실패, {{token}}이 전송되지 않았습니다",
+        "refundedLead": "환불됨",
+        "popupProcessing": "브리지 처리 중",
+        "popupPending": "브리지 대기 중",
+        "popupFailed": "브리지 실패",
+        "popupRefunded": "브리지 환불 완료",
+        "popupCompleted": "브리지 완료",
+        "popupBridgeDelayed": "브리지 지연",
+        "popupBridgeFailed": "브리지에 실패했습니다",
+        "popupRefundedIn": "{{token}}으로 환불됨",
+        "processing": "처리 중",
+        "refund": "환불됨",
+        "goBack": "돌아가기",
+        "contactSupport": "지원팀에 문의",
+        "succeeded": "성공",
+        "sendFrom": "{{chain}}에서 보내기",
+        "receiveOn": "{{chain}}에서 받기",
+        "refundOn": "{{chain}}에서 환불됨",
+        "waitingDestination": "대상 체인의 트랜잭션 대기 중",
+        "sendFailed": "전송 실패",
+        "tokenNotSent": "{{token}}이 전송되지 않았습니다"
       },
-      "best-subtitle": "최고의报价은 예상 총 비용(gas 비용 포함)과 거래 속도의 조합에 의해 결정됩니다."
+      "best-subtitle": "최고의报价은 예상 총 비용(gas 비용 포함)과 거래 속도의 조합에 의해 결정됩니다.",
+      "bridge": "브리지",
+      "by": "제공:",
+      "timeLeft": "{{time}} 남음",
+      "refundIn": "{{token}}으로 환불됨",
+      "viewDetails": "상세 보기",
+      "duration-sec": "{{duration}}초",
+      "duration-hour": "{{duration}}시간",
+      "duration-hour-min": "{{hours}}시간 {{minutes}}분",
+      "duration-day": "{{duration}}일",
+      "duration-day-hour": "{{days}}일 {{hours}}시간",
+      "duration-day-min": "{{days}}일 {{minutes}}분",
+      "duration-day-hour-min": "{{days}}일 {{hours}}시간 {{minutes}}분"
     },
     "manageAddress": {
       "deleted": "삭제됨",
@@ -1432,7 +1472,9 @@
           "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요.",
           "currency": "통화",
           "searchCurrency": "통화 검색",
-          "dataAnalysis": "데이터 분석"
+          "dataAnalysis": "데이터 분석",
+          "extraFeeProtection": "추가 수수료 보호",
+          "extraFeeProtectionDesc": "브라우저 확장 프로그램이 추가 수수료를 부과할 수 있게 하는 서명 요청을 차단합니다"
         },
         "save": "저장",
         "inputOpenapiHost": "openapi 호스트를 입력하세요",
@@ -1500,7 +1542,13 @@
         "biometricUnlockEnableFailed": "생체 인식 잠금 해제를 활성화하는 데 실패했습니다.",
         "biometricUnlockSetupDesc": "바이오메트릭 잠금을 활성화하려면 비밀번호를 확인하세요.",
         "clearPendingCheckbox": "로컬 nonce 데이터와 서명 기록도 재설정",
-        "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다."
+        "biometricUnlockDisableFailed": "생체 인식 잠금 해제를 비활성화하는 데 실패했습니다.",
+        "removedToken": {
+          "title": "삭제된 토큰",
+          "description": "삭제된 토큰은 모든 주소의 포트폴리오에서 숨겨지지만 잔액 계산에는 계속 포함됩니다.",
+          "loadFailed": "토큰을 불러오지 못했습니다",
+          "retry": "다시 시도"
+        }
       },
       "tokenDetail": {
         "customized": "맞춤형",
@@ -1544,7 +1592,19 @@
         "verifyScamTips": "이것은 사기 토큰입니다.",
         "BridgeProvider": "브리지 제공자",
         "bridge": "브리지",
-        "bridgeToEth": "Ethereum 체인으로 브릿지"
+        "bridgeToEth": "Ethereum 체인으로 브릿지",
+        "removed": {
+          "more": "더 보기",
+          "removeToken": "토큰 삭제",
+          "remove": "삭제",
+          "confirmTitle": "이 토큰을 삭제하시겠습니까?",
+          "portfolioNotice": "삭제하면 이 토큰은 포트폴리오에 더 이상 표시되지 않습니다.",
+          "restoreNotice": "“설정 >> 삭제된 토큰”에서 언제든지 복원할 수 있습니다.",
+          "warning": "삭제된 토큰은 모든 주소의 포트폴리오에서 숨겨지지만 잔액 계산에는 계속 포함됩니다.",
+          "removeFailed": "토큰을 삭제하지 못했습니다",
+          "restore": "삭제된 토큰 복원",
+          "restoreFailed": "토큰을 복원하지 못했습니다"
+        }
       },
       "assets": {
         "portfolio": {
@@ -1850,6 +1910,7 @@
         "haveOneKey": "아직 OneKey가 없으신가요?"
       },
       "walletConnect": {
+        "clockSkewError": "컴퓨터 시간이 동기화되지 않아 WalletConnect에 연결할 수 없습니다. 날짜 및 시간 자동 설정을 켠 후 다시 시도하세요.",
         "status": {
           "accountError": "주소가 일치하지 않습니다.",
           "connected": "연결됨",
@@ -3310,6 +3371,14 @@
           "creatorFeeTips1": "판매자가 크리에이터 수익을 지급합니다. 크리에이터 수익은 강제됩니다.",
           "offer": "제안"
         },
+        "verifyError": {
+          "unsupportedChain": "이 체인에서는 아직 NFT 거래를 지원하지 않습니다",
+          "currency": "보안 검사 실패: 결제 토큰이 예상과 일치하지 않습니다",
+          "nft": "보안 검사 실패: 주문의 NFT가 선택한 NFT와 일치하지 않습니다",
+          "amount": "보안 검사 실패: 받을 금액이 표시된 금액과 일치하지 않습니다",
+          "recipient": "보안 검사 실패: 수익금이 내 주소로 전송되지 않습니다",
+          "invalid": "보안 검사 실패: 주문 데이터가 올바르지 않습니다. 잠시 후 다시 시도하세요"
+        },
         "empty": "NFT가 없음",
         "confirmingTx": "거래를 확인하는 중",
         "all": "모두",
@@ -4170,6 +4239,53 @@
         "tpTriggerInvalid": "TP 트리거 가격이 유효하지 않아 설정되지 않습니다",
         "slTriggerInvalid": "SL 트리거 가격이 유효하지 않아 설정되지 않습니다"
       },
+      "positionTpSl": {
+        "title": "TP/SL",
+        "addTitle": "TP/SL 추가",
+        "modifyTitle": "TP/SL 수정",
+        "modifyPositionTitle": "포지션 TP/SL 수정",
+        "confirmTitle": "TP/SL 확인",
+        "tabPartial": "TP/SL",
+        "tabPosition": "포지션 TP/SL",
+        "entryPrice": "진입가",
+        "markPrice": "마크 가격",
+        "estLiqPrice": "예상 청산가",
+        "takeProfit": "이익실현",
+        "stopLoss": "손절매",
+        "tpTrigger": "TP 트리거",
+        "slTrigger": "SL 트리거",
+        "pnl": "PNL",
+        "roi": "ROI",
+        "estimatedPnlHint": "예상 손익은 <value>{{pnl}} {{quoteAsset}} (ROI: {{roi}}%)</value>입니다",
+        "invalidTriggerForMark": "트리거 가격이 최신 마크 가격 기준으로 유효하지 않습니다",
+        "amount": "수량",
+        "positionAmount": "포지션 수량 {{amount}} {{unit}}",
+        "introPartialTitle": "TP/SL이란?",
+        "introPartialDesc": "지정한 수량에 대해 이익실현과 손절매를 설정합니다. 포지션 규모가 바뀌어도 이 수량은 고정됩니다.",
+        "introPositionTitle": "포지션 TP/SL이란?",
+        "introPositionDesc": "전체 포지션에 대해 이익실현과 손절매를 설정합니다. 수량은 포지션 규모 변화에 따라 자동으로 조정됩니다.",
+        "gotIt": "확인",
+        "whatIsPositionTpSl": "포지션 TP/SL이란?",
+        "addTpSl": "TP/SL 추가",
+        "cancelAll": "모두 취소",
+        "positionSizeCoverage": "포지션 규모의 {{percent}}",
+        "triggerPrice": "트리거 가격",
+        "estPnl": "예상 PNL ({{unit}})",
+        "price": "가격",
+        "market": "시장가",
+        "unfilledAmt": "미체결 수량 ({{unit}})",
+        "all": "전체",
+        "modify": "수정",
+        "cancel": "취소",
+        "add": "추가",
+        "volume": "수량",
+        "estimatedPnl": "예상 PNL",
+        "submitted": "TP/SL이 제출되었습니다",
+        "partialSubmitted": "일부 TP/SL 주문이 제출되었습니다. 새로고침 후 최신 주문이 표시됩니다.",
+        "contextChanged": "포지션 또는 마크 가격이 변경되었습니다. 다시 확인해 주세요.",
+        "noTp": "TP 없음",
+        "noSl": "SL 없음"
+      },
       "accountInfo": {
         "totalBalance": "총 잔액",
         "crossMarginRatio": "교차 마진 비율",
@@ -4834,7 +4950,8 @@
     "screenshotModal": {
       "title": "피드백용 스크린샷",
       "placeholder": "문제를 설명해 주세요",
-      "placeholderRequired": "문제를 설명해 주세요 (필수)"
+      "placeholderRequired": "문제를 설명해 주세요 (필수)",
+      "includeAddress": "문제 해결을 위해 주소 공유"
     },
     "feedbackPopup": {
       "title": "Rabby Support의 응답",

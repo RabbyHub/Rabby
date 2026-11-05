@@ -220,6 +220,7 @@ import LogoParaswap from 'ui/assets/swap/paraswap.png';
 import LogoMagpie from 'ui/assets/swap/magpie.png';
 import LogoSushi from 'ui/assets/swap/sushi.png';
 import LogoUniswap from 'ui/assets/swap/uniswap.png';
+import LogoPancakeSwap from 'ui/assets/swap/pancakeswap.png';
 
 import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 import LogoBinance from 'ui/assets/swap/binance.png';
@@ -1624,6 +1625,12 @@ export const DEX = {
     logo: LogoUniswap,
     name: 'Uniswap',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.UNI],
+  },
+  [DEX_ENUM.PANCAKESWAP]: {
+    id: DEX_ENUM.PANCAKESWAP,
+    logo: LogoPancakeSwap,
+    name: 'PancakeSwap',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PANCAKESWAP],
   },
 };
 

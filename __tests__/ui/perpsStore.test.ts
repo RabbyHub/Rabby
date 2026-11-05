@@ -44,11 +44,6 @@ jest.mock('@/ui/views/DesktopPerps/utils', () => ({
   showDepositAndWithdrawToast: jest.fn(),
 }));
 
-jest.mock('@/stats', () => ({
-  __esModule: true,
-  default: {},
-}));
-
 jest.mock('@/ui/wallet', () => ({
   wallet: {
     getMarketSlippage: jest.fn(),
@@ -60,11 +55,13 @@ jest.mock('@/ui/wallet', () => ({
     getPerpsSelectedCoin: jest.fn(),
     getPerpsShowPopularTradings: jest.fn(),
     getPerpsTpslModePreferences: jest.fn(),
+    getPerpsTpslIntroShown: jest.fn(),
     getSkipMarketCloseConfirm: jest.fn(),
     getSoundEnabled: jest.fn(),
     setMarketSlippage: jest.fn(),
     setPerpsOrderConfirmation: jest.fn(),
     setPerpsShowPopularTradings: jest.fn(),
+    setPerpsTpslIntroShown: jest.fn(),
     openapi: {},
   },
 }));
@@ -155,6 +152,36 @@ describe('perps store', () => {
       'market',
       false
     );
+  });
+
+  test('keeps the TP/SL intro unknown until its persisted state loads', async () => {
+    expect(usePerpsStore.getState().tpslIntroShown).toBeNull();
+    (wallet.getPerpsTpslIntroShown as jest.Mock).mockResolvedValue({
+      partial: true,
+      position: false,
+    });
+
+    await usePerpsStore.getState().initTpslIntroShown();
+
+    expect(usePerpsStore.getState().tpslIntroShown).toEqual({
+      partial: true,
+      position: false,
+    });
+  });
+
+  test('marks a TP/SL intro tab as shown before persisting it', async () => {
+    (wallet.setPerpsTpslIntroShown as jest.Mock).mockResolvedValue(undefined);
+    usePerpsStore.setState({
+      tpslIntroShown: { partial: false, position: false },
+    });
+
+    await usePerpsStore.getState().markTpslIntroShown('position');
+
+    expect(usePerpsStore.getState().tpslIntroShown).toEqual({
+      partial: false,
+      position: true,
+    });
+    expect(wallet.setPerpsTpslIntroShown).toHaveBeenCalledWith('position');
   });
 
   test('loads persisted preferences through the background domain methods', async () => {
@@ -433,6 +460,36 @@ describe('perps store', () => {
       expect(usePerpsStore.getState().userAbstraction).toBe(
         UserAbstractionResp.default
       );
+    });
+  });
+
+  describe('fetchPerpPermission', () => {
+    const openapi = (wallet.openapi as unknown) as {
+      getPerpPermission: jest.Mock;
+    };
+
+    test('denies when the permission check fails', async () => {
+      openapi.getPerpPermission = jest
+        .fn()
+        .mockRejectedValue(new Error('network'));
+
+      await usePerpsStore.getState().fetchPerpPermission(accountA.address);
+
+      expect(usePerpsStore.getState().hasPermission).toBe(false);
+    });
+
+    test('applies the server result when the check succeeds', async () => {
+      usePerpsStore.setState({ hasPermission: false });
+      openapi.getPerpPermission = jest
+        .fn()
+        .mockResolvedValue({ has_permission: true });
+
+      await usePerpsStore.getState().fetchPerpPermission(accountA.address);
+
+      expect(openapi.getPerpPermission).toHaveBeenCalledWith({
+        id: accountA.address,
+      });
+      expect(usePerpsStore.getState().hasPermission).toBe(true);
     });
   });
 

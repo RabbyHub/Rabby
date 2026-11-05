@@ -17,7 +17,6 @@ import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
-import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useAsync, useClickAway } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
@@ -32,15 +31,8 @@ import {
 import { findChain } from '@/utils/chain';
 import { Chain } from '@/types/chain';
 import styled from 'styled-components';
-import stats from '@/stats';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { ga4 } from '@/utils/ga4';
 import browser from 'webextension-polyfill';
-import { ReactComponent as RcIconTriangle } from '@/ui/assets/new-user-import/triangle.svg';
-import UserGuide1 from '@/ui/assets/new-user-import/guide-1.png';
-import UserGuide2 from '@/ui/assets/new-user-import/guide-2.png';
-import { ReactComponent as UserGuide1Icon } from '@/ui/assets/new-user-import/guide1.svg';
-import { ReactComponent as UserGuide2Icon } from '@/ui/assets/new-user-import/guide2.svg';
+import { PinGuideTips } from './PinGuideTips';
 
 const ScrollBarDiv = styled.div`
   overflow-y: scroll;
@@ -139,17 +131,6 @@ export const ImportOrCreatedSuccess = () => {
   const isSeedPhrase = React.useMemo(() => hd === KEYRING_CLASS.MNEMONIC, [hd]);
 
   const documentVisibility = useDocumentVisibility();
-  const hasReportedRef = useRef(false);
-  const isExistedKeyring = useImportMnemonicsStore(
-    (state) => state.isExistedKeyring
-  );
-  const finalMnemonics = useImportMnemonicsStore(
-    (state) => state.finalMnemonics
-  );
-  const stashKeyringId = useImportMnemonicsStore(
-    (state) => state.stashKeyringId
-  );
-  const hasMnemonicImportContext = Boolean(finalMnemonics || stashKeyringId);
 
   const { value: accounts } = useAsync(async () => {
     if (documentVisibility === 'visible') {
@@ -250,46 +231,6 @@ export const ImportOrCreatedSuccess = () => {
       closeConnect();
     };
   }, []);
-
-  useEffect(() => {
-    const account = accounts?.[0];
-    if (!account || hasReportedRef.current) {
-      return;
-    }
-    hasReportedRef.current = true;
-
-    const mnemonicSource =
-      account.type === KEYRING_CLASS.MNEMONIC
-        ? isCreated
-          ? 'New'
-          : hasMnemonicImportContext && isExistedKeyring
-          ? 'Add'
-          : hasMnemonicImportContext && !isExistedKeyring
-          ? 'Import'
-          : undefined
-        : undefined;
-
-    if (Object.values(KEYRING_CLASS.HARDWARE).includes(account.type as any)) {
-      stats.report('importHardware', {
-        type: account.type,
-      });
-    }
-
-    matomoRequestEvent({
-      category: 'User',
-      action: 'importAddress',
-      label: mnemonicSource
-        ? `${account.type}_${mnemonicSource}`
-        : account.type,
-    });
-
-    ga4.fireEvent(
-      `Import_${account.type}${mnemonicSource ? `_${mnemonicSource}` : ''}`,
-      {
-        event_category: 'Import Address',
-      }
-    );
-  }, [accounts, hasMnemonicImportContext, isCreated, isExistedKeyring]);
 
   const { data: chainList } = useRequest(
     async () => {
@@ -401,44 +342,7 @@ export const ImportOrCreatedSuccess = () => {
           )
         ) : null}
       </Card>
-      <div
-        className={clsx(
-          'fixed top-[40px] right-[90px]',
-          'w-[242px] h-[300px]',
-          'py-12 px-12',
-          'bg-r-neutral-card-1 rounded-[12px]'
-        )}
-      >
-        <RcIconTriangle className="absolute top-[-39px] right-[22px]" />
-        <div className="flex flex-col gap-[11px]">
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide1Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step1')}
-              </span>
-            </div>
-            <img
-              src={UserGuide1}
-              alt="user-guide-1"
-              className="w-[186px] h-[96px] mt-[10px] ml-[25px]"
-            />
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center">
-              <UserGuide2Icon className="w-[20px] h-[20px] mr-[5px]" />
-              <span className="text-[12px] font-semibold text-r-neutral-title1">
-                {t('page.newUserImport.readyToUse.guides.step2')}
-              </span>
-            </div>
-            <img
-              src={UserGuide2}
-              alt="user-guide-2"
-              className="w-[183px] h-[114px] mt-[10px] ml-[25px]"
-            />
-          </div>
-        </div>
-      </div>
+      <PinGuideTips />
     </>
   );
 };

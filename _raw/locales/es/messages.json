@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "Sin historial de transacciones en 90 días",
         "descThreeMonths": "Sin historial de transacciones en 90 días en <2>cadenas compatibles</2>"
       },
+      "noMore": {
+        "title": "No hay más transacciones.",
+        "titleInLast90Days": "No hay más transacciones en los últimos 90 días."
+      },
       "explain": {
         "approve": "Aprobar {{amount}} {{symbol}} para {{project}}",
         "unknown": "Interacción con el contrato",
@@ -504,6 +508,7 @@
       "blockDappFromSendingRequests": "Bloquear Dapp para que no envíe solicitudes durante 1 min",
       "cancelCurrentTransaction": "Cancelar la transacción actual",
       "imKeyConnected": "imKey está conectado",
+      "extraFeeProtectionBlocked": "La protección contra comisiones adicionales bloqueó esta solicitud de firma. Si aun así quieres firmar, desactívala en Ajustes",
       "cancelAll": "Cancelar todas las {{count}} solicitudes de Dapp",
       "cancelConnection": "Cancelar conexión",
       "cancelTransaction": "Cancelar Transacción",
@@ -1363,7 +1368,9 @@
           "perpsFloatWidget": "Widget flotante de Perps",
           "currency": "Moneda",
           "searchCurrency": "Buscar moneda",
-          "dataAnalysis": "Análisis de datos"
+          "dataAnalysis": "Análisis de datos",
+          "extraFeeProtection": "Protección contra comisiones adicionales",
+          "extraFeeProtectionDesc": "Bloquea las solicitudes de firma que permiten a extensiones del navegador cobrar comisiones adicionales"
         },
         "aboutUs": "Acerca de nosotros",
         "currentVersion": "Versión actual",
@@ -1407,7 +1414,13 @@
         "biometricUnlockSetupTitle": "Habilitar Desbloqueo Biométrico",
         "biometricUnlockEnableFailed": "No se pudo habilitar el desbloqueo biométrico.",
         "biometricUnlockSetupDesc": "Confirma tu contraseña para activar el desbloqueo biométrico.",
-        "clearPendingCheckbox": "Restablecer también mis datos de nonce locales y el registro de firmas"
+        "clearPendingCheckbox": "Restablecer también mis datos de nonce locales y el registro de firmas",
+        "removedToken": {
+          "title": "Tokens eliminados",
+          "description": "Los tokens eliminados se ocultarán de tu Portafolio en todas tus direcciones, pero seguirán incluidos en el cálculo de tu saldo.",
+          "loadFailed": "No se pudo cargar el token",
+          "retry": "Reintentar"
+        }
       },
       "tokenDetail": {
         "blockedTip": "Los tokens bloqueados no se mostrarán en la lista de tokens",
@@ -1451,7 +1464,19 @@
         "OriginalToken": "Token original",
         "fdvTips": "La capitalización de mercado si la oferta máxima estuviera en circulación. Valoración totalmente diluida (FDV) = precio × oferta máxima. Si no se especifica la oferta máxima, FDV = precio × oferta total. Si ninguna de las dos está definida o es infinita, no se muestra la FDV.",
         "bridgeToEth": "Hacer bridge a Ethereum",
-        "bridge": "Bridge"
+        "bridge": "Bridge",
+        "removed": {
+          "more": "Más",
+          "removeToken": "Eliminar token",
+          "remove": "Eliminar",
+          "confirmTitle": "¿Eliminar este token?",
+          "portfolioNotice": "Este token dejará de aparecer en tu Portafolio después de eliminarlo.",
+          "restoreNotice": "Puedes restaurarlo en cualquier momento en «Configuración >> Tokens eliminados».",
+          "warning": "Los tokens eliminados se ocultarán de tu Portafolio en todas tus direcciones, pero seguirán incluidos en el cálculo de tu saldo.",
+          "removeFailed": "No se pudo eliminar el token",
+          "restore": "Restaurar token eliminado",
+          "restoreFailed": "No se pudo restaurar el token"
+        }
       },
       "assets": {
         "usdValue": "VALOR EN USD",
@@ -1748,6 +1773,7 @@
         }
       },
       "walletConnect": {
+        "clockSkewError": "WalletConnect no puede conectarse porque la hora de tu ordenador no está sincronizada. Activa la fecha y hora automáticas y vuelve a intentarlo.",
         "connectYour": "Conectar tu",
         "viaWalletConnect": "mediante WalletConnect",
         "connectedSuccessfully": "Conectado exitosamente",
@@ -2362,9 +2388,44 @@
         "pending": "Pendiente",
         "sendingFrom": "Enviando desde {{chain}}",
         "swapStatus": "Estado de intercambio",
-        "sendStatus": "Estado del envío"
+        "sendStatus": "Estado del envío",
+        "bridgingEta": "Bridge en curso, tiempo estimado: <time>{{time}}</time>",
+        "stillBridging": "Bridge aún en curso",
+        "sourceFailed": "El bridge falló. Tus {{token}} no se enviaron",
+        "refundedLead": "Reembolsado",
+        "popupProcessing": "Bridge en proceso",
+        "popupPending": "Bridge pendiente",
+        "popupFailed": "Bridge fallido",
+        "popupRefunded": "Bridge reembolsado",
+        "popupCompleted": "Bridge completado",
+        "popupBridgeDelayed": "Bridge retrasado",
+        "popupBridgeFailed": "El bridge falló",
+        "popupRefundedIn": "Reembolsado en {{token}}",
+        "processing": "Procesando",
+        "refund": "Reembolsado",
+        "goBack": "Volver",
+        "contactSupport": "Contactar con soporte",
+        "succeeded": "Completado con éxito",
+        "sendFrom": "Enviar desde {{chain}}",
+        "receiveOn": "Recibir en {{chain}}",
+        "refundOn": "Reembolsado en {{chain}}",
+        "waitingDestination": "Esperando la transacción de destino",
+        "sendFailed": "Error de envío",
+        "tokenNotSent": "Tus {{token}} no se enviaron"
       },
-      "best-subtitle": "La mejor cotización se determina por una combinación del costo total estimado (incluyendo las tarifas de gas) y la velocidad de entrega."
+      "best-subtitle": "La mejor cotización se determina por una combinación del costo total estimado (incluyendo las tarifas de gas) y la velocidad de entrega.",
+      "bridge": "Bridge",
+      "by": "por",
+      "timeLeft": "Tiempo restante: {{time}}",
+      "refundIn": "Reembolsado en {{token}}",
+      "viewDetails": "Ver detalles",
+      "duration-sec": "{{duration}} s",
+      "duration-hour": "{{duration}} h",
+      "duration-hour-min": "{{hours}} h {{minutes}} min",
+      "duration-day": "{{duration}} d",
+      "duration-day-hour": "{{days}} d {{hours}} h",
+      "duration-day-min": "{{days}} d {{minutes}} min",
+      "duration-day-hour-min": "{{days}} d {{hours}} h {{minutes}} min"
     },
     "pendingDetail": {
       "Header": {
@@ -3313,6 +3374,14 @@
           "totalEst": "Ingresos totales estimados",
           "platformFeeTips": "Esta tarifa es el cargo por servicio de OpenSea."
         },
+        "verifyError": {
+          "unsupportedChain": "El comercio de NFT aún no es compatible con esta cadena",
+          "currency": "Falló la verificación de seguridad: el token de pago no coincide con el esperado",
+          "nft": "Falló la verificación de seguridad: el NFT de la orden no coincide con el que seleccionaste",
+          "amount": "Falló la verificación de seguridad: el monto que recibirías no coincide con el mostrado",
+          "recipient": "Falló la verificación de seguridad: los fondos no se enviarían a tu dirección",
+          "invalid": "Falló la verificación de seguridad: los datos de la orden no son válidos. Inténtalo de nuevo más tarde"
+        },
         "empty": "Sin NFTs",
         "hideLowValue": "Ocultar NFTs de bajo valor",
         "confirmingTx": "Confirmando tu transacción",
@@ -4173,6 +4242,53 @@
         "tpTriggerInvalid": "El precio de activación de TP no es válido y no se establecerá",
         "slTriggerInvalid": "El precio de activación de SL no es válido y no se establecerá"
       },
+      "positionTpSl": {
+        "title": "TP/SL",
+        "addTitle": "Añadir TP/SL",
+        "modifyTitle": "Modificar TP/SL",
+        "modifyPositionTitle": "Modificar TP/SL de la posición",
+        "confirmTitle": "Confirmar TP/SL",
+        "tabPartial": "TP/SL",
+        "tabPosition": "TP/SL de la posición",
+        "entryPrice": "Precio de entrada",
+        "markPrice": "Precio de marca",
+        "estLiqPrice": "Precio liq. est.",
+        "takeProfit": "Toma de ganancias",
+        "stopLoss": "Límite de pérdidas",
+        "tpTrigger": "Activación TP",
+        "slTrigger": "Activación SL",
+        "pnl": "PNL",
+        "roi": "ROI",
+        "estimatedPnlHint": "Tu PnL estimado será <value>{{pnl}} {{quoteAsset}} (ROI: {{roi}}%)</value>",
+        "invalidTriggerForMark": "El precio de activación no es válido para el último precio de marca",
+        "amount": "Cantidad",
+        "positionAmount": "Cantidad de la posición {{amount}} {{unit}}",
+        "introPartialTitle": "¿Qué es TP/SL?",
+        "introPartialDesc": "Establece toma de ganancias y límite de pérdidas para una cantidad específica. Esta cantidad se mantiene fija aunque cambie el tamaño de tu posición.",
+        "introPositionTitle": "¿Qué es TP/SL de la posición?",
+        "introPositionDesc": "Establece toma de ganancias y límite de pérdidas para toda tu posición. La cantidad se ajusta automáticamente cuando cambia el tamaño de tu posición.",
+        "gotIt": "Entendido",
+        "whatIsPositionTpSl": "¿Qué es TP/SL de la posición?",
+        "addTpSl": "Añadir TP/SL",
+        "cancelAll": "Cancelar todo",
+        "positionSizeCoverage": "{{percent}} del tamaño de la posición",
+        "triggerPrice": "Precio de activación",
+        "estPnl": "PnL est. ({{unit}})",
+        "price": "Precio",
+        "market": "A mercado",
+        "unfilledAmt": "Cantidad sin ejecutar ({{unit}})",
+        "all": "Todo",
+        "modify": "Modificar",
+        "cancel": "Cancelar",
+        "add": "Añadir",
+        "volume": "Cantidad",
+        "estimatedPnl": "PNL estimado",
+        "submitted": "TP/SL enviado",
+        "partialSubmitted": "Se enviaron algunas órdenes TP/SL. Las órdenes más recientes se muestran tras actualizar.",
+        "contextChanged": "La posición o el precio de marca ha cambiado. Revisa de nuevo.",
+        "noTp": "sin TP",
+        "noSl": "sin SL"
+      },
       "accountInfo": {
         "availableBalance": "Saldo disponible",
         "withdraw": "Retirar",
@@ -4837,7 +4953,8 @@
     "screenshotModal": {
       "title": "Captura de pantalla para enviar comentarios",
       "placeholder": "Describe el problema",
-      "placeholderRequired": "Describir el problema (obligatorio)"
+      "placeholderRequired": "Describir el problema (obligatorio)",
+      "includeAddress": "Compartir dirección para resolver problemas"
     },
     "feedbackPopup": {
       "title": "Respuesta del soporte de Rabby",

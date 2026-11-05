@@ -1,12 +1,9 @@
 import { NFTApproval } from '@/background/service/openapi';
 import { Empty } from '@/ui/component';
-import { connectStore, useRabbySelector } from '@/ui/store';
-import { getKRCategoryByType } from '@/utils/transaction';
+import { connectStore } from '@/ui/store';
 import React from 'react';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
-import { getChain } from '@/utils';
 import { Loading } from './Loading';
 import NFTListItem from './NFTListItem';
 
@@ -19,7 +16,6 @@ interface ApprovalCardProps {
 
 const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
   const { t } = useTranslation();
-  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
 
   return (
     <div className="list">
@@ -41,15 +37,6 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
             <NFTListItem
               item={item}
               onDecline={(item) => {
-                matomoRequestEvent({
-                  category: 'Security',
-                  action: 'startDeclineNFTApproval',
-                  label: [
-                    getChain(item.chain)?.name,
-                    getKRCategoryByType(currentAccount?.type),
-                    currentAccount?.brandName,
-                  ].join('|'),
-                });
                 onDecline(item);
               }}
               key={item.id}

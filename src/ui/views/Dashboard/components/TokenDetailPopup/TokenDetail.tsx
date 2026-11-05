@@ -1,5 +1,6 @@
 import { useInfiniteScroll } from 'ahooks';
-import { Button } from 'antd';
+import { Button, Dropdown, Menu } from 'antd';
+import type { DrawerProps } from 'antd';
 import { TokenEntityDetail, TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
 import { last, sortBy } from 'lodash';
@@ -34,6 +35,16 @@ import { DBK_CHAIN_ID } from '@/constant';
 import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '@/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag';
 import { transformToHistory } from '@/utils/history';
+import { ReactComponent as RcIconMore } from '@/ui/assets/desktop/profile/more-cc.svg';
+import { ReactComponent as RcArrowRight } from '@/ui/assets/arrow-right-cc.svg';
+import { useRemovedTokens } from '@/ui/hooks/useRemovedTokens';
+import { RemoveTokenConfirmPopup } from './RemoveTokenConfirmPopup';
+import { RemovedTokenActions } from './RemovedTokenActions';
+import type { RemovedTokenAction } from './RemovedTokenActions';
+import { ReactComponent as RcIconSend } from '@/ui/assets/dashboard/panel/send-cc.svg';
+import { ReactComponent as RcIconSwap } from '@/ui/assets/dashboard/panel/swap-cc.svg';
+import { ReactComponent as RcIconBridge } from '@/ui/assets/tokenDetail/more-bridge.svg';
+import { ReactComponent as RcIconReceive } from '@/ui/assets/dashboard/panel/receive-cc.svg';
 const isDesktop = getUiType().isDesktop;
 const PAGE_COUNT = 10;
 
@@ -47,6 +58,7 @@ interface TokenDetailProps {
   popupHeight: number;
   tipsFromTokenSelect?: string;
   account?: Account;
+  getContainer?: DrawerProps['getContainer'];
 }
 
 const TokenDetail = ({
@@ -59,9 +71,20 @@ const TokenDetail = ({
   hideOperationButtons = false,
   tipsFromTokenSelect,
   account,
+  getContainer,
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
+  const isRemoved = useRemovedTokens((state) =>
+    state.isTokenRemoved({ tokenId: token.id, chain: token.chain })
+  );
+  const removedTokensReady = useRemovedTokens((state) => state.isReady);
+  const [moreMenuVisible, setMoreMenuVisible] = React.useState(false);
+  const [
+    removeConfirmToken,
+    setRemoveConfirmToken,
+  ] = React.useState<TokenItem | null>(null);
+
   const [entityLoading, setEntityLoading] = React.useState(true);
   const [tokenWithAmount, setTokenWithAmount] = React.useState<TokenItem>(
     token
@@ -173,6 +196,19 @@ const TokenDetail = ({
     location.pathname === '/send-token' || (action === 'send' && isDesktop);
   const isBridge =
     location.pathname === '/bridge' || (action === 'bridge' && isDesktop);
+  const footerScene = hideOperationButtons
+    ? 'hidden'
+    : isSwap || isSend || isBridge
+    ? 'confirm'
+    : 'portfolioDisplay';
+  const isPortfolioDisplay = footerScene === 'portfolioDisplay';
+  const canRemoveToken = isPortfolioDisplay && !isRemoved;
+
+  React.useEffect(() => {
+    setRemoveConfirmToken(null);
+    setMoreMenuVisible(false);
+  }, [token.id, token.chain, footerScene]);
+
   const isInDesktopActionModal =
     isDesktop &&
     (action === 'send' || action === 'swap' || action === 'bridge');
@@ -256,11 +292,11 @@ const TokenDetail = ({
   }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
 
   const BottomBtn = useMemo(() => {
-    if (hideOperationButtons) {
+    if (footerScene === 'hidden') {
       return null;
     }
 
-    if (isSwap || isSend || isBridge) {
+    if (footerScene === 'confirm') {
       return (
         <div className="flex flex-row justify-between J_buttons_area relative height-[70px] px-20 py-14 ">
           <TooltipWithMagnetArrow
@@ -286,6 +322,50 @@ const TokenDetail = ({
             </Button>
           </TooltipWithMagnetArrow>
         </div>
+      );
+    }
+
+    if (isPortfolioDisplay && isRemoved) {
+      const actions: RemovedTokenAction[] = [
+        {
+          key: 'swap',
+          title: t('page.dashboard.tokenDetail.swap'),
+          Icon: RcIconSwap,
+          iconSize: 24,
+          iconClassName: '[&_path]:stroke-[2.128944]',
+          onClick: goToSwap,
+        },
+        {
+          key: 'bridge',
+          title: t('page.dashboard.tokenDetail.bridge'),
+          Icon: RcIconBridge,
+          iconClassName: '[&_path]:fill-current',
+          onClick: gotoBridge,
+        },
+        {
+          key: 'send',
+          title: t('page.dashboard.tokenDetail.send'),
+          Icon: RcIconSend,
+          iconSize: 24,
+          iconClassName: '[&_path]:stroke-[2.1]',
+          onClick: goToSend,
+        },
+        {
+          key: 'receive',
+          title: t('page.dashboard.tokenDetail.receive'),
+          Icon: RcIconReceive,
+          iconSize: 24,
+          iconClassName: '[&_path]:stroke-[2.1]',
+          onClick: goToReceive,
+        },
+      ];
+
+      return (
+        <RemovedTokenActions
+          key={`${token.chain}:${token.id}`}
+          token={token}
+          actions={actions}
+        />
       );
     }
 
@@ -337,12 +417,15 @@ const TokenDetail = ({
     goToReceive,
     goToSend,
     goToSwap,
-    hideOperationButtons,
+    footerScene,
     isSwap,
     isBridge,
     gotoBridge,
-    isSend,
     tipsFromTokenSelect,
+    isPortfolioDisplay,
+    isRemoved,
+    token,
+    t,
   ]);
 
   const chain = useMemo(() => getChain(token?.chain), [token?.chain]);
@@ -352,10 +435,60 @@ const TokenDetail = ({
 
   return (
     <div className="token-detail">
-      <div className={clsx('token-detail-header', 'border-b-0 pb-24')}>
+      <div
+        className={clsx('token-detail-header', 'border-b-0 pb-24', {
+          'can-remove-token': canRemoveToken,
+        })}
+      >
+        {canRemoveToken && (
+          <Dropdown
+            trigger={['click']}
+            placement="bottomRight"
+            align={{ offset: [12, 4] }}
+            overlayClassName="token-detail-more-menu"
+            visible={moreMenuVisible}
+            onVisibleChange={setMoreMenuVisible}
+            disabled={!removedTokensReady}
+            getPopupContainer={(trigger) => trigger.parentElement!}
+            overlay={
+              <Menu
+                onClick={() => {
+                  setMoreMenuVisible(false);
+                  setRemoveConfirmToken(token);
+                }}
+                items={[
+                  {
+                    key: 'remove',
+                    label: (
+                      <span className="token-detail-more-menu-item">
+                        <span>
+                          {t('page.dashboard.tokenDetail.removed.removeToken')}
+                        </span>
+                        <span className="token-detail-more-menu-arrow">
+                          <RcArrowRight />
+                        </span>
+                      </span>
+                    ),
+                  },
+                ]}
+              />
+            }
+          >
+            <button
+              type="button"
+              className="token-detail-more-trigger"
+              aria-label={t('page.dashboard.tokenDetail.removed.more')}
+              aria-haspopup="menu"
+              aria-expanded={moreMenuVisible}
+              disabled={!removedTokensReady}
+            >
+              <RcIconMore />
+            </button>
+          </Dropdown>
+        )}
         <div className={clsx('flex items-center', 'mb-20')}>
-          <div className="flex items-center mr-8">
-            <div className="relative h-[24px]">
+          <div className="flex items-center mr-8 min-w-0">
+            <div className="relative h-[24px] flex-shrink-0">
               <Image
                 className="w-24 h-24 rounded-full"
                 src={token.logo_url || IconUnknown}
@@ -375,7 +508,10 @@ const TokenDetail = ({
               ) : null}
             </div>
 
-            <div className="token-symbol ml-8" title={getTokenSymbol(token)}>
+            <div
+              className="token-symbol ml-8 truncate"
+              title={getTokenSymbol(token)}
+            >
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
             {isUnknownToken(token) && (
@@ -395,6 +531,11 @@ const TokenDetail = ({
         ref={ref}
         className={clsx('token-detail-body flex flex-col gap-12', 'pt-[0px]')}
       >
+        {isPortfolioDisplay && isRemoved && (
+          <div className="token-detail-removed-warning" role="status">
+            {t('page.dashboard.tokenDetail.removed.warning')}
+          </div>
+        )}
         <ScamTokenTips token={tokenWithAmount}></ScamTokenTips>
         {/* {variant === 'add' && !isDesktop && (
           <BlockedTopTips
@@ -528,6 +669,13 @@ const TokenDetail = ({
         </div>
       </div>
       {BottomBtn}
+      {isPortfolioDisplay && removeConfirmToken && (
+        <RemoveTokenConfirmPopup
+          token={removeConfirmToken}
+          onClose={() => setRemoveConfirmToken(null)}
+          getContainer={getContainer}
+        />
+      )}
     </div>
   );
 };

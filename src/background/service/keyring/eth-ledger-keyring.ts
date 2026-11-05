@@ -79,6 +79,7 @@ import {
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
 import { isManifestV3 } from '@/utils/env';
+import * as Sentry from '@sentry/browser';
 
 const HD_PATH_BASE = {
   [HDPathType.BIP44]: "m/44'/60'/0'/0",
@@ -114,6 +115,7 @@ let ethSigner: SignerEth | null = null;
 let makeAppPromise: Promise<void> | null = null;
 let sessionReleaseTimer: ReturnType<typeof setTimeout> | null = null;
 let activeLedgerOperationCount = 0;
+let lastLedgerOperationEndedAt = 0;
 const ledgerSessionClosed$ = new Subject<void>();
 
 type LedgerActionDiagnostics = {
@@ -200,16 +202,69 @@ const beginLedgerOperation = () => {
 
 const endLedgerOperation = () => {
   activeLedgerOperationCount -= 1;
+  lastLedgerOperationEndedAt = Date.now();
   releaseLedgerSessionWhenIdle();
+};
+
+// A Ledger re-enumerates by itself when its app exits, so how soon the device
+// comes back after a disconnect tells an app exit apart from an unplug. The
+// DMK can fail the operation on its own disconnect event just before the
+// offscreen relay lands, hence the grace period after the last operation.
+const LEDGER_RECONNECT_WINDOW = 10_000;
+const LEDGER_DISCONNECT_GRACE = 2_000;
+let pendingLedgerDisconnect: {
+  at: number;
+  productId?: number;
+  timer: ReturnType<typeof setTimeout>;
+} | null = null;
+
+const reportLedgerReconnect = (
+  productId: number | undefined,
+  reconnectMs: number | null
+) => {
+  Sentry.captureMessage('ledger disconnected during operation', {
+    level: 'warning',
+    tags: {
+      wallet_provider: 'ledger',
+      ledger_reconnect:
+        reconnectMs === null ? 'none' : reconnectMs < 2000 ? 'lt_2s' : '2s_10s',
+    },
+    extra: { reconnectMs, productId: productId?.toString(16) },
+  });
+};
+
+const onLedgerDeviceDisconnect = (productId?: number) => {
+  const hitOperation =
+    activeLedgerOperationCount > 0 ||
+    Date.now() - lastLedgerOperationEndedAt < LEDGER_DISCONNECT_GRACE;
+  if (hitOperation && !pendingLedgerDisconnect) {
+    pendingLedgerDisconnect = {
+      at: Date.now(),
+      productId,
+      timer: setTimeout(() => {
+        pendingLedgerDisconnect = null;
+        reportLedgerReconnect(productId, null);
+      }, LEDGER_RECONNECT_WINDOW),
+    };
+  }
+  void cleanUpLedgerSession();
+};
+
+const onLedgerDeviceConnect = () => {
+  if (!pendingLedgerDisconnect) return;
+  const { at, productId, timer } = pendingLedgerDisconnect;
+  clearTimeout(timer);
+  pendingLedgerDisconnect = null;
+  reportLedgerReconnect(productId, Date.now() - at);
 };
 
 if (isManifestV3) {
   Browser.runtime.onMessage.addListener((request) => {
-    if (
-      request.target === OffscreenCommunicationTarget.extension &&
-      request.event === LedgerAction.ledgerDeviceDisconnect
-    ) {
-      void cleanUpLedgerSession();
+    if (request.target !== OffscreenCommunicationTarget.extension) return;
+    if (request.event === LedgerAction.ledgerDeviceDisconnect) {
+      onLedgerDeviceDisconnect(request.productId);
+    } else if (request.event === LedgerAction.ledgerDeviceConnect) {
+      onLedgerDeviceConnect();
     }
   });
 }
@@ -376,7 +431,7 @@ const findLedgerMessageReason = (err: unknown, depth = 0): string => {
   const message = (err as { message?: unknown }).message;
   if (typeof message === 'string') {
     if (
-      /Ledger: (?:Device disconnected|No connected Ledger device found)/iu.test(
+      /Ledger: (?:Device disconnected|No connected Ledger device found)|DeviceDisconnectedWhileSendingError|DisconnectedDeviceDuringOperation/iu.test(
         message
       )
     ) {

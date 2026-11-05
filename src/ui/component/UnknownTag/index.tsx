@@ -14,9 +14,6 @@ const UnknownTag = ({ className }: UnknownTagProps) => {
     <Tooltip
       title={t('component.UnknownTag.tooltip')}
       overlayClassName="rectangle"
-      overlayInnerStyle={{
-        borderRadius: '12px',
-      }}
       mouseEnterDelay={0}
     >
       <span

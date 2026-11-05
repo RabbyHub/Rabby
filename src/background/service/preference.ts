@@ -117,12 +117,10 @@ export interface PreferenceStore {
   addedToken: addedToken;
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
-  sendLogTime?: number;
   needSwitchWalletCheck?: boolean;
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
   sendEnableTime?: number;
-  ga4EventTime?: number;
   userDataTrackingOptOut?: boolean;
   customizedToken?: Token[];
   blockedToken?: Token[];
@@ -142,6 +140,7 @@ export interface PreferenceStore {
   isHideEcologyNoticeDict?: Record<string | number, boolean>;
 
   isEnabledPwdForNonWhitelistedTx?: boolean;
+  isExtraFeeProtectionEnabled?: boolean;
   isEnabledDappAccount?: boolean;
   biometricUnlockEnabled?: boolean;
   biometricUnlockCredentialId?: string;
@@ -230,7 +229,6 @@ class PreferenceService {
         addedToken: {},
         tokenApprovalChain: {},
         nftApprovalChain: {},
-        sendLogTime: 0,
         needSwitchWalletCheck: true,
         sendEnableTime: 0,
         customizedToken: [],
@@ -246,13 +244,13 @@ class PreferenceService {
         isHideEcologyNoticeDict: {},
         safeSelfHostConfirm: {},
         isEnabledPwdForNonWhitelistedTx: false,
+        isExtraFeeProtectionEnabled: true,
         isEnabledDappAccount: false,
         biometricUnlockEnabled: false,
         biometricUnlockCredentialId: '',
         biometricUnlockEncryptedPassword: '',
         biometricUnlockIv: '',
         unlockPreferredMethod: 'biometric',
-        ga4EventTime: 0,
         userDataTrackingOptOut: true,
         rateGuideLastExposure: getDefaultRateGuideLastExposure(),
         desktopTabId: undefined,
@@ -322,9 +320,6 @@ class PreferenceService {
     if (!this.store.nftApprovalChain) {
       this.store.nftApprovalChain = {};
     }
-    if (!this.store.sendLogTime) {
-      this.store.sendLogTime = 0;
-    }
     if (this.store.needSwitchWalletCheck == null) {
       this.store.needSwitchWalletCheck = true;
     }
@@ -392,9 +387,6 @@ class PreferenceService {
 
     this.store.currentVersion = version;
 
-    if (this.store.ga4EventTime) {
-      this.store.ga4EventTime = 0;
-    }
     if (this.store.userDataTrackingOptOut == null) {
       this.store.userDataTrackingOptOut = false;
     }
@@ -968,12 +960,6 @@ class PreferenceService {
     );
   };
 
-  getSendLogTime = () => {
-    return this.store.sendLogTime || 0;
-  };
-  updateSendLogTime = (time: number) => {
-    this.store.sendLogTime = time;
-  };
   getSendEnableTime = () => {
     return this.store.sendEnableTime || 0;
   };

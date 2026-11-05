@@ -10,7 +10,10 @@ jest.mock('webextension-polyfill', () => ({
 }));
 
 import PortMessage from '@/utils/message/portMessage';
-import { MessageDisconnectedError } from '@/utils/message/index';
+import {
+  MessageDisconnectedError,
+  setMessageErrorReporter,
+} from '@/utils/message/index';
 import { errorCodes } from 'eth-rpc-errors';
 
 const createEvent = () => {
@@ -101,5 +104,32 @@ describe('PortMessage', () => {
       code: errorCodes.provider.disconnected,
       message: 'Message channel disconnected',
     });
+  });
+
+  // The reporter decides by method, e.g. to withhold the message of an error
+  // thrown while handling a private key.
+  test('hands the failed request to the error reporter', async () => {
+    const reporter = jest.fn(() => true);
+    setMessageErrorReporter(reporter);
+    const listener = new PortMessage();
+    const sent: any[] = [];
+    (listener as any).send = (type: string, data: any) => {
+      sent.push({ type, data });
+      return true;
+    };
+    const error = new TypeError('boom');
+    listener.listenCallback = () => {
+      throw error;
+    };
+    const request = { type: 'controller', method: 'importPrivateKey' };
+
+    await listener.onRequest({ ident: 'req-1', data: request });
+
+    expect(reporter).toHaveBeenCalledWith(error, request);
+    expect(sent[0].data.err).toMatchObject({
+      message: 'boom',
+      reportedFromBackground: true,
+    });
+    setMessageErrorReporter(() => false);
   });
 });

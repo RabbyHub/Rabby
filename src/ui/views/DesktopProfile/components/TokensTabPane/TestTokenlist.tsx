@@ -13,7 +13,6 @@ import { ReactComponent as RcIconAdd } from '@/ui/assets/dashboard/portfolio/cc-
 import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { isSameTesnetToken } from '@/utils/chain';
-import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
   Table,
   TBody,
@@ -215,10 +214,6 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
                 'flex items-center gap-x-[4px] justify-center'
               )}
               onClick={() => {
-                matomoRequestEvent({
-                  category: 'Custom Network',
-                  action: 'TokenList Add Network',
-                });
                 setIsShowAddNetworkModal(true);
               }}
             >

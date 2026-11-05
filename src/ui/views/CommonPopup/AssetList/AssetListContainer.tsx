@@ -23,6 +23,7 @@ import { concatAndSort } from '@/ui/utils/portfolio/tokenUtils';
 import { NftPreviewSection } from './NftPreviewSection';
 import type { NftPreviewItem } from './NftPreviewSection';
 import { useNFTCollections } from '@/ui/hooks/useNFTCollections';
+import { usePortfolioDisplayTokens } from '@/ui/hooks/useRemovedTokens';
 
 interface Props {
   className?: string;
@@ -144,7 +145,8 @@ export const AssetListContainer: React.FC<Props> = ({
     onEmptyAssets(isEmptyAssets && !lpTokenMode);
   }, [isEmptyAssets, onEmptyAssets, lpTokenMode]);
 
-  const sortTokens = useSortTokens(displayTokenList);
+  const sortedTokens = useSortTokens(displayTokenList);
+  const sortTokens = usePortfolioDisplayTokens(sortedTokens, !!search);
   const filteredPortfolios = useFilterProtocolList({
     list: displayPortfolios,
     kw: search,

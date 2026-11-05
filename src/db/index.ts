@@ -82,19 +82,18 @@ let dbOpenBlockedReported = false;
 let dbOpenIssueReported = false;
 let dbOpenTimedOut = false;
 
-const dbOpenStartedAt = Date.now();
+const dbModuleLoadedAt = Date.now();
+let dbOpenStartedAt = dbModuleLoadedAt;
 
-// The open is issued while the importing bundle is still evaluating, and its
-// callbacks can't run until that bundle and whatever it kicks off yield, so
-// elapsed alone can't tell a slow IndexedDB from a busy event loop. The first
-// macrotask after this point marks when the loop first came free.
+// The open can be triggered while the caller is still busy (a page rendering,
+// the background handling the request that needed the db), and its callbacks
+// can't run until that work yields, so elapsed alone can't tell a slow
+// IndexedDB from a busy event loop. The first macrotask after the open starts
+// marks when the loop first came free.
 let dbOpenFirstTickAt: number | null = null;
-setTimeout(() => {
-  dbOpenFirstTickAt = Date.now();
-}, 0);
 
-// The background (sw.js in MV3, background.html in MV2) opens on every
-// service worker start; UI pages open once per page load.
+// The background (sw.js in MV3, background.html in MV2) opens at most once per
+// service worker lifetime; UI pages open once per page load.
 const getDbOpenContext = () => {
   const pathname = globalThis.location?.pathname ?? '';
   if (pathname === '/sw.js' || pathname === '/background.html') {
@@ -122,9 +121,13 @@ const getDbOpenTiming = () => {
   // spent in IndexedDB can't be told apart.
   const loopLag =
     dbOpenFirstTickAt === null ? elapsed : dbOpenFirstTickAt - dbOpenStartedAt;
-  // Time after the loop first came free. Mostly IndexedDB, but later
-  // bootstrap work that blocks the loop again still lands here.
+  // Time after the loop first came free. Mostly IndexedDB, but later work
+  // that blocks the loop again still lands here.
   const afterFirstTick = dbOpenFirstTickAt === null ? null : elapsed - loopLag;
+  // How long the context ran before anything needed the db. Opens that start
+  // right after load still overlap startup; this is what shows whether
+  // deferring them moved them clear of it.
+  const sinceLoad = dbOpenStartedAt - dbModuleLoadedAt;
   return {
     tags: {
       db_blocked: dbOpenBlocked,
@@ -133,18 +136,20 @@ const getDbOpenTiming = () => {
       db_open_loop_lag: durationBucket(loopLag),
       db_open_after_first_tick:
         afterFirstTick === null ? 'unknown' : durationBucket(afterFirstTick),
+      db_open_since_load: durationBucket(sinceLoad),
     },
     extra: {
       elapsed,
       loopLag,
       afterFirstTick,
+      sinceLoad,
       blocked: dbOpenBlocked,
     },
   };
 };
 
-// Guards the outcome of the single db.open() below, so timeout and slow stay
-// mutually exclusive. The promise settles once, so each path is one-shot.
+// Guards the outcome of the first open, so timeout and slow stay mutually
+// exclusive. That promise settles once, so each path is one-shot.
 const reportDbOpenIssue = (
   message: string,
   level: 'warning' | 'error',
@@ -188,46 +193,74 @@ db.on('blocked', (event) => {
   });
 });
 
-const dbOpenTimeoutTimer = setTimeout(() => {
-  dbOpenTimedOut = true;
-  reportDbOpenIssue('indexeddb open timeout', 'error', {
-    timeout: DB_OPEN_TIMEOUT,
-  });
-}, DB_OPEN_TIMEOUT);
+const instrumentDbOpen = (opening: ReturnType<typeof db.open>) => {
+  const timeoutTimer = setTimeout(() => {
+    dbOpenTimedOut = true;
+    reportDbOpenIssue('indexeddb open timeout', 'error', {
+      timeout: DB_OPEN_TIMEOUT,
+    });
+  }, DB_OPEN_TIMEOUT);
 
-db.open()
-  .then(() => {
-    // The timeout is reported as soon as it fires, since the context may be
-    // gone before the open settles. Following it up here is what separates a
-    // slow open from a hung one: timeouts without a matching late report
-    // never opened (or their context was torn down first).
-    if (dbOpenTimedOut) {
+  opening
+    .then(() => {
+      // The timeout is reported as soon as it fires, since the context may be
+      // gone before the open settles. Following it up here is what separates
+      // a slow open from a hung one: timeouts without a matching late report
+      // never opened (or their context was torn down first).
+      if (dbOpenTimedOut) {
+        const timing = getDbOpenTiming();
+        captureDbOpenMessage('indexeddb open resolved after timeout', {
+          level: 'warning',
+          tags: timing.tags,
+          extra: timing.extra,
+        });
+        return;
+      }
+      if (
+        Date.now() - dbOpenStartedAt >= DB_OPEN_SLOW &&
+        Math.random() < DB_OPEN_SLOW_SAMPLE_RATE
+      ) {
+        reportDbOpenIssue('indexeddb open slow', 'warning', {
+          sampleRate: DB_OPEN_SLOW_SAMPLE_RATE,
+        });
+      }
+    })
+    .catch((error) => {
+      // Dexie rejects every later query too, so this surfaces in the UI as
+      // well; capturing here is what attaches the cause and the elapsed time.
       const timing = getDbOpenTiming();
-      captureDbOpenMessage('indexeddb open resolved after timeout', {
-        level: 'warning',
-        tags: timing.tags,
+      Sentry.captureException(error, {
+        tags: { ...timing.tags, db_open_timed_out: dbOpenTimedOut },
         extra: timing.extra,
       });
-      return;
-    }
-    if (
-      Date.now() - dbOpenStartedAt >= DB_OPEN_SLOW &&
-      Math.random() < DB_OPEN_SLOW_SAMPLE_RATE
-    ) {
-      reportDbOpenIssue('indexeddb open slow', 'warning', {
-        sampleRate: DB_OPEN_SLOW_SAMPLE_RATE,
-      });
-    }
-  })
-  .catch((error) => {
-    // Dexie rejects every later query too, so this surfaces in the UI as
-    // well; capturing here is what attaches the cause and the elapsed time.
-    const timing = getDbOpenTiming();
-    Sentry.captureException(error, {
-      tags: { ...timing.tags, db_open_timed_out: dbOpenTimedOut },
-      extra: timing.extra,
+    })
+    .finally(() => {
+      clearTimeout(timeoutTimer);
     });
-  })
-  .finally(() => {
-    clearTimeout(dbOpenTimeoutTimer);
-  });
+};
+
+// The db is opened lazily: Dexie auto-opens on the first query, and that
+// auto-open goes through db.open(), so wrapping it here is where the first
+// open starts. Opening eagerly at import meant every service worker start
+// opened it, including the many wakeups (alarms, dapp RPC) that never read
+// the db, and always while the rest of startup was competing for disk —
+// which is where nearly all slow and timed-out opens were reported from.
+//
+// Only the first open is instrumented. Later calls are either no-ops on an
+// open db or reopens after Dexie's versionchange close, and measuring those
+// would mix a different failure into the same timings.
+const openDb = db.open.bind(db);
+let dbOpenInstrumented = false;
+db.open = () => {
+  if (dbOpenInstrumented) {
+    return openDb();
+  }
+  dbOpenInstrumented = true;
+  dbOpenStartedAt = Date.now();
+  setTimeout(() => {
+    dbOpenFirstTickAt = Date.now();
+  }, 0);
+  const opening = openDb();
+  instrumentDbOpen(opening);
+  return opening;
+};

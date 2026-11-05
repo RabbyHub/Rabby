@@ -50,12 +50,20 @@ export type SignerCtx = {
   };
   gasFeeTooHigh?: boolean;
   disabledProcess?: boolean;
+  // tx from/to hit the blocked-address list; signing must be refused
+  isBlocked?: boolean;
 } & PreparedContext;
 
+// Cached ctx (pre-exec, security checks, the txs actually signed) is reused
+// whenever this matches, so it must cover everything that changes what is signed.
+// Calldata stays as-is: lowercasing copies large strings, and a case-only
+// mismatch just re-prefetches.
 export const buildFingerprint = (txs: Tx[]) =>
   txs
     .map(
       (t) =>
-        `${t.chainId}|${t.to || ''}|${t.value || ''}|${(t.data || '').length}`
+        `${t.chainId}|${(t.from || '').toLowerCase()}|${(
+          t.to || ''
+        ).toLowerCase()}|${t.value || ''}|${t.data || ''}`
     )
     .join(';');
