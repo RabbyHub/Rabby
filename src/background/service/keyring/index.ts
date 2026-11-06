@@ -1,7 +1,6 @@
 /// fork from https://github.com/MetaMask/KeyringController/blob/master/index.js
 
 import { EventEmitter } from 'events';
-import log from 'loglevel';
 import { stripHexPrefix } from '@ethereumjs/util';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
@@ -1420,7 +1419,6 @@ export class KeyringService extends EventEmitter {
     includeWatchKeyring = true
   ): Promise<any> {
     const hexed = normalizeAddress(address).toLowerCase();
-    log.debug(`KeyringController - getKeyringForAccount: ${hexed}`);
     let keyrings = type
       ? this.keyrings.filter((keyring) => keyring.type === type)
       : this.keyrings;
