@@ -29,8 +29,6 @@ import { ReactComponent as RcIconEcosystemCC } from 'ui/assets/settings/echosyst
 import { ReactComponent as RcIconRabbyMobileCC } from 'ui/assets/settings/IconMobileSync-cc.svg';
 import { ReactComponent as RCIconBiometric } from 'ui/assets/dashboard/settings/biometric.svg';
 import { ReactComponent as RcIconPerps } from 'ui/assets/dashboard/panel/perps-float-cc.svg';
-import IconDiscordHover from 'ui/assets/discord-hover.svg';
-import { ReactComponent as RcIconDiscord } from 'ui/assets/discord.svg';
 import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import { ReactComponent as RcIconTwitter } from 'ui/assets/twitter.svg';
 import { ReactComponent as RcIconClear } from 'ui/assets/icon-clear.svg';
@@ -1438,21 +1436,6 @@ const SettingsInner = ({
                 />
                 <ThemeIcon
                   src={IconTwitterHover}
-                  className="w-0 h-0 overflow-hidden group-hover:w-20 group-hover:h-20"
-                />
-              </a>
-              <a
-                href="https://discord.com/invite/seFBCWmUre"
-                target="_blank"
-                rel="noreferrer"
-                className="ml-12 group"
-              >
-                <ThemeIcon
-                  src={RcIconDiscord}
-                  className="w-20 overflow-hidden group-hover:w-0 group-hover:h-0 "
-                />
-                <ThemeIcon
-                  src={IconDiscordHover}
                   className="w-0 h-0 overflow-hidden group-hover:w-20 group-hover:h-20"
                 />
               </a>
