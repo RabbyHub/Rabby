@@ -282,7 +282,7 @@
       "title": "Joindre une capture d'écran au feedback",
       "placeholder": "Décrivez le problème",
       "placeholderRequired": "Décrivez le problème (obligatoire)",
-      "includeAddress": "Partager mes adresses pour faciliter le diagnostic"
+      "includeAddress": "Partager l'adresse pour le dépannage"
     },
     "feedbackPopup": {
       "title": "Réponse du support Rabby",

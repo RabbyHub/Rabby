@@ -4951,7 +4951,7 @@
       "title": "Ảnh chụp màn hình để phản hồi",
       "placeholder": "Mô tả vấn đề",
       "placeholderRequired": "Mô tả vấn đề (bắt buộc)",
-      "includeAddress": "Chia sẻ địa chỉ của tôi để hỗ trợ khắc phục sự cố"
+      "includeAddress": "Chia sẻ địa chỉ để khắc phục sự cố"
     },
     "feedbackPopup": {
       "title": "Phản hồi từ Hỗ trợ Rabby",

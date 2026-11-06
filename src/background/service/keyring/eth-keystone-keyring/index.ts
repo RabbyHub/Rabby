@@ -26,6 +26,8 @@ export type RequestSignPayload = {
   };
 };
 
+const wiredInteractions = new WeakSet<object>();
+
 type PagedAccount = { address: string; balance: any; index: number };
 
 type GetDeviceReturnType<T extends boolean> = T extends true ? EthLegacy : Eth;
@@ -51,12 +53,33 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   constructor() {
     super();
 
-    this.getInteraction().on(AcquireMemeStoreData, () => {
+    // The interaction (and its memStore) is a process-wide singleton shared by
+    // every keyring instance, so wire it once.
+    const interaction = this.getInteraction();
+    if (wiredInteractions.has(interaction)) return;
+    wiredInteractions.add(interaction);
+
+    // Pull: the waiting page asks for a request that already exists.
+    interaction.on(AcquireMemeStoreData, () => {
       const request = this.getMemStore().getState().sign?.request;
 
       if (request) {
-        this.getInteraction().emit(MemStoreDataReady, request);
+        interaction.emit(MemStoreDataReady, request);
       }
+    });
+
+    // Push: the request usually appears after the page asked, since signing
+    // starts only once the page has mounted and may await more checks first.
+    let pushedRequestId: string | undefined;
+    this.getMemStore().subscribe((state) => {
+      const request = state.sign?.request;
+      if (!request) {
+        pushedRequestId = undefined;
+        return;
+      }
+      if (request.requestId === pushedRequestId) return;
+      pushedRequestId = request.requestId;
+      interaction.emit(MemStoreDataReady, request);
     });
   }
 

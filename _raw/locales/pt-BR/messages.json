@@ -4957,7 +4957,7 @@
       "title": "Captura de tela para feedback",
       "placeholder": "Descreva o problema",
       "placeholderRequired": "Descreva o problema (obrigatório)",
-      "includeAddress": "Compartilhar meus endereços para ajudar a resolver o problema"
+      "includeAddress": "Compartilhar endereço para solução de problemas"
     },
     "feedbackPopup": {
       "title": "Resposta do Suporte Rabby",
