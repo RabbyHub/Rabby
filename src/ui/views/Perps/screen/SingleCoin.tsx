@@ -890,7 +890,7 @@ export const PerpsSingleCoin = () => {
         positionSize={positionData?.size.toString() || '0'}
         pnl={positionData?.pnl || 0}
         onCancel={() => setClosePositionVisible(false)}
-        marginUsed={positionData?.marginUsed || 0}
+        quoteAsset={quoteAsset}
         markPrice={markPrice}
         entryPrice={positionData?.entryPrice || 0}
         szDecimals={currentAssetCtx?.szDecimals || 0}
