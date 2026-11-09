@@ -324,7 +324,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           )}
           {hasPrice ? (
             <RcIconTpSlCancel
-              className="w-16 h-16 text-rb-neutral-secondary cursor-pointer hover:text-r-neutral-title-1"
+              className="w-16 h-16 text-rb-neutral-secondary cursor-pointer hover:text-r-blue-default"
               onClick={handleTagClick}
             />
           ) : (
