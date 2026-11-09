@@ -1,6 +1,5 @@
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { Tooltip } from 'antd';
 import clsx from 'clsx';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { splitNumberByStep } from '@/ui/utils';
@@ -9,6 +8,7 @@ import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconMarginAdd } from 'ui/assets/perps/IconMarginAddCC.svg';
 import { ReactComponent as RcIconRoiUp } from 'ui/assets/perps/IconRoiUpCC.svg';
 import { ReactComponent as RcIconRoiDown } from 'ui/assets/perps/IconRoiDownCC.svg';
+import TooltipV6 from '@/ui/component/Tooltip/TooltipV6';
 import { DashedUnderlineText } from '../../DesktopPerps/components/DashedUnderlineText';
 import {
   formatPerpsCoin,
@@ -59,6 +59,19 @@ const Row: React.FC<{ label: React.ReactNode; value: React.ReactNode }> = ({
     <div className="text-r-neutral-body">{label}</div>
     <div className="font-medium text-r-neutral-title-1 text-right">{value}</div>
   </div>
+);
+
+/** Label with a dashed underline whose tooltip arrow stays on the label. */
+const TipLabel = ({
+  tip,
+  children,
+}: {
+  tip: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  <TooltipV6 overlayClassName="rectangle" placement="top" title={tip}>
+    <DashedUnderlineText needCursor={false}>{children}</DashedUnderlineText>
+  </TooltipV6>
 );
 
 const CardTitle = ({ children }: { children: React.ReactNode }) => (
@@ -141,7 +154,7 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
         <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-line text-r-neutral-foot gap-2">
           {type === 'cross' ? t('page.perps.cross') : t('page.perps.isolated')}
           {type === 'cross' && (
-            <Tooltip
+            <TooltipV6
               overlayClassName="rectangle"
               placement="bottom"
               title={t('page.perps.crossMarginLiqPriceTip')}
@@ -152,7 +165,7 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
                 height={12}
                 className="text-r-neutral-foot"
               />
-            </Tooltip>
+            </TooltipV6>
           )}
         </span>
       </div>
@@ -208,12 +221,9 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
         <div className="h-[0.5px] bg-r-neutral-line my-12" />
         <Row
           label={
-            <DashedUnderlineText
-              needCursor={false}
-              tooltipText={t('page.perps.sizeTips')}
-            >
+            <TipLabel tip={t('page.perps.sizeTips')}>
               {t('page.perps.size')}
-            </DashedUnderlineText>
+            </TipLabel>
           }
           value={`${splitNumberByStep(
             positionData.positionValue.toFixed(2)
@@ -277,12 +287,9 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
         <CardTitle>{t('page.perpsDetail.simpleAccount.funding')}</CardTitle>
         <Row
           label={
-            <DashedUnderlineText
-              needCursor={false}
-              tooltipText={t('page.perps.singleCoin.fundingTips')}
-            >
+            <TipLabel tip={t('page.perps.singleCoin.fundingTips')}>
               {t('page.perpsDetail.simpleAccount.nextFundingRate')}
-            </DashedUnderlineText>
+            </TipLabel>
           }
           value={
             nextFundingRate != null
@@ -292,19 +299,18 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
         />
         <Row
           label={
-            <DashedUnderlineText
-              needCursor={false}
-              tooltipText={() => (
+            <TipLabel
+              tip={
                 <Trans
                   i18nKey="page.perpsPro.userInfo.tab.fundingTipsBold"
                   components={{ bold: <span className="font-bold" /> }}
                 />
-              )}
+              }
             >
               {isFundingGains
                 ? t('page.perps.fundingGains')
                 : t('page.perps.fundingPayments')}
-            </DashedUnderlineText>
+            </TipLabel>
           }
           value={
             <span

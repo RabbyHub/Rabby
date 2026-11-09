@@ -283,14 +283,18 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   return (
     <>
       {variant === 'position' ? (
+        // Once set, only the cancel icon is interactive; the pill itself is
+        // read-only so a stray click cannot cancel the order.
         <div
           className={clsx(
-            'inline-flex items-center justify-end gap-[5px] pl-12 pr-6 rounded-[10px] cursor-pointer',
-            'bg-rb-neutral-bg-5/50 border border-solid border-transparent hover:border-rabby-blue-default',
-            hasPrice ? 'h-[40px]' : 'h-[20px]',
+            'inline-flex items-center justify-end gap-[5px] pl-12 pr-6 rounded-[10px]',
+            'bg-rb-neutral-bg-5/50 border border-solid border-transparent',
+            hasPrice
+              ? 'h-[40px]'
+              : 'h-[20px] cursor-pointer hover:border-rabby-blue-default',
             disableEdit && !hasPrice && 'opacity-50 cursor-not-allowed'
           )}
-          onClick={handleTagClick}
+          onClick={hasPrice ? undefined : handleTagClick}
         >
           {hasPrice ? (
             <div className="flex flex-col items-end gap-2">
@@ -319,7 +323,10 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
             </span>
           )}
           {hasPrice ? (
-            <RcIconTpSlCancel className="w-16 h-16 text-rb-neutral-secondary" />
+            <RcIconTpSlCancel
+              className="w-16 h-16 text-rb-neutral-secondary cursor-pointer hover:text-r-neutral-title-1"
+              onClick={handleTagClick}
+            />
           ) : (
             <RcIconTpSlEdit className="w-16 h-16 text-r-neutral-foot" />
           )}
