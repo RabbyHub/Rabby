@@ -61,7 +61,7 @@ const Row: React.FC<{ label: React.ReactNode; value: React.ReactNode }> = ({
   </div>
 );
 
-const CardTitle: React.FC = ({ children }) => (
+const CardTitle = ({ children }: { children: React.ReactNode }) => (
   <div className="py-6 text-14 leading-[18px] font-bold text-r-neutral-body">
     {children}
   </div>
@@ -185,7 +185,8 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
                 pnl >= 0 ? 'text-r-green-default' : 'text-r-red-default'
               )}
             >
-              {pnl >= 0 ? '+' : '-'}${splitNumberByStep(Math.abs(pnl).toFixed(2))}
+              {pnl >= 0 ? '+' : '-'}$
+              {splitNumberByStep(Math.abs(pnl).toFixed(2))}
             </div>
             <div
               className={clsx(
