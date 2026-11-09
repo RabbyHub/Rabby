@@ -135,7 +135,11 @@ jest.mock('@/background/utils', () => ({
 describe('OneKey V1/V2 account import', () => {
   const publicKey =
     '0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798';
-  function setup(protocol: 'V1' | 'V2', passphraseState?: string) {
+  function setup(
+    protocol: 'V1' | 'V2',
+    passphraseState?: string,
+    status?: { passphraseProtection?: boolean }
+  ) {
     const bridge = {
       init: jest.fn().mockResolvedValue(undefined),
       cancel: jest.fn(),
@@ -149,6 +153,7 @@ describe('OneKey V1/V2 account import', () => {
         payload: {
           protocol,
           identity: { deviceId: 'authoritative-device-id' },
+          ...(status ? { status } : {}),
         },
       }),
       getPassphraseState: jest
@@ -184,6 +189,93 @@ describe('OneKey V1/V2 account import', () => {
       expect(keyring.hdk.publicKey.toString('hex')).toBe(publicKey);
     }
   );
+
+  it('selects the standard wallet on a V2 device with passphrase protection off', async () => {
+    // Real Pro 2 firmware returns the standard-wallet session id
+    // (btc_test_address) even when passphrase protection is off.
+    const { bridge, keyring } = setup('V2', 'bc1q-standard-wallet-session', {
+      passphraseProtection: false,
+    });
+    await expect(keyring.unlock()).resolves.toBe('just unlocked');
+    expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
+    expect(bridge.getPassphraseState).toHaveBeenCalledWith('usb-path', {
+      useEmptyPassphrase: true,
+    });
+    expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+      'usb-path',
+      'authoritative-device-id',
+      expect.objectContaining({
+        passphraseState: undefined,
+        useEmptyPassphrase: true,
+      })
+    );
+    expect(keyring.passphraseState).toBeUndefined();
+  });
+
+  it.each([
+    [{ error: 'Passphrase disabled', code: 999 }],
+    [{ error: 'Device not opened passphrase', code: 113 }],
+  ])(
+    'retries with the standard wallet when wallet selection fails with %p',
+    async (failure) => {
+      const { bridge, keyring } = setup('V2', 'bc1q-standard-wallet-session');
+      bridge.getPassphraseState
+        .mockResolvedValueOnce({ success: false, payload: failure })
+        .mockResolvedValueOnce({
+          success: true,
+          payload: 'bc1q-standard-wallet-session',
+        });
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(bridge.getPassphraseState).toHaveBeenNthCalledWith(
+        1,
+        'usb-path',
+        undefined
+      );
+      expect(bridge.getPassphraseState).toHaveBeenNthCalledWith(2, 'usb-path', {
+        useEmptyPassphrase: true,
+      });
+      expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+        'usb-path',
+        'authoritative-device-id',
+        expect.objectContaining({
+          passphraseState: undefined,
+          useEmptyPassphrase: true,
+        })
+      );
+    }
+  );
+
+  it('keeps the hidden wallet passphraseState on a V2 device with passphrase on', async () => {
+    const { bridge, keyring } = setup('V2', 'hidden-wallet-token', {
+      passphraseProtection: true,
+    });
+    await expect(keyring.unlock()).resolves.toBe('just unlocked');
+    expect(bridge.getPassphraseState).toHaveBeenCalledWith(
+      'usb-path',
+      undefined
+    );
+    expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+      'usb-path',
+      'authoritative-device-id',
+      expect.objectContaining({
+        passphraseState: 'hidden-wallet-token',
+        useEmptyPassphrase: false,
+      })
+    );
+    expect(keyring.passphraseState).toBe('hidden-wallet-token');
+  });
+
+  it('rejects unlock failures with an Error that carries the device message', async () => {
+    const { bridge, keyring } = setup('V2');
+    bridge.getPassphraseState.mockResolvedValue({
+      success: false,
+      payload: { error: 'Some wallet session failure', code: 800 },
+    });
+    const error = await keyring.unlock().catch((e: unknown) => e);
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toBe('Some wallet session failure');
+    expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
+  });
 
   it('does not restore a cleared wallet cache on the next unlock', async () => {
     const env = require('@/utils/env');

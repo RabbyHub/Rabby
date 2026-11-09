@@ -71,6 +71,34 @@ interface AccountDetail {
   index: number;
 }
 
+function toError(e: unknown): Error {
+  if (e instanceof Error) {
+    return e;
+  }
+  if (typeof e === 'string') {
+    return new Error(e);
+  }
+  const message = (e as { message?: unknown } | null)?.message;
+  if (typeof message === 'string' && message) {
+    return new Error(message);
+  }
+  try {
+    return new Error(JSON.stringify(e) ?? 'Unknown error');
+  } catch {
+    return new Error('Unknown error');
+  }
+}
+
+function isPassphraseDisabledError(payload?: {
+  code?: unknown;
+  error?: unknown;
+}) {
+  return (
+    payload?.code === HardwareErrorCode.DeviceNotOpenedPassphrase ||
+    /passphrase disabled/i.test(String(payload?.error ?? ''))
+  );
+}
+
 function handleDeviceError(
   errorCode: string | number | undefined,
   errorMessage: string
@@ -219,7 +247,12 @@ class OneKeyKeyring extends EventEmitter {
     // if (this.isUnlocked()) {
     //   return Promise.resolve('already unlocked');
     // }
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, rejectRaw) => {
+      // Reject with real Errors: the UI<->background channel only forwards
+      // error.message, so string rejections reached the UI as `{}`.
+      const reject = (e: any) => {
+        rejectRaw(toError(e));
+      };
       this.init()
         .then(() => this.bridge.searchDevices())
         .then(async (result) => {
@@ -270,22 +303,50 @@ class OneKeyKeyring extends EventEmitter {
             }
             this.deviceId = deviceId;
             this.connectId = connectId;
-            const passphraseState = await this.bridge.getPassphraseState(
-              connectId
+            // Protocol V2 (Pro 2): getPassphraseState() without options always
+            // opens wallet selection, and answering it with "passphrase on
+            // device" fails with "Passphrase disabled" when the device has
+            // passphrase protection off. Select the standard wallet instead.
+            const passphraseProtectionOff =
+              state.payload.status?.passphraseProtection === false;
+            let standardWallet = passphraseProtectionOff;
+            let passphraseState = await this.bridge.getPassphraseState(
+              connectId,
+              standardWallet ? { useEmptyPassphrase: true } : undefined
             );
+            if (
+              !passphraseState.success &&
+              !standardWallet &&
+              isPassphraseDisabledError(passphraseState.payload)
+            ) {
+              standardWallet = true;
+              passphraseState = await this.bridge.getPassphraseState(
+                connectId,
+                { useEmptyPassphrase: true }
+              );
+            }
             if (!passphraseState.success) {
               reject(
                 passphraseState.payload.error ?? 'getPassphraseState failed'
               );
               return;
             }
-            this.passphraseState = passphraseState.payload;
+            // On V2 the standard-wallet session still returns a wallet id
+            // (btc_test_address). Passing it on a passphrase-off device makes
+            // the SDK throw DeviceNotOpenedPassphrase (113), so the standard
+            // wallet is represented by an empty passphraseState.
+            this.passphraseState = standardWallet
+              ? undefined
+              : passphraseState.payload || undefined;
             return this.bridge
               .evmGetPublicKey(connectId, deviceId, {
                 showOnOneKey: false,
                 chainId: 1,
                 path: hdPathString,
-                passphraseState: passphraseState.payload,
+                passphraseState: this.passphraseState,
+                useEmptyPassphrase: this._isEmptyPassphrase(
+                  this.passphraseState
+                ),
               })
               .then(async (res) => {
                 if (res.success) {
@@ -296,7 +357,7 @@ class OneKeyKeyring extends EventEmitter {
                   );
                   if (isManifestV3) {
                     const sessionState: OneKeySessionState = {
-                      passphraseState: passphraseState.payload,
+                      passphraseState: this.passphraseState,
                       publicKey: res.payload.pub,
                       chainCode: res.payload.node.chain_code,
                       deviceId,
