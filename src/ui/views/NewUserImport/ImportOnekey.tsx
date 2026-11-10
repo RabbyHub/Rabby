@@ -7,7 +7,7 @@ import { useWallet } from '@/ui/utils';
 import { LedgerHDPathType as HDPathType } from '@/ui/utils/ledger';
 import { URDecoder } from '@ngraveio/bc-ur';
 import * as Sentry from '@sentry/browser';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,7 +18,6 @@ import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { useMount } from 'ahooks';
 import { findEthAccountByMultiAccounts } from '../ImportHardware/OneKeyConnect/utils';
 import { ImageCarousel } from '../ImportHardware/OneKeyConnect/ImageCarousel';
-import { useHDWalletUnlockAndRedirect } from './hooks/useHardWareUnlockAddress';
 import { useAsyncFn } from 'react-use';
 import { getOneKeyFirstOneKeyDevice } from '@/ui/utils/onekey';
 
@@ -165,20 +164,85 @@ export const NewUserImportOneKey = () => {
     );
   }, []);
 
-  const handle = useHDWalletUnlockAndRedirect(
-    HARDWARE_KEYRING_TYPES.Onekey.type
-  );
+  const usbPendingRef = useRef(false);
+  const usbKeyringIdRef = useRef<number | null>(null);
+  const usbActiveRef = useRef(false);
+  const usbGenerationRef = useRef(0);
+
+  useEffect(() => {
+    usbActiveRef.current = connectType === ConnectType.USB;
+    const cancel = () => {
+      usbActiveRef.current = false;
+      usbGenerationRef.current += 1;
+      const id = usbKeyringIdRef.current;
+      usbKeyringIdRef.current = null;
+      if (id !== null) {
+        void wallet
+          .requestKeyring(
+            HARDWARE_KEYRING_TYPES.Onekey.type,
+            'cleanUp',
+            id,
+            true
+          )
+          .catch(console.error);
+      }
+    };
+    window.addEventListener('beforeunload', cancel);
+    return () => {
+      window.removeEventListener('beforeunload', cancel);
+      cancel();
+    };
+  }, [connectType]);
 
   const onConnectViaUSB = async () => {
+    if (usbPendingRef.current) return;
+    usbPendingRef.current = true;
+    const type = HARDWARE_KEYRING_TYPES.Onekey.type;
+    const generation = usbGenerationRef.current;
+    const isActive = () =>
+      usbActiveRef.current && generation === usbGenerationRef.current;
     try {
       if (!store.password) {
         throw new Error('empty password');
       }
       await getOneKeyFirstOneKeyDevice();
+      if (!isActive()) return;
       await wallet.authorizeOneKeyHIDPermission();
-      await handle();
+      if (!isActive()) return;
+      // Acquire the import id before starting device interaction so closing
+      // this page can cancel the exact keyring waiting for PIN/passphrase.
+      const id = await wallet.connectHardware({ type, isWebHID: true });
+      usbKeyringIdRef.current = id;
+      if (!isActive()) {
+        await wallet.requestKeyring(type, 'cleanUp', id, true);
+        return;
+      }
+      const accounts = await wallet.requestKeyring(
+        type,
+        'getAddresses',
+        id,
+        0,
+        1
+      );
+      if (!isActive() || !accounts?.length) return;
+      await wallet.boot(store.password);
+      if (!isActive()) return;
+      await wallet.unlockHardwareAccount(type, [accounts[0].index - 1], id);
+      if (!isActive()) return;
+      setStore({ clearKeyringId: id });
+      usbKeyringIdRef.current = null;
+      history.push({
+        pathname: '/new-user/success',
+        search: `?hd=${encodeURIComponent(type)}&keyringId=${id}`,
+      });
     } catch (error) {
-      console.error(error);
+      if (isActive() && error?.name !== 'NotFoundError') {
+        message.error(
+          error.message || t('page.newAddress.hd.tooltip.connectError')
+        );
+      }
+    } finally {
+      usbPendingRef.current = false;
     }
   };
 

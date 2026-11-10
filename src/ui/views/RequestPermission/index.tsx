@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { StrayPage } from 'ui/component';
 import { query2obj } from 'ui/utils/url';
@@ -29,6 +29,8 @@ const RequestPermission = () => {
   const [loading, setLoading] = useState(false);
   const keystoneErrorCatcher = useKeystoneUSBErrorCatcher();
   const isReconnect = !!qs.reconnect;
+  const oneKeyPendingRef = useRef(false);
+  const mountedRef = useRef(true);
 
   const PERMISSIONS = {
     camera: {
@@ -179,9 +181,14 @@ const RequestPermission = () => {
       }
     }
     if (type === 'onekey') {
+      if (oneKeyPendingRef.current) return;
+      oneKeyPendingRef.current = true;
+      setLoading(true);
       try {
         await getOneKeyFirstOneKeyDevice();
+        if (!mountedRef.current) return;
         await wallet.authorizeOneKeyHIDPermission();
+        if (!mountedRef.current) return;
         if (isReconnect) {
           wallet.activeFirstApproval();
           window.close();
@@ -202,7 +209,14 @@ const RequestPermission = () => {
           ),
         });
       } catch (e) {
-        console.error(e);
+        if (mountedRef.current && e?.name !== 'NotFoundError') {
+          message.error(
+            e.message || t('page.newAddress.hd.tooltip.connectError')
+          );
+        }
+      } finally {
+        oneKeyPendingRef.current = false;
+        if (mountedRef.current) setLoading(false);
       }
     }
   };
@@ -216,7 +230,11 @@ const RequestPermission = () => {
   };
 
   useEffect(() => {
+    mountedRef.current = true;
     !needConfirm && init();
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   return (
@@ -257,7 +275,12 @@ const RequestPermission = () => {
           )}
           {needConfirm && (
             <div className="btn-footer">
-              <Button type="primary" size="large" onClick={init}>
+              <Button
+                type="primary"
+                size="large"
+                onClick={init}
+                loading={loading}
+              >
                 {t('page.newAddress.ledger.allow')}
               </Button>
             </div>
