@@ -12,16 +12,13 @@ export type LocalUserFeedbackItem = Pick<UserFeedbackItem, 'id' | 'create_at'>;
 export interface FeedbackServiceStore {
   screenshotFeedbacks: LocalUserFeedbackItem[];
   /**
-   * True once the user unticks the "share my addresses" checkbox in the
-   * screenshot feedback modal. The checkbox is ticked by default, unless the
-   * user turned off "Help improve Rabby" (see
-   * WalletController.getScreenshotShareAddress).
-   *
-   * Replaces the legacy `screenshotShareAddress` key, whose `false` default
-   * was persisted for every user and cannot be told apart from an explicit
-   * opt-out.
+   * Last state of the "share my addresses" checkbox in the screenshot
+   * feedback modal. Ticked by default when nothing is stored yet (e.g. a new
+   * install); a value already persisted by an earlier version is kept as is.
+   * The modal also starts unticked when the user turned off
+   * "Help improve Rabby" (see WalletController.getScreenshotShareAddress).
    */
-  screenshotShareAddressOptOut?: boolean;
+  screenshotShareAddress?: boolean;
 }
 
 const LATEST_LOCAL_FEEDBACK_LIMIT = 10;
@@ -37,7 +34,7 @@ const getScreenshotContextMenuTitle = () =>
 class FeedbackService {
   store: FeedbackServiceStore = {
     screenshotFeedbacks: [],
-    screenshotShareAddressOptOut: false,
+    screenshotShareAddress: true,
   };
 
   init = async () => {
@@ -45,7 +42,7 @@ class FeedbackService {
       name: 'feedback',
       template: {
         screenshotFeedbacks: [],
-        screenshotShareAddressOptOut: false,
+        screenshotShareAddress: true,
       },
     });
 
@@ -170,11 +167,11 @@ class FeedbackService {
   };
 
   getScreenshotShareAddress = () => {
-    return this.store.screenshotShareAddressOptOut !== true;
+    return this.store.screenshotShareAddress === true;
   };
 
   setScreenshotShareAddress = (shareAddress: boolean) => {
-    this.store.screenshotShareAddressOptOut = shareAddress !== true;
+    this.store.screenshotShareAddress = shareAddress === true;
   };
 }
 
