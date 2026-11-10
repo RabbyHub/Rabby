@@ -31,6 +31,9 @@ const CODE_BY_MESSAGE: [RegExp, string][] = [
   // Too common a word to match inside other messages; the keyring may
   // prefix it with "Error: ".
   [/^(Error: )?Canceled$/, 'Method_Cancel'],
+  // Device firmware wording: "PIN entry cancelled" (core), "PIN cancelled"
+  // (legacy).
+  [/PIN (entry )?cancelled/, 'Failure_PinCancelled'],
   [/Device disconnected/, 'Device_Disconnected'],
   [/Device not found/, 'Device_NotFound'],
   [/Transport is missing/, 'Transport_Missing'],

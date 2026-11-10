@@ -148,5 +148,9 @@ describe('Trezor signing diagnostics', () => {
     };
     expect(await run(new Error('Error: Canceled'))).toBe('user_cancelled');
     expect(await run(new Error('Request Canceled by server'))).toBe('unknown');
+    expect(await run(new Error('Error: PIN entry cancelled'))).toBe(
+      'user_cancelled'
+    );
+    expect(await run(new Error('Error: PIN cancelled'))).toBe('user_cancelled');
   });
 });
