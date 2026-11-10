@@ -1,3 +1,5 @@
+import { ethErrors } from 'eth-rpc-errors';
+
 /**
  * Holds work until the background has restored its stores. A UI call that
  * reaches the controller earlier reads services whose store is still undefined.
@@ -29,4 +31,24 @@ export const createReadyGate = () => {
       return isOpen ? task() : opened.then(task);
     },
   };
+};
+
+type ReadyGate = ReturnType<typeof createReadyGate>;
+
+// Handles a UI port's requests through `gate`. A request held while the port
+// closes is dropped: nobody waits for its result, and it may change state.
+export const holdPortRequests = <D, R>(
+  gate: ReadyGate,
+  port: { onDisconnect: { addListener: (cb: () => void) => void } },
+  handle: (data: D) => R
+) => {
+  let closed = false;
+  port.onDisconnect.addListener(() => {
+    closed = true;
+  });
+  return (data: D) =>
+    gate.run(() => {
+      if (closed) throw ethErrors.provider.disconnected();
+      return handle(data);
+    });
 };

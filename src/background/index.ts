@@ -96,7 +96,7 @@ import { ga4 } from '@/utils/ga4';
 import { ALARMS_SYNC_DEFAULT_RPC, ALARMS_USER_ENABLE } from './utils/alarms';
 import { subscribeTxCompleted } from './subscriptions/rateGuidance';
 import extensionUpdateService from './service/extensionUpdate';
-import { createReadyGate } from './utils/readyGate';
+import { createReadyGate, holdPortRequests } from './utils/readyGate';
 
 // Register synchronously so update events can wake the MV3 service worker.
 void extensionUpdateService.init().catch((error) => {
@@ -353,16 +353,10 @@ browser.runtime.onConnect.addListener((port) => {
       return;
     }
     const pm = new PortMessage(port);
-    let portClosed = false;
-    port.onDisconnect.addListener(() => {
-      portClosed = true;
-    });
     // The port is accepted before the stores are restored; hold its requests
-    // until they are, instead of letting them read an undefined store. Drop
-    // those whose page closed meanwhile: nobody is waiting for their result.
-    pm.listen((data) =>
-      backgroundReadyGate.run(() => {
-        if (portClosed) throw ethErrors.provider.disconnected();
+    // until they are, instead of letting them read an undefined store.
+    pm.listen(
+      holdPortRequests(backgroundReadyGate, port, (data: any) => {
         if (data?.type) {
           switch (data.type) {
             case 'broadcast':
