@@ -30,6 +30,7 @@ export enum OneKeyAction {
   evmSignTypedData = 'onekey-evm-sign-typed-data',
   searchDevices = 'onekey-search-devices',
   getPassphraseState = 'onekey-get-passphrase-state',
+  openWalletSession = 'onekey-open-wallet-session',
   evmGetPublicKey = 'onekey-evm-get-public-key',
   getDeviceState = 'onekey-get-device-state',
 }

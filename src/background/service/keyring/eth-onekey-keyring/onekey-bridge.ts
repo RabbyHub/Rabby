@@ -1,4 +1,5 @@
 import { UI_EVENT, UI_REQUEST, UI_RESPONSE } from '@onekeyfe/hd-core';
+import webSdkPackage from '@onekeyfe/hd-web-sdk/package.json';
 import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 import HardwareSDK from '@onekeyfe/hd-web-sdk';
 const { HardwareWebSdk } = HardwareSDK;
@@ -12,7 +13,7 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
         debug: false,
         // The official iframe page deployed by OneKey
         // of course you can also deploy it yourself
-        connectSrc: 'https://jssdk.onekey.so/1.2.7/',
+        connectSrc: `https://jssdk.onekey.so/${webSdkPackage.version}/`,
         env: 'webusb',
         fetchConfig: true,
       })
@@ -71,6 +72,8 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
   searchDevices = HardwareWebSdk.searchDevices;
 
   getPassphraseState = HardwareWebSdk.getPassphraseState;
+
+  openWalletSession = HardwareWebSdk.openWalletSession;
 
   evmGetPublicKey = HardwareWebSdk.evmGetPublicKey;
 

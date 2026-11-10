@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 // Perps invite (the only caller of sendRequest's approvalRequestId/onApproval
 // option) must never let its inline SignTypedData request queue behind
@@ -195,9 +196,8 @@ test('cancels the captured OneKey signing task when its waiting approval is reje
 });
 
 test('does not start OneKey signing if approval is cancelled before the waiting UI mounts', async () => {
-  const { waitSignComponentAmounted } = require('@/utils/signEvent');
   let mounted!: () => void;
-  waitSignComponentAmounted.mockImplementationOnce(
+  jest.mocked(waitSignComponentAmounted).mockImplementationOnce(
     () =>
       new Promise<void>((resolve) => {
         mounted = resolve;
@@ -215,6 +215,38 @@ test('does not start OneKey signing if approval is cancelled before the waiting 
   mounted();
   await Promise.resolve();
   await Promise.resolve();
+  expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+});
+
+test('does not fail the approval when the OneKey account was removed mid-approval', async () => {
+  let mounted!: () => void;
+  jest.mocked(waitSignComponentAmounted).mockImplementationOnce(
+    () =>
+      new Promise<void>((resolve) => {
+        mounted = resolve;
+      })
+  );
+  state.isUnlocked = true;
+  state.currentApproval = null;
+  state.hasPermission = true;
+  mockOneKeyCancel.mockClear();
+  ethSignTypedDataV4.mockClear();
+  mockKeyringService.getKeyringForAccount.mockRejectedValueOnce(
+    new Error('Address 0xaccount not found in this keyring')
+  );
+  mockNotificationService.requestApproval
+    .mockResolvedValueOnce({
+      uiRequestComponent: 'CommonWaiting',
+      type: 'Onekey Hardware',
+      address: '0xaccount',
+    })
+    .mockRejectedValueOnce(new Error('user cancel'));
+
+  await expect(rpcFlow(baseRequest() as any)).rejects.toThrow('user cancel');
+  mounted();
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(mockOneKeyCancel).not.toHaveBeenCalled();
   expect(ethSignTypedDataV4).not.toHaveBeenCalled();
 });
 

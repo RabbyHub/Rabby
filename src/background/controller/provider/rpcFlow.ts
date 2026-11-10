@@ -556,12 +556,23 @@ const flowContext = flow
     if (!approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
-    const oneKeyKeyring =
-      uiRequestComponent === 'CommonWaiting' && rest.type === 'Onekey Hardware'
-        ? await keyringService.getKeyringForAccount(rest.address, rest.type)
-        : undefined;
+    const isOneKeyRequest =
+      uiRequestComponent === 'CommonWaiting' && rest.type === 'Onekey Hardware';
+    let oneKeyKeyring: any;
+    if (isOneKeyRequest) {
+      try {
+        oneKeyKeyring = await keyringService.getKeyringForAccount(
+          rest.address,
+          rest.type
+        );
+      } catch (e) {
+        // The account may have been removed while the approval was pending.
+        console.error('Failed to get OneKey keyring for account', e);
+        oneKeyKeyring = undefined;
+      }
+    }
     const requestDefer = requestDeferFn();
-    if (oneKeyKeyring) {
+    if (isOneKeyRequest) {
       // The approval promise owns the result; SDK cancellation also rejects this task.
       void requestDefer.catch(() => undefined);
     }
@@ -592,8 +603,10 @@ const flowContext = flow
         uiRequestComponent,
         ...rest,
       }).catch(async (error) => {
-        if (oneKeyKeyring) {
+        if (isOneKeyRequest) {
           oneKeyRequestCancelled = true;
+        }
+        if (oneKeyKeyring) {
           try {
             await oneKeyKeyring.cancel();
           } catch (cancelError) {
