@@ -5055,7 +5055,11 @@
         "notAllowInBootloaderMode": "请在正常模式下使用",
         "deviceCheckPassphraseStateError": "账户与当前设备解锁地址不匹配，请确认设备与账户地址一致后重试",
         "actionCancel": "操作已取消",
-        "deviceNeedsWebHIDPermission": "未找到设备或需要 WebHID 权限"
+        "deviceNeedsWebHIDPermission": "未找到设备或需要 WebUSB 权限",
+        "pinInvalid": "PIN 码错误，请在 OneKey 上重试。",
+        "deviceBusy": "OneKey 正忙。请完成或取消当前操作后重试。",
+        "deviceInterrupted": "OneKey 连接已中断。请重新连接设备后重试。",
+        "webUSBUnavailable": "WebUSB 不可用，请使用支持 WebUSB 的浏览器。"
       }
     }
   },

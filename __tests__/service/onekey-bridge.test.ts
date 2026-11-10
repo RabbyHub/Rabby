@@ -202,7 +202,12 @@ describe('OneKey offscreen error serialization', () => {
 });
 
 jest.mock('@/utils/env', () => ({ isManifestV3: false }));
-jest.mock('@/constant', () => ({ EVENTS: {} }));
+jest.mock('@/constant', () => ({
+  EVENTS: {
+    ONEKEY: { REQUEST_PERMISSION_WEBUSB: 'onekey-permission' },
+    broadcastToUI: 'broadcast',
+  },
+}));
 jest.mock('@/eventBus', () => ({ emit: jest.fn() }));
 jest.mock('webextension-polyfill', () => ({
   storage: { session: { get: jest.fn(), set: jest.fn() } },
@@ -335,6 +340,169 @@ describe('OneKey V1/V2 account import', () => {
         expect.objectContaining({ passphraseState })
       );
       expect(keyring.hdk.publicKey.toString('hex')).toBe(publicKey);
+    }
+  );
+
+  it('shares concurrent unlock and address imports without issuing competing SDK calls', async () => {
+    const { bridge, keyring } = setup('V2');
+    await Promise.all([
+      keyring.unlock(),
+      keyring.getAddresses(0, 1),
+      keyring.getAddresses(1, 2),
+    ]);
+    expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
+    expect(bridge.getDeviceState).toHaveBeenCalledTimes(1);
+    expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
+    expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['getDeviceState', 'getPassphraseState', 'evmGetPublicKey'])(
+    'cancels import during %s and ignores a late successful device response',
+    async (stage) => {
+      const { bridge, keyring } = setup('V2');
+      const response = await bridge[stage]();
+      bridge[stage].mockClear();
+      let finish!: (value: any) => void;
+      let entered!: () => void;
+      const waiting = new Promise<void>((resolve) => {
+        entered = resolve;
+      });
+      bridge[stage].mockImplementationOnce(() => {
+        entered();
+        return new Promise((resolve) => {
+          finish = resolve;
+        });
+      });
+      const importing = keyring.getAddresses(0, 1);
+      const rejected = expect(importing).rejects.toThrow(
+        'OneKey signing cancelled'
+      );
+      await waiting;
+      await keyring.cleanUp(true);
+      expect(bridge.cancel).toHaveBeenCalledWith('usb-path');
+      finish(response);
+      await rejected;
+      expect(keyring.isUnlocked()).toBe(false);
+      if (stage === 'getDeviceState')
+        expect(bridge.getPassphraseState).not.toHaveBeenCalled();
+      if (stage !== 'evmGetPublicKey')
+        expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+    }
+  );
+
+  it('does not cancel another device operation when a completed import page closes', async () => {
+    const { bridge, keyring } = setup('V2');
+    await keyring.unlock();
+    await keyring.cleanUp(true);
+    expect(bridge.cancel).not.toHaveBeenCalled();
+    expect(keyring.isUnlocked()).toBe(false);
+  });
+
+  it('releases a pending Mini signing request when its UI cleans up', async () => {
+    const { bridge, keyring } = signingKeyring();
+    let finish!: (value: any) => void;
+    let entered!: () => void;
+    const waiting = new Promise<void>((resolve) => {
+      entered = resolve;
+    });
+    bridge.evmSignMessage.mockImplementationOnce(() => {
+      entered();
+      return new Promise((resolve) => {
+        finish = resolve;
+      });
+    });
+    const signing = keyring.signPersonalMessage(signerAddress, message);
+    const rejected = expect(signing).rejects.toThrow(
+      'OneKey signing cancelled'
+    );
+    await waiting;
+    await keyring.cleanUp(true);
+    expect(bridge.cancel).toHaveBeenCalledWith('usb-path');
+    finish({ success: true, payload: { signature: 'late-signature' } });
+    await rejected;
+  });
+
+  it('clears a failed unlock so a reconnect can retry', async () => {
+    const { bridge, keyring } = setup('V2');
+    bridge.searchDevices.mockRejectedValueOnce(
+      Object.assign(new Error('Disconnected'), { code: 107 })
+    );
+    await expect(keyring.unlock()).rejects.toMatchObject({ code: 107 });
+    await expect(keyring.unlock()).resolves.toBe('just unlocked');
+  });
+
+  it.each([
+    105,
+    901,
+    802,
+    801,
+    803,
+    822,
+    117,
+    107,
+    109,
+    407,
+    414,
+    115,
+    116,
+    112,
+    113,
+    118,
+  ])('preserves SDK error code %s through an unlock failure', async (code) => {
+    const { bridge, keyring } = setup('V2');
+    bridge.getDeviceState.mockResolvedValueOnce({
+      success: false,
+      payload: { code, error: 'SDK failure' },
+    });
+    await expect(keyring.unlock()).rejects.toMatchObject({ code });
+  });
+
+  it.each(['transaction', 'personal', 'typed'])(
+    'preserves a thrown SDK error code during %s signing',
+    async (kind) => {
+      const { bridge, keyring } = signingKeyring();
+      const error = Object.assign(new Error('USB interrupted'), { code: 109 });
+      bridge.evmSignTransaction.mockRejectedValueOnce(error);
+      bridge.evmSignMessage.mockRejectedValueOnce(error);
+      bridge.evmSignTypedData.mockRejectedValueOnce(error);
+      const signing =
+        kind === 'transaction'
+          ? keyring.signTransaction(
+              signerAddress,
+              TransactionFactory.fromTxData({ gasLimit: 21000, gasPrice: 1 })
+            )
+          : kind === 'personal'
+          ? keyring.signPersonalMessage(signerAddress, message)
+          : keyring.signTypedData(signerAddress, typedData, { version: 'V4' });
+      await expect(signing).rejects.toMatchObject({
+        code: 109,
+        message: 'USB interrupted',
+      });
+    }
+  );
+
+  it.each(['transaction', 'personal', 'typed'])(
+    'preserves a returned SDK error code during %s signing',
+    async (kind) => {
+      const { bridge, keyring } = signingKeyring();
+      const response = {
+        success: false,
+        payload: { code: 802, error: 'PIN cancelled' },
+      };
+      bridge.evmSignTransaction.mockResolvedValueOnce(response);
+      bridge.evmSignMessage.mockResolvedValueOnce(response);
+      bridge.evmSignTypedData.mockResolvedValueOnce(response);
+      const signing =
+        kind === 'transaction'
+          ? keyring.signTransaction(
+              signerAddress,
+              TransactionFactory.fromTxData({ gasLimit: 21000, gasPrice: 1 })
+            )
+          : kind === 'personal'
+          ? keyring.signPersonalMessage(signerAddress, message)
+          : keyring.signTypedData(signerAddress, typedData, { version: 'V4' });
+      await expect(signing).rejects.toMatchObject({ code: 802 });
     }
   );
 
@@ -684,7 +852,10 @@ describe('OneKey V1/V2 account import', () => {
     });
     const error = await keyring.unlock().catch((e: unknown) => e);
     expect(error).toBeInstanceOf(Error);
-    expect((error as Error).message).toBe('Some wallet session failure');
+    expect(error).toMatchObject({
+      code: 800,
+      message: '800: Some wallet session failure',
+    });
     expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
   });
 
@@ -1073,4 +1244,97 @@ describe('OneKey V1/V2 account import', () => {
       ).rejects.toThrow('signature doesnt match the right address');
     }
   );
+});
+
+describe('OneKey WebUSB discovery', () => {
+  const originalNavigator = Object.getOwnPropertyDescriptor(
+    globalThis,
+    'navigator'
+  );
+  afterEach(() => {
+    if (originalNavigator)
+      Object.defineProperty(globalThis, 'navigator', originalNavigator);
+    else Reflect.deleteProperty(globalThis, 'navigator');
+  });
+  function setUSB(usb: any) {
+    Object.defineProperty(globalThis, 'navigator', {
+      configurable: true,
+      value: { usb },
+    });
+    return jest.requireActual(
+      '@/ui/utils/onekey'
+    ) as typeof import('@/ui/utils/onekey');
+  }
+  const device = {
+    vendorId: 0x1209,
+    productId: 0x4f4c,
+    manufacturerName: 'OneKey',
+  };
+
+  it('matches vendor and product and excludes known Trezor devices sharing OneKey USB ids', async () => {
+    const utils = setUSB({
+      getDevices: jest
+        .fn()
+        .mockResolvedValue([
+          { ...device, productId: 0xffff },
+          { ...device, vendorId: 0xffff },
+          { ...device, productId: 0x53c1, manufacturerName: ' Trezor ' },
+          { ...device, productId: 0x53c1, manufacturerName: 'SatoshiLabs' },
+          device,
+        ]),
+    });
+    await expect(utils.getOneKeyDevices()).resolves.toEqual([device]);
+  });
+
+  it('handles missing WebUSB without dereferencing an undefined device list', async () => {
+    const utils = setUSB(undefined);
+    await expect(utils.getOneKeyDevices()).resolves.toEqual([]);
+    await expect(utils.getOneKeyFirstOneKeyDevice()).rejects.toBeInstanceOf(
+      Error
+    );
+  });
+
+  it('reuses a granted device and requests a new device after unplugging', async () => {
+    const usb = {
+      getDevices: jest
+        .fn()
+        .mockResolvedValueOnce([device])
+        .mockResolvedValueOnce([]),
+      requestDevice: jest.fn().mockResolvedValue(device),
+    };
+    const utils = setUSB(usb);
+    await expect(utils.getOneKeyFirstOneKeyDevice()).resolves.toBe(device);
+    expect(usb.requestDevice).not.toHaveBeenCalled();
+    await expect(utils.getOneKeyFirstOneKeyDevice()).resolves.toBe(device);
+    expect(usb.requestDevice).toHaveBeenCalledWith({
+      filters: expect.arrayContaining([
+        expect.objectContaining({ vendorId: 0x1209, productId: 0x4f4c }),
+      ]),
+    });
+  });
+
+  it('rejects a known Trezor selected in the shared-id chooser', async () => {
+    const utils = setUSB({
+      getDevices: jest.fn().mockResolvedValue([]),
+      requestDevice: jest.fn().mockResolvedValue({
+        ...device,
+        productId: 0x53c1,
+        manufacturerName: 'Trezor',
+      }),
+    });
+    await expect(utils.getOneKeyFirstOneKeyDevice()).rejects.toBeInstanceOf(
+      Error
+    );
+  });
+
+  it('preserves NotFoundError so callers can silently handle chooser cancellation', async () => {
+    const cancelled = Object.assign(new Error('No device selected'), {
+      name: 'NotFoundError',
+    });
+    const utils = setUSB({
+      getDevices: jest.fn().mockResolvedValue([]),
+      requestDevice: jest.fn().mockRejectedValue(cancelled),
+    });
+    await expect(utils.getOneKeyFirstOneKeyDevice()).rejects.toBe(cancelled);
+  });
 });

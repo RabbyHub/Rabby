@@ -976,6 +976,9 @@ class ProviderController extends BaseController {
         bindSigningCarrier(errObj, carrier);
         errObj.reportedFromBackground = true;
       }
+      if (keyring.type === 'Onekey Hardware' && e?.code !== undefined) {
+        errObj.code = e.code;
+      }
       errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
 
       throw errObj;

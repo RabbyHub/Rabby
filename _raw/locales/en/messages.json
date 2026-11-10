@@ -5063,7 +5063,11 @@
         "notAllowInBootloaderMode": "Please use in normal mode",
         "deviceCheckPassphraseStateError": "Account does not match the current device unlock address. Please confirm the device and account address are consistent and try again",
         "actionCancel": "Operation cancelled",
-        "deviceNeedsWebHIDPermission": "Device not found or needs WebHID permission"
+        "deviceNeedsWebHIDPermission": "Device not found or needs WebUSB permission",
+        "pinInvalid": "Incorrect PIN. Please try again on your OneKey.",
+        "deviceBusy": "OneKey is busy. Finish or cancel the current operation and try again.",
+        "deviceInterrupted": "OneKey connection was interrupted. Reconnect the device and try again.",
+        "webUSBUnavailable": "WebUSB is unavailable. Please use a browser that supports WebUSB."
       }
     }
   },
