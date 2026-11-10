@@ -435,12 +435,16 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
   if (!context) return;
 
   const deviceModel = context.provider_metadata?.device_model;
-  const diagnosticValue =
-    context.wallet_provider === 'ledger'
-      ? context.provider_code ??
-        context.provider_error_tag ??
-        context.error_category
-      : context.error_category;
+  // Providers whose `provider_code` is a bounded device/SDK code, safe to
+  // group on.
+  const groupsByProviderCode =
+    context.wallet_provider === 'ledger' ||
+    context.wallet_provider === 'trezor';
+  const diagnosticValue = groupsByProviderCode
+    ? context.provider_code ??
+      context.provider_error_tag ??
+      context.error_category
+    : context.error_category;
 
   event.tags = {
     ...event.tags,
@@ -453,7 +457,7 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     sign_outcome: context.outcome,
     error_category: context.error_category,
     duration_bucket: context.duration_bucket,
-    ...(context.wallet_provider === 'ledger' && context.provider_code
+    ...(groupsByProviderCode && context.provider_code
       ? { signing_provider_code: context.provider_code }
       : {}),
     ...(context.wallet_provider === 'ledger' && context.provider_error_tag
