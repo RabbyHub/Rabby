@@ -13,7 +13,9 @@ export interface FeedbackServiceStore {
   screenshotFeedbacks: LocalUserFeedbackItem[];
   /**
    * True once the user unticks the "share my addresses" checkbox in the
-   * screenshot feedback modal. The checkbox is ticked by default.
+   * screenshot feedback modal. The checkbox is ticked by default, unless the
+   * user turned off "Help improve Rabby" (see
+   * WalletController.getScreenshotShareAddress).
    *
    * Replaces the legacy `screenshotShareAddress` key, whose `false` default
    * was persisted for every user and cannot be told apart from an explicit

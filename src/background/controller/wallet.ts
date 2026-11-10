@@ -7102,7 +7102,14 @@ export class WalletController extends BaseController {
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
   removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
   clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
-  getScreenshotShareAddress = feedbackService.getScreenshotShareAddress;
+  /**
+   * Initial state of the "share my addresses" checkbox in screenshot
+   * feedback: ticked by default, but unticked when the user has turned off
+   * "Help improve Rabby" (userDataTrackingOptOut) or unticked it before.
+   */
+  getScreenshotShareAddress = () =>
+    !preferenceService.getUserDataTrackingOptOut() &&
+    feedbackService.getScreenshotShareAddress();
   setScreenshotShareAddress = feedbackService.setScreenshotShareAddress;
   setScreenshotContextMenuVisible =
     feedbackService.setScreenshotContextMenuVisible;
