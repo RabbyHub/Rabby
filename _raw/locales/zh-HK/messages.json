@@ -295,7 +295,8 @@
           "biometricUnlockHint": "使用生物識別在此裝置上解鎖。",
           "currency": "貨幣",
           "searchCurrency": "搜尋貨幣",
-          "dataAnalysis": "資料分析",
+          "helpImproveRabby": "協助改進 Rabby",
+          "helpImproveRabbyDesc": "分享匿名使用數據以協助改進 Rabby。收集的資料不會與你或你的帳戶關聯。",
           "extraFeeProtection": "額外費用保護",
           "extraFeeProtectionDesc": "阻止瀏覽器擴充功能透過簽名請求收取額外手續費"
         },
@@ -2956,7 +2957,11 @@
           }
         },
         "title": "設定密碼",
-        "agree": "我同意<1/> <2>使用條款</2>和<4>私隱政策</4>",
+        "dataCollection": {
+          "title": "協助改進 Rabby",
+          "desc": "分享匿名使用數據以協助改進 Rabby。收集的資料不會與你或你的帳戶關聯。你可以隨時在設定中更改此選項。"
+        },
+        "termsNotice": "繼續即表示你同意<terms>使用條款</terms>並知悉<privacy>私隱政策</privacy>。",
         "desc": "此密碼將用於解鎖錢包和加密資料"
       },
       "successful": {

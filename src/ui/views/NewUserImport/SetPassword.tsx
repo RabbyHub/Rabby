@@ -234,5 +234,11 @@ export const NewUserSetPassword = () => {
     }
   });
 
-  return <PasswordCard onBack={handleBack} onSubmit={handleSubmit} />;
+  return (
+    <PasswordCard
+      onBack={handleBack}
+      onSubmit={handleSubmit}
+      showDataCollectionToggle
+    />
+  );
 };

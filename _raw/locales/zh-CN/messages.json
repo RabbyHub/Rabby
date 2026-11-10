@@ -295,7 +295,8 @@
           "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
           "perpsFloatWidget": "永续合约悬浮窗",
           "biometricUnlockHint": "使用生物识别在此设备上解锁。",
-          "dataAnalysis": "数据分析",
+          "helpImproveRabby": "帮助改进 Rabby",
+          "helpImproveRabbyDesc": "分享匿名使用数据以帮助改进 Rabby。收集的数据不会与你或你的账户关联。",
           "extraFeeProtection": "额外费用保护",
           "extraFeeProtectionDesc": "阻止浏览器插件通过签名请求收取额外手续费"
         },
@@ -2997,7 +2998,11 @@
           }
         },
         "title": "设置密码",
-        "agree": "我同意<1/><2>使用条款</2>和<4>隐私政策</4>",
+        "dataCollection": {
+          "title": "帮助改进 Rabby",
+          "desc": "分享匿名使用数据以帮助改进 Rabby。收集的数据不会与你或你的账户关联。你可以随时在设置中更改此选项。"
+        },
+        "termsNotice": "继续即表示你同意<terms>使用条款</terms>并知悉<privacy>隐私政策</privacy>。",
         "desc": "它将用于解锁钱包和加密数据"
       },
       "successful": {
