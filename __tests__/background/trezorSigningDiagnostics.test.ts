@@ -24,6 +24,8 @@ const signLikeKeyring = async (bridge: TrezorOffscreenBridge) => {
   return response;
 };
 
+let lastBridge: TrezorOffscreenBridge;
+
 const failSigningWith = async (payload: { error: string; code?: string }) => {
   sendMessage.mockImplementation(async ({ action }) =>
     action === TrezorAction.ethereumSignTransaction
@@ -31,6 +33,7 @@ const failSigningWith = async (payload: { error: string; code?: string }) => {
       : {}
   );
   const bridge = new TrezorOffscreenBridge();
+  lastBridge = bridge;
   await bridge.init({} as any);
   const keyring = {
     type: 'Trezor Hardware',
@@ -109,5 +112,28 @@ describe('Trezor signing diagnostics', () => {
       error_category: 'user_cancelled',
       provider_code: 'Method_Interrupted',
     });
+  });
+  it("does not label a later failure with an earlier attempt's code", async () => {
+    const cancelled = await failSigningWith({
+      error: 'Action cancelled by user',
+      code: 'Failure_ActionCancelled',
+    });
+    expect(getSigningContext(cancelled)?.error_category).toBe('user_cancelled');
+
+    // The next attempt fails before reaching the bridge (as in getHdPath).
+    const keyring = {
+      type: 'Trezor Hardware',
+      signingDiagnosticsProvider: 'trezor',
+      bridge: lastBridge,
+    };
+    const error = new Error('Error: Unknown address');
+    await withSigningDiagnostics(keyring, 'transaction', () =>
+      Promise.reject(error)
+    ).catch(() => undefined);
+    expect(getSigningContext(error)).toMatchObject({
+      error_category: 'unknown',
+    });
+    expect(getSigningContext(error)?.provider_code).toBeUndefined();
+    expect(shouldIgnoreSentryError(error)).toBe(false);
   });
 });
