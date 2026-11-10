@@ -353,10 +353,16 @@ browser.runtime.onConnect.addListener((port) => {
       return;
     }
     const pm = new PortMessage(port);
+    let portClosed = false;
+    port.onDisconnect.addListener(() => {
+      portClosed = true;
+    });
     // The port is accepted before the stores are restored; hold its requests
-    // until they are, instead of letting them read an undefined store.
+    // until they are, instead of letting them read an undefined store. Drop
+    // those whose page closed meanwhile: nobody is waiting for their result.
     pm.listen((data) =>
       backgroundReadyGate.run(() => {
+        if (portClosed) throw ethErrors.provider.disconnected();
         if (data?.type) {
           switch (data.type) {
             case 'broadcast':
