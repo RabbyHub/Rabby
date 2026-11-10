@@ -136,4 +136,17 @@ describe('Trezor signing diagnostics', () => {
     expect(getSigningContext(error)?.provider_code).toBeUndefined();
     expect(shouldIgnoreSentryError(error)).toBe(false);
   });
+
+  it('reads a bare Connect cancel, but not "canceled" inside another message', async () => {
+    const run = async (error: Error) => {
+      await withSigningDiagnostics(
+        { type: 'Trezor Hardware', signingDiagnosticsProvider: 'trezor' },
+        'transaction',
+        () => Promise.reject(error)
+      ).catch(() => undefined);
+      return getSigningContext(error)?.error_category;
+    };
+    expect(await run(new Error('Error: Canceled'))).toBe('user_cancelled');
+    expect(await run(new Error('Request Canceled by server'))).toBe('unknown');
+  });
 });

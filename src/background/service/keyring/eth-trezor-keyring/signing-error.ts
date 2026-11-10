@@ -24,18 +24,21 @@ const CATEGORY_BY_CODE: Record<string, SigningErrorCategory> = {
 
 // The keyring keeps only the message, so a failure that arrives without its
 // code is matched on Connect's fixed wording for that code.
-const CODE_BY_MESSAGE: [string, string][] = [
-  ['Action cancelled by user', 'Failure_ActionCancelled'],
-  ['Permissions not granted', 'Method_PermissionsNotGranted'],
-  ['Popup closed', 'Method_Interrupted'],
-  ['Device disconnected', 'Device_Disconnected'],
-  ['Device not found', 'Device_NotFound'],
-  ['Transport is missing', 'Transport_Missing'],
+const CODE_BY_MESSAGE: [RegExp, string][] = [
+  [/Action cancelled by user/, 'Failure_ActionCancelled'],
+  [/Permissions not granted/, 'Method_PermissionsNotGranted'],
+  [/Popup closed/, 'Method_Interrupted'],
+  // Too common a word to match inside other messages; the keyring may
+  // prefix it with "Error: ".
+  [/^(Error: )?Canceled$/, 'Method_Cancel'],
+  [/Device disconnected/, 'Device_Disconnected'],
+  [/Device not found/, 'Device_NotFound'],
+  [/Transport is missing/, 'Transport_Missing'],
 ];
 
 const codeFromMessage = (error: unknown) => {
   const message = error instanceof Error ? error.message : String(error ?? '');
-  return CODE_BY_MESSAGE.find(([text]) => message.includes(text))?.[1];
+  return CODE_BY_MESSAGE.find(([pattern]) => pattern.test(message))?.[1];
 };
 
 export const getTrezorSigningDiagnostics = (
