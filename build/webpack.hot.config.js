@@ -177,6 +177,8 @@ const commonPlugins = [
     'process.env.RABBY_SENTRY_DSN': JSON.stringify(
       process.env.RABBY_SENTRY_DSN
     ),
+    // lets code drop the other manifest's modules at build time
+    'process.env.IS_MANIFEST_MV3': JSON.stringify(IS_MANIFEST_MV3),
   }),
   new CopyPlugin({
     patterns: [
