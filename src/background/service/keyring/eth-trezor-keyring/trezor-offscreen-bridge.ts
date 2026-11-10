@@ -7,6 +7,7 @@ import {
   OffscreenCommunicationTarget,
   TrezorAction,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 import type {
   HardwareSigningMetadata,
@@ -33,9 +34,9 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
     browser.runtime.onMessage.addListener((msg, sender) => {
       if (
-        sender.id !== browser.runtime.id ||
         msg.target !== OffscreenCommunicationTarget.extension ||
-        msg.event !== OffscreenCommunicationEvents.trezorDeviceEvent
+        msg.event !== OffscreenCommunicationEvents.trezorDeviceEvent ||
+        !isPrivilegedOffscreenSender(sender)
       ) {
         return;
       }
