@@ -5,9 +5,12 @@
 export const createReadyGate = () => {
   let isOpen = false;
   let resolveOpened!: () => void;
-  const opened = new Promise<void>((resolve) => {
+  let rejectOpened!: (error: unknown) => void;
+  const opened = new Promise<void>((resolve, reject) => {
     resolveOpened = resolve;
+    rejectOpened = reject;
   });
+  opened.catch(() => undefined); // nothing may be waiting when it fails
   return {
     get isOpen() {
       return isOpen;
@@ -15,6 +18,11 @@ export const createReadyGate = () => {
     open() {
       isOpen = true;
       resolveOpened();
+    },
+    // The stores will never be restored: reject held and later tasks with
+    // `error` instead of leaving their callers waiting forever.
+    fail(error: unknown) {
+      rejectOpened(error);
     },
     // Runs `task` now once open, so a ready background keeps its sync results.
     run<T>(task: () => T): T | Promise<T> {

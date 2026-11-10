@@ -275,12 +275,13 @@ async function restoreAppState() {
 }
 
 restoreAppState().catch((e) => {
-  // A throw here leaves `backgroundReadyGate` closed and `getBackgroundReady`
-  // unregistered, so every UI page waits until its bootstrap timeout.
+  // A throw here leaves `getBackgroundReady` unregistered, so every UI page
+  // waits until its bootstrap timeout; held port requests are rejected.
   console.error('[restoreAppState] failed', e);
   Sentry.captureException(e, {
     tags: { bootstrap_stage: 'restoreAppState' },
   });
+  backgroundReadyGate.fail(ethErrors.provider.disconnected());
 });
 {
   keyringService.on('unlock', () => {
@@ -566,13 +567,18 @@ async function onInstall() {
 }
 
 if (isManifestV3) {
+  // An alarm can wake the worker before the stores are restored.
   browser.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === ALARMS_USER_ENABLE) {
-      startEnableUser();
-    }
-    if (alarm.name === ALARMS_SYNC_DEFAULT_RPC) {
-      RPCService.syncDefaultRPC();
-    }
+    void Promise.resolve(
+      backgroundReadyGate.run(() => {
+        if (alarm.name === ALARMS_USER_ENABLE) {
+          startEnableUser();
+        }
+        if (alarm.name === ALARMS_SYNC_DEFAULT_RPC) {
+          RPCService.syncDefaultRPC();
+        }
+      })
+    ).catch(() => undefined);
   });
 }
 

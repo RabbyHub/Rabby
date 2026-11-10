@@ -34,4 +34,15 @@ describe('createReadyGate', () => {
     gate.open();
     await expect(held).rejects.toThrow('late');
   });
+
+  it('rejects held and later tasks when it fails', async () => {
+    const gate = createReadyGate();
+    const task = jest.fn();
+    const held = gate.run(task);
+    gate.fail(new Error('restore failed'));
+    await expect(held).rejects.toThrow('restore failed');
+    await expect(gate.run(task)).rejects.toThrow('restore failed');
+    expect(task).not.toHaveBeenCalled();
+    expect(gate.isOpen).toBe(false);
+  });
 });
