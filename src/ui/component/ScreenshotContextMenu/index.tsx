@@ -191,7 +191,7 @@ export const ScreenshotContextMenu = () => {
   const [screenshot, setScreenshot] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [description, setDescription] = useState('');
-  const [includeAddress, setIncludeAddress] = useState(false);
+  const [includeAddress, setIncludeAddress] = useState(true);
   const { t } = useTranslation();
 
   const { loading: submitting, run: submitFeedback } = useRequest(
@@ -227,7 +227,7 @@ export const ScreenshotContextMenu = () => {
       return (await wallet.getScreenshotShareAddress()) === true;
     } catch (error) {
       console.error('Failed to read share address preference', error);
-      return false;
+      return true;
     }
   }, [wallet]);
 

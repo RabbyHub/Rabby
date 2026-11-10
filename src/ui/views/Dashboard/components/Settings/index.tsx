@@ -1030,7 +1030,19 @@ const SettingsInner = ({
         {
           leftIcon: RcIconDataAnalysisCC,
           leftIconClassName: 'text-r-neutral-body',
-          content: t('page.dashboard.settings.settings.dataAnalysis'),
+          content: (
+            <span className="flex items-center gap-[4px]">
+              {t('page.dashboard.settings.settings.helpImproveRabby')}
+              <TooltipV6
+                overlayClassName="rectangle"
+                title={t(
+                  'page.dashboard.settings.settings.helpImproveRabbyDesc'
+                )}
+              >
+                <RcIconInfoCC className="w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
+              </TooltipV6>
+            </span>
+          ),
           rightIcon: (
             <Switch
               checked={!userDataTrackingOptOut}

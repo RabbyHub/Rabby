@@ -12,10 +12,14 @@ export type LocalUserFeedbackItem = Pick<UserFeedbackItem, 'id' | 'create_at'>;
 export interface FeedbackServiceStore {
   screenshotFeedbacks: LocalUserFeedbackItem[];
   /**
-   * Last state of the "share my addresses" checkbox in the screenshot
-   * feedback modal. Opt-in: false until the user ticks it.
+   * True once the user unticks the "share my addresses" checkbox in the
+   * screenshot feedback modal. The checkbox is ticked by default.
+   *
+   * Replaces the legacy `screenshotShareAddress` key, whose `false` default
+   * was persisted for every user and cannot be told apart from an explicit
+   * opt-out.
    */
-  screenshotShareAddress?: boolean;
+  screenshotShareAddressOptOut?: boolean;
 }
 
 const LATEST_LOCAL_FEEDBACK_LIMIT = 10;
@@ -31,7 +35,7 @@ const getScreenshotContextMenuTitle = () =>
 class FeedbackService {
   store: FeedbackServiceStore = {
     screenshotFeedbacks: [],
-    screenshotShareAddress: false,
+    screenshotShareAddressOptOut: false,
   };
 
   init = async () => {
@@ -39,7 +43,7 @@ class FeedbackService {
       name: 'feedback',
       template: {
         screenshotFeedbacks: [],
-        screenshotShareAddress: false,
+        screenshotShareAddressOptOut: false,
       },
     });
 
@@ -164,11 +168,11 @@ class FeedbackService {
   };
 
   getScreenshotShareAddress = () => {
-    return this.store.screenshotShareAddress === true;
+    return this.store.screenshotShareAddressOptOut !== true;
   };
 
   setScreenshotShareAddress = (shareAddress: boolean) => {
-    this.store.screenshotShareAddress = shareAddress === true;
+    this.store.screenshotShareAddressOptOut = shareAddress !== true;
   };
 }
 
