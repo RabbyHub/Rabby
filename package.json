@@ -67,6 +67,7 @@
     "@noble/curves": "1.9.7",
     "@noble/hashes": "1.8.0",
     "@onekeyfe/hd-core": "1.2.7",
+    "@onekeyfe/hd-shared": "1.2.7",
     "@onekeyfe/hd-web-sdk": "1.2.7",
     "@opensea/seaport-js": "4.0.5",
     "@rabby-wallet/eth-coinbase-keyring": "0.0.0-beta.8",
@@ -258,7 +259,8 @@
     "postcss@^8.3.5": "8.4.32",
     "rc-tooltip": "5.3.1",
     "rc-picker": "2.6.9",
-    "rc-trigger": "5.3.4"
+    "rc-trigger": "5.3.4",
+    "protobufjs@^6.11.2": "6.11.6"
   },
   "engines": {
     "node": ">=22"
