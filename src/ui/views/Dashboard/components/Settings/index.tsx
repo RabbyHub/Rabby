@@ -621,6 +621,40 @@ type SettingItem = {
   onClick?: (...args: any[]) => any;
 };
 
+/**
+ * Setting title followed by an ⓘ tooltip icon. The icon is kept on the same
+ * line as the last word (or last character for text without spaces, e.g.
+ * CJK), so a title that wraps neither pushes the icon to the right edge nor
+ * leaves it alone on a new line.
+ */
+const TitleWithInfoTooltip = ({
+  title,
+  tooltip,
+}: {
+  title: string;
+  tooltip: React.ReactNode;
+}) => {
+  const text = title.trimEnd();
+  const lastSpace = text.lastIndexOf(' ');
+  const chars = Array.from(text);
+  const head =
+    lastSpace >= 0 ? text.slice(0, lastSpace + 1) : chars.slice(0, -1).join('');
+  const tail =
+    lastSpace >= 0 ? text.slice(lastSpace + 1) : chars.slice(-1).join('');
+
+  return (
+    <span>
+      {head}
+      <span className="whitespace-nowrap">
+        {tail}
+        <TooltipV6 overlayClassName="rectangle" title={tooltip}>
+          <RcIconInfoCC className="inline-block align-middle ml-[4px] w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
+        </TooltipV6>
+      </span>
+    </span>
+  );
+};
+
 const SettingsInner = ({
   visible,
   onClose,
@@ -1000,17 +1034,12 @@ const SettingsInner = ({
           leftIcon: RcIconExtraFeeProtectionCC,
           leftIconClassName: 'text-r-neutral-body',
           content: (
-            <span className="flex items-center gap-[4px]">
-              {t('page.dashboard.settings.settings.extraFeeProtection')}
-              <TooltipV6
-                overlayClassName="rectangle"
-                title={t(
-                  'page.dashboard.settings.settings.extraFeeProtectionDesc'
-                )}
-              >
-                <RcIconInfoCC className="w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
-              </TooltipV6>
-            </span>
+            <TitleWithInfoTooltip
+              title={t('page.dashboard.settings.settings.extraFeeProtection')}
+              tooltip={t(
+                'page.dashboard.settings.settings.extraFeeProtectionDesc'
+              )}
+            />
           ),
           rightIcon: (
             <Switch
@@ -1033,17 +1062,12 @@ const SettingsInner = ({
           leftIcon: RcIconDataAnalysisCC,
           leftIconClassName: 'text-r-neutral-body',
           content: (
-            <span className="flex items-center gap-[4px]">
-              {t('page.dashboard.settings.settings.helpImproveRabby')}
-              <TooltipV6
-                overlayClassName="rectangle"
-                title={t(
-                  'page.dashboard.settings.settings.helpImproveRabbyDesc'
-                )}
-              >
-                <RcIconInfoCC className="w-[14px] h-[14px] text-r-neutral-foot hover:text-r-blue-default" />
-              </TooltipV6>
-            </span>
+            <TitleWithInfoTooltip
+              title={t('page.dashboard.settings.settings.helpImproveRabby')}
+              tooltip={t(
+                'page.dashboard.settings.settings.helpImproveRabbyDesc'
+              )}
+            />
           ),
           rightIcon: (
             <Switch
