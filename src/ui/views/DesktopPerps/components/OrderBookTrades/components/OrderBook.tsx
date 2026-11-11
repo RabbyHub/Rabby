@@ -24,6 +24,11 @@ import {
 import { Trade } from '..';
 import { getPerpTickOptions } from '../../../utils';
 import { formatPerpsCoin, formatPerpsValueKMB } from '../../../utils';
+import {
+  PERPS_DROPDOWN_ALIGN,
+  PERPS_DROPDOWN_MENU_CLASS,
+  PERPS_DROPDOWN_TRIGGER_CLASS,
+} from '../../TradingPanel/components/PerpsDropdown';
 // View modes
 type ViewMode = 'Both' | 'Bids' | 'Asks';
 
@@ -572,83 +577,54 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           <Dropdown
             transitionName=""
             forceRender={true}
+            align={PERPS_DROPDOWN_ALIGN}
             overlay={
               <Menu
-                className="bg-r-neutral-bg1"
+                className={PERPS_DROPDOWN_MENU_CLASS}
                 onClick={(info) =>
                   dispatch.perps.updateQuoteUnit(info.key as 'base' | 'usd')
                 }
               >
-                <Menu.Item
-                  className="text-r-neutral-title1 hover:bg-r-blue-light1"
-                  key="base"
-                >
+                <Menu.Item key="base">
                   {formatPerpsCoin(selectedCoin)}
                 </Menu.Item>
-                <Menu.Item
-                  className="text-r-neutral-title1 hover:bg-r-blue-light1"
-                  key="usd"
-                >
-                  {quoteAsset}
-                </Menu.Item>
+                <Menu.Item key="usd">{quoteAsset}</Menu.Item>
               </Menu>
             }
           >
-            <button
-              type="button"
-              className={clsx(
-                'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
-                'border border-transparent rounded-[6px]',
-                'hover:border-rb-brand-default border border-solid',
-                'text-[12px] leading-[14px] text-rb-neutral-title-1'
-              )}
-            >
+            <button type="button" className={PERPS_DROPDOWN_TRIGGER_CLASS}>
               {quoteUnit === 'base'
                 ? formatPerpsCoin(selectedCoin)
                 : quoteAsset}
-              <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
+              <RcIconArrowDownPerpsCC className="w-[14px] h-[14px] text-rb-neutral-secondary" />
             </button>
           </Dropdown>
           <Dropdown
             forceRender={true}
             transitionName=""
+            align={PERPS_DROPDOWN_ALIGN}
             overlay={
               <Menu
-                className="bg-r-neutral-bg1"
+                className={PERPS_DROPDOWN_MENU_CLASS}
                 onClick={(info) =>
                   setAggregationIndex((info.key as unknown) as number)
                 }
               >
                 {aggregationLevels.map((level, index) => (
-                  <Menu.Item
-                    className="text-r-neutral-title1 hover:bg-r-blue-light1"
-                    key={index}
-                  >
-                    {level.label}
-                  </Menu.Item>
+                  <Menu.Item key={index}>{level.label}</Menu.Item>
                 ))}
               </Menu>
             }
           >
-            <button
-              type="button"
-              className={clsx(
-                'inline-flex items-center justify-between',
-                'px-[8px] py-[8px] flex-1 gap-[6px] h-24',
-                'border border-transparent rounded-[6px]',
-                'hover:border-rb-brand-default border border-solid',
-                'text-[12px] leading-[14px] text-rb-neutral-title-1'
-              )}
-            >
+            <button type="button" className={PERPS_DROPDOWN_TRIGGER_CLASS}>
               {selectedAggregation?.label || ''}
-              <RcIconArrowDownPerpsCC className="text-rb-neutral-secondary" />
+              <RcIconArrowDownPerpsCC className="w-[14px] h-[14px] text-rb-neutral-secondary" />
             </button>
           </Dropdown>
         </div>
       </div>
 
-      <div className="grid grid-cols-10 px-[12px] h-20 text-[11px] text-rb-neutral-secondary shrink-0">
+      <div className="grid grid-cols-10 px-[12px] h-20 text-[12px] text-rb-neutral-secondary shrink-0">
         <span className="col-span-4 text-left">
           {t('page.perpsPro.orderBook.price')} ({quoteAsset})
         </span>

@@ -586,6 +586,97 @@ html.dark {
   }
 }
 
+// ── Tooltips on the Perps pro page (design review 26.11) ──
+// Surface is bg-2 in dark mode, for every tooltip on the page. Same selector
+// shape as the generic dark rule in style/antd-overwrite.less plus the page
+// scope, so it outranks that rule (the block above does not).
+html.dark body.perps-pro-page,
+body.dark.perps-pro-page {
+  .ant-tooltip:not(.disable-ant-overwrite) {
+    .ant-tooltip-inner {
+      background-color: var(--rb-neutral-bg-2);
+    }
+
+    .ant-tooltip-arrow-content {
+      background-color: var(--rb-neutral-bg-2);
+
+      &::before {
+        background: var(--rb-neutral-bg-2);
+      }
+    }
+  }
+}
+
+// Geometry for components/PerpsTooltip. The arrow shows an 8px tip
+// (style/antd-overwrite.less). The global rule already trims the arrow zone to
+// 8px for `top`; do the same on the other sides so the tip touches the popup
+// box and the 3px placement offset is the whole gap to the trigger.
+.ant-tooltip.perps-pro-tooltip {
+  &.ant-tooltip-placement-bottom,
+  &.ant-tooltip-placement-bottomLeft,
+  &.ant-tooltip-placement-bottomRight {
+    padding-top: 8px;
+  }
+
+  &.ant-tooltip-placement-left,
+  &.ant-tooltip-placement-leftTop,
+  &.ant-tooltip-placement-leftBottom {
+    padding-right: 8px;
+  }
+
+  &.ant-tooltip-placement-right,
+  &.ant-tooltip-placement-rightTop,
+  &.ant-tooltip-placement-rightBottom {
+    padding-left: 8px;
+  }
+
+  // PerpsTooltip sets the arrow's `left` to the trigger's center. antd centers
+  // the arrow box on that point only for plain top / bottom; the edge
+  // placements need the same translateX.
+  &.ant-tooltip-placement-topLeft .ant-tooltip-arrow,
+  &.ant-tooltip-placement-topRight .ant-tooltip-arrow {
+    transform: translateY(100%) translateX(-50%);
+  }
+
+  &.ant-tooltip-placement-bottomLeft .ant-tooltip-arrow,
+  &.ant-tooltip-placement-bottomRight .ant-tooltip-arrow {
+    transform: translateY(-100%) translateX(-50%);
+  }
+}
+
+// ── Dropdown menus on the Perps pro page (Figma 165065:93924) ──
+// bg-1 surface with a 1px line border; 28px rows that fill with bg-5 on hover.
+.ant-dropdown-menu.desktop-perps-dropdown-menu {
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--rb-neutral-line);
+  border-radius: 6px;
+  background: var(--rb-neutral-bg-1);
+  box-shadow: 0 16px 12px rgba(0, 0, 0, 0.1);
+
+  .ant-dropdown-menu-item {
+    height: 28px;
+    padding: 0 8px;
+    color: var(--rb-neutral-body);
+    font-size: 12px;
+    font-weight: var(--font-weight-medium, 500);
+    line-height: 28px;
+
+    &:hover,
+    &.ant-dropdown-menu-item-active {
+      background: var(--rb-neutral-bg-5);
+    }
+  }
+
+  // Rows whose label carries its own hover tooltip: the label fills the row so
+  // the tooltip anchors to the row's edge, not to the text.
+  .desktop-perps-dropdown-item-fill {
+    display: block;
+    margin: 0 -8px;
+    padding: 0 8px;
+  }
+}
+
 // The 28x14 pill and its 12px knob already come from `size="small"` plus the
 // height/handle override in style/antd-overwrite.less; pinning the width here
 // only stops the flex row from shrinking it.
