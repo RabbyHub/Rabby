@@ -596,7 +596,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
               {quoteUnit === 'base'
                 ? formatPerpsCoin(selectedCoin)
                 : quoteAsset}
-              <RcIconArrowDownPerpsCC className="w-[14px] h-[14px] text-rb-neutral-secondary" />
+              <RcIconArrowDownPerpsCC
+                viewBox="0 0 10 10"
+                className="w-[14px] h-[14px] text-rb-neutral-secondary"
+              />
             </button>
           </Dropdown>
           <Dropdown
@@ -618,7 +621,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
           >
             <button type="button" className={PERPS_DROPDOWN_TRIGGER_CLASS}>
               {selectedAggregation?.label || ''}
-              <RcIconArrowDownPerpsCC className="w-[14px] h-[14px] text-rb-neutral-secondary" />
+              <RcIconArrowDownPerpsCC
+                viewBox="0 0 10 10"
+                className="w-[14px] h-[14px] text-rb-neutral-secondary"
+              />
             </button>
           </Dropdown>
         </div>

@@ -140,9 +140,15 @@ const MarketRowComponent = memo(
               onClick={(e) => onToggleFavorite(marketItem.name, e)}
             >
               {isFavorited ? (
-                <RcIconStarFilled className="w-[14px] h-[14px] text-r-yellow-default" />
+                <RcIconStarFilled
+                  viewBox="0 0 16 16"
+                  className="w-[14px] h-[14px] text-r-yellow-default"
+                />
               ) : (
-                <RcIconStar className="w-[14px] h-[14px] text-r-neutral-foot" />
+                <RcIconStar
+                  viewBox="0 0 16 16"
+                  className="w-[14px] h-[14px] text-r-neutral-foot"
+                />
               )}
             </div>
             <div className="flex items-center gap-[3px]">
@@ -477,7 +483,10 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       <div className="bg-rb-neutral-bg-1 rounded-[12px] shadow-lg border border-solid border-rb-neutral-line w-[854px] overflow-hidden flex flex-col p-[12px]">
         <SearchInput
           prefix={
-            <RcIconSearch className="w-[14px] h-[14px] text-r-neutral-foot" />
+            <RcIconSearch
+              viewBox="0 0 20 20"
+              className="w-[14px] h-[14px] text-r-neutral-foot"
+            />
           }
           placeholder={t('page.perpsPro.chatArea.searchMarkets')}
           value={searchText}

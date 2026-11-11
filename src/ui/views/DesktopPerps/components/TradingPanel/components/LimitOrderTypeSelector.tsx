@@ -43,7 +43,10 @@ export const LimitOrderTypeSelector: React.FC<LimitOrderTypeSelectorProps> = ({
       >
         <div className={PERPS_DROPDOWN_TRIGGER_CLASS}>
           {OPTIONS.find((opt) => opt.value === value)?.label}
-          <RcIconArrowDownCC className="w-[14px] h-[14px] text-rb-neutral-secondary" />
+          <RcIconArrowDownCC
+            viewBox="0 0 16 16"
+            className="w-[14px] h-[14px] text-rb-neutral-secondary"
+          />
         </div>
       </PerpsDropdown>
     </div>
