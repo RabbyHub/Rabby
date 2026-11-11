@@ -2336,7 +2336,7 @@
       "title": "Köprü",
       "Balance": "Bakiye: ",
       "the-following-bridge-route-are-found": "Bulunan rota",
-      "no-quote-found": "Teklif bulunamadı. Lütfen diğer token çiftlerini deneyin.",
+      "no-quote-found": "Teklif bulunamadı.",
       "gas-x-price": "Gas fiyatı: {{price}} Gwei.",
       "unlimited-allowance": "Sınırsız harcama limiti",
       "actual": "Mevcut:",

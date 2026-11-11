@@ -2565,7 +2565,7 @@
       "title": "跨鏈",
       "insufficient-balance": "餘額不足",
       "Amount": "金額",
-      "no-quote-found": "未找到報價。請嘗試其他代幣對。",
+      "no-quote-found": "未找到報價。",
       "history": "跨鏈記錄",
       "no-transaction-records": "沒有交易記錄",
       "actual": "實際：",

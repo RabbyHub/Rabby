@@ -2600,7 +2600,7 @@
       "From": "从",
       "To": "至",
       "select-chain": "选择链",
-      "no-quote-found": "未找到报价。请尝试其他代币对。",
+      "no-quote-found": "未找到报价。",
       "Select": "选择",
       "Balance": "余额：",
       "Pending": "待处理",

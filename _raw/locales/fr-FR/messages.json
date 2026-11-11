@@ -2770,7 +2770,7 @@
       "actual": "Réel :",
       "detail-tx": "Détails",
       "BridgeTokenPair": "Paire de tokens du bridge",
-      "no-quote-found": "Aucune cotation trouvée. Veuillez essayer d'autres paires de jetons.",
+      "no-quote-found": "Aucune cotation trouvée.",
       "via-bridge": "via {{bridge}}",
       "rabby-fee": "Frais Rabby",
       "slippage-adjusted-refresh-quote": "Slippage ajusté. Actualisez l'itinéraire.",

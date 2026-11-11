@@ -2351,7 +2351,7 @@
       "bridge-cost": "Bridge-Kosten",
       "approve-and-bridge": "Genehmigen und bridgen",
       "estimate": "Schätzung:",
-      "no-quote-found": "Kein Angebot gefunden. Bitte versuchen Sie es mit anderen Token-Paaren.",
+      "no-quote-found": "Kein Angebot gefunden.",
       "completedTip": "Transaktion ist on-chain. Die Daten werden dekodiert, um einen Eintrag zu erstellen",
       "need-to-approve-token-before-bridge": "Vor dem Bridgen muss der Token genehmigt werden.",
       "loss-tips": "Sie verlieren {{usd}}. Versuchen Sie einen anderen Betrag.",
