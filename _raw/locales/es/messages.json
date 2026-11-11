@@ -2351,7 +2351,6 @@
       "price-impact": "Impacto en el precio",
       "enable-it": "Habilitarlo",
       "via-bridge": "a través de {{bridge}}",
-      "recommendFromToken": "Haz el bridge desde <1></1> para obtener una cotización disponible",
       "est-payment": "Pago est.:",
       "aggregator-not-enabled": "No has habilitado este agregador para operar.",
       "no-route-found": "No se encontró ruta",

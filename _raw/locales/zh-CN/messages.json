@@ -2644,7 +2644,6 @@
       "loss-tips": "当前报价预计损失 {{usd}}，请尝试其他金额。",
       "max-tips": "此值通过减去跨链的 Gas 成本来计算。",
       "duration": "{{duration}} 分钟",
-      "recommendFromToken": "从 <1></1> 跨链以获取可用报价",
       "est-receiving": "预计接收：",
       "bridgeDbkBtn": "通过 DBK 官方服务跨链",
       "pendingItem": {

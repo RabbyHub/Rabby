@@ -1133,7 +1133,6 @@
       "est-payment": "Est. Thanh toán:",
       "estimated-value": "≈ {{value}} ",
       "detail-tx": "Chi tiết",
-      "recommendFromToken": "Bridge từ <1></1> cho một báo giá hiện có",
       "bridgeTo": "Cầu nối đến",
       "est-difference": "Chênh lệch ước tính:",
       "aggregator-not-enabled": "Bạn không thể giao dịch qua trình tổng hợp này.",

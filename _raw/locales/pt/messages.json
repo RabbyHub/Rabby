@@ -1146,7 +1146,6 @@
       "approve-x-symbol": "Aprovar {{symbol}}",
       "enable-it": "Ative-o",
       "slippage-adjusted-refresh-quote": "Deslizamento ajustado. Atualize a rota.",
-      "recommendFromToken": "Utilize a ponte a partir de <1></1> para obter uma cotação",
       "est-receiving": "Receção estimada:",
       "tokenPairPlaceholder": "Selecionar Par de Tokens",
       "approve-and-bridge": "Aprovar e usar a ponte",
