@@ -2443,7 +2443,7 @@
       "Balance": "Balance: ",
       "Select": "Select",
       "select-chain": "Select Chain",
-      "no-quote-found": "No quote found. Please try other token pairs.",
+      "no-quote-found": "No quote found.",
       "no-quote": "No Quote",
       "title": "Bridge",
       "history": "Bridge history",
