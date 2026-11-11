@@ -3180,6 +3180,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Buscando endereço...",
       "emptyWhitelist": {
         "desc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas - sem confirmação necessária na próxima vez.",
         "title": "Adicionar endereço à lista de permissões",

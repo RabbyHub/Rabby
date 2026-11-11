@@ -3523,6 +3523,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Recherche de l’adresse...",
       "emptyWhitelist": {
         "title": "Ajouter l'adresse à la liste blanche",
         "desc": "Ajoutez des adresses de confiance à la liste blanche pour effectuer rapidement des transferts sans avoir à les confirmer la prochaine fois.",

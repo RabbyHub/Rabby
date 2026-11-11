@@ -3180,6 +3180,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "アドレスを検索中...",
       "emptyWhitelist": {
         "title": "ホワイトリストにアドレスを追加",
         "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を行います - 次回は確認は必要ありません。",

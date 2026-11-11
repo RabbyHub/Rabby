@@ -3183,6 +3183,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Adres aranıyor...",
       "emptyWhitelist": {
         "title": "Adresi beyaz listeye ekle",
         "desc": "Güvenilir adresleri hızlı transferler için beyaz listeye ekleyin - bir sonraki sefer onay gerekmez",
