@@ -2342,7 +2342,7 @@
       "no-transaction-records": "Sem registros de transações",
       "no-quote": "Sem cotação",
       "getRoutes": "Obter rotas",
-      "no-quote-found": "Nenhuma cotação encontrada. Tente outros pares de tokens.",
+      "no-quote-found": "Nenhuma cotação encontrada.",
       "insufficient-balance": "Saldo insuficiente",
       "completedTip": "Transação na cadeia, decodificando dados para gerar registro",
       "detail-tx": "Detalhe",

@@ -1120,7 +1120,7 @@
       "no-transaction-records": "Không có hồ sơ giao dịch",
       "select-chain": "Chọn Chuỗi",
       "estimate": "Ước tính:",
-      "no-quote-found": "Không tìm thấy báo giá. Vui lòng thử các cặp token khác.",
+      "no-quote-found": "Không tìm thấy báo giá.",
       "gas-fee": "Phí gas: {{gasUsed}}",
       "the-following-bridge-route-are-found": "Tìm thấy lộ trình sau đây",
       "Balance": "Số dư: ",
