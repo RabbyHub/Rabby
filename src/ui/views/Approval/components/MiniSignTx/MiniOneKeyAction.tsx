@@ -5,7 +5,7 @@ import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
-import { EVENTS, HARDWARE_KEYRING_TYPES } from 'consts';
+import { EVENTS } from 'consts';
 import React, { ReactNode, useRef } from 'react';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 
@@ -86,18 +86,15 @@ export const MiniOneKeyAction: React.FC<Props> = ({
   const wallet = useWallet();
   const taskStatusRef = useRef(task.status);
   taskStatusRef.current = task.status;
+  const signingAddressRef = useRef(account.address);
+  signingAddressRef.current = account.address;
 
   React.useEffect(() => {
     const cancel = () => {
       if (taskStatusRef.current === 'active') {
         taskStatusRef.current = 'idle';
         void wallet
-          .requestKeyring(
-            HARDWARE_KEYRING_TYPES.Onekey.type,
-            'cleanUp',
-            null,
-            true
-          )
+          .cancelOneKeySigning(signingAddressRef.current)
           .catch(console.error);
       }
     };
