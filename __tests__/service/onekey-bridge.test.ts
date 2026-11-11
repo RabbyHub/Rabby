@@ -282,7 +282,11 @@ describe('OneKey V1/V2 account import', () => {
   function setup(
     protocol: 'V1' | 'V2',
     passphraseState?: string,
-    status?: { passphraseProtection?: boolean },
+    status?: {
+      passphraseProtection?: boolean;
+      unlocked?: boolean;
+      unlockedAttachPin?: boolean;
+    },
     bridgeOverrides: Record<string, any> = {}
   ) {
     const bridge: any = {
@@ -723,6 +727,78 @@ describe('OneKey V1/V2 account import', () => {
     );
     expect(keyring.passphraseState).toBe('hidden-wallet-token');
   });
+
+  function hiddenWalletSession(passphraseState = 'hidden-wallet-token') {
+    return jest.fn().mockResolvedValue({
+      success: true,
+      payload: {
+        protocol: 'V2',
+        deviceId: 'authoritative-device-id',
+        resumed: false,
+        walletType: 'hidden',
+        passphraseState,
+      },
+    });
+  }
+
+  it('follows the original getPassphraseState flow on an unlocked V2 main wallet', async () => {
+    const openWalletSession = hiddenWalletSession();
+    const { bridge, keyring } = setup(
+      'V2',
+      'hidden-wallet-token',
+      { passphraseProtection: true, unlocked: true, unlockedAttachPin: false },
+      { openWalletSession }
+    );
+    await expect(keyring.unlock()).resolves.toBe('just unlocked');
+    expect(openWalletSession).not.toHaveBeenCalled();
+    expect(bridge.getPassphraseState).toHaveBeenNthCalledWith(
+      1,
+      'usb-path',
+      undefined
+    );
+    expect(keyring.passphraseState).toBe('hidden-wallet-token');
+  });
+
+  it('treats an empty passphrase from the original flow as the standard wallet on V2', async () => {
+    const openWalletSession = hiddenWalletSession();
+    const { keyring } = setup(
+      'V2',
+      'standard-wallet-id',
+      { passphraseProtection: true, unlocked: true, unlockedAttachPin: false },
+      { openWalletSession }
+    );
+    await expect(keyring.unlock()).resolves.toBe('just unlocked');
+    expect(openWalletSession).not.toHaveBeenCalled();
+    expect(keyring.passphraseState).toBeUndefined();
+  });
+
+  it.each([
+    ['locked', { unlocked: false }],
+    [
+      'unlocked with an attach PIN',
+      { unlocked: true, unlockedAttachPin: true },
+    ],
+    ['of unknown lock state', {}],
+  ])(
+    'opens the V2 wallet with select-hidden when the device is %s',
+    async (_label, lockStatus) => {
+      const openWalletSession = hiddenWalletSession();
+      const { bridge, keyring } = setup(
+        'V2',
+        'hidden-wallet-token',
+        { passphraseProtection: true, ...lockStatus },
+        { openWalletSession }
+      );
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(openWalletSession).toHaveBeenCalledWith('usb-path', {
+        mode: 'select-hidden',
+      });
+      expect(bridge.getPassphraseState).not.toHaveBeenCalledWith(
+        'usb-path',
+        undefined
+      );
+    }
+  );
 
   it('stores no passphraseState when openWalletSession selects the standard wallet', async () => {
     const openWalletSession = jest.fn().mockResolvedValue({

@@ -414,16 +414,24 @@ class OneKeyKeyring extends EventEmitter {
             }
             this.deviceId = deviceId;
             this.connectId = connectId;
-            // Protocol V2 (Pro 2): openWalletSession() selects the standard or
-            // hidden wallet explicitly. The deprecated getPassphraseState()
-            // path stays for V1 and for bridges without the newer API.
+            // Follow Rabby's original flow on every device: getPassphraseState()
+            // resumes the wallet the device already has open and otherwise asks
+            // for the passphrase on the device. A Pro 2 (Protocol V2) uses
+            // openWalletSession() only where that call cannot: passphrase off
+            // (standard wallet), and a locked device or an attach-PIN session
+            // (the device must accept any PIN).
+            const deviceStatus = state.payload.status;
             const passphraseProtectionOff =
-              state.payload.status?.passphraseProtection === false;
+              deviceStatus?.passphraseProtection === false;
+            const mainWalletUnlocked =
+              deviceStatus?.unlocked === true &&
+              deviceStatus?.unlockedAttachPin === false;
             let passphraseState: string | undefined;
             let useLegacyWalletSession = true;
             if (
               state.payload.protocol === 'V2' &&
-              this.bridge.openWalletSession
+              this.bridge.openWalletSession &&
+              (passphraseProtectionOff || !mainWalletUnlocked)
             ) {
               let mode: 'standard' | 'select-hidden' = passphraseProtectionOff
                 ? 'standard'
