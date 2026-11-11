@@ -774,6 +774,10 @@ describe('OneKey V1/V2 account import', () => {
         'usb-path',
         undefined
       );
+      expect(bridge.getPassphraseState).toHaveBeenCalledTimes(2);
+      expect(bridge.getPassphraseState).toHaveBeenNthCalledWith(2, 'usb-path', {
+        useEmptyPassphrase: true,
+      });
       expect(keyring.passphraseState).toBe('hidden-wallet-token');
     }
   );
@@ -907,15 +911,37 @@ describe('OneKey V1/V2 account import', () => {
         'authoritative-device-id',
         expect.objectContaining({ path: "m/44'/60'/0'/0", passphraseState })
       );
-      // This existing standard-identity probe cannot request a passphrase.
-      expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
-      expect(bridge.getPassphraseState).toHaveBeenCalledWith('usb-path', {
-        useEmptyPassphrase: true,
-      });
+      expect(bridge.getPassphraseState).not.toHaveBeenCalled();
       expect(unlock).not.toHaveBeenCalled();
       expect(initSession).not.toHaveBeenCalled();
       expect(forceWalletSelection).not.toHaveBeenCalled();
       expect(eventBus.emit).not.toHaveBeenCalled();
+    }
+  );
+
+  it.each(['pro2', 'neo'] as const)(
+    'keeps the attach-PIN V2 %s session without a standard-wallet probe in the original flow',
+    async (deviceType) => {
+      const passphraseState = 'attach-pin-session-state';
+      const { bridge, keyring } = setup(
+        'V2',
+        passphraseState,
+        { passphraseProtection: true, unlocked: true, unlockedAttachPin: true },
+        {},
+        deviceType
+      );
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
+      expect(bridge.getPassphraseState).toHaveBeenCalledWith(
+        'usb-path',
+        undefined
+      );
+      expect(keyring.passphraseState).toBe(passphraseState);
+      expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+        'usb-path',
+        'authoritative-device-id',
+        expect.objectContaining({ passphraseState, useEmptyPassphrase: false })
+      );
     }
   );
 

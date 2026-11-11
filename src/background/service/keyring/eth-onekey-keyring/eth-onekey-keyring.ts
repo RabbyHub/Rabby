@@ -466,6 +466,7 @@ class OneKeyKeyring extends EventEmitter {
                 passphraseState = await this._resolvePassphraseStateForImport({
                   connectId,
                   protocol: state.payload.protocol,
+                  unlockedAttachPin: deviceStatus?.unlockedAttachPin,
                   walletType: walletSession.payload.walletType,
                   passphraseState: walletSession.payload.passphraseState,
                   cancellationVersion,
@@ -518,6 +519,7 @@ class OneKeyKeyring extends EventEmitter {
               passphraseState = await this._resolvePassphraseStateForImport({
                 connectId,
                 protocol: state.payload.protocol,
+                unlockedAttachPin: deviceStatus?.unlockedAttachPin,
                 passphraseState: standardWallet
                   ? undefined
                   : currentPassphraseState.payload || undefined,
@@ -1401,18 +1403,21 @@ class OneKeyKeyring extends EventEmitter {
    * and the passphraseState is the standard wallet's btc_test_address. Compare
    * that identity with a useEmptyPassphrase probe and, if they match, treat the
    * session as the standard wallet so the id is never persisted. The probe runs
-   * only for an ambiguous V2 session (hidden type + non-empty state). A failed
-   * probe keeps the hidden id so import can still proceed, unless cancelled.
+   * only for an ambiguous V2 session (hidden type + non-empty state), excluding
+   * attach-PIN sessions where it would request an extra Main PIN. A failed probe
+   * keeps the hidden id so import can still proceed, unless cancelled.
    */
   private async _resolvePassphraseStateForImport({
     connectId,
     protocol,
+    unlockedAttachPin,
     walletType,
     passphraseState,
     cancellationVersion,
   }: {
     connectId: string;
     protocol?: string;
+    unlockedAttachPin?: boolean | null;
     walletType?: 'standard' | 'hidden';
     passphraseState?: string | null;
     cancellationVersion: number;
@@ -1424,7 +1429,7 @@ class OneKeyKeyring extends EventEmitter {
     if (this._isEmptyPassphrase(imported)) {
       return undefined;
     }
-    if (protocol !== 'V2') {
+    if (protocol !== 'V2' || unlockedAttachPin === true) {
       return imported;
     }
     const standardIdentity = await this._getStandardWalletIdentity(
