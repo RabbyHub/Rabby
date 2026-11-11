@@ -2354,7 +2354,6 @@
       "duration": "{{duration}} 分",
       "price-expired-refresh-route": "価格の有効期限が切れました。ルートを更新してください。",
       "aggregator-not-enabled": "このアグリゲーターでは取引できません。",
-      "recommendFromToken": "<1></1> からのブリッジの見積もりを取得",
       "getRoutes": "ルートを取得",
       "via-bridge": "{{bridge}} 経由",
       "need-to-approve-token-before-bridge": "ブリッジする前にトークンを承認する必要があります",

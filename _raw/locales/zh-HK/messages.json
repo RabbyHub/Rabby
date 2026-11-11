@@ -2597,7 +2597,6 @@
       "est-payment": "預計付款：",
       "max-tips": "此數值是透過扣除跨鏈的 Gas 費用計算得出。",
       "via-bridge": "透過 {{bridge}}",
-      "recommendFromToken": "從 <1></1> 跨鏈以取得可用報價",
       "pendingTip": "交易已提交。如果交易長時間處於待處理狀態，可嘗試在設定中清除待處理交易。",
       "approve-and-bridge": "授權並跨鏈",
       "loss-tips": "目前報價預計損失 {{usd}}，請嘗試其他金額。",

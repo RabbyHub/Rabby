@@ -2367,7 +2367,6 @@
       "est-payment": "Pagamento est.:",
       "via-bridge": "via {{bridge}}",
       "price-impact": "Impacto no Preço",
-      "recommendFromToken": "Faça uma ponte de <1></1> para uma cotação disponível",
       "slippage-adjusted-refresh-quote": "Deslizamento ajustado. Atualizar rota.",
       "aggregator-not-enabled": "Este agregador não está habilitado para negociação por você.",
       "unlimited-allowance": "Permissão ilimitada",

@@ -2493,7 +2493,6 @@
       "no-route-found": "No route found",
       "aggregator-not-enabled": "This aggregator is not enabled to trade by you.",
       "enable-it": "Enable it",
-      "recommendFromToken": "Bridge from <1></1> for an available quote",
       "est-payment": "Est. Payment:",
       "est-receiving": "Est. Receiving:",
       "est-difference": "Est. Difference:",
