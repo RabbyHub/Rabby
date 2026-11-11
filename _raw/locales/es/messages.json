@@ -3184,6 +3184,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Buscando dirección...",
       "emptyWhitelist": {
         "title": "Agregar dirección a la lista blanca",
         "addNow": "Agregar ahora",

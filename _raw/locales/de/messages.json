@@ -3184,6 +3184,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Adresse wird gesucht...",
       "emptyWhitelist": {
         "addNow": "Jetzt hinzufügen",
         "title": "Adresse zur Whitelist hinzufügen",

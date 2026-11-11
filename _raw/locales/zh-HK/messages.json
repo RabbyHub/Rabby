@@ -3231,6 +3231,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "正在查詢地址...",
       "emptyWhitelist": {
         "title": "將地址新增到白名單",
         "desc": "將可信地址新增至白名單，即可快速轉賬；下次無需再次確認。",

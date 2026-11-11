@@ -3231,6 +3231,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "正在查询地址...",
       "emptyWhitelist": {
         "title": "将地址添加到白名单",
         "desc": "将可信地址添加到白名单，即可快速转账；下次无需再次确认。",

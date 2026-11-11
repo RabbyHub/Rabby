@@ -3181,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Đang tìm địa chỉ...",
       "emptyWhitelist": {
         "title": "Thêm địa chỉ vào danh sách trắng",
         "desc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh - không cần xác nhận lần sau.",
