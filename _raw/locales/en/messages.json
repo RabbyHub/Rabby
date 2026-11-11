@@ -5062,6 +5062,7 @@
         "thisMethodNeedUpgradeFirmware": "This feature requires firmware upgrade, please upgrade firmware in OneKey app",
         "notAllowInBootloaderMode": "Please use in normal mode",
         "deviceCheckPassphraseStateError": "Account does not match the current device unlock address. Please confirm the device and account address are consistent and try again",
+        "deviceNotOpenedPassphrase": "Passphrase is turned off on the device. Turn it on, or re-import this wallet.",
         "actionCancel": "Operation cancelled",
         "deviceNeedsWebHIDPermission": "Device not found or needs WebUSB permission",
         "pinInvalid": "Incorrect PIN. Please try again on your OneKey.",

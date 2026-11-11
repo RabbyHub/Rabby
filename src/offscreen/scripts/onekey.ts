@@ -21,10 +21,14 @@ export function initOneKey() {
         action: OneKeyAction;
         params: any[];
       },
-      _sender,
+      sender,
       sendResponse
     ) => {
-      if (msg.target !== OffscreenCommunicationTarget.onekeyOffscreen) {
+      if (
+        sender.id !== chrome.runtime.id ||
+        sender.tab ||
+        msg.target !== OffscreenCommunicationTarget.onekeyOffscreen
+      ) {
         return;
       }
 

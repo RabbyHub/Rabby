@@ -5054,6 +5054,7 @@
         "thisMethodNeedUpgradeFirmware": "使用该功能需要升级固件，请在 OneKey 应用中升级固件",
         "notAllowInBootloaderMode": "请在正常模式下使用",
         "deviceCheckPassphraseStateError": "账户与当前设备解锁地址不匹配，请确认设备与账户地址一致后重试",
+        "deviceNotOpenedPassphrase": "设备未开启 Passphrase。请在设备上开启，或重新导入该钱包。",
         "actionCancel": "操作已取消",
         "deviceNeedsWebHIDPermission": "未找到设备或需要 WebUSB 权限",
         "pinInvalid": "PIN 码错误，请在 OneKey 上重试。",

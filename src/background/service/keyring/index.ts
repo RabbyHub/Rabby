@@ -505,6 +505,13 @@ export class KeyringService extends EventEmitter {
     // release all transport before lock wallet
     this.keyrings.forEach((keyring) => {
       if (keyring.cleanUp) {
+        if (keyring.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+          // Locking must stop in-flight OneKey work (unlock, 113 recovery,
+          // signing) even when an approval owns the signing.
+          void Promise.resolve(keyring.cancelPendingWork()).catch(
+            console.error
+          );
+        }
         keyring.cleanUp();
       }
     });
