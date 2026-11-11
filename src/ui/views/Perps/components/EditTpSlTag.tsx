@@ -5,6 +5,8 @@ import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { ReactComponent as RcIconEdit } from 'ui/assets/perps/IconEditCC.svg';
 import { ReactComponent as RcIconDelete } from 'ui/assets/perps/IconTagCloseCC.svg';
 import { ReactComponent as RcIconClose } from 'ui/assets/perps/icon-close-cc.svg';
+import { ReactComponent as RcIconTpSlEdit } from 'ui/assets/perps/IconTpSlEditCC.svg';
+import { ReactComponent as RcIconTpSlCancel } from 'ui/assets/perps/IconTpSlCancelCC.svg';
 import clsx from 'clsx';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
@@ -33,6 +35,11 @@ interface EditTpSlTagProps {
   activeAssetCtx?: WsActiveAssetCtx['ctx'] | null;
   currentAssetCtx?: MarketData;
   type: 'openPosition' | 'hasPosition';
+  /** `position`: the detail page's TP/SL card pill; the editor modal is shared. */
+  variant?: 'position';
+  /** Shown under the price once set; position variant only. */
+  estimatedPnl?: number | null;
+  quoteAsset?: string;
   handleSetAutoClose: (price: string) => Promise<void>;
   handleCancelAutoClose: () => Promise<void>;
 }
@@ -58,6 +65,9 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
   szDecimals,
   actionType,
   type,
+  variant,
+  estimatedPnl,
+  quoteAsset = 'USDC',
   activeAssetCtx,
   currentAssetCtx,
   handleSetAutoClose,
@@ -252,50 +262,105 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     }
   });
 
+  const handleTagClick = useMemoizedFn(async () => {
+    await handleActionApproveStatus?.();
+    if (hasPrice) {
+      await handleCancelAutoClose();
+      return;
+    }
+
+    if (disableEdit) {
+      message.error({
+        // className: 'toast-message-2025-center',
+        duration: 1.5,
+        content: t('page.perpsDetail.PerpsAutoCloseModal.noPosition'),
+      });
+      return;
+    }
+    setModalVisible(true);
+  });
+
   return (
     <>
-      <div
-        className={clsx(
-          'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer',
-          disableEdit && 'opacity-50 cursor-not-allowed'
-        )}
-        onClick={async () => {
-          await handleActionApproveStatus?.();
-          if (hasPrice) {
-            await handleCancelAutoClose();
-            return;
-          }
-
-          if (disableEdit) {
-            message.error({
-              // className: 'toast-message-2025-center',
-              duration: 1.5,
-              content: t('page.perpsDetail.PerpsAutoCloseModal.noPosition'),
-            });
-            return;
-          }
-          setModalVisible(true);
-        }}
-      >
-        <span
+      {variant === 'position' ? (
+        // Once set, only the cancel icon is interactive; the pill itself is
+        // read-only so a stray click cannot cancel the order.
+        <div
           className={clsx(
-            'text-14 font-bold leading-[18px]',
-            disableEdit ? 'text-r-blue-disable' : 'text-r-blue-default'
+            'inline-flex items-center justify-end gap-[5px] pl-12 pr-6 rounded-[10px]',
+            'bg-rb-neutral-bg-5/50 border border-solid border-transparent',
+            hasPrice
+              ? 'h-[40px]'
+              : 'h-[20px] cursor-pointer hover:border-rabby-blue-default',
+            disableEdit && !hasPrice && 'opacity-50 cursor-not-allowed'
           )}
+          onClick={hasPrice ? undefined : handleTagClick}
         >
-          {hasPrice ? `$${splitNumberByStep(initTpOrSlPrice)}` : '--'}
-        </span>
-        {hasPrice ? (
-          <RcIconDelete className={clsx('w-16 h-16', 'text-r-neutral-foot')} />
-        ) : (
-          <RcIconEdit
+          {hasPrice ? (
+            <div className="flex flex-col items-end gap-2">
+              <span className="text-13 leading-[16px] font-medium text-r-neutral-title-1 whitespace-nowrap">
+                {splitNumberByStep(initTpOrSlPrice)} {quoteAsset}
+              </span>
+              {estimatedPnl != null && (
+                <span className="text-12 leading-[16px] font-medium text-r-neutral-foot whitespace-nowrap">
+                  {t('page.perpsDetail.simpleAccount.estimatedPnl')}{' '}
+                  <span
+                    className={
+                      estimatedPnl >= 0
+                        ? 'text-r-green-default'
+                        : 'text-r-red-default'
+                    }
+                  >
+                    {estimatedPnl >= 0 ? '+' : '-'}
+                    {formatUsdValue(Math.abs(estimatedPnl))}
+                  </span>
+                </span>
+              )}
+            </div>
+          ) : (
+            <span className="text-14 leading-[18px] font-bold text-r-neutral-foot">
+              -
+            </span>
+          )}
+          {hasPrice ? (
+            <RcIconTpSlCancel
+              className="w-16 h-16 text-rb-neutral-secondary cursor-pointer hover:text-r-blue-default"
+              onClick={handleTagClick}
+            />
+          ) : (
+            <RcIconTpSlEdit className="w-16 h-16 text-r-neutral-foot" />
+          )}
+        </div>
+      ) : (
+        <div
+          className={clsx(
+            'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer',
+            disableEdit && 'opacity-50 cursor-not-allowed'
+          )}
+          onClick={handleTagClick}
+        >
+          <span
             className={clsx(
-              'w-16 h-16',
+              'text-14 font-bold leading-[18px]',
               disableEdit ? 'text-r-blue-disable' : 'text-r-blue-default'
             )}
-          />
-        )}
-      </div>
+          >
+            {hasPrice ? `$${splitNumberByStep(initTpOrSlPrice)}` : '--'}
+          </span>
+          {hasPrice ? (
+            <RcIconDelete
+              className={clsx('w-16 h-16', 'text-r-neutral-foot')}
+            />
+          ) : (
+            <RcIconEdit
+              className={clsx(
+                'w-16 h-16',
+                disableEdit ? 'text-r-blue-disable' : 'text-r-blue-default'
+              )}
+            />
+          )}
+        </div>
+      )}
 
       <Modal
         visible={modalVisible}

@@ -2049,7 +2049,19 @@
         "stopLossTipsShortLiquidation": "Price is higher than the liq.price ({{price}})",
         "cancel": "Cancel"
       },
-      "needDepositFirst": "You need to deposit funds first."
+      "needDepositFirst": "You need to deposit funds first.",
+      "simpleAccount": {
+        "margin": "Margin",
+        "averageEntry": "Avg. Entry",
+        "estimatedLiquidationPrice": "Est. Liq. Price",
+        "estimatedLiquidationDistance": "Est. Liq. Distance",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Take Profit Price",
+        "stopLossPrice": "Stop Loss Price",
+        "funding": "Funding",
+        "nextFundingRate": "Next Funding Rate",
+        "estimatedPnl": "Est.PNL"
+      }
     },
     "sendPoly": {
       "title": "Send to",

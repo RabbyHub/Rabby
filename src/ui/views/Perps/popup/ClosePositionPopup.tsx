@@ -20,13 +20,14 @@ import { EditLimitPriceTag } from '../components/EditLimitPriceTag';
 import { useMarketSlippage } from '../hooks/useMarketSlippage';
 import { isMarketableLimit } from '../limitOrderUtils';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
+import { closeQuantitySummary } from '../positionDisplay';
 
 interface ClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   visible: boolean;
   coin: string;
   direction: 'Long' | 'Short';
   positionSize: string;
-  marginUsed: number;
+  quoteAsset?: string;
   markPrice: number;
   entryPrice: number;
   szDecimals: number;
@@ -47,7 +48,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
   coin,
   direction,
   positionSize,
-  marginUsed,
+  quoteAsset = 'USDC',
   markPrice,
   entryPrice,
   szDecimals,
@@ -178,10 +179,17 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
 
   const confirmDisabled = !isValidClosePercent || (isLimit && !hasLimitPx);
 
+  const quantity = closeQuantitySummary(
+    positionSize,
+    closePercent,
+    szDecimals,
+    markPrice
+  );
+
   return (
     <Popup
       placement="bottom"
-      height={478}
+      height="fit-content"
       isSupportDarkMode
       // Drops the global 1.5px top border on .ant-drawer-content.
       className="borderless"
@@ -204,33 +212,30 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
         <div className="flex-1 px-20 overflow-y-auto pb-[80px]">
           {/* Amount Section */}
           <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-12">
-            <div className="flex justify-between items-center mb-12">
-              <div className="text-[17px] font-bold text-r-neutral-title-1 leading-[20px]">
-                {t('page.perpsDetail.PerpsClosePositionPopup.amount')}
-              </div>
+            <div className="text-[17px] font-bold text-r-neutral-title-1 leading-[20px]">
+              {t('page.perpsDetail.PerpsClosePositionPopup.amount')}
             </div>
-            <div className="flex justify-between items-center h-[33px]">
-              <div className="flex items-end gap-4">
-                <span className="text-20 font-semibold text-r-neutral-title-1 leading-[24px]">
-                  ${splitNumberByStep(marginUsed.toFixed(2))}
-                </span>
-                <span className="text-12 font-normal text-r-neutral-foot leading-[14px] py-[2px]">
-                  {t('page.perpsDetail.PerpsClosePositionPopup.total')}
-                </span>
-              </div>
-              <span className="text-28 font-bold text-r-blue-default">
+            <div className="mt-12 flex flex-col gap-4">
+              <div className="text-28 font-bold leading-[33px] text-r-blue-default">
                 {closePercent}%
-              </span>
-            </div>
-            {/* Only takes vertical space once the warning actually shows. */}
-            {!isValidClosePercent && (
-              <div className="mt-8 text-14 font-medium text-r-red-default">
-                {t('page.perpsDetail.PerpsClosePositionPopup.minimumWarning', {
-                  percent: minClosePercent,
-                })}{' '}
-                (${PERPS_MINI_USD_VALUE})
               </div>
-            )}
+              <div className="text-13 font-medium leading-[18px] text-r-neutral-foot">
+                {splitNumberByStep(quantity.notional)} {quoteAsset} ={' '}
+                {quantity.quantity} {formatPerpsCoin(coin)}
+              </div>
+              {/* Only takes vertical space once the warning actually shows. */}
+              {!isValidClosePercent && (
+                <div className="text-14 font-medium leading-[18px] text-r-red-default">
+                  {t(
+                    'page.perpsDetail.PerpsClosePositionPopup.minimumWarning',
+                    {
+                      percent: minClosePercent,
+                    }
+                  )}{' '}
+                  (${PERPS_MINI_USD_VALUE})
+                </div>
+              )}
+            </div>
             <div className="mt-12">
               <PerpsSlider
                 value={closePercent}
@@ -240,15 +245,15 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
           </div>
 
-          {/* PNL Card */}
-          <div className="bg-r-neutral-card1 rounded-[8px] p-16 mb-12">
-            <div className="flex flex-col gap-12">
-              <div className="flex justify-between items-center">
-                <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
+          {/* Order Card */}
+          <div className="bg-r-neutral-card1 rounded-[8px] py-8 mb-12">
+            <div className="flex flex-col">
+              <div className="flex justify-between items-center px-16 py-8">
+                <span className="text-13 font-medium text-r-neutral-foot leading-[18px]">
                   {t('page.perpsDetail.PerpsOpenPositionPopup.orderType')}
                 </span>
                 <div
-                  className="flex items-center gap-4 text-14 font-medium text-r-blue-default cursor-pointer"
+                  className="flex items-center gap-4 text-13 font-medium leading-[16px] text-r-blue-default cursor-pointer"
                   onClick={() => switchOrderType(isLimit ? 'market' : 'limit')}
                 >
                   {isLimit
@@ -262,8 +267,8 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 </div>
               </div>
               {isLimit && (
-                <div className="flex justify-between items-center">
-                  <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
+                <div className="flex justify-between items-center px-16 py-8">
+                  <span className="text-13 font-medium text-r-neutral-foot leading-[18px]">
                     {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
                   </span>
                   <EditLimitPriceTag
@@ -276,25 +281,13 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                   />
                 </div>
               )}
-              <div className="h-[0.5px] bg-r-neutral-line w-full" />
-              <div className="flex justify-between items-center">
-                <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
-                  {t('page.perpsDetail.PerpsClosePositionPopup.receive')}
-                </span>
-                <span className="text-17 font-medium text-r-neutral-title-1 leading-[22px]">
-                  +$
-                  {splitNumberByStep(
-                    ((marginUsed * closePercent) / 100).toFixed(2)
-                  )}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-14 font-medium text-rb-neutral-body leading-[18px]">
+              <div className="flex justify-between items-center px-16 py-8">
+                <span className="text-14 font-medium text-r-neutral-foot leading-[18px]">
                   {t('page.perpsDetail.PerpsClosePositionPopup.closedPnl')}
                 </span>
                 <span
                   className={clsx(
-                    'text-17 font-medium leading-[22px]',
+                    'text-13 font-medium leading-[18px]',
                     closedPnl >= 0
                       ? 'text-r-green-default'
                       : 'text-r-red-default'
@@ -313,8 +306,9 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 }
                 slippage={slippage}
                 depthInsufficient={depthInsufficient}
-                labelClassName="text-14 font-medium text-rb-neutral-body leading-[18px]"
-                valueClassName="text-17 font-medium leading-[22px]"
+                rowClassName="px-16 py-8"
+                labelClassName="text-14 font-medium text-r-neutral-foot leading-[18px]"
+                valueClassName="text-13 font-medium leading-[18px]"
               />
             </div>
           </div>
