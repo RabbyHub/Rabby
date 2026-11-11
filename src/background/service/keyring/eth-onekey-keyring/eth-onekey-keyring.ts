@@ -1432,6 +1432,26 @@ class OneKeyKeyring extends EventEmitter {
     if (protocol !== 'V2' || unlockedAttachPin === true) {
       return imported;
     }
+    try {
+      const state = await this.bridge.getDeviceState(connectId);
+      if (cancellationVersion !== this.cancellationVersion) {
+        throw new Error('OneKey signing cancelled');
+      }
+      if (!state.success && isDeviceCancelledError(state.payload)) {
+        throw toError(state.payload);
+      }
+      if (state.success && state.payload.status?.unlockedAttachPin === true) {
+        return imported;
+      }
+    } catch (e) {
+      if (cancellationVersion !== this.cancellationVersion) {
+        throw new Error('OneKey signing cancelled');
+      }
+      if (isDeviceCancelledError(e)) {
+        throw e;
+      }
+      // Status refresh is best-effort; fall back to the existing probe on failure.
+    }
     const standardIdentity = await this._getStandardWalletIdentity(
       connectId,
       cancellationVersion

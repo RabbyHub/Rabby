@@ -778,6 +778,7 @@ describe('OneKey V1/V2 account import', () => {
       expect(bridge.getPassphraseState).toHaveBeenNthCalledWith(2, 'usb-path', {
         useEmptyPassphrase: true,
       });
+      expect(bridge.getDeviceState).toHaveBeenCalledTimes(2);
       expect(keyring.passphraseState).toBe('hidden-wallet-token');
     }
   );
@@ -931,11 +932,65 @@ describe('OneKey V1/V2 account import', () => {
         deviceType
       );
       await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(bridge.getDeviceState).toHaveBeenCalledTimes(1);
       expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
       expect(bridge.getPassphraseState).toHaveBeenCalledWith(
         'usb-path',
         undefined
       );
+      expect(keyring.passphraseState).toBe(passphraseState);
+      expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+        'usb-path',
+        'authoritative-device-id',
+        expect.objectContaining({ passphraseState, useEmptyPassphrase: false })
+      );
+    }
+  );
+
+  it.each([
+    ['pro2', true],
+    ['neo', true],
+    ['pro2', false],
+    ['neo', false],
+  ] as const)(
+    'refreshes the V2 %s status after select-hidden with unlockedAttachPin=%s',
+    async (deviceType, unlockedAttachPin) => {
+      const passphraseState = 'hidden-session-state';
+      const openWalletSession = hiddenWalletSession(passphraseState);
+      const { bridge, keyring } = setup(
+        'V2',
+        undefined,
+        { passphraseProtection: true, unlocked: false },
+        { openWalletSession },
+        deviceType
+      );
+      openWalletSession.mockImplementationOnce(async () => {
+        bridge.getDeviceState.mockResolvedValue({
+          success: true,
+          payload: {
+            status: { unlocked: true, unlockedAttachPin },
+          },
+        });
+        return {
+          success: true,
+          payload: { walletType: 'hidden', passphraseState },
+        };
+      });
+
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(openWalletSession).toHaveBeenCalledWith('usb-path', {
+        mode: 'select-hidden',
+      });
+      expect(bridge.getDeviceState).toHaveBeenCalledTimes(2);
+      expect(bridge.getDeviceState).toHaveBeenNthCalledWith(2, 'usb-path');
+      if (unlockedAttachPin) {
+        expect(bridge.getPassphraseState).not.toHaveBeenCalled();
+      } else {
+        expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
+        expect(bridge.getPassphraseState).toHaveBeenCalledWith('usb-path', {
+          useEmptyPassphrase: true,
+        });
+      }
       expect(keyring.passphraseState).toBe(passphraseState);
       expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
         'usb-path',
@@ -1132,63 +1187,114 @@ describe('OneKey V1/V2 account import', () => {
     );
   });
 
-  it('keeps the hidden wallet when the standard-identity probe fails', async () => {
-    const openWalletSession = jest.fn().mockResolvedValue({
-      success: true,
-      payload: {
-        protocol: 'V2',
-        deviceId: 'authoritative-device-id',
-        resumed: false,
-        walletType: 'hidden',
-        passphraseState: 'hidden-wallet-token',
-      },
-    });
-    const { bridge, keyring } = setup(
-      'V2',
-      'hidden-wallet-token',
-      { passphraseProtection: true },
-      { openWalletSession }
-    );
-    bridge.getPassphraseState.mockRejectedValueOnce(new Error('probe failed'));
-    await expect(keyring.unlock()).resolves.toBe('just unlocked');
-    expect(keyring.passphraseState).toBe('hidden-wallet-token');
-  });
+  it.each(['success', 'response failure', 'throw'])(
+    'keeps the hidden wallet when the standard-identity probe fails after status refresh %s',
+    async (refreshResult) => {
+      const openWalletSession = jest.fn().mockResolvedValue({
+        success: true,
+        payload: {
+          protocol: 'V2',
+          deviceId: 'authoritative-device-id',
+          resumed: false,
+          walletType: 'hidden',
+          passphraseState: 'hidden-wallet-token',
+        },
+      });
+      const { bridge, keyring } = setup(
+        'V2',
+        'hidden-wallet-token',
+        { passphraseProtection: true },
+        { openWalletSession }
+      );
+      if (refreshResult !== 'success') {
+        openWalletSession.mockImplementationOnce(async () => {
+          if (refreshResult === 'throw') {
+            bridge.getDeviceState.mockRejectedValue(
+              new Error('refresh failed')
+            );
+          } else {
+            bridge.getDeviceState.mockResolvedValue({
+              success: false,
+              payload: { error: 'refresh failed' },
+            });
+          }
+          return {
+            success: true,
+            payload: {
+              walletType: 'hidden',
+              passphraseState: 'hidden-wallet-token',
+            },
+          };
+        });
+      }
+      bridge.getPassphraseState.mockRejectedValueOnce(
+        new Error('probe failed')
+      );
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(bridge.getDeviceState).toHaveBeenCalledTimes(2);
+      expect(bridge.getPassphraseState).toHaveBeenCalledWith('usb-path', {
+        useEmptyPassphrase: true,
+      });
+      expect(keyring.passphraseState).toBe('hidden-wallet-token');
+    }
+  );
 
-  it.each(['response', 'throw', 'cancel'])(
-    'rejects import when the standard-identity probe is cancelled via %s',
-    async (kind) => {
-      const { bridge, keyring } = setup('V2', undefined, undefined, {
-        openWalletSession: jest.fn().mockResolvedValue({
+  it.each([
+    ['probe', 'response'],
+    ['probe', 'throw'],
+    ['probe', 'cancel'],
+    ['status refresh', 'response'],
+    ['status refresh', 'throw'],
+    ['status refresh', 'cancel'],
+  ])('rejects import when the %s is cancelled via %s', async (stage, kind) => {
+    const { bridge, keyring } = setup('V2', undefined, undefined, {
+      openWalletSession: jest.fn().mockResolvedValue({
+        success: true,
+        payload: {
+          walletType: 'hidden',
+          passphraseState: 'hidden-wallet-token',
+        },
+      }),
+    });
+    const cancel = async () => {
+      if (kind === 'throw')
+        throw Object.assign(new Error('SDK cancellation'), { code: 802 });
+      if (kind === 'cancel') {
+        await keyring.cleanUp(true);
+        return { success: true, payload: 'standard-wallet-id' };
+      }
+      return {
+        success: false,
+        payload: { code: 802, error: 'SDK cancellation' },
+      };
+    };
+    if (stage === 'probe') {
+      bridge.getPassphraseState.mockImplementationOnce(cancel);
+    } else {
+      bridge.openWalletSession.mockImplementationOnce(async () => {
+        bridge.getDeviceState.mockImplementationOnce(cancel);
+        return {
           success: true,
           payload: {
             walletType: 'hidden',
             passphraseState: 'hidden-wallet-token',
           },
-        }),
-      });
-      bridge.getPassphraseState.mockImplementationOnce(async () => {
-        if (kind === 'throw')
-          throw Object.assign(new Error('SDK cancellation'), { code: 802 });
-        if (kind === 'cancel') {
-          await keyring.cleanUp(true);
-          return { success: true, payload: 'standard-wallet-id' };
-        }
-        return {
-          success: false,
-          payload: { code: 802, error: 'SDK cancellation' },
         };
       });
-      if (kind === 'cancel') {
-        await expect(keyring.unlock()).rejects.toThrow(
-          'OneKey signing cancelled'
-        );
-      } else {
-        await expect(keyring.unlock()).rejects.toMatchObject({ code: 802 });
-      }
-      expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
-      expect(keyring.isUnlocked()).toBe(false);
     }
-  );
+    if (kind === 'cancel') {
+      await expect(keyring.unlock()).rejects.toThrow(
+        'OneKey signing cancelled'
+      );
+    } else {
+      await expect(keyring.unlock()).rejects.toMatchObject({ code: 802 });
+    }
+    expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
+    if (stage === 'status refresh') {
+      expect(bridge.getPassphraseState).not.toHaveBeenCalled();
+    }
+    expect(keyring.isUnlocked()).toBe(false);
+  });
 
   it.each(['en', 'zh-CN'])('explains error 113 in %s', async (language) => {
     const i18next = jest.requireActual('i18next');
