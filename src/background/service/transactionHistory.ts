@@ -1078,18 +1078,41 @@ class TxHistory {
       });
   };
 
-  private async _getOnChainNonce(address: string, chainServerId: string) {
-    const key = `${chainServerId}-${address}`;
+  // Same choice as providerController.ethRpc: the user's custom RPC when the
+  // chain has one enabled, otherwise the backend.
+  private _requestNonceFallbackRpc(
+    chain: NonNullable<ReturnType<typeof findChain>>,
+    method: string,
+    params: any[]
+  ) {
+    if (RPCService.hasCustomRPC(chain.enum as CHAINS_ENUM)) {
+      return RPCService.requestCustomRPC(
+        chain.enum as CHAINS_ENUM,
+        method,
+        params
+      );
+    }
+    return openapiService.ethRpc(chain.serverId, {
+      origin: encodeURIComponent(INTERNAL_REQUEST_ORIGIN),
+      method,
+      params,
+    });
+  }
+
+  private async _getOnChainNonce(
+    address: string,
+    chain: NonNullable<ReturnType<typeof findChain>>
+  ) {
+    const key = `${chain.serverId}-${address}`;
     const cached = this._onChainNonceCache[key];
     if (cached && cached.expireAt > Date.now()) {
       return cached.nonce;
     }
     const nonce = parseInt(
-      await openapiService.ethRpc(chainServerId, {
-        origin: encodeURIComponent(INTERNAL_REQUEST_ORIGIN),
-        method: 'eth_getTransactionCount',
-        params: [address, 'latest'],
-      }),
+      await this._requestNonceFallbackRpc(chain, 'eth_getTransactionCount', [
+        address,
+        'latest',
+      ]),
       16
     );
     this._onChainNonceCache[key] = {
@@ -1104,8 +1127,9 @@ class TxHistory {
    * unreachable from the user's network or not have the receipt. Once the
    * account's on-chain nonce has moved past a pending group's nonce, that nonce
    * is spent and the group can no longer be pending, so the receipt is looked
-   * up through the backend instead. If none of the group's txs is on chain,
-   * another tx took the nonce and the local pending record is removed.
+   * up through the user's custom RPC, or the backend when the chain has none.
+   * If none of the group's txs is on chain, another tx took the nonce and the
+   * local pending record is removed.
    *
    * @returns the raw receipt of the group's tx that is on chain, if any
    */
@@ -1139,7 +1163,7 @@ class TxHistory {
     }
 
     const takenKey = `${from}-${chainId}-${nonce}`;
-    const onChainNonce = await this._getOnChainNonce(from, chain.serverId);
+    const onChainNonce = await this._getOnChainNonce(from, chain);
     if (!(onChainNonce > nonce)) {
       delete this._nonceTakenFirstSeenAt[takenKey];
       return;
@@ -1147,14 +1171,16 @@ class TxHistory {
 
     const receipts = await Promise.all(
       broadcastedTxs.map((tx) =>
-        openapiService.ethRpc(chain.serverId, {
-          origin: encodeURIComponent(INTERNAL_REQUEST_ORIGIN),
-          method: 'eth_getTransactionReceipt',
-          params: [tx.hash],
-        })
+        this._requestNonceFallbackRpc(chain, 'eth_getTransactionReceipt', [
+          tx.hash,
+        ])
       )
     );
-    const receipt = receipts.find(Boolean);
+    // A custom RPC answers a null result with the whole JSON-RPC response
+    // (see RPCService.request), so an object alone is not a receipt.
+    const receipt = receipts.find(
+      (item) => item?.transactionHash && item?.blockNumber
+    );
     if (receipt) {
       delete this._nonceTakenFirstSeenAt[takenKey];
       return receipt;

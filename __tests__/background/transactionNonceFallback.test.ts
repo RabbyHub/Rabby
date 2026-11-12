@@ -61,6 +61,7 @@ const history = extract('src/background/service/transactionHistory.ts', [
   'formatRpcTxReceipt',
   '_onChainNonceCache',
   '_nonceTakenFirstSeenAt',
+  '_requestNonceFallbackRpc',
   '_getOnChainNonce',
   'findTxReceiptByNonce',
   'getRpcTxReceipt',
@@ -69,6 +70,7 @@ const history = extract('src/background/service/transactionHistory.ts', [
 
 const receiptOf = (hash: string, status = '0x1') => ({
   transactionHash: hash,
+  blockNumber: '0x7ead8d7',
   status,
   gasUsed: '0xb6f7',
   effectiveGasPrice: '0x2faf080',
@@ -78,12 +80,15 @@ const createHistoryService = ({
   hashes = ['0xlocal'],
   onChainNonce = '0xc4',
   backendReceipts = {},
-  chain = { id: CHAIN_ID, serverId: 'bsc', isTestnet: false },
+  customRpc,
+  chain = { id: CHAIN_ID, serverId: 'bsc', enum: 'BSC', isTestnet: false },
 }: {
   hashes?: string[];
   onChainNonce?: string;
   backendReceipts?: Record<string, unknown>;
-  chain?: { id: number; serverId: string; isTestnet: boolean };
+  // 传入即视为该链启用了自定义 RPC
+  customRpc?: (method: string, params: any[]) => unknown;
+  chain?: { id: number; serverId: string; enum: string; isTestnet: boolean };
 } = {}) => {
   const clock = { now: START + 2 * MINUTE };
   const group = {
@@ -113,6 +118,10 @@ const createHistoryService = ({
         : backendReceipts[params[0]] ?? null
   );
   const defaultRpc = jest.fn(async () => null);
+  const requestCustomRPC = jest.fn(
+    async (_chain: string, method: string, params: any[]) =>
+      customRpc?.(method, params)
+  );
   const eventBus = { emit: jest.fn() };
   const watcher = { removeLocalPendingTx: jest.fn() };
   const broadcastWatcher = { removeLocalPendingTx: jest.fn() };
@@ -124,7 +133,11 @@ const createHistoryService = ({
       Date: { now: () => clock.now },
       setTimeout: jest.fn(),
       openapiService: { ethRpc },
-      RPCService: { requestDefaultRPC: defaultRpc },
+      RPCService: {
+        requestDefaultRPC: defaultRpc,
+        hasCustomRPC: () => !!customRpc,
+        requestCustomRPC,
+      },
       customTestnetService: {},
       findChain: () => chain,
       isTempoChain: (serverId: string) => serverId === 'tempo',
@@ -154,6 +167,7 @@ const createHistoryService = ({
     clock,
     ethRpc,
     defaultRpc,
+    requestCustomRPC,
     eventBus,
     watcher,
     broadcastWatcher,
@@ -178,6 +192,32 @@ describe('findTxReceiptByNonce', () => {
       })
     );
     expect(service.removeLocalPendingTx).not.toHaveBeenCalled();
+  });
+
+  it('asks the custom RPC instead of the backend when the chain has one', async () => {
+    const receipt = receiptOf('0xlocal');
+    const { find, ethRpc, requestCustomRPC } = createHistoryService({
+      customRpc: (method) =>
+        method === 'eth_getTransactionCount' ? '0xc4' : receipt,
+    });
+
+    await expect(find()).resolves.toBe(receipt);
+    expect(requestCustomRPC.mock.calls).toEqual([
+      ['BSC', 'eth_getTransactionCount', [FROM, 'latest']],
+      ['BSC', 'eth_getTransactionReceipt', ['0xlocal']],
+    ]);
+    expect(ethRpc).not.toHaveBeenCalled();
+  });
+
+  it('does not take the response a custom RPC returns for a null result as a receipt', async () => {
+    const { find } = createHistoryService({
+      customRpc: (method) =>
+        method === 'eth_getTransactionCount'
+          ? '0xc4'
+          : { jsonrpc: '2.0', id: 1, result: null },
+    });
+
+    await expect(find()).resolves.toBeUndefined();
   });
 
   it('finds whichever tx of the group is on chain', async () => {
@@ -209,8 +249,19 @@ describe('findTxReceiptByNonce', () => {
   });
 
   it.each([
-    ['a testnet', { id: CHAIN_ID, serverId: 'custom_56', isTestnet: true }],
-    ['Tempo', { id: CHAIN_ID, serverId: 'tempo', isTestnet: false }],
+    [
+      'a testnet',
+      {
+        id: CHAIN_ID,
+        serverId: 'custom_56',
+        enum: 'CUSTOM_56',
+        isTestnet: true,
+      },
+    ],
+    [
+      'Tempo',
+      { id: CHAIN_ID, serverId: 'tempo', enum: 'TEMPO', isTestnet: false },
+    ],
   ])('is skipped on %s', async (_name, chain) => {
     const { find, ethRpc } = createHistoryService({ chain });
 
