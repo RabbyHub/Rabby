@@ -1,6 +1,6 @@
 import { Checkbox } from '@/ui/component';
-import { Tooltip } from 'antd';
 import React from 'react';
+import { PerpsTooltip } from '../../../PerpsTooltip';
 
 interface PerpsCheckboxProps {
   checked: boolean;
@@ -155,6 +155,9 @@ export const PerpsCheckbox = ({
       type="square"
       onChange={onChange}
       disabled={disabled}
+      // Design: a disabled option reads at 30%. Checkbox dims itself to 50%
+      // with an inline style, which only an !important utility can override.
+      className={disabled ? 'opacity-30' : undefined}
       unCheckBackground="transparent"
       background="transparent"
       width={`${size}px`}
@@ -163,14 +166,9 @@ export const PerpsCheckbox = ({
     >
       {title &&
         (tooltipText ? (
-          <Tooltip
-            title={tooltipText}
-            overlayClassName="rectangle"
-            placement="top"
-            trigger="hover"
-          >
+          <PerpsTooltip title={tooltipText} placement="top" trigger="hover">
             <span className="text-r-neutral-title-1 text-12">{title}</span>
-          </Tooltip>
+          </PerpsTooltip>
         ) : (
           <span className="text-r-neutral-title-1 text-12">{title}</span>
         ))}

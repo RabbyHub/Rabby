@@ -518,7 +518,9 @@ export const PositionsInfo: React.FC = () => {
             {t('page.perpsPro.userInfo.tab.unrealizedPnl')}
           </DashedUnderlineText>
         ),
-        width: 92,
+        // Title (~82px) + sort icon (4 + 12) + cell padding (16): at 92 the
+        // icon spilled over the next column's header.
+        width: 116,
         key: 'unrealizedPnl',
         dataIndex: 'unrealizedPnl',
         sorter: (a, b) => Number(a.unrealizedPnl) - Number(b.unrealizedPnl),

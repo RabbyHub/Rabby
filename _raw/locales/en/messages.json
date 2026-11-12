@@ -1675,6 +1675,7 @@
         "liquidationPriceTooltip": "Position risk is low, so there is no liquidation price for the time being. Note that increasing the position or reducing the margin will increase the risk.",
         "tpSlTips": "Places simple market TP/SL orders. For advanced features such as limited prices or partial TP/SL, set the TP/SL in an open position.",
         "reduceOnlyTips": "This order will not open a new position no matter how large the order size is. It will compare to the existing position at the time of execution.",
+        "reduceOnlyNoPositionTips": "Reduce Only is unavailable because you have no open position in this market. It only reduces an existing position and never opens a new one.",
         "runtimeTooShort": "Runtime must be more than 5 minutes",
         "runtimeTooLong": "Runtime must be less than 24 hours",
         "slippagePage": {
@@ -1684,7 +1685,7 @@
           "minError": "Minimum slippage is 0%",
           "maxError": "Maximum slippage is 100%"
         },
-        "sizeSkewTooltip": "Ratio between end and start prices. For example, if size skew is 2.0 then a limit order for end price will be placed with twice the size of the start price. A size skew of 1.0 creates equally sized orders.",
+        "sizeSkewTooltip": "Size of the last order relative to the first. 1.0 makes all orders equal; 2.0 makes the order at the end price twice the size of the one at the start price.",
         "randomizeTooltip": "Randomizes the timing and size of sub-orders to reduce predictability.",
         "reduceOnly": "Reduce Only",
         "enableTrading": "Enable Trading",
@@ -1759,6 +1760,7 @@
         "min": "min",
         "totalTime": "Total Time (5m-24h)",
         "maxDurationTwap": "Max duration to run the TWAP order is",
+        "twapPresetDisabledTips": "Order size is too small for this duration. Each sub-order must be at least $10.",
         "invalidSlPrice": "Invalid stop loss price",
         "slBuyMustBeHigherThanMidPrice": "Stop buy order price must be higher than mid",
         "slSellMustBeLowerThanMidPrice": "Stop sell order price must be lower than mid",

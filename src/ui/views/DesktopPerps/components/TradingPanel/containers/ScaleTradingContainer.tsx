@@ -10,8 +10,8 @@ import {
 } from '../../../types';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { message, Tooltip } from 'antd';
-import clsx from 'clsx';
+import { message } from 'antd';
+import { PerpsTooltip } from '../../PerpsTooltip';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { LimitOrderTypeSelector } from '../components/LimitOrderTypeSelector';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
@@ -473,15 +473,14 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       </div>
 
       <div className="flex flex-col gap-[6px] mt-[6px]">
-        <Tooltip
+        <PerpsTooltip
           placement="topLeft"
-          overlayClassName={clsx('rectangle')}
           title={t('page.perpsPro.tradingPanel.sizeSkewTooltip')}
         >
           <span className="text-rb-neutral-secondary text-12 cursor-help">
             {t('page.perpsPro.tradingPanel.sizeSkew')}
           </span>
-        </Tooltip>
+        </PerpsTooltip>
         <DesktopPerpsInput
           value={sizeSkew}
           onChange={handleSizeSkewChange}
@@ -515,7 +514,11 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
         <PerpsCheckbox
           checked={reduceOnly}
           onChange={setReduceOnly}
-          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          tooltipText={t(
+            currentPosition
+              ? 'page.perpsPro.tradingPanel.reduceOnlyTips'
+              : 'page.perpsPro.tradingPanel.reduceOnlyNoPositionTips'
+          )}
           title={t('page.perpsPro.tradingPanel.reduceOnly')}
           disabled={!currentPosition}
         />
