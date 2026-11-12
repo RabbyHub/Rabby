@@ -24,6 +24,18 @@ import {
 
 const ORIGINAL_TITLE = 'Rabby Wallet';
 
+const PX_FORMAT: BigNumber.Format = {
+  decimalSeparator: '.',
+  groupSeparator: ',',
+  groupSize: 3,
+};
+
+// Fixed decimals per market so a price keeps its length between ticks
+// (2,415.10 rather than 2,415.1). `toFormat` needs the decimals itself:
+// BigNumber drops trailing zeros, so a `toFixed` string loses them again.
+const formatFixedPx = (value: string | number, decimals: number) =>
+  new BigNumber(value).abs().toFormat(decimals, PX_FORMAT);
+
 type Direction = 'up' | 'down' | 'flat';
 
 /**
@@ -83,11 +95,9 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
   const location = useLocation();
   const isPerpsRoute = location.pathname.startsWith('/desktop/perps');
 
-  // Fixed decimals per market so the price keeps its length between ticks
-  // (2,415.0 rather than 2,415). 0 is a valid precision (BTC): no `||`.
+  // 0 is a valid precision (BTC): no `||`.
   const pxDecimals = marketMeta?.pxDecimals ?? 2;
-  const formatPx = (value: string | number) =>
-    splitNumberByStep(new BigNumber(value).abs().toFixed(pxDecimals));
+  const formatPx = (value: string | number) => formatFixedPx(value, pxDecimals);
 
   // Browser tab title follows the last traded price, like the order book's
   // center price; the mark price only fills in until the first trade arrives.
@@ -103,9 +113,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
     const render = () => {
       const px = getLastTradePrice(coin) ?? markPx;
       document.title = px
-        ? `$${splitNumberByStep(
-            new BigNumber(px).toFixed(pxDecimals)
-          )} | ${titleBase} | Rabby`
+        ? `$${formatFixedPx(px, pxDecimals)} | ${titleBase} | Rabby`
         : ORIGINAL_TITLE;
     };
     render();
@@ -225,7 +233,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </div>
           <span className="text-12 text-rb-neutral-body">
             {currentMarketData.markPx
-              ? `$${splitNumberByStep(Number(currentMarketData.markPx))}`
+              ? `$${formatPx(currentMarketData.markPx)}`
               : '-'}
           </span>
         </div>
@@ -243,7 +251,7 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
           </div>
           <span className="text-12 text-rb-neutral-body">
             {currentMarketData.oraclePx
-              ? `$${splitNumberByStep(Number(currentMarketData.oraclePx))}`
+              ? `$${formatPx(currentMarketData.oraclePx)}`
               : '-'}
           </span>
         </div>
