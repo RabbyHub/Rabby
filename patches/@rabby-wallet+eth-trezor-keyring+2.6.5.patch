@@ -1,8 +1,22 @@
 diff --git a/node_modules/@rabby-wallet/eth-trezor-keyring/dist/index.js b/node_modules/@rabby-wallet/eth-trezor-keyring/dist/index.js
-index ca96a31..63f443f 100644
 --- a/node_modules/@rabby-wallet/eth-trezor-keyring/dist/index.js
 +++ b/node_modules/@rabby-wallet/eth-trezor-keyring/dist/index.js
-@@ -97,7 +97,7 @@ class TrezorKeyring extends events_1.EventEmitter {
+@@ -28,7 +28,13 @@
+ const tx_1 = require("@ethereumjs/tx");
+ const util_1 = require("@ethereumjs/util");
+ const hdkey_1 = __importDefault(require("hdkey"));
+-const connect_plugin_ethereum_1 = __importDefault(require("@trezor/connect-plugin-ethereum"));
++const responseError = (response) => {
++    const error = new Error((response.error && response.error.message) || (response.payload && response.payload.error) || 'Unknown error');
++    if (response.error && response.error.code) {
++        error.code = response.error.code;
++    }
++    return error;
++};
+ const SLIP0044TestnetPath = `m/44'/1'/0'/0`;
+ const keyringType = 'Trezor Hardware';
+ const pathBase = 'm';
+@@ -95,7 +101,7 @@
              manifest: TREZOR_CONNECT_MANIFEST,
              lazyLoad: true,
          });
@@ -11,3 +25,105 @@ index ca96a31..63f443f 100644
      }
      /**
       * Gets the model, if known.
+@@ -162,7 +168,13 @@
+         if (this.isUnlocked(start, len)) {
+             return Promise.resolve('already unlocked');
+         }
+-        return new Promise((resolve, reject) => {
++        // Each cache miss is a separate Trezor Suite session. Let concurrent
++        // callers wait for the in-flight one (and share its cancellation)
++        // instead of reopening Suite right after the user closes it.
++        if (this.pendingUnlock) {
++            return this.pendingUnlock.then(() => this.unlock(start, len));
++        }
++        const pending = new Promise((resolve, reject) => {
+             const hdPaths = [];
+             hdPaths.push(this.hdPath);
+             if (typeof start === 'number' &&
+@@ -188,13 +200,20 @@
+                     resolve('just unlocked');
+                 }
+                 else {
+-                    reject(new Error((response.payload && response.payload.error) || 'Unknown error'));
++                    reject(responseError(response));
+                 }
+             })
+                 .catch((e) => {
+-                reject(new Error((e && e.toString()) || 'Unknown error'));
++                reject(Object.assign(new Error((e && e.toString()) || 'Unknown error'), { code: e && e.code }));
+             });
+         });
++        this.pendingUnlock = pending;
++        const clear = () => {
++            if (this.pendingUnlock === pending)
++                this.pendingUnlock = undefined;
++        };
++        pending.then(clear, clear);
++        return pending;
+     }
+     setAccountToUnlock(index) {
+         this.unlockedAccount = parseInt(index, 10);
+@@ -372,10 +391,10 @@
+                     }
+                     return newOrMutatedTx;
+                 }
+-                throw new Error((response.payload && response.payload.error) || 'Unknown error');
++                throw responseError(response);
+             }
+             catch (e) {
+-                throw new Error((e && e.toString()) || 'Unknown error');
++                throw Object.assign(new Error((e && e.toString()) || 'Unknown error'), { code: e && e.code });
+             }
+         });
+     }
+@@ -399,11 +418,11 @@
+                     return signature;
+                 }
+                 else {
+-                    throw new Error((response.payload && response.payload.error) || 'Unknown error');
++                    throw responseError(response);
+                 }
+             }
+             catch (e) {
+-                throw new Error((e && e.toString()) || 'Unknown error');
++                throw Object.assign(new Error((e && e.toString()) || 'Unknown error'), { code: e && e.code });
+             }
+         });
+     }
+@@ -412,13 +431,12 @@
+      */
+     signTypedData(address, data, { version }) {
+         return __awaiter(this, void 0, void 0, function* () {
+-            const dataWithHashes = (0, connect_plugin_ethereum_1.default)(data, version === 'V4');
++            if (version !== 'V3' && version !== 'V4') {
++                throw new Error('Trezor: Only V3 and V4 typed data signing is supported');
++            }
+             // set default values for signTypedData
+             // Trezor is stricter than @metamask/eth-sig-util in what it accepts
+-            const _a = dataWithHashes.types, _b = _a === void 0 ? {} : _a, { EIP712Domain = [] } = _b, otherTypes = __rest(_b, ["EIP712Domain"]), { message = {}, domain = {}, primaryType, 
+-            // snake_case since Trezor uses Protobuf naming conventions here
+-            domain_separator_hash, // eslint-disable-line camelcase
+-            message_hash } = dataWithHashes;
++            const _a = data.types, _b = _a === void 0 ? {} : _a, { EIP712Domain = [] } = _b, otherTypes = __rest(_b, ["EIP712Domain"]), { message = {}, domain = {}, primaryType } = data;
+             // This is necessary to avoid popup collision
+             // between the unlock & sign trezor popups
+             const response = yield this.bridge.ethereumSignTypedData({
+@@ -430,9 +448,6 @@
+                     primaryType,
+                 },
+                 metamask_v4_compat: true,
+-                // Trezor 1 only supports blindly signing hashes
+-                domain_separator_hash,
+-                message_hash,
+             });
+             if (response.success) {
+                 if ((0, util_1.toChecksumAddress)(address) !== response.payload.address) {
+@@ -440,7 +455,7 @@
+                 }
+                 return response.payload.signature;
+             }
+-            throw new Error((response.payload && response.payload.error) || 'Unknown error');
++            throw responseError(response);
+         });
+     }
+     exportAccount() {

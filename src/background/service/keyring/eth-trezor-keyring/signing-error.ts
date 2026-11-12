@@ -22,8 +22,8 @@ const CATEGORY_BY_CODE: Record<string, SigningErrorCategory> = {
   Device_InvalidState: 'derivation_failed',
 };
 
-// The keyring keeps only the message, so a failure that arrives without its
-// code is matched on Connect's fixed wording for that code.
+// A failure that arrives without its code (e.g. thrown before the keyring
+// wraps it) is matched on Connect's fixed wording for that code.
 const CODE_BY_MESSAGE: [RegExp, string][] = [
   [/Action cancelled by user/, 'Failure_ActionCancelled'],
   [/Permissions not granted/, 'Method_PermissionsNotGranted'],
@@ -48,13 +48,18 @@ export const getTrezorSigningDiagnostics = (
   error: unknown,
   failureCode?: string
 ) => {
+  // The patched keyring keeps Connect's code on the thrown error.
+  const errorCode = (error as { code?: unknown } | undefined)?.code;
+  failureCode =
+    failureCode ?? (typeof errorCode === 'string' ? errorCode : undefined);
   const code =
     failureCode && failureCode in CATEGORY_BY_CODE
       ? failureCode
       : codeFromMessage(error) ?? failureCode;
   return {
     wallet_provider: 'trezor' as const,
-    transport: 'usb' as const,
+    // Suite owns the transport; Connect 10 no longer reports USB/WebUSB.
+    transport: 'unknown' as const,
     error_category: (code && CATEGORY_BY_CODE[code]) || 'unknown',
     // Only the code goes to Sentry: Connect messages can echo request params.
     ...(code ? { provider_code: code } : {}),

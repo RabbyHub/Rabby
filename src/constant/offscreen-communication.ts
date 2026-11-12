@@ -2,8 +2,6 @@ export enum OffscreenCommunicationTarget {
   latticeOffscreen = 'lattice-offscreen',
   imkeyOffscreen = 'imkey-offscreen',
   onekeyOffscreen = 'onekey-offscreen',
-  trezorOffscreen = 'trezor-offscreen',
-  trezorBrowser = 'trezor-browser',
   bitbox02Offscreen = 'bitbox02-offscreen',
   extension = 'extension-offscreen',
 }
@@ -11,7 +9,6 @@ export enum OffscreenCommunicationTarget {
 export enum OffscreenCommunicationEvents {
   imKeyDeviceConnect = 'imkey-device-connect',
   oneKeyDeviceConnect = 'onekey-device-connect',
-  trezorDeviceEvent = 'trezor-device-event',
   bitbox02DeviceConnect = 'bitbox02-device-connect',
   latticeDeviceConnect = 'lattice-device-connect',
 }
@@ -31,25 +28,6 @@ export enum OneKeyAction {
   getPassphraseState = 'onekey-get-passphrase-state',
   evmGetPublicKey = 'onekey-evm-get-public-key',
   getFeatures = 'onekey-get-device-features',
-}
-
-export enum TrezorAction {
-  init = 'trezor-init',
-  dispose = 'trezor-dispose',
-  getPublicKey = 'trezor-get-public-key',
-  ethereumSignTransaction = 'trezor-sign-transaction',
-  ethereumSignMessage = 'trezor-sign-message',
-  ethereumSignTypedData = 'trezor-sign-typed-data',
-}
-
-export enum TrezorBrowserAction {
-  getCurrentWindow = 'trezor-browser-get-current-window',
-  createWindow = 'trezor-browser-create-window',
-  queryTabs = 'trezor-browser-query-tabs',
-  createTab = 'trezor-browser-create-tab',
-  getTab = 'trezor-browser-get-tab',
-  updateTab = 'trezor-browser-update-tab',
-  removeTab = 'trezor-browser-remove-tab',
 }
 
 export enum BitBox02Action {

@@ -1,38 +1,44 @@
-import TrezorOffscreenBridge from '@/background/service/keyring/eth-trezor-keyring/trezor-offscreen-bridge';
+import TrezorConnect from '@trezor/connect-webextension';
+
+import TrezorBridge from '@/background/service/keyring/eth-trezor-keyring/trezor-bridge';
 import { withSigningDiagnostics } from '@/background/service/keyring/signing-diagnostics';
-import { TrezorAction } from '@/constant/offscreen-communication';
 import {
   applySigningContext,
   getSigningContext,
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
 
-const sendMessage = jest.fn();
-
-jest.mock('webextension-polyfill', () => ({
-  runtime: {
-    id: 'rabby-test',
-    sendMessage: (...args: unknown[]) => sendMessage(...args),
-    onMessage: { addListener: jest.fn() },
-  },
+jest.mock('@trezor/connect-webextension', () => ({
+  __esModule: true,
+  default: { init: jest.fn(), ethereumSignTransaction: jest.fn() },
+}));
+jest.mock('@trezor/connect-web', () => ({
+  __esModule: true,
+  default: { init: jest.fn() },
 }));
 
-// What the eth-trezor-keyring does with a failed Connect response.
-const signLikeKeyring = async (bridge: TrezorOffscreenBridge) => {
+const connect = TrezorConnect as jest.Mocked<typeof TrezorConnect>;
+
+// What the patched eth-trezor-keyring does with a failed Connect response:
+// keep the message and Connect's code on the thrown error.
+const signLikeKeyring = async (bridge: TrezorBridge) => {
   const response: any = await bridge.ethereumSignTransaction({} as any);
-  if (!response.success) throw new Error(response.payload.error);
+  if (!response.success) {
+    throw Object.assign(new Error(response.payload.error), {
+      code: response.payload.code,
+    });
+  }
   return response;
 };
 
-let lastBridge: TrezorOffscreenBridge;
+let lastBridge: TrezorBridge;
 
 const failSigningWith = async (payload: { error: string; code?: string }) => {
-  sendMessage.mockImplementation(async ({ action }) =>
-    action === TrezorAction.ethereumSignTransaction
-      ? { success: false, payload }
-      : {}
-  );
-  const bridge = new TrezorOffscreenBridge();
+  connect.ethereumSignTransaction.mockResolvedValueOnce({
+    success: false,
+    payload,
+  } as never);
+  const bridge = new TrezorBridge();
   lastBridge = bridge;
   await bridge.init({} as any);
   const keyring = {
@@ -50,8 +56,6 @@ const failSigningWith = async (payload: { error: string; code?: string }) => {
 };
 
 describe('Trezor signing diagnostics', () => {
-  beforeEach(() => sendMessage.mockReset());
-
   it('classifies a device rejection as a user cancellation and drops it', async () => {
     const error = await failSigningWith({
       error: 'Action cancelled by user',
