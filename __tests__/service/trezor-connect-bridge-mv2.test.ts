@@ -34,6 +34,12 @@ const manifest = {
   appUrl: 'https://rabby.io/',
 };
 
+const expectedManifest = {
+  ...manifest,
+  appIcon:
+    'https://static-assets.rabby.io/files/122da969-da58-42e9-ab39-0a8dd38d94b8.png',
+};
+
 describe('Trezor Connect bridge (MV2)', () => {
   it('uses the web flow so Firefox does not depend on externally_connectable', async () => {
     const bridge = new TrezorBridge();
@@ -46,7 +52,7 @@ describe('Trezor Connect bridge (MV2)', () => {
     await bridge.ethereumSignMessage({ path: 'm/1' });
 
     expect(connect.init).toHaveBeenCalledWith({
-      manifest,
+      manifest: expectedManifest,
       env: 'web',
     });
   });

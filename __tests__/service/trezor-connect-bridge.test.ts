@@ -30,6 +30,12 @@ const manifest = {
   appUrl: 'https://rabby.io/',
 };
 
+const expectedManifest = {
+  ...manifest,
+  appIcon:
+    'https://static-assets.rabby.io/files/122da969-da58-42e9-ab39-0a8dd38d94b8.png',
+};
+
 describe('Trezor Connect bridge', () => {
   it('retries failed initialization, shares concurrent initialization and preserves responses', async () => {
     const bridge = new TrezorBridge();
@@ -65,7 +71,7 @@ describe('Trezor Connect bridge', () => {
       bundle: [{ path: "m/44'/60'/0'" }],
     });
     expect(connect.init).toHaveBeenLastCalledWith({
-      manifest,
+      manifest: expectedManifest,
       env: 'webextension',
     });
     expect(bridge.getSigningDiagnostics().transport).toBe('unknown');
