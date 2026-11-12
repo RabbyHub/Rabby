@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, useWallet } from '@/ui/utils';
@@ -39,6 +38,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { TokenImg } from '../components/TokenImg';
 import { TopPermissionTips } from '../components/TopPermissionTips';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { markHomeScrollResetOnNextRestore } from './homeScrollState';
 import { PerpsPositionSection } from '../components/PerpsPositionSection';
@@ -524,7 +524,7 @@ export const PerpsSingleCoin = () => {
     return (
       <div className="flex items-center gap-12">
         <div
-          className="cursor-pointer flex items-center text-r-neutral-body hover:text-r-blue-default"
+          className="w-24 h-24 cursor-pointer flex items-center justify-center text-r-neutral-body hover:text-r-blue-default"
           onClick={(e) => {
             e.stopPropagation();
             if (currentPerpsAccount) {
@@ -543,7 +543,12 @@ export const PerpsSingleCoin = () => {
             handleToggleFavorite();
           }}
         >
-          {isFavorited ? <RcIconCollected /> : <RcIconNotCollected />}
+          {/* SVGR drops viewBox: keep it so the 20px star scales to 24px. */}
+          {isFavorited ? (
+            <RcIconCollected viewBox="0 0 20 20" className="w-24 h-24" />
+          ) : (
+            <RcIconNotCollected viewBox="0 0 20 20" className="w-24 h-24" />
+          )}
         </div>
       </div>
     );
@@ -551,31 +556,35 @@ export const PerpsSingleCoin = () => {
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
-      <PageHeader
-        className="mx-[20px] pt-[20px]"
-        forceShowBack
-        rightSlot={HeaderRightSlot}
-      >
-        <div className="flex items-center justify-center">
+      <div className="h-[56px] px-20 flex items-center justify-between gap-12 flex-shrink-0">
+        <div className="flex items-center gap-4 min-w-0">
           <div
-            className="flex items-center gap-8 cursor-pointer"
-            style={{ width: 'fit-content' }}
+            className="hit-slop-8 relative flex items-center cursor-pointer"
+            onClick={() => history.goBack()}
+          >
+            <ThemeIcon src={RcIconBackNew} className="w-20 h-20" />
+          </div>
+          <div
+            className="flex items-center gap-[3px] min-w-0 cursor-pointer"
             onClick={() => {
               setSearchPopupVisible(true);
             }}
           >
-            <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
-            <PerpsDisplayCoinName
-              item={currentAssetCtx}
-              className="text-20 font-medium"
-            />
+            <div className="flex items-center gap-8 min-w-0">
+              <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
+              <PerpsDisplayCoinName
+                item={currentAssetCtx}
+                className="text-20 leading-[24px] font-medium whitespace-nowrap"
+              />
+            </div>
             <ThemeIcon
-              className="icon text-r-neutral-title-1"
+              className="icon text-r-neutral-title-1 flex-shrink-0"
               src={isDarkTheme ? RcIconTitleSelectDark : RcIconTitleSelect}
             />
           </div>
         </div>
-      </PageHeader>
+        {HeaderRightSlot}
+      </div>
 
       {!hasPermission ? <TopPermissionTips /> : null}
       <div className="flex-1 overflow-auto mx-20 pb-[40px]">
