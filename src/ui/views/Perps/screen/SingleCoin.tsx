@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { PageHeader } from '@/ui/component';
 import { useParams, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, useWallet } from '@/ui/utils';
@@ -15,7 +14,6 @@ import { PerpsChart } from '../components/Chart';
 import { PERPS_MAX_NTL_VALUE, PERPS_BUILDER_INFO } from '../constants';
 import * as Sentry from '@sentry/browser';
 import { useMemoizedFn } from 'ahooks';
-import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconTitleSelect } from 'ui/assets/perps/IconTitleSelect.svg';
 import { ReactComponent as RcIconTitleSelectDark } from 'ui/assets/perps/IconTitleSelectDark.svg';
 import { EditMarginPopup } from '../popup/EditMarginPopup';
@@ -35,13 +33,14 @@ import {
   DirectSubmitProvider,
   supportedDirectSign,
 } from '@/ui/hooks/useMiniApprovalDirectSign';
-import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { TokenImg } from '../components/TokenImg';
 import { TopPermissionTips } from '../components/TopPermissionTips';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { ReactComponent as RcIconBackNew } from 'ui/assets/back-new.svg';
 import { SearchPerpsPopup } from '../popup/SearchPerpsPopup';
 import { markHomeScrollResetOnNextRestore } from './homeScrollState';
 import { PerpsPositionSection } from '../components/PerpsPositionSection';
+import { PerpsTipLabel } from '../components/PerpsTipLabel';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as RcIconCollected } from '@/ui/assets/perps/IconCollected20.svg';
 import { ReactComponent as RcIconNotCollected } from '@/ui/assets/perps/IconUnCollected20.svg';
@@ -524,7 +523,7 @@ export const PerpsSingleCoin = () => {
     return (
       <div className="flex items-center gap-12">
         <div
-          className="cursor-pointer flex items-center text-r-neutral-body hover:text-r-blue-default"
+          className="w-24 h-24 cursor-pointer flex items-center justify-center text-r-neutral-body hover:text-r-blue-default"
           onClick={(e) => {
             e.stopPropagation();
             if (currentPerpsAccount) {
@@ -543,7 +542,12 @@ export const PerpsSingleCoin = () => {
             handleToggleFavorite();
           }}
         >
-          {isFavorited ? <RcIconCollected /> : <RcIconNotCollected />}
+          {/* SVGR drops viewBox: keep it so the 20px star scales to 24px. */}
+          {isFavorited ? (
+            <RcIconCollected viewBox="0 0 20 20" className="w-24 h-24" />
+          ) : (
+            <RcIconNotCollected viewBox="0 0 20 20" className="w-24 h-24" />
+          )}
         </div>
       </div>
     );
@@ -551,31 +555,35 @@ export const PerpsSingleCoin = () => {
 
   return (
     <div className="h-full min-h-full bg-r-neutral-bg2 flex flex-col">
-      <PageHeader
-        className="mx-[20px] pt-[20px]"
-        forceShowBack
-        rightSlot={HeaderRightSlot}
-      >
-        <div className="flex items-center justify-center">
+      <div className="h-[56px] px-20 flex items-center justify-between gap-12 flex-shrink-0">
+        <div className="flex items-center gap-4 min-w-0">
           <div
-            className="flex items-center gap-8 cursor-pointer"
-            style={{ width: 'fit-content' }}
+            className="hit-slop-8 relative flex items-center cursor-pointer"
+            onClick={() => history.goBack()}
+          >
+            <ThemeIcon src={RcIconBackNew} className="w-20 h-20" />
+          </div>
+          <div
+            className="flex items-center gap-[3px] min-w-0 cursor-pointer"
             onClick={() => {
               setSearchPopupVisible(true);
             }}
           >
-            <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
-            <PerpsDisplayCoinName
-              item={currentAssetCtx}
-              className="text-20 font-medium"
-            />
+            <div className="flex items-center gap-8 min-w-0">
+              <TokenImg logoUrl={currentAssetCtx?.logoUrl} size={24} />
+              <PerpsDisplayCoinName
+                item={currentAssetCtx}
+                className="text-20 leading-[24px] font-medium whitespace-nowrap"
+              />
+            </div>
             <ThemeIcon
-              className="icon text-r-neutral-title-1"
+              className="icon text-r-neutral-title-1 flex-shrink-0"
               src={isDarkTheme ? RcIconTitleSelectDark : RcIconTitleSelect}
             />
           </div>
         </div>
-      </PageHeader>
+        {HeaderRightSlot}
+      </div>
 
       {!hasPermission ? <TopPermissionTips /> : null}
       <div className="flex-1 overflow-auto mx-20 pb-[40px]">
@@ -680,15 +688,10 @@ export const PerpsSingleCoin = () => {
           </div>
 
           <div className="flex justify-between text-13 py-16">
-            <div className="text-r-neutral-body flex items-center gap-4 relative">
-              {t('page.perps.openInterest')}
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content]"
-                placement="top"
-                title={t('page.perps.singleCoin.openInterestTips')}
-              >
-                <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-              </TooltipWithMagnetArrow>
+            <div className="text-r-neutral-body">
+              <PerpsTipLabel tip={t('page.perps.singleCoin.openInterestTips')}>
+                {t('page.perps.openInterest')}
+              </PerpsTipLabel>
             </div>
             <span className="text-r-neutral-title-1 font-medium">
               {formatUsdValueKMB(
@@ -698,21 +701,19 @@ export const PerpsSingleCoin = () => {
             </span>
           </div>
 
-          <div className="flex justify-between text-13 py-16">
-            <div className="text-r-neutral-body flex items-center gap-4 relative">
-              {t('page.perps.fundingRate')}
-              <TooltipWithMagnetArrow
-                overlayClassName="rectangle w-[max-content]"
-                placement="top"
-                title={t('page.perps.singleCoin.fundingTips')}
-              >
-                <RcIconInfo className="text-rabby-neutral-foot w-14 h-14" />
-              </TooltipWithMagnetArrow>
+          {/* With a position, the Funding card already shows the rate. */}
+          {!(hasPosition && isLogin) && (
+            <div className="flex justify-between text-13 py-16">
+              <div className="text-r-neutral-body">
+                <PerpsTipLabel tip={t('page.perps.singleCoin.fundingTips')}>
+                  {t('page.perps.fundingRate')}
+                </PerpsTipLabel>
+              </div>
+              <span className="text-r-neutral-title-1 font-medium">
+                {formatPercent(Number(currentAssetCtx?.funding || 0), 6)}
+              </span>
             </div>
-            <span className="text-r-neutral-title-1 font-medium">
-              {formatPercent(Number(currentAssetCtx?.funding || 0), 6)}
-            </span>
-          </div>
+          )}
         </div>
 
         {isLogin ? (

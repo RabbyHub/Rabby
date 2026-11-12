@@ -22,6 +22,12 @@ import { isMarketableLimit } from '../limitOrderUtils';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
 import { closeQuantitySummary } from '../positionDisplay';
 
+// Fixed at the tallest single-line state (mirrors mobile): title 56 +
+// Amount card, warning line always reserved, 173 + gap 12 + order card with three
+// rows (limit price, or market slippage) 126 + footer 80. Shorter states
+// leave the spare space below the cards; translations can still scroll.
+const CLOSE_POPUP_HEIGHT = 447;
+
 interface ClosePositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   visible: boolean;
   coin: string;
@@ -189,7 +195,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
   return (
     <Popup
       placement="bottom"
-      height="fit-content"
+      height={CLOSE_POPUP_HEIGHT}
       isSupportDarkMode
       // Drops the global 1.5px top border on .ant-drawer-content.
       className="borderless"
@@ -223,20 +229,25 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 {splitNumberByStep(quantity.notional)} {quoteAsset} ={' '}
                 {quantity.quantity} {formatPerpsCoin(coin)}
               </div>
-              {/* Only takes vertical space once the warning actually shows. */}
-              {!isValidClosePercent && (
-                <div className="text-14 font-medium leading-[18px] text-r-red-default">
-                  {t(
-                    'page.perpsDetail.PerpsClosePositionPopup.minimumWarning',
-                    {
-                      percent: minClosePercent,
-                    }
-                  )}{' '}
-                  (${PERPS_MINI_USD_VALUE})
-                </div>
-              )}
+              {/* The warning line is always reserved so the card never
+                  changes height when it toggles. */}
+              <div className="min-h-[18px] text-14 font-medium leading-[18px] text-r-red-default">
+                {!isValidClosePercent && (
+                  <>
+                    {t(
+                      'page.perpsDetail.PerpsClosePositionPopup.minimumWarning',
+                      {
+                        percent: minClosePercent,
+                      }
+                    )}{' '}
+                    (${PERPS_MINI_USD_VALUE})
+                  </>
+                )}
+              </div>
             </div>
-            <div className="mt-12">
+            {/* Pinned to 20px so the fixed popup height does not depend on
+                antd's slider margins. */}
+            <div className="mt-12 h-[20px] flex items-center">
               <PerpsSlider
                 value={closePercent}
                 onValueChange={setClosePercent}
@@ -245,10 +256,10 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
             </div>
           </div>
 
-          {/* Order Card */}
-          <div className="bg-r-neutral-card1 rounded-[8px] py-8 mb-12">
+          {/* Order Card — rows pinned to 34px so the fixed height holds. */}
+          <div className="bg-r-neutral-card1 rounded-[8px] py-8 flex flex-col gap-8">
             <div className="flex flex-col">
-              <div className="flex justify-between items-center px-16 py-8">
+              <div className="flex justify-between items-center px-16 h-[34px]">
                 <span className="text-13 font-medium text-r-neutral-foot leading-[18px]">
                   {t('page.perpsDetail.PerpsOpenPositionPopup.orderType')}
                 </span>
@@ -267,7 +278,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 </div>
               </div>
               {isLimit && (
-                <div className="flex justify-between items-center px-16 py-8">
+                <div className="flex justify-between items-center px-16 h-[34px]">
                   <span className="text-13 font-medium text-r-neutral-foot leading-[18px]">
                     {t('page.perpsDetail.PerpsOpenPositionPopup.limitPrice')}
                   </span>
@@ -281,7 +292,9 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                   />
                 </div>
               )}
-              <div className="flex justify-between items-center px-16 py-8">
+            </div>
+            <div className="flex flex-col">
+              <div className="flex justify-between items-center px-16 h-[34px]">
                 <span className="text-14 font-medium text-r-neutral-foot leading-[18px]">
                   {t('page.perpsDetail.PerpsClosePositionPopup.closedPnl')}
                 </span>
@@ -306,7 +319,7 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 }
                 slippage={slippage}
                 depthInsufficient={depthInsufficient}
-                rowClassName="px-16 py-8"
+                rowClassName="px-16 h-[34px]"
                 labelClassName="text-14 font-medium text-r-neutral-foot leading-[18px]"
                 valueClassName="text-13 font-medium leading-[18px]"
               />

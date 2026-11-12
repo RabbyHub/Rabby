@@ -2060,7 +2060,8 @@
         "stopLossPrice": "Stop Loss Price",
         "funding": "Funding",
         "nextFundingRate": "Next Funding Rate",
-        "estimatedPnl": "Est.PNL"
+        "estimatedPnl": "Est.PNL",
+        "fundingPaymentsTips": "This shows your total funding settled since the position was opened. <positive>Green (positive)</positive> values mean you’ve earned from other traders, while <negative>Red (negative)</negative> values are funding costs you've paid to them."
       }
     },
     "sendPoly": {

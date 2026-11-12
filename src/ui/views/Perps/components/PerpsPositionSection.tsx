@@ -4,12 +4,9 @@ import clsx from 'clsx';
 import { WsActiveAssetCtx } from '@rabby-wallet/hyperliquid-sdk';
 import { splitNumberByStep } from '@/ui/utils';
 import { MarketData } from '@/ui/state/perps';
-import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconMarginAdd } from 'ui/assets/perps/IconMarginAddCC.svg';
 import { ReactComponent as RcIconRoiUp } from 'ui/assets/perps/IconRoiUpCC.svg';
 import { ReactComponent as RcIconRoiDown } from 'ui/assets/perps/IconRoiDownCC.svg';
-import TooltipV6 from '@/ui/component/Tooltip/TooltipV6';
-import { DashedUnderlineText } from '../../DesktopPerps/components/DashedUnderlineText';
 import {
   formatPerpsCoin,
   handleDisplayFundingPayments,
@@ -17,6 +14,7 @@ import {
 import { formatPercent } from '../utils';
 import { formatLiquidationGap } from '../positionDisplay';
 import { EditTpSlTag } from './EditTpSlTag';
+import { PerpsTipLabel as TipLabel } from './PerpsTipLabel';
 
 export interface PerpsPositionSectionData {
   pnl: number;
@@ -55,23 +53,10 @@ const Row: React.FC<{ label: React.ReactNode; value: React.ReactNode }> = ({
   label,
   value,
 }) => (
-  <div className="flex items-center justify-between gap-8 py-6 text-13">
+  <div className="flex items-center justify-between gap-8 py-6 text-13 leading-[16px]">
     <div className="text-r-neutral-body">{label}</div>
     <div className="font-medium text-r-neutral-title-1 text-right">{value}</div>
   </div>
-);
-
-/** Label with a dashed underline whose tooltip arrow stays on the label. */
-const TipLabel = ({
-  tip,
-  children,
-}: {
-  tip: React.ReactNode;
-  children: React.ReactNode;
-}) => (
-  <TooltipV6 overlayClassName="rectangle" placement="top" title={tip}>
-    <DashedUnderlineText needCursor={false}>{children}</DashedUnderlineText>
-  </TooltipV6>
 );
 
 const CardTitle = ({ children }: { children: React.ReactNode }) => (
@@ -137,7 +122,7 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
   return (
     <div className="flex flex-col gap-12 mt-16">
       <div className="flex items-center gap-6">
-        <div className="text-15 font-medium text-r-neutral-title-1 flex items-center gap-4">
+        <div className="text-15 leading-[18px] font-medium text-r-neutral-title-1 flex items-center gap-4">
           <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
           {t('page.perps.position')}
         </div>
@@ -151,21 +136,16 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
         >
           {direction} {leverage}x
         </span>
-        <span className="text-[12px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-line text-r-neutral-foot gap-2">
-          {type === 'cross' ? t('page.perps.cross') : t('page.perps.isolated')}
-          {type === 'cross' && (
-            <TooltipV6
-              overlayClassName="rectangle"
+        <span className="text-[12px] leading-[16px] font-medium px-4 h-[18px] flex items-center justify-center rounded-[4px] bg-r-neutral-line text-r-neutral-foot">
+          {type === 'cross' ? (
+            <TipLabel
               placement="bottom"
-              title={t('page.perps.crossMarginLiqPriceTip')}
+              tip={t('page.perps.crossMarginLiqPriceTip')}
             >
-              <RcIconInfo
-                viewBox="0 0 14 14"
-                width={12}
-                height={12}
-                className="text-r-neutral-foot"
-              />
-            </TooltipV6>
+              {t('page.perps.cross')}
+            </TipLabel>
+          ) : (
+            t('page.perps.isolated')
           )}
         </span>
       </div>
@@ -182,6 +162,7 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
               </span>
               {type === 'isolated' && (
                 <RcIconMarginAdd
+                  viewBox="0 0 16 16"
                   className="w-20 h-20 text-r-neutral-foot cursor-pointer hover:text-r-blue-default"
                   onClick={onEditMargin}
                 />
@@ -302,8 +283,13 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
             <TipLabel
               tip={
                 <Trans
-                  i18nKey="page.perpsPro.userInfo.tab.fundingTipsBold"
-                  components={{ bold: <span className="font-bold" /> }}
+                  i18nKey="page.perpsDetail.simpleAccount.fundingPaymentsTips"
+                  components={{
+                    positive: (
+                      <span className="font-bold text-r-green-default" />
+                    ),
+                    negative: <span className="font-bold text-r-red-default" />,
+                  }}
                 />
               }
             >
