@@ -55,7 +55,7 @@ const Row: React.FC<{ label: React.ReactNode; value: React.ReactNode }> = ({
   label,
   value,
 }) => (
-  <div className="flex items-center justify-between gap-8 py-6 text-13">
+  <div className="flex items-center justify-between gap-8 py-6 text-13 leading-[16px]">
     <div className="text-r-neutral-body">{label}</div>
     <div className="font-medium text-r-neutral-title-1 text-right">{value}</div>
   </div>
@@ -137,7 +137,7 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
   return (
     <div className="flex flex-col gap-12 mt-16">
       <div className="flex items-center gap-6">
-        <div className="text-15 font-medium text-r-neutral-title-1 flex items-center gap-4">
+        <div className="text-15 leading-[18px] font-medium text-r-neutral-title-1 flex items-center gap-4">
           <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
           {t('page.perps.position')}
         </div>
@@ -182,6 +182,7 @@ export const PerpsPositionSection: React.FC<PerpsPositionSectionProps> = ({
               </span>
               {type === 'isolated' && (
                 <RcIconMarginAdd
+                  viewBox="0 0 16 16"
                   className="w-20 h-20 text-r-neutral-foot cursor-pointer hover:text-r-blue-default"
                   onClick={onEditMargin}
                 />
