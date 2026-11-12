@@ -857,9 +857,60 @@ export const getPendingTxs = async ({
   const { pendings } = await wallet.getTransactionHistory(address);
 
   return buildPendingTxList(
-    pendings.filter((item) => item.chainId === chainId),
+    await excludeMinedPendingTxs({
+      pendings: pendings.filter((item) => item.chainId === chainId),
+      recommendNonce,
+      address,
+      chainId,
+      requestETHRpc: (data, chainServerId) =>
+        wallet.requestETHRpc(data, chainServerId),
+    }),
     recommendNonce
   );
+};
+
+/**
+ * The pre-exec API replays every pending tx it is given, whatever its nonce. A
+ * local pending tx below the account's on-chain nonce was already mined or
+ * replaced, so replaying it would simulate the new tx on a wrong state.
+ */
+export const excludeMinedPendingTxs = async <T extends { nonce: number }>({
+  pendings,
+  recommendNonce,
+  address,
+  chainId,
+  requestETHRpc,
+}: {
+  pendings: T[];
+  recommendNonce: string;
+  address: string;
+  chainId: number;
+  requestETHRpc: (
+    data: { method: string; params: any[] },
+    chainServerId: string
+  ) => Promise<string>;
+}) => {
+  const chain = findChain({ id: chainId });
+  if (
+    !chain ||
+    // A Tempo tx may use a nonce key, which the account nonce doesn't cover.
+    isTempoChain(chain.serverId) ||
+    !pendings.some((item) => new BigNumber(item.nonce).lt(recommendNonce))
+  ) {
+    return pendings;
+  }
+  try {
+    const onChainNonce = await requestETHRpc(
+      { method: 'eth_getTransactionCount', params: [address, 'latest'] },
+      chain.serverId
+    );
+    // `!lt` rather than `gte`, so an unreadable nonce filters nothing out.
+    return pendings.filter(
+      (item) => !new BigNumber(item.nonce).lt(onChainNonce)
+    );
+  } catch (e) {
+    return pendings;
+  }
 };
 
 export const buildPendingTxList = (
