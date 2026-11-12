@@ -23,7 +23,7 @@ import { formatPerpsCoin } from '../../DesktopPerps/utils';
 import { closeQuantitySummary } from '../positionDisplay';
 
 // Fixed at the tallest single-line state (mirrors mobile): title 56 +
-// Amount card with the minimum warning 173 + gap 12 + order card with three
+// Amount card, warning line always reserved, 173 + gap 12 + order card with three
 // rows (limit price, or market slippage) 126 + footer 80. Shorter states
 // leave the spare space below the cards; translations can still scroll.
 const CLOSE_POPUP_HEIGHT = 447;
@@ -229,18 +229,21 @@ export const ClosePositionPopup: React.FC<ClosePositionPopupProps> = ({
                 {splitNumberByStep(quantity.notional)} {quoteAsset} ={' '}
                 {quantity.quantity} {formatPerpsCoin(coin)}
               </div>
-              {/* Only takes vertical space once the warning actually shows. */}
-              {!isValidClosePercent && (
-                <div className="text-14 font-medium leading-[18px] text-r-red-default">
-                  {t(
-                    'page.perpsDetail.PerpsClosePositionPopup.minimumWarning',
-                    {
-                      percent: minClosePercent,
-                    }
-                  )}{' '}
-                  (${PERPS_MINI_USD_VALUE})
-                </div>
-              )}
+              {/* The warning line is always reserved so the card never
+                  changes height when it toggles. */}
+              <div className="min-h-[18px] text-14 font-medium leading-[18px] text-r-red-default">
+                {!isValidClosePercent && (
+                  <>
+                    {t(
+                      'page.perpsDetail.PerpsClosePositionPopup.minimumWarning',
+                      {
+                        percent: minClosePercent,
+                      }
+                    )}{' '}
+                    (${PERPS_MINI_USD_VALUE})
+                  </>
+                )}
+              </div>
             </div>
             {/* Pinned to 20px so the fixed popup height does not depend on
                 antd's slider margins. */}
