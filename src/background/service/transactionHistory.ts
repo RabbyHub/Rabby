@@ -22,14 +22,44 @@ import {
   checkIsPendingTxGroup,
   checkIsSubmittedTxGroup,
   findMaxGasTx,
+  getPendingGroupCategory,
 } from '@/utils/tx';
+import { isTempoChain } from '@/utils/tempo';
 import eventBus from '@/eventBus';
 import { customTestnetService } from './customTestnet';
 import {
   ActionRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
-import { RPCService, uninstalledService } from '.';
+import {
+  RPCService,
+  transactionBroadcastWatchService,
+  transactionWatchService,
+  uninstalledService,
+} from '.';
+
+// A tx that confirms normally never reaches the nonce fallback, so it costs no
+// backend request.
+const NONCE_FALLBACK_MIN_PENDING_MS = 60 * 1000;
+const ON_CHAIN_NONCE_CACHE_MS = 10 * 1000;
+// The node answering the nonce can be ahead of the node answering the receipt,
+// so a nonce taken by an unknown tx must be seen twice, this far apart, before
+// the local pending record is removed.
+const NONCE_TAKEN_CONFIRM_MS = 30 * 1000;
+
+const formatRpcTxReceipt = (res: {
+  transactionHash: string;
+  status: string;
+  gasUsed: string;
+  effectiveGasPrice: string;
+}) => ({
+  hash: res.transactionHash,
+  code: 0,
+  status: parseInt(res.status, 16),
+  gas_used: parseInt(res.gasUsed, 16),
+  gasUsed: res.gasUsed,
+  effectiveGasPrice: res.effectiveGasPrice,
+});
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -202,6 +232,11 @@ class TxHistory {
   private _signingTxList: TransactionSigningItem[] = [];
   private _availableTxs: TxHistory['store']['transactions'] = {};
   private _txHistoryLimit = 100;
+  private _onChainNonceCache: Record<
+    string,
+    { nonce: number; expireAt: number }
+  > = {};
+  private _nonceTakenFirstSeenAt: Record<string, number> = {};
 
   addSigningTx(tx: Tx) {
     uninstalledService.setTx();
@@ -1030,16 +1065,7 @@ class TxHistory {
       method: 'eth_getTransactionReceipt',
       params: [hash],
     })
-      .then((res) => {
-        return {
-          hash: res.transactionHash,
-          code: 0,
-          status: parseInt(res.status, 16),
-          gas_used: parseInt(res.gasUsed, 16),
-          gasUsed: res.gasUsed,
-          effectiveGasPrice: res.effectiveGasPrice,
-        };
-      })
+      .then(formatRpcTxReceipt)
       .catch((e) => {
         return {
           hash: hash,
@@ -1051,6 +1077,112 @@ class TxHistory {
         };
       });
   };
+
+  private async _getOnChainNonce(address: string, chainServerId: string) {
+    const key = `${chainServerId}-${address}`;
+    const cached = this._onChainNonceCache[key];
+    if (cached && cached.expireAt > Date.now()) {
+      return cached.nonce;
+    }
+    const nonce = parseInt(
+      await openapiService.ethRpc(chainServerId, {
+        origin: encodeURIComponent(INTERNAL_REQUEST_ORIGIN),
+        method: 'eth_getTransactionCount',
+        params: [address, 'latest'],
+      }),
+      16
+    );
+    this._onChainNonceCache[key] = {
+      nonce,
+      expireAt: Date.now() + ON_CHAIN_NONCE_CACHE_MS,
+    };
+    return nonce;
+  }
+
+  /**
+   * Receipts are read from the default (public) RPC only, which can be
+   * unreachable from the user's network or not have the receipt. Once the
+   * account's on-chain nonce has moved past a pending group's nonce, that nonce
+   * is spent and the group can no longer be pending, so the receipt is looked
+   * up through the backend instead. If none of the group's txs is on chain,
+   * another tx took the nonce and the local pending record is removed.
+   *
+   * @returns the raw receipt of the group's tx that is on chain, if any
+   */
+  async findTxReceiptByNonce({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) {
+    const from = address.toLowerCase();
+    const target = this.store.transactions[from]?.[`${chainId}-${nonce}`];
+    const chain = findChain({
+      id: chainId,
+    });
+    // A Tempo tx may use a nonce key, which the account nonce doesn't cover.
+    if (!target || !chain || chain.isTestnet || isTempoChain(chain.serverId)) {
+      return;
+    }
+    if (
+      !checkIsPendingTxGroup(target) ||
+      Date.now() - target.createdAt < NONCE_FALLBACK_MIN_PENDING_MS
+    ) {
+      return;
+    }
+    const { broadcastedTxs } = getPendingGroupCategory([target]);
+    if (!broadcastedTxs.length) {
+      return;
+    }
+
+    const takenKey = `${from}-${chainId}-${nonce}`;
+    const onChainNonce = await this._getOnChainNonce(from, chain.serverId);
+    if (!(onChainNonce > nonce)) {
+      delete this._nonceTakenFirstSeenAt[takenKey];
+      return;
+    }
+
+    const receipts = await Promise.all(
+      broadcastedTxs.map((tx) =>
+        openapiService.ethRpc(chain.serverId, {
+          origin: encodeURIComponent(INTERNAL_REQUEST_ORIGIN),
+          method: 'eth_getTransactionReceipt',
+          params: [tx.hash],
+        })
+      )
+    );
+    const receipt = receipts.find(Boolean);
+    if (receipt) {
+      delete this._nonceTakenFirstSeenAt[takenKey];
+      return receipt;
+    }
+
+    const firstSeenAt = this._nonceTakenFirstSeenAt[takenKey];
+    if (!firstSeenAt) {
+      this._nonceTakenFirstSeenAt[takenKey] = Date.now();
+      return;
+    }
+    if (Date.now() - firstSeenAt < NONCE_TAKEN_CONFIRM_MS) {
+      return;
+    }
+    delete this._nonceTakenFirstSeenAt[takenKey];
+    this.removeLocalPendingTx({ address, chainId, nonce });
+    transactionWatchService.removeLocalPendingTx({ address, chainId, nonce });
+    transactionBroadcastWatchService.removeLocalPendingTx({
+      address,
+      chainId,
+      nonce,
+    });
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.RELOAD_TX,
+      params: {
+        addressList: [address],
+      },
+    });
+  }
 
   async reloadTx(
     {
@@ -1094,7 +1226,18 @@ class TxHistory {
           }
         })
       );
-      const completed = results.find((result) => result.code === 0);
+      let completed = results.find((result) => result.code === 0);
+
+      if (!completed) {
+        const receipt = await this.findTxReceiptByNonce({
+          address,
+          chainId,
+          nonce,
+        });
+        if (receipt) {
+          completed = formatRpcTxReceipt(receipt);
+        }
+      }
 
       if (!completed) {
         if (duration !== false && +duration < 1000 * 15) {
@@ -1106,7 +1249,8 @@ class TxHistory {
         }
         return;
       }
-      const completedTx = txs.find((tx) => tx.hash === completed.hash)!;
+      const completedHash = completed.hash;
+      const completedTx = txs.find((tx) => tx.hash === completedHash)!;
       this.updateSingleTx({
         ...completedTx,
         gasUsed: completed.gas_used,

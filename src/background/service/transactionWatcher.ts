@@ -76,7 +76,7 @@ class TransactionWatcher {
     if (!this.store.pendingTx[id]) {
       return;
     }
-    const { hash, chain } = this.store.pendingTx[id];
+    const { hash, chain, nonce } = this.store.pendingTx[id];
     const chainItem = findChain({ enum: chain });
     if (!chainItem) {
       return;
@@ -91,18 +91,32 @@ class TransactionWatcher {
         .catch(() => null);
     }
 
-    return RPCService.requestDefaultRPC({
+    const receipt = await RPCService.requestDefaultRPC({
       chainServerId: chainItem.serverId,
       method: 'eth_getTransactionReceipt',
       params: [hash],
     }).catch(() => null);
+    if (receipt) {
+      return receipt;
+    }
+
+    const [address] = id.split('_');
+    return transactionHistoryService
+      .findTxReceiptByNonce({
+        address,
+        chainId: chainItem.id,
+        nonce: Number(nonce),
+      })
+      .catch(() => null);
   };
 
   notify = async (id: string, txReceipt) => {
     if (!this.store.pendingTx[id]) {
       return;
     }
-    const { hash, chain, nonce } = this.store.pendingTx[id];
+    const { chain, nonce } = this.store.pendingTx[id];
+    // the nonce fallback can find the receipt of another tx of the same nonce
+    const hash = txReceipt?.transactionHash || this.store.pendingTx[id].hash;
 
     const chainItem = findChain({ enum: chain });
     if (!chainItem) {
@@ -188,6 +202,10 @@ class TransactionWatcher {
         return;
       } else if (times > 10) {
         stop();
+        // the tx may have been removed while it was being queried
+        if (!this.store.pendingTx[id]) {
+          return;
+        }
         this.store.pendingTx = {
           ...this.store.pendingTx,
           [id]: {
@@ -261,8 +279,8 @@ class TransactionWatcher {
   }) => {
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [key, v]) => {
-        // address_chain_nonce
-        const [kAddress, , _nonce] = key.split('_');
+        // address_nonce_chain
+        const [kAddress, _nonce] = key.split('_');
         const chainItem = findChainByEnum(v.chain);
         const isSameAddr = isSameAddress(address, kAddress);
         if (+chainId === chainItem?.id && isSameAddr && +_nonce === +nonce) {
