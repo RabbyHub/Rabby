@@ -3888,7 +3888,7 @@
           "slice": "Slice",
           "unrealizedPnl": "Unrealisiertes PnL",
           "fundingTipsV2": "Nettofinanzierung seit der Eröffnung der Position. Ein roter (negativer) Finanzierungswert zeigt gezahlte Finanzierung an, während ein grüner (positiver) Wert erhaltene Finanzierung anzeigt.",
-          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <bold>Grüne (positive)</bold> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <bold>Rote (negative)</bold> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben.",
+          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <positive>Grüne (positive)</positive> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <negative>Rote (negative)</negative> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben.",
           "assets": "Vermögen",
           "about": "Über"
         },
@@ -4488,7 +4488,20 @@
         "takeProfitWhenPriceAbove": "Take-Profit-Auftrag, wenn der Preis darüber liegt",
         "takeProfitWhenPriceBelow": "Gewinnmitnahme-Auftrag, wenn der Preis darunter liegt"
       },
-      "needDepositFirst": "Sie müssen zuerst Geld einzahlen."
+      "needDepositFirst": "Sie müssen zuerst Geld einzahlen.",
+      "simpleAccount": {
+        "margin": "Margin",
+        "averageEntry": "Ø Einstiegspreis",
+        "estimatedLiquidationPrice": "Gesch. Liq.-Preis",
+        "estimatedLiquidationDistance": "Gesch. Liq.-Abstand",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Take-Profit-Preis",
+        "stopLossPrice": "Stop-Loss-Preis",
+        "funding": "Finanzierung",
+        "nextFundingRate": "Nächste Funding-Rate",
+        "estimatedPnl": "Gesch. PnL",
+        "fundingPaymentsTips": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <positive>Grüne (positive)</positive> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <negative>Rote (negative)</negative> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
