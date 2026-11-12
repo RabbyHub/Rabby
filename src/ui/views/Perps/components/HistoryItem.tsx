@@ -3,6 +3,7 @@ import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue, sinceTime, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
+import dayjs from 'dayjs';
 import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.svg';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw.svg';
@@ -12,7 +13,6 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
 import { TokenImg } from './TokenImg';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
-import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 import { SPOT_STABLE_COIN_NAME, PerpsQuoteAsset } from '../constants';
 import { ReactComponent as RcIconUSDT } from '@/ui/assets/perps/IconUSDT.svg';
 import { ReactComponent as RcIconUSDE } from '@/ui/assets/perps/IconUSDE.svg';
@@ -38,6 +38,16 @@ interface HistoryAccountItemProps {
   data: AccountHistoryItem;
   onClick?: (data: AccountHistoryItem) => void;
 }
+
+// sinceTime, minus the year for this year's records so the row keeps room
+// for the price.
+const formatHistoryTime = (ms: number) => {
+  if (Date.now() - ms < 24 * 3600 * 1000) return sinceTime(ms / 1000);
+  const time = dayjs(ms);
+  return time.format(
+    time.isSame(dayjs(), 'year') ? 'MM/DD HH:mm' : 'YYYY/MM/DD HH:mm'
+  );
+};
 
 const getPnlColor = (pnl: string | number) => {
   const pnlValue = Number(pnl);
@@ -150,7 +160,7 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
           </div>
           {isSuccess && (
             <div className="flex-shrink-0 text-r-neutral-foot">
-              {sinceTime(time / 1000)}
+              {formatHistoryTime(time)}
             </div>
           )}
         </div>
@@ -276,17 +286,16 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
             </div>
           ) : null}
         </div>
+        {/* Plain text so the whole line inherits the foot color —
+            PerpsDisplayCoinName's default title color on the base can win
+            over a passed foot class. */}
         <div className="flex items-center justify-between gap-8 text-13 leading-[16px] font-normal text-r-neutral-foot">
           <div className="truncate">
-            {stableCoinSwap ? (
-              t('page.swap.Completed')
-            ) : (
-              <PerpsDisplayCoinName
-                item={itemData}
-                baseClassName="text-r-neutral-foot"
-                quoteClassName="text-r-neutral-foot"
-              />
-            )}
+            {stableCoinSwap
+              ? t('page.swap.Completed')
+              : `${formatPerpsCoin(
+                  itemData?.displayName || itemData?.name || ''
+                )}/${itemData?.quoteAsset || 'USDC'}`}
             {!stableCoinSwap && fill.px ? (
               <span className="ml-4">
                 @$
@@ -294,7 +303,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
               </span>
             ) : null}
           </div>
-          <div className="flex-shrink-0">{sinceTime(fill.time / 1000)}</div>
+          <div className="flex-shrink-0">{formatHistoryTime(fill.time)}</div>
         </div>
       </div>
     </div>
