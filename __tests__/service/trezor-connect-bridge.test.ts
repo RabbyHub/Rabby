@@ -70,4 +70,27 @@ describe('Trezor Connect bridge', () => {
     });
     expect(bridge.getSigningDiagnostics().transport).toBe('unknown');
   });
+
+  it('invalidates the keyring cache when the active device changes', async () => {
+    const bridge = new TrezorBridge();
+    await bridge.init({ manifest });
+    const cleanUp = jest.fn();
+    bridge.event.on('cleanUp', cleanUp);
+
+    connect.ethereumSignMessage.mockResolvedValueOnce({
+      success: true,
+      payload: { address: '0x0', signature: '0x0' },
+      device: { path: 'device-a', state: { staticSessionId: 'session-a' } },
+    } as never);
+    await bridge.ethereumSignMessage({ path: 'm/1' });
+    expect(cleanUp).not.toHaveBeenCalled();
+
+    connect.ethereumSignMessage.mockResolvedValueOnce({
+      success: true,
+      payload: { address: '0x0', signature: '0x0' },
+      device: { path: 'device-b', state: { staticSessionId: 'session-b' } },
+    } as never);
+    await bridge.ethereumSignMessage({ path: 'm/1' });
+    expect(cleanUp).toHaveBeenCalledWith(true);
+  });
 });

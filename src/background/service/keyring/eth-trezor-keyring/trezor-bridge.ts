@@ -58,6 +58,29 @@ export default class TrezorBridge implements TrezorBridgeInterface {
   connectDevices = new Set<string>();
   event = new EventEmitter();
 
+  private lastDeviceIdentity?: string;
+
+  // Connect 10 has no DEVICE_EVENT. Invalidate the keyring's HD cache when a
+  // response comes from a different device (or passphrase session) so stale
+  // public keys are not reused after switching Trezor devices.
+  private trackDevice(response: unknown) {
+    const device = (response as {
+      device?: {
+        path?: string;
+        state?: { staticSessionId?: string };
+      };
+    })?.device;
+    if (!device) return;
+
+    const identity = device.state?.staticSessionId || device.path;
+    if (!identity) return;
+
+    if (this.lastDeviceIdentity && this.lastDeviceIdentity !== identity) {
+      this.event.emit('cleanUp', true);
+    }
+    this.lastDeviceIdentity = identity;
+  }
+
   // The keyring does not await init. Keep the manifest for the first request
   // instead of touching Trezor Suite before the user starts an operation.
   init: TrezorBridgeInterface['init'] = async (config) => {
@@ -79,27 +102,35 @@ export default class TrezorBridge implements TrezorBridgeInterface {
   getPublicKey: TrezorBridgeInterface['getPublicKey'] = async (params) => {
     await ensureInitialized();
     const bundle = params.bundle.map(({ coin: _coin, ...item }) => item);
-    return TrezorConnect.ethereumGetPublicKey({ bundle });
+    const response = await TrezorConnect.ethereumGetPublicKey({ bundle });
+    this.trackDevice(response);
+    return response;
   };
 
   ethereumSignTransaction: TrezorBridgeInterface['ethereumSignTransaction'] = async (
     params
   ) => {
     await ensureInitialized();
-    return TrezorConnect.ethereumSignTransaction(params);
+    const response = await TrezorConnect.ethereumSignTransaction(params);
+    this.trackDevice(response);
+    return response;
   };
 
   ethereumSignMessage: TrezorBridgeInterface['ethereumSignMessage'] = async (
     params
   ) => {
     await ensureInitialized();
-    return TrezorConnect.ethereumSignMessage(params);
+    const response = await TrezorConnect.ethereumSignMessage(params);
+    this.trackDevice(response);
+    return response;
   };
 
   ethereumSignTypedData: TrezorBridgeInterface['ethereumSignTypedData'] = async (
     params
   ) => {
     await ensureInitialized();
-    return TrezorConnect.ethereumSignTypedData(params);
+    const response = await TrezorConnect.ethereumSignTypedData(params);
+    this.trackDevice(response);
+    return response;
   };
 }

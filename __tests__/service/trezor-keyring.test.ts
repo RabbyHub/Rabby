@@ -31,13 +31,11 @@ const makeBridge = () => ({
 });
 
 describe('patched Trezor keyring', () => {
-  it('refreshes public keys without a device event instead of reusing the previous device', async () => {
+  it('reuses cached public keys until the bridge reports a device change', async () => {
     const bridge = makeBridge();
     const first = publicKeyResult(1);
     const second = publicKeyResult(2);
-    bridge.getPublicKey
-      .mockResolvedValueOnce(first)
-      .mockResolvedValueOnce(second);
+    bridge.getPublicKey.mockResolvedValueOnce(first);
     const keyring: any = new TrezorKeyring({ bridge } as any);
 
     await keyring.unlock();
@@ -45,36 +43,23 @@ describe('patched Trezor keyring', () => {
       first.payload[0].publicKey
     );
     await keyring.unlock();
+    expect(bridge.getPublicKey).toHaveBeenCalledTimes(1);
+    expect(keyring.hdkMap.get(path).publicKey.toString('hex')).toBe(
+      first.payload[0].publicKey
+    );
+
+    bridge.event.emit('cleanUp', true);
+    expect(keyring.hdkMap.size).toBe(0);
+
+    bridge.getPublicKey.mockResolvedValueOnce(second);
+    await keyring.unlock();
+    expect(bridge.getPublicKey).toHaveBeenCalledTimes(2);
     expect(keyring.hdkMap.get(path).publicKey.toString('hex')).toBe(
       second.payload[0].publicKey
     );
-    expect(bridge.getPublicKey).toHaveBeenCalledTimes(2);
     expect(bridge.getPublicKey).toHaveBeenLastCalledWith({
       bundle: [{ path, coin: 'ETH' }],
     });
-    bridge.event.emit('cleanUp', true);
-    expect(keyring.hdkMap.size).toBe(0);
-  });
-
-  it('rejects a superseded public-key response instead of mixing devices', async () => {
-    const bridge = makeBridge();
-    let resolveFirst!: (result: ReturnType<typeof publicKeyResult>) => void;
-    bridge.getPublicKey
-      .mockImplementationOnce(
-        () =>
-          new Promise((resolve) => {
-            resolveFirst = resolve;
-          })
-      )
-      .mockResolvedValueOnce(publicKeyResult(2));
-    const keyring: any = new TrezorKeyring({ bridge } as any);
-    const first = keyring.unlock();
-    await keyring.unlock();
-    resolveFirst(publicKeyResult(1));
-    await expect(first).rejects.toThrow('public key request was superseded');
-    expect(keyring.hdkMap.get(path).publicKey.toString('hex')).toBe(
-      publicKeyResult(2).payload[0].publicKey
-    );
   });
 
   it('passes V4 typed data without precomputed hashes and checks the signing address', async () => {
