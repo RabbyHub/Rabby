@@ -130,6 +130,7 @@
     "^node_modules/@rabby-wallet/rabby-api",
     "^node_modules/@rabby-wallet/rabby-sign",
     "^node_modules/@sentry/utils",
+    "^node_modules/@trezor/connect-common",
     "^node_modules/@trezor/connect-web",
     "^node_modules/lightweight-charts",
     "^node_modules/webextension-polyfill",

@@ -240,6 +240,21 @@ describe('signing diagnostics port', () => {
     }
   );
 
+  it('does not infer the Trezor transport when Suite handles signing', async () => {
+    const error = new Error('Trezor signing failed');
+    await expect(
+      withSigningDiagnostics(
+        { type: 'Trezor Hardware', signingDiagnosticsProvider: 'trezor' },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+    expect(getSigningContext(error)).toMatchObject({
+      wallet_provider: 'trezor',
+      transport: 'unknown',
+    });
+  });
+
   it('falls back to unknown for malformed provider values', async () => {
     registerSigningDiagnosticsProvider('bad-wallet', () => ({
       wallet_provider: 'address-0x1234567890123456789012345678901234567890',
