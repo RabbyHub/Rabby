@@ -5,9 +5,25 @@ import {
 } from '@rabby-wallet/rabby-bridge';
 import type { BridgeErrorReport } from '@rabby-wallet/rabby-bridge';
 
+// A failed quote/build request is not a validation failure.
+const BUILD_REQUEST_CODES = new Set([
+  'BRIDGE_BACKEND_BUILD_REQUEST_FAILED',
+  'BRIDGE_BACKEND_QUOTE_REQUEST_FAILED',
+]);
+
+const isBuildRequestReport = (report: BridgeErrorReport) => {
+  const codes = [
+    report.error_code,
+    ...report.errors.map((error) => error.error_code),
+  ];
+  return (
+    codes.length > 0 && codes.every((code) => BUILD_REQUEST_CODES.has(code))
+  );
+};
+
 export const createBridgeSdkSentryEvent = (value: unknown) => {
   const report = toBridgeErrorReport(value);
-  if (!report) return null;
+  if (!report || isBuildRequestReport(report)) return null;
 
   const primary = report.errors[0];
   const tags: Record<string, string> = {

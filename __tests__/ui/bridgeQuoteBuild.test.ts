@@ -1,6 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import ts from 'typescript';
+import React, { useCallback } from 'react';
+import { flushSync } from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import useMemoizedFn from 'ahooks/lib/useMemoizedFn';
 import { isSameBridgeQuote } from '@/ui/views/Bridge/utils/bridgeQuote';
 
 // Exercise the actual callback without loading the unrelated wallet UI.
@@ -16,7 +20,15 @@ const source = ts.createSourceFile(
   ts.ScriptKind.TSX
 );
 let callback: string | undefined;
+let submitInitializer: string | undefined;
 const visit = (node: ts.Node) => {
+  if (
+    ts.isVariableDeclaration(node) &&
+    node.name.getText(source) === 'gotoBridge' &&
+    node.initializer
+  ) {
+    submitInitializer = node.initializer.getText(source);
+  }
   if (
     ts.isVariableDeclaration(node) &&
     node.name.getText(source) === 'buildTxs' &&
@@ -149,4 +161,78 @@ describe('Bridge failed build quote cleanup', () => {
     const update = state.setQuotesList.mock.calls[0][0];
     expect(update(state.getQuotes())).toEqual([fresh, state.otherQuote]);
   });
+});
+
+it('submits the refreshed quote when only its quote key changes', async () => {
+  if (!submitInitializer) throw new Error('Cannot locate Bridge gotoBridge');
+  const compiledSubmit = ts.transpileModule(
+    `const gotoBridge = ${submitInitializer};`,
+    { compilerOptions: { target: ts.ScriptTarget.ES2020 } }
+  ).outputText;
+  const selectedQuote = {
+    aggregator: { id: 'relay' },
+    bridge_id: 'relay',
+    quote_key: { quote_id: 'old' },
+    to_token_amount: '4',
+    duration: 60,
+  };
+  const requestBridgeQuoteTx = jest.fn().mockResolvedValue({});
+  const scope = {
+    useCallback,
+    useMemoizedFn,
+    inSufficient: false,
+    fromToken: { chain: 'arb', id: 'arb' },
+    toToken: { chain: 'base', id: 'base' },
+    userAddress: `0x${'11'.repeat(20)}`,
+    amount: '1',
+    slippage: '1',
+    slippageState: '1',
+    feeRate: 0,
+    maxNativeTokenGasPrice: undefined,
+    rbiSource: 'test',
+    wallet: {
+      openapi: {},
+      bridgeToken: jest.fn().mockResolvedValue(undefined),
+    },
+    requestBridgeQuoteTx,
+    buildBridgeTokenSideParams: jest.fn().mockReturnValue({}),
+    setFetchingBridgeQuote: jest.fn(),
+    setQuotesList: jest.fn(),
+    handleAmountChange: jest.fn(),
+    isTab: true,
+    isDesktop: false,
+    isSameBridgeQuote,
+    message: { error: jest.fn() },
+    console: { error: jest.fn() },
+  };
+  const useSubmit = new Function(
+    ...Object.keys(scope),
+    'selectedBridgeQuote',
+    `${compiledSubmit}; return gotoBridge;`
+  );
+  let submit!: () => Promise<void>;
+  const Harness = ({ quote }: { quote: typeof selectedQuote }) => {
+    submit = useSubmit(...Object.values(scope), quote);
+    return null;
+  };
+  const container = document.createElement('div');
+  const root = createRoot(container);
+  try {
+    flushSync(() => {
+      root.render(React.createElement(Harness, { quote: selectedQuote }));
+    });
+    const freshQuote = { ...selectedQuote, quote_key: { quote_id: 'fresh' } };
+    flushSync(() => {
+      root.render(React.createElement(Harness, { quote: freshQuote }));
+    });
+    await submit();
+    expect(requestBridgeQuoteTx).toHaveBeenCalledWith(
+      expect.objectContaining({ quote: freshQuote })
+    );
+    expect(scope.wallet.bridgeToken).toHaveBeenCalledTimes(1);
+  } finally {
+    flushSync(() => {
+      root.unmount();
+    });
+  }
 });

@@ -1,4 +1,6 @@
 import * as Sentry from '@sentry/browser';
+import { BRIDGE_ERRORS, BridgeError } from '@rabby-wallet/rabby-bridge';
+import { reportBridgeSdkException } from '@/utils/bridge-sdk-report';
 import type { SelectedBridgeQuote } from '@/ui/views/Bridge/hooks';
 import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { requestBridgeQuoteTx } from '@/ui/views/Bridge/utils/submit';
@@ -79,6 +81,16 @@ describe('Bridge SDK business integration', () => {
     expect(captureEvent.mock.calls[0][0].tags.bridge_error_code).toBe(
       'BRIDGE_ROUTER_NOT_ALLOWED'
     );
+  });
+
+  it.each([
+    BRIDGE_ERRORS.BACKEND_QUOTE_REQUEST_FAILED,
+    BRIDGE_ERRORS.BACKEND_BUILD_REQUEST_FAILED,
+    BRIDGE_ERRORS.UNSUPPORTED_SOURCE_CHAIN,
+    BRIDGE_ERRORS.UNSUPPORTED_BRIDGE_AGGREGATOR,
+  ])('does not report $error_code as a validation failure', (definition) => {
+    reportBridgeSdkException(new BridgeError(definition));
+    expect(captureEvent).not.toHaveBeenCalled();
   });
 
   it('keeps a rejection blocking even if Sentry throws', async () => {
