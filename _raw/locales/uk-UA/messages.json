@@ -4495,7 +4495,20 @@
         "takeProfitWhenPriceBelow": "Тейк-профіт, коли ціна нижча за",
         "stopLossWhenPriceAbove": "Стоп-ліміт, коли ціна вище"
       },
-      "needDepositFirst": "Спочатку потрібно поповнити рахунок."
+      "needDepositFirst": "Спочатку потрібно поповнити рахунок.",
+      "simpleAccount": {
+        "margin": "Маржа",
+        "averageEntry": "Середня ціна входу",
+        "estimatedLiquidationPrice": "Розрах. ціна ліквідації",
+        "estimatedLiquidationDistance": "Розрах. відстань до ліквідації",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Ціна тейк-профіту",
+        "stopLossPrice": "Ціна стоп-лосу",
+        "funding": "Фандінг",
+        "nextFundingRate": "Наступна ставка фандінгу",
+        "estimatedPnl": "Розрах. PnL",
+        "fundingPaymentsTips": "Це показує ваші загальні кошти, які були встановлені з моменту відкриття позиції. <positive>Зелені (позитивні)</positive> значення означають, що ви заробили від інших трейдерів, тоді як <negative>Червоні (негативні)</negative> значення - це витрати на фінансування, які ви їм заплатили."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

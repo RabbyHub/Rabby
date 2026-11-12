@@ -4480,7 +4480,20 @@
         "stopLossWhenPriceBelow": "Cắt lỗ khi giá xuống dưới",
         "stopLossExpectedPNL": "Dừng lỗ PNL dự kiến"
       },
-      "needDepositFirst": "Bạn cần nạp tiền ký quỹ trước."
+      "needDepositFirst": "Bạn cần nạp tiền ký quỹ trước.",
+      "simpleAccount": {
+        "margin": "Ký quỹ",
+        "averageEntry": "Giá vào trung bình",
+        "estimatedLiquidationPrice": "Giá thanh lý ước tính",
+        "estimatedLiquidationDistance": "Khoảng cách thanh lý ước tính",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Giá chốt lời",
+        "stopLossPrice": "Giá cắt lỗ",
+        "funding": "Funding",
+        "nextFundingRate": "Tỷ lệ funding tiếp theo",
+        "estimatedPnl": "PNL ước tính",
+        "fundingPaymentsTips": "Đây là tổng funding đã quyết toán kể từ khi vị thế được mở. <positive>Giá trị xanh (dương)</positive> là khoản bạn nhận từ nhà giao dịch khác, còn <negative>giá trị đỏ (âm)</negative> là chi phí funding bạn đã trả cho họ."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

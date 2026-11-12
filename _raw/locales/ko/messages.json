@@ -4480,7 +4480,20 @@
         "stopLossWhenPriceAbove": "가격이 상회할 때 손절매",
         "takeProfitTipsLong": "익절가가 현재가보다 높아야 합니다."
       },
-      "needDepositFirst": "먼저 자금을 예치해야 합니다."
+      "needDepositFirst": "먼저 자금을 예치해야 합니다.",
+      "simpleAccount": {
+        "margin": "마진",
+        "averageEntry": "평균 진입가",
+        "estimatedLiquidationPrice": "예상 청산가",
+        "estimatedLiquidationDistance": "예상 청산 거리",
+        "tpSl": "익절/손절",
+        "takeProfitPrice": "익절 가격",
+        "stopLossPrice": "손절 가격",
+        "funding": "펀딩",
+        "nextFundingRate": "다음 펀딩 비율",
+        "estimatedPnl": "예상 PNL",
+        "fundingPaymentsTips": "포지션을 연 이후 정산된 총 펀딩 금액입니다. <positive>녹색(양수)</positive>은 다른 트레이더에게서 받은 금액, <negative>빨간색(음수)</negative>은 다른 트레이더에게 지급한 펀딩 비용을 나타냅니다."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

@@ -4530,7 +4530,20 @@
         "whenPriceBelow": "當價格低於",
         "stopLossWhenPriceBelow": "止蝕單：當價格跌破"
       },
-      "needDepositFirst": "你需要先存入資金。"
+      "needDepositFirst": "你需要先存入資金。",
+      "simpleAccount": {
+        "margin": "保證金",
+        "averageEntry": "平均開倉價",
+        "estimatedLiquidationPrice": "預計強平價",
+        "estimatedLiquidationDistance": "預計強平距離",
+        "tpSl": "止盈/止損",
+        "takeProfitPrice": "止盈價格",
+        "stopLossPrice": "止損價格",
+        "funding": "資金費",
+        "nextFundingRate": "下一期資金費率",
+        "estimatedPnl": "預計盈虧",
+        "fundingPaymentsTips": "這裡顯示自開倉以來結算的資金費總額。<positive>綠色（正數）</positive>表示從其他交易者獲得的資金費收益，<negative>紅色（負數）</negative>表示已支付的資金費。"
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

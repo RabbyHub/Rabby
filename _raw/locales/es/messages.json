@@ -4483,7 +4483,20 @@
         "stopLossExpectedPNL": "PNL esperado con el límite de pérdidas",
         "takeProfitExpectedPNL": "PNL esperado con la toma de ganancias"
       },
-      "needDepositFirst": "Primero debes depositar fondos."
+      "needDepositFirst": "Primero debes depositar fondos.",
+      "simpleAccount": {
+        "margin": "Margen",
+        "averageEntry": "Precio medio de entrada",
+        "estimatedLiquidationPrice": "Precio de liq. estimado",
+        "estimatedLiquidationDistance": "Distancia de liq. estimada",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Precio de toma de ganancias",
+        "stopLossPrice": "Precio de stop loss",
+        "funding": "Financiación",
+        "nextFundingRate": "Próxima tasa de financiación",
+        "estimatedPnl": "PnL estimado",
+        "fundingPaymentsTips": "Esto muestra tu financiación total liquidada desde que se abrió la posición. Los valores <positive>Verdes (positivos)</positive> significan que has ganado de otros traders, mientras que los valores <negative>Rojos (negativos)</negative> son los costos de financiación que les has pagado."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

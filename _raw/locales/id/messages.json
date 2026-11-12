@@ -4480,7 +4480,20 @@
         "stopLossTipsShortLiquidation": "Harga lebih tinggi dari harga likuidasi ({{price}})",
         "takeProfitTipsLong": "Harga ambil untung harus lebih tinggi dari harga saat ini"
       },
-      "needDepositFirst": "Anda perlu melakukan setoran dana terlebih dahulu."
+      "needDepositFirst": "Anda perlu melakukan setoran dana terlebih dahulu.",
+      "simpleAccount": {
+        "margin": "Margin",
+        "averageEntry": "Harga masuk rata-rata",
+        "estimatedLiquidationPrice": "Estimasi harga likuidasi",
+        "estimatedLiquidationDistance": "Estimasi jarak likuidasi",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Harga ambil untung",
+        "stopLossPrice": "Harga hentikan rugi",
+        "funding": "Pendanaan",
+        "nextFundingRate": "Tingkat Pendanaan Berikutnya",
+        "estimatedPnl": "Estimasi PNL",
+        "fundingPaymentsTips": "Ini menunjukkan total pendanaan yang diselesaikan sejak posisi dibuka. Nilai <positive>hijau (positif)</positive> berarti Anda menerima pendanaan dari trader lain, sedangkan nilai <negative>merah (negatif)</negative> adalah biaya pendanaan yang Anda bayarkan kepada mereka."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

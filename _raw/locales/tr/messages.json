@@ -4486,7 +4486,20 @@
         "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından daha yüksektir ({{price}})",
         "takeProfitExpectedPNL": "Kâr Al Beklenen PnL"
       },
-      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir."
+      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir.",
+      "simpleAccount": {
+        "margin": "Marj",
+        "averageEntry": "Ort. giriş fiyatı",
+        "estimatedLiquidationPrice": "Tahmini lik. fiyatı",
+        "estimatedLiquidationDistance": "Tahmini lik. mesafesi",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Kâr alma fiyatı",
+        "stopLossPrice": "Zarar durdurma fiyatı",
+        "funding": "Fonlama",
+        "nextFundingRate": "Sonraki Fonlama Oranı",
+        "estimatedPnl": "Tahmini PNL",
+        "fundingPaymentsTips": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <positive>Yeşil (pozitif)</positive> değerler, diğer ticaretçilerden kazandığınızı, <negative>Kırmızı (negatif)</negative> değerler ise onlara ödediğiniz finansman maliyetleridir."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

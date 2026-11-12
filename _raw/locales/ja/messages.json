@@ -4483,7 +4483,20 @@
         "cancel": "キャンセル",
         "stopLossExpectedPNL": "ストップロス 予想P/L"
       },
-      "needDepositFirst": "先に資金を入金してください。"
+      "needDepositFirst": "先に資金を入金してください。",
+      "simpleAccount": {
+        "margin": "証拠金",
+        "averageEntry": "平均建値",
+        "estimatedLiquidationPrice": "予想清算価格",
+        "estimatedLiquidationDistance": "予想清算乖離率",
+        "tpSl": "利確/損切り",
+        "takeProfitPrice": "利確価格",
+        "stopLossPrice": "損切り価格",
+        "funding": "資金調達料",
+        "nextFundingRate": "次回の資金調達率",
+        "estimatedPnl": "予想損益",
+        "fundingPaymentsTips": "ポジションを開いてから決済されたファンディングの合計です。<positive>緑（プラス）</positive>は他のトレーダーから受け取った額、<negative>赤（マイナス）</negative>は他のトレーダーに支払ったファンディングコストを示します。"
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
