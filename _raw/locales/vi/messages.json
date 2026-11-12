@@ -3880,7 +3880,7 @@
           "markEntry": "Giá tham chiếu / Giá vào vị thế",
           "closedPnl": "PnL đã thực hiện",
           "fundingTipsV2": "Khoản funding ròng kể từ khi vị thế được mở. Giá trị đỏ (âm) cho biết funding đã trả, còn giá trị xanh (dương) cho biết funding đã nhận.",
-          "fundingTipsBold": "Đây là tổng funding đã quyết toán kể từ khi vị thế được mở. <bold>Giá trị xanh (dương)</bold> là khoản bạn nhận từ nhà giao dịch khác, còn <bold>giá trị đỏ (âm)</bold> là chi phí funding bạn đã trả cho họ.",
+          "fundingTipsBold": "Đây là tổng funding đã quyết toán kể từ khi vị thế được mở. <positive>Giá trị xanh (dương)</positive> là khoản bạn nhận từ nhà giao dịch khác, còn <negative>giá trị đỏ (âm)</negative> là chi phí funding bạn đã trả cho họ.",
           "assets": "Tài sản",
           "about": "Giới thiệu"
         },

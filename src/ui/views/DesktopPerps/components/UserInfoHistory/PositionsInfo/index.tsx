@@ -557,9 +557,6 @@ export const PositionsInfo: React.FC = () => {
               <Trans
                 i18nKey={'page.perpsPro.userInfo.tab.fundingTipsBold'}
                 components={{
-                  // `bold` stays until the other locales pick up the
-                  // positive/negative tags.
-                  bold: <span className="font-bold" />,
                   positive: (
                     <span className="font-bold text-rb-green-default" />
                   ),

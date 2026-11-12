@@ -4226,7 +4226,7 @@
           "closedPnlTooltip": "Le PNL réalisé inclut les frais et les remises.",
           "tpSl": "Objectif de profit / Limite de perte",
           "fundingTipsV2": "Financement net depuis l'ouverture de la position. Une valeur de financement rouge (négative) indique un financement payé, tandis qu'une valeur verte (positive) indique un financement reçu.",
-          "fundingTipsBold": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <bold>vertes (positives)</bold> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <bold>rouges (négatives)</bold> sont des coûts de financement que vous leur avez payés.",
+          "fundingTipsBold": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <positive>vertes (positives)</positive> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <negative>rouges (négatives)</negative> sont des coûts de financement que vous leur avez payés.",
           "assets": "Actifs",
           "about": "À propos"
         },

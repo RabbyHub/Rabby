@@ -3930,7 +3930,7 @@
           "size": "倉位大小",
           "orderHistory": "委託單歷史",
           "fundingTipsV2": "自開倉以來的淨資金費用。紅色（負值）表示已支付資金費用，綠色（正值）表示已收取資金費用。",
-          "fundingTipsBold": "這裡顯示自開倉以來結算的資金費總額。<bold>綠色（正數）</bold>表示從其他交易者獲得的資金費收益，<bold>紅色（負數）</bold>表示已支付的資金費。",
+          "fundingTipsBold": "這裡顯示自開倉以來結算的資金費總額。<positive>綠色（正數）</positive>表示從其他交易者獲得的資金費收益，<negative>紅色（負數）</negative>表示已支付的資金費。",
           "assets": "資產",
           "about": "關於"
         },

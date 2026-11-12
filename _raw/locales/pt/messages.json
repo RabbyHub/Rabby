@@ -3880,7 +3880,7 @@
           "trade": "Negociar",
           "unrealizedPnlTooltip": "O preço de marcação é usado para estimar o PnL não realizado. Apenas os preços de negociação são usados para o PnL realizado.",
           "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido.",
-          "fundingTipsBold": "Mostra o financiamento total liquidado desde a abertura da posição. Valores <bold>verdes (positivos)</bold> indicam montantes recebidos de outros operadores; valores <bold>vermelhos (negativos)</bold> indicam custos de financiamento pagos.",
+          "fundingTipsBold": "Mostra o financiamento total liquidado desde a abertura da posição. Valores <positive>verdes (positivos)</positive> indicam montantes recebidos de outros operadores; valores <negative>vermelhos (negativos)</negative> indicam custos de financiamento pagos.",
           "assets": "Ativos",
           "about": "Sobre"
         },

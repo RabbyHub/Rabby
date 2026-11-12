@@ -3883,7 +3883,7 @@
           "slice": "Slice",
           "unrealizedPnl": "Unrealisiertes PnL",
           "fundingTipsV2": "Nettofinanzierung seit der Eröffnung der Position. Ein roter (negativer) Finanzierungswert zeigt gezahlte Finanzierung an, während ein grüner (positiver) Wert erhaltene Finanzierung anzeigt.",
-          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <bold>Grüne (positive)</bold> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <bold>Rote (negative)</bold> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben.",
+          "fundingTipsBold": "Dies zeigt Ihre gesamten seit der Eröffnung der Position abgerechneten Finanzierungen. <positive>Grüne (positive)</positive> Werte bedeuten, dass Sie von anderen Händlern verdient haben, während <negative>Rote (negative)</negative> Werte die Finanzierungskosten sind, die Sie an sie gezahlt haben.",
           "assets": "Vermögen",
           "about": "Über"
         },

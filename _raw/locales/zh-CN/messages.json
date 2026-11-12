@@ -3930,7 +3930,7 @@
           "closedPnl": "已实现盈亏",
           "unrealizedPnl": "未实现盈亏",
           "fundingTipsV2": "自开仓以来的资金费净额。红色（负值）表示已支付资金费，绿色（正值）表示已收到资金费。",
-          "fundingTipsBold": "这里显示自开仓以来结算的资金费总额。<bold>绿色（正值）</bold>表示从其他交易者处获得的资金费收益，<bold>红色（负值）</bold>表示已支付的资金费。",
+          "fundingTipsBold": "这里显示自开仓以来结算的资金费总额。<positive>绿色（正值）</positive>表示从其他交易者处获得的资金费收益，<negative>红色（负值）</negative>表示已支付的资金费。",
           "assets": "资产",
           "about": "关于"
         },

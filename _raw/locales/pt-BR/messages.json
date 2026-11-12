@@ -3885,7 +3885,7 @@
           "size": "Tamanho da posição",
           "tpSl": "Lucro-alvo / Stop Loss",
           "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido.",
-          "fundingTipsBold": "Isto mostra o total de funding liquidado desde que a posição foi aberta. Valores <bold>Verde (positivo)</bold> significam que você ganhou de outros traders, enquanto valores <bold>Vermelho (negativo)</bold> são os custos de funding que você pagou a eles.",
+          "fundingTipsBold": "Isto mostra o total de funding liquidado desde que a posição foi aberta. Valores <positive>Verde (positivo)</positive> significam que você ganhou de outros traders, enquanto valores <negative>Vermelho (negativo)</negative> são os custos de funding que você pagou a eles.",
           "assets": "Ativos",
           "about": "Sobre"
         },
