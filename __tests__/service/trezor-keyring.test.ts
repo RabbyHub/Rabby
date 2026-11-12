@@ -62,6 +62,42 @@ describe('patched Trezor keyring', () => {
     });
   });
 
+  // HDManager mounts getCurrentAccounts and the queued unlock at the same time.
+  // Each cache miss is a separate Suite session, so the second one reopened
+  // Suite right after the user closed the first.
+  it('shares one in-flight public-key request between concurrent unlocks', async () => {
+    const bridge = makeBridge();
+    let resolve!: (r: ReturnType<typeof publicKeyResult>) => void;
+    bridge.getPublicKey.mockReturnValueOnce(new Promise((r) => (resolve = r)));
+    const keyring: any = new TrezorKeyring({ bridge } as any);
+
+    const first = keyring.unlock(0, 51);
+    const second = keyring.unlock();
+    resolve(publicKeyResult(1));
+    await expect(first).resolves.toBe('just unlocked');
+    await expect(second).resolves.toBe('already unlocked');
+    expect(bridge.getPublicKey).toHaveBeenCalledTimes(1);
+  });
+
+  it('rejects waiting unlocks when the user cancels in Suite', async () => {
+    const bridge = makeBridge();
+    bridge.getPublicKey.mockResolvedValueOnce({
+      success: false,
+      error: { message: 'Cancelled', code: 'Method_Cancel' },
+    });
+    const keyring: any = new TrezorKeyring({ bridge } as any);
+
+    const first = keyring.unlock();
+    const second = keyring.unlock();
+    await expect(first).rejects.toMatchObject({ code: 'Method_Cancel' });
+    await expect(second).rejects.toMatchObject({ code: 'Method_Cancel' });
+    expect(bridge.getPublicKey).toHaveBeenCalledTimes(1);
+
+    // A later, user-initiated retry still reaches the device.
+    bridge.getPublicKey.mockResolvedValueOnce(publicKeyResult(1));
+    await expect(keyring.unlock()).resolves.toBe('just unlocked');
+  });
+
   it('passes V4 typed data without precomputed hashes and checks the signing address', async () => {
     const bridge = makeBridge();
     bridge.ethereumSignTypedData.mockResolvedValue({
@@ -115,12 +151,38 @@ describe('patched Trezor keyring', () => {
     });
   });
 
-  it('rejects V3 before making a device call', async () => {
+  // eth_signTypedData_v3 reaches the keyring as V3. Connect 9 already signed it
+  // with metamask_v4_compat on Model T+; keep that instead of rejecting.
+  it('passes V3 typed data through with v4 compat', async () => {
+    const bridge = makeBridge();
+    bridge.ethereumSignTypedData.mockResolvedValue({
+      success: true,
+      payload: { address, signature: '0xsignature' },
+    });
+    const keyring: any = new TrezorKeyring({ bridge } as any);
+    keyring.getHdPath = jest.fn().mockResolvedValue(`${path}/0`);
+    const data = {
+      types: { EIP712Domain: [], Message: [{ name: 'v', type: 'uint256' }] },
+      primaryType: 'Message',
+      domain: {},
+      message: { v: '1' },
+    };
+    await expect(
+      keyring.signTypedData(address, data, { version: 'V3' })
+    ).resolves.toBe('0xsignature');
+    expect(bridge.ethereumSignTypedData).toHaveBeenCalledWith({
+      path: `${path}/0`,
+      data,
+      metamask_v4_compat: true,
+    });
+  });
+
+  it('rejects V1 before making a device call', async () => {
     const bridge = makeBridge();
     const keyring: any = new TrezorKeyring({ bridge } as any);
     await expect(
-      keyring.signTypedData(address, {}, { version: 'V3' })
-    ).rejects.toThrow('Only version 4');
+      keyring.signTypedData(address, {}, { version: 'V1' })
+    ).rejects.toThrow('Only V3 and V4');
     expect(bridge.ethereumSignTypedData).not.toHaveBeenCalled();
   });
 });
