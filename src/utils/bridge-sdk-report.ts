@@ -1,7 +1,6 @@
 import * as Sentry from '@sentry/browser';
 import {
-  BridgeError,
-  InvalidBridgeCalldataError,
+  InvalidBridgeContractError,
   toBridgeErrorReport,
 } from '@rabby-wallet/rabby-bridge';
 import type { BridgeErrorReport } from '@rabby-wallet/rabby-bridge';
@@ -57,10 +56,7 @@ export const reportBridgeSdkError = (report: BridgeErrorReport) => {
 
 export const reportBridgeSdkException = (error: unknown) => {
   // Calldata failures already reached onError before the SDK threw them.
-  if (
-    error instanceof BridgeError &&
-    !(error instanceof InvalidBridgeCalldataError)
-  ) {
+  if (error instanceof InvalidBridgeContractError) {
     reportBridgeSdkError(error.toJSON());
   }
 };
