@@ -1,6 +1,7 @@
 import type { Approval } from '@/background/service/notification';
 import {
   assertApprovalSigningBinding,
+  signForWaitingApproval,
   waitForApprovalSigning,
 } from '@/background/controller/walletUtils/approvalSigning';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
@@ -167,6 +168,64 @@ describe('bound deferred Safe signing', () => {
     finishKeyringLookup();
     await expect(pending).rejects.toMatchObject({ code: 4001 });
     expect(sign).not.toHaveBeenCalled();
+  });
+
+  describe('reporting a failed attempt to the waiting approval', () => {
+    const deviceRejection = new Error('Ledger: Condition not satisfied 0x6985');
+    const signWithUI = (
+      sign: () => Promise<string>,
+      onFailed: (error: unknown) => void
+    ) => {
+      const pending = signForWaitingApproval({
+        ...request,
+        getApproval: () => currentApproval,
+        waitForUI: waitSignComponentAmounted,
+        sign,
+        onFailed,
+      });
+      eventBus.emit('SIGN_WAITING_AMOUNTED');
+      return pending;
+    };
+
+    test('reports a signature rejected on the device', async () => {
+      const onFailed = jest.fn();
+      await expect(
+        signWithUI(() => Promise.reject(deviceRejection), onFailed)
+      ).rejects.toBe(deviceRejection);
+      expect(onFailed).toHaveBeenCalledTimes(1);
+      expect(onFailed).toHaveBeenCalledWith(deviceRejection);
+    });
+
+    test('does not report a successful signature as failed', async () => {
+      const onFailed = jest.fn();
+      await expect(
+        signWithUI(() => Promise.resolve('0xsig'), onFailed)
+      ).resolves.toBe('0xsig');
+      expect(onFailed).not.toHaveBeenCalled();
+    });
+
+    test('a stale attempt cannot fail the approval that replaced it', async () => {
+      const onFailed = jest.fn();
+      await expect(
+        signWithUI(() => {
+          currentApproval = makeApproval();
+          currentApproval.data.params.sourceApprovalId = 'next-request';
+          return Promise.reject(deviceRejection);
+        }, onFailed)
+      ).rejects.toBe(deviceRejection);
+      expect(onFailed).not.toHaveBeenCalled();
+    });
+
+    test('an attempt that never started is not reported', async () => {
+      const sign = jest.fn();
+      const onFailed = jest.fn();
+      currentApproval = null;
+      await expect(signWithUI(sign, onFailed)).rejects.toMatchObject({
+        code: 4001,
+      });
+      expect(sign).not.toHaveBeenCalled();
+      expect(onFailed).not.toHaveBeenCalled();
+    });
   });
 
   test('fails closed for incomplete binding, while preserving legacy callers', () => {
