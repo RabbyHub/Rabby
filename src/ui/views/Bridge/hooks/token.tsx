@@ -6,6 +6,10 @@ import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getQuoteList as getBridgeQuoteList } from '@rabby-wallet/rabby-bridge';
 import {
+  reportBridgeSdkError,
+  reportBridgeSdkException,
+} from '@/utils/bridge-sdk-report';
+import {
   useCallback,
   useEffect,
   useLayoutEffect,
@@ -579,9 +583,11 @@ export const useBridge = () => {
                 toTokenId: toToken.id,
                 slippage: formatBridgeSlippageRatio(slippageObj.slippage),
                 feeRate: Number(feeRate),
+                onError: reportBridgeSdkError,
               },
               wallet.openapi
             ).catch((e) => {
+              reportBridgeSdkException(e);
               console.error(e);
             });
 
