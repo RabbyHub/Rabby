@@ -543,7 +543,12 @@ const flowContext = flow
 
     const requestDeferFn = createRequestDeferFn(approvalRes);
 
-    if (!approvalRes?.isGnosis) {
+    // resendSign() re-runs this from a waiting component, so only a request
+    // that hands off to one may become the retry target. Every request ends
+    // up here, including a dapp polling eth_chainId or eth_accounts while the
+    // user is still signing: letting those replace it makes "Retry" re-run
+    // the poll instead of the signature. Safe owner signing registers its own.
+    if (uiRequestComponent && !approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
     const requestDefer = requestDeferFn();
