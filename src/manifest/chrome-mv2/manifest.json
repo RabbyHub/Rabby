@@ -44,18 +44,9 @@
         "https://*/*"
       ],
       "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "*://connect.trezor.io/*/popup.html",
-        "https://connect.onekey.so/popup.html"
-      ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
     }
   ],
-  "content_security_policy": "script-src 'self' 'wasm-eval' https://www.google-analytics.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'wasm-eval' https://www.google-analytics.com; object-src 'self'; frame-src https://suite.trezor.io",
   "permissions": [
     "storage",
     "unlimitedStorage",

@@ -43,15 +43,6 @@
         "https://*/*"
       ],
       "run_at": "document_start"
-    },
-    {
-      "matches": [
-        "*://connect.trezor.io/*/popup.html*",
-        "https://connect.onekey.so/popup.html"
-      ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
     }
   ],
   "content_security_policy": {
@@ -82,6 +73,7 @@
     }
   ],
   "externally_connectable": {
-    "ids": []
+    "ids": [],
+    "matches": ["https://suite.trezor.io/*"]
   }
 }

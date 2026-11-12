@@ -465,4 +465,4 @@ export const withSigningDiagnostics = (
 };
 
 registerSimpleProvider('onekey', 'usb');
-registerSimpleProvider('trezor', 'usb');
+registerSimpleProvider('trezor');
