@@ -10286,90 +10286,6 @@
       "node_modules/@emotion/memoize/dist/emotion-memoize.esm.js"
     ]
   },
-  "node_modules/@eth-optimism/contracts/dist/contract-artifacts.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/chugsplash/interfaces/iL1ChugSplashDeployer.sol/iL1ChugSplashDeployer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/chugsplash/L1ChugSplashProxy.sol/L1ChugSplashProxy.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/deployment/AddressDictator.sol/AddressDictator.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/deployment/ChugSplashDictator.sol/ChugSplashDictator.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/IL1CrossDomainMessenger.sol/IL1CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/IL1ERC20Bridge.sol/IL1ERC20Bridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/IL1StandardBridge.sol/IL1StandardBridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/L1CrossDomainMessenger.sol/L1CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/messaging/L1StandardBridge.sol/L1StandardBridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/CanonicalTransactionChain.sol/CanonicalTransactionChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/ChainStorageContainer.sol/ChainStorageContainer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/ICanonicalTransactionChain.sol/ICanonicalTransactionChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/IChainStorageContainer.sol/IChainStorageContainer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/IStateCommitmentChain.sol/IStateCommitmentChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/rollup/StateCommitmentChain.sol/StateCommitmentChain.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/teleportr/TeleportrDeposit.sol/TeleportrDeposit.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/verification/BondManager.sol/BondManager.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L1/verification/IBondManager.sol/IBondManager.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/IL2CrossDomainMessenger.sol/IL2CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/IL2ERC20Bridge.sol/IL2ERC20Bridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/L2CrossDomainMessenger.sol/L2CrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/L2StandardBridge.sol/L2StandardBridge.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/messaging/L2StandardTokenFactory.sol/L2StandardTokenFactory.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/iOVM_L1BlockNumber.sol/iOVM_L1BlockNumber.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/iOVM_L2ToL1MessagePasser.sol/iOVM_L2ToL1MessagePasser.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_DeployerWhitelist.sol/OVM_DeployerWhitelist.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_ETH.sol/OVM_ETH.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_GasPriceOracle.sol/OVM_GasPriceOracle.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_L2ToL1MessagePasser.sol/OVM_L2ToL1MessagePasser.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/OVM_SequencerFeeVault.sol/OVM_SequencerFeeVault.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/predeploys/WETH9.sol/WETH9.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/L2/teleportr/TeleportrDisburser.sol/TeleportrDisburser.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/bridge/CrossDomainEnabled.sol/CrossDomainEnabled.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/bridge/ICrossDomainMessenger.sol/ICrossDomainMessenger.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/bridge/Lib_CrossDomainUtils.sol/Lib_CrossDomainUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/codec/Lib_OVMCodec.sol/Lib_OVMCodec.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/constants/Lib_DefaultValues.sol/Lib_DefaultValues.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/constants/Lib_PredeployAddresses.sol/Lib_PredeployAddresses.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/resolver/Lib_AddressManager.sol/Lib_AddressManager.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/resolver/Lib_AddressResolver.sol/Lib_AddressResolver.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/resolver/Lib_ResolvedDelegateProxy.sol/Lib_ResolvedDelegateProxy.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/rlp/Lib_RLPReader.sol/Lib_RLPReader.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/rlp/Lib_RLPWriter.sol/Lib_RLPWriter.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/trie/Lib_MerkleTrie.sol/Lib_MerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/trie/Lib_SecureMerkleTrie.sol/Lib_SecureMerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_Buffer.sol/Lib_Buffer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_Bytes32Utils.sol/Lib_Bytes32Utils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_BytesUtils.sol/Lib_BytesUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/libraries/utils/Lib_MerkleTree.sol/Lib_MerkleTree.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/standards/AddressAliasHelper.sol/AddressAliasHelper.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/standards/IL2StandardERC20.sol/IL2StandardERC20.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/standards/L2StandardERC20.sol/L2StandardERC20.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-helpers/FailingReceiver.sol/FailingReceiver.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-helpers/TestERC20.sol/TestERC20.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/bridge/TestLib_CrossDomainUtils.sol/TestLib_CrossDomainUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/codec/TestLib_OVMCodec.sol/TestLib_OVMCodec.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/rlp/TestLib_RLPReader.sol/TestLib_RLPReader.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/rlp/TestLib_RLPWriter.sol/TestLib_RLPWriter.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/standards/TestLib_AddressAliasHelper.sol/TestLib_AddressAliasHelper.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/trie/TestLib_MerkleTrie.sol/TestLib_MerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/trie/TestLib_SecureMerkleTrie.sol/TestLib_SecureMerkleTrie.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_Buffer.sol/TestLib_Buffer.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_Bytes32Utils.sol/TestLib_Bytes32Utils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_BytesUtils.sol/TestLib_BytesUtils.json",
-      "node_modules/@eth-optimism/contracts/artifacts/contracts/test-libraries/utils/TestLib_MerkleTree.sol/TestLib_MerkleTree.json"
-    ]
-  },
-  "node_modules/@eth-optimism/contracts/dist/contract-defs.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@eth-optimism/contracts/dist/contract-artifacts.js",
-      "node_modules/ethers/lib.esm/index.js"
-    ]
-  },
-  "node_modules/@eth-optimism/contracts/dist/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@eth-optimism/contracts/dist/contract-defs.js",
-      "node_modules/@eth-optimism/contracts/dist/predeploys.js"
-    ]
-  },
   "node_modules/@ethereumjs/common/dist/cjs/common.js": {
     "enable": true,
     "require": [
@@ -11369,14 +11285,6 @@
       "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js"
     ]
   },
-  "node_modules/@ethersproject/constants/lib.esm/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/constants/lib.esm/addresses.js",
-      "node_modules/@ethersproject/constants/lib.esm/bignumbers.js",
-      "node_modules/@ethersproject/constants/lib.esm/hashes.js"
-    ]
-  },
   "node_modules/@ethersproject/contracts/lib.esm/index.js": {
     "enable": true,
     "global": {
@@ -11577,26 +11485,6 @@
       "node_modules/@ethersproject/properties/lib.esm/_version.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/alchemy-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/websocket-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/ankr-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/base-provider.js": {
     "enable": true,
     "global": {
@@ -11624,45 +11512,12 @@
       "node_modules/bech32/index.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/cloudflare-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/etherscan-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/bytes/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/base-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/transactions/lib.esm/index.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/fallback-provider.js": {
     "enable": true,
     "global": {
       "clearTimeout": "r",
       "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/abstract-provider/lib.esm/index.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/bytes/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/base-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/random/lib.esm/shuffle.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/providers/lib.esm/formatter.js": {
     "enable": true,
@@ -11680,52 +11535,11 @@
       "node_modules/@ethersproject/transactions/lib.esm/index.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/abstract-provider/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/networks/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/alchemy-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/ankr-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/base-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/cloudflare-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/etherscan-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/fallback-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/infura-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-batch-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/nodesmith-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/pocket-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/quicknode-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/web3-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/websocket-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/infura-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/formatter.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/websocket-provider.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/json-rpc-batch-provider.js": {
     "enable": true,
     "global": {
       "setTimeout": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js": {
     "enable": true,
@@ -11746,39 +11560,6 @@
       "node_modules/@ethersproject/web/lib.esm/index.js"
     ]
   },
-  "node_modules/@ethersproject/providers/lib.esm/nodesmith-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/pocket-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/quicknode-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js"
-    ]
-  },
-  "node_modules/@ethersproject/providers/lib.esm/url-json-rpc-provider.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js"
-    ]
-  },
   "node_modules/@ethersproject/providers/lib.esm/web3-provider.js": {
     "enable": true,
     "require": [
@@ -11793,25 +11574,13 @@
     "global": {
       "console": "r",
       "setInterval": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js",
-      "node_modules/@ethersproject/providers/lib.esm/json-rpc-provider.js",
-      "node_modules/@ethersproject/providers/lib.esm/ws.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/providers/lib.esm/ws.js": {
     "enable": true,
     "global": {
       "WebSocket": "r"
-    },
-    "require": [
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/_version.js"
-    ]
+    }
   },
   "node_modules/@ethersproject/random/lib.esm/index.js": {
     "enable": true,
@@ -14523,7 +14292,7 @@
   "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/@metamask/obs-store/dist/asStream.js": {
     "enable": true,
     "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/readable-browser.js"
+      "node_modules/readable-stream/readable-browser.js"
     ]
   },
   "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/@metamask/obs-store/dist/index.js": {
@@ -14539,7 +14308,7 @@
   "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/@metamask/obs-store/dist/transform.js": {
     "enable": true,
     "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/readable-browser.js"
+      "node_modules/readable-stream/readable-browser.js"
     ]
   },
   "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/@metamask/safe-event-emitter/dist/cjs/index.js": {
@@ -14549,138 +14318,6 @@
     },
     "require": [
       "node_modules/events/events.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_duplex.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_passthrough.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/inherits/inherits_browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_readable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/async_iterator.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/buffer_list.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/from-browser.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/buffer/index.js",
-      "node_modules/events/events.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/string_decoder/lib/string_decoder.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_transform.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/inherits/inherits_browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_writable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "localStorage": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/buffer/index.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/util-deprecate/browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/async_iterator.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/buffer_list.js": {
-    "enable": true,
-    "require": [
-      "node_modules/buffer/index.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/destroy.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/end-of-stream.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/pipeline.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/state.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/events/events.js"
-    ]
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/readable-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_passthrough.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/internal/streams/pipeline.js"
     ]
   },
   "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/uuid/dist/esm-browser/index.js": {
@@ -20896,15 +20533,6 @@
       "node_modules/events/events.js"
     ]
   },
-  "node_modules/@metamask/metamask-eth-abis/dist/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@metamask/metamask-eth-abis/dist/abis/abiERC1155.js",
-      "node_modules/@metamask/metamask-eth-abis/dist/abis/abiERC20.js",
-      "node_modules/@metamask/metamask-eth-abis/dist/abis/abiERC721.js",
-      "node_modules/@metamask/metamask-eth-abis/dist/abis/fiatTokenV2.js"
-    ]
-  },
   "node_modules/@metamask/obs-store/dist/ComposedStore.js": {
     "enable": true,
     "require": [
@@ -20948,7 +20576,7 @@
   "node_modules/@metamask/post-message-stream/dist/BasePostMessageStream.js": {
     "enable": true,
     "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/readable-browser.js"
+      "node_modules/readable-stream/readable-browser.js"
     ]
   },
   "node_modules/@metamask/post-message-stream/dist/WebWorker/WebWorkerParentPostMessageStream.js": {
@@ -21133,138 +20761,6 @@
       "node_modules/@metamask/post-message-stream/node_modules/@metamask/utils/dist/assert.cjs",
       "node_modules/@metamask/post-message-stream/node_modules/semver/index.js",
       "node_modules/@metamask/superstruct/dist/index.cjs"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_duplex.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_passthrough.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/inherits/inherits_browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_readable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/async_iterator.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/buffer_list.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/from-browser.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/buffer/index.js",
-      "node_modules/events/events.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/string_decoder/lib/string_decoder.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_transform.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/inherits/inherits_browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_writable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "localStorage": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/buffer/index.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/util-deprecate/browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/async_iterator.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/buffer_list.js": {
-    "enable": true,
-    "require": [
-      "node_modules/buffer/index.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/destroy.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/end-of-stream.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/pipeline.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/errors-browser.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/state.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/events/events.js"
-    ]
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/readable-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_passthrough.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/internal/streams/pipeline.js"
     ]
   },
   "node_modules/@metamask/post-message-stream/node_modules/semver/classes/comparator.js": {
@@ -31006,10 +30502,17 @@
       "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
     ]
   },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/curve.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
+    ]
+  },
   "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/unoswap.js": {
     "enable": true,
     "require": [
       "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/curve.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/v2.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/chain.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/list.js",
@@ -45649,9 +45152,9 @@
       "node_modules/browserify-sign/browser/algorithms.json",
       "node_modules/browserify-sign/browser/sign.js",
       "node_modules/browserify-sign/browser/verify.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js",
       "node_modules/create-hash/browser.js",
       "node_modules/inherits/inherits_browser.js",
-      "node_modules/readable-stream/readable-browser.js",
       "node_modules/safe-buffer/index.js"
     ]
   },
@@ -45684,6 +45187,120 @@
     },
     "require": [
       "webpack:buffer (ignored)"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js": {
+    "enable": true,
+    "require": [
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js",
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js": {
+    "enable": true,
+    "require": [
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js",
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js": {
+    "enable": true,
+    "global": {
+      "global": "r",
+      "process": "r"
+    },
+    "require": [
+      "node_modules/browserify-sign/node_modules/isarray/index.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/BufferList.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/node_modules/safe-buffer/index.js",
+      "node_modules/browserify-sign/node_modules/string_decoder/lib/string_decoder.js",
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/events/events.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js",
+      "node_modules/process/browser.js",
+      "webpack:util (ignored)"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js": {
+    "enable": true,
+    "require": [
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js": {
+    "enable": true,
+    "global": {
+      "global": "r",
+      "process": "r",
+      "setImmediate": "r"
+    },
+    "require": [
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/node_modules/safe-buffer/index.js",
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js",
+      "node_modules/process/browser.js",
+      "node_modules/util-deprecate/browser.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/BufferList.js": {
+    "enable": true,
+    "require": [
+      "node_modules/browserify-sign/node_modules/readable-stream/node_modules/safe-buffer/index.js",
+      "webpack:util (ignored)"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/destroy.js": {
+    "enable": true,
+    "require": [
+      "node_modules/process-nextick-args/index.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/events/events.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/node_modules/safe-buffer/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/readable-stream/readable-browser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_passthrough.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_readable.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_transform.js",
+      "node_modules/browserify-sign/node_modules/readable-stream/lib/_stream_writable.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/string_decoder/lib/string_decoder.js": {
+    "enable": true,
+    "require": [
+      "node_modules/browserify-sign/node_modules/string_decoder/node_modules/safe-buffer/index.js"
+    ]
+  },
+  "node_modules/browserify-sign/node_modules/string_decoder/node_modules/safe-buffer/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/buffer/index.js"
     ]
   },
   "node_modules/browserify-zlib/lib/binding.js": {
@@ -48666,67 +48283,11 @@
       "node_modules/secp256k1/elliptic.js"
     ]
   },
-  "node_modules/ethers/lib.esm/ethers.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/abstract-signer/lib.esm/index.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/bignumber.js",
-      "node_modules/@ethersproject/bignumber/lib.esm/fixednumber.js",
-      "node_modules/@ethersproject/constants/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/providers/lib.esm/index.js",
-      "node_modules/@ethersproject/wallet/lib.esm/index.js",
-      "node_modules/@ethersproject/wordlists/lib.esm/wordlist.js",
-      "node_modules/@ethersproject/wordlists/lib.esm/wordlists.js",
-      "node_modules/ethers/lib.esm/_version.js",
-      "node_modules/ethers/lib.esm/utils.js",
-      "node_modules/ethers/node_modules/@ethersproject/contracts/lib.esm/index.js"
-    ]
-  },
   "node_modules/ethers/lib.esm/index.js": {
     "enable": true,
     "global": {
       "_ethers": "rw"
-    },
-    "require": [
-      "node_modules/ethers/lib.esm/ethers.js"
-    ]
-  },
-  "node_modules/ethers/lib.esm/utils.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
-      "node_modules/@ethersproject/abi/lib.esm/coders/abstract-coder.js",
-      "node_modules/@ethersproject/abi/lib.esm/fragments.js",
-      "node_modules/@ethersproject/abi/lib.esm/interface.js",
-      "node_modules/@ethersproject/address/lib.esm/index.js",
-      "node_modules/@ethersproject/base64/lib.esm/index.js",
-      "node_modules/@ethersproject/basex/lib.esm/index.js",
-      "node_modules/@ethersproject/bytes/lib.esm/index.js",
-      "node_modules/@ethersproject/hash/lib.esm/id.js",
-      "node_modules/@ethersproject/hash/lib.esm/message.js",
-      "node_modules/@ethersproject/hash/lib.esm/namehash.js",
-      "node_modules/@ethersproject/hash/lib.esm/typed-data.js",
-      "node_modules/@ethersproject/hdnode/lib.esm/index.js",
-      "node_modules/@ethersproject/json-wallets/lib.esm/inspect.js",
-      "node_modules/@ethersproject/keccak256/lib.esm/index.js",
-      "node_modules/@ethersproject/logger/lib.esm/index.js",
-      "node_modules/@ethersproject/properties/lib.esm/index.js",
-      "node_modules/@ethersproject/random/lib.esm/random.js",
-      "node_modules/@ethersproject/random/lib.esm/shuffle.js",
-      "node_modules/@ethersproject/rlp/lib.esm/index.js",
-      "node_modules/@ethersproject/sha2/lib.esm/sha2.js",
-      "node_modules/@ethersproject/sha2/lib.esm/types.js",
-      "node_modules/@ethersproject/signing-key/lib.esm/index.js",
-      "node_modules/@ethersproject/solidity/lib.esm/index.js",
-      "node_modules/@ethersproject/strings/lib.esm/bytes32.js",
-      "node_modules/@ethersproject/strings/lib.esm/idna.js",
-      "node_modules/@ethersproject/strings/lib.esm/utf8.js",
-      "node_modules/@ethersproject/transactions/lib.esm/index.js",
-      "node_modules/@ethersproject/units/lib.esm/index.js",
-      "node_modules/@ethersproject/wallet/lib.esm/index.js",
-      "node_modules/@ethersproject/web/lib.esm/index.js"
-    ]
+    }
   },
   "node_modules/ethers/lib/utils.js": {
     "enable": true,
@@ -51155,10 +50716,124 @@
   "node_modules/hash-base/index.js": {
     "enable": true,
     "require": [
+      "node_modules/hash-base/node_modules/readable-stream/readable-browser.js",
       "node_modules/hash-base/to-buffer.js",
       "node_modules/inherits/inherits_browser.js",
-      "node_modules/readable-stream/readable-browser.js",
       "node_modules/safe-buffer/index.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js": {
+    "enable": true,
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/_stream_passthrough.js": {
+    "enable": true,
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js",
+      "node_modules/inherits/inherits_browser.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js": {
+    "enable": true,
+    "global": {
+      "global": "r",
+      "process": "r"
+    },
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/events/events.js",
+      "node_modules/hash-base/node_modules/isarray/index.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/BufferList.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
+      "node_modules/hash-base/node_modules/readable-stream/node_modules/safe-buffer/index.js",
+      "node_modules/hash-base/node_modules/string_decoder/lib/string_decoder.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js",
+      "node_modules/process/browser.js",
+      "webpack:util (ignored)"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js": {
+    "enable": true,
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/inherits/inherits_browser.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js": {
+    "enable": true,
+    "global": {
+      "global": "r",
+      "process": "r",
+      "setImmediate": "r"
+    },
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
+      "node_modules/hash-base/node_modules/readable-stream/node_modules/safe-buffer/index.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js",
+      "node_modules/process/browser.js",
+      "node_modules/util-deprecate/browser.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/BufferList.js": {
+    "enable": true,
+    "require": [
+      "node_modules/hash-base/node_modules/readable-stream/node_modules/safe-buffer/index.js",
+      "webpack:util (ignored)"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/destroy.js": {
+    "enable": true,
+    "require": [
+      "node_modules/process-nextick-args/index.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/events/events.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/node_modules/safe-buffer/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/readable-stream/readable-browser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_passthrough.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_readable.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_transform.js",
+      "node_modules/hash-base/node_modules/readable-stream/lib/_stream_writable.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/string_decoder/lib/string_decoder.js": {
+    "enable": true,
+    "require": [
+      "node_modules/hash-base/node_modules/string_decoder/node_modules/safe-buffer/index.js"
+    ]
+  },
+  "node_modules/hash-base/node_modules/string_decoder/node_modules/safe-buffer/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/buffer/index.js"
     ]
   },
   "node_modules/hash-base/to-buffer.js": {
@@ -51400,12 +51075,6 @@
       "setTimeout": "r"
     }
   },
-  "node_modules/interval-promise/src/index.js": {
-    "enable": true,
-    "global": {
-      "setTimeout": "r"
-    }
-  },
   "node_modules/is-arguments/index.js": {
     "enable": true,
     "require": [
@@ -51602,7 +51271,7 @@
     },
     "require": [
       "node_modules/buffer/index.js",
-      "node_modules/keccak/node_modules/readable-stream/readable-browser.js"
+      "node_modules/readable-stream/readable-browser.js"
     ]
   },
   "node_modules/keccak/lib/api/shake.js": {
@@ -51612,7 +51281,7 @@
     },
     "require": [
       "node_modules/buffer/index.js",
-      "node_modules/keccak/node_modules/readable-stream/readable-browser.js"
+      "node_modules/readable-stream/readable-browser.js"
     ]
   },
   "node_modules/keccak/lib/keccak.js": {
@@ -51623,138 +51292,6 @@
     "require": [
       "node_modules/buffer/index.js",
       "node_modules/keccak/lib/keccak-state-unroll.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/_stream_duplex.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/_stream_passthrough.js": {
-    "enable": true,
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_transform.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/_stream_readable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/buffer/index.js",
-      "node_modules/events/events.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/keccak/node_modules/readable-stream/errors-browser.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/async_iterator.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/buffer_list.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/from-browser.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/string_decoder/lib/string_decoder.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/_stream_transform.js": {
-    "enable": true,
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/keccak/node_modules/readable-stream/errors-browser.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_duplex.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/_stream_writable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "localStorage": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/buffer/index.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/keccak/node_modules/readable-stream/errors-browser.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/util-deprecate/browser.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/async_iterator.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/buffer_list.js": {
-    "enable": true,
-    "require": [
-      "node_modules/buffer/index.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/destroy.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/end-of-stream.js": {
-    "enable": true,
-    "require": [
-      "node_modules/keccak/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/pipeline.js": {
-    "enable": true,
-    "require": [
-      "node_modules/keccak/node_modules/readable-stream/errors-browser.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/state.js": {
-    "enable": true,
-    "require": [
-      "node_modules/keccak/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/events/events.js"
-    ]
-  },
-  "node_modules/keccak/node_modules/readable-stream/readable-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_passthrough.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/keccak/node_modules/readable-stream/lib/internal/streams/pipeline.js"
     ]
   },
   "node_modules/koa-compose/index.js": {
@@ -52803,17 +52340,6 @@
       "node_modules/lodash/_baseUniq.js"
     ]
   },
-  "node_modules/loglevel/lib/loglevel.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "define": "r",
-      "document": "r",
-      "localStorage": "r",
-      "log": "rw",
-      "navigator": "r"
-    }
-  },
   "node_modules/long/src/long.js": {
     "enable": true,
     "global": {
@@ -52888,14 +52414,6 @@
       "node_modules/unist-util-visit/lib/index.js"
     ]
   },
-  "node_modules/mdast-util-find-and-replace/lib/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-find-and-replace/node_modules/escape-string-regexp/index.js",
-      "node_modules/unist-util-is/lib/index.js",
-      "node_modules/unist-util-visit-parents/lib/index.js"
-    ]
-  },
   "node_modules/mdast-util-from-markdown/lib/index.js": {
     "enable": true,
     "require": [
@@ -52908,57 +52426,6 @@
       "node_modules/micromark/lib/postprocess.js",
       "node_modules/micromark/lib/preprocess.js",
       "node_modules/unist-util-stringify-position/lib/index.js"
-    ]
-  },
-  "node_modules/mdast-util-gfm-autolink-literal/lib/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/ccount/index.js",
-      "node_modules/mdast-util-find-and-replace/lib/index.js",
-      "node_modules/micromark-util-character/index.js"
-    ]
-  },
-  "node_modules/mdast-util-gfm-footnote/lib/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-to-markdown/lib/util/association.js",
-      "node_modules/mdast-util-to-markdown/lib/util/container-flow.js",
-      "node_modules/mdast-util-to-markdown/lib/util/indent-lines.js",
-      "node_modules/mdast-util-to-markdown/lib/util/safe.js",
-      "node_modules/mdast-util-to-markdown/lib/util/track.js",
-      "node_modules/micromark-util-normalize-identifier/index.js"
-    ]
-  },
-  "node_modules/mdast-util-gfm-strikethrough/lib/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-to-markdown/lib/util/container-phrasing.js",
-      "node_modules/mdast-util-to-markdown/lib/util/track.js"
-    ]
-  },
-  "node_modules/mdast-util-gfm-table/lib/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/markdown-table/index.js",
-      "node_modules/mdast-util-to-markdown/lib/handle/inline-code.js",
-      "node_modules/mdast-util-to-markdown/lib/util/container-phrasing.js"
-    ]
-  },
-  "node_modules/mdast-util-gfm-task-list-item/lib/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-to-markdown/lib/handle/list-item.js",
-      "node_modules/mdast-util-to-markdown/lib/util/track.js"
-    ]
-  },
-  "node_modules/mdast-util-gfm/lib/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-gfm-autolink-literal/lib/index.js",
-      "node_modules/mdast-util-gfm-footnote/lib/index.js",
-      "node_modules/mdast-util-gfm-strikethrough/lib/index.js",
-      "node_modules/mdast-util-gfm-table/lib/index.js",
-      "node_modules/mdast-util-gfm-task-list-item/lib/index.js"
     ]
   },
   "node_modules/mdast-util-to-hast/lib/footer.js": {
@@ -53165,32 +52632,6 @@
       "node_modules/unist-builder/lib/index.js"
     ]
   },
-  "node_modules/mdast-util-to-markdown/lib/handle/inline-code.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-to-markdown/lib/util/pattern-compile.js"
-    ]
-  },
-  "node_modules/mdast-util-to-markdown/lib/handle/list-item.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-to-markdown/lib/util/check-bullet.js",
-      "node_modules/mdast-util-to-markdown/lib/util/check-list-item-indent.js"
-    ]
-  },
-  "node_modules/mdast-util-to-markdown/lib/util/association.js": {
-    "enable": true,
-    "require": [
-      "node_modules/micromark-util-decode-string/index.js"
-    ]
-  },
-  "node_modules/mdast-util-to-markdown/lib/util/safe.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-to-markdown/lib/util/pattern-compile.js",
-      "node_modules/mdast-util-to-markdown/lib/util/pattern-in-scope.js"
-    ]
-  },
   "node_modules/micro-ftch/index.js": {
     "enable": true,
     "global": {
@@ -53374,56 +52815,6 @@
     "require": [
       "node_modules/micromark-factory-space/index.js",
       "node_modules/micromark-util-character/index.js"
-    ]
-  },
-  "node_modules/micromark-extension-gfm-autolink-literal/lib/syntax.js": {
-    "enable": true,
-    "require": [
-      "node_modules/micromark-util-character/index.js"
-    ]
-  },
-  "node_modules/micromark-extension-gfm-footnote/lib/syntax.js": {
-    "enable": true,
-    "require": [
-      "node_modules/micromark-core-commonmark/lib/blank-line.js",
-      "node_modules/micromark-factory-space/index.js",
-      "node_modules/micromark-util-character/index.js",
-      "node_modules/micromark-util-normalize-identifier/index.js"
-    ]
-  },
-  "node_modules/micromark-extension-gfm-strikethrough/lib/syntax.js": {
-    "enable": true,
-    "require": [
-      "node_modules/micromark-util-chunked/index.js",
-      "node_modules/micromark-util-classify-character/index.js",
-      "node_modules/micromark-util-resolve-all/index.js"
-    ]
-  },
-  "node_modules/micromark-extension-gfm-table/lib/syntax.js": {
-    "enable": true,
-    "require": [
-      "node_modules/micromark-extension-gfm-table/lib/edit-map.js",
-      "node_modules/micromark-extension-gfm-table/lib/infer.js",
-      "node_modules/micromark-factory-space/index.js",
-      "node_modules/micromark-util-character/index.js"
-    ]
-  },
-  "node_modules/micromark-extension-gfm-task-list-item/lib/syntax.js": {
-    "enable": true,
-    "require": [
-      "node_modules/micromark-factory-space/index.js",
-      "node_modules/micromark-util-character/index.js"
-    ]
-  },
-  "node_modules/micromark-extension-gfm/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/micromark-extension-gfm-autolink-literal/lib/syntax.js",
-      "node_modules/micromark-extension-gfm-footnote/lib/syntax.js",
-      "node_modules/micromark-extension-gfm-strikethrough/lib/syntax.js",
-      "node_modules/micromark-extension-gfm-table/lib/syntax.js",
-      "node_modules/micromark-extension-gfm-task-list-item/lib/syntax.js",
-      "node_modules/micromark-util-combine-extensions/index.js"
     ]
   },
   "node_modules/micromark-factory-destination/index.js": {
@@ -58532,10 +57923,12 @@
   },
   "node_modules/readable-stream/lib/_stream_duplex.js": {
     "enable": true,
+    "global": {
+      "process": "r"
+    },
     "require": [
-      "node_modules/core-util-is/lib/util.js",
       "node_modules/inherits/inherits_browser.js",
-      "node_modules/process-nextick-args/index.js",
+      "node_modules/process/browser.js",
       "node_modules/readable-stream/lib/_stream_readable.js",
       "node_modules/readable-stream/lib/_stream_writable.js"
     ]
@@ -58543,7 +57936,6 @@
   "node_modules/readable-stream/lib/_stream_passthrough.js": {
     "enable": true,
     "require": [
-      "node_modules/core-util-is/lib/util.js",
       "node_modules/inherits/inherits_browser.js",
       "node_modules/readable-stream/lib/_stream_transform.js"
     ]
@@ -58555,26 +57947,27 @@
       "process": "r"
     },
     "require": [
-      "node_modules/core-util-is/lib/util.js",
+      "node_modules/buffer/index.js",
       "node_modules/events/events.js",
       "node_modules/inherits/inherits_browser.js",
-      "node_modules/process-nextick-args/index.js",
       "node_modules/process/browser.js",
+      "node_modules/readable-stream/errors-browser.js",
       "node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/readable-stream/lib/internal/streams/BufferList.js",
+      "node_modules/readable-stream/lib/internal/streams/async_iterator.js",
+      "node_modules/readable-stream/lib/internal/streams/buffer_list.js",
       "node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/readable-stream/lib/internal/streams/from-browser.js",
+      "node_modules/readable-stream/lib/internal/streams/state.js",
       "node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/readable-stream/node_modules/isarray/index.js",
-      "node_modules/readable-stream/node_modules/safe-buffer/index.js",
-      "node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js",
+      "node_modules/string_decoder/lib/string_decoder.js",
       "webpack:util (ignored)"
     ]
   },
   "node_modules/readable-stream/lib/_stream_transform.js": {
     "enable": true,
     "require": [
-      "node_modules/core-util-is/lib/util.js",
       "node_modules/inherits/inherits_browser.js",
+      "node_modules/readable-stream/errors-browser.js",
       "node_modules/readable-stream/lib/_stream_duplex.js"
     ]
   },
@@ -58583,50 +57976,69 @@
     "global": {
       "global": "r",
       "localStorage": "r",
-      "process": "r",
-      "setImmediate": "r"
+      "process": "r"
     },
     "require": [
-      "node_modules/core-util-is/lib/util.js",
+      "node_modules/buffer/index.js",
       "node_modules/inherits/inherits_browser.js",
-      "node_modules/process-nextick-args/index.js",
       "node_modules/process/browser.js",
+      "node_modules/readable-stream/errors-browser.js",
       "node_modules/readable-stream/lib/_stream_duplex.js",
       "node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/readable-stream/lib/internal/streams/state.js",
       "node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/readable-stream/node_modules/safe-buffer/index.js",
       "node_modules/util-deprecate/browser.js"
     ]
   },
-  "node_modules/readable-stream/lib/internal/streams/BufferList.js": {
+  "node_modules/readable-stream/lib/internal/streams/async_iterator.js": {
+    "enable": true,
+    "global": {
+      "process": "r"
+    },
+    "require": [
+      "node_modules/process/browser.js",
+      "node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
+    ]
+  },
+  "node_modules/readable-stream/lib/internal/streams/buffer_list.js": {
     "enable": true,
     "require": [
-      "node_modules/readable-stream/node_modules/safe-buffer/index.js",
+      "node_modules/buffer/index.js",
       "webpack:util (ignored)"
     ]
   },
   "node_modules/readable-stream/lib/internal/streams/destroy.js": {
     "enable": true,
+    "global": {
+      "process": "r"
+    },
     "require": [
-      "node_modules/process-nextick-args/index.js"
+      "node_modules/process/browser.js"
+    ]
+  },
+  "node_modules/readable-stream/lib/internal/streams/end-of-stream.js": {
+    "enable": true,
+    "require": [
+      "node_modules/readable-stream/errors-browser.js"
+    ]
+  },
+  "node_modules/readable-stream/lib/internal/streams/pipeline.js": {
+    "enable": true,
+    "require": [
+      "node_modules/readable-stream/errors-browser.js",
+      "node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
+    ]
+  },
+  "node_modules/readable-stream/lib/internal/streams/state.js": {
+    "enable": true,
+    "require": [
+      "node_modules/readable-stream/errors-browser.js"
     ]
   },
   "node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
     "enable": true,
     "require": [
       "node_modules/events/events.js"
-    ]
-  },
-  "node_modules/readable-stream/node_modules/safe-buffer/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/buffer/index.js"
-    ]
-  },
-  "node_modules/readable-stream/node_modules/string_decoder/lib/string_decoder.js": {
-    "enable": true,
-    "require": [
-      "node_modules/readable-stream/node_modules/safe-buffer/index.js"
     ]
   },
   "node_modules/readable-stream/readable-browser.js": {
@@ -58636,7 +58048,9 @@
       "node_modules/readable-stream/lib/_stream_passthrough.js",
       "node_modules/readable-stream/lib/_stream_readable.js",
       "node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/readable-stream/lib/_stream_writable.js"
+      "node_modules/readable-stream/lib/_stream_writable.js",
+      "node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
+      "node_modules/readable-stream/lib/internal/streams/pipeline.js"
     ]
   },
   "node_modules/recharts-scale/es6/getNiceTickValues.js": {
@@ -60241,13 +59655,6 @@
       "regeneratorRuntime": "rw"
     }
   },
-  "node_modules/remark-gfm/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/mdast-util-gfm/lib/index.js",
-      "node_modules/micromark-extension-gfm/index.js"
-    ]
-  },
   "node_modules/remark-parse/lib/index.js": {
     "enable": true,
     "require": [
@@ -61224,133 +60631,13 @@
     "require": [
       "node_modules/events/events.js",
       "node_modules/inherits/inherits_browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_passthrough.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/pipeline.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_passthrough.js": {
-    "enable": true,
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_transform.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_readable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/buffer/index.js",
-      "node_modules/events/events.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/async_iterator.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/buffer_list.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/from-browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/string_decoder/lib/string_decoder.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_transform.js": {
-    "enable": true,
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "localStorage": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/buffer/index.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/util-deprecate/browser.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/async_iterator.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/process/browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/buffer_list.js": {
-    "enable": true,
-    "require": [
-      "node_modules/buffer/index.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/destroy.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js": {
-    "enable": true,
-    "require": [
-      "node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/pipeline.js": {
-    "enable": true,
-    "require": [
-      "node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/state.js": {
-    "enable": true,
-    "require": [
-      "node_modules/stream-browserify/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/events/events.js"
+      "node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/readable-stream/lib/_stream_passthrough.js",
+      "node_modules/readable-stream/lib/_stream_readable.js",
+      "node_modules/readable-stream/lib/_stream_transform.js",
+      "node_modules/readable-stream/lib/_stream_writable.js",
+      "node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
+      "node_modules/readable-stream/lib/internal/streams/pipeline.js"
     ]
   },
   "node_modules/stream-http/index.js": {
@@ -61385,9 +60672,9 @@
       "node_modules/buffer/index.js",
       "node_modules/inherits/inherits_browser.js",
       "node_modules/process/browser.js",
+      "node_modules/readable-stream/readable-browser.js",
       "node_modules/stream-http/lib/capability.js",
-      "node_modules/stream-http/lib/response.js",
-      "node_modules/stream-http/node_modules/readable-stream/readable-browser.js"
+      "node_modules/stream-http/lib/response.js"
     ]
   },
   "node_modules/stream-http/lib/response.js": {
@@ -61402,139 +60689,8 @@
       "node_modules/buffer/index.js",
       "node_modules/inherits/inherits_browser.js",
       "node_modules/process/browser.js",
-      "node_modules/stream-http/lib/capability.js",
-      "node_modules/stream-http/node_modules/readable-stream/readable-browser.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_writable.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/_stream_passthrough.js": {
-    "enable": true,
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_transform.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/_stream_readable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/buffer/index.js",
-      "node_modules/events/events.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/async_iterator.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/buffer_list.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/from-browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/string_decoder/lib/string_decoder.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/_stream_transform.js": {
-    "enable": true,
-    "require": [
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/_stream_writable.js": {
-    "enable": true,
-    "global": {
-      "global": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/buffer/index.js",
-      "node_modules/inherits/inherits_browser.js",
-      "node_modules/process/browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/destroy.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/state.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
-      "node_modules/util-deprecate/browser.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/async_iterator.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/process/browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/buffer_list.js": {
-    "enable": true,
-    "require": [
-      "node_modules/buffer/index.js",
-      "webpack:util (ignored)"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/destroy.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/process/browser.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js": {
-    "enable": true,
-    "require": [
-      "node_modules/stream-http/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/pipeline.js": {
-    "enable": true,
-    "require": [
-      "node_modules/stream-http/node_modules/readable-stream/errors-browser.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/state.js": {
-    "enable": true,
-    "require": [
-      "node_modules/stream-http/node_modules/readable-stream/errors-browser.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/events/events.js"
-    ]
-  },
-  "node_modules/stream-http/node_modules/readable-stream/readable-browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_duplex.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_passthrough.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_readable.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_transform.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/_stream_writable.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/end-of-stream.js",
-      "node_modules/stream-http/node_modules/readable-stream/lib/internal/streams/pipeline.js"
+      "node_modules/readable-stream/readable-browser.js",
+      "node_modules/stream-http/lib/capability.js"
     ]
   },
   "node_modules/string_decoder/lib/string_decoder.js": {
@@ -61588,6 +60744,114 @@
       "node_modules/shallowequal/index.js"
     ]
   },
+  "node_modules/through2/node_modules/readable-stream/lib/_stream_duplex.js": {
+    "enable": true,
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_readable.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_writable.js"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/_stream_passthrough.js": {
+    "enable": true,
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_transform.js"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/_stream_readable.js": {
+    "enable": true,
+    "global": {
+      "global": "r",
+      "process": "r"
+    },
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/events/events.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js",
+      "node_modules/process/browser.js",
+      "node_modules/through2/node_modules/isarray/index.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/through2/node_modules/readable-stream/lib/internal/streams/BufferList.js",
+      "node_modules/through2/node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/through2/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
+      "node_modules/through2/node_modules/safe-buffer/index.js",
+      "node_modules/through2/node_modules/string_decoder/lib/string_decoder.js",
+      "webpack:util (ignored)"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/_stream_transform.js": {
+    "enable": true,
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_duplex.js"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/_stream_writable.js": {
+    "enable": true,
+    "global": {
+      "global": "r",
+      "process": "r",
+      "setImmediate": "r"
+    },
+    "require": [
+      "node_modules/core-util-is/lib/util.js",
+      "node_modules/inherits/inherits_browser.js",
+      "node_modules/process-nextick-args/index.js",
+      "node_modules/process/browser.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/through2/node_modules/readable-stream/lib/internal/streams/destroy.js",
+      "node_modules/through2/node_modules/readable-stream/lib/internal/streams/stream-browser.js",
+      "node_modules/through2/node_modules/safe-buffer/index.js",
+      "node_modules/util-deprecate/browser.js"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/internal/streams/BufferList.js": {
+    "enable": true,
+    "require": [
+      "node_modules/through2/node_modules/safe-buffer/index.js",
+      "webpack:util (ignored)"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/internal/streams/destroy.js": {
+    "enable": true,
+    "require": [
+      "node_modules/process-nextick-args/index.js"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/lib/internal/streams/stream-browser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/events/events.js"
+    ]
+  },
+  "node_modules/through2/node_modules/readable-stream/readable-browser.js": {
+    "enable": true,
+    "require": [
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_duplex.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_passthrough.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_readable.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_transform.js",
+      "node_modules/through2/node_modules/readable-stream/lib/_stream_writable.js"
+    ]
+  },
+  "node_modules/through2/node_modules/safe-buffer/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/through2/node_modules/string_decoder/lib/string_decoder.js": {
+    "enable": true,
+    "require": [
+      "node_modules/through2/node_modules/safe-buffer/index.js"
+    ]
+  },
   "node_modules/through2/through2.js": {
     "enable": true,
     "global": {
@@ -61595,7 +60859,7 @@
     },
     "require": [
       "node_modules/process/browser.js",
-      "node_modules/readable-stream/readable-browser.js",
+      "node_modules/through2/node_modules/readable-stream/readable-browser.js",
       "node_modules/util/util.js",
       "node_modules/xtend/immutable.js"
     ]
@@ -61919,9 +61183,9 @@
     "require": [
       "node_modules/bail/index.js",
       "node_modules/extend/index.js",
+      "node_modules/is-buffer/index.js",
       "node_modules/is-plain-obj/index.js",
       "node_modules/trough/lib/index.js",
-      "node_modules/unified/node_modules/is-buffer/index.js",
       "node_modules/vfile/lib/index.js"
     ]
   },
@@ -62078,12 +61342,12 @@
   "node_modules/vfile/lib/index.js": {
     "enable": true,
     "require": [
+      "node_modules/is-buffer/index.js",
       "node_modules/vfile-message/lib/index.js",
       "node_modules/vfile/lib/minpath.browser.js",
       "node_modules/vfile/lib/minproc.browser.js",
       "node_modules/vfile/lib/minurl.browser.js",
-      "node_modules/vfile/lib/minurl.shared.js",
-      "node_modules/vfile/node_modules/is-buffer/index.js"
+      "node_modules/vfile/lib/minurl.shared.js"
     ]
   },
   "node_modules/vfile/lib/minurl.browser.js": {
@@ -80233,13 +79497,11 @@
     "enable": true,
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
-      "node_modules/@eth-optimism/contracts/dist/index.js",
       "node_modules/@ethereumjs/common/dist/esm/index.js",
       "node_modules/@ethereumjs/rlp/dist/esm/index.js",
       "node_modules/@ethereumjs/tx/dist/esm/index.js",
       "node_modules/@ethereumjs/util/dist/esm/index.js",
       "node_modules/@ethereumjs/wallet/dist/esm/index.js",
-      "node_modules/@ethersproject/abi/lib.esm/fragments.js",
       "node_modules/@ethersproject/providers/lib.esm/web3-provider.js",
       "node_modules/@keystonehq/bc-ur-registry-eth/dist/index.js",
       "node_modules/@keystonehq/hw-app-eth/lib/index.js",
@@ -80253,7 +79515,6 @@
       "node_modules/@metamask/eth-block-tracker/dist/index.js",
       "node_modules/@metamask/eth-json-rpc-filters/subscriptionManager.js",
       "node_modules/@metamask/eth-sig-util/dist/index.js",
-      "node_modules/@metamask/metamask-eth-abis/dist/index.js",
       "node_modules/@metamask/obs-store/dist/index.js",
       "node_modules/@metamask/post-message-stream/dist/browser.js",
       "node_modules/@onekeyfe/hd-shared/dist/index.js",
@@ -80295,12 +79556,10 @@
       "node_modules/events/events.js",
       "node_modules/hdkey/lib/hdkey.js",
       "node_modules/i18next/dist/esm/i18next.js",
-      "node_modules/interval-promise/src/index.js",
       "node_modules/koa-compose/index.js",
       "node_modules/lodash/cloneDeep.js",
       "node_modules/lodash/lodash.js",
       "node_modules/lodash/maxBy.js",
-      "node_modules/loglevel/lib/loglevel.js",
       "node_modules/lru-cache/index.js",
       "node_modules/multiformats/dist/src/index.js",
       "node_modules/nanoid/index.browser.js",
@@ -80319,7 +79578,6 @@
       "node_modules/rxjs/dist/esm5/internal/operators/take.js",
       "node_modules/rxjs/dist/esm5/internal/operators/tap.js",
       "node_modules/rxjs/dist/esm5/internal/Subject.js",
-      "node_modules/semver-compare/index.js",
       "node_modules/semver/functions/satisfies.js",
       "node_modules/uuid/dist/esm-browser/v4.js",
       "node_modules/viem/_esm/actions/getContract.js",
@@ -80359,15 +79617,16 @@
       "src/background/service/keyring/eth-bitbox02-keyring/bitbox02-offscreen-bridge.ts",
       "src/background/service/keyring/eth-imkey-keyring/imkey-offscreen-bridge.ts",
       "src/background/service/keyring/eth-onekey-keyring/onekey-offscreen-bridge.ts",
+      "src/background/service/keyring/eth-trezor-keyring/signing-error.ts",
       "src/background/service/keyring/eth-trezor-keyring/trezor-offscreen-bridge.ts",
-      "src/constant/offscreen-communication.ts"
+      "src/constant/offscreen-communication.ts",
+      "src/utils/offscreenMessageSecurity.ts"
     ]
   },
   "src/background/service/customTestnet.ts": {
     "enable": true,
     "require": [
       "node_modules/@ethereumjs/util/dist/esm/index.js",
-      "node_modules/@metamask/metamask-eth-abis/dist/index.js",
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/dayjs/dayjs.min.js",
       "node_modules/ethereumjs-util/dist.browser/index.js",
@@ -80405,7 +79664,8 @@
     "require": [
       "node_modules/hdkey/lib/hdkey.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/constant/offscreen-communication.ts"
+      "src/constant/offscreen-communication.ts",
+      "src/utils/offscreenMessageSecurity.ts"
     ]
   },
   "src/background/service/keyring/eth-imkey-keyring/imkey-offscreen-bridge.ts": {
@@ -80427,7 +79687,9 @@
     "require": [
       "node_modules/events/events.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/constant/offscreen-communication.ts"
+      "src/background/service/keyring/eth-trezor-keyring/signing-error.ts",
+      "src/constant/offscreen-communication.ts",
+      "src/utils/offscreenMessageSecurity.ts"
     ]
   },
   "src/background/service/openapi.ts": {
@@ -83350,6 +82612,18 @@
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/hooks/useEnsInputResolver.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethereumjs/util/dist/esm/index.js",
+      "node_modules/react/index.js",
+      "node_modules/viem/_esm/chains/definitions/mainnet.js",
+      "node_modules/viem/_esm/clients/createPublicClient.js",
+      "node_modules/viem/_esm/clients/transports/custom.js",
+      "node_modules/viem/_esm/utils/ens/normalize.js",
+      "src/utils/chain.ts"
+    ]
+  },
   "src/ui/hooks/useEnterPassphraseModal.ts": {
     "enable": true,
     "require": [
@@ -83581,7 +82855,6 @@
       "node_modules/recharts/es6/cartesian/YAxis.js",
       "node_modules/recharts/es6/chart/AreaChart.js",
       "node_modules/recharts/es6/component/Tooltip.js",
-      "node_modules/remark-gfm/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/uuid/dist/esm-browser/v4.js",
@@ -83998,16 +83271,6 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/utils/ens.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/viem/_esm/chains/definitions/mainnet.js",
-      "node_modules/viem/_esm/clients/createPublicClient.js",
-      "node_modules/viem/_esm/clients/transports/custom.js",
-      "node_modules/viem/_esm/utils/ens/normalize.js",
-      "src/utils/chain.ts"
-    ]
-  },
   "src/ui/utils/form.ts": {
     "enable": true,
     "require": [
@@ -84260,7 +83523,7 @@
     "require": [
       "node_modules/@ethersproject/abi/lib.esm/interface.js",
       "node_modules/bignumber.js/bignumber.js",
-      "node_modules/human-standard-token-abi/index.js",
+      "node_modules/viem/_esm/constants/abis.js",
       "node_modules/viem/_esm/utils/data/isHex.js",
       "node_modules/viem/_esm/utils/encoding/fromHex.js",
       "node_modules/viem/_esm/utils/encoding/toHex.js",
@@ -85322,6 +84585,7 @@
       "src/ui/views/GasAccount/hooks/checkTxs.ts",
       "src/ui/views/GasAccount/hooks/runtime.ts",
       "src/utils/chain.ts",
+      "src/utils/hexQuantity.ts",
       "src/utils/hyperEvm.ts",
       "src/utils/tempo.ts",
       "src/utils/transaction.ts"
@@ -87043,7 +86307,6 @@
     "require": [
       "node_modules/@ant-design/icons/es/icons/InfoCircleFilled.js",
       "node_modules/@ant-design/icons/es/icons/Loading3QuartersOutlined.js",
-      "node_modules/@eth-optimism/contracts-ts/dist/constants.js",
       "node_modules/ahooks/es/useInfiniteScroll/index.js",
       "node_modules/ahooks/es/useInterval/index.js",
       "node_modules/ahooks/es/useMemoizedFn/index.js",
@@ -87074,6 +86337,7 @@
       "node_modules/viem/_esm/utils/chain/defineChain.js",
       "node_modules/viem/_esm/utils/encoding/fromHex.js",
       "node_modules/viem/_esm/utils/unit/parseEther.js",
+      "node_modules/viem/node_modules/abitype/dist/esm/human-readable/parseAbi.js",
       "src/constant/index.ts",
       "src/ui/assets/checked.svg",
       "src/ui/assets/icon-unchecked-cc.svg",
@@ -87527,8 +86791,8 @@
       "node_modules/@ethereumjs/util/dist/esm/index.js",
       "node_modules/antd/es/form/index.js",
       "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/spin/index.js",
       "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/lodash/lodash.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useMedia.js",
@@ -87539,7 +86803,7 @@
       "src/ui/assets/icon-back.svg",
       "src/ui/component/index.tsx",
       "src/ui/component/QRCodeReader/index.tsx",
-      "src/ui/utils/ens.ts",
+      "src/ui/hooks/useEnsInputResolver.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/useRepeatImportConfirm.tsx",
       "src/ui/utils/webapi.tsx",
@@ -87963,13 +87227,12 @@
       "node_modules/antd/es/button/index.js",
       "node_modules/antd/es/form/index.js",
       "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/switch/index.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/lodash/lodash.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
-      "src/ui/assets/icon-checked-cc.svg",
-      "src/ui/assets/icon-unchecked-cc.svg",
       "src/ui/assets/new-user-import/eye-cc.svg",
       "src/ui/assets/new-user-import/eye-close-cc.svg",
       "src/ui/component/NewUserImport/index.tsx",
@@ -88217,6 +87480,7 @@
       "node_modules/antd/es/form/index.js",
       "node_modules/antd/es/input/index.js",
       "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/spin/index.js",
       "node_modules/antd/es/switch/index.js",
       "node_modules/antd/es/tabs/index.js",
       "node_modules/clsx/dist/clsx.m.js",
@@ -88240,12 +87504,12 @@
       "src/ui/component/index.tsx",
       "src/ui/component/Whitelist/Modal.tsx",
       "src/ui/hooks/useAccounts.ts",
+      "src/ui/hooks/useEnsInputResolver.ts",
       "src/ui/hooks/usePreference.ts",
       "src/ui/state/whitelist.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/addressInput.ts",
-      "src/ui/utils/ens.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/WalletContext.tsx",
       "src/ui/views/SelectToAddress/style.less",
@@ -88752,6 +88016,7 @@
       "src/ui/views/TransactionHistory/components/CancelTxConfirmPopup.tsx",
       "src/ui/views/TransactionHistory/hooks/index.ts",
       "src/utils/chain.ts",
+      "src/utils/hexQuantity.ts",
       "src/utils/index.ts",
       "src/utils/transaction.ts",
       "src/utils/tx.ts"
@@ -88911,11 +88176,23 @@
       "src/utils/user-data-tracking.ts"
     ]
   },
+  "src/utils/hexQuantity.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js"
+    ]
+  },
   "src/utils/index.ts": {
     "enable": true,
     "require": [
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/utils/chain.ts"
+    ]
+  },
+  "src/utils/offscreenMessageSecurity.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js"
     ]
   },
   "src/utils/rateGuidance.ts": {
@@ -88953,6 +88230,7 @@
       "src/constant/txGasLimit.ts",
       "src/i18n.ts",
       "src/utils/chain.ts",
+      "src/utils/hexQuantity.ts",
       "src/utils/hyperEvm.ts",
       "src/utils/tempo.ts"
     ]
