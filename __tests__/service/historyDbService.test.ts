@@ -59,7 +59,8 @@ beforeEach(() => {
 });
 
 const ADDRESS = '0x0000000000000000000000000000000000000001';
-const LATEST_TIME = 2_000_000;
+// Inside the retention window, so hasNewTxFrom gets it unchanged.
+const LATEST_TIME = Math.floor(Date.now() / 1000) - 60 * 60;
 
 const createOpenapi = (hasNew: boolean) => {
   const openapi = {
@@ -157,6 +158,42 @@ describe('historyDbService sync routing', () => {
     expect(openapi.hasNewTxFrom).toHaveBeenCalledTimes(1);
     expect(syncWithAllHistoryApi).toHaveBeenCalledTimes(1);
     expect(syncWithRealTimeApi).not.toHaveBeenCalled();
+  });
+
+  test('checks for new txs from the retention start when the latest stored item has expired', async () => {
+    // A fractional retention start, since the API rejects a non-integer
+    // start_time.
+    const NOW = 1_800_000_000_500;
+    const retentionStart = NOW / 1000 - HISTORY_RETENTION_SECONDS;
+    // Older than the year has_new_tx accepts, like an address that had no txs
+    // for a long time and kept its last one as the watermark.
+    const expiredLatestTime = NOW / 1000 - 2 * 365 * 24 * 60 * 60;
+    jest.spyOn(Date, 'now').mockReturnValue(NOW);
+    mockSyncDbService.getUpdatedAt.mockResolvedValue(NOW);
+    jest
+      .spyOn(historyDbService, 'getLatestItemTime')
+      .mockResolvedValue(expiredLatestTime);
+    const openapi = createOpenapi(true);
+    const syncWithRealTimeApi = jest
+      .spyOn(historyDbService, 'syncWithRealTimeApi')
+      .mockResolvedValue(undefined);
+
+    await historyDbService.sync({
+      openapi,
+      address: ADDRESS,
+    });
+
+    expect(openapi.hasNewTxFrom).toHaveBeenCalledWith({
+      address: ADDRESS,
+      startTime: Math.floor(retentionStart),
+    });
+    // The sync itself still runs down to the stored watermark.
+    expect(syncWithRealTimeApi).toHaveBeenCalledWith({
+      openapi,
+      address: ADDRESS,
+      startTime: 0,
+      latestTime: expiredLatestTime * 1000,
+    });
   });
 });
 
