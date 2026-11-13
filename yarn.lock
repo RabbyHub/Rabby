@@ -18586,6 +18586,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mini-css-extract-plugin@npm:2.10.2":
+  version: 2.10.2
+  resolution: "mini-css-extract-plugin@npm:2.10.2"
+  dependencies:
+    schema-utils: "npm:^4.0.0"
+    tapable: "npm:^2.2.1"
+  peerDependencies:
+    webpack: ^5.0.0
+  checksum: 10c0/ba58afb1c090be144b423a3621c4e0d09a9f8f4875410d3bc108915dfcf8e2fd6e550a7f3ba129eb07fd76599157650f86186b09f3ae2c34ccc5b50e82da0aa3
+  languageName: node
+  linkType: hard
+
 "minimalistic-assert@npm:^1.0.0, minimalistic-assert@npm:^1.0.1":
   version: 1.0.1
   resolution: "minimalistic-assert@npm:1.0.1"
@@ -20761,6 +20773,7 @@ __metadata:
     loglevel: "npm:1.7.1"
     lottie-react: "npm:2.4.0"
     lru-cache: "npm:6.0.0"
+    mini-css-extract-plugin: "npm:2.10.2"
     minimizer-webpack-plugin: "npm:5.13.0"
     multiformats: "npm:13.3.2"
     nanoid: "npm:3.3.6"
