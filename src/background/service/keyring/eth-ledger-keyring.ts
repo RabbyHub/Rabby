@@ -774,9 +774,8 @@ class LedgerBridgeKeyring {
       sessionId,
     })
       .withContextModule(
-        !preferenceService.getIsLedgerClearSigningEnabled()
-          ? disabledContextModule
-          : getEthContextModule((params) => {
+        preferenceService.getIsLedgerClearSigningEnabled()
+          ? getEthContextModule((params) => {
               if (
                 !attempt ||
                 this.activeSigningAttempts.size !== 1 ||
@@ -791,6 +790,7 @@ class LedgerBridgeKeyring {
                 params.ethContext.clearSigningType
               ).slice(0, 32);
             })
+          : disabledContextModule
       )
       .build();
     return ethSigner;
