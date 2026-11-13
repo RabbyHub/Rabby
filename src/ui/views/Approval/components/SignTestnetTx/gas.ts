@@ -1,7 +1,7 @@
 import { GasLevel, Tx } from '@rabby-wallet/rabby-api/dist/types';
-import { intToHex } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import { omit } from 'lodash';
+import { toHexQuantity } from '@/utils/hexQuantity';
 
 const HEX_QUANTITY_RE = /^0x[0-9a-fA-F]+$/;
 
@@ -32,15 +32,15 @@ export const applyCustomNetworkGas = ({
   if (support1559) {
     return {
       ...omit(tx, 'gasPrice'),
-      maxFeePerGas: intToHex(price),
-      maxPriorityFeePerGas: intToHex(
+      maxFeePerGas: toHexQuantity(price),
+      maxPriorityFeePerGas: toHexQuantity(
         clampPriorityFee(gas.priority_price ?? price, price)
       ),
     };
   }
   return {
     ...omit(tx, ['maxFeePerGas', 'maxPriorityFeePerGas']),
-    gasPrice: intToHex(price),
+    gasPrice: toHexQuantity(price),
   };
 };
 

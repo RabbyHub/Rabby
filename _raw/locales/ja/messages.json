@@ -1368,7 +1368,8 @@
           "perpsFloatWidget": "パーペチュアル・フローティングウィジェット",
           "currency": "通貨",
           "searchCurrency": "通貨を検索",
-          "dataAnalysis": "データ分析",
+          "helpImproveRabby": "Rabbyの改善に協力する",
+          "helpImproveRabbyDesc": "匿名の使用状況データを共有して、Rabbyの改善にご協力ください。収集されたデータがあなたやあなたのアカウントに関連付けられることはありません。",
           "extraFeeProtection": "追加手数料保護",
           "extraFeeProtectionDesc": "ブラウザ拡張機能による追加手数料の徴収を許可する署名リクエストをブロックします"
         },
@@ -2353,7 +2354,6 @@
       "duration": "{{duration}} 分",
       "price-expired-refresh-route": "価格の有効期限が切れました。ルートを更新してください。",
       "aggregator-not-enabled": "このアグリゲーターでは取引できません。",
-      "recommendFromToken": "<1></1> からのブリッジの見積もりを取得",
       "getRoutes": "ルートを取得",
       "via-bridge": "{{bridge}} 経由",
       "need-to-approve-token-before-bridge": "ブリッジする前にトークンを承認する必要があります",
@@ -2369,7 +2369,7 @@
       "max-tips": "この値は、bridgeのガスコストを差し引いた額で計算されます。",
       "loss-tips": "{{usd}}の損失が発生します。別の金額でお試しください。",
       "unlimited-allowance": "無制限の許可",
-      "no-quote-found": "見積もりが見つかりませんでした。他のトークンペアをお試しください。",
+      "no-quote-found": "見積もりが見つかりませんでした。",
       "bridgeDbkBtn": "DBK公式サービス経由でブリッジ",
       "pendingItem": {
         "estimatedTime": "推定時間",
@@ -2912,7 +2912,11 @@
         },
         "title": "パスワードを設定",
         "desc": "ウォレットをアンロックし、データを暗号化するために使用されます。",
-        "agree": "私は<1/><2>利用規約</2>と<4>プライバシーポリシー</4>に同意します"
+        "dataCollection": {
+          "title": "Rabbyの改善に協力する",
+          "desc": "匿名の使用状況データを共有して、Rabbyの改善にご協力ください。収集されたデータがあなたやあなたのアカウントに関連付けられることはありません。この設定はいつでも「設定」で変更できます。"
+        },
+        "termsNotice": "続行すると、<terms>利用規約</terms>に同意し、<privacy>プライバシーポリシー</privacy>を確認したものとみなされます。"
       },
       "successful": {
         "start": "スタート",
@@ -3180,6 +3184,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "アドレスを検索中...",
       "emptyWhitelist": {
         "title": "ホワイトリストにアドレスを追加",
         "desc": "信頼できるアドレスをホワイトリストに追加して、迅速な送金を行います - 次回は確認は必要ありません。",

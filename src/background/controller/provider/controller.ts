@@ -670,6 +670,18 @@ class ProviderController extends BaseController {
       account,
     } = cloneDeep(options);
     const currentAccount = account;
+    const requestedFrom = txParams.from?.toLowerCase();
+    const approvedFrom = approvalRes.from?.toLowerCase();
+    if (
+      !requestedFrom ||
+      !approvedFrom ||
+      requestedFrom !== approvedFrom ||
+      Number(txParams.chainId) !== Number(approvalRes.chainId)
+    ) {
+      throw ethErrors.rpc.invalidParams(
+        'approved transaction does not match request'
+      );
+    }
     const keyring = await this._checkAddress(txParams.from, options);
     // Started now, awaited right before signing, so it overlaps the tx build.
     const isBlockedPromise = hasBlockedAddress([

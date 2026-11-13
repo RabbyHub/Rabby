@@ -157,6 +157,9 @@ async function getBundleOptions() {
 
 async function bundle() {
   const { version, isMV3, isDebug, isRelease } = await getBundleOptions();
+  // build:pro no longer type-checks or lints; keep both as release gates
+  execOrThrow('yarn typecheck');
+  execOrThrow('yarn lint');
   const buildStr = isDebug ? 'build:debug' : 'build:pro';
   const distDir = path.resolve(PROJECT_ROOT, isMV3 ? 'dist' : 'dist-mv2');
   const tmpSourceMapDir = path.resolve(
@@ -190,12 +193,11 @@ async function bundle() {
   return [version, isDebug, isRelease, isMV3];
 }
 async function packed([version, isDebug, , isMV3]) {
-  import('./zip.mjs').then((re) => {
-    re.createZipTask(
-      isMV3 ? 'dist/**' : 'dist-mv2/**',
-      `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`
-    );
-  });
+  const { createZipTask } = await import('./zip.mjs');
+  await createZipTask(
+    isMV3 ? 'dist' : 'dist-mv2',
+    `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`
+  );
 }
 
 bundle().then(release).then(packed);

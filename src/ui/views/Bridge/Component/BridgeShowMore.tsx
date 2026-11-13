@@ -1,11 +1,10 @@
-import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol, abstractTokenToTokenItem } from '@/ui/utils/token';
 import {
   GasAccountCheckResult,
   TokenItem,
   Tx,
 } from '@rabby-wallet/rabby-api/dist/types';
-import { Button, DrawerProps, Skeleton, Switch, Tooltip } from 'antd';
+import { DrawerProps, Skeleton, Switch, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
   PropsWithChildren,
@@ -15,7 +14,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcInfoRowArrowRight } from '@/ui/assets/swap/info-row-arrow-right.svg';
 import { BridgeSlippage, SlippageValidationResult } from './BridgeSlippage';
@@ -1326,60 +1325,3 @@ function ListItem({
     </div>
   );
 }
-
-export const RecommendFromToken = ({
-  token,
-  className,
-  onOk,
-}: {
-  token: TokenItem;
-  className?: string;
-  onOk: () => void;
-}) => {
-  const { t } = useTranslation();
-  return (
-    <div
-      className={clsx(
-        'flex items-center',
-        'h-[44px] pl-12 pr-10 rounded-[8px]',
-        'bg-r-neutral-card-1',
-        className
-      )}
-    >
-      <div
-        className={clsx(
-          'flex-1 flex items-center',
-          'text-12 text-rabby-neutral-title-1'
-        )}
-      >
-        <Trans t={t} i18nKey={'page.bridge.recommendFromToken'}>
-          Bridge from
-          <div
-            className={clsx(
-              'flex items-center gap-6',
-              'px-8 py-6 mx-6',
-              'text-r-blue-default',
-              'bg-rabby-blue-light1 rounded-[6px]'
-            )}
-          >
-            <TokenWithChain
-              token={token}
-              width="16px"
-              height="16px"
-              chainSize={'10px'}
-            />
-            <span>{getTokenSymbol(token)}</span>
-          </div>
-          for an available quote
-        </Trans>
-      </div>
-      <Button
-        type="primary"
-        className="h-24 text-13 font-medium px-10 py-0"
-        onClick={onOk}
-      >
-        {t('global.ok')}
-      </Button>
-    </div>
-  );
-};

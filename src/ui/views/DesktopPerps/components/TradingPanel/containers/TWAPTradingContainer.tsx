@@ -22,6 +22,9 @@ import {
 } from '../../../modal/OrderConfirmProvider';
 import type { OrderConfirmRow } from '../../../modal/OrderConfirmModal';
 import { LiveMarkPrice } from '../../../modal/OrderConfirmLiveValues';
+import { PerpsTooltip } from '../../PerpsTooltip';
+
+const MAX_RUNTIME_MINS = 24 * 60;
 
 const RUNTIME_PRESETS = [
   { label: '1h', hours: 1, minutes: 0 },
@@ -387,17 +390,28 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     return /^[0-9]*$/.test(value);
   };
 
+  // Total runtime is capped at 24h: anything above snaps to 24h 0min.
+  const applyDuration = (hours: string, minutes: string) => {
+    if (Number(hours) * 60 + Number(minutes) > MAX_RUNTIME_MINS) {
+      setHourInput('24');
+      setMinuteInput('0');
+      return;
+    }
+    setHourInput(hours);
+    setMinuteInput(minutes);
+  };
+
   const handleHourInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (validateNumberInput(value)) {
-      setHourInput(value);
+      applyDuration(value, minuteInput);
     }
   };
 
   const handleMinuteInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (validateNumberInput(value)) {
-      setMinuteInput(value);
+      applyDuration(hourInput, value);
     }
   };
 
@@ -467,25 +481,36 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
               Number(minuteInput) === preset.minutes;
             const isDisabled = presetMins > maxDurationMins;
             return (
-              <div
+              // A preset is disabled when the size cannot fill that many
+              // sub-orders at the $10 minimum; say so on hover.
+              <PerpsTooltip
                 key={preset.label}
-                className={clsx(
-                  'flex-1 h-[32px] flex items-center justify-center text-center text-[13px] rounded-[6px] border border-solid',
-                  isActive
-                    ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default cursor-pointer'
-                    : isDisabled
-                    ? 'bg-rb-neutral-bg-2 text-rb-neutral-foot border-transparent opacity-50 cursor-not-allowed'
-                    : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent hover:border-rb-brand-default cursor-pointer'
-                )}
-                onClick={() => {
-                  if (!isDisabled) {
-                    setHourInput(String(preset.hours));
-                    setMinuteInput(String(preset.minutes));
-                  }
-                }}
+                placement="top"
+                title={
+                  isDisabled && !isActive
+                    ? t('page.perpsPro.tradingPanel.twapPresetDisabledTips')
+                    : null
+                }
               >
-                {preset.label}
-              </div>
+                <div
+                  className={clsx(
+                    'flex-1 h-[32px] flex items-center justify-center text-center text-[13px] rounded-[6px] border border-solid',
+                    isActive
+                      ? 'bg-rb-brand-light-1 text-rb-neutral-title-1 border-rb-brand-default cursor-pointer'
+                      : isDisabled
+                      ? 'bg-rb-neutral-bg-2 text-rb-neutral-foot border-transparent opacity-50 cursor-not-allowed'
+                      : 'bg-rb-neutral-bg-2 text-r-neutral-title-1 border-transparent hover:border-rb-brand-default cursor-pointer'
+                  )}
+                  onClick={() => {
+                    if (!isDisabled) {
+                      setHourInput(String(preset.hours));
+                      setMinuteInput(String(preset.minutes));
+                    }
+                  }}
+                >
+                  {preset.label}
+                </div>
+              </PerpsTooltip>
             );
           })}
         </div>
@@ -507,7 +532,11 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
         <PerpsCheckbox
           checked={reduceOnly}
           onChange={setReduceOnly}
-          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          tooltipText={t(
+            currentPosition
+              ? 'page.perpsPro.tradingPanel.reduceOnlyTips'
+              : 'page.perpsPro.tradingPanel.reduceOnlyNoPositionTips'
+          )}
           title={t('page.perpsPro.tradingPanel.reduceOnly')}
           disabled={!currentPosition}
         />
