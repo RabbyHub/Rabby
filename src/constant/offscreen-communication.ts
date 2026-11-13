@@ -23,14 +23,16 @@ export enum ImKeyAction {
 }
 
 export enum OneKeyAction {
+  cancel = 'onekey-cancel',
   init = 'onekey-init',
   evmSignTransaction = 'onekey-evm-sign-transaction',
   evmSignMessage = 'onekey-evm-sign-message',
   evmSignTypedData = 'onekey-evm-sign-typed-data',
   searchDevices = 'onekey-search-devices',
   getPassphraseState = 'onekey-get-passphrase-state',
+  openWalletSession = 'onekey-open-wallet-session',
   evmGetPublicKey = 'onekey-evm-get-public-key',
-  getFeatures = 'onekey-get-device-features',
+  getDeviceState = 'onekey-get-device-state',
 }
 
 export enum TrezorAction {

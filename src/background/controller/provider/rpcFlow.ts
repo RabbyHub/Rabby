@@ -406,6 +406,7 @@ const flowContext = flow
   })
   .use(async (ctx) => {
     const { approvalRes, mapMethod, request } = ctx;
+    let oneKeyRequestCancelled = false;
     // process request
     const [approvalType] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
@@ -431,7 +432,15 @@ const flowContext = flow
           return resolve(undefined);
         }
 
-        return waitSignComponentPromise.then(() => {
+        waitSignComponentPromise = waitSignComponentPromise.then(() => {
+          if (oneKeyRequestCancelled) {
+            throw ethErrors.provider.userRejectedRequest(
+              'OneKey signing cancelled'
+            );
+          }
+        });
+
+        const signingTask = waitSignComponentPromise.then(() => {
           let _approvalRes = originApprovalRes;
 
           if (
@@ -539,6 +548,7 @@ const flowContext = flow
               reject(e);
             });
         });
+        return signingTask.catch(reject);
       });
 
     const requestDeferFn = createRequestDeferFn(approvalRes);
@@ -546,7 +556,26 @@ const flowContext = flow
     if (!approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
+    const isOneKeyRequest =
+      uiRequestComponent === 'CommonWaiting' && rest.type === 'Onekey Hardware';
+    let oneKeyKeyring: any;
+    if (isOneKeyRequest) {
+      try {
+        oneKeyKeyring = await keyringService.getKeyringForAccount(
+          rest.address,
+          rest.type
+        );
+      } catch (e) {
+        // The account may have been removed while the approval was pending.
+        console.error('Failed to get OneKey keyring for account', e);
+        oneKeyKeyring = undefined;
+      }
+    }
     const requestDefer = requestDeferFn();
+    if (isOneKeyRequest) {
+      // The approval promise owns the result; SDK cancellation also rejects this task.
+      void requestDefer.catch(() => undefined);
+    }
     async function requestApprovalLoop({
       uiRequestComponent,
       $account,
@@ -570,7 +599,22 @@ const flowContext = flow
 
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
+      const result = await requestApprovalLoop({
+        uiRequestComponent,
+        ...rest,
+      }).catch(async (error) => {
+        if (isOneKeyRequest) {
+          oneKeyRequestCancelled = true;
+        }
+        if (oneKeyKeyring) {
+          try {
+            await oneKeyKeyring.cancel();
+          } catch (cancelError) {
+            console.error('OneKey cancellation failed', cancelError);
+          }
+        }
+        throw error;
+      });
       if (rest?.safeMessage) {
         const safeMessage: {
           safeAddress: string;

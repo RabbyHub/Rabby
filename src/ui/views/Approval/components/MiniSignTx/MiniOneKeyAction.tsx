@@ -15,6 +15,7 @@ import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import eventBus from '@/eventBus';
 import { Popup } from '@/ui/component';
+import { useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import { useMemoizedFn } from 'ahooks';
 import { DrawerProps } from 'antd';
@@ -82,10 +83,34 @@ export const MiniOneKeyAction: React.FC<Props> = ({
   const { txStatus, total, currentActiveIndex: current } = task;
 
   const [disconnectTipsModal, setDisconnectTipsModal] = React.useState(false);
+  const wallet = useWallet();
+  const taskStatusRef = useRef(task.status);
+  taskStatusRef.current = task.status;
+  const signingAddressRef = useRef(account.address);
+  signingAddressRef.current = account.address;
+
+  React.useEffect(() => {
+    const cancel = () => {
+      if (taskStatusRef.current === 'active') {
+        taskStatusRef.current = 'idle';
+        void wallet
+          .cancelOneKeySigning(signingAddressRef.current)
+          .catch(console.error);
+      }
+    };
+    window.addEventListener('beforeunload', cancel);
+    return () => {
+      window.removeEventListener('beforeunload', cancel);
+      cancel();
+    };
+  }, []);
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (msg === 'No OneKey Device found') {
+      if (
+        typeof msg === 'string' &&
+        (msg === 'No OneKey Device found' || /^(105|901|107|109):/.test(msg))
+      ) {
         console.log('msgmsg', msg);
         setDisconnectTipsModal(true);
         task.stop();
