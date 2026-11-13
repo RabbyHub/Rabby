@@ -94549,6 +94549,12 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/assets/address/delete-current-color.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/assets/approval/arrow-down-blue.svg": {
     "enable": true,
     "require": [
@@ -95012,6 +95018,24 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/assets/new-user-import/guide1.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/new-user-import/guide2.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/new-user-import/triangle.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/assets/nft-default.svg": {
     "enable": true,
     "require": [
@@ -95031,6 +95055,12 @@
     ]
   },
   "src/ui/assets/perps/IconDeposit.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/assets/perps/IconHyperLogo.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -95988,6 +96018,16 @@
       "src/ui/component/ChainSelector/style.less"
     ]
   },
+  "src/ui/component/ChainSelector/tag.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "src/ui/assets/index.ts",
+      "src/ui/component/ChainSelector/Modal.tsx",
+      "src/ui/component/ChainSelector/style.less",
+      "src/utils/chain.ts"
+    ]
+  },
   "src/ui/component/Checkbox/index.tsx": {
     "enable": true,
     "require": [
@@ -96187,7 +96227,9 @@
   "src/ui/component/LangSelector/styles.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/LangSelector/styles.less"
     ]
   },
   "src/ui/component/Loading/style.less": {
@@ -96343,7 +96385,9 @@
   "src/ui/component/NFTNumberInput/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/NFTNumberInput/style.less"
     ]
   },
   "src/ui/component/NameAndAddress/index.less": {
@@ -96445,7 +96489,9 @@
   "src/ui/component/Progress/index.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/Progress/index.less"
     ]
   },
   "src/ui/component/Progress/index.tsx": {
@@ -96453,7 +96499,6 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/component/Progress/index.less"
     ]
   },
@@ -96464,7 +96509,6 @@
       "node_modules/antd/es/message/index.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/component/QRCodeReader/style.less",
       "src/ui/utils/index.ts"
     ]
@@ -96472,7 +96516,9 @@
   "src/ui/component/QRCodeReader/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/QRCodeReader/style.less"
     ]
   },
   "src/ui/component/RiskWarningTitle.tsx": {
@@ -96585,7 +96631,9 @@
   "src/ui/component/TokenAmountInput/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/TokenAmountInput/style.less"
     ]
   },
   "src/ui/component/TokenChart/index.tsx": {
@@ -96655,7 +96703,6 @@
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/dashboard/asset-empty.svg",
       "src/ui/assets/match-cc.svg",
@@ -96687,7 +96734,9 @@
   "src/ui/component/TokenSelector/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/TokenSelector/style.less"
     ]
   },
   "src/ui/component/TokenWithChain/index.tsx": {
@@ -97674,6 +97723,38 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/utils/SyncToMobile/SyncToMobile.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@ngraveio/bc-ur/dist/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/buffer/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/fflate/esm/browser.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/qrcode.react/lib/esm/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/constant/index.ts",
+      "src/ui/assets/create-mnemonics/mask-lock.svg",
+      "src/ui/component/AuthenticationModal/index.tsx",
+      "src/ui/component/CopyChecked.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/hooks/useAccounts.ts",
+      "src/ui/hooks/useScreenshotContextMenuVisible.ts",
+      "src/ui/state/whitelist.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/address.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/WalletContext.tsx",
+      "src/ui/utils/webapi.tsx",
+      "src/utils/account.ts"
+    ]
+  },
   "src/ui/utils/WalletContext.tsx": {
     "enable": true,
     "require": [
@@ -97711,7 +97792,9 @@
   "src/ui/utils/confirmPopup.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/confirmPopup.less"
     ]
   },
   "src/ui/utils/ens.ts": {
@@ -97817,6 +97900,12 @@
     "require": [
       "node_modules/bignumber.js/bignumber.js",
       "src/constant/regexp.ts"
+    ]
+  },
+  "src/ui/utils/onekey.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@onekeyfe/hd-shared/dist/index.js"
     ]
   },
   "src/ui/utils/portfolio/expandList.ts": {
@@ -97999,7 +98088,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/ui.ts",
       "src/ui/component/AccountSelector/AccountItem.tsx",
       "src/ui/store.ts",
@@ -98044,7 +98132,6 @@
       "node_modules/lodash/minBy.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
       "src/eventBus.ts",
@@ -98068,7 +98155,9 @@
   "src/ui/views/Activities/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Activities/style.less"
     ]
   },
   "src/ui/views/AddAddress/AddMoreAddressesFromSeedPhrase.tsx": {
@@ -98116,6 +98205,31 @@
       "src/ui/views/AddAddress/useCreateAddress.ts",
       "src/ui/views/AddFromCurrentSeedPhrase/hooks.ts",
       "src/ui/views/AddFromCurrentSeedPhrase/sort.ts"
+    ]
+  },
+  "src/ui/views/AddAddress/BulkImportPrivateKey.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/viem/_esm/accounts/utils/privateKeyToAddress.js",
+      "src/ui/assets/logo-rabby-large.svg",
+      "src/ui/assets/new-user-import/eye-cc.svg",
+      "src/ui/assets/new-user-import/eye-close-cc.svg",
+      "src/ui/assets/success.svg",
+      "src/ui/assets/uploader.svg",
+      "src/ui/component/PillsSwitch/index.tsx",
+      "src/ui/hooks/useScreenshotContextMenuVisible.ts",
+      "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/AddAddress/useCreateAddress.ts"
     ]
   },
   "src/ui/views/AddAddress/CreateAddressSuccess.tsx": {
@@ -98231,7 +98345,6 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/component/index.tsx",
       "src/ui/views/AddAddress/style.less"
     ]
@@ -98254,7 +98367,9 @@
   "src/ui/views/AddAddress/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/AddAddress/style.less"
     ]
   },
   "src/ui/views/AddAddress/useCreateAddress.ts": {
@@ -98376,7 +98491,6 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
       "src/constant/ui.ts",
@@ -98413,19 +98527,104 @@
   "src/ui/views/AddressDetail/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/AddressDetail/style.less"
+    ]
+  },
+  "src/ui/views/AddressManagement/AddressItem.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/antd/lib/skeleton/Input.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/address/delete-current-color.svg",
+      "src/ui/assets/check.svg",
+      "src/ui/assets/success.svg",
+      "src/ui/component/ConnectStatus/CommonSignal.tsx",
+      "src/ui/component/CopyChecked.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/hooks/useBrandIcon.ts",
+      "src/ui/hooks/useDeleteHdOrPrivateKeyringAddress.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/views/AddressManagement/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useDebounceFn/index.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-window/dist/index.esm.js",
+      "node_modules/react/index.js",
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/constant/index.ts",
+      "src/constant/ui.ts",
+      "src/ui/assets/icon-pinned-fill.svg",
+      "src/ui/assets/icon-pinned.svg",
+      "src/ui/component/AuthenticationModal/index.tsx",
+      "src/ui/component/ConnectStatus/CommonStatusBar.tsx",
+      "src/ui/component/ConnectStatus/GridPlusSignal.tsx",
+      "src/ui/component/ConnectStatus/KeystoneSignal.tsx",
+      "src/ui/component/ConnectStatus/LedgerSignal.tsx",
+      "src/ui/component/ConnectStatus/useGridPlusStatus.ts",
+      "src/ui/component/ConnectStatus/useLedgerStatus.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/component/WalletConnect/SessionStatusBar.tsx",
+      "src/ui/hooks/useAccounts.ts",
+      "src/ui/hooks/useDebounceValue.ts",
+      "src/ui/hooks/useEnterPassphraseModal.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/keystone.ts",
+      "src/ui/utils/switch.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/utils/useCheckSeedPhraseBackup.ts",
+      "src/ui/views/AddressManagement/AddressItem.tsx",
+      "src/ui/views/AddressManagement/style.less"
     ]
   },
   "src/ui/views/AddressManagement/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/AddressManagement/style.less"
+    ]
+  },
+  "src/ui/views/AdvanceSettings/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/switch/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/arrow-right-gray.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/AdvanceSettings/style.less"
     ]
   },
   "src/ui/views/AdvanceSettings/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/AdvanceSettings/style.less"
     ]
   },
   "src/ui/views/Approval/components/ActionWrapper.tsx": {
@@ -98643,6 +98842,18 @@
       "src/ui/views/Approval/components/Actions/components/Table.tsx",
       "src/ui/views/Approval/components/Actions/components/Values.tsx",
       "src/ui/views/Approval/components/Actions/components/ViewMore.tsx"
+    ]
+  },
+  "src/ui/views/Approval/components/Connect/SelectWalletApproval.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Approval/components/Connect/index.tsx",
+      "src/ui/views/Approval/hooks/useApprovalUtils.tsx",
+      "src/ui/views/Approval/style.less"
     ]
   },
   "src/ui/views/Approval/components/Connect/index.tsx": {
@@ -99476,6 +99687,25 @@
       "src/ui/views/Approval/style.less"
     ]
   },
+  "src/ui/views/BiometricUnlockSetup/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/ui/assets/unlock/background.svg",
+      "src/ui/assets/unlock/biometrics.svg",
+      "src/ui/store.ts",
+      "src/ui/utils/biometric.ts",
+      "src/ui/utils/index.ts"
+    ]
+  },
   "src/ui/views/Bridge/Component/BridgeHistory.tsx": {
     "enable": true,
     "require": [
@@ -99730,10 +99960,23 @@
       "src/constant/screenshot.ts"
     ]
   },
+  "src/ui/views/ChainList/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/component/index.tsx",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/views/ChainList/style.less",
+      "src/utils/chain.ts"
+    ]
+  },
   "src/ui/views/ChainList/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ChainList/style.less"
     ]
   },
   "src/ui/views/CommonPopup/AssetList/ChainItem.tsx": {
@@ -99798,7 +100041,9 @@
   "src/ui/views/CommonPopup/AssetList/CustomTestnetTokenDetailPopup/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/CommonPopup/AssetList/CustomTestnetTokenDetailPopup/style.less"
     ]
   },
   "src/ui/views/CommonPopup/AssetList/HomePerpsPositionList.tsx": {
@@ -99907,7 +100152,6 @@
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react-window/dist/index.esm.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
       "src/eventBus.ts",
@@ -99976,16 +100220,98 @@
       "src/utils/string.ts"
     ]
   },
+  "src/ui/views/ConnectedSites/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/ConnectedSites/style.less"
+    ]
+  },
   "src/ui/views/ConnectedSites/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ConnectedSites/style.less"
+    ]
+  },
+  "src/ui/views/CreateMnemonics/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/zustand/esm/react.mjs",
+      "src/constant/index.ts",
+      "src/ui/assets/new-user-import/dot-cc.svg",
+      "src/ui/assets/success.svg",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/component/WordsMatrix/index.tsx",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/state/importMnemonics.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/wallet/index.ts"
+    ]
+  },
+  "src/ui/views/CreatePassword.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/spin/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useCss.js",
+      "node_modules/react-use/esm/useToggle.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/check.svg",
+      "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/views/CustomRPC/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@debank/common/dist/index-rabby.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/switch/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useDebounce.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/assets/success.svg",
+      "src/ui/component/ChainIcon.tsx",
+      "src/ui/component/ChainSelector/Modal.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/state/customRPC.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/CustomRPC/style.less",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/CustomRPC/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/CustomRPC/style.less"
     ]
   },
   "src/ui/views/CustomTestnet/components/CustomTestnetForm.tsx": {
@@ -100066,7 +100392,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/success.svg",
       "src/ui/component/index.tsx",
@@ -100081,7 +100406,35 @@
   "src/ui/views/CustomTestnet/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/CustomTestnet/style.less"
+    ]
+  },
+  "src/ui/views/DappSearch/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@debank/common/dist/index-rabby.js",
+      "node_modules/ahooks/es/useDebounce/index.js",
+      "node_modules/ahooks/es/useInfiniteScroll/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/ahooks/es/useScroll/index.js",
+      "node_modules/ahooks/es/useTitle/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/antd/lib/typography/Paragraph.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/component/FallbackSiteLogo/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton.tsx",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/Dashboard/components/BalanceView/useCurve.ts": {
@@ -100799,6 +101152,24 @@
       "node_modules/styled-components/dist/styled-components.browser.esm.js"
     ]
   },
+  "src/ui/views/Ecology/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/icon-back-cc.svg",
+      "src/ui/views/Ecology/constants.tsx"
+    ]
+  },
+  "src/ui/views/GasAccount/components/Button.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+    ]
+  },
   "src/ui/views/GasAccount/components/GasAccountDepositPopup.tsx": {
     "enable": true,
     "require": [
@@ -100903,6 +101274,50 @@
       "node_modules/use-sync-external-store/shim/index.js"
     ]
   },
+  "src/ui/views/GasAccount/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/dropdown/index.js",
+      "node_modules/antd/es/menu/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-virtuoso/dist/index.mjs",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/constant/gas-account.ts",
+      "src/constant/index.ts",
+      "src/eventBus.ts",
+      "src/ui/assets/component/close-cc.svg",
+      "src/ui/assets/dashboard/settings/icon-right-arrow.svg",
+      "src/ui/assets/empty-cc.svg",
+      "src/ui/assets/info-cc.svg",
+      "src/ui/assets/open-external-cc.svg",
+      "src/ui/assets/tokenDetail/IconHelp.svg",
+      "src/ui/component/CopyChecked.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/component/Tooltip/TooltipV6.tsx",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useBrandIcon.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/account.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/number.ts",
+      "src/ui/views/GasAccount/components/Button.tsx",
+      "src/ui/views/GasAccount/components/GasAccountDepositPopup.tsx",
+      "src/ui/views/GasAccount/hooks/context.ts",
+      "src/ui/views/GasAccount/hooks/index.ts",
+      "src/utils/chain.ts",
+      "src/utils/env.ts",
+      "src/utils/index.ts"
+    ]
+  },
   "src/ui/views/GnosisQueue/index.tsx": {
     "enable": true,
     "require": [
@@ -100923,7 +101338,6 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/viem/_esm/utils/encoding/toHex.js",
       "src/constant/index.ts",
@@ -100955,7 +101369,9 @@
   "src/ui/views/GnosisQueue/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/GnosisQueue/style.less"
     ]
   },
   "src/ui/views/HDManager/AdvancedSettings.tsx": {
@@ -101007,10 +101423,51 @@
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/views/History/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethereumjs/util/dist/esm/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/switch/index.js",
+      "node_modules/antd/es/tabs/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/p-queue/dist/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router-dom/esm/react-router-dom.js",
+      "node_modules/react-use/esm/useAsync.js",
+      "node_modules/react-virtuoso/dist/index.mjs",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/db/hooks/history.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/component/PillsSwitch/NetSwitchTabs.tsx",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/transaction.ts",
+      "src/ui/views/Bridge/Component/BridgeHistory.tsx",
+      "src/ui/views/Bridge/constants.ts",
+      "src/ui/views/Bridge/utils/historyCache.ts",
+      "src/ui/views/Bridge/utils/historyRefresh.ts",
+      "src/ui/views/History/style.less",
+      "src/ui/views/TransactionHistory/components/TransactionItem.tsx",
+      "src/ui/views/TransactionHistory/style.less",
+      "src/utils/account.ts",
+      "src/utils/chain.ts",
+      "src/utils/index.ts"
+    ]
+  },
   "src/ui/views/History/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/History/style.less"
     ]
   },
   "src/ui/views/ImportCoboArgus/ImportCoboArgus.tsx": {
@@ -101046,7 +101503,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/constant/ui.ts",
       "src/eventBus.ts",
@@ -101060,7 +101516,9 @@
   "src/ui/views/ImportCoinbase/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportCoinbase/style.less"
     ]
   },
   "src/ui/views/ImportGnosisAddress/index.tsx": {
@@ -101076,7 +101534,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/tailwind-merge/dist/bundle-mjs.mjs",
       "src/constant/index.ts",
       "src/constant/ui.ts",
@@ -101091,49 +101548,197 @@
   "src/ui/views/ImportGnosisAddress/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportGnosisAddress/style.less"
+    ]
+  },
+  "src/ui/views/ImportHardware/ImKeyConnect/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/ImportHardware/ImKeyConnect/style.less",
+      "src/ui/views/SelectAddress/route.ts"
     ]
   },
   "src/ui/views/ImportHardware/ImKeyConnect/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportHardware/ImKeyConnect/style.less"
+    ]
+  },
+  "src/ui/views/ImportHardware/KeystoneConnect/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@ngraveio/bc-ur/dist/index.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/PillsSwitch/index.tsx",
+      "src/ui/component/Progress/index.tsx",
+      "src/ui/component/QRCodeReader/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/ImportHardware/KeystoneConnect/style.less",
+      "src/ui/views/QRCodeCheckerDetail.tsx",
+      "src/ui/views/SelectAddress/route.ts"
     ]
   },
   "src/ui/views/ImportHardware/KeystoneConnect/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportHardware/KeystoneConnect/style.less"
+    ]
+  },
+  "src/ui/views/ImportHardware/LedgerConnect/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/ledger-dmk.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/ImportHardware/LedgerConnect/style.less",
+      "src/ui/views/SelectAddress/route.ts"
     ]
   },
   "src/ui/views/ImportHardware/LedgerConnect/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportHardware/LedgerConnect/style.less"
+    ]
+  },
+  "src/ui/views/ImportHardware/OneKeyConnect/ImageCarousel.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/views/ImportHardware/OneKeyConnect/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@ngraveio/bc-ur/dist/index.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/i18next/dist/esm/i18next.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/component/PillsSwitch/index.tsx",
+      "src/ui/component/Progress/index.tsx",
+      "src/ui/component/QRCodeReader/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/ImportHardware/OneKeyConnect/ImageCarousel.tsx",
+      "src/ui/views/ImportHardware/OneKeyConnect/style.less",
+      "src/ui/views/ImportHardware/OneKeyConnect/utils.ts",
+      "src/ui/views/QRCodeCheckerDetail.tsx",
+      "src/ui/views/SelectAddress/route.ts"
     ]
   },
   "src/ui/views/ImportHardware/OneKeyConnect/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportHardware/OneKeyConnect/style.less"
+    ]
+  },
+  "src/ui/views/ImportHardware/OneKeyConnect/utils.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@keystonehq/bc-ur-registry/dist/index.js",
+      "node_modules/@ngraveio/bc-ur/dist/index.js"
+    ]
+  },
+  "src/ui/views/ImportHardware/QRCodeConnect/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@ngraveio/bc-ur/dist/index.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/Progress/index.tsx",
+      "src/ui/component/QRCodeReader/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/ImportHardware/QRCodeConnect/style.less",
+      "src/ui/views/QRCodeCheckerDetail.tsx",
+      "src/ui/views/SelectAddress/route.ts"
     ]
   },
   "src/ui/views/ImportHardware/QRCodeConnect/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportHardware/QRCodeConnect/style.less"
+    ]
+  },
+  "src/ui/views/ImportHardware/TrezorConnect/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/ImportHardware/TrezorConnect/style.less"
     ]
   },
   "src/ui/views/ImportHardware/TrezorConnect/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportHardware/TrezorConnect/style.less"
     ]
   },
   "src/ui/views/ImportHardware/index.css": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportHardware/index.css"
+    ]
+  },
+  "src/ui/views/ImportHardware/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-router/esm/react-router.js",
+      "src/constant/index.ts",
+      "src/ui/views/ImportHardware/index.css",
+      "src/ui/views/SelectAddress/route.ts"
     ]
   },
   "src/ui/views/ImportJson.tsx": {
@@ -101150,6 +101755,38 @@
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/views/ImportMnemonics/InputMnemonics.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/constant/index.ts",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/component/WordsMatrix/index.tsx",
+      "src/ui/state/importMnemonics.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/views/ImportMode.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/index.ts"
+    ]
+  },
   "src/ui/views/ImportMyMetaMaskAccount/index.tsx": {
     "enable": true,
     "require": [
@@ -101157,7 +101794,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/ui.ts",
       "src/ui/component/index.tsx",
       "src/ui/utils/index.ts",
@@ -101167,7 +101803,9 @@
   "src/ui/views/ImportMyMetaMaskAccount/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportMyMetaMaskAccount/style.less"
     ]
   },
   "src/ui/views/ImportPrivateKey.tsx": {
@@ -101196,7 +101834,9 @@
   "src/ui/views/ImportSuccess/index.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/ImportSuccess/index.less"
     ]
   },
   "src/ui/views/ImportSuccess/index.tsx": {
@@ -101209,7 +101849,6 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useMedia.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/constant/ui.ts",
       "src/ui/assets/add-address/index.ts",
@@ -101251,367 +101890,159 @@
   "src/ui/views/MainRoute.tsx": {
     "enable": true,
     "require": [
-      "node_modules/@ant-design/icons/es/icons/LoadingOutlined.js",
-      "node_modules/@debank/common/dist/index-rabby.js",
-      "node_modules/@ethereumjs/util/dist/esm/index.js",
-      "node_modules/@keystonehq/bc-ur-registry/dist/index.js",
-      "node_modules/@keystonehq/hw-transport-webusb/lib/index.js",
-      "node_modules/@ngraveio/bc-ur/dist/index.js",
-      "node_modules/@onekeyfe/hd-shared/dist/index.js",
-      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
-      "node_modules/@rabby-wallet/staking-sdk/dist/index.js",
-      "node_modules/@scure/bip39/esm/index.js",
-      "node_modules/@scure/bip39/esm/wordlists/english.js",
-      "node_modules/@sentry/core/build/esm/exports.js",
-      "node_modules/@tanstack/react-query/build/modern/useQuery.js",
-      "node_modules/ahooks/es/useCreation/index.js",
-      "node_modules/ahooks/es/useDebounce/index.js",
-      "node_modules/ahooks/es/useDebounceFn/index.js",
-      "node_modules/ahooks/es/useDocumentVisibility/index.js",
-      "node_modules/ahooks/es/useInfiniteScroll/index.js",
-      "node_modules/ahooks/es/useInViewport/index.js",
-      "node_modules/ahooks/es/useMemoizedFn/index.js",
-      "node_modules/ahooks/es/useMount/index.js",
-      "node_modules/ahooks/es/useRequest/index.js",
-      "node_modules/ahooks/es/useScroll/index.js",
-      "node_modules/ahooks/es/useTitle/index.js",
-      "node_modules/ahooks/es/useUnmount/index.js",
-      "node_modules/antd/es/button/index.js",
-      "node_modules/antd/es/drawer/index.js",
-      "node_modules/antd/es/dropdown/index.js",
-      "node_modules/antd/es/empty/index.js",
-      "node_modules/antd/es/form/index.js",
-      "node_modules/antd/es/input/index.js",
-      "node_modules/antd/es/menu/index.js",
-      "node_modules/antd/es/message/index.js",
-      "node_modules/antd/es/modal/index.js",
-      "node_modules/antd/es/popover/index.js",
-      "node_modules/antd/es/skeleton/index.js",
-      "node_modules/antd/es/spin/index.js",
-      "node_modules/antd/es/switch/index.js",
-      "node_modules/antd/es/table/index.js",
-      "node_modules/antd/es/tabs/index.js",
-      "node_modules/antd/es/tooltip/index.js",
-      "node_modules/antd/lib/modal/useModal/index.js",
-      "node_modules/antd/lib/skeleton/Input.js",
-      "node_modules/antd/lib/typography/Paragraph.js",
-      "node_modules/bignumber.js/bignumber.js",
-      "node_modules/buffer/index.js",
-      "node_modules/clipboard/dist/clipboard.js",
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/dayjs/dayjs.min.js",
-      "node_modules/dayjs/plugin/utc.js",
-      "node_modules/ethers/lib/utils.js",
-      "node_modules/fflate/esm/browser.js",
-      "node_modules/i18next/dist/esm/i18next.js",
-      "node_modules/lightweight-charts/dist/lightweight-charts.production.mjs",
-      "node_modules/lodash/lodash.js",
-      "node_modules/nanoid/index.browser.js",
-      "node_modules/p-queue/dist/index.js",
-      "node_modules/process/browser.js",
-      "node_modules/qrcode.react/lib/esm/index.js",
-      "node_modules/qs/lib/index.js",
-      "node_modules/rc-switch/es/index.js",
-      "node_modules/react-countup/build/index.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react-router-dom/esm/react-router-dom.js",
       "node_modules/react-router/esm/react-router.js",
-      "node_modules/react-use/esm/useAsync.js",
-      "node_modules/react-use/esm/useAsyncFn.js",
-      "node_modules/react-use/esm/useAsyncRetry.js",
-      "node_modules/react-use/esm/useClickAway.js",
-      "node_modules/react-use/esm/useCss.js",
-      "node_modules/react-use/esm/useDebounce.js",
-      "node_modules/react-use/esm/useInterval.js",
-      "node_modules/react-use/esm/useToggle.js",
-      "node_modules/react-virtuoso/dist/index.mjs",
-      "node_modules/react-window/dist/index.esm.js",
       "node_modules/react/index.js",
-      "node_modules/recharts/es6/cartesian/Area.js",
-      "node_modules/recharts/es6/cartesian/XAxis.js",
-      "node_modules/recharts/es6/cartesian/YAxis.js",
-      "node_modules/recharts/es6/chart/AreaChart.js",
-      "node_modules/recharts/es6/component/ResponsiveContainer.js",
-      "node_modules/recharts/es6/component/Tooltip.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
-      "node_modules/viem/_esm/accounts/utils/privateKeyToAddress.js",
-      "node_modules/viem/_esm/constants/address.js",
-      "node_modules/viem/_esm/utils/abi/decodeFunctionResult.js",
-      "node_modules/viem/_esm/utils/abi/encodeFunctionData.js",
-      "node_modules/viem/_esm/utils/encoding/fromHex.js",
-      "node_modules/web3-eth-abi/lib/index.js",
-      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "node_modules/zustand/esm/react.mjs",
-      "src/constant/eip7702.ts",
-      "src/constant/gas-account.ts",
       "src/constant/index.ts",
-      "src/constant/regexp.ts",
-      "src/constant/ui.ts",
-      "src/db/hooks/history.ts",
-      "src/eventBus.ts",
-      "src/i18n.ts",
-      "src/types/chain.ts",
-      "src/ui/assets/approval/loading.svg",
-      "src/ui/assets/approval/success.svg",
-      "src/ui/assets/arrow-down-cc.svg",
-      "src/ui/assets/arrow-right-cc.svg",
-      "src/ui/assets/arrow-right-gray.svg",
-      "src/ui/assets/check-2.svg",
-      "src/ui/assets/check.svg",
-      "src/ui/assets/component/close-cc.svg",
-      "src/ui/assets/component/icon-copy-cc.svg",
-      "src/ui/assets/create-mnemonics/mask-lock.svg",
-      "src/ui/assets/dapps.svg",
-      "src/ui/assets/dashboard/arrow-down-cc.svg",
-      "src/ui/assets/dashboard/index.tsx",
-      "src/ui/assets/dashboard/settings/icon-right-arrow-cc.svg",
-      "src/ui/assets/dashboard/settings/icon-right-arrow.svg",
-      "src/ui/assets/desktop/common/index.tsx",
-      "src/ui/assets/editpen.svg",
-      "src/ui/assets/empty-cc.svg",
-      "src/ui/assets/icon-back-cc.svg",
-      "src/ui/assets/icon-copy-cc.svg",
-      "src/ui/assets/icon-pinned-fill.svg",
-      "src/ui/assets/icon-pinned.svg",
-      "src/ui/assets/icon-rabby-circle.svg",
-      "src/ui/assets/icon-unknown-1.svg",
-      "src/ui/assets/index.ts",
-      "src/ui/assets/info-cc.svg",
-      "src/ui/assets/infoicon.svg",
-      "src/ui/assets/ledger/press.svg",
-      "src/ui/assets/logo-rabby-large.svg",
-      "src/ui/assets/new-user-import/dot-cc.svg",
-      "src/ui/assets/new-user-import/external-cc.svg",
-      "src/ui/assets/new-user-import/eye-cc.svg",
-      "src/ui/assets/new-user-import/eye-close-cc.svg",
-      "src/ui/assets/open-external-cc.svg",
-      "src/ui/assets/perps/icon-alarm-cc.svg",
-      "src/ui/assets/perps/icon-hyperliquid.svg",
-      "src/ui/assets/perps/IconAddDeposit.svg",
-      "src/ui/assets/perps/IconDeposit.svg",
-      "src/ui/assets/perps/IconInfo.svg",
-      "src/ui/assets/perps/IconNoSrc.svg",
-      "src/ui/assets/perps/IconPending.svg",
-      "src/ui/assets/perps/IconTransfer.svg",
-      "src/ui/assets/perps/IconUSDE.svg",
-      "src/ui/assets/perps/IconUSDH.svg",
-      "src/ui/assets/perps/IconUSDT.svg",
-      "src/ui/assets/perps/IconWithdraw.svg",
-      "src/ui/assets/perps/ImgDeleteWarning.svg",
-      "src/ui/assets/rabby-logo-circle.svg",
-      "src/ui/assets/search.svg",
-      "src/ui/assets/success.svg",
-      "src/ui/assets/swap/history-cc.svg",
-      "src/ui/assets/swap/wallet-cc.svg",
-      "src/ui/assets/token-default.svg",
-      "src/ui/assets/tokenDetail/IconHelp.svg",
-      "src/ui/assets/unlock/background.svg",
-      "src/ui/assets/unlock/biometrics.svg",
-      "src/ui/assets/unlock/rabby.svg",
-      "src/ui/assets/uploader.svg",
-      "src/ui/assets/walletlogo/airgap.svg",
-      "src/ui/assets/walletlogo/coolwallet.svg",
-      "src/ui/assets/walletlogo/gridplus.svg",
-      "src/ui/assets/walletlogo/imkey.svg",
-      "src/ui/assets/walletlogo/imTokenOffline.svg",
-      "src/ui/assets/walletlogo/keystone.svg",
-      "src/ui/assets/walletlogo/ledger.svg",
-      "src/ui/assets/walletlogo/ngrave.svg",
-      "src/ui/assets/walletlogo/onekey.svg",
-      "src/ui/assets/walletlogo/trezor.svg",
-      "src/ui/assets/warning-cc.svg",
-      "src/ui/component/AuthenticationModal/index.tsx",
-      "src/ui/component/AutoSizeAmountInput/index.tsx",
-      "src/ui/component/ChainIcon.tsx",
-      "src/ui/component/ChainSelector/Modal.tsx",
-      "src/ui/component/ChainSelector/style.less",
-      "src/ui/component/ConnectStatus/CommonSignal.tsx",
-      "src/ui/component/ConnectStatus/CommonStatusBar.tsx",
-      "src/ui/component/ConnectStatus/GridPlusSignal.tsx",
-      "src/ui/component/ConnectStatus/KeystoneSignal.tsx",
-      "src/ui/component/ConnectStatus/LedgerSignal.tsx",
-      "src/ui/component/ConnectStatus/useGridPlusStatus.ts",
-      "src/ui/component/ConnectStatus/useLedgerStatus.ts",
-      "src/ui/component/CopyChecked.tsx",
-      "src/ui/component/FallbackSiteLogo/index.tsx",
-      "src/ui/component/FieldCheckbox.tsx",
       "src/ui/component/index.tsx",
       "src/ui/component/LangSelector/styles.less",
       "src/ui/component/MiniSignV2/components/index.ts",
-      "src/ui/component/MiniSignV2/index.ts",
-      "src/ui/component/MiniSignV2/state/SignatureManager.ts",
-      "src/ui/component/NewUserImport/index.tsx",
-      "src/ui/component/PillsSwitch/index.tsx",
-      "src/ui/component/PillsSwitch/NetSwitchTabs.tsx",
-      "src/ui/component/Popup/index.tsx",
+      "src/ui/component/NFTNumberInput/style.less",
       "src/ui/component/PortalHost/index.tsx",
-      "src/ui/component/Progress/index.tsx",
-      "src/ui/component/QRCodeReader/index.tsx",
-      "src/ui/component/ThemeMode/ThemeIcon.tsx",
-      "src/ui/component/TokenWithChain/index.tsx",
-      "src/ui/component/Tooltip/TooltipV6.tsx",
-      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
-      "src/ui/component/WalletConnect/SessionStatusBar.tsx",
-      "src/ui/component/WalletConnect/useWalletConnectIcon.ts",
-      "src/ui/component/WordsMatrix/index.tsx",
-      "src/ui/hooks/backgroundState/useAccount.ts",
-      "src/ui/hooks/useAccounts.ts",
-      "src/ui/hooks/useBrandIcon.ts",
-      "src/ui/hooks/useDebounceValue.ts",
-      "src/ui/hooks/useDeleteHdOrPrivateKeyringAddress.tsx",
-      "src/ui/hooks/useEnterPassphraseModal.ts",
-      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
-      "src/ui/hooks/usePreference.ts",
-      "src/ui/hooks/useScreenshotContextMenuVisible.ts",
-      "src/ui/hooks/useSigner.tsx",
-      "src/ui/query/queryKey.ts",
-      "src/ui/state/customRPC.ts",
-      "src/ui/state/importMnemonics.ts",
-      "src/ui/state/perps.ts",
-      "src/ui/state/whitelist.ts",
-      "src/ui/store.ts",
-      "src/ui/utils/account.ts",
-      "src/ui/utils/address.ts",
-      "src/ui/utils/biometric.ts",
-      "src/ui/utils/clipboard.tsx",
+      "src/ui/component/Progress/index.less",
+      "src/ui/component/QRCodeReader/style.less",
+      "src/ui/component/TokenAmountInput/style.less",
+      "src/ui/component/TokenSelector/style.less",
+      "src/ui/utils/confirmPopup.less",
       "src/ui/utils/ga-event.ts",
-      "src/ui/utils/imKey.ts",
       "src/ui/utils/index.ts",
-      "src/ui/utils/keystone.ts",
-      "src/ui/utils/ledger-dmk.ts",
-      "src/ui/utils/ledger.ts",
-      "src/ui/utils/number.ts",
-      "src/ui/utils/os.ts",
-      "src/ui/utils/portfolio/collections.ts",
-      "src/ui/utils/portfolio/tokenUtils.ts",
-      "src/ui/utils/sendPersonalMessage.ts",
-      "src/ui/utils/sendTransaction.ts",
-      "src/ui/utils/switch.ts",
-      "src/ui/utils/token.ts",
-      "src/ui/utils/transaction.ts",
-      "src/ui/utils/url.ts",
-      "src/ui/utils/useCheckSeedPhraseBackup.ts",
-      "src/ui/utils/WalletContext.tsx",
-      "src/ui/utils/webapi.tsx",
+      "src/ui/utils/SyncToMobile/SyncToMobile.tsx",
       "src/ui/views/Activities/index.tsx",
+      "src/ui/views/Activities/style.less",
       "src/ui/views/AddAddress/AddMoreAddressesFromSeedPhrase.tsx",
       "src/ui/views/AddAddress/AddNewAddress.tsx",
+      "src/ui/views/AddAddress/BulkImportPrivateKey.tsx",
       "src/ui/views/AddAddress/CreateAddressSuccess.tsx",
       "src/ui/views/AddAddress/HardwareWallets.tsx",
       "src/ui/views/AddAddress/ImportAddressSuccess.tsx",
       "src/ui/views/AddAddress/ImportKeyOrSeed.tsx",
       "src/ui/views/AddAddress/index.tsx",
       "src/ui/views/AddAddress/InstitutionalWallets.tsx",
-      "src/ui/views/AddAddress/useCreateAddress.ts",
+      "src/ui/views/AddAddress/style.less",
       "src/ui/views/AddFromCurrentSeedPhrase/index.tsx",
       "src/ui/views/AddressBackup/Mnemonics.tsx",
       "src/ui/views/AddressBackup/PrivateKey.tsx",
+      "src/ui/views/AddressBackup/style.less",
       "src/ui/views/AddressDetail/index.tsx",
+      "src/ui/views/AddressDetail/style.less",
+      "src/ui/views/AddressManagement/index.tsx",
       "src/ui/views/AddressManagement/style.less",
+      "src/ui/views/AdvanceSettings/index.tsx",
       "src/ui/views/AdvanceSettings/style.less",
-      "src/ui/views/Approval/components/Connect/index.tsx",
-      "src/ui/views/Approval/components/FooterBar/CommonAccount.tsx",
-      "src/ui/views/Approval/components/MiniPersonalMessgae/MiniSignPersonalMessage.tsx",
-      "src/ui/views/Approval/components/Popup/Dots.tsx",
-      "src/ui/views/Approval/hooks/useApprovalUtils.tsx",
+      "src/ui/views/Approval/components/Connect/SelectWalletApproval.tsx",
       "src/ui/views/Approval/index.tsx",
       "src/ui/views/Approval/style.less",
-      "src/ui/views/Bridge/Component/BridgeHistory.tsx",
-      "src/ui/views/Bridge/constants.ts",
+      "src/ui/views/BiometricUnlockSetup/index.tsx",
       "src/ui/views/Bridge/index.tsx",
-      "src/ui/views/Bridge/utils/historyCache.ts",
-      "src/ui/views/Bridge/utils/historyRefresh.ts",
+      "src/ui/views/ChainList/index.tsx",
       "src/ui/views/ChainList/style.less",
+      "src/ui/views/CommonPopup/AssetList/CustomTestnetTokenDetailPopup/style.less",
       "src/ui/views/CommonPopup/index.tsx",
-      "src/ui/views/CommonPopup/Ledger.tsx",
-      "src/ui/views/CommonPopup/OneKey.tsx",
+      "src/ui/views/ConnectedSites/index.tsx",
       "src/ui/views/ConnectedSites/style.less",
+      "src/ui/views/CreateMnemonics/index.tsx",
+      "src/ui/views/CreatePassword.tsx",
+      "src/ui/views/CustomRPC/index.tsx",
       "src/ui/views/CustomRPC/style.less",
       "src/ui/views/CustomTestnet/index.tsx",
-      "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
-      "src/ui/views/Dashboard/components/NFT/NFTModal.tsx",
-      "src/ui/views/Dashboard/components/TokenDetailPopup/utils.ts",
-      "src/ui/views/DesktopPerps/components/ChartArea/components/HorizontalScrollContainer.tsx",
-      "src/ui/views/DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag.tsx",
-      "src/ui/views/DesktopPerps/utils.ts",
-      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton.tsx",
-      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts",
-      "src/ui/views/DesktopSmallSwap/components/Checkbox.tsx",
-      "src/ui/views/Ecology/constants.tsx",
-      "src/ui/views/GasAccount/components/GasAccountDepositPopup.tsx",
-      "src/ui/views/GasAccount/hooks/context.ts",
-      "src/ui/views/GasAccount/hooks/index.ts",
+      "src/ui/views/CustomTestnet/style.less",
+      "src/ui/views/DappSearch/index.tsx",
+      "src/ui/views/Ecology/index.tsx",
+      "src/ui/views/GasAccount/index.tsx",
       "src/ui/views/GnosisQueue/index.tsx",
-      "src/ui/views/HDManager/AdvancedSettings.tsx",
-      "src/ui/views/HDManager/HDPathTypeButton.tsx",
+      "src/ui/views/GnosisQueue/style.less",
       "src/ui/views/HDManager/index.less",
-      "src/ui/views/HDManager/utils.tsx",
+      "src/ui/views/History/index.tsx",
       "src/ui/views/History/style.less",
       "src/ui/views/ImportCoboArgus/ImportCoboArgus.tsx",
       "src/ui/views/ImportCoinbase/ImportCoinbase.tsx",
+      "src/ui/views/ImportCoinbase/style.less",
       "src/ui/views/ImportGnosisAddress/index.tsx",
+      "src/ui/views/ImportGnosisAddress/style.less",
+      "src/ui/views/ImportHardware/ImKeyConnect/index.tsx",
       "src/ui/views/ImportHardware/ImKeyConnect/style.less",
       "src/ui/views/ImportHardware/index.css",
+      "src/ui/views/ImportHardware/index.tsx",
+      "src/ui/views/ImportHardware/KeystoneConnect/index.tsx",
       "src/ui/views/ImportHardware/KeystoneConnect/style.less",
+      "src/ui/views/ImportHardware/LedgerConnect/index.tsx",
       "src/ui/views/ImportHardware/LedgerConnect/style.less",
+      "src/ui/views/ImportHardware/OneKeyConnect/index.tsx",
       "src/ui/views/ImportHardware/OneKeyConnect/style.less",
+      "src/ui/views/ImportHardware/QRCodeConnect/index.tsx",
       "src/ui/views/ImportHardware/QRCodeConnect/style.less",
+      "src/ui/views/ImportHardware/TrezorConnect/index.tsx",
       "src/ui/views/ImportHardware/TrezorConnect/style.less",
       "src/ui/views/ImportJson.tsx",
+      "src/ui/views/ImportMnemonics/InputMnemonics.tsx",
+      "src/ui/views/ImportMode.tsx",
       "src/ui/views/ImportMyMetaMaskAccount/index.tsx",
+      "src/ui/views/ImportMyMetaMaskAccount/style.less",
       "src/ui/views/ImportPrivateKey.tsx",
+      "src/ui/views/ImportSuccess/index.less",
       "src/ui/views/ImportSuccess/index.tsx",
       "src/ui/views/ImportWatchAddress.tsx",
-      "src/ui/views/ManageAddress/hooks.tsx",
+      "src/ui/views/ManageAddress/index.tsx",
+      "src/ui/views/ManageApprovals/index.tsx",
+      "src/ui/views/ManageBatchApprovals/index.tsx",
+      "src/ui/views/MetamaskModeDapps/index.tsx",
       "src/ui/views/MetamaskModeDapps/style.less",
-      "src/ui/views/NewUserImport/AccountItem.tsx",
-      "src/ui/views/NewUserImport/PasswordCard.tsx",
+      "src/ui/views/NewUserImport/BackupSeedPhrase.tsx",
+      "src/ui/views/NewUserImport/CreateSeedPhrase.tsx",
+      "src/ui/views/NewUserImport/Guide.tsx",
+      "src/ui/views/NewUserImport/ImportGnosisAddress.tsx",
+      "src/ui/views/NewUserImport/ImportHardWare.tsx",
+      "src/ui/views/NewUserImport/importHardwareList.tsx",
+      "src/ui/views/NewUserImport/ImportImKey.tsx",
+      "src/ui/views/NewUserImport/ImportKeystone.tsx",
+      "src/ui/views/NewUserImport/ImportLedger.tsx",
+      "src/ui/views/NewUserImport/ImportOnekey.tsx",
+      "src/ui/views/NewUserImport/ImportSeedOrKey/index.tsx",
+      "src/ui/views/NewUserImport/ImportWalletType.tsx",
+      "src/ui/views/NewUserImport/ReadyToUse.tsx",
+      "src/ui/views/NewUserImport/SelectAddress.tsx",
+      "src/ui/views/NewUserImport/SetPassword.tsx",
+      "src/ui/views/NewUserImport/Success.tsx",
+      "src/ui/views/NFTApproval/index.tsx",
       "src/ui/views/NFTApproval/style.less",
+      "src/ui/views/NFTView/index.tsx",
       "src/ui/views/NFTView/style.less",
+      "src/ui/views/NoAddress/index.tsx",
       "src/ui/views/NoAddress/style.less",
-      "src/ui/views/Perps/components/BlueBorderedButton.tsx",
-      "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
-      "src/ui/views/Perps/components/quoteAssetIcons.ts",
-      "src/ui/views/Perps/components/SelectAddressList.tsx",
-      "src/ui/views/Perps/components/TokenImg.tsx",
-      "src/ui/views/Perps/constants.ts",
-      "src/ui/views/Perps/hooks/useHypeWithdrawGasReserve.ts",
-      "src/ui/views/Perps/hooks/usePerpsAccount.ts",
-      "src/ui/views/Perps/hooks/usePerpsActions.ts",
-      "src/ui/views/Perps/hooks/useStableCoinSwap.ts",
       "src/ui/views/Perps/popup/OpenPositionPopup.less",
-      "src/ui/views/Perps/sdkManager.ts",
-      "src/ui/views/Perps/sentry.ts",
-      "src/ui/views/Perps/utils.ts",
-      "src/ui/views/Perps/utils/accountPricing.ts",
-      "src/ui/views/Perps/utils/perpsPortfolio.ts",
+      "src/ui/views/Perps/screen/ExploreMore.tsx",
+      "src/ui/views/Perps/screen/HistoryPage.tsx",
+      "src/ui/views/Perps/screen/home.tsx",
+      "src/ui/views/Perps/screen/SingleCoin.tsx",
+      "src/ui/views/RabbyPoints/index.tsx",
       "src/ui/views/Receive/index.tsx",
+      "src/ui/views/Receive/style.less",
+      "src/ui/views/RequestPermission/index.tsx",
       "src/ui/views/RequestPermission/style.less",
+      "src/ui/views/SelectAddress/index.tsx",
       "src/ui/views/SelectAddress/style.less",
       "src/ui/views/SelectToAddress/index.tsx",
+      "src/ui/views/SelectToAddress/style.less",
       "src/ui/views/SendNFT/index.tsx",
+      "src/ui/views/SendNFT/style.less",
       "src/ui/views/SendToken/index.tsx",
+      "src/ui/views/SendToken/style.less",
+      "src/ui/views/SignedTextHistory/style.less",
       "src/ui/views/Staking/components/actionModal.less",
+      "src/ui/views/Staking/Detail.tsx",
+      "src/ui/views/Staking/index.tsx",
       "src/ui/views/Staking/style.less",
-      "src/ui/views/Swap/Component/Slider.tsx",
-      "src/ui/views/Swap/hooks/twoStepSwap.tsx",
       "src/ui/views/Swap/index.tsx",
+      "src/ui/views/SwitchLang/index.tsx",
       "src/ui/views/SwitchLang/style.less",
+      "src/ui/views/TokenApproval/index.tsx",
       "src/ui/views/TokenApproval/style.less",
-      "src/ui/views/TransactionHistory/components/TransactionItem.tsx",
       "src/ui/views/TransactionHistory/style.less",
       "src/ui/views/WalletConnect/index.tsx",
+      "src/ui/views/WalletConnect/style.less",
+      "src/ui/views/Welcome.tsx",
       "src/ui/views/WhitelistInput/index.tsx",
-      "src/ui/wallet/index.ts",
-      "src/utils/account.ts",
-      "src/utils/approval.ts",
-      "src/utils/approve.ts",
-      "src/utils/chain.ts",
-      "src/utils/env.ts",
-      "src/utils/ga4.ts",
-      "src/utils/index.ts",
-      "src/utils/string.ts"
+      "src/ui/views/WhitelistInput/styles.less",
+      "src/utils/ga4.ts"
     ]
   },
   "src/ui/views/ManageAddress/hooks.tsx": {
@@ -101632,22 +102063,250 @@
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/views/ManageAddress/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/spin/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-virtuoso/dist/index.mjs",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/constant/index.ts",
+      "src/i18n.ts",
+      "src/ui/assets/address/delete-current-color.svg",
+      "src/ui/assets/arrow-right-gray.svg",
+      "src/ui/assets/empty-cc.svg",
+      "src/ui/assets/icon-pinned-fill.svg",
+      "src/ui/assets/icon-pinned.svg",
+      "src/ui/assets/success.svg",
+      "src/ui/component/AuthenticationModal/index.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/component/WalletConnect/useWalletConnectIcon.ts",
+      "src/ui/hooks/useEnterPassphraseModal.ts",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/ledger.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/AddressManagement/AddressItem.tsx",
+      "src/ui/views/ManageAddress/hooks.tsx",
+      "src/utils/account.ts"
+    ]
+  },
+  "src/ui/views/ManageApprovals/components/AssetAvatar.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/token-default.svg",
+      "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/views/ManageApprovals/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tabs/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/p-queue/dist/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/viem/_esm/constants/address.js",
+      "node_modules/viem/_esm/utils/encoding/fromHex.js",
+      "src/constant/eip7702.ts",
+      "src/constant/index.ts",
+      "src/ui/assets/dashboard/index.tsx",
+      "src/ui/assets/desktop/common/index.tsx",
+      "src/ui/assets/warning-cc.svg",
+      "src/ui/component/ChainIcon.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/component/MiniSignV2/state/SignatureManager.ts",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useDebounceValue.ts",
+      "src/ui/hooks/useSigner.tsx",
+      "src/ui/utils/address.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/token.ts",
+      "src/ui/utils/transaction.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
+      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts",
+      "src/ui/views/DesktopSmallSwap/components/Checkbox.tsx",
+      "src/ui/views/ManageApprovals/components/AssetAvatar.tsx",
+      "src/ui/views/ManageApprovals/utils.ts",
+      "src/ui/views/ManageBatchApprovals/hooks/useBatchRevokeTask.ts",
+      "src/utils/approval.ts",
+      "src/utils/approve.ts",
+      "src/utils/chain.ts",
+      "src/utils/index.ts",
+      "src/utils/string.ts"
+    ]
+  },
+  "src/ui/views/ManageApprovals/utils.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/dayjs/dayjs.min.js",
+      "src/ui/utils/index.ts",
+      "src/utils/approval.ts",
+      "src/utils/index.ts"
+    ]
+  },
+  "src/ui/views/ManageBatchApprovals/hooks/useBatchRevokeTask.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/p-queue/dist/index.js",
+      "node_modules/react/index.js",
+      "src/i18n.ts",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/sendTransaction.ts",
+      "src/ui/views/GasAccount/hooks/index.ts",
+      "src/ui/views/ManageApprovals/utils.ts"
+    ]
+  },
+  "src/ui/views/ManageBatchApprovals/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useInterval.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/constant/index.ts",
+      "src/eventBus.ts",
+      "src/ui/assets/approval/loading.svg",
+      "src/ui/assets/approval/success.svg",
+      "src/ui/assets/dashboard/index.tsx",
+      "src/ui/assets/ledger/press.svg",
+      "src/ui/assets/warning-cc.svg",
+      "src/ui/component/ConnectStatus/useLedgerStatus.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/ledger.ts",
+      "src/ui/utils/onekey.ts",
+      "src/ui/views/Approval/components/FooterBar/CommonAccount.tsx",
+      "src/ui/views/Approval/components/Popup/Dots.tsx",
+      "src/ui/views/CommonPopup/Ledger.tsx",
+      "src/ui/views/CommonPopup/OneKey.tsx",
+      "src/ui/views/ManageApprovals/components/AssetAvatar.tsx",
+      "src/ui/views/ManageApprovals/utils.ts",
+      "src/ui/views/ManageBatchApprovals/hooks/useBatchRevokeTask.ts",
+      "src/ui/views/Perps/components/BlueBorderedButton.tsx"
+    ]
+  },
+  "src/ui/views/MetamaskModeDapps/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/switch/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router-dom/esm/react-router-dom.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/arrow-right-cc.svg",
+      "src/ui/assets/dapps.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/MetamaskModeDapps/style.less",
+      "src/utils/index.ts"
+    ]
+  },
   "src/ui/views/MetamaskModeDapps/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/MetamaskModeDapps/style.less"
+    ]
+  },
+  "src/ui/views/NFTApproval/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tabs/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/infoicon.svg",
+      "src/ui/assets/search.svg",
+      "src/ui/component/ChainSelector/tag.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/address.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
+      "src/ui/views/NFTApproval/style.less",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/NFTApproval/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/NFTApproval/style.less"
+    ]
+  },
+  "src/ui/views/NFTView/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tabs/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/constant/index.ts",
+      "src/ui/assets/token-default.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/portfolio/collections.ts",
+      "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
+      "src/ui/views/Dashboard/components/NFT/NFTModal.tsx",
+      "src/ui/views/NFTView/style.less",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/NFTView/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/NFTView/style.less"
     ]
   },
   "src/ui/views/NewUserImport/AccountItem.tsx": {
@@ -101655,6 +102314,249 @@
     "require": [
       "node_modules/antd/es/input/index.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js"
+    ]
+  },
+  "src/ui/views/NewUserImport/BackupSeedPhrase.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/component/icon-copy-cc.svg",
+      "src/ui/assets/success.svg",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/component/WordsMatrix/index.tsx",
+      "src/ui/hooks/useScreenshotContextMenuVisible.ts",
+      "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/NewUserImport/PinGuideTips.tsx"
+    ]
+  },
+  "src/ui/views/NewUserImport/CreateSeedPhrase.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/state/importMnemonics.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/NewUserImport/PasswordCard.tsx"
+    ]
+  },
+  "src/ui/views/NewUserImport/GnosisChainList.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+    ]
+  },
+  "src/ui/views/NewUserImport/Guide.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useUnmount/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/popover/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/check-2.svg",
+      "src/ui/assets/dashboard/arrow-down-cc.svg",
+      "src/ui/assets/unlock/rabby.svg",
+      "src/ui/component/LangSelector/styles.less",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportGnosisAddress.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@ant-design/icons/es/icons/LoadingOutlined.js",
+      "node_modules/@ethereumjs/util/dist/esm/index.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/NewUserImport/GnosisChainList.tsx",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportHardWare.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useAsyncFn.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/views/NewUserImport/hooks/useHardWareUnlockAddress.tsx",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportImKey.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/utils/imKey.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/NewUserImport/hooks/useHardWareUnlockAddress.tsx",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportKeystone.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@keystonehq/hw-transport-webusb/lib/index.js",
+      "node_modules/@ngraveio/bc-ur/dist/index.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/qs/lib/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/walletlogo/airgap.svg",
+      "src/ui/assets/walletlogo/keystone.svg",
+      "src/ui/assets/walletlogo/ngrave.svg",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/component/PillsSwitch/index.tsx",
+      "src/ui/component/Progress/index.tsx",
+      "src/ui/component/QRCodeReader/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/keystone.ts",
+      "src/ui/utils/ledger.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/QRCodeCheckerDetail.tsx"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportLedger.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/ledger-dmk.ts",
+      "src/ui/utils/ledger.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportOnekey.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@ngraveio/bc-ur/dist/index.js",
+      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useAsyncFn.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/walletlogo/onekey.svg",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/component/PillsSwitch/index.tsx",
+      "src/ui/component/Progress/index.tsx",
+      "src/ui/component/QRCodeReader/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/ledger.ts",
+      "src/ui/utils/onekey.ts",
+      "src/ui/views/ImportHardware/OneKeyConnect/ImageCarousel.tsx",
+      "src/ui/views/ImportHardware/OneKeyConnect/utils.ts",
+      "src/ui/views/NewUserImport/hooks/useHardWareUnlockAddress.tsx",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/QRCodeCheckerDetail.tsx"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportSeedOrKey/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@scure/bip39/esm/index.js",
+      "node_modules/@scure/bip39/esm/wordlists/english.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/form/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router-dom/esm/react-router-dom.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/viem/_esm/accounts/utils/privateKeyToAddress.js",
+      "src/ui/assets/success.svg",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/component/PillsSwitch/index.tsx",
+      "src/ui/component/WordsMatrix/index.tsx",
+      "src/ui/hooks/useScreenshotContextMenuVisible.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/address.ts",
+      "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportWalletType.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/component/NewUserImport/index.tsx"
     ]
   },
   "src/ui/views/NewUserImport/PasswordCard.tsx": {
@@ -101678,10 +102580,152 @@
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/views/NewUserImport/PinGuideTips.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@tanstack/react-query/build/modern/useQuery.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/ui/assets/new-user-import/guide-1.png",
+      "src/ui/assets/new-user-import/guide-2.png",
+      "src/ui/assets/new-user-import/guide1.svg",
+      "src/ui/assets/new-user-import/guide2.svg",
+      "src/ui/assets/new-user-import/triangle.svg",
+      "src/ui/query/queryKey.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/ReadyToUse.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/new-user-import/guide-1.png",
+      "src/ui/assets/new-user-import/guide-2.png",
+      "src/ui/assets/new-user-import/guide1.svg",
+      "src/ui/assets/new-user-import/guide2.svg",
+      "src/ui/assets/new-user-import/triangle.svg",
+      "src/ui/component/NewUserImport/index.tsx"
+    ]
+  },
+  "src/ui/views/NewUserImport/SelectAddress.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/utils/index.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/SelectAddress/index.tsx"
+    ]
+  },
+  "src/ui/views/NewUserImport/SetPassword.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useMount/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/qs/lib/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/state/importMnemonics.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/NewUserImport/PasswordCard.tsx"
+    ]
+  },
+  "src/ui/views/NewUserImport/Success.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useDocumentVisibility/index.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useAsync.js",
+      "node_modules/react-use/esm/useClickAway.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/constant/index.ts",
+      "src/ui/assets/new-user-import/external-cc.svg",
+      "src/ui/component/NewUserImport/index.tsx",
+      "src/ui/utils/address.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/NewUserImport/AccountItem.tsx",
+      "src/ui/views/NewUserImport/GnosisChainList.tsx",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/NewUserImport/PinGuideTips.tsx",
+      "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/hooks/useHardWareUnlockAddress.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/message/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/utils/index.ts",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts"
+    ]
+  },
+  "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/zustand/esm/react.mjs"
+    ]
+  },
+  "src/ui/views/NewUserImport/importHardwareList.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/qs/lib/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/component/NewUserImport/index.tsx"
+    ]
+  },
+  "src/ui/views/NoAddress/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/component/index.tsx",
+      "src/ui/views/NoAddress/style.less"
+    ]
+  },
   "src/ui/views/NoAddress/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/NoAddress/style.less"
+    ]
+  },
+  "src/ui/views/Perps/components/AssetMetaItem.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react/index.js",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Dashboard/components/TokenDetailPopup/utils.ts",
+      "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
+      "src/ui/views/Perps/components/TokenImg.tsx"
     ]
   },
   "src/ui/views/Perps/components/BlueBorderedButton.tsx": {
@@ -101691,12 +102735,57 @@
       "node_modules/styled-components/dist/styled-components.browser.esm.js"
     ]
   },
+  "src/ui/views/Perps/components/HistoryItem.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/perps/IconDeposit.svg",
+      "src/ui/assets/perps/IconPending.svg",
+      "src/ui/assets/perps/IconTransfer.svg",
+      "src/ui/assets/perps/IconUSDE.svg",
+      "src/ui/assets/perps/IconUSDH.svg",
+      "src/ui/assets/perps/IconUSDT.svg",
+      "src/ui/assets/perps/IconWithdraw.svg",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
+      "src/ui/views/Perps/components/TokenImg.tsx",
+      "src/ui/views/Perps/constants.ts"
+    ]
+  },
   "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx": {
     "enable": true,
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
       "src/ui/views/DesktopPerps/utils.ts"
+    ]
+  },
+  "src/ui/views/Perps/components/PerpsLimitOrdersSection.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/component/close-cc.svg",
+      "src/ui/component/Popup/index.tsx",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/DesktopPerps/utils.ts",
+      "src/ui/views/Perps/components/BlueBorderedButton.tsx",
+      "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
+      "src/ui/views/Perps/components/TokenImg.tsx",
+      "src/ui/views/Perps/hooks/usePerpsPosition.ts",
+      "src/ui/views/Perps/limitOrderUtils.ts"
     ]
   },
   "src/ui/views/Perps/components/SelectAddressList.tsx": {
@@ -101730,6 +102819,13 @@
       "src/ui/assets/token-default.svg"
     ]
   },
+  "src/ui/views/Perps/components/TopPermissionTips.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/views/Perps/components/quoteAssetIcons.ts": {
     "enable": true,
     "require": [
@@ -101748,6 +102844,13 @@
       "src/utils/perps/quoteAsset.ts"
     ]
   },
+  "src/ui/views/Perps/hooks/useActiveAssetDataCache.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "src/ui/views/Perps/sdkManager.ts"
+    ]
+  },
   "src/ui/views/Perps/hooks/useHypeWithdrawGasReserve.ts": {
     "enable": true,
     "require": [
@@ -101756,6 +102859,15 @@
       "node_modules/react/index.js",
       "src/ui/utils/index.ts",
       "src/ui/views/Perps/constants.ts"
+    ]
+  },
+  "src/ui/views/Perps/hooks/useLimitOrders.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "src/ui/store.ts",
+      "src/ui/views/Perps/hooks/useActiveAssetDataCache.ts",
+      "src/ui/views/Perps/limitOrderUtils.ts"
     ]
   },
   "src/ui/views/Perps/hooks/usePerpsAccount.ts": {
@@ -101806,6 +102918,65 @@
       "src/ui/views/Perps/sdkManager.ts"
     ]
   },
+  "src/ui/views/Perps/hooks/usePerpsDeposit.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@ethereumjs/util/dist/esm/index.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react/index.js",
+      "node_modules/web3-eth-abi/lib/index.js",
+      "src/constant/index.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Perps/constants.ts",
+      "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/views/Perps/hooks/usePerpsGroupedMarketData.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/views/Perps/hooks/usePerpsPosition.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "src/ui/state/perps.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Perps/hooks/usePerpsState.ts",
+      "src/ui/views/Perps/sdkManager.ts",
+      "src/ui/views/Perps/sentry.ts",
+      "src/ui/views/Perps/utils.ts"
+    ]
+  },
+  "src/ui/views/Perps/hooks/usePerpsState.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/MiniSignV2/index.ts",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Perps/sdkManager.ts",
+      "src/ui/views/Perps/sentry.ts",
+      "src/ui/views/Perps/utils.ts"
+    ]
+  },
   "src/ui/views/Perps/hooks/useStableCoinSwap.ts": {
     "enable": true,
     "require": [
@@ -101819,10 +102990,321 @@
       "src/ui/views/Perps/sdkManager.ts"
     ]
   },
+  "src/ui/views/Perps/limitOrderUtils.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js"
+    ]
+  },
+  "src/ui/views/Perps/popup/DepositAmountPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useAsync.js",
+      "node_modules/react-use/esm/useDebounce.js",
+      "node_modules/react-window/dist/index.esm.js",
+      "node_modules/react/index.js",
+      "src/types/chain.ts",
+      "src/ui/assets/desktop/common/index.tsx",
+      "src/ui/assets/perps/IconInfo.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/component/MiniSignV2/state/SignatureManager.ts",
+      "src/ui/component/Popup/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/hooks/useSigner.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/number.ts",
+      "src/ui/utils/portfolio/tokenUtils.ts",
+      "src/ui/utils/token.ts",
+      "src/ui/views/Perps/components/BlueBorderedButton.tsx",
+      "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Swap/hooks/twoStepSwap.tsx",
+      "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/views/Perps/popup/EnableUnifiedAccountPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/component/index.tsx"
+    ]
+  },
+  "src/ui/views/Perps/popup/HistoryDetailPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/info-cc.svg",
+      "src/ui/assets/perps/IconHyperLogo.svg",
+      "src/ui/assets/perps/IconUSDE.svg",
+      "src/ui/assets/perps/IconUSDH.svg",
+      "src/ui/assets/perps/IconUSDT.svg",
+      "src/ui/assets/rabby-logo-circle.svg",
+      "src/ui/component/Popup/index.tsx",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/DesktopPerps/utils.ts",
+      "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
+      "src/ui/views/Perps/components/TokenImg.tsx",
+      "src/ui/views/Perps/constants.ts"
+    ]
+  },
+  "src/ui/views/Perps/popup/HistoryTransferDetailPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/component/Popup/index.tsx",
+      "src/ui/utils/index.ts"
+    ]
+  },
   "src/ui/views/Perps/popup/OpenPositionPopup.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Perps/popup/OpenPositionPopup.less"
+    ]
+  },
+  "src/ui/views/Perps/popup/RiskLevelPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/component/close-cc.svg",
+      "src/ui/component/Popup/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Perps/utils.ts"
+    ]
+  },
+  "src/ui/views/Perps/popup/SearchPerpsPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/empty/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/assets/index.ts",
+      "src/ui/assets/search.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/store.ts",
+      "src/ui/views/DesktopPerps/components/ChartArea/components/HorizontalScrollContainer.tsx",
+      "src/ui/views/Perps/components/AssetMetaItem.tsx",
+      "src/ui/views/Perps/hooks/usePerpsGroupedMarketData.ts"
+    ]
+  },
+  "src/ui/views/Perps/popup/SpotSwapPopup.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/dropdown/index.js",
+      "node_modules/antd/es/menu/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/arrow-down-cc.svg",
+      "src/ui/assets/info-cc.svg",
+      "src/ui/assets/perps/IconAddDeposit.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/views/Perps/components/quoteAssetIcons.ts",
+      "src/ui/views/Perps/hooks/usePerpsPosition.ts",
+      "src/ui/views/Perps/hooks/useStableCoinSwap.ts"
+    ]
+  },
+  "src/ui/views/Perps/screen/ExploreMore.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/component/index.tsx",
+      "src/ui/store.ts",
+      "src/ui/views/Dashboard/components/TokenDetailPopup/utils.ts",
+      "src/ui/views/Perps/components/TokenImg.tsx",
+      "src/ui/views/Perps/utils.ts"
+    ]
+  },
+  "src/ui/views/Perps/screen/HistoryPage.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-virtuoso/dist/index.mjs",
+      "node_modules/react/index.js",
+      "src/ui/assets/perps/IconNoSrc.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/store.ts",
+      "src/ui/views/Perps/components/HistoryItem.tsx",
+      "src/ui/views/Perps/popup/HistoryDetailPopup.tsx",
+      "src/ui/views/Perps/popup/HistoryTransferDetailPopup.tsx"
+    ]
+  },
+  "src/ui/views/Perps/screen/SingleCoin.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/lightweight-charts/dist/lightweight-charts.production.mjs",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/component/close-cc.svg",
+      "src/ui/assets/dashboard/index.tsx",
+      "src/ui/assets/dashboard/settings/icon-right-arrow-cc.svg",
+      "src/ui/assets/desktop/common/index.tsx",
+      "src/ui/assets/info-cc.svg",
+      "src/ui/assets/perps/icon-alarm-cc.svg",
+      "src/ui/assets/perps/IconNoSrc.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/component/Popup/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/Dashboard/components/TokenDetailPopup/utils.ts",
+      "src/ui/views/DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag.tsx",
+      "src/ui/views/DesktopPerps/utils.ts",
+      "src/ui/views/Perps/components/BlueBorderedButton.tsx",
+      "src/ui/views/Perps/components/HistoryItem.tsx",
+      "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
+      "src/ui/views/Perps/components/PerpsLimitOrdersSection.tsx",
+      "src/ui/views/Perps/components/TokenImg.tsx",
+      "src/ui/views/Perps/components/TopPermissionTips.tsx",
+      "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Perps/hooks/useActiveAssetDataCache.ts",
+      "src/ui/views/Perps/hooks/useLimitOrders.ts",
+      "src/ui/views/Perps/hooks/usePerpsAccount.ts",
+      "src/ui/views/Perps/hooks/usePerpsActions.ts",
+      "src/ui/views/Perps/hooks/usePerpsDeposit.ts",
+      "src/ui/views/Perps/hooks/usePerpsPosition.ts",
+      "src/ui/views/Perps/limitOrderUtils.ts",
+      "src/ui/views/Perps/popup/DepositAmountPopup.tsx",
+      "src/ui/views/Perps/popup/EnableUnifiedAccountPopup.tsx",
+      "src/ui/views/Perps/popup/HistoryDetailPopup.tsx",
+      "src/ui/views/Perps/popup/HistoryTransferDetailPopup.tsx",
+      "src/ui/views/Perps/popup/OpenPositionPopup.less",
+      "src/ui/views/Perps/popup/RiskLevelPopup.tsx",
+      "src/ui/views/Perps/popup/SearchPerpsPopup.tsx",
+      "src/ui/views/Perps/popup/SpotSwapPopup.tsx",
+      "src/ui/views/Perps/screen/homeScrollState.ts",
+      "src/ui/views/Perps/sdkManager.ts",
+      "src/ui/views/Perps/utils.ts",
+      "src/ui/views/Swap/Component/Slider.tsx"
+    ]
+  },
+  "src/ui/views/Perps/screen/home.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/recharts/es6/cartesian/Area.js",
+      "node_modules/recharts/es6/cartesian/XAxis.js",
+      "node_modules/recharts/es6/cartesian/YAxis.js",
+      "node_modules/recharts/es6/chart/AreaChart.js",
+      "node_modules/recharts/es6/component/ResponsiveContainer.js",
+      "node_modules/recharts/es6/component/Tooltip.js",
+      "src/constant/index.ts",
+      "src/ui/assets/component/close-cc.svg",
+      "src/ui/assets/dashboard/index.tsx",
+      "src/ui/assets/dashboard/settings/icon-right-arrow-cc.svg",
+      "src/ui/assets/desktop/common/index.tsx",
+      "src/ui/assets/icon-rabby-circle.svg",
+      "src/ui/assets/info-cc.svg",
+      "src/ui/assets/perps/icon-hyperliquid.svg",
+      "src/ui/assets/perps/IconHyperLogo.svg",
+      "src/ui/assets/perps/IconInfo.svg",
+      "src/ui/assets/perps/ImgDeleteWarning.svg",
+      "src/ui/assets/swap/history-cc.svg",
+      "src/ui/component/CopyChecked.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/component/Popup/index.tsx",
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useBrandIcon.ts",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/number.ts",
+      "src/ui/utils/token.ts",
+      "src/ui/views/DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag.tsx",
+      "src/ui/views/GasAccount/components/Button.tsx",
+      "src/ui/views/Perps/components/AssetMetaItem.tsx",
+      "src/ui/views/Perps/components/BlueBorderedButton.tsx",
+      "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
+      "src/ui/views/Perps/components/PerpsLimitOrdersSection.tsx",
+      "src/ui/views/Perps/components/SelectAddressList.tsx",
+      "src/ui/views/Perps/components/TokenImg.tsx",
+      "src/ui/views/Perps/components/TopPermissionTips.tsx",
+      "src/ui/views/Perps/constants.ts",
+      "src/ui/views/Perps/hooks/useHypeWithdrawGasReserve.ts",
+      "src/ui/views/Perps/hooks/useLimitOrders.ts",
+      "src/ui/views/Perps/hooks/usePerpsAccount.ts",
+      "src/ui/views/Perps/hooks/usePerpsActions.ts",
+      "src/ui/views/Perps/hooks/usePerpsDeposit.ts",
+      "src/ui/views/Perps/hooks/usePerpsGroupedMarketData.ts",
+      "src/ui/views/Perps/hooks/usePerpsPosition.ts",
+      "src/ui/views/Perps/hooks/usePerpsState.ts",
+      "src/ui/views/Perps/popup/DepositAmountPopup.tsx",
+      "src/ui/views/Perps/popup/EnableUnifiedAccountPopup.tsx",
+      "src/ui/views/Perps/popup/RiskLevelPopup.tsx",
+      "src/ui/views/Perps/popup/SearchPerpsPopup.tsx",
+      "src/ui/views/Perps/popup/SpotSwapPopup.tsx",
+      "src/ui/views/Perps/screen/homeScrollState.ts",
+      "src/ui/views/Perps/sdkManager.ts",
+      "src/ui/views/Perps/sentry.ts",
+      "src/ui/views/Perps/utils.ts",
+      "src/ui/views/Perps/utils/accountPricing.ts",
+      "src/ui/views/Perps/utils/perpsPortfolio.ts",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/Perps/sdkManager.ts": {
@@ -101860,6 +103342,53 @@
       "src/ui/views/Perps/constants.ts"
     ]
   },
+  "src/ui/views/QRCodeCheckerDetail.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/drawer/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/assets/arrow-right-gray.svg"
+    ]
+  },
+  "src/ui/views/RabbyPoints/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tabs/index.js",
+      "node_modules/antd/lib/skeleton/Input.js",
+      "node_modules/buffer/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/dayjs/plugin/utc.js",
+      "node_modules/nanoid/index.browser.js",
+      "node_modules/react-countup/build/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useAsync.js",
+      "node_modules/react-use/esm/useInterval.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/assets/info-cc.svg",
+      "src/ui/assets/success.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useDebounceValue.ts",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/address.ts",
+      "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/sendPersonalMessage.ts",
+      "src/ui/views/Approval/components/MiniPersonalMessgae/MiniSignPersonalMessage.tsx",
+      "src/utils/index.ts"
+    ]
+  },
   "src/ui/views/Receive/index.tsx": {
     "enable": true,
     "require": [
@@ -101871,7 +103400,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/types/chain.ts",
       "src/ui/assets/back.svg",
@@ -101892,19 +103420,104 @@
   "src/ui/views/Receive/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Receive/style.less"
+    ]
+  },
+  "src/ui/views/RequestPermission/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@keystonehq/hw-transport-webusb/lib/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/imKey.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/keystone.ts",
+      "src/ui/utils/ledger-dmk.ts",
+      "src/ui/utils/ledger.ts",
+      "src/ui/utils/onekey.ts",
+      "src/ui/utils/url.ts",
+      "src/ui/views/RequestPermission/style.less",
+      "src/ui/views/SelectAddress/route.ts"
     ]
   },
   "src/ui/views/RequestPermission/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/RequestPermission/style.less"
+    ]
+  },
+  "src/ui/views/SelectAddress/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@sentry/core/build/esm/exports.js",
+      "node_modules/ahooks/es/useCreation/index.js",
+      "node_modules/ahooks/es/useInViewport/index.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/modal/index.js",
+      "node_modules/antd/es/spin/index.js",
+      "node_modules/antd/es/table/index.js",
+      "node_modules/antd/es/tabs/index.js",
+      "node_modules/antd/lib/modal/useModal/index.js",
+      "node_modules/clipboard/dist/clipboard.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/p-queue/dist/index.js",
+      "node_modules/rc-switch/es/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react-use/esm/useAsyncRetry.js",
+      "node_modules/react/index.js",
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "src/constant/index.ts",
+      "src/ui/assets/check-2.svg",
+      "src/ui/assets/editpen.svg",
+      "src/ui/assets/icon-copy-cc.svg",
+      "src/ui/assets/walletlogo/airgap.svg",
+      "src/ui/assets/walletlogo/coolwallet.svg",
+      "src/ui/assets/walletlogo/gridplus.svg",
+      "src/ui/assets/walletlogo/imkey.svg",
+      "src/ui/assets/walletlogo/imTokenOffline.svg",
+      "src/ui/assets/walletlogo/keystone.svg",
+      "src/ui/assets/walletlogo/ledger.svg",
+      "src/ui/assets/walletlogo/ngrave.svg",
+      "src/ui/assets/walletlogo/onekey.svg",
+      "src/ui/assets/walletlogo/trezor.svg",
+      "src/ui/component/index.tsx",
+      "src/ui/state/importMnemonics.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/keystone.ts",
+      "src/ui/utils/os.ts",
+      "src/ui/views/AddAddress/useCreateAddress.ts",
+      "src/ui/views/HDManager/AdvancedSettings.tsx",
+      "src/ui/views/HDManager/HDPathTypeButton.tsx",
+      "src/ui/views/HDManager/index.less",
+      "src/ui/views/HDManager/utils.tsx",
+      "src/ui/views/NewUserImport/hooks/useNewUserGuideStore.ts",
+      "src/ui/views/SelectAddress/route.ts",
+      "src/ui/views/SelectAddress/style.less",
+      "src/utils/account.ts",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/SelectAddress/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/SelectAddress/style.less"
     ]
   },
   "src/ui/views/SelectToAddress/index.tsx": {
@@ -101928,7 +103541,6 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
       "src/ui/assets/address/add.svg",
@@ -101957,7 +103569,9 @@
   "src/ui/views/SelectToAddress/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/SelectToAddress/style.less"
     ]
   },
   "src/ui/views/SelectToAddress/util.ts": {
@@ -101984,7 +103598,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/web3-eth-abi/lib/index.js",
       "src/ui/assets/dashboard/index.tsx",
       "src/ui/assets/icon-share-currentcolor.svg",
@@ -102027,7 +103640,9 @@
   "src/ui/views/SendNFT/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/SendNFT/style.less"
     ]
   },
   "src/ui/views/SendToken/components/MaxButton.tsx": {
@@ -102072,7 +103687,6 @@
       "node_modules/react-use/esm/useAsyncFn.js",
       "node_modules/react-use/esm/usePrevious.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/web3-eth-abi/lib/index.js",
       "src/constant/index.ts",
@@ -102129,25 +103743,141 @@
   "src/ui/views/SendToken/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/SendToken/style.less"
     ]
   },
   "src/ui/views/SignedTextHistory/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/SignedTextHistory/style.less"
+    ]
+  },
+  "src/ui/views/Staking/Detail.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/staking-sdk/dist/index.js",
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/empty/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/ethers/lib/utils.js",
+      "node_modules/process/browser.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "node_modules/recharts/es6/cartesian/Area.js",
+      "node_modules/recharts/es6/cartesian/YAxis.js",
+      "node_modules/recharts/es6/chart/AreaChart.js",
+      "node_modules/recharts/es6/component/ResponsiveContainer.js",
+      "node_modules/recharts/es6/component/Tooltip.js",
+      "node_modules/viem/_esm/utils/abi/decodeFunctionResult.js",
+      "node_modules/viem/_esm/utils/abi/encodeFunctionData.js",
+      "src/constant/index.ts",
+      "src/ui/assets/index.ts",
+      "src/ui/assets/swap/wallet-cc.svg",
+      "src/ui/assets/warning-cc.svg",
+      "src/ui/component/AutoSizeAmountInput/index.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/component/MiniSignV2/state/SignatureManager.ts",
+      "src/ui/component/TokenWithChain/index.tsx",
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/hooks/useSigner.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Staking/components/actionModal.less",
+      "src/ui/views/Staking/components/PoolVisuals.tsx",
+      "src/ui/views/Staking/hooks/useStakingFilters.ts",
+      "src/ui/views/Staking/icons/index.ts",
+      "src/ui/views/Staking/style.less",
+      "src/ui/views/Staking/utils/format.ts",
+      "src/ui/views/Staking/utils/normalize.ts",
+      "src/ui/views/Swap/Component/Slider.tsx",
+      "src/utils/chain.ts",
+      "src/utils/index.ts"
+    ]
+  },
+  "src/ui/views/Staking/components/PoolVisuals.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/component/Tooltip/TooltipV6.tsx",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/Staking/components/actionModal.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Staking/components/actionModal.less"
+    ]
+  },
+  "src/ui/views/Staking/hooks/useStakingFilters.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useRequest/index.js",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Staking/utils/normalize.ts"
+    ]
+  },
+  "src/ui/views/Staking/icons/index.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/views/Staking/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/ahooks/es/useRequest/index.js",
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/switch/index.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/ui/component/index.tsx",
+      "src/ui/hooks/useDebounceValue.ts",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Staking/components/PoolVisuals.tsx",
+      "src/ui/views/Staking/hooks/useStakingFilters.ts",
+      "src/ui/views/Staking/icons/index.ts",
+      "src/ui/views/Staking/style.less",
+      "src/ui/views/Staking/utils/format.ts",
+      "src/ui/views/Staking/utils/normalize.ts",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/Staking/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Staking/style.less"
+    ]
+  },
+  "src/ui/views/Staking/utils/format.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js",
+      "src/constant/regexp.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/token.ts"
     ]
   },
   "src/ui/views/Swap/Component/LowCreditModal.tsx": {
@@ -102393,16 +104123,59 @@
       "src/utils/index.ts"
     ]
   },
+  "src/ui/views/SwitchLang/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/i18n.ts",
+      "src/ui/component/FieldCheckbox.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/utils/index.ts",
+      "src/ui/views/SwitchLang/style.less"
+    ]
+  },
   "src/ui/views/SwitchLang/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/SwitchLang/style.less"
+    ]
+  },
+  "src/ui/views/TokenApproval/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/antd/es/input/index.js",
+      "node_modules/antd/es/message/index.js",
+      "node_modules/antd/es/skeleton/index.js",
+      "node_modules/antd/es/tooltip/index.js",
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/lodash/lodash.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router/esm/react-router.js",
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/assets/arrow-right-gray.svg",
+      "src/ui/assets/icon-unknown-1.svg",
+      "src/ui/assets/infoicon.svg",
+      "src/ui/assets/search.svg",
+      "src/ui/component/ChainSelector/tag.tsx",
+      "src/ui/component/index.tsx",
+      "src/ui/store.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/TokenApproval/style.less",
+      "src/utils/chain.ts"
     ]
   },
   "src/ui/views/TokenApproval/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/TokenApproval/style.less"
     ]
   },
   "src/ui/views/TransactionHistory/components/CancelTxConfirmPopup.tsx": {
@@ -102510,6 +104283,16 @@
       "src/ui/views/WalletConnect/style.less"
     ]
   },
+  "src/ui/views/Welcome.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/antd/es/button/index.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react-router-dom/esm/react-router-dom.js",
+      "node_modules/react/index.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+    ]
+  },
   "src/ui/views/WhitelistInput/index.tsx": {
     "enable": true,
     "require": [
@@ -102523,7 +104306,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/component/IconClear.tsx",
@@ -102545,7 +104327,9 @@
   "src/ui/views/WhitelistInput/styles.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/WhitelistInput/styles.less"
     ]
   },
   "src/ui/wallet/index.ts": {
