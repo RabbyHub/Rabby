@@ -651,6 +651,8 @@ const SettingsInner = ({
   const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
   const [dataAnalysisPending, setDataAnalysisPending] = useState(false);
+  const [clearSigningPending, setClearSigningPending] = useState(false);
+  const [extraFeePending, setExtraFeePending] = useState(false);
 
   const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
     () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
@@ -719,10 +721,17 @@ const SettingsInner = ({
   });
 
   const handleToggleExtraFeeProtection = useMemoizedFn(async () => {
-    if (isExtraFeeProtectionEnabled) {
-      await dispatch.preference.disableExtraFeeProtection();
-    } else {
-      await dispatch.preference.enableExtraFeeProtection();
+    try {
+      setExtraFeePending(true);
+      if (isExtraFeeProtectionEnabled) {
+        await dispatch.preference.disableExtraFeeProtection();
+      } else {
+        await dispatch.preference.enableExtraFeeProtection();
+      }
+    } catch (error) {
+      message.error((error as Error)?.message || 'Failed to update setting');
+    } finally {
+      setExtraFeePending(false);
     }
   });
 
@@ -783,9 +792,18 @@ const SettingsInner = ({
     }
   });
 
-  const handleToggleLedgerClearSigning = useMemoizedFn((checked: boolean) => {
-    dispatch.preference.setIsLedgerClearSigningEnabled(checked);
-  });
+  const handleToggleLedgerClearSigning = useMemoizedFn(
+    async (checked: boolean) => {
+      try {
+        setClearSigningPending(true);
+        await dispatch.preference.setIsLedgerClearSigningEnabled(checked);
+      } catch (error) {
+        message.error((error as Error)?.message || 'Failed to update setting');
+      } finally {
+        setClearSigningPending(false);
+      }
+    }
+  );
 
   const handleToggleUserDataTrackingOptOut = useMemoizedFn(
     async (checked: boolean) => {
@@ -1012,6 +1030,8 @@ const SettingsInner = ({
             <Switch
               checked={isExtraFeeProtectionEnabled}
               onChange={handleToggleExtraFeeProtection}
+              loading={extraFeePending}
+              disabled={extraFeePending}
             />
           ),
         },
@@ -1023,6 +1043,8 @@ const SettingsInner = ({
             <Switch
               checked={isLedgerClearSigningEnabled}
               onChange={handleToggleLedgerClearSigning}
+              loading={clearSigningPending}
+              disabled={clearSigningPending}
             />
           ),
         },
