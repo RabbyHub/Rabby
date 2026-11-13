@@ -1,9 +1,6 @@
-import { keyringService, preferenceService } from 'background/service';
+import { preferenceService } from 'background/service';
 
-// Turning protection off is password-gated here, not only in the UI modal,
-// so no caller of the wallet controller can skip the check.
-export const disableExtraFeeProtection = async (password: string) => {
-  await keyringService.verifyPassword(password);
+export const disableExtraFeeProtection = () => {
   preferenceService.setPreferencePartials({
     isExtraFeeProtectionEnabled: false,
   });

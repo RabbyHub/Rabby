@@ -1473,6 +1473,7 @@
           "searchCurrency": "통화 검색",
           "helpImproveRabby": "Rabby 개선에 참여하기",
           "helpImproveRabbyDesc": "익명의 사용 데이터를 공유하여 Rabby 개선에 도움을 주세요. 수집된 데이터는 사용자 본인이나 계정과 연결되지 않습니다.",
+          "ledgerClearSigning": "Ledger 클리어 사이닝",
           "extraFeeProtection": "추가 수수료 보호",
           "extraFeeProtectionDesc": "브라우저 확장 프로그램이 추가 수수료를 부과할 수 있게 하는 서명 요청을 차단합니다"
         },

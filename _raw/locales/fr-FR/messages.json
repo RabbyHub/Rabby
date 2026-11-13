@@ -1075,6 +1075,7 @@
           "searchCurrency": "Rechercher une devise",
           "helpImproveRabby": "Aidez à améliorer Rabby",
           "helpImproveRabbyDesc": "Partagez des données d'utilisation anonymes pour aider à améliorer Rabby. Les données collectées ne sont associées ni à vous ni à votre compte.",
+          "ledgerClearSigning": "Clear Signing Ledger",
           "extraFeeProtection": "Protection contre les frais supplémentaires",
           "extraFeeProtectionDesc": "Bloque les demandes de signature permettant à des extensions de navigateur de prélever des frais supplémentaires"
         },

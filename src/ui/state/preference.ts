@@ -42,6 +42,7 @@ export interface PreferenceState {
   isEnabledPwdForNonWhitelistedTx?: boolean;
   isExtraFeeProtectionEnabled?: boolean;
   isEnabledDappAccount?: boolean;
+  isLedgerClearSigningEnabled?: boolean;
   biometricUnlockEnabled?: boolean;
   biometricUnlockCredentialId?: string;
   biometricUnlockEncryptedPassword?: string;
@@ -89,6 +90,7 @@ export type PreferenceActions = {
   setHiddenBalance: (hidden: boolean) => Promise<void>;
   setIsShowTestnet: (value: boolean) => Promise<void>;
   setUserDataTrackingOptOut: (value: boolean) => Promise<void>;
+  setIsLedgerClearSigningEnabled: (value: boolean) => Promise<void>;
   setDesktopTokensAllMode: (value: boolean) => Promise<void>;
   switchLocale: (locale: string) => Promise<void>;
   switchThemeMode: (themeMode: DARK_MODE_TYPE) => Promise<void>;
@@ -102,7 +104,7 @@ export type PreferenceActions = {
   }) => Promise<void>;
   enablePwdForNonWhitelistedTx: (value: boolean) => Promise<void>;
   enableExtraFeeProtection: () => Promise<void>;
-  disableExtraFeeProtection: (password: string) => Promise<void>;
+  disableExtraFeeProtection: () => Promise<void>;
   enableDappAccount: (value: boolean) => Promise<void>;
   setBiometricUnlock: (payload: {
     enabled: boolean;
@@ -143,6 +145,7 @@ export const getDefaultPreferenceState = (): PreferenceState => ({
   isEnabledPwdForNonWhitelistedTx: false,
   isExtraFeeProtectionEnabled: true,
   isEnabledDappAccount: false,
+  isLedgerClearSigningEnabled: false,
   biometricUnlockEnabled: false,
   biometricUnlockCredentialId: '',
   biometricUnlockEncryptedPassword: '',
@@ -262,6 +265,11 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
     await wallet.setIsShowTestnet(isShowTestnet);
     void get().getPreference('isShowTestnet');
   },
+  async setIsLedgerClearSigningEnabled(isLedgerClearSigningEnabled) {
+    set({ isLedgerClearSigningEnabled });
+    await wallet.setIsLedgerClearSigningEnabled(isLedgerClearSigningEnabled);
+    void get().getPreference('isLedgerClearSigningEnabled');
+  },
   async setUserDataTrackingOptOut(userDataTrackingOptOut) {
     set({ userDataTrackingOptOut });
     await wallet.setUserDataTrackingOptOut(userDataTrackingOptOut);
@@ -311,8 +319,8 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
     await wallet.enableExtraFeeProtection();
     void get().getPreference('isExtraFeeProtectionEnabled');
   },
-  async disableExtraFeeProtection(password) {
-    await wallet.disableExtraFeeProtection(password);
+  async disableExtraFeeProtection() {
+    await wallet.disableExtraFeeProtection();
     void get().getPreference('isExtraFeeProtectionEnabled');
   },
   async enableDappAccount(value) {

@@ -1,0 +1,71 @@
+{
+  "params": {
+    "userAddress": "0x341a1fbd51825e5a107db54ccb3166deba145479",
+    "fromChainId": "arb",
+    "fromTokenId": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+    "fromTokenRawAmount": "4000000",
+    "toChainId": "base",
+    "toTokenId": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+    "slippage": "0.01",
+    "feeRate": 0.25
+  },
+  "tx": {
+    "from": "0x341a1fbd51825e5a107db54ccb3166deba145479",
+    "to": "0x4cd00e387622c35bddb9b4c962c136462338bc31",
+    "data": "0xe8017952000000000000000000000000341a1fbd51825e5a107db54ccb3166deba145479000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e583100000000000000000000000000000000000000000000000000000000003d0900bd67c7135287b37f894ddb83c8aeea4fcc1ef65f766f3dff1154b4a10c684242",
+    "value": "0",
+    "chainId": 42161,
+    "gas": "76177",
+    "maxFeePerGas": "22017600",
+    "maxPriorityFeePerGas": "0"
+  },
+  "order_data": {
+    "version": "v1",
+    "solverChainId": "base",
+    "solver": "0xf70da97812cb96acdf810712aa562db8dfa3dbef",
+    "salt": "0x3d58ab7592f4863a11ecfd7f521ce02c345b0b6392671ae47fb7bc7a6f6ca718",
+    "inputs": [
+      {
+        "payment": {
+          "chainId": "arbitrum",
+          "currency": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "amount": "4000000",
+          "weight": "1"
+        },
+        "refunds": [
+          {
+            "chainId": "arbitrum",
+            "recipient": "0x341a1fbd51825e5a107db54ccb3166deba145479",
+            "currency": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+            "minimumAmount": "0",
+            "deadline": 1794291368,
+            "extraData": "0x0000000000000000000000000729e2a4716d9f7dd17858d5d504426d228697f7"
+          },
+          {
+            "chainId": "base",
+            "recipient": "0x341a1fbd51825e5a107db54ccb3166deba145479",
+            "currency": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+            "minimumAmount": "0",
+            "deadline": 1794291368,
+            "extraData": "0x0000000000000000000000000729e2a4716d9f7dd17858d5d504426d228697f7"
+          }
+        ]
+      }
+    ],
+    "output": {
+      "chainId": "base",
+      "payments": [
+        {
+          "recipient": "0x341a1fbd51825e5a107db54ccb3166deba145479",
+          "currency": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+          "minimumAmount": "3928976",
+          "expectedAmount": "3968662"
+        }
+      ],
+      "calls": [],
+      "deadline": 1794291368,
+      "extraData": "0x0000000000000000000000000729e2a4716d9f7dd17858d5d504426d228697f7"
+    },
+    "fees": []
+  }
+}

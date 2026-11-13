@@ -2849,6 +2849,7 @@
           "perpsFloatWidget": "Perps Floating Widget",
           "helpImproveRabby": "Help improve Rabby",
           "helpImproveRabbyDesc": "Share anonymous usage data to help improve Rabby. Collected data is not associated with you or your account.",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Extra Fee Protection",
           "extraFeeProtectionDesc": "Blocks signature requests that allow browser extensions to charge extra fees"
         },
