@@ -1074,6 +1074,7 @@
           "currency": "Devise",
           "searchCurrency": "Rechercher une devise",
           "dataAnalysis": "Analyse des données",
+          "ledgerClearSigning": "Clear Signing Ledger",
           "extraFeeProtection": "Protection contre les frais supplémentaires",
           "extraFeeProtectionDesc": "Bloque les demandes de signature permettant à des extensions de navigateur de prélever des frais supplémentaires"
         },

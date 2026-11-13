@@ -1473,6 +1473,7 @@
           "currency": "Tiền tệ",
           "searchCurrency": "Tìm kiếm tiền tệ",
           "dataAnalysis": "Phân tích dữ liệu",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Chống phí bổ sung",
           "extraFeeProtectionDesc": "Chặn các yêu cầu chữ ký cho phép tiện ích trình duyệt thu thêm phí"
         },

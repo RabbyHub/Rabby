@@ -1372,6 +1372,7 @@
           "currency": "Валюта",
           "searchCurrency": "Пошук валюти",
           "dataAnalysis": "Аналіз даних",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Захист від додаткових комісій",
           "extraFeeProtectionDesc": "Блокує запити на підпис, які дозволяють розширенням браузера стягувати додаткові комісії"
         },

@@ -142,6 +142,8 @@ export interface PreferenceStore {
   isEnabledPwdForNonWhitelistedTx?: boolean;
   isExtraFeeProtectionEnabled?: boolean;
   isEnabledDappAccount?: boolean;
+  /** Ledger DMK clear signing, off by default */
+  isLedgerClearSigningEnabled?: boolean;
   biometricUnlockEnabled?: boolean;
   biometricUnlockCredentialId?: string;
   biometricUnlockEncryptedPassword?: string;
@@ -246,6 +248,7 @@ class PreferenceService {
         isEnabledPwdForNonWhitelistedTx: false,
         isExtraFeeProtectionEnabled: true,
         isEnabledDappAccount: false,
+        isLedgerClearSigningEnabled: false,
         biometricUnlockEnabled: false,
         biometricUnlockCredentialId: '',
         biometricUnlockEncryptedPassword: '',
@@ -965,6 +968,12 @@ class PreferenceService {
   };
   updateSendEnableTime = (time: number) => {
     this.store.sendEnableTime = time;
+  };
+  getIsLedgerClearSigningEnabled = () => {
+    return this.store.isLedgerClearSigningEnabled === true;
+  };
+  setIsLedgerClearSigningEnabled = (value: boolean) => {
+    this.store.isLedgerClearSigningEnabled = value;
   };
   getUserDataTrackingOptOut = () => {
     return this.store.userDataTrackingOptOut === true;

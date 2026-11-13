@@ -1369,6 +1369,7 @@
           "currency": "Para Birimi",
           "searchCurrency": "Para birimi ara",
           "dataAnalysis": "Veri Analizi",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Ek Ücret Koruması",
           "extraFeeProtectionDesc": "Tarayıcı uzantılarının ek ücret almasına izin veren imza isteklerini engeller"
         },

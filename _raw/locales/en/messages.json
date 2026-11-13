@@ -2834,6 +2834,7 @@
           "biometricUnlockUnsupported": "This device does not support biometric unlock.",
           "perpsFloatWidget": "Perps Floating Widget",
           "dataAnalysis": "Data Analysis",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Extra Fee Protection",
           "extraFeeProtectionDesc": "Blocks signature requests that allow browser extensions to charge extra fees"
         },

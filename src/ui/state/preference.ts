@@ -42,6 +42,7 @@ export interface PreferenceState {
   isEnabledPwdForNonWhitelistedTx?: boolean;
   isExtraFeeProtectionEnabled?: boolean;
   isEnabledDappAccount?: boolean;
+  isLedgerClearSigningEnabled?: boolean;
   biometricUnlockEnabled?: boolean;
   biometricUnlockCredentialId?: string;
   biometricUnlockEncryptedPassword?: string;
@@ -89,6 +90,7 @@ export type PreferenceActions = {
   setHiddenBalance: (hidden: boolean) => Promise<void>;
   setIsShowTestnet: (value: boolean) => Promise<void>;
   setUserDataTrackingOptOut: (value: boolean) => Promise<void>;
+  setIsLedgerClearSigningEnabled: (value: boolean) => Promise<void>;
   setDesktopTokensAllMode: (value: boolean) => Promise<void>;
   switchLocale: (locale: string) => Promise<void>;
   switchThemeMode: (themeMode: DARK_MODE_TYPE) => Promise<void>;
@@ -143,6 +145,7 @@ export const getDefaultPreferenceState = (): PreferenceState => ({
   isEnabledPwdForNonWhitelistedTx: false,
   isExtraFeeProtectionEnabled: true,
   isEnabledDappAccount: false,
+  isLedgerClearSigningEnabled: false,
   biometricUnlockEnabled: false,
   biometricUnlockCredentialId: '',
   biometricUnlockEncryptedPassword: '',
@@ -261,6 +264,11 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
     set({ isShowTestnet });
     await wallet.setIsShowTestnet(isShowTestnet);
     void get().getPreference('isShowTestnet');
+  },
+  async setIsLedgerClearSigningEnabled(isLedgerClearSigningEnabled) {
+    set({ isLedgerClearSigningEnabled });
+    await wallet.setIsLedgerClearSigningEnabled(isLedgerClearSigningEnabled);
+    void get().getPreference('isLedgerClearSigningEnabled');
   },
   async setUserDataTrackingOptOut(userDataTrackingOptOut) {
     set({ userDataTrackingOptOut });

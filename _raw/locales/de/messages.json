@@ -1369,6 +1369,7 @@
           "currency": "Währung",
           "searchCurrency": "Währung suchen",
           "dataAnalysis": "Datenanalyse",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Schutz vor Zusatzgebühren",
           "extraFeeProtectionDesc": "Blockiert Signaturanfragen, mit denen Browser-Erweiterungen zusätzliche Gebühren erheben können"
         },

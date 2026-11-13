@@ -1473,6 +1473,7 @@
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
           "dataAnalysis": "Analisis Data",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Perlindungan Biaya Tambahan",
           "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },

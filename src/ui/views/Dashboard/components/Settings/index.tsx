@@ -60,6 +60,7 @@ import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.
 import { ReactComponent as RcIconRemovedToken } from 'ui/assets/settings/removed-token.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconClearSigningCC } from 'ui/assets/dashboard/settings/clear-signing-cc.svg';
 import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
 import { ReactComponent as RcIconExtraFeeProtectionCC } from 'ui/assets/dashboard/settings/extra-fee-protection-cc.svg';
 import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
@@ -670,6 +671,9 @@ const SettingsInner = ({
   const isEnabledDappAccount = useRabbySelector(
     (state) => state.preference.isEnabledDappAccount
   );
+  const isLedgerClearSigningEnabled = useRabbySelector(
+    (state) => !!state.preference.isLedgerClearSigningEnabled
+  );
   const isExtraFeeProtectionEnabled = useRabbySelector((state) =>
     isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
   );
@@ -789,6 +793,10 @@ const SettingsInner = ({
     } finally {
       setPerpsWidgetBusy(false);
     }
+  });
+
+  const handleToggleLedgerClearSigning = useMemoizedFn((checked: boolean) => {
+    dispatch.preference.setIsLedgerClearSigningEnabled(checked);
   });
 
   const handleToggleUserDataTrackingOptOut = useMemoizedFn(
@@ -1016,6 +1024,17 @@ const SettingsInner = ({
             <Switch
               checked={isExtraFeeProtectionEnabled}
               onChange={handleToggleExtraFeeProtection}
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconClearSigningCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.settings.ledgerClearSigning'),
+          rightIcon: (
+            <Switch
+              checked={isLedgerClearSigningEnabled}
+              onChange={handleToggleLedgerClearSigning}
             />
           ),
         },

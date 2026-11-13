@@ -296,6 +296,7 @@
           "perpsFloatWidget": "永续合约悬浮窗",
           "biometricUnlockHint": "使用生物识别在此设备上解锁。",
           "dataAnalysis": "数据分析",
+          "ledgerClearSigning": "Ledger 清晰签名",
           "extraFeeProtection": "额外费用保护",
           "extraFeeProtectionDesc": "阻止浏览器插件通过签名请求收取额外手续费"
         },

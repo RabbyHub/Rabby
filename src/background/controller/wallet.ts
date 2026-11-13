@@ -2193,6 +2193,14 @@ export class WalletController extends BaseController {
     return preferenceService.setIsShowTestnet(value);
   };
 
+  getIsLedgerClearSigningEnabled = () => {
+    return preferenceService.getIsLedgerClearSigningEnabled();
+  };
+
+  setIsLedgerClearSigningEnabled = (value: boolean) => {
+    return preferenceService.setIsLedgerClearSigningEnabled(value);
+  };
+
   getUserDataTrackingOptOut = () => {
     return preferenceService.getUserDataTrackingOptOut();
   };
