@@ -3181,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "주소 조회 중...",
       "emptyWhitelist": {
         "title": "주소를 화이트리스트에 추가하십시오",
         "desc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 이체를 지원합니다 - 다음 번에는 확인이 필요하지 않습니다.",

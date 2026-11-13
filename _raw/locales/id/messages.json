@@ -3181,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Mencari alamat...",
       "emptyWhitelist": {
         "title": "Tambahkan alamat ke daftar putih",
         "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat - tidak diperlukan konfirmasi di lain waktu",

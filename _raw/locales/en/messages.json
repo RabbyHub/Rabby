@@ -4612,6 +4612,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Looking up address...",
       "title": "Address",
       "enterAddress": "Enter address",
       "enterAddressOrENS": "Enter or search address",
