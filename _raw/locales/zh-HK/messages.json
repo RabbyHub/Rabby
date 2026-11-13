@@ -296,7 +296,6 @@
           "currency": "貨幣",
           "searchCurrency": "搜尋貨幣",
           "dataAnalysis": "資料分析",
-          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "額外費用保護",
           "extraFeeProtectionDesc": "阻止瀏覽器擴充功能透過簽名請求收取額外手續費"
         },

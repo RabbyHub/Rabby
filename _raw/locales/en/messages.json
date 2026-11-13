@@ -2815,6 +2815,7 @@
           "ecosystem": "Ecosystem"
         },
         "settings": {
+          "__skip_translation": ["ledgerClearSigning"],
           "label": "Settings",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
           "customRpc": "Modify RPC URL",

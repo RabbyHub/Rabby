@@ -1473,7 +1473,6 @@
           "currency": "통화",
           "searchCurrency": "통화 검색",
           "dataAnalysis": "데이터 분석",
-          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "추가 수수료 보호",
           "extraFeeProtectionDesc": "브라우저 확장 프로그램이 추가 수수료를 부과할 수 있게 하는 서명 요청을 차단합니다"
         },
