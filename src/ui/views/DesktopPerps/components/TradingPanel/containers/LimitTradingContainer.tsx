@@ -14,8 +14,9 @@ import { TPSLSettings } from '../components/TPSLSettings';
 import { OrderInfoGrid } from '../components/OrderInfoGrid';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { Dropdown, Menu, Tooltip } from 'antd';
+import { Dropdown, Menu } from 'antd';
 import clsx from 'clsx';
+import { PerpsTooltip } from '../../PerpsTooltip';
 import { OrderSideAndFunds } from '../components/OrderSideAndFunds';
 import { PositionSizeInputAndSliderV2 as PositionSizeInputAndSlider } from '../components/PositionSizeInputAndSliderV2';
 import { usePerpsTradingState } from '../../../hooks/usePerpsTradingState';
@@ -781,7 +782,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
         <span className="text-rb-neutral-secondary text-[12px] leading-[14px]">
           {t('page.perpsPro.tradingPanel.price')}
         </span>
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-[6px]">
           {bboEnabled ? (
             <PerpsDropdown
               options={BBO_STRATEGY_OPTIONS}
@@ -807,8 +808,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
               }
             />
           )}
-          <Tooltip
-            overlayClassName="rectangle"
+          <PerpsTooltip
             placement="topRight"
             title={
               bboDisabledReason
@@ -831,7 +831,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
             >
               BBO
             </div>
-          </Tooltip>
+          </PerpsTooltip>
         </div>
       </div>
 
@@ -888,7 +888,11 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
               handleTPSLEnabledChange(false);
             }
           }}
-          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          tooltipText={t(
+            currentPosition
+              ? 'page.perpsPro.tradingPanel.reduceOnlyTips'
+              : 'page.perpsPro.tradingPanel.reduceOnlyNoPositionTips'
+          )}
           title={t('page.perpsPro.tradingPanel.reduceOnly')}
           disabled={!currentPosition}
         />
