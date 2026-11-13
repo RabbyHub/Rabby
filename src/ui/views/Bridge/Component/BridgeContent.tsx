@@ -27,7 +27,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { CHAINS_ENUM, DBK_CHAIN_ID } from '@/constant';
 import { useHistory } from 'react-router-dom';
 import { BridgeToken } from './BridgeToken';
-import { BridgeShowMore, RecommendFromToken } from './BridgeShowMore';
+import { BridgeShowMore } from './BridgeShowMore';
 import { BridgeSwitchBtn } from './BridgeSwitchButton';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
 import { Header } from './BridgeHeader';
@@ -96,9 +96,6 @@ export const BridgeContent = () => {
     handleAmountChange,
     feeRate,
     feeTier,
-
-    recommendFromToken,
-    fillRecommendFromToken,
 
     inSufficient,
 
@@ -464,11 +461,8 @@ export const BridgeContent = () => {
     !quoteList?.length;
   const [bridgeProgressVisible, setBridgeProgressVisible] = useState(false);
   const [bridgePending, setBridgePending] = useState(false);
-  const hideBridgeProgress =
-    amountAvailable || !!selectedBridgeQuote || !!recommendFromToken;
-  const showQuoteAlert =
-    !inSufficientCanGetQuote || (noQuote && !recommendFromToken);
-  const showRecommendFromToken = noQuote && !!recommendFromToken;
+  const hideBridgeProgress = amountAvailable || !!selectedBridgeQuote;
+  const showQuoteAlert = !inSufficientCanGetQuote || noQuote;
   const showStickyInfo =
     !!fromToken &&
     !!toToken &&
@@ -1071,15 +1065,6 @@ export const BridgeContent = () => {
           />
         ) : null}
 
-        <div className="mx-20 mt-20">
-          {showRecommendFromToken && (
-            <RecommendFromToken
-              token={recommendFromToken}
-              className="mt-16"
-              onOk={fillRecommendFromToken}
-            />
-          )}
-        </div>
         {/* 隐藏展示时仍跟踪状态，供历史入口提示。 */}
         <div className={hideBridgeProgress ? 'hidden' : 'mt-20 mx-20'}>
           <BridgePendingTxItem

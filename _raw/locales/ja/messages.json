@@ -2354,7 +2354,6 @@
       "duration": "{{duration}} 分",
       "price-expired-refresh-route": "価格の有効期限が切れました。ルートを更新してください。",
       "aggregator-not-enabled": "このアグリゲーターでは取引できません。",
-      "recommendFromToken": "<1></1> からのブリッジの見積もりを取得",
       "getRoutes": "ルートを取得",
       "via-bridge": "{{bridge}} 経由",
       "need-to-approve-token-before-bridge": "ブリッジする前にトークンを承認する必要があります",
@@ -2370,7 +2369,7 @@
       "max-tips": "この値は、bridgeのガスコストを差し引いた額で計算されます。",
       "loss-tips": "{{usd}}の損失が発生します。別の金額でお試しください。",
       "unlimited-allowance": "無制限の許可",
-      "no-quote-found": "見積もりが見つかりませんでした。他のトークンペアをお試しください。",
+      "no-quote-found": "見積もりが見つかりませんでした。",
       "bridgeDbkBtn": "DBK公式サービス経由でブリッジ",
       "pendingItem": {
         "estimatedTime": "推定時間",

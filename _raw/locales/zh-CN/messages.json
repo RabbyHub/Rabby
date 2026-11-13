@@ -2600,7 +2600,7 @@
       "From": "从",
       "To": "至",
       "select-chain": "选择链",
-      "no-quote-found": "未找到报价。请尝试其他代币对。",
+      "no-quote-found": "未找到报价。",
       "Select": "选择",
       "Balance": "余额：",
       "Pending": "待处理",
@@ -2645,7 +2645,6 @@
       "loss-tips": "当前报价预计损失 {{usd}}，请尝试其他金额。",
       "max-tips": "此值通过减去跨链的 Gas 成本来计算。",
       "duration": "{{duration}} 分钟",
-      "recommendFromToken": "从 <1></1> 跨链以获取可用报价",
       "est-receiving": "预计接收：",
       "bridgeDbkBtn": "通过 DBK 官方服务跨链",
       "pendingItem": {
