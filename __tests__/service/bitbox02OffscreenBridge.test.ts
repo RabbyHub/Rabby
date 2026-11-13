@@ -15,6 +15,7 @@ jest.mock('webextension-polyfill', () => ({
   __esModule: true,
   default: {
     runtime: {
+      id: 'test-extension',
       onMessage: {
         addListener: jest.fn(),
       },
@@ -51,7 +52,7 @@ describe('BitBox02OffscreenBridge', () => {
           pairingCode: 'AAAAA BBBBB\nCCCCC DDDDD',
         },
       },
-      {},
+      { id: 'test-extension' },
       jest.fn()
     );
     await Promise.resolve();
@@ -61,6 +62,30 @@ describe('BitBox02OffscreenBridge', () => {
     // the pub key rides on the init response, so it can only land on the
     // bridge that asked for it
     expect(restoredBridge.hdk).toEqual({ key: 'xpub-live' });
+  });
+
+  it('rejects device events from content scripts', () => {
+    const addListener = browser.runtime.onMessage.addListener as jest.Mock;
+    const [listener] = addListener.mock.calls[0];
+    const sendResponse = jest.fn();
+    (browser.windows.create as jest.Mock).mockClear();
+
+    listener(
+      {
+        target: OffscreenCommunicationTarget.extension,
+        event: OffscreenCommunicationEvents.bitbox02DeviceConnect,
+        payload: { name: 'open-popup', pairingCode: 'AAAAA' },
+      },
+      {
+        id: 'test-extension',
+        tab: { id: 123 },
+        url: 'https://attacker.example',
+      },
+      sendResponse
+    );
+
+    expect(browser.windows.create).not.toHaveBeenCalled();
+    expect(sendResponse).not.toHaveBeenCalled();
   });
 
   it('rejects init when the offscreen document is unreachable', async () => {
