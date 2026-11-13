@@ -21,6 +21,7 @@ const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
 
 const paths = require('./paths');
+const DedupeIdenticalPackagesPlugin = require('./dedupe-identical-packages');
 
 const BUILD_GIT_HASH = child_process
   .execSync('git rev-parse HEAD')
@@ -311,6 +312,11 @@ const config = {
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
       dayjs: 'dayjs',
+    }),
+    // bundle each identical nested install of these leaf packages once
+    new DedupeIdenticalPackagesPlugin({
+      nodeModules: paths.rootResolve('node_modules'),
+      packages: ['bn.js', 'semver', '@noble/hashes'],
     }),
     new webpack.DefinePlugin({
       'process.env.version': JSON.stringify(`version: ${APP_VERSION}`),
