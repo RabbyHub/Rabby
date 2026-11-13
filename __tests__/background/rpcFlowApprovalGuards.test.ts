@@ -25,6 +25,8 @@ const mockPermissionService = {
   hasPermission: jest.fn(() => state.hasPermission),
   getConnectedSite: jest.fn(() => undefined),
   addConnectedSiteV2: jest.fn(),
+  updateConnectSite: jest.fn(),
+  touchConnectedSite: jest.fn(),
 };
 const mockPreferenceService = {
   getPreference: jest.fn(),
@@ -88,6 +90,7 @@ jest.mock('consts', () => ({
 }));
 
 import rpcFlow from '@/background/controller/provider/rpcFlow';
+import eventBus from '@/eventBus';
 
 const baseRequest = () => ({
   data: { method: 'eth_signTypedData_v4', params: [] },
@@ -189,5 +192,52 @@ describe('rpcFlow method dispatch', () => {
     });
     expect(mockNotificationService.requestApproval).not.toHaveBeenCalled();
     expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+  });
+});
+
+describe('rpcFlow signing operation context', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    state.isUnlocked = true;
+    state.currentApproval = null;
+    state.hasPermission = true;
+  });
+
+  const getEmittedOperation = () => {
+    const call = (eventBus.emit as jest.Mock).mock.calls.find(
+      ([, payload]) => payload?.params?.signingOperation
+    );
+    return call?.[1]?.params?.signingOperation;
+  };
+
+  test('binds the completion event to the request origin, account and payload', async () => {
+    mockNotificationService.requestApproval.mockResolvedValueOnce({});
+
+    await rpcFlow(baseRequest() as any);
+
+    expect(getEmittedOperation()).toMatchObject({
+      origin: 'https://app.hyperliquid.xyz',
+      accountAddress: '0xaccount',
+      accountType: 'SimpleKeyring',
+      id: expect.any(String),
+      payloadHash: expect.stringMatching(/^0x[0-9a-f]{64}$/),
+    });
+  });
+
+  test('preserves the inner Safe signing operation instead of replacing it with the outer dApp request', async () => {
+    const safeOperation = {
+      id: 'safe-operation',
+      origin: 'https://safe.example',
+      accountAddress: '0xowner',
+      accountType: 'HD Key Tree',
+      payloadHash: `0x${'ab'.repeat(32)}`,
+    };
+    mockNotificationService.requestApproval.mockResolvedValueOnce({
+      signingOperation: safeOperation,
+    });
+
+    await rpcFlow(baseRequest() as any);
+
+    expect(getEmittedOperation()).toBe(safeOperation);
   });
 });

@@ -21,7 +21,10 @@ import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
+import {
+  createSigningOperation,
+  waitSignComponentAmounted,
+} from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
 import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
@@ -409,10 +412,23 @@ const flowContext = flow
     // process request
     const [approvalType] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
-    const { uiRequestComponent, ...rest } = approvalRes || {};
     const {
       session: { origin },
     } = request;
+    const signingOperation = isSignApproval(approvalType)
+      ? approvalRes?.signingOperation ||
+        createSigningOperation({
+          id: uuidv4(),
+          origin,
+          account: request.account!,
+          method: request.data.method,
+          params: request.data.params,
+        })
+      : undefined;
+    const signingApprovalRes = signingOperation
+      ? { ...approvalRes, signingOperation }
+      : approvalRes;
+    const { uiRequestComponent, ...rest } = signingApprovalRes || {};
 
     const createRequestDeferFn = (
       originApprovalRes: typeof approvalRes
@@ -502,6 +518,7 @@ const flowContext = flow
                   params: {
                     success: true,
                     data: result,
+                    signingOperation,
                   },
                 });
               }
@@ -515,6 +532,7 @@ const flowContext = flow
                 params: {
                   success: false,
                   errorMsg: e?.message || JSON.stringify(e),
+                  signingOperation,
                 },
               };
               if (e.method) {
@@ -541,7 +559,7 @@ const flowContext = flow
         });
       });
 
-    const requestDeferFn = createRequestDeferFn(approvalRes);
+    const requestDeferFn = createRequestDeferFn(signingApprovalRes);
 
     if (!approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);

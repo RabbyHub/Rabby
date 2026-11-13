@@ -3320,8 +3320,9 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  getGnosisTransactionSignatures = () => {
+  getGnosisTransactionSignatures = (expectedHash?: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
+    keyring.assertExpectedTransactionHash(expectedHash);
     if (keyring.currentTransaction) {
       const sigs = Array.from(keyring.currentTransaction.signatures.values());
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
@@ -3355,6 +3356,7 @@ export class WalletController extends BaseController {
         version,
         networkId
       );
+      return keyring.getTransactionHash();
     } else {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
@@ -3397,12 +3399,12 @@ export class WalletController extends BaseController {
     }
   };
 
-  postGnosisTransaction = () => {
+  postGnosisTransaction = (expectedHash?: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    return keyring.postTransaction();
+    return keyring.postTransaction(expectedHash);
   };
 
   getGnosisAllPendingTxs = async (address: string) => {
@@ -3580,40 +3582,52 @@ export class WalletController extends BaseController {
     }
   };
 
-  gnosisGenerateTypedData = () => {
+  gnosisGenerateTypedData = (expectedHash?: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    return keyring.generateTypedData();
+    return keyring.generateTypedData(expectedHash);
   };
 
-  gnosisAddConfirmation = async (address: string, signature: string) => {
+  gnosisAddConfirmation = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addConfirmation(address, signature);
+    await keyring.addConfirmation(address, signature, expectedHash);
   };
 
-  gnosisAddPureSignature = async (address: string, signature: string) => {
+  gnosisAddPureSignature = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addPureSignature(address, signature);
+    await keyring.addPureSignature(address, signature, expectedHash);
   };
 
-  gnosisAddSignature = async (address: string, signature: string) => {
+  gnosisAddSignature = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addSignature(address, signature);
+    await keyring.addSignature(address, signature, expectedHash);
   };
 
   buildGnosisMessage = async ({
@@ -4962,16 +4976,20 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    const signingOptions = options
+      ? omit(options, ['signingOperation'])
+      : options;
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },
-      options
+      signingOptions
     );
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.SIGN_FINISHED,
       params: {
         success: true,
         data: res,
+        signingOperation: options?.signingOperation,
       },
     });
     return res;
@@ -5006,7 +5024,11 @@ export class WalletController extends BaseController {
       options,
     });
     const signingOptions = options
-      ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+      ? omit(options, [
+          'sourceApprovalId',
+          'approvalComponent',
+          'signingOperation',
+        ])
       : options;
     const res = await keyringService.signTypedMessage(
       keyring,
@@ -5018,6 +5040,7 @@ export class WalletController extends BaseController {
       params: {
         success: true,
         data: res,
+        signingOperation: options?.signingOperation,
       },
     });
     return res;

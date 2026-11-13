@@ -292,7 +292,19 @@ class GnosisKeyring extends EventEmitter {
     this.accountToAdd = account;
   };
 
-  generateTypedData = () => {
+  assertExpectedTransactionHash = (expectedHash?: string) => {
+    if (
+      expectedHash &&
+      this.currentTransactionHash?.toLowerCase() !== expectedHash.toLowerCase()
+    ) {
+      throw new Error(
+        'Safe transaction changed; review it again before signing'
+      );
+    }
+  };
+
+  generateTypedData = (expectedHash?: string) => {
+    this.assertExpectedTransactionHash(expectedHash);
     if (!this.safeInstance || !this.currentTransaction) return;
     const safe = this.safeInstance;
     const { version } = safe;
@@ -410,20 +422,37 @@ class GnosisKeyring extends EventEmitter {
     });
   }
 
-  async addConfirmation(address: string, signature: string) {
+  async addConfirmation(
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) {
+    this.assertExpectedTransactionHash(expectedHash);
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
     const safe = this.safeInstance;
-    const hash = await this.getTransactionHash();
-    if (!hash) throw new Error('No transaction hash in Gnosis keyring');
+    const transaction = this.currentTransaction;
+    const hash =
+      this.currentTransactionHash ||
+      (await safe.getTransactionHash(transaction));
+    if (expectedHash && hash.toLowerCase() !== expectedHash.toLowerCase()) {
+      throw new Error(
+        'Safe transaction changed; review it again before signing'
+      );
+    }
     const sig = new EthSafeSignature(address, signature);
-    await submitWithSignature(this.currentTransaction, sig, () =>
+    await submitWithSignature(transaction, sig, () =>
       safe.request.confirmTransaction(hash, { signature: sig.data })
     );
   }
 
-  async addPureSignature(address: string, signature: string) {
+  async addPureSignature(
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) {
+    this.assertExpectedTransactionHash(expectedHash);
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
@@ -431,7 +460,12 @@ class GnosisKeyring extends EventEmitter {
     this.currentTransaction.addSignature(sig);
   }
 
-  async addSignature(address: string, signature: string) {
+  async addSignature(
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) {
+    this.assertExpectedTransactionHash(expectedHash);
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
@@ -476,11 +510,20 @@ class GnosisKeyring extends EventEmitter {
     return result.hash;
   }
 
-  async postTransaction() {
+  async postTransaction(expectedHash?: string) {
+    this.assertExpectedTransactionHash(expectedHash);
     const safe = this.safeInstance;
     const safeTransaction = this.currentTransaction;
     if (!safe || !safeTransaction) return;
     const transactionHash = await safe.getTransactionHash(safeTransaction);
+    if (
+      expectedHash &&
+      transactionHash.toLowerCase() !== expectedHash.toLowerCase()
+    ) {
+      throw new Error(
+        'Safe transaction changed; review it again before signing'
+      );
+    }
     try {
       await safe.postTransaction(safeTransaction, transactionHash);
     } catch (e) {
@@ -530,12 +573,11 @@ class GnosisKeyring extends EventEmitter {
     };
 
     const safe = new Safe(checksumAddress, version, provider, networkId);
-    this.safeInstance = safe;
     const safeTransaction = await safe.buildTransaction(tx);
+    const transactionHash = await safe.getTransactionHash(safeTransaction);
+    this.safeInstance = safe;
     this.currentTransaction = safeTransaction;
-    this.currentTransactionHash = await safe.getTransactionHash(
-      safeTransaction
-    );
+    this.currentTransactionHash = transactionHash;
     return safeTransaction;
   }
 
