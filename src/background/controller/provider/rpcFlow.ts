@@ -21,7 +21,10 @@ import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
 import { findChain } from '@/utils/chain';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
+import {
+  createSigningOperation,
+  waitSignComponentAmounted,
+} from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
 import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
@@ -409,10 +412,22 @@ const flowContext = flow
     // process request
     const [approvalType] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
-    const { uiRequestComponent, ...rest } = approvalRes || {};
     const {
       session: { origin },
     } = request;
+    const signingOperation = isSignApproval(approvalType)
+      ? approvalRes?.signingOperation ||
+        createSigningOperation({
+          id: uuidv4(),
+          origin,
+          account: request.account!,
+          method: request.data.method,
+          params: request.data.params,
+        })
+      : undefined;
+    // Completed Safe message approvals are signature strings. Keep signing
+    // metadata separate so the controller receives the original result.
+    const { uiRequestComponent, ...rest } = approvalRes || {};
 
     const createRequestDeferFn = (
       originApprovalRes: typeof approvalRes
@@ -502,6 +517,7 @@ const flowContext = flow
                   params: {
                     success: true,
                     data: result,
+                    signingOperation,
                   },
                 });
               }
@@ -515,6 +531,7 @@ const flowContext = flow
                 params: {
                   success: false,
                   errorMsg: e?.message || JSON.stringify(e),
+                  signingOperation,
                 },
               };
               if (e.method) {
@@ -570,7 +587,11 @@ const flowContext = flow
 
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
+      const result = await requestApprovalLoop({
+        uiRequestComponent,
+        ...rest,
+        signingOperation,
+      });
       if (rest?.safeMessage) {
         const safeMessage: {
           safeAddress: string;

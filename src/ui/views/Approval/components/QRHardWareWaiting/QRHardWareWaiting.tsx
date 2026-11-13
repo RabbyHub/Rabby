@@ -28,7 +28,10 @@ import {
   KeystoneWiredWaiting,
 } from './KeystoneWaiting';
 import clsx from 'clsx';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import {
+  emitSignComponentAmounted,
+  isSignFinishedFor,
+} from '@/utils/signEvent';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 enum QRHARDWARE_STATUS {
@@ -135,6 +138,7 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
       }
     );
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+      if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (data.success) {
         let sig = data.data;
         try {
@@ -147,12 +151,22 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
                 signerAddress: params.account!.address!,
               });
             } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
+              const sigs = await wallet.getGnosisTransactionSignatures(
+                params.safeTxHash
+              );
               if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
+                await wallet.gnosisAddConfirmation(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
               } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
+                await wallet.gnosisAddSignature(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
+                await wallet.postGnosisTransaction(params.safeTxHash);
               }
             }
           }
