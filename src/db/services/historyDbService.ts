@@ -23,6 +23,16 @@ export type HistoryOpenapi = Pick<
 export const getHistoryRetentionStart = () =>
   Date.now() / 1000 - HISTORY_RETENTION_SECONDS;
 
+// The newest stored second is kept as the sync watermark even after it
+// expires, so an address with no txs for a long time keeps an old one. The
+// has_new_tx API rejects a start_time older than about a year (400 "invalid
+// start time"), which failed every sync and left new txs unsynced for good.
+// A tx older than the retention window is never shown or kept, so checking
+// from the window start answers the same question. The API also rejects a
+// non-integer start_time.
+const getHasNewTxStartTime = (latestTime: number) =>
+  Math.floor(Math.max(latestTime, getHistoryRetentionStart()));
+
 // Txs mined in one block share time_at, and the time index breaks that tie by
 // _id, i.e. by tx hash. idx is the tx's position in its block, so ordering by
 // it puts an approve below the swap that followed it in the same block.
@@ -269,7 +279,7 @@ class HistoryDbService {
     if (latestTime) {
       const res = await openapi.hasNewTxFrom({
         address: address,
-        startTime: latestTime,
+        startTime: getHasNewTxStartTime(latestTime),
       });
       hasNew = res.has_new_tx;
     }
