@@ -4125,6 +4125,7 @@
         "reduceOnly": "Sadece Azalt",
         "insufficientBalance": "Yetersiz bakiye",
         "reduceOnlyTips": "Bu emir, emir büyüklüğü ne olursa olsun yeni bir pozisyon açmayacaktır. Bu emir yürütülme anında mevcut pozisyonla karşılaştırılacaktır.",
+        "reduceOnlyNoPositionTips": "Bu piyasada açık pozisyonunuz olmadığı için Sadece Azalt kullanılamaz. Bu özellik yalnızca mevcut bir pozisyonu azaltır ve asla yeni bir pozisyon açmaz.",
         "numberOfOrders": "Emir sayısı",
         "marginUsage": "Marjin Kullanımı",
         "type": "Tür",
@@ -4203,6 +4204,7 @@
         "totalTime": "Toplam Zaman (5d-24s)",
         "bboTips": "En İyi Alış ve Satış (BBO), emir defterindeki mevcut en iyi satış ve alış fiyatlarını ifade eder. BBO emirleri, görüntüleme tercihlerinden bağımsız olarak ayrıntılı ve doğru fiyatlandırma sağlayan kesin minimum fiyat adımıyla verilir.",
         "maxDurationTwap": "TWAP emrinin çalışacağı maksimum süre:",
+        "twapPresetDisabledTips": "Emir büyüklüğü bu süre için çok küçük. Her alt emir en az $10 olmalıdır.",
         "orderTypeTooltipScale": "Ölçekli emirler, piyasa etkisini azaltmak için bir miktarı birden fazla alt emre bölmenizi sağlar.",
         "orderTypeTooltipTwap": "TWAP (Zaman Ağırlıklı Ortalama Fiyat), kullanıcının belirttiği dönem boyunca zaman ağırlıklı ortalama fiyata yakın bir ortalama işlem fiyatı elde etmeyi amaçlayan bir algoritmik işlem yürütme stratejisidir.",
         "swapStableCoins": "Stablecoin Swap"
