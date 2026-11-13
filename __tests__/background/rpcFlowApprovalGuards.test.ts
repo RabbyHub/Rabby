@@ -19,6 +19,7 @@ const mockKeyringService = {
 const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
+  setCurrentRequestDeferFn: jest.fn(),
   unLock: jest.fn(),
 };
 const mockPermissionService = {
@@ -45,7 +46,9 @@ jest.mock('background/service', () => ({
 // APPROVAL-decorated method shaped like the real ethSignTypedDataV4 (see
 // controller.ts), enough to drive rpcFlow's real middleware chain without
 // importing the full controller and its heavy transaction/keyring surface.
-const ethSignTypedDataV4 = jest.fn(async () => 'signature-result');
+const ethSignTypedDataV4 = jest.fn(
+  async (_request?: any) => 'signature-result'
+);
 const fakeController = { ethSignTypedDataV4 };
 Reflect.defineMetadata(
   'APPROVAL',
@@ -76,10 +79,18 @@ jest.mock('@/background/service/signTxPreparation', () => ({
 jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 jest.mock('@/eventBus', () => ({
   __esModule: true,
-  default: { emit: jest.fn(), addEventListener: jest.fn() },
+  default: {
+    emit: jest.fn(),
+    addEventListener: jest.fn(),
+    once: jest.fn((_event, listener) => listener()),
+  },
 }));
 jest.mock('consts', () => ({
-  EVENTS: {},
+  EVENTS: {
+    broadcastToUI: 'broadcastToUI',
+    SIGN_FINISHED: 'SIGN_FINISHED',
+    SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
+  },
   INTERNAL_REQUEST_ORIGIN: 'https://rabby.io',
   KEYRING_CLASS: { GnosisKeyring: 'Gnosis Safe' },
   KEYRING_TYPE: {
@@ -239,5 +250,25 @@ describe('rpcFlow signing operation context', () => {
     await rpcFlow(baseRequest() as any);
 
     expect(getEmittedOperation()).toBe(safeOperation);
+  });
+
+  test('passes the same operation to the waiting UI and completion event without changing the controller approval result', async () => {
+    const approvalRes = {
+      uiRequestComponent: 'PrivatekeyWaiting',
+      $account: baseRequest().account,
+    };
+    mockNotificationService.requestApproval
+      .mockResolvedValueOnce(approvalRes)
+      .mockResolvedValueOnce('waiting-result');
+
+    await expect(rpcFlow(baseRequest() as any)).resolves.toBe('waiting-result');
+
+    const waitingApproval =
+      mockNotificationService.requestApproval.mock.calls[1][0];
+    expect(waitingApproval.params.signingOperation).toEqual(
+      getEmittedOperation()
+    );
+    expect(waitingApproval.params.signingOperation).toBeDefined();
+    expect(ethSignTypedDataV4.mock.calls[0][0].approvalRes).toBe(approvalRes);
   });
 });
