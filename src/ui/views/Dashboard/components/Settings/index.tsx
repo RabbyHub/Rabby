@@ -84,7 +84,6 @@ import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
-import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { isExtraFeeProtectionOn } from '@/utils/extraFeeProtection';
 import { useCurrency } from '@/ui/hooks/useCurrency';
 import { useExtensionUpdateSettingsCard } from '@/ui/hooks/useExtensionUpdateSettingsCard';
@@ -720,21 +719,10 @@ const SettingsInner = ({
   });
 
   const handleToggleExtraFeeProtection = useMemoizedFn(async () => {
-    if (!isExtraFeeProtectionEnabled) {
+    if (isExtraFeeProtectionEnabled) {
+      await dispatch.preference.disableExtraFeeProtection();
+    } else {
       await dispatch.preference.enableExtraFeeProtection();
-      return;
-    }
-    try {
-      await AuthenticationModalPromise({
-        title: t('page.dashboard.settings.settings.extraFeeProtection'),
-        confirmText: t('global.confirm'),
-        cancelText: t('global.Cancel'),
-        validationHandler: (password: string) =>
-          dispatch.preference.disableExtraFeeProtection(password),
-        wallet,
-      });
-    } catch (e) {
-      // cancelled: protection stays on
     }
   });
 
