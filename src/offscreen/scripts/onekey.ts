@@ -3,6 +3,7 @@ import {
   OneKeyAction,
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 export function initOneKey() {
   const bridge = new OneKeyBridge();
@@ -14,10 +15,13 @@ export function initOneKey() {
         action: OneKeyAction;
         params: any[];
       },
-      _sender,
+      sender,
       sendResponse
     ) => {
-      if (msg.target !== OffscreenCommunicationTarget.onekeyOffscreen) {
+      if (
+        msg.target !== OffscreenCommunicationTarget.onekeyOffscreen ||
+        !isPrivilegedOffscreenSender(sender)
+      ) {
         return;
       }
 

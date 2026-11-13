@@ -7,6 +7,7 @@ import {
 } from '@/constant/offscreen-communication';
 
 import { installTrezorBrowserApi } from './trezor-browser-api';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 type TrezorRequest = {
   target: OffscreenCommunicationTarget;
@@ -105,8 +106,8 @@ export function initTrezor() {
   chrome.runtime.onMessage.addListener(
     (msg: TrezorRequest, sender, sendResponse) => {
       if (
-        sender.id !== chrome.runtime.id ||
-        msg.target !== OffscreenCommunicationTarget.trezorOffscreen
+        msg.target !== OffscreenCommunicationTarget.trezorOffscreen ||
+        !isPrivilegedOffscreenSender(sender)
       ) {
         return;
       }

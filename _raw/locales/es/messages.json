@@ -1368,7 +1368,8 @@
           "perpsFloatWidget": "Widget flotante de Perps",
           "currency": "Moneda",
           "searchCurrency": "Buscar moneda",
-          "dataAnalysis": "Análisis de datos",
+          "helpImproveRabby": "Ayuda a mejorar Rabby",
+          "helpImproveRabbyDesc": "Comparte datos de uso anónimos para ayudar a mejorar Rabby. Los datos recopilados no se asocian contigo ni con tu cuenta.",
           "extraFeeProtection": "Protección contra comisiones adicionales",
           "extraFeeProtectionDesc": "Bloquea las solicitudes de firma que permiten a extensiones del navegador cobrar comisiones adicionales"
         },
@@ -2327,7 +2328,7 @@
       "To": "Para",
       "From": "Desde",
       "Balance": "Saldo: ",
-      "no-quote-found": "No se encontró cotización. Por favor, prueba con otros pares de tokens.",
+      "no-quote-found": "No se encontró cotización.",
       "unlimited-allowance": "Autorización ilimitada",
       "title": "Bridge",
       "BridgeTokenPair": "Par de tokens del bridge",
@@ -2351,7 +2352,6 @@
       "price-impact": "Impacto en el precio",
       "enable-it": "Habilitarlo",
       "via-bridge": "a través de {{bridge}}",
-      "recommendFromToken": "Haz el bridge desde <1></1> para obtener una cotización disponible",
       "est-payment": "Pago est.:",
       "aggregator-not-enabled": "No has habilitado este agregador para operar.",
       "no-route-found": "No se encontró ruta",
@@ -2910,7 +2910,11 @@
             "placeholder": "Confirmar contraseña"
           }
         },
-        "agree": "Estoy de acuerdo con los<1/> <2>Términos de uso</2> y la <4>Política de privacidad</4>",
+        "dataCollection": {
+          "title": "Ayuda a mejorar Rabby",
+          "desc": "Comparte datos de uso anónimos para ayudar a mejorar Rabby. Los datos recopilados no se asocian contigo ni con tu cuenta. Puedes cambiar esto en cualquier momento en Configuración."
+        },
+        "termsNotice": "Al continuar, aceptas los <terms>Términos de uso</terms> y reconoces la <privacy>Política de privacidad</privacy>.",
         "title": "Establecer contraseña",
         "desc": "Se utilizará para desbloquear la wallet y cifrar los datos"
       },
@@ -3180,6 +3184,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Buscando dirección...",
       "emptyWhitelist": {
         "title": "Agregar dirección a la lista blanca",
         "addNow": "Agregar ahora",

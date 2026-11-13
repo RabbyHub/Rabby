@@ -214,19 +214,6 @@ export const useBridge = () => {
 
   const slippageObj = useBridgeSlippage();
 
-  const [recommendFromToken, setRecommendFromToken] = useState<TokenItem>();
-
-  const fillRecommendFromToken = useCallback(() => {
-    if (recommendFromToken) {
-      const targetChain = findChainByServerID(recommendFromToken?.chain);
-      if (targetChain) {
-        switchFromChain(targetChain.enum, false);
-        setFromToken(recommendFromToken);
-        setAmount('');
-      }
-    }
-  }, [recommendFromToken, switchFromChain, setFromToken]);
-
   const [selectedBridgeQuote, setOriSelectedBridgeQuote] = useState<
     SelectedBridgeQuote | undefined
   >();
@@ -470,7 +457,6 @@ export const useBridge = () => {
             loading: true,
           }))
     );
-    setRecommendFromToken(undefined);
     if (shouldResetQuote) {
       setQuoteRefreshCountdown(null);
       if (expiredTimer.current) {
@@ -558,23 +544,19 @@ export const useBridge = () => {
         });
       };
 
-      const getQUoteV2 = async (alternativeToken?: TokenItem) =>
+      const getQUoteV2 = async () =>
         await Promise.allSettled(
           aggregatorsList.map(async (bridgeAggregator) => {
             const data = await getBridgeQuoteList(
               bridgeAggregator.id,
               {
                 userAddress,
-                fromChainId: alternativeToken?.chain || fromToken.chain,
-                fromTokenId: alternativeToken?.id || fromToken.id,
-                fromTokenRawAmount: alternativeToken
-                  ? new BigNumber(amount)
-                      .times(fromToken.price)
-                      .div(alternativeToken.price)
-                      .times(10 ** alternativeToken.decimals)
-                      .toFixed(0, 1)
-                      .toString()
-                  : getBridgePayTokenRawAmount(amount, fromToken.decimals),
+                fromChainId: fromToken.chain,
+                fromTokenId: fromToken.id,
+                fromTokenRawAmount: getBridgePayTokenRawAmount(
+                  amount,
+                  fromToken.decimals
+                ),
                 toChainId: toToken.chain,
                 toTokenId: toToken.id,
                 slippage: formatBridgeSlippageRatio(slippageObj.slippage),
@@ -584,13 +566,6 @@ export const useBridge = () => {
             ).catch((e) => {
               console.error(e);
             });
-
-            if (alternativeToken) {
-              if (data?.length && isCurrentRequest()) {
-                setRecommendFromToken(alternativeToken);
-              }
-              return data;
-            }
 
             const validQuotes = (data || []).filter(isValidBridgeQuote);
             if (validQuotes.length && isCurrentRequest()) {
@@ -610,38 +585,6 @@ export const useBridge = () => {
         setPending(false);
 
         if (data.length < 1) {
-          try {
-            const recommendFromToken = await wallet.openapi.getRecommendFromToken(
-              {
-                user_addr: userAddress,
-                from_chain_id: fromToken.chain,
-                from_token_id: fromToken.id,
-                from_token_amount: getBridgePayTokenRawAmount(
-                  amount,
-                  fromToken.decimals
-                ),
-                to_chain_id: toToken.chain,
-                to_token_id: toToken.id,
-              }
-            );
-            if (currentFetchId !== fetchIdRef.current) {
-              return;
-            }
-            if (recommendFromToken?.token_list?.[0]) {
-              await getQUoteV2(recommendFromToken?.token_list?.[0]);
-            } else {
-              setRecommendFromToken(undefined);
-            }
-          } catch (error) {
-            if (currentFetchId === fetchIdRef.current) {
-              setRecommendFromToken(undefined);
-            }
-          }
-
-          if (currentFetchId !== fetchIdRef.current) {
-            return;
-          }
-
           setSelectedBridgeQuote(undefined);
         }
 
@@ -974,9 +917,6 @@ export const useBridge = () => {
     setToToken,
     switchToChain,
     switchToken,
-
-    recommendFromToken,
-    fillRecommendFromToken,
 
     inSufficient,
     inSufficientCanGetQuote,

@@ -7,11 +7,13 @@ import {
   OffscreenCommunicationTarget,
   TrezorAction,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 import type {
   HardwareSigningMetadata,
   SigningAttempt,
 } from '../signing-diagnostics';
+import { getTrezorSigningDiagnostics } from './signing-error';
 
 export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
   isDeviceConnected = false;
@@ -32,9 +34,9 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
     browser.runtime.onMessage.addListener((msg, sender) => {
       if (
-        sender.id !== browser.runtime.id ||
         msg.target !== OffscreenCommunicationTarget.extension ||
-        msg.event !== OffscreenCommunicationEvents.trezorDeviceEvent
+        msg.event !== OffscreenCommunicationEvents.trezorDeviceEvent ||
+        !isPrivilegedOffscreenSender(sender)
       ) {
         return;
       }
@@ -128,12 +130,42 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
   getHardwareSigningMetadata = () => this.hardwareSigningMetadata;
 
-  getSigningDiagnostics = (_error?: unknown, _attempt?: SigningAttempt) => ({
-    wallet_provider: 'trezor' as const,
-    transport: 'usb' as const,
-    error_category: 'unknown' as const,
+  getSigningDiagnostics = (error?: unknown, _attempt?: SigningAttempt) => ({
+    ...getTrezorSigningDiagnostics(error, this.failureCodeFor(error)),
     provider_metadata: this.hardwareSigningMetadata,
   });
+
+  // The keyring rethrows a failed response with its message only, so keep the
+  // Connect code here for diagnostics, with the message it came with.
+  // ponytail: one slot per bridge; the device runs one signing call at a time.
+  private lastFailure?: { code: string; message: string };
+
+  // The kept code belongs to `error` only if the error carries its message:
+  // an attempt can fail before reaching the bridge (e.g. in getHdPath), and
+  // must not inherit an earlier attempt's code such as a user cancel.
+  private failureCodeFor(error: unknown) {
+    const failure = this.lastFailure;
+    const message =
+      error instanceof Error ? error.message : String(error ?? '');
+    return failure?.message && message.includes(failure.message)
+      ? failure.code
+      : undefined;
+  }
+
+  private sign<T>(action: TrezorAction, params: unknown) {
+    this.lastFailure = undefined;
+    return this.invokeAfterInit<T>(action, params).then((response: any) => {
+      const code = response?.payload?.code;
+      const message = response?.payload?.error;
+      if (response?.success === false && typeof code === 'string') {
+        this.lastFailure = {
+          code,
+          message: typeof message === 'string' ? message : '',
+        };
+      }
+      return response as T;
+    });
+  }
 
   dispose: TrezorBridgeInterface['dispose'] = async () => {
     if (!this.disposal) {
@@ -164,13 +196,13 @@ export default class TrezorOffscreenBridge implements TrezorBridgeInterface {
 
   ethereumSignTransaction: TrezorBridgeInterface['ethereumSignTransaction'] = (
     params
-  ) => this.invokeAfterInit(TrezorAction.ethereumSignTransaction, params);
+  ) => this.sign(TrezorAction.ethereumSignTransaction, params);
 
   ethereumSignMessage: TrezorBridgeInterface['ethereumSignMessage'] = (
     params
-  ) => this.invokeAfterInit(TrezorAction.ethereumSignMessage, params);
+  ) => this.sign(TrezorAction.ethereumSignMessage, params);
 
   ethereumSignTypedData: TrezorBridgeInterface['ethereumSignTypedData'] = (
     params
-  ) => this.invokeAfterInit(TrezorAction.ethereumSignTypedData, params);
+  ) => this.sign(TrezorAction.ethereumSignTypedData, params);
 }

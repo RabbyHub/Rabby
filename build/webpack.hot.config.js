@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const { codeInspectorPlugin } = require('code-inspector-plugin');
 const paths = require('./paths');
 const devPort = require('./dev-port');
 const child_process = require('child_process');
@@ -396,9 +395,6 @@ const uiConfig = {
       'process.env.BUILD_ENV': JSON.stringify('DEV'),
       'process.env.DEBUG': true,
     }),
-    codeInspectorPlugin({
-      bundler: 'webpack',
-    }),
     isHot && new webpack.HotModuleReplacementPlugin(),
     isHot &&
       new ReactRefreshWebpackPlugin({
@@ -574,4 +570,17 @@ const otherConfig = {
   ],
 };
 
-module.exports = [uiConfig, otherConfig];
+module.exports = Promise.all([
+  import('code-inspector-plugin'),
+  import('@code-inspector/core'),
+]).then(async ([{ codeInspectorPlugin }, { startServer }]) => {
+  const plugin = codeInspectorPlugin({ bundler: 'webpack' });
+  await startServer(plugin.options, {
+    port: 0,
+    entry: '',
+    output: plugin.options.output,
+    envDir: process.cwd(),
+  });
+  uiConfig.plugins.push(plugin);
+  return [uiConfig, otherConfig];
+});
