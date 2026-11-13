@@ -677,8 +677,8 @@ export const PerpsSingleCoin = () => {
           <span className="w-[2px] h-[12px] bg-r-blue-default inline-block" />
           {t('page.perps.info')}
         </div>
-        <div className="bg-r-neutral-card1 rounded-[12px] px-16">
-          <div className="flex justify-between text-13 py-16">
+        <div className="bg-r-neutral-card1 rounded-[12px] px-16 py-12">
+          <div className="flex justify-between text-13 leading-[16px] py-6">
             <span className="text-r-neutral-body">
               {t('page.perps.dailyVolume')}
             </span>
@@ -687,7 +687,7 @@ export const PerpsSingleCoin = () => {
             </span>
           </div>
 
-          <div className="flex justify-between text-13 py-16">
+          <div className="flex justify-between text-13 leading-[16px] py-6">
             <div className="text-r-neutral-body">
               <PerpsTipLabel tip={t('page.perps.singleCoin.openInterestTips')}>
                 {t('page.perps.openInterest')}
@@ -703,7 +703,7 @@ export const PerpsSingleCoin = () => {
 
           {/* With a position, the Funding card already shows the rate. */}
           {!(hasPosition && isLogin) && (
-            <div className="flex justify-between text-13 py-16">
+            <div className="flex justify-between text-13 leading-[16px] py-6">
               <div className="text-r-neutral-body">
                 <PerpsTipLabel tip={t('page.perps.singleCoin.fundingTips')}>
                   {t('page.perps.fundingRate')}
