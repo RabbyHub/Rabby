@@ -3935,7 +3935,7 @@
           "closedPnl": "已实现盈亏",
           "unrealizedPnl": "未实现盈亏",
           "fundingTipsV2": "自开仓以来的资金费净额。红色（负值）表示已支付资金费，绿色（正值）表示已收到资金费。",
-          "fundingTipsBold": "这里显示自开仓以来结算的资金费总额。<bold>绿色（正值）</bold>表示从其他交易者处获得的资金费收益，<bold>红色（负值）</bold>表示已支付的资金费。",
+          "fundingTipsBold": "这里显示自开仓以来结算的资金费总额。<positive>绿色（正值）</positive>表示从其他交易者处获得的资金费收益，<negative>红色（负值）</negative>表示已支付的资金费。",
           "assets": "资产",
           "about": "关于"
         },
@@ -4535,7 +4535,20 @@
         "stopLossWhenPriceBelow": "当价格低于时止损",
         "takeProfitWhenPriceBelow": "当价格低于时止盈"
       },
-      "needDepositFirst": "你需要先存入资金。"
+      "needDepositFirst": "你需要先存入资金。",
+      "simpleAccount": {
+        "margin": "保证金",
+        "averageEntry": "平均开仓价",
+        "estimatedLiquidationPrice": "预计强平价",
+        "estimatedLiquidationDistance": "预计强平距离",
+        "tpSl": "止盈/止损",
+        "takeProfitPrice": "止盈价格",
+        "stopLossPrice": "止损价格",
+        "funding": "资金费",
+        "nextFundingRate": "下一期资金费率",
+        "estimatedPnl": "预计盈亏",
+        "fundingPaymentsTips": "这里显示自开仓以来结算的资金费总额。<positive>绿色（正值）</positive>表示从其他交易者处获得的资金费收益，<negative>红色（负值）</negative>表示已支付的资金费。"
+      }
     },
     "desktopSmallSwap": {
       "title": "小额资产归集",
