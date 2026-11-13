@@ -9,7 +9,7 @@ async function startDevServer() {
   const config = await require('./webpack.hot.config.js');
 
   const app = express();
-  const port = 3173;
+  const port = require('./dev-port');
 
   // 只对 uiConfig 启用热更新
   const uiConfig = Array.isArray(config)
@@ -71,8 +71,19 @@ async function startDevServer() {
 
   app.listen(port, 'localhost', (err) => {
     if (err) {
-      console.error(err);
-      return;
+      // 不能只打日志继续跑：webpack 还会照常构建，而 ui 包里的 HMR 客户端会连上
+      // 占用这个端口的另一个 dev:hot，收到别人的更新就整页刷新
+      if (err.code === 'EADDRINUSE') {
+        console.error(
+          `\n端口 ${port} 已被占用，可能已有一个 dev:hot 在运行。` +
+            `同时跑多个时用 DEV_PORT 指定其他端口，例如：DEV_PORT=${
+              port + 1
+            } yarn dev:hot\n`
+        );
+      } else {
+        console.error(err);
+      }
+      process.exit(1);
     }
     console.log(`服务器正在监听端口 ${port}...\n`);
   });
