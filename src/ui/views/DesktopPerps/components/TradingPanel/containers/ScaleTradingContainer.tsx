@@ -27,6 +27,7 @@ import { TradingButton } from '../components/TradingButtons';
 import { formatPerpsCoin } from '../../../utils';
 import { useOrderConfirm } from '../../../modal/OrderConfirmProvider';
 import { OrderConfirmScaleTable } from '../../../modal/OrderConfirmScaleTable';
+import { DashedUnderlineText } from '../../DashedUnderlineText';
 
 export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
   const { t } = useTranslation();
@@ -473,14 +474,13 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
       </div>
 
       <div className="flex flex-col gap-[6px] mt-[6px]">
-        <PerpsTooltip
-          placement="topLeft"
-          title={t('page.perpsPro.tradingPanel.sizeSkewTooltip')}
+        <DashedUnderlineText
+          needCursor={false}
+          className="text-rb-neutral-secondary text-12 w-[fit-content]"
+          tooltipText={t('page.perpsPro.tradingPanel.sizeSkewTooltip')}
         >
-          <span className="text-rb-neutral-secondary text-12 cursor-help">
-            {t('page.perpsPro.tradingPanel.sizeSkew')}
-          </span>
-        </PerpsTooltip>
+          {t('page.perpsPro.tradingPanel.sizeSkew')}
+        </DashedUnderlineText>
         <DesktopPerpsInput
           value={sizeSkew}
           onChange={handleSizeSkewChange}
