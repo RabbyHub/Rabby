@@ -2829,6 +2829,7 @@
           "ecosystem": "Ecosystem"
         },
         "settings": {
+          "__skip_translation": ["ledgerClearSigning"],
           "label": "Settings",
           "enableWhitelistForSendingAssets": "Enable Whitelist For Sending Assets",
           "customRpc": "Modify RPC URL",
@@ -2847,6 +2848,7 @@
           "biometricUnlockHint": "Use biometrics to unlock on this device.",
           "biometricUnlockUnsupported": "This device does not support biometric unlock.",
           "perpsFloatWidget": "Perps Floating Widget",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "helpImproveRabby": "Help improve Rabby",
           "helpImproveRabbyDesc": "Share anonymous usage data to help improve Rabby. Collected data is not associated with you or your account.",
           "extraFeeProtection": "Extra Fee Protection",
