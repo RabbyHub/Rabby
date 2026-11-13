@@ -73,6 +73,7 @@ import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
+import { createSigningOperation } from '@/utils/signEvent';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { getCexInfo } from '@/ui/state/exchange';
 import {
@@ -863,6 +864,13 @@ const SignTypedData = ({
       data: signTypedData as any,
     });
 
+    const signingOperation = createSigningOperation({
+      id: approvalId!,
+      origin: session.origin,
+      account,
+      method: 'eth_signTypedData_v4',
+      params: [account.address, JSON.stringify(typedData)],
+    });
     if (WaitingSignMessageComponent[account.type]) {
       const approval = await wallet.getApproval();
       if (
@@ -882,6 +890,7 @@ const SignTypedData = ({
           version: 'V4',
           sourceApprovalId: approvalId,
           approvalComponent: WaitingSignMessageComponent[account.type],
+          signingOperation,
         }
       );
 
@@ -892,6 +901,7 @@ const SignTypedData = ({
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         sourceApprovalId: approvalId,
+        signingOperation,
         account: account,
         $account: account,
         safeMessage: {

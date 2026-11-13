@@ -48,6 +48,7 @@ import {
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { BasicSafeInfo } from '@rabby-wallet/gnosis-sdk';
 import { generateTypedData } from '@safe-global/protocol-kit';
+import { createSigningOperation } from '@/utils/signEvent';
 import { useGetCurrentSafeInfo } from '../hooks/useGetCurrentSafeInfo';
 import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
@@ -507,6 +508,13 @@ const SignText = ({
       chainId: BigInt(chainId!),
       data: signText,
     });
+    const signingOperation = createSigningOperation({
+      id: approvalId!,
+      origin: session.origin,
+      account,
+      method: 'eth_signTypedData_v4',
+      params: [account.address, JSON.stringify(typedData)],
+    });
     if (WaitingSignMessageComponent[account.type]) {
       wallet.signTypedDataWithUI(
         account.type,
@@ -517,6 +525,7 @@ const SignText = ({
           version: 'V4',
           sourceApprovalId: approvalId,
           approvalComponent: WaitingSignMessageComponent[account.type],
+          signingOperation,
         }
       );
 
@@ -527,6 +536,7 @@ const SignText = ({
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         sourceApprovalId: approvalId,
+        signingOperation,
         account: account,
         $account: account,
         safeMessage: {
