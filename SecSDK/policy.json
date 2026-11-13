@@ -94389,8 +94389,7 @@
       "node_modules/nanoid/index.browser.js",
       "node_modules/p-queue/dist/index.js",
       "node_modules/process/browser.js",
-      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
-      "src/content-script/perps-widget/index.ts"
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js"
     ]
   },
   "src/content-script/page-provider.ts": {
@@ -94399,9 +94398,10 @@
       "node_modules/@rabby-wallet/page-provider/dist/index.js"
     ]
   },
-  "src/content-script/perps-widget/index.ts": {
+  "src/content-script/perps-widget/entry.ts": {
     "enable": true,
     "require": [
+      "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/content-script/perps-widget/livedataClient.ts",
       "src/content-script/perps-widget/ui/mount.tsx"
     ]

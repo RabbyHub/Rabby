@@ -69,6 +69,13 @@ const config = {
     },
     'content-script': paths.rootResolve('src/content-script/index.ts'),
     pageProvider: paths.rootResolve('src/content-script/page-provider.ts'),
+    // Injected by the background only when the perps widget is enabled, into a
+    // frame where content-script.js already runs: it reuses that webpack runtime,
+    // which is also the runtime Warden inlines its module policy for.
+    'perps-widget': {
+      import: paths.rootResolve('src/content-script/perps-widget/entry.ts'),
+      dependOn: 'content-script',
+    },
     ui: paths.rootResolve('src/ui/index.tsx'),
     offscreen: paths.rootResolve('src/offscreen/scripts/offscreen.ts'),
   },
@@ -398,7 +405,9 @@ const config = {
     splitChunks: {
       ...(IS_FIREFOX && {
         chunks: (chunk) =>
-          chunk.name !== 'content-script' && chunk.name !== 'pageProvider',
+          chunk.name !== 'content-script' &&
+          chunk.name !== 'pageProvider' &&
+          chunk.name !== 'perps-widget',
         minSize: 10000,
         maxSize: 4000000,
         minChunks: 1,
