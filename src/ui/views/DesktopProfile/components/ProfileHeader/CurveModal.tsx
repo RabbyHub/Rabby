@@ -2,13 +2,18 @@ import { Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'react-use';
 import styled, { createGlobalStyle } from 'styled-components';
-import { CurveThumbnail } from './CurveThumbnail';
+import { lazyComponent } from '@/ui/utils/lazyComponent';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
 import dayjs from 'dayjs';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/tips-cc.svg';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+
+// keeps recharts out of the initial bundle
+const CurveThumbnail = lazyComponent(() =>
+  import('./CurveThumbnail').then((m) => m.CurveThumbnail)
+);
 export type CurvePoint = {
   value: number;
   netWorth: string;

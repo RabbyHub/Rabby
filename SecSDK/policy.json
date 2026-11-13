@@ -96190,6 +96190,13 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/component/LazyLottie/index.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/lottie-react/build/index.umd.js",
+      "src/ui/utils/lazyComponent.tsx"
+    ]
+  },
   "src/ui/component/Loading/style.less": {
     "enable": true,
     "require": [
@@ -96607,6 +96614,13 @@
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/hooks/backgroundState/useAccount.ts",
       "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/component/TokenChart/lazy.ts": {
+    "enable": true,
+    "require": [
+      "src/ui/component/TokenChart/index.tsx",
+      "src/ui/utils/lazyComponent.tsx"
     ]
   },
   "src/ui/component/TokenSelect/index.tsx": {
@@ -97277,7 +97291,6 @@
       "node_modules/dayjs/plugin/weekYear.js",
       "node_modules/i18next/dist/esm/i18next.js",
       "node_modules/lodash/lodash.js",
-      "node_modules/lottie-react/build/index.umd.js",
       "node_modules/process/browser.js",
       "node_modules/qrcode.react/lib/esm/index.js",
       "node_modules/qs/lib/index.js",
@@ -97293,11 +97306,6 @@
       "node_modules/react-use/esm/useInterval.js",
       "node_modules/react-use/esm/useMount.js",
       "node_modules/react/index.js",
-      "node_modules/recharts/es6/cartesian/Area.js",
-      "node_modules/recharts/es6/cartesian/XAxis.js",
-      "node_modules/recharts/es6/cartesian/YAxis.js",
-      "node_modules/recharts/es6/chart/AreaChart.js",
-      "node_modules/recharts/es6/component/Tooltip.js",
       "node_modules/remark-gfm/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
@@ -97331,7 +97339,6 @@
       "src/ui/assets/search.svg",
       "src/ui/assets/settings/update/glow.svg",
       "src/ui/assets/success.svg",
-      "src/ui/assets/tips-cc.svg",
       "src/ui/assets/token-default.svg",
       "src/ui/assets/unlock/background.svg",
       "src/ui/assets/unlock/biometrics.svg",
@@ -97345,6 +97352,7 @@
       "src/ui/component/ConnectStatus/CommonSignal.tsx",
       "src/ui/component/FullscreenContainer/index.tsx",
       "src/ui/component/index.tsx",
+      "src/ui/component/LazyLottie/index.tsx",
       "src/ui/component/NameAndAddress/index.tsx",
       "src/ui/component/NewUserImport/index.tsx",
       "src/ui/component/Popup/index.tsx",
@@ -97356,7 +97364,6 @@
       "src/ui/component/WalletConnect/useWalletConnectIcon.ts",
       "src/ui/component/Whitelist/Modal.tsx",
       "src/ui/hooks/backgroundState/useAccount.ts",
-      "src/ui/hooks/useAppChain.ts",
       "src/ui/hooks/useCurrentBalance.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/hooks/useEventBusListener.ts",
@@ -97391,6 +97398,7 @@
       "src/ui/utils/broadcastToUI.ts",
       "src/ui/utils/clipboard.tsx",
       "src/ui/utils/index.ts",
+      "src/ui/utils/lazyComponent.tsx",
       "src/ui/utils/portfolio/index.ts",
       "src/ui/utils/sendPersonalMessage.ts",
       "src/ui/utils/token.ts",
@@ -97398,6 +97406,7 @@
       "src/ui/utils/withAccountChange.tsx",
       "src/ui/views/Bridge/utils/historyCache.ts",
       "src/ui/views/CommonPopup/AssetList/ChainItem.tsx",
+      "src/ui/views/Dashboard/components/BalanceView/CurveView.tsx",
       "src/ui/views/Dashboard/components/BalanceView/useCurve.ts",
       "src/ui/views/Dashboard/components/BalanceView/useHomeBalanceView.ts",
       "src/ui/views/Dashboard/components/Feedback/style.less",
@@ -97793,6 +97802,12 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js"
+    ]
+  },
+  "src/ui/utils/lazyComponent.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
     ]
   },
   "src/ui/utils/ledger-dmk.ts": {
@@ -99393,7 +99408,7 @@
       "src/ui/component/Progress/index.tsx",
       "src/ui/component/QRCodeReader/index.tsx",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
-      "src/ui/component/TokenChart/index.tsx",
+      "src/ui/component/TokenChart/lazy.ts",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/component/WalletConnect/ClockSkewWarning.tsx",
       "src/ui/component/WalletConnect/useDisplayBrandName.ts",
@@ -100084,6 +100099,22 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/views/Dashboard/components/BalanceView/CurveView.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/recharts/es6/cartesian/Area.js",
+      "node_modules/recharts/es6/cartesian/XAxis.js",
+      "node_modules/recharts/es6/cartesian/YAxis.js",
+      "node_modules/recharts/es6/chart/AreaChart.js",
+      "node_modules/recharts/es6/component/Tooltip.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/assets/tips-cc.svg",
+      "src/ui/hooks/useAppChain.ts"
+    ]
+  },
   "src/ui/views/Dashboard/components/BalanceView/useCurve.ts": {
     "enable": true,
     "require": [
@@ -100220,7 +100251,7 @@
       "src/ui/component/DropdownWithMask/index.tsx",
       "src/ui/component/index.tsx",
       "src/ui/component/Popup/index.tsx",
-      "src/ui/component/TokenChart/index.tsx",
+      "src/ui/component/TokenChart/lazy.ts",
       "src/ui/component/TokenSelector/context.tsx",
       "src/ui/component/TokenWithChain/index.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
@@ -100411,6 +100442,22 @@
       "src/utils/index.ts"
     ]
   },
+  "src/ui/views/DesktopProfile/components/ProfileHeader/CurveThumbnail.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/recharts/es6/cartesian/Area.js",
+      "node_modules/recharts/es6/cartesian/XAxis.js",
+      "node_modules/recharts/es6/cartesian/YAxis.js",
+      "node_modules/recharts/es6/chart/AreaChart.js",
+      "node_modules/recharts/es6/component/Tooltip.js",
+      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "src/ui/assets/tips-cc.svg",
+      "src/ui/hooks/useAppChain.ts"
+    ]
+  },
   "src/ui/views/DesktopProfile/components/TokenDetailModal/index.tsx": {
     "enable": true,
     "require": [
@@ -100509,7 +100556,6 @@
       "node_modules/i18next/dist/esm/i18next.js",
       "node_modules/lodash/groupBy.js",
       "node_modules/lodash/lodash.js",
-      "node_modules/lottie-react/build/index.umd.js",
       "node_modules/p-queue/dist/index.js",
       "node_modules/process/browser.js",
       "node_modules/qrcode.react/lib/esm/index.js",
@@ -100527,11 +100573,6 @@
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react-window/dist/index.esm.js",
       "node_modules/react/index.js",
-      "node_modules/recharts/es6/cartesian/Area.js",
-      "node_modules/recharts/es6/cartesian/XAxis.js",
-      "node_modules/recharts/es6/cartesian/YAxis.js",
-      "node_modules/recharts/es6/chart/AreaChart.js",
-      "node_modules/recharts/es6/component/Tooltip.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/viem/_esm/constants/address.js",
@@ -100580,7 +100621,6 @@
       "src/ui/assets/search.svg",
       "src/ui/assets/swap/history-cc.svg",
       "src/ui/assets/swap/modal-close.svg",
-      "src/ui/assets/tips-cc.svg",
       "src/ui/assets/token-default.svg",
       "src/ui/component/ChainIcon.tsx",
       "src/ui/component/ChainSelector/LargeModal.tsx",
@@ -100589,6 +100629,7 @@
       "src/ui/component/DesktopAccountSelector/styles.less",
       "src/ui/component/DesktopSelectAccountList/styles.less",
       "src/ui/component/index.tsx",
+      "src/ui/component/LazyLottie/index.tsx",
       "src/ui/component/MiniSignV2/components/index.ts",
       "src/ui/component/MiniSignV2/index.ts",
       "src/ui/component/MiniSignV2/state/SignatureManager.ts",
@@ -100627,6 +100668,7 @@
       "src/ui/utils/clipboard.tsx",
       "src/ui/utils/ga-event.ts",
       "src/ui/utils/index.ts",
+      "src/ui/utils/lazyComponent.tsx",
       "src/ui/utils/ledger.ts",
       "src/ui/utils/number.ts",
       "src/ui/utils/os.ts",
@@ -100683,6 +100725,7 @@
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton.tsx",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/style.less",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts",
+      "src/ui/views/DesktopProfile/components/ProfileHeader/CurveThumbnail.tsx",
       "src/ui/views/DesktopProfile/components/TokenDetailModal/index.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag.tsx",
@@ -101327,12 +101370,6 @@
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react-window/dist/index.esm.js",
       "node_modules/react/index.js",
-      "node_modules/recharts/es6/cartesian/Area.js",
-      "node_modules/recharts/es6/cartesian/XAxis.js",
-      "node_modules/recharts/es6/cartesian/YAxis.js",
-      "node_modules/recharts/es6/chart/AreaChart.js",
-      "node_modules/recharts/es6/component/ResponsiveContainer.js",
-      "node_modules/recharts/es6/component/Tooltip.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/viem/_esm/accounts/utils/privateKeyToAddress.js",
@@ -101346,7 +101383,6 @@
       "src/constant/eip7702.ts",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
-      "src/constant/regexp.ts",
       "src/constant/ui.ts",
       "src/db/hooks/history.ts",
       "src/eventBus.ts",
@@ -101479,6 +101515,7 @@
       "src/ui/utils/imKey.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/keystone.ts",
+      "src/ui/utils/lazyComponent.tsx",
       "src/ui/utils/ledger-dmk.ts",
       "src/ui/utils/ledger.ts",
       "src/ui/utils/number.ts",
@@ -101572,6 +101609,7 @@
       "src/ui/views/NoAddress/style.less",
       "src/ui/views/Perps/components/BlueBorderedButton.tsx",
       "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
+      "src/ui/views/Perps/components/PerpsPortfolioChart.tsx",
       "src/ui/views/Perps/components/quoteAssetIcons.ts",
       "src/ui/views/Perps/components/SelectAddressList.tsx",
       "src/ui/views/Perps/components/TokenImg.tsx",
@@ -101593,7 +101631,10 @@
       "src/ui/views/SendNFT/index.tsx",
       "src/ui/views/SendToken/index.tsx",
       "src/ui/views/Staking/components/actionModal.less",
+      "src/ui/views/Staking/components/DetailSummarySection.tsx",
+      "src/ui/views/Staking/components/PoolVisuals.tsx",
       "src/ui/views/Staking/style.less",
+      "src/ui/views/Staking/utils/format.ts",
       "src/ui/views/Swap/Component/Slider.tsx",
       "src/ui/views/Swap/hooks/twoStepSwap.tsx",
       "src/ui/views/Swap/index.tsx",
@@ -101697,6 +101738,23 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
       "src/ui/views/DesktopPerps/utils.ts"
+    ]
+  },
+  "src/ui/views/Perps/components/PerpsPortfolioChart.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js",
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/recharts/es6/cartesian/Area.js",
+      "node_modules/recharts/es6/cartesian/XAxis.js",
+      "node_modules/recharts/es6/cartesian/YAxis.js",
+      "node_modules/recharts/es6/chart/AreaChart.js",
+      "node_modules/recharts/es6/component/ResponsiveContainer.js",
+      "node_modules/recharts/es6/component/Tooltip.js",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Perps/utils/perpsPortfolio.ts"
     ]
   },
   "src/ui/views/Perps/components/SelectAddressList.tsx": {
@@ -102138,6 +102196,32 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/views/Staking/components/DetailSummarySection.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/dayjs/dayjs.min.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "node_modules/recharts/es6/cartesian/Area.js",
+      "node_modules/recharts/es6/cartesian/YAxis.js",
+      "node_modules/recharts/es6/chart/AreaChart.js",
+      "node_modules/recharts/es6/component/ResponsiveContainer.js",
+      "node_modules/recharts/es6/component/Tooltip.js",
+      "src/ui/views/Staking/components/PoolVisuals.tsx",
+      "src/ui/views/Staking/utils/format.ts"
+    ]
+  },
+  "src/ui/views/Staking/components/PoolVisuals.tsx": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/react-i18next/dist/es/index.js",
+      "node_modules/react/index.js",
+      "src/ui/component/Tooltip/TooltipV6.tsx",
+      "src/utils/chain.ts"
+    ]
+  },
   "src/ui/views/Staking/components/actionModal.less": {
     "enable": true,
     "require": [
@@ -102148,6 +102232,15 @@
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Staking/utils/format.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/bignumber.js/bignumber.js",
+      "src/constant/regexp.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/utils/token.ts"
     ]
   },
   "src/ui/views/Swap/Component/LowCreditModal.tsx": {

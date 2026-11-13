@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Button, Input, Modal, message } from 'antd';
-import { snapdom } from '@zumer/snapdom';
 import type { SnapdomOptions, SnapdomPlugin } from '@zumer/snapdom';
 import { useRequest } from 'ahooks';
 import browser from 'webextension-polyfill';
@@ -68,6 +67,8 @@ const captureBySnapdom = async () => {
   const viewport = getViewportSize();
   const captureTarget = document.documentElement;
   const snapdomOptions = getSnapdomOptions(viewport);
+  // loaded on first capture so it stays out of the ui.js entry
+  const { snapdom } = await import('@zumer/snapdom');
 
   const image = await snapdom.toPng(captureTarget, snapdomOptions);
 

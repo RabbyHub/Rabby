@@ -17,8 +17,8 @@ import {
 import type { PortfolioPeriodKey } from '../utils/perpsPortfolio';
 import type { PerpsBreakdownMode } from '../utils/accountPricing';
 import { PerpsQuoteAsset } from '../constants';
-import { PerpsPortfolioChart } from './PerpsPortfolioChart';
 import { PerpsPortfolioBreakdownTips } from './PerpsPortfolioBreakdownTips';
+import { lazyComponent } from '@/ui/utils/lazyComponent';
 import { RcIconInfoCC } from '@/ui/assets/desktop/common';
 import { ReactComponent as RcIconBalanceAdd } from '@/ui/assets/perps/IconBalanceAdd.svg';
 import { ReactComponent as RcIconBalanceMinus } from '@/ui/assets/perps/IconBalanceMinus.svg';
@@ -30,6 +30,11 @@ import { ReactComponent as RcIconPerpsGuideLogoDark } from '@/ui/assets/perps/Ic
 import perpsGuideBg from '@/ui/assets/perps/IconPerpsGuideBg.svg';
 import perpsGuideBgDark from '@/ui/assets/perps/IconPerpsGuideBgDark.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+
+// keeps recharts out of the initial bundle
+const PerpsPortfolioChart = lazyComponent(() =>
+  import('./PerpsPortfolioChart').then((m) => m.PerpsPortfolioChart)
+);
 
 interface PerpsAccountCardProps {
   currentPerpsAccount: Account | null;

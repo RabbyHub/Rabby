@@ -31,13 +31,19 @@ import { useCommonPopupView, useWallet } from 'ui/utils';
 import { useQueryProjects } from 'ui/utils/portfolio';
 import { BalanceLabel } from './BalanceLabel';
 import { ChainList } from './ChainList';
-import { CurvePoint, CurveThumbnail } from './CurveView';
+import type { CurvePoint } from './CurveView';
 import { formChartData, useCurve } from './useCurve';
 import {
   useHomeBalanceView,
   useRefreshHomeBalanceView,
 } from './useHomeBalanceView';
 import { ZeroAssets } from './ZeroAssets';
+import { lazyComponent } from '@/ui/utils/lazyComponent';
+
+// keeps recharts out of the ui.js entry
+const CurveThumbnail = lazyComponent(() =>
+  import('./CurveView').then((m) => m.CurveThumbnail)
+);
 
 export const BalanceViewJumpButton = ({
   className,

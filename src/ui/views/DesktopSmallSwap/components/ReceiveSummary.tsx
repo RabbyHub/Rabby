@@ -9,7 +9,7 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { usePrevious } from 'ahooks';
 import { Button, Image, Tooltip } from 'antd';
 import clsx from 'clsx';
-import Lottie from 'lottie-react';
+import { LazyLottie } from '@/ui/component/LazyLottie';
 import React, { useMemo } from 'react';
 import CountUp from 'react-countup';
 import { useTranslation } from 'react-i18next';
@@ -99,7 +99,7 @@ export const ReceiveSummary: React.FC<ReceiveSummaryProps> = ({
           <>
             <div className="flex-1 pt-[12px]">
               {isSuccess ? (
-                <Lottie
+                <LazyLottie
                   animationData={require('@/ui/assets/animation/animation-create-success.min.json')}
                   loop={false}
                   style={{ width: 130, height: 130, margin: '0 auto' }}
