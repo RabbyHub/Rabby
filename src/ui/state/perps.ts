@@ -1297,10 +1297,16 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
   },
 
   async fetchPerpPermission(address: string, rootState: PerpsRootState) {
-    const {
-      has_permission,
-    } = await rootState.app.wallet.openapi.getPerpPermission({ id: address });
-    dispatch.perps.setHasPermission(has_permission);
+    try {
+      const {
+        has_permission,
+      } = await rootState.app.wallet.openapi.getPerpPermission({ id: address });
+      dispatch.perps.setHasPermission(has_permission);
+    } catch (error) {
+      // Fail closed: an unverified address must not keep the default `true`.
+      console.error('[perps] fetch permission failed', error);
+      dispatch.perps.setHasPermission(false);
+    }
   },
 
   async fetchUserAbstraction(address: string) {

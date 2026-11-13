@@ -281,7 +281,8 @@
     "screenshotModal": {
       "title": "Joindre une capture d'écran au feedback",
       "placeholder": "Décrivez le problème",
-      "placeholderRequired": "Décrivez le problème (obligatoire)"
+      "placeholderRequired": "Décrivez le problème (obligatoire)",
+      "includeAddress": "Partager l'adresse pour le dépannage"
     },
     "feedbackPopup": {
       "title": "Réponse du support Rabby",
@@ -1072,7 +1073,8 @@
           "biometricUnlock": "Déverrouiller par biométrie",
           "currency": "Devise",
           "searchCurrency": "Rechercher une devise",
-          "dataAnalysis": "Analyse des données",
+          "helpImproveRabby": "Aidez à améliorer Rabby",
+          "helpImproveRabbyDesc": "Partagez des données d'utilisation anonymes pour aider à améliorer Rabby. Les données collectées ne sont associées ni à vous ni à votre compte.",
           "extraFeeProtection": "Protection contre les frais supplémentaires",
           "extraFeeProtectionDesc": "Bloque les demandes de signature permettant à des extensions de navigateur de prélever des frais supplémentaires"
         },
@@ -2582,6 +2584,10 @@
         "noTxInThreeMonth": "Aucun historique de transactions depuis 90 jours",
         "descThreeMonths": "Aucun historique de transactions depuis 90 jours sur <2>les chaînes prises en charge</2>"
       },
+      "noMore": {
+        "title": "Aucune autre transaction.",
+        "titleInLast90Days": "Aucune autre transaction au cours des 90 derniers jours."
+      },
       "explain": {
         "approve": "Approuver {{amount}} {{symbol}} pour {{project}}",
         "cancel": "A annulé une transaction en attente",
@@ -2764,7 +2770,7 @@
       "actual": "Réel :",
       "detail-tx": "Détails",
       "BridgeTokenPair": "Paire de tokens du bridge",
-      "no-quote-found": "Aucune cotation trouvée. Veuillez essayer d'autres paires de jetons.",
+      "no-quote-found": "Aucune cotation trouvée.",
       "via-bridge": "via {{bridge}}",
       "rabby-fee": "Frais Rabby",
       "slippage-adjusted-refresh-quote": "Slippage ajusté. Actualisez l'itinéraire.",
@@ -2777,7 +2783,6 @@
       "bridge-via-x": "Bridger sur {{name}}",
       "completedTip": "La transaction est on-chain. Les données sont décodées pour générer un enregistrement",
       "price-expired-refresh-route": "Le prix a expiré. Actualiser l'itinéraire.",
-      "recommendFromToken": "Bridger depuis <1></1> pour obtenir une cotation disponible",
       "insufficient-balance": "Solde insuffisant",
       "price-impact": "Impact sur le prix",
       "est-payment": "Paiement estimé :",
@@ -3249,7 +3254,11 @@
           }
         },
         "title": "Définir le mot de passe",
-        "agree": "J'accepte les<1/> <2>Conditions d'utilisation</2> et la <4>Politique de confidentialité</4>",
+        "dataCollection": {
+          "title": "Aidez à améliorer Rabby",
+          "desc": "Partagez des données d'utilisation anonymes pour aider à améliorer Rabby. Les données collectées ne sont associées ni à vous ni à votre compte. Vous pouvez modifier ce choix à tout moment dans les Paramètres."
+        },
+        "termsNotice": "En continuant, vous acceptez les <terms>Conditions d'utilisation</terms> et reconnaissez avoir pris connaissance de la <privacy>Politique de confidentialité</privacy>.",
         "desc": "Il sera utilisé pour déverrouiller le portefeuille et chiffrer les données"
       },
       "successful": {
@@ -3518,6 +3527,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Recherche de l’adresse...",
       "emptyWhitelist": {
         "title": "Ajouter l'adresse à la liste blanche",
         "desc": "Ajoutez des adresses de confiance à la liste blanche pour effectuer rapidement des transferts sans avoir à les confirmer la prochaine fois.",

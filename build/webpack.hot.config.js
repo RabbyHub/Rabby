@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-const { codeInspectorPlugin } = require('code-inspector-plugin');
 const paths = require('./paths');
 const child_process = require('child_process');
 const path = require('path');
@@ -22,7 +21,8 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
   .default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
-const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
+// hot builds are dev builds: type-check in ForkTsChecker, never in ts-loader
+const useForkTsChecker = true;
 
 const isHot = process.env.HOT === 'true';
 
@@ -103,7 +103,7 @@ const commonConfig = {
       http: require.resolve('stream-http'),
       vm: false,
     },
-    extensions: ['.js', 'jsx', '.ts', '.tsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   stats: 'minimal',
   optimization: {
@@ -176,6 +176,8 @@ const commonPlugins = [
     'process.env.RABBY_SENTRY_DSN': JSON.stringify(
       process.env.RABBY_SENTRY_DSN
     ),
+    // lets code drop the other manifest's modules at build time
+    'process.env.IS_MANIFEST_MV3': JSON.stringify(IS_MANIFEST_MV3),
   }),
   new CopyPlugin({
     patterns: [
@@ -395,9 +397,6 @@ const uiConfig = {
       'process.env.BUILD_ENV': JSON.stringify('DEV'),
       'process.env.DEBUG': true,
     }),
-    codeInspectorPlugin({
-      bundler: 'webpack',
-    }),
     isHot && new webpack.HotModuleReplacementPlugin(),
     isHot &&
       new ReactRefreshWebpackPlugin({
@@ -573,4 +572,17 @@ const otherConfig = {
   ],
 };
 
-module.exports = [uiConfig, otherConfig];
+module.exports = Promise.all([
+  import('code-inspector-plugin'),
+  import('@code-inspector/core'),
+]).then(async ([{ codeInspectorPlugin }, { startServer }]) => {
+  const plugin = codeInspectorPlugin({ bundler: 'webpack' });
+  await startServer(plugin.options, {
+    port: 0,
+    entry: '',
+    output: plugin.options.output,
+    envDir: process.cwd(),
+  });
+  uiConfig.plugins.push(plugin);
+  return [uiConfig, otherConfig];
+});

@@ -1,0 +1,59 @@
+diff --git a/node_modules/@code-inspector/core/dist/index.mjs b/node_modules/@code-inspector/core/dist/index.mjs
+index 6ea74dc9c..a45e25bee 100644
+--- a/node_modules/@code-inspector/core/dist/index.mjs
++++ b/node_modules/@code-inspector/core/dist/index.mjs
+@@ -173157,23 +173157,39 @@ function fcr(e, t, r) {
+   var n;
+   const i = Zxe.createServer((s, a) => {
+     var f, h;
++    const origin = s.headers.origin;
++    if (!origin || !origin.startsWith("chrome-extension://")) {
++      a.writeHead(403), a.end("forbidden");
++      return;
++    }
++    if (s.method !== "POST") {
++      a.writeHead(405, {
++        Allow: "POST",
++        "Access-Control-Allow-Origin": origin,
++        "Access-Control-Allow-Methods": "POST",
++        Vary: "Origin"
++      }), a.end("method not allowed");
++      return;
++    }
+     const o = new URLSearchParams(s.url.slice(1));
+     let l = decodeURIComponent(o.get("file"));
+     if (_h && !Tn.isAbsolute(l) && (l = "".concat(_h, "/").concat(l)), (t == null ? void 0 : t.pathType) === "relative" && _h && !l.startsWith(_h)) {
+       a.writeHead(403, {
+-        "Access-Control-Allow-Origin": "*",
+-        "Access-Control-Allow-Methods": "*",
++        "Access-Control-Allow-Origin": origin,
++        "Access-Control-Allow-Methods": "POST",
+         "Access-Control-Allow-Headers": "*",
+-        "Access-Control-Allow-Private-Network": "true"
++        "Access-Control-Allow-Private-Network": "true",
++        Vary: "Origin"
+       }), a.end("not allowed to open this file");
+       return;
+     }
+     const u = Number(o.get("line")), c = Number(o.get("column"));
+     a.writeHead(200, {
+-      "Access-Control-Allow-Origin": "*",
+-      "Access-Control-Allow-Methods": "*",
++      "Access-Control-Allow-Origin": origin,
++      "Access-Control-Allow-Methods": "POST",
+       "Access-Control-Allow-Headers": "*",
+-      "Access-Control-Allow-Private-Network": "true"
++      "Access-Control-Allow-Private-Network": "true",
++      Vary: "Origin"
+     }), a.end("ok"), (h = (f = t == null ? void 0 : t.hooks) == null ? void 0 : f.afterInspectRequest) == null || h.call(f, t, { file: l, line: u, column: c }), zxe({
+       file: l,
+       line: u,
+@@ -195371,7 +195387,7 @@ function Tvr(e) {
+ }
+ let aC = "";
+ typeof __dirname != "undefined" ? aC = __dirname : aC = Gxe(KNe(import.meta.url));
+-const $yr = Tn.resolve(aC, "./client.umd.js"), Uyr = Zi.readFileSync($yr, "utf-8"), qyr = Tn.resolve(aC, "./client.iife.js"), Vyr = Zi.readFileSync(qyr, "utf-8"), oC = "CodeInspectorEmptyElement";
++const $yr = Tn.resolve(aC, "./client.umd.js"), Uyr = Zi.readFileSync($yr, "utf-8").replace('i.open("GET",t,!0),i.send(),i.addEventListener("error",()=>{this.sendType="img",this.sendImg()})', 'i.open("POST",t,!0),i.send()').replace('this.sendType==="xhr"?this.sendXHR():this.sendImg()', 'this.sendXHR()'), qyr = Tn.resolve(aC, "./client.iife.js"), Vyr = Zi.readFileSync(qyr, "utf-8"), oC = "CodeInspectorEmptyElement";
+ function Wyr(e, t, r) {
+   var n, s;
+   let i = "'use client';";

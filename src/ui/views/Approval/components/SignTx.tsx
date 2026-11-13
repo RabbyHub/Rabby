@@ -2208,11 +2208,9 @@ const SignTx = ({
 
   const checkBlockedAddress = useMemoizedFn(async () => {
     try {
-      const isBlockedFromPromise = wallet.openapi.isBlockedAddress(tx.from);
-      const isBlockedToPromise = wallet.openapi.isBlockedAddress(tx.to);
-      const { is_blocked: isBlockedFrom } = await isBlockedFromPromise;
-      const { is_blocked: isBlockedTo } = await isBlockedToPromise;
-      if (isBlockedFrom || isBlockedTo) {
+      // Goes through the background cache, so the sign-time check in
+      // ethSendTransaction reuses these lookups instead of asking again.
+      if (await wallet.hasBlockedAddress([tx.from, tx.to])) {
         Modal.error({
           title: t('page.sendToken.blockedTransaction'),
           content: t('page.sendToken.blockedTransactionContent'),

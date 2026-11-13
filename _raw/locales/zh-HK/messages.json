@@ -47,6 +47,10 @@
         "noTxInThreeMonth": "過去 90 天沒有交易記錄",
         "descThreeMonths": "過去 90 天在 <2>支援的鏈</2> 上沒有交易記錄"
       },
+      "noMore": {
+        "title": "沒有更多交易記錄",
+        "titleInLast90Days": "過去 90 天沒有更多交易記錄"
+      },
       "explain": {
         "approve": "授權 {{project}} 使用 {{amount}} {{symbol}}",
         "cancel": "取消了待處理交易",
@@ -291,7 +295,8 @@
           "biometricUnlockHint": "使用生物識別在此裝置上解鎖。",
           "currency": "貨幣",
           "searchCurrency": "搜尋貨幣",
-          "dataAnalysis": "資料分析",
+          "helpImproveRabby": "協助改進 Rabby",
+          "helpImproveRabbyDesc": "分享匿名使用數據以協助改進 Rabby。收集的資料不會與你或你的帳戶關聯。",
           "extraFeeProtection": "額外費用保護",
           "extraFeeProtectionDesc": "阻止瀏覽器擴充功能透過簽名請求收取額外手續費"
         },
@@ -2560,7 +2565,7 @@
       "title": "跨鏈",
       "insufficient-balance": "餘額不足",
       "Amount": "金額",
-      "no-quote-found": "未找到報價。請嘗試其他代幣對。",
+      "no-quote-found": "未找到報價。",
       "history": "跨鏈記錄",
       "no-transaction-records": "沒有交易記錄",
       "actual": "實際：",
@@ -2592,7 +2597,6 @@
       "est-payment": "預計付款：",
       "max-tips": "此數值是透過扣除跨鏈的 Gas 費用計算得出。",
       "via-bridge": "透過 {{bridge}}",
-      "recommendFromToken": "從 <1></1> 跨鏈以取得可用報價",
       "pendingTip": "交易已提交。如果交易長時間處於待處理狀態，可嘗試在設定中清除待處理交易。",
       "approve-and-bridge": "授權並跨鏈",
       "loss-tips": "目前報價預計損失 {{usd}}，請嘗試其他金額。",
@@ -2952,7 +2956,11 @@
           }
         },
         "title": "設定密碼",
-        "agree": "我同意<1/> <2>使用條款</2>和<4>私隱政策</4>",
+        "dataCollection": {
+          "title": "協助改進 Rabby",
+          "desc": "分享匿名使用數據以協助改進 Rabby。收集的資料不會與你或你的帳戶關聯。你可以隨時在設定中更改此選項。"
+        },
+        "termsNotice": "繼續即表示你同意<terms>使用條款</terms>並知悉<privacy>私隱政策</privacy>。",
         "desc": "此密碼將用於解鎖錢包和加密資料"
       },
       "successful": {
@@ -3223,6 +3231,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "正在查詢地址...",
       "emptyWhitelist": {
         "title": "將地址新增到白名單",
         "desc": "將可信地址新增至白名單，即可快速轉賬；下次無需再次確認。",
@@ -4996,7 +5005,8 @@
     "screenshotModal": {
       "title": "截圖回饋",
       "placeholder": "描述問題",
-      "placeholderRequired": "描述問題（必填）"
+      "placeholderRequired": "描述問題（必填）",
+      "includeAddress": "分享地址以便排查問題"
     },
     "feedbackPopup": {
       "title": "Rabby 支援團隊的回覆",

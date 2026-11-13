@@ -15,7 +15,9 @@ const mockSetChain = jest.fn();
 const mockSetBlindSigningReporter = jest.fn();
 const mockContextModuleBuild = jest.fn();
 const mockWithContextModule = jest.fn();
-let mockRuntimeMessageListener: ((request: any) => void) | undefined;
+let mockRuntimeMessageListener:
+  | ((request: any, sender: any) => void)
+  | undefined;
 const mockRuntimeOnMessageAddListener = jest.fn((listener) => {
   mockRuntimeMessageListener = listener;
 });
@@ -99,6 +101,7 @@ jest.mock('@sentry/browser', () => ({
 
 jest.mock('webextension-polyfill', () => ({
   runtime: {
+    id: 'test-extension',
     onMessage: {
       addListener: mockRuntimeOnMessageAddListener,
     },
@@ -626,10 +629,13 @@ describe('LedgerBridgeKeyring makeApp', () => {
       },
     });
     expect(mockRuntimeMessageListener).toBeDefined();
-    mockRuntimeMessageListener!({
-      target: 'extension-offscreen',
-      event: 'ledger-device-disconnect',
-    });
+    mockRuntimeMessageListener!(
+      {
+        target: 'extension-offscreen',
+        event: 'ledger-device-disconnect',
+      },
+      { id: 'test-extension' }
+    );
     await new Promise((resolve) => setTimeout(resolve, 0));
 
     const rejectionAfterDisconnect = rejection;
@@ -946,11 +952,14 @@ describe('LedgerBridgeKeyring makeApp', () => {
 
 describe('Ledger reconnect diagnostics', () => {
   const sendOffscreen = (event: string) =>
-    mockRuntimeMessageListener!({
-      target: 'extension-offscreen',
-      event,
-      productId: 0x5011,
-    });
+    mockRuntimeMessageListener!(
+      {
+        target: 'extension-offscreen',
+        event,
+        productId: 0x5011,
+      },
+      { id: 'test-extension' }
+    );
 
   const startHangingOperation = async () => {
     const keyring = new LedgerBridgeKeyring();

@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "Không có lịch sử giao dịch trong 90 ngày",
         "descThreeMonths": "Không có lịch sử giao dịch trong 90 ngày trên <2>các chuỗi được hỗ trợ</2>"
       },
+      "noMore": {
+        "title": "Không còn giao dịch nào.",
+        "titleInLast90Days": "Không còn giao dịch nào trong 90 ngày qua."
+      },
       "explain": {
         "approve": "Phê duyệt {{amount}} {{symbol}} cho {{project}}",
         "unknown": "Tương tác hợp đồng",
@@ -1116,7 +1120,7 @@
       "no-transaction-records": "Không có hồ sơ giao dịch",
       "select-chain": "Chọn Chuỗi",
       "estimate": "Ước tính:",
-      "no-quote-found": "Không tìm thấy báo giá. Vui lòng thử các cặp token khác.",
+      "no-quote-found": "Không tìm thấy báo giá.",
       "gas-fee": "Phí gas: {{gasUsed}}",
       "the-following-bridge-route-are-found": "Tìm thấy lộ trình sau đây",
       "Balance": "Số dư: ",
@@ -1129,7 +1133,6 @@
       "est-payment": "Est. Thanh toán:",
       "estimated-value": "≈ {{value}} ",
       "detail-tx": "Chi tiết",
-      "recommendFromToken": "Bridge từ <1></1> cho một báo giá hiện có",
       "bridgeTo": "Cầu nối đến",
       "est-difference": "Chênh lệch ước tính:",
       "aggregator-not-enabled": "Bạn không thể giao dịch qua trình tổng hợp này.",
@@ -1468,7 +1471,8 @@
           "perpsFloatWidget": "Tiện ích nổi Perps",
           "currency": "Tiền tệ",
           "searchCurrency": "Tìm kiếm tiền tệ",
-          "dataAnalysis": "Phân tích dữ liệu",
+          "helpImproveRabby": "Giúp cải thiện Rabby",
+          "helpImproveRabbyDesc": "Chia sẻ dữ liệu sử dụng ẩn danh để giúp cải thiện Rabby. Dữ liệu thu thập không liên kết với bạn hoặc tài khoản của bạn.",
           "extraFeeProtection": "Chống phí bổ sung",
           "extraFeeProtectionDesc": "Chặn các yêu cầu chữ ký cho phép tiện ích trình duyệt thu thêm phí"
         },
@@ -2905,7 +2909,11 @@
         },
         "title": "Đặt Mật Khẩu",
         "desc": "Nó sẽ được sử dụng để mở khóa ví và mã hóa dữ liệu.",
-        "agree": "Tôi đồng ý với<1/> <2>Các Điều Khoản Sử Dụng</2> và <4>Chính Sách Bảo Mật</4>"
+        "dataCollection": {
+          "title": "Giúp cải thiện Rabby",
+          "desc": "Chia sẻ dữ liệu sử dụng ẩn danh để giúp cải thiện Rabby. Dữ liệu thu thập không liên kết với bạn hoặc tài khoản của bạn. Bạn có thể thay đổi tùy chọn này bất cứ lúc nào trong Cài đặt."
+        },
+        "termsNotice": "Bằng việc tiếp tục, bạn đồng ý với <terms>Các Điều Khoản Sử Dụng</terms> và xác nhận <privacy>Chính Sách Bảo Mật</privacy>."
       },
       "successful": {
         "create": "Tạo thành công",
@@ -3173,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Đang tìm địa chỉ...",
       "emptyWhitelist": {
         "title": "Thêm địa chỉ vào danh sách trắng",
         "desc": "Thêm địa chỉ tin cậy vào danh sách trắng để chuyển tiền nhanh - không cần xác nhận lần sau.",
@@ -4946,7 +4955,8 @@
     "screenshotModal": {
       "title": "Ảnh chụp màn hình để phản hồi",
       "placeholder": "Mô tả vấn đề",
-      "placeholderRequired": "Mô tả vấn đề (bắt buộc)"
+      "placeholderRequired": "Mô tả vấn đề (bắt buộc)",
+      "includeAddress": "Chia sẻ địa chỉ để khắc phục sự cố"
     },
     "feedbackPopup": {
       "title": "Phản hồi từ Hỗ trợ Rabby",
