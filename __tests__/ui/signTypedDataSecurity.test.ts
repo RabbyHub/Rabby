@@ -183,6 +183,7 @@ describe('SignTypedData security lifecycle', () => {
       '@/utils/extraFeeProtection': jest.requireActual(
         '@/utils/extraFeeProtection'
       ),
+      '@/utils/signEvent': jest.requireActual('@/utils/signEvent'),
       consts: {
         ALIAS_ADDRESS: {},
         CHAINS: { ETH: { serverId: 'eth' } },

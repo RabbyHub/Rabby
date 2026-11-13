@@ -425,10 +425,9 @@ const flowContext = flow
           params: request.data.params,
         })
       : undefined;
-    const signingApprovalRes = signingOperation
-      ? { ...approvalRes, signingOperation }
-      : approvalRes;
-    const { uiRequestComponent, ...rest } = signingApprovalRes || {};
+    // Completed Safe message approvals are signature strings. Keep signing
+    // metadata separate so the controller receives the original result.
+    const { uiRequestComponent, ...rest } = approvalRes || {};
 
     const createRequestDeferFn = (
       originApprovalRes: typeof approvalRes
@@ -559,7 +558,7 @@ const flowContext = flow
         });
       });
 
-    const requestDeferFn = createRequestDeferFn(signingApprovalRes);
+    const requestDeferFn = createRequestDeferFn(approvalRes);
 
     if (!approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
@@ -588,7 +587,11 @@ const flowContext = flow
 
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
+      const result = await requestApprovalLoop({
+        uiRequestComponent,
+        ...rest,
+        signingOperation,
+      });
       if (rest?.safeMessage) {
         const safeMessage: {
           safeAddress: string;

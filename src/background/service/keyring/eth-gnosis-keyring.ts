@@ -551,7 +551,7 @@ class GnosisKeyring extends EventEmitter {
     provider,
     version: string,
     networkId: string
-  ) {
+  ): Promise<string> {
     if (
       !this.accounts.find(
         (account) => account.toLowerCase() === address.toLowerCase()
@@ -578,7 +578,7 @@ class GnosisKeyring extends EventEmitter {
     this.safeInstance = safe;
     this.currentTransaction = safeTransaction;
     this.currentTransactionHash = transactionHash;
-    return safeTransaction;
+    return transactionHash;
   }
 
   async validateTransaction(

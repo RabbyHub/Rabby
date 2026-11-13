@@ -3349,14 +3349,15 @@ export class WalletController extends BaseController {
       currentProvider.currentAccountType = account.type;
       currentProvider.currentAccountBrand = account.brandName;
       currentProvider.chainId = networkId;
-      await keyring.buildTransaction(
+      // Return this build's hash; another build can replace the shared state
+      // before this async controller resumes.
+      return keyring.buildTransaction(
         safeAddress,
         tx,
         new ethers.providers.Web3Provider(currentProvider),
         version,
         networkId
       );
-      return keyring.getTransactionHash();
     } else {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
