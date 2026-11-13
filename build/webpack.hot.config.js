@@ -21,7 +21,8 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
   .default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
-const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
+// hot builds are dev builds: type-check in ForkTsChecker, never in ts-loader
+const useForkTsChecker = true;
 
 const isHot = process.env.HOT === 'true';
 
@@ -102,7 +103,7 @@ const commonConfig = {
       http: require.resolve('stream-http'),
       vm: false,
     },
-    extensions: ['.js', 'jsx', '.ts', '.tsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   stats: 'minimal',
   optimization: {

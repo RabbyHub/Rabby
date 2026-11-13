@@ -157,6 +157,9 @@ async function getBundleOptions() {
 
 async function bundle() {
   const { version, isMV3, isDebug, isRelease } = await getBundleOptions();
+  // build:pro no longer type-checks or lints; keep both as release gates
+  execOrThrow('yarn typecheck');
+  execOrThrow('yarn lint');
   const buildStr = isDebug ? 'build:debug' : 'build:pro';
   const distDir = path.resolve(PROJECT_ROOT, isMV3 ? 'dist' : 'dist-mv2');
   const tmpSourceMapDir = path.resolve(
