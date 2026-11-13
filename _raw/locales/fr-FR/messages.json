@@ -4231,7 +4231,7 @@
           "closedPnlTooltip": "Le PNL réalisé inclut les frais et les remises.",
           "tpSl": "Objectif de profit / Limite de perte",
           "fundingTipsV2": "Financement net depuis l'ouverture de la position. Une valeur de financement rouge (négative) indique un financement payé, tandis qu'une valeur verte (positive) indique un financement reçu.",
-          "fundingTipsBold": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <bold>vertes (positives)</bold> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <bold>rouges (négatives)</bold> sont des coûts de financement que vous leur avez payés.",
+          "fundingTipsBold": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <positive>vertes (positives)</positive> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <negative>rouges (négatives)</negative> sont des coûts de financement que vous leur avez payés.",
           "assets": "Actifs",
           "about": "À propos"
         },
@@ -4831,7 +4831,20 @@
         "takeProfitExpectedPNL": "PNL attendu avec la prise de bénéfices",
         "stopLossExpectedPNL": "PNL attendu avec le stop-loss"
       },
-      "needDepositFirst": "Vous devez d'abord déposer des fonds."
+      "needDepositFirst": "Vous devez d'abord déposer des fonds.",
+      "simpleAccount": {
+        "margin": "Marge",
+        "averageEntry": "Prix moyen d’entrée",
+        "estimatedLiquidationPrice": "Prix de liq. estimé",
+        "estimatedLiquidationDistance": "Écart de liq. estimé",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Prix de prise de profit",
+        "stopLossPrice": "Prix de stop-loss",
+        "funding": "Financement",
+        "nextFundingRate": "Prochain taux de financement",
+        "estimatedPnl": "PnL estimé",
+        "fundingPaymentsTips": "Cela montre votre total de financement réglé depuis l'ouverture de la position. Les valeurs <positive>vertes (positives)</positive> signifient que vous avez gagné de la part d'autres traders, tandis que les valeurs <negative>rouges (négatives)</negative> sont des coûts de financement que vous leur avez payés."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

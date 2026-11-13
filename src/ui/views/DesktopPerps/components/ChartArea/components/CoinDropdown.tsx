@@ -25,6 +25,7 @@ import styled from 'styled-components';
 import { FixedSizeList } from 'react-window';
 import { formatPerpsCoin } from '../../../utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
+import { SortIcon } from '../../UserInfoHistory/CommonTable';
 
 const CATEGORY_ALL_ID = 'all';
 
@@ -36,8 +37,13 @@ const SearchInput = styled(Input)`
   .ant-input {
     background-color: transparent !important;
     color: var(--rb-neutral-title-1, #192945) !important;
+    font-size: 12px;
   }
-  height: 46px !important;
+  .ant-input-prefix {
+    margin-right: 6px;
+  }
+  height: 38px !important;
+  padding: 0 12px !important;
   border-radius: 6px !important;
   input::placeholder {
     color: var(--r-neutral-foot, #6a7587) !important;
@@ -53,7 +59,7 @@ interface CoinDropdownProps {
   onSelectCoin: (coin: string) => void;
 }
 
-const ROW_HEIGHT = 48;
+const ROW_HEIGHT = 38;
 
 type SortField =
   | 'name'
@@ -120,37 +126,45 @@ const MarketRowComponent = memo(
         )}
       >
         <div
-          className="flex items-center gap-[12px] px-[8px] h-full rounded-[4px] hover:bg-rb-neutral-bg-2 cursor-pointer"
+          className="flex items-center gap-[12px] px-[12px] h-full rounded-[3px] hover:bg-rb-neutral-bg-5 cursor-pointer"
           onClick={() => {
             onSelectCoin(marketItem.name);
             setDropdownVisible(false);
             setSearchText('');
           }}
         >
-          {/* Left: Star + Logo + Symbol */}
-          <div className="flex items-center gap-[8px] w-[250px] shrink-0">
+          {/* Left: Star + (Logo, Symbol, dex tag, leverage) */}
+          <div className="flex items-center gap-[6px] w-[250px] shrink-0">
             <div
-              className="flex items-center justify-center w-[16px] h-[16px] shrink-0"
+              className="flex items-center justify-center w-[14px] h-[14px] shrink-0"
               onClick={(e) => onToggleFavorite(marketItem.name, e)}
             >
               {isFavorited ? (
-                <RcIconStarFilled className="text-r-yellow-default" />
+                <RcIconStarFilled
+                  viewBox="0 0 16 16"
+                  className="w-[14px] h-[14px] text-r-yellow-default"
+                />
               ) : (
-                <RcIconStar className="text-r-neutral-foot" />
+                <RcIconStar
+                  viewBox="0 0 16 16"
+                  className="w-[14px] h-[14px] text-r-neutral-foot"
+                />
               )}
             </div>
-            <TokenImg
-              logoUrl={marketItem.logoUrl}
-              withDirection={false}
-              size={20}
-            />
-            <div>
+            <div className="flex items-center gap-[3px]">
+              <TokenImg
+                logoUrl={marketItem.logoUrl}
+                withDirection={false}
+                size={14}
+              />
               <PerpsDisplayCoinName
                 item={marketItem}
                 showDexTag
-                className="text-[13px] font-medium"
+                dexTagClassName="ml-[3px]"
+                className="text-[12px] font-medium"
+                quoteClassName="text-rb-neutral-secondary"
               />
-              <span className="text-[13px] text-r-neutral-foot ml-4">
+              <span className="text-[12px] text-r-neutral-foot">
                 {marketItem.maxLeverage}x
               </span>
             </div>
@@ -159,14 +173,14 @@ const MarketRowComponent = memo(
           {/* Right: Data columns - 5 columns with custom widths */}
           <div className="flex flex-1">
             {/* Last Price */}
-            <div className="text-[13px] text-r-neutral-body text-start flex-1">
+            <div className="text-[12px] text-r-neutral-body text-start flex-1">
               ${splitNumberByStep(Number(marketItem.markPx))}
             </div>
 
             {/* 24h Change - 1.5x width */}
             <div
               className={clsx(
-                'text-[13px] text-start flex-[1.5]',
+                'text-[12px] text-start flex-[1.5]',
                 isPositive ? 'text-r-green-default' : 'text-r-red-default'
               )}
             >
@@ -179,19 +193,19 @@ const MarketRowComponent = memo(
             {/* 8hr Funding */}
             <div
               className={clsx(
-                'text-[13px] text-r-neutral-body text-start flex-1'
+                'text-[12px] text-r-neutral-body text-start flex-1'
               )}
             >
               {formatPercent(Number(marketItem.funding), 4)}
             </div>
 
             {/* Volume */}
-            <div className="text-[13px] text-r-neutral-body text-start flex-1">
+            <div className="text-[12px] text-r-neutral-body text-start flex-1">
               {formatUsdValueKMB(Number(marketItem.dayNtlVlm))}
             </div>
 
             {/* Open Interest */}
-            <div className="text-[13px] text-r-neutral-body text-start flex-1">
+            <div className="text-[12px] text-r-neutral-body text-start flex-1">
               {formatUsdValueKMB(
                 Number(marketItem.openInterest) * Number(marketItem.markPx)
               )}
@@ -271,13 +285,15 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     dispatch.perps.toggleFavoriteCoin(coinName);
   };
 
+  // Same as the positions/history tables below: a new column sorts descending
+  // first, clicking the active column flips it.
   const handleSort = useCallback(
     (field: SortField) => {
       if (sortField === field) {
         setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
       } else {
         setSortField(field);
-        setSortOrder(field === 'name' ? 'asc' : 'desc');
+        setSortOrder('desc');
       }
     },
     [sortField, sortOrder]
@@ -426,21 +442,52 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     [sortedAndFilteredData, favoritedCoins, lastFavoritedIndex, onSelectCoin]
   );
 
-  const renderSortIcon = useCallback(
-    (field: SortField) => {
-      if (sortField !== field) return null;
+  // Header cell: secondary text, title color on hover / when active, never
+  // bold. The sort icon shows muted on hover and highlighted when active, like
+  // the tables below.
+  const renderHeaderCell = useCallback(
+    (field: SortField, label: React.ReactNode, className: string) => {
+      const active = sortField === field;
       return (
-        <span className="ml-[4px]">{sortOrder === 'asc' ? '↑' : '↓'}</span>
+        <div
+          className={clsx(
+            'group inline-flex items-center text-[12px] cursor-pointer transition-colors text-start',
+            active
+              ? 'text-rb-neutral-title-1'
+              : 'text-rb-neutral-secondary hover:text-rb-neutral-title-1',
+            className
+          )}
+          onClick={() => handleSort(field)}
+        >
+          {label}
+          <span
+            className={clsx(
+              'inline-flex ml-[3px] transition-opacity',
+              active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            )}
+          >
+            <SortIcon
+              order={
+                active ? (sortOrder === 'asc' ? 'ascend' : 'descend') : null
+              }
+            />
+          </span>
+        </div>
       );
     },
-    [sortField, sortOrder]
+    [sortField, sortOrder, handleSort]
   );
 
   const dropdownMenu = useMemo(
     () => (
-      <div className="bg-rb-neutral-bg-1 rounded-[8px] shadow-lg border border-solid border-rb-neutral-line w-[854px] h-[480px] overflow-hidden flex flex-col px-16 pt-16">
+      <div className="bg-rb-neutral-bg-1 rounded-[12px] shadow-lg border border-solid border-rb-neutral-line w-[854px] overflow-hidden flex flex-col p-[12px]">
         <SearchInput
-          prefix={<RcIconSearch className="text-r-neutral-foot" />}
+          prefix={
+            <RcIconSearch
+              viewBox="0 0 20 20"
+              className="w-[14px] h-[14px] text-r-neutral-foot"
+            />
+          }
           placeholder={t('page.perpsPro.chatArea.searchMarkets')}
           value={searchText}
           ref={searchInputRef}
@@ -450,7 +497,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         />
 
         {visibleCategories.length > 1 && (
-          <div className="flex items-center gap-[16px] px-[8px] pt-[12px]">
+          <div className="flex items-center gap-[24px] px-[12px] pt-[12px]">
             {visibleCategories.map((c) => {
               const active = c.id === selectedCategoryId;
               return (
@@ -471,71 +518,39 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
           </div>
         )}
 
-        <div className="flex items-center gap-[12px] px-[8px] py-[12px]">
-          <div
-            className={clsx(
-              'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors w-[250px] shrink-0',
-              sortField === 'name' && 'text-r-neutral-title-1 font-medium'
-            )}
-            onClick={() => handleSort('name')}
-          >
-            {t('page.perpsPro.chatArea.symbol')}
-            {renderSortIcon('name')}
-          </div>
+        <div className="flex items-center gap-[12px] px-[12px] h-[38px] mt-[6px]">
+          {renderHeaderCell(
+            'name',
+            t('page.perpsPro.chatArea.symbol'),
+            'w-[250px] shrink-0'
+          )}
 
           <div className="flex flex-1">
-            <div
-              className={clsx(
-                'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors text-start flex-1',
-                sortField === 'markPx' && 'text-r-neutral-title-1 font-medium'
-              )}
-              onClick={() => handleSort('markPx')}
-            >
-              {t('page.perpsPro.chatArea.lastPrice')}
-              {renderSortIcon('markPx')}
-            </div>
-            <div
-              className={clsx(
-                'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors text-start flex-[1.5]',
-                sortField === 'change' && 'text-r-neutral-title-1 font-medium'
-              )}
-              onClick={() => handleSort('change')}
-            >
-              {t('page.perpsPro.chatArea.24hChange')}
-              {renderSortIcon('change')}
-            </div>
-            <div
-              className={clsx(
-                'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors text-start flex-1',
-                sortField === 'funding' && 'text-r-neutral-title-1 font-medium'
-              )}
-              onClick={() => handleSort('funding')}
-            >
-              {t('page.perpsPro.chatArea.8hrFunding')}
-              {renderSortIcon('funding')}
-            </div>
-            <div
-              className={clsx(
-                'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium transition-colors text-start flex-1',
-                sortField === 'dayNtlVlm' &&
-                  'text-r-neutral-title-1 font-medium'
-              )}
-              onClick={() => handleSort('dayNtlVlm')}
-            >
-              {t('page.perpsPro.chatArea.volume')}
-              {renderSortIcon('dayNtlVlm')}
-            </div>
-            <div
-              className={clsx(
-                'text-[13px] text-r-neutral-foot cursor-pointer hover:text-r-neutral-title-1 hover:font-medium  transition-colors text-start flex-1',
-                sortField === 'openInterest' &&
-                  'text-r-neutral-title-1 font-medium'
-              )}
-              onClick={() => handleSort('openInterest')}
-            >
-              {t('page.perpsPro.chatArea.openInterest')}
-              {renderSortIcon('openInterest')}
-            </div>
+            {renderHeaderCell(
+              'markPx',
+              t('page.perpsPro.chatArea.lastPrice'),
+              'flex-1'
+            )}
+            {renderHeaderCell(
+              'change',
+              t('page.perpsPro.chatArea.24hChange'),
+              'flex-[1.5]'
+            )}
+            {renderHeaderCell(
+              'funding',
+              t('page.perpsPro.chatArea.8hrFunding'),
+              'flex-1'
+            )}
+            {renderHeaderCell(
+              'dayNtlVlm',
+              t('page.perpsPro.chatArea.volume'),
+              'flex-1'
+            )}
+            {renderHeaderCell(
+              'openInterest',
+              t('page.perpsPro.chatArea.openInterest'),
+              'flex-1'
+            )}
           </div>
         </div>
 
@@ -560,8 +575,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       sortOrder,
       searchText,
       itemData,
-      renderSortIcon,
-      handleSort,
+      renderHeaderCell,
       t,
       visibleCategories,
       selectedCategoryId,

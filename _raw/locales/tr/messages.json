@@ -3891,7 +3891,7 @@
           "closedPnl": "Gerçekleşen PnL",
           "fee": "Ücret",
           "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir.",
-          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <bold>Yeşil (pozitif)</bold> değerler, diğer ticaretçilerden kazandığınızı, <bold>Kırmızı (negatif)</bold> değerler ise onlara ödediğiniz finansman maliyetleridir.",
+          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <positive>Yeşil (pozitif)</positive> değerler, diğer ticaretçilerden kazandığınızı, <negative>Kırmızı (negatif)</negative> değerler ise onlara ödediğiniz finansman maliyetleridir.",
           "assets": "Varlıklar",
           "about": "Hakkında"
         },
@@ -4491,7 +4491,20 @@
         "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından daha yüksektir ({{price}})",
         "takeProfitExpectedPNL": "Kâr Al Beklenen PnL"
       },
-      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir."
+      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir.",
+      "simpleAccount": {
+        "margin": "Marj",
+        "averageEntry": "Ort. giriş fiyatı",
+        "estimatedLiquidationPrice": "Tahmini lik. fiyatı",
+        "estimatedLiquidationDistance": "Tahmini lik. mesafesi",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Kâr alma fiyatı",
+        "stopLossPrice": "Zarar durdurma fiyatı",
+        "funding": "Fonlama",
+        "nextFundingRate": "Sonraki Fonlama Oranı",
+        "estimatedPnl": "Tahmini PNL",
+        "fundingPaymentsTips": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <positive>Yeşil (pozitif)</positive> değerler, diğer ticaretçilerden kazandığınızı, <negative>Kırmızı (negatif)</negative> değerler ise onlara ödediğiniz finansman maliyetleridir."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

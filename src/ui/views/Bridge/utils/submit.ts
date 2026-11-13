@@ -1,6 +1,10 @@
 import pRetry, { AbortError } from 'p-retry';
 import { buildTx as buildBridgeTx } from '@rabby-wallet/rabby-bridge';
 import type { BridgeTx } from '@rabby-wallet/rabby-bridge';
+import {
+  reportBridgeSdkError,
+  reportBridgeSdkException,
+} from '@/utils/bridge-sdk-report';
 import { findChain } from '@/utils/chain';
 import type { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import type { BridgeTxHistoryItem } from '@/background/service/transactionHistory';
@@ -34,6 +38,11 @@ export const buildBridgeQuoteTxParams = ({
   fromTokenRawAmount: getBridgePayTokenRawAmount(amount, fromToken.decimals),
   toChainId: toToken.chain,
   toTokenId: toToken.id,
+  toTokenRawAmount:
+    quote.to_token_raw_amount_hex_str ??
+    (Number.isSafeInteger(quote.to_token_raw_amount)
+      ? String(quote.to_token_raw_amount)
+      : undefined),
   slippage: formatBridgeSlippageRatio(slippage),
   quoteKey: quote.quote_key || {},
 });
@@ -59,16 +68,20 @@ export const requestBridgeQuoteTx = ({
     () =>
       buildBridgeTx(
         quote.aggregator.id,
-        buildBridgeQuoteTxParams({
-          userAddress,
-          fromToken,
-          toToken,
-          amount,
-          slippage,
-          quote,
-        }),
+        {
+          ...buildBridgeQuoteTxParams({
+            userAddress,
+            fromToken,
+            toToken,
+            amount,
+            slippage,
+            quote,
+          }),
+          onError: reportBridgeSdkError,
+        },
         openapi
       ).catch((e) => {
+        reportBridgeSdkException(e);
         throw new AbortError(e?.message || String(e));
       }),
     { retries: 1 }

@@ -1,4 +1,5 @@
 import RcTooltip from 'rc-tooltip';
+import type { TooltipProps as RcTooltipProps } from 'rc-tooltip/lib/Tooltip';
 import clsx from 'clsx';
 import React from 'react';
 
@@ -62,6 +63,15 @@ export interface TooltipV6Props {
   overlayStyle?: React.CSSProperties;
   overlayInnerStyle?: React.CSSProperties;
   align?: Record<string, unknown>;
+  /** replaces rc-tooltip's placement table (points / offsets per placement) */
+  builtinPlacements?: RcTooltipProps['builtinPlacements'];
+  /**
+   * When set, the arrow points at the target's center (instead of the center
+   * of the popup/target overlap), kept at least this many px away from the
+   * popup's edges. For popups deliberately offset from a wide target, where
+   * the overlap center would drift off the target's middle.
+   */
+  arrowEdgeInset?: number;
   getPopupContainer?: (node: HTMLElement) => HTMLElement;
   getTooltipContainer?: (node: HTMLElement) => HTMLElement;
   zIndex?: number;
@@ -77,10 +87,26 @@ const isVerticalPlacement = (points?: string[]) => {
   return !popupPoint.startsWith('c');
 };
 
+// Center of [targetStart, targetEnd], kept `inset` px inside the anchor. If the
+// anchor is too small to honor the inset on both sides, fall back to its middle.
+const clampedTargetCenter = (
+  targetStart: number,
+  targetEnd: number,
+  anchorStart: number,
+  anchorEnd: number,
+  inset: number
+) => {
+  const min = anchorStart + inset;
+  const max = anchorEnd - inset;
+  if (min > max) return (anchorStart + anchorEnd) / 2;
+  return Math.min(Math.max((targetStart + targetEnd) / 2, min), max);
+};
+
 const alignArrow = (
   popupNode: HTMLElement,
   targetNode: HTMLElement | null | undefined,
-  matchPoints?: string[]
+  matchPoints?: string[],
+  arrowEdgeInset?: number
 ) => {
   if (!targetNode) return;
   const arrowEl = popupNode.querySelector<HTMLElement>(`.${PREFIX}-arrow`);
@@ -95,7 +121,16 @@ const alignArrow = (
     // arrow slides horizontally to the center of the horizontal overlap
     const start = Math.max(anchorRect.left, targetRect.left);
     const end = Math.min(anchorRect.right, targetRect.right);
-    const center = (start + end) / 2;
+    const center =
+      arrowEdgeInset === undefined
+        ? (start + end) / 2
+        : clampedTargetCenter(
+            targetRect.left,
+            targetRect.right,
+            anchorRect.left,
+            anchorRect.right,
+            arrowEdgeInset
+          );
     arrowEl.style.left = `${center - anchorRect.left}px`;
     arrowEl.style.right = 'auto';
 
@@ -107,7 +142,16 @@ const alignArrow = (
     // left/right placement: arrow slides vertically
     const start = Math.max(anchorRect.top, targetRect.top);
     const end = Math.min(anchorRect.bottom, targetRect.bottom);
-    const center = (start + end) / 2;
+    const center =
+      arrowEdgeInset === undefined
+        ? (start + end) / 2
+        : clampedTargetCenter(
+            targetRect.top,
+            targetRect.bottom,
+            anchorRect.top,
+            anchorRect.bottom,
+            arrowEdgeInset
+          );
     arrowEl.style.top = `${center - anchorRect.top}px`;
     arrowEl.style.bottom = 'auto';
 
@@ -134,6 +178,7 @@ export const TooltipV6 = React.forwardRef<any, TooltipV6Props>(
       getPopupContainer,
       getTooltipContainer,
       showArrow = true,
+      arrowEdgeInset,
       children,
       ...rest
     },
@@ -155,10 +200,11 @@ export const TooltipV6 = React.forwardRef<any, TooltipV6Props>(
         alignArrow(
           popupNode,
           instRef.current?.getRootDomNode?.() ?? null,
-          matchAlign?.points
+          matchAlign?.points,
+          arrowEdgeInset
         );
       },
-      []
+      [arrowEdgeInset]
     );
 
     const controlledVisible = open ?? visible;

@@ -527,7 +527,11 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
                 handleTPSLEnabledChange(false);
               }
             }}
-            tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+            tooltipText={t(
+              currentPosition
+                ? 'page.perpsPro.tradingPanel.reduceOnlyTips'
+                : 'page.perpsPro.tradingPanel.reduceOnlyNoPositionTips'
+            )}
             title={t('page.perpsPro.tradingPanel.reduceOnly')}
             disabled={!currentPosition}
           />
