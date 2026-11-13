@@ -1371,7 +1371,6 @@
           "searchCurrency": "Поиск валюты",
           "helpImproveRabby": "Помогите улучшить Rabby",
           "helpImproveRabbyDesc": "Делитесь анонимными данными об использовании, чтобы помочь улучшить Rabby. Собранные данные не связаны с вами или вашим аккаунтом.",
-          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Защита от дополнительных комиссий",
           "extraFeeProtectionDesc": "Блокирует запросы подписи, позволяющие расширениям браузера взимать дополнительные комиссии"
         },

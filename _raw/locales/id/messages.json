@@ -1473,7 +1473,6 @@
           "searchCurrency": "Cari mata uang",
           "helpImproveRabby": "Bantu tingkatkan Rabby",
           "helpImproveRabbyDesc": "Bagikan data penggunaan anonim untuk membantu meningkatkan Rabby. Data yang dikumpulkan tidak dikaitkan dengan Anda atau akun Anda.",
-          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Perlindungan Biaya Tambahan",
           "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },
