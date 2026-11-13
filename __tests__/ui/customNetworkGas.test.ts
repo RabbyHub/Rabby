@@ -61,6 +61,59 @@ describe('applyCustomNetworkGas', () => {
     expect(next).not.toHaveProperty('maxFeePerGas');
     expect(next).not.toHaveProperty('maxPriorityFeePerGas');
   });
+
+  describe('prices above Number.MAX_SAFE_INTEGER (RABBY-5XK)', () => {
+    // seen in production on a network whose native token is worth little
+    const BIG_PRICE = 9372974029086880;
+    const toHex = (value: number) => `0x${BigInt(value).toString(16)}`;
+
+    test('writes exact type-2 fee fields', () => {
+      const next = applyCustomNetworkGas({
+        tx,
+        gas: { price: BIG_PRICE, priority_price: GWEI },
+        support1559: true,
+      });
+
+      expect(next.maxFeePerGas).toBe(toHex(BIG_PRICE));
+      expect(next.maxPriorityFeePerGas).toBe(toHex(GWEI));
+      expect(hasValidCustomNetworkGasFields(next, true)).toBe(true);
+    });
+
+    test('caps a big tip at the big maxFee', () => {
+      const next = applyCustomNetworkGas({
+        tx,
+        gas: { price: BIG_PRICE, priority_price: BIG_PRICE * 2 },
+        support1559: true,
+      });
+
+      expect(next.maxPriorityFeePerGas).toBe(next.maxFeePerGas);
+      expect(next.maxFeePerGas).toBe(toHex(BIG_PRICE));
+      expect(hasValidCustomNetworkGasFields(next, true)).toBe(true);
+    });
+
+    test('writes an exact legacy gasPrice', () => {
+      const next = applyCustomNetworkGas({
+        tx,
+        gas: { price: BIG_PRICE, priority_price: BIG_PRICE },
+        support1559: false,
+      });
+
+      expect(next.gasPrice).toBe(toHex(BIG_PRICE));
+      expect(hasValidCustomNetworkGasFields(next, false)).toBe(true);
+    });
+  });
+
+  test.each([NaN, Infinity])('fails closed on a %p price', (price) => {
+    [true, false].forEach((support1559) => {
+      expect(() =>
+        applyCustomNetworkGas({
+          tx,
+          gas: { price, priority_price: GWEI },
+          support1559,
+        })
+      ).toThrow();
+    });
+  });
 });
 
 describe('resolveCustomGasPriorityFee', () => {
