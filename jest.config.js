@@ -25,6 +25,8 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^ui/(.*)$': '<rootDir>/src/ui/$1',
     '^background/(.*)$': '<rootDir>/src/background/$1',
+    '^@rabby-wallet/rabby-bridge$':
+      '<rootDir>/node_modules/@rabby-wallet/rabby-bridge/dist/index.js',
     '^@rabby-wallet/staking-sdk$':
       '<rootDir>/node_modules/@rabby-wallet/staking-sdk/dist/index.js',
   },

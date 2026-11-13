@@ -14,6 +14,7 @@ jest.mock('@/utils/chain', () => ({
 jest.mock(
   '@rabby-wallet/rabby-bridge',
   () => ({
+    ...jest.requireActual('@rabby-wallet/rabby-bridge'),
     buildTx: jest.fn(),
   }),
   { virtual: true }
@@ -32,6 +33,8 @@ const quote = (): SelectedBridgeQuote =>
     aggregator: { id: 'lifi' },
     bridge_id: 'stargate',
     to_token_amount: '10',
+    to_token_raw_amount: 10000000,
+    to_token_raw_amount_hex_str: '0x989680',
     duration: 90,
     approve_contract_id: '0xapprove',
     shouldApproveToken: true,
@@ -59,9 +62,31 @@ describe('bridge submit helpers', () => {
       fromTokenRawAmount: '1500000',
       toChainId: 'bsc',
       toTokenId: '0xto',
+      toTokenRawAmount: '0x989680',
       slippage: '0.01',
       quoteKey: { k: 1 },
     });
+  });
+
+  it.each([
+    ['0x20000000000001', Number.MAX_SAFE_INTEGER + 1, '0x20000000000001'],
+    [undefined, 10000000, '10000000'],
+    [undefined, Number.MAX_SAFE_INTEGER + 1, undefined],
+  ])('preserves the exact quoted output amount (%s)', (hex, raw, expected) => {
+    const selected = {
+      ...quote(),
+      to_token_raw_amount_hex_str: hex,
+      to_token_raw_amount: raw,
+    } as SelectedBridgeQuote;
+    const params = buildBridgeQuoteTxParams({
+      userAddress: '0xuser',
+      fromToken: token(),
+      toToken: token({ id: '0xto', chain: 'bsc' }),
+      amount: '1.5',
+      slippage: '1',
+      quote: selected,
+    });
+    expect(params.toTokenRawAmount).toBe(expected);
   });
 
   it('builds token-side submit params and local history payload', () => {
