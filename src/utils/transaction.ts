@@ -26,6 +26,7 @@ import { Account } from 'background/service/preference';
 import type { ChainGas } from 'background/service/preference';
 import { AuthorizationList, AuthorizationListBytes } from '@ethereumjs/common';
 import { TX_GAS_LIMIT_CHAIN_MAPPING } from '@/constant/txGasLimit';
+import { toHexQuantity } from '@/utils/hexQuantity';
 import {
   getHyperEvmGasLimit,
   HYPER_EVM_SMALL_BLOCK_GAS_LIMIT,
@@ -127,12 +128,12 @@ const getSignTxGasPrice = (tx: Tx & Record<string, any>) => {
   if (tx.maxFeePerGas) {
     result = isHexString(tx.maxFeePerGas)
       ? tx.maxFeePerGas
-      : intToHex(tx.maxFeePerGas as any);
+      : toHexQuantity(tx.maxFeePerGas as string | number);
   }
   if (tx.gasPrice) {
     result = isHexString(tx.gasPrice)
       ? tx.gasPrice
-      : intToHex(parseInt(tx.gasPrice));
+      : toHexQuantity(tx.gasPrice);
   }
   if (Number.isNaN(Number(result))) {
     result = '';
@@ -394,7 +395,7 @@ const resolveInitialGasSelection = ({
   return {
     tx: applySelectedGasToTx({
       tx,
-      gasPrice: intToHex(gas.price),
+      gasPrice: toHexQuantity(gas.price),
       support1559,
       enable7702,
     }),
