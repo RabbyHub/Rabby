@@ -1370,6 +1370,7 @@
           "searchCurrency": "Pesquisar moeda",
           "helpImproveRabby": "Ajude a melhorar o Rabby",
           "helpImproveRabbyDesc": "Compartilhe dados de uso anônimos para ajudar a melhorar o Rabby. Os dados coletados não são associados a você nem à sua conta.",
+          "ledgerClearSigning": "Ledger Clear Signing",
           "extraFeeProtection": "Proteção contra taxas extras",
           "extraFeeProtectionDesc": "Bloqueia solicitações de assinatura que permitem que extensões do navegador cobrem taxas extras"
         },

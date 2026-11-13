@@ -1370,6 +1370,7 @@
           "searchCurrency": "通貨を検索",
           "helpImproveRabby": "Rabbyの改善に協力する",
           "helpImproveRabbyDesc": "匿名の使用状況データを共有して、Rabbyの改善にご協力ください。収集されたデータがあなたやあなたのアカウントに関連付けられることはありません。",
+          "ledgerClearSigning": "Ledger クリアサイニング",
           "extraFeeProtection": "追加手数料保護",
           "extraFeeProtectionDesc": "ブラウザ拡張機能による追加手数料の徴収を許可する署名リクエストをブロックします"
         },

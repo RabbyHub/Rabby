@@ -297,6 +297,7 @@
           "searchCurrency": "搜尋貨幣",
           "helpImproveRabby": "協助改進 Rabby",
           "helpImproveRabbyDesc": "分享匿名使用數據以協助改進 Rabby。收集的資料不會與你或你的帳戶關聯。",
+          "ledgerClearSigning": "Ledger 清晰簽名",
           "extraFeeProtection": "額外費用保護",
           "extraFeeProtectionDesc": "阻止瀏覽器擴充功能透過簽名請求收取額外手續費"
         },
