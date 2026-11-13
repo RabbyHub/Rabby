@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import Close from '@/ui/assets/settings/update/close.svg';
 
 export const FirstNoticeDialog = ({
@@ -47,7 +46,7 @@ export const FirstNoticeDialog = ({
         </Button>
       }
     >
-      <ReactMarkdown className="first-notice-notes" remarkPlugins={[remarkGfm]}>
+      <ReactMarkdown className="first-notice-notes">
         {updateContent}
       </ReactMarkdown>
     </Modal>
