@@ -183,7 +183,7 @@ const ProgressFooter = ({
   }
 
   return (
-    <div className="flex items-center justify-center gap-[4px] bg-r-neutral-bg-3 py-[8px] text-center text-12 leading-[14px] text-r-neutral-foot">
+    <div className="flex items-center justify-center gap-[4px] rounded-b-[7px] bg-r-neutral-bg-3 py-[8px] text-center text-12 leading-[14px] text-r-neutral-foot">
       {content}
     </div>
   );
@@ -208,7 +208,7 @@ export const BridgeProgressCard = ({
   return (
     <div
       className={clsx(
-        'cursor-pointer overflow-hidden rounded-[8px] border border-solid border-transparent bg-r-neutral-card-1 shadow-[0px_4px_20px_rgba(55,56,63,0.06)] dark:shadow-none',
+        'cursor-pointer rounded-[8px] border border-solid border-transparent bg-r-neutral-card-1 shadow-[0px_4px_20px_rgba(55,56,63,0.06)] dark:shadow-none',
         'hover:border-rabby-blue-default hover:bg-r-blue-light-1 active:bg-rb-brand-light-2'
       )}
       onClick={onOpen}

@@ -3,7 +3,7 @@ import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { max } from 'lodash';
-import { findChain, findChainByEnum } from '@/utils/chain';
+import { findChain, waitForLocalMainnetList } from '@/utils/chain';
 import { BasicDappInfo } from './openapi';
 import { Account } from './preference';
 
@@ -48,17 +48,15 @@ class PermissionService {
     });
     this.store = storage || this.store;
 
+    // site chains are checked against the store, which only holds the bundled
+    // chain list until the cached one is loaded
+    await waitForLocalMainnetList();
+
     this.lruCache = new LRU();
 
-    let filtered = false;
-    const cache: ReadonlyArray<LRU.Entry<string, ConnectedSite>> = (
-      this.store.dumpCache || []
-    )
-      .filter((item) => {
-        const found = item?.v?.chain && findChainByEnum(item.v.chain);
-        if (!filtered && !found) filtered = true;
-        return found;
-      })
+    const dumpCache = this.store.dumpCache || [];
+    const cache: ReadonlyArray<LRU.Entry<string, ConnectedSite>> = dumpCache
+      .filter((item) => !!item?.v)
       .map((item) => ({
         k: item.k,
         v: item.v,
@@ -66,7 +64,8 @@ class PermissionService {
       }));
     this.lruCache.load(cache);
 
-    if (filtered) this.sync();
+    if (cache.length !== dumpCache.length) this.sync();
+    this.resetSitesWithUnsupportedChain();
   };
 
   sync = () => {
@@ -323,6 +322,31 @@ class PermissionService {
       isConnected: false,
     });
     this.sync();
+  };
+
+  /**
+   * Persist the fallback `_getSite` applies on read: a site whose chain is no
+   * longer supported is moved to ETH and disconnected. Returns the sites as
+   * they were before the reset.
+   */
+  resetSitesWithUnsupportedChain = () => {
+    const lruCache = this.lruCache;
+    if (!lruCache) return [];
+
+    const sites = lruCache
+      .values()
+      .filter((item) => !item.chain || !findChain({ enum: item.chain }));
+    if (!sites.length) return sites;
+
+    sites.forEach((site) => {
+      lruCache.set(site.origin, {
+        ...site,
+        chain: CHAINS_ENUM.ETH,
+        isConnected: false,
+      });
+    });
+    this.sync();
+    return sites;
   };
 
   getSitesByDefaultChain = (chain: CHAINS_ENUM) => {

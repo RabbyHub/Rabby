@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "90일 이내 거래 내역 없음",
         "descThreeMonths": "90일 이내 <2>지원되는 체인</2>의 거래 내역 없음"
       },
+      "noMore": {
+        "title": "더 이상 거래 내역이 없습니다.",
+        "titleInLast90Days": "최근 90일간 더 이상 거래 내역이 없습니다."
+      },
       "explain": {
         "unknown": "계약 상호작용",
         "cancel": "보류 중인 거래가 취소되었습니다.",
@@ -1120,7 +1124,7 @@
       "To": "에",
       "history": "브리지 히스토리",
       "pendingTip": "Tx가 제출되었습니다. Tx가 오랜 시간 동안 대기 중이라면 설정에서 대기 중인 항목을 지우는 것을 시도해 볼 수 있습니다.",
-      "no-quote-found": "견적을 찾을 수 없습니다. 다른 토큰 쌍을 시도해 주세요.",
+      "no-quote-found": "견적을 찾을 수 없습니다.",
       "estimate": "추정:",
       "actual": "실제:",
       "Amount": "금액",
@@ -1147,7 +1151,6 @@
       "price-expired-refresh-route": "가격이 만료되었습니다. 경로를 새로 고치세요.",
       "getRoutes": "경로 가져오기",
       "rabby-fee": "Rabby 수수료",
-      "recommendFromToken": "<1></1>에서 사용할 수 있는 견적으로 브리지합니다.",
       "est-receiving": "예상 수신:",
       "best": "최고",
       "aggregator-not-enabled": "이 애그리게이터에서는 거래할 수 없습니다.",
@@ -1468,7 +1471,8 @@
           "biometricUnlockHint": "이 장치에서 생체 인식을 사용하여 잠금을 해제하세요.",
           "currency": "통화",
           "searchCurrency": "통화 검색",
-          "dataAnalysis": "데이터 분석",
+          "helpImproveRabby": "Rabby 개선에 참여하기",
+          "helpImproveRabbyDesc": "익명의 사용 데이터를 공유하여 Rabby 개선에 도움을 주세요. 수집된 데이터는 사용자 본인이나 계정과 연결되지 않습니다.",
           "extraFeeProtection": "추가 수수료 보호",
           "extraFeeProtectionDesc": "브라우저 확장 프로그램이 추가 수수료를 부과할 수 있게 하는 서명 요청을 차단합니다"
         },
@@ -2905,7 +2909,11 @@
         },
         "title": "비밀번호 설정",
         "desc": "지갑을 잠금 해제하고 데이터를 암호화하는 데 사용됩니다.",
-        "agree": "나는 <1/> <2>이용 약관</2> 및 <4>개인정보 보호정책</4>에 동의합니다."
+        "dataCollection": {
+          "title": "Rabby 개선에 참여하기",
+          "desc": "익명의 사용 데이터를 공유하여 Rabby 개선에 도움을 주세요. 수집된 데이터는 사용자 본인이나 계정과 연결되지 않습니다. 이 설정은 언제든지 설정에서 변경할 수 있습니다."
+        },
+        "termsNotice": "계속하면 <terms>이용 약관</terms>에 동의하고 <privacy>개인정보 보호정책</privacy>을 확인한 것으로 간주됩니다."
       },
       "successful": {
         "create": "성공적으로 생성됨",
@@ -3173,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "주소 조회 중...",
       "emptyWhitelist": {
         "title": "주소를 화이트리스트에 추가하십시오",
         "desc": "신뢰할 수 있는 주소를 화이트리스트에 추가하여 빠른 이체를 지원합니다 - 다음 번에는 확인이 필요하지 않습니다.",
@@ -4946,7 +4955,8 @@
     "screenshotModal": {
       "title": "피드백용 스크린샷",
       "placeholder": "문제를 설명해 주세요",
-      "placeholderRequired": "문제를 설명해 주세요 (필수)"
+      "placeholderRequired": "문제를 설명해 주세요 (필수)",
+      "includeAddress": "문제 해결을 위해 주소 공유"
     },
     "feedbackPopup": {
       "title": "Rabby Support의 응답",

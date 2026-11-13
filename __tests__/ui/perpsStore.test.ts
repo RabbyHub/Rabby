@@ -463,6 +463,36 @@ describe('perps store', () => {
     });
   });
 
+  describe('fetchPerpPermission', () => {
+    const openapi = (wallet.openapi as unknown) as {
+      getPerpPermission: jest.Mock;
+    };
+
+    test('denies when the permission check fails', async () => {
+      openapi.getPerpPermission = jest
+        .fn()
+        .mockRejectedValue(new Error('network'));
+
+      await usePerpsStore.getState().fetchPerpPermission(accountA.address);
+
+      expect(usePerpsStore.getState().hasPermission).toBe(false);
+    });
+
+    test('applies the server result when the check succeeds', async () => {
+      usePerpsStore.setState({ hasPermission: false });
+      openapi.getPerpPermission = jest
+        .fn()
+        .mockResolvedValue({ has_permission: true });
+
+      await usePerpsStore.getState().fetchPerpPermission(accountA.address);
+
+      expect(openapi.getPerpPermission).toHaveBeenCalledWith({
+        id: accountA.address,
+      });
+      expect(usePerpsStore.getState().hasPermission).toBe(true);
+    });
+  });
+
   describe('rebuildAggregatedClearinghouseState USDC-only overwrite', () => {
     const usdcBalance = {
       coin: 'USDC',

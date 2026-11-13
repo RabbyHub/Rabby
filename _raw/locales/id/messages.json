@@ -7,6 +7,10 @@
         "noTxInThreeMonth": "Tidak ada riwayat transaksi dalam 90 hari",
         "descThreeMonths": "Tidak ada riwayat transaksi dalam 90 hari pada <2>rantai yang didukung</2>"
       },
+      "noMore": {
+        "title": "Tidak ada transaksi lagi.",
+        "titleInLast90Days": "Tidak ada transaksi lagi dalam 90 hari terakhir."
+      },
       "explain": {
         "unknown": "Interaksi kontrak",
         "cancel": "Transaksi menunggu dibatalkan",
@@ -1109,7 +1113,7 @@
       "To": "Untuk",
       "Balance": "Saldo: ",
       "Select": "Pilih",
-      "no-quote-found": "Penawaran harga tidak ditemukan. Silakan coba pasangan token lain.",
+      "no-quote-found": "Penawaran harga tidak ditemukan.",
       "From": "Dari",
       "select-chain": "Pilih Rantai",
       "Amount": "Jumlah",
@@ -1148,7 +1152,6 @@
       "bridge-cost": "Biaya Jembatan",
       "no-route-found": "Tidak ada rute ditemukan",
       "est-receiving": "Est. Menerima:",
-      "recommendFromToken": "Bridge dari <1></1> untuk mendapatkan penawaran harga",
       "loss-tips": "Anda akan rugi {{usd}}. Coba jumlah lain.",
       "max-tips": "Nilai ini dihitung dengan mengurangi biaya gas untuk bridge.",
       "est-payment": "Est. Pembayaran:",
@@ -1468,7 +1471,8 @@
           "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
-          "dataAnalysis": "Analisis Data",
+          "helpImproveRabby": "Bantu tingkatkan Rabby",
+          "helpImproveRabbyDesc": "Bagikan data penggunaan anonim untuk membantu meningkatkan Rabby. Data yang dikumpulkan tidak dikaitkan dengan Anda atau akun Anda.",
           "extraFeeProtection": "Perlindungan Biaya Tambahan",
           "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },
@@ -2904,7 +2908,11 @@
           }
         },
         "title": "Atur Kata Sandi",
-        "agree": "Saya setuju dengan <1/> <2>Ketentuan Penggunaan</2> dan <4>Kebijakan Privasi</4>",
+        "dataCollection": {
+          "title": "Bantu tingkatkan Rabby",
+          "desc": "Bagikan data penggunaan anonim untuk membantu meningkatkan Rabby. Data yang dikumpulkan tidak dikaitkan dengan Anda atau akun Anda. Anda dapat mengubahnya kapan saja di Pengaturan."
+        },
+        "termsNotice": "Dengan melanjutkan, Anda menyetujui <terms>Ketentuan Penggunaan</terms> dan mengakui <privacy>Kebijakan Privasi</privacy>.",
         "desc": "Ini akan digunakan untuk membuka dompet dan mengenkripsi data."
       },
       "successful": {
@@ -3173,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Mencari alamat...",
       "emptyWhitelist": {
         "title": "Tambahkan alamat ke daftar putih",
         "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat - tidak diperlukan konfirmasi di lain waktu",
@@ -4946,7 +4955,8 @@
     "screenshotModal": {
       "title": "Tangkapan layar untuk masukan",
       "placeholder": "Jelaskan masalahnya",
-      "placeholderRequired": "Jelaskan masalah (wajib)"
+      "placeholderRequired": "Jelaskan masalah (wajib)",
+      "includeAddress": "Bagikan alamat untuk pemecahan masalah"
     },
     "feedbackPopup": {
       "title": "Respons dari Dukungan Rabby",

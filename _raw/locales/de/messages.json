@@ -8,6 +8,10 @@
         "noTxInThreeMonth": "Keine Transaktionshistorie in 90 Tagen",
         "descThreeMonths": "Keine Transaktionshistorie in 90 Tagen auf <2>unterstützten Chains</2>"
       },
+      "noMore": {
+        "title": "Keine weiteren Transaktionen.",
+        "titleInLast90Days": "Keine weiteren Transaktionen in den letzten 90 Tagen."
+      },
       "explain": {
         "approve": "{{amount}} {{symbol}} für {{project}} genehmigen",
         "unknown": "Smart Contract-Interaktion",
@@ -1364,7 +1368,8 @@
           "perpsFloatWidget": "Perps-Floating-Widget",
           "currency": "Währung",
           "searchCurrency": "Währung suchen",
-          "dataAnalysis": "Datenanalyse",
+          "helpImproveRabby": "Helfen Sie, Rabby zu verbessern",
+          "helpImproveRabbyDesc": "Teilen Sie anonyme Nutzungsdaten, um Rabby zu verbessern. Die erfassten Daten werden nicht mit Ihnen oder Ihrem Konto verknüpft.",
           "extraFeeProtection": "Schutz vor Zusatzgebühren",
           "extraFeeProtectionDesc": "Blockiert Signaturanfragen, mit denen Browser-Erweiterungen zusätzliche Gebühren erheben können"
         },
@@ -2346,8 +2351,7 @@
       "bridge-cost": "Bridge-Kosten",
       "approve-and-bridge": "Genehmigen und bridgen",
       "estimate": "Schätzung:",
-      "recommendFromToken": "Mit <1></1> bridgen, um ein verfügbares Angebot zu erhalten",
-      "no-quote-found": "Kein Angebot gefunden. Bitte versuchen Sie es mit anderen Token-Paaren.",
+      "no-quote-found": "Kein Angebot gefunden.",
       "completedTip": "Transaktion ist on-chain. Die Daten werden dekodiert, um einen Eintrag zu erstellen",
       "need-to-approve-token-before-bridge": "Vor dem Bridgen muss der Token genehmigt werden.",
       "loss-tips": "Sie verlieren {{usd}}. Versuchen Sie einen anderen Betrag.",
@@ -2907,7 +2911,11 @@
           }
         },
         "title": "Passwort festlegen",
-        "agree": "Ich stimme den<1/> <2>Nutzungsbedingungen</2> und der <4>Datenschutzerklärung</4> zu.",
+        "dataCollection": {
+          "title": "Helfen Sie, Rabby zu verbessern",
+          "desc": "Teilen Sie anonyme Nutzungsdaten, um Rabby zu verbessern. Die erfassten Daten werden nicht mit Ihnen oder Ihrem Konto verknüpft. Sie können dies jederzeit in den Einstellungen ändern."
+        },
+        "termsNotice": "Indem Sie fortfahren, stimmen Sie den <terms>Nutzungsbedingungen</terms> zu und nehmen die <privacy>Datenschutzerklärung</privacy> zur Kenntnis.",
         "desc": "Es wird verwendet, um die Wallet zu entsperren und Daten zu verschlüsseln"
       },
       "successful": {
@@ -3176,6 +3184,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Adresse wird gesucht...",
       "emptyWhitelist": {
         "addNow": "Jetzt hinzufügen",
         "title": "Adresse zur Whitelist hinzufügen",
@@ -4949,7 +4958,8 @@
     "screenshotModal": {
       "title": "Screenshot an Feedback anhängen",
       "placeholder": "Beschreiben Sie das Problem",
-      "placeholderRequired": "Beschreiben Sie das Problem (erforderlich)"
+      "placeholderRequired": "Beschreiben Sie das Problem (erforderlich)",
+      "includeAddress": "Adresse zur Fehlerbehebung teilen"
     },
     "feedbackPopup": {
       "title": "Antwort des Rabby-Supports",
