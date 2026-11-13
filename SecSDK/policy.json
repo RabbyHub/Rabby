@@ -30003,16 +30003,16 @@
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/viem/_cjs/accounts/wordlists.js": {
     "enable": true,
     "require": [
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/czech.js",
       "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/english.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/french.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/italian.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/japanese.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/korean.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/portuguese.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/simplified-chinese.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/spanish.js",
-      "node_modules/@rabby-wallet/gnosis-sdk/node_modules/@scure/bip39/wordlists/traditional-chinese.js"
+      "webpack:@scure/bip39/wordlists/czech (ignored)",
+      "webpack:@scure/bip39/wordlists/french (ignored)",
+      "webpack:@scure/bip39/wordlists/italian (ignored)",
+      "webpack:@scure/bip39/wordlists/japanese (ignored)",
+      "webpack:@scure/bip39/wordlists/korean (ignored)",
+      "webpack:@scure/bip39/wordlists/portuguese (ignored)",
+      "webpack:@scure/bip39/wordlists/simplified-chinese (ignored)",
+      "webpack:@scure/bip39/wordlists/spanish (ignored)",
+      "webpack:@scure/bip39/wordlists/traditional-chinese (ignored)"
     ]
   },
   "node_modules/@rabby-wallet/gnosis-sdk/node_modules/viem/_cjs/actions/ens/getEnsAddress.js": {
@@ -49220,16 +49220,16 @@
   "node_modules/@safe-global/protocol-kit/node_modules/viem/_cjs/accounts/wordlists.js": {
     "enable": true,
     "require": [
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/czech.js",
       "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/english.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/french.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/italian.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/japanese.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/korean.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/portuguese.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/simplified-chinese.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/spanish.js",
-      "node_modules/@safe-global/protocol-kit/node_modules/@scure/bip39/wordlists/traditional-chinese.js"
+      "webpack:@scure/bip39/wordlists/czech (ignored)",
+      "webpack:@scure/bip39/wordlists/french (ignored)",
+      "webpack:@scure/bip39/wordlists/italian (ignored)",
+      "webpack:@scure/bip39/wordlists/japanese (ignored)",
+      "webpack:@scure/bip39/wordlists/korean (ignored)",
+      "webpack:@scure/bip39/wordlists/portuguese (ignored)",
+      "webpack:@scure/bip39/wordlists/simplified-chinese (ignored)",
+      "webpack:@scure/bip39/wordlists/spanish (ignored)",
+      "webpack:@scure/bip39/wordlists/traditional-chinese (ignored)"
     ]
   },
   "node_modules/@safe-global/protocol-kit/node_modules/viem/_cjs/actions/ens/getEnsAddress.js": {
@@ -87578,16 +87578,16 @@
   "node_modules/viem/_cjs/accounts/wordlists.js": {
     "enable": true,
     "require": [
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/czech.js",
       "node_modules/viem/node_modules/@scure/bip39/wordlists/english.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/french.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/italian.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/japanese.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/korean.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/portuguese.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/simplified-chinese.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/spanish.js",
-      "node_modules/viem/node_modules/@scure/bip39/wordlists/traditional-chinese.js"
+      "webpack:@scure/bip39/wordlists/czech (ignored)",
+      "webpack:@scure/bip39/wordlists/french (ignored)",
+      "webpack:@scure/bip39/wordlists/italian (ignored)",
+      "webpack:@scure/bip39/wordlists/japanese (ignored)",
+      "webpack:@scure/bip39/wordlists/korean (ignored)",
+      "webpack:@scure/bip39/wordlists/portuguese (ignored)",
+      "webpack:@scure/bip39/wordlists/simplified-chinese (ignored)",
+      "webpack:@scure/bip39/wordlists/spanish (ignored)",
+      "webpack:@scure/bip39/wordlists/traditional-chinese (ignored)"
     ]
   },
   "node_modules/viem/_cjs/actions/public/call.js": {

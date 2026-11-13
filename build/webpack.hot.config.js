@@ -58,6 +58,29 @@ const APP_VERSION =
     buildEnv: 'dev',
   });
 
+// keep in step with the same rule in webpack.common.config.js
+const unusedBip39WordlistsRule = {
+  test: /[\\/]viem[\\/]_cjs[\\/]accounts[\\/]wordlists\.js$/,
+  resolve: {
+    alias: Object.fromEntries(
+      [
+        'czech',
+        'french',
+        'italian',
+        'japanese',
+        'korean',
+        'portuguese',
+        'simplified-chinese',
+        'spanish',
+        'traditional-chinese',
+      ].flatMap((language) => [
+        [`@scure/bip39/wordlists/${language}$`, false],
+        [`@scure/bip39/wordlists/${language}.js$`, false],
+      ])
+    ),
+  },
+};
+
 // 通用配置
 const commonConfig = {
   mode: 'development',
@@ -387,6 +410,7 @@ const uiConfig = {
         test: /\.md$/,
         use: 'raw-loader',
       },
+      unusedBip39WordlistsRule,
     ],
   },
   plugins: [
@@ -550,6 +574,7 @@ const otherConfig = {
         test: /\.md$/,
         use: 'raw-loader',
       },
+      unusedBip39WordlistsRule,
     ],
   },
   plugins: [
