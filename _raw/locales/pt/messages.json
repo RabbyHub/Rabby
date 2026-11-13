@@ -1472,7 +1472,8 @@
           "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda",
-          "dataAnalysis": "Análise de Dados",
+          "helpImproveRabby": "Ajude a melhorar o Rabby",
+          "helpImproveRabbyDesc": "Partilhe dados de utilização anónimos para ajudar a melhorar o Rabby. Os dados recolhidos não são associados a si nem à sua conta.",
           "extraFeeProtection": "Proteção contra taxas extras",
           "extraFeeProtectionDesc": "Bloqueia pedidos de assinatura que permitem a extensões do navegador cobrar taxas extras"
         },
@@ -2907,7 +2908,11 @@
             "placeholder": "Confirmar Palavra-passe"
           }
         },
-        "agree": "Eu concordo com os<1/> <2>Termos de Uso</2> e <4>Política de Privacidade</4>",
+        "dataCollection": {
+          "title": "Ajude a melhorar o Rabby",
+          "desc": "Partilhe dados de utilização anónimos para ajudar a melhorar o Rabby. Os dados recolhidos não são associados a si nem à sua conta. Pode alterar esta opção a qualquer momento nas Definições."
+        },
+        "termsNotice": "Ao continuar, aceita os <terms>Termos de Uso</terms> e reconhece a <privacy>Política de Privacidade</privacy>.",
         "title": "Definir Palavra-passe",
         "desc": "Será utilizada para desbloquear a carteira e encriptar os dados."
       },

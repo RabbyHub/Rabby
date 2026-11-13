@@ -227,6 +227,7 @@ export const ScreenshotContextMenu = () => {
       return (await wallet.getScreenshotShareAddress()) === true;
     } catch (error) {
       console.error('Failed to read share address preference', error);
+      // Fail closed: an unreadable preference may hide a saved opt-out.
       return false;
     }
   }, [wallet]);

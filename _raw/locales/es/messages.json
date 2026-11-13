@@ -1368,7 +1368,8 @@
           "perpsFloatWidget": "Widget flotante de Perps",
           "currency": "Moneda",
           "searchCurrency": "Buscar moneda",
-          "dataAnalysis": "Análisis de datos",
+          "helpImproveRabby": "Ayuda a mejorar Rabby",
+          "helpImproveRabbyDesc": "Comparte datos de uso anónimos para ayudar a mejorar Rabby. Los datos recopilados no se asocian contigo ni con tu cuenta.",
           "extraFeeProtection": "Protección contra comisiones adicionales",
           "extraFeeProtectionDesc": "Bloquea las solicitudes de firma que permiten a extensiones del navegador cobrar comisiones adicionales"
         },
@@ -2910,7 +2911,11 @@
             "placeholder": "Confirmar contraseña"
           }
         },
-        "agree": "Estoy de acuerdo con los<1/> <2>Términos de uso</2> y la <4>Política de privacidad</4>",
+        "dataCollection": {
+          "title": "Ayuda a mejorar Rabby",
+          "desc": "Comparte datos de uso anónimos para ayudar a mejorar Rabby. Los datos recopilados no se asocian contigo ni con tu cuenta. Puedes cambiar esto en cualquier momento en Configuración."
+        },
+        "termsNotice": "Al continuar, aceptas los <terms>Términos de uso</terms> y reconoces la <privacy>Política de privacidad</privacy>.",
         "title": "Establecer contraseña",
         "desc": "Se utilizará para desbloquear la wallet y cifrar los datos"
       },
