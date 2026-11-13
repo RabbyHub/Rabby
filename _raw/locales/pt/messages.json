@@ -1122,7 +1122,7 @@
       "To": "Para",
       "Select": "Selecionar",
       "the-following-bridge-route-are-found": "Rota encontrada",
-      "no-quote-found": "Nenhuma cotação encontrada. Por favor, tente outros pares de tokens.",
+      "no-quote-found": "Nenhuma cotação encontrada.",
       "pendingTip": "Transação enviada. Se permanecer pendente durante várias horas, tente limpar a transação pendente nas definições.",
       "select-chain": "Selecionar rede",
       "completedTip": "Transação na rede, decodificando dados para gerar registo",
@@ -1146,7 +1146,6 @@
       "approve-x-symbol": "Aprovar {{symbol}}",
       "enable-it": "Ative-o",
       "slippage-adjusted-refresh-quote": "Deslizamento ajustado. Atualize a rota.",
-      "recommendFromToken": "Utilize a ponte a partir de <1></1> para obter uma cotação",
       "est-receiving": "Receção estimada:",
       "tokenPairPlaceholder": "Selecionar Par de Tokens",
       "approve-and-bridge": "Aprovar e usar a ponte",
@@ -1472,7 +1471,8 @@
           "perpsFloatWidget": "Widget flutuante de Perps",
           "currency": "Moeda",
           "searchCurrency": "Pesquisar moeda",
-          "dataAnalysis": "Análise de Dados",
+          "helpImproveRabby": "Ajude a melhorar o Rabby",
+          "helpImproveRabbyDesc": "Partilhe dados de utilização anónimos para ajudar a melhorar o Rabby. Os dados recolhidos não são associados a si nem à sua conta.",
           "extraFeeProtection": "Proteção contra taxas extras",
           "extraFeeProtectionDesc": "Bloqueia pedidos de assinatura que permitem a extensões do navegador cobrar taxas extras"
         },
@@ -2907,7 +2907,11 @@
             "placeholder": "Confirmar Palavra-passe"
           }
         },
-        "agree": "Eu concordo com os<1/> <2>Termos de Uso</2> e <4>Política de Privacidade</4>",
+        "dataCollection": {
+          "title": "Ajude a melhorar o Rabby",
+          "desc": "Partilhe dados de utilização anónimos para ajudar a melhorar o Rabby. Os dados recolhidos não são associados a si nem à sua conta. Pode alterar esta opção a qualquer momento nas Definições."
+        },
+        "termsNotice": "Ao continuar, aceita os <terms>Termos de Uso</terms> e reconhece a <privacy>Política de Privacidade</privacy>.",
         "title": "Definir Palavra-passe",
         "desc": "Será utilizada para desbloquear a carteira e encriptar os dados."
       },
@@ -3177,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "A procurar endereço...",
       "emptyWhitelist": {
         "title": "Adicionar endereço à lista branca",
         "desc": "Adicione endereços confiáveis à lista de permissões para transferências rápidas - nenhuma confirmação necessária na próxima vez.",
@@ -3880,7 +3885,7 @@
           "trade": "Negociar",
           "unrealizedPnlTooltip": "O preço de marcação é usado para estimar o PnL não realizado. Apenas os preços de negociação são usados para o PnL realizado.",
           "fundingTipsV2": "Financiamento líquido desde que a posição foi aberta. Um valor de financiamento vermelho (negativo) indica financiamento pago, enquanto um valor verde (positivo) indica financiamento recebido.",
-          "fundingTipsBold": "Mostra o financiamento total liquidado desde a abertura da posição. Valores <bold>verdes (positivos)</bold> indicam montantes recebidos de outros operadores; valores <bold>vermelhos (negativos)</bold> indicam custos de financiamento pagos.",
+          "fundingTipsBold": "Mostra o financiamento total liquidado desde a abertura da posição. Valores <positive>verdes (positivos)</positive> indicam montantes recebidos de outros operadores; valores <negative>vermelhos (negativos)</negative> indicam custos de financiamento pagos.",
           "assets": "Ativos",
           "about": "Sobre"
         },
@@ -4480,7 +4485,20 @@
         "takeProfitExpectedPNL": "Realizar Lucro\nPnL Esperado",
         "stopLossExpectedPNL": "P/L Esperado de Stop Loss"
       },
-      "needDepositFirst": "Tem de depositar fundos primeiro."
+      "needDepositFirst": "Tem de depositar fundos primeiro.",
+      "simpleAccount": {
+        "margin": "Margem",
+        "averageEntry": "Preço médio de entrada",
+        "estimatedLiquidationPrice": "Preço de liq. estimado",
+        "estimatedLiquidationDistance": "Distância de liq. estimada",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Preço de realização de lucro",
+        "stopLossPrice": "Preço de stop loss",
+        "funding": "Financiamento",
+        "nextFundingRate": "Próxima taxa de financiamento",
+        "estimatedPnl": "PnL estimado",
+        "fundingPaymentsTips": "Mostra o financiamento total liquidado desde a abertura da posição. Valores <positive>verdes (positivos)</positive> indicam montantes recebidos de outros operadores; valores <negative>vermelhos (negativos)</negative> indicam custos de financiamento pagos."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

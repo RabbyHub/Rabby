@@ -407,9 +407,13 @@ const signTypedDataVlidation = ({
   if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
-  reportInvalidTypedDataValue(findInvalidTypedDataValue(jsonData), {
+  const invalidValue = findInvalidTypedDataValue(jsonData);
+  reportInvalidTypedDataValue(invalidValue, {
     rawTypedData: data,
   });
+  if (invalidValue) {
+    throw ethErrors.rpc.invalidParams('invalid typed data');
+  }
   if (!permissionService.isInternalOrigin(session!.origin)) {
     const currentChain = permissionService.getConnectedSite(session!.origin)
       ?.chain;
@@ -670,6 +674,18 @@ class ProviderController extends BaseController {
       account,
     } = cloneDeep(options);
     const currentAccount = account;
+    const requestedFrom = txParams.from?.toLowerCase();
+    const approvedFrom = approvalRes.from?.toLowerCase();
+    if (
+      !requestedFrom ||
+      !approvedFrom ||
+      requestedFrom !== approvedFrom ||
+      Number(txParams.chainId) !== Number(approvalRes.chainId)
+    ) {
+      throw ethErrors.rpc.invalidParams(
+        'approved transaction does not match request'
+      );
+    }
     const keyring = await this._checkAddress(txParams.from, options);
     // Started now, awaited right before signing, so it overlaps the tx build.
     const isBlockedPromise = hasBlockedAddress([

@@ -295,7 +295,8 @@
           "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
           "perpsFloatWidget": "永续合约悬浮窗",
           "biometricUnlockHint": "使用生物识别在此设备上解锁。",
-          "dataAnalysis": "数据分析",
+          "helpImproveRabby": "帮助改进 Rabby",
+          "helpImproveRabbyDesc": "分享匿名使用数据以帮助改进 Rabby。收集的数据不会与你或你的账户关联。",
           "extraFeeProtection": "额外费用保护",
           "extraFeeProtectionDesc": "阻止浏览器插件通过签名请求收取额外手续费"
         },
@@ -2599,7 +2600,7 @@
       "From": "从",
       "To": "至",
       "select-chain": "选择链",
-      "no-quote-found": "未找到报价。请尝试其他代币对。",
+      "no-quote-found": "未找到报价。",
       "Select": "选择",
       "Balance": "余额：",
       "Pending": "待处理",
@@ -2644,7 +2645,6 @@
       "loss-tips": "当前报价预计损失 {{usd}}，请尝试其他金额。",
       "max-tips": "此值通过减去跨链的 Gas 成本来计算。",
       "duration": "{{duration}} 分钟",
-      "recommendFromToken": "从 <1></1> 跨链以获取可用报价",
       "est-receiving": "预计接收：",
       "bridgeDbkBtn": "通过 DBK 官方服务跨链",
       "pendingItem": {
@@ -2997,7 +2997,11 @@
           }
         },
         "title": "设置密码",
-        "agree": "我同意<1/><2>使用条款</2>和<4>隐私政策</4>",
+        "dataCollection": {
+          "title": "帮助改进 Rabby",
+          "desc": "分享匿名使用数据以帮助改进 Rabby。收集的数据不会与你或你的账户关联。你可以随时在设置中更改此选项。"
+        },
+        "termsNotice": "继续即表示你同意<terms>使用条款</terms>并知悉<privacy>隐私政策</privacy>。",
         "desc": "它将用于解锁钱包和加密数据"
       },
       "successful": {
@@ -3227,6 +3231,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "正在查询地址...",
       "emptyWhitelist": {
         "title": "将地址添加到白名单",
         "desc": "将可信地址添加到白名单，即可快速转账；下次无需再次确认。",
@@ -3930,7 +3935,7 @@
           "closedPnl": "已实现盈亏",
           "unrealizedPnl": "未实现盈亏",
           "fundingTipsV2": "自开仓以来的资金费净额。红色（负值）表示已支付资金费，绿色（正值）表示已收到资金费。",
-          "fundingTipsBold": "这里显示自开仓以来结算的资金费总额。<bold>绿色（正值）</bold>表示从其他交易者处获得的资金费收益，<bold>红色（负值）</bold>表示已支付的资金费。",
+          "fundingTipsBold": "这里显示自开仓以来结算的资金费总额。<positive>绿色（正值）</positive>表示从其他交易者处获得的资金费收益，<negative>红色（负值）</negative>表示已支付的资金费。",
           "assets": "资产",
           "about": "关于"
         },
@@ -4530,7 +4535,20 @@
         "stopLossWhenPriceBelow": "当价格低于时止损",
         "takeProfitWhenPriceBelow": "当价格低于时止盈"
       },
-      "needDepositFirst": "你需要先存入资金。"
+      "needDepositFirst": "你需要先存入资金。",
+      "simpleAccount": {
+        "margin": "保证金",
+        "averageEntry": "平均开仓价",
+        "estimatedLiquidationPrice": "预计强平价",
+        "estimatedLiquidationDistance": "预计强平距离",
+        "tpSl": "止盈/止损",
+        "takeProfitPrice": "止盈价格",
+        "stopLossPrice": "止损价格",
+        "funding": "资金费",
+        "nextFundingRate": "下一期资金费率",
+        "estimatedPnl": "预计盈亏",
+        "fundingPaymentsTips": "这里显示自开仓以来结算的资金费总额。<positive>绿色（正值）</positive>表示从其他交易者处获得的资金费收益，<negative>红色（负值）</negative>表示已支付的资金费。"
+      }
     },
     "desktopSmallSwap": {
       "title": "小额资产归集",

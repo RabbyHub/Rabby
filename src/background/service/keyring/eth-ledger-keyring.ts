@@ -80,6 +80,7 @@ import {
   LedgerAction,
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 import { isManifestV3 } from '@/utils/env';
 import preferenceService from '../preference';
 import * as Sentry from '@sentry/browser';
@@ -262,7 +263,8 @@ const onLedgerDeviceConnect = () => {
 };
 
 if (isManifestV3) {
-  Browser.runtime.onMessage.addListener((request) => {
+  Browser.runtime.onMessage.addListener((request, sender) => {
+    if (!isPrivilegedOffscreenSender(sender)) return;
     if (request.target !== OffscreenCommunicationTarget.extension) return;
     if (request.event === LedgerAction.ledgerDeviceDisconnect) {
       onLedgerDeviceDisconnect(request.productId);

@@ -298,8 +298,6 @@ type ScreenshotFeedbackExtra = {
   extensionVersion: string;
   extensionName?: string;
   totalBalanceText?: string;
-  myCallableAddressCount?: number;
-  myUncallableAddressCount?: number;
   myFirstAddress?: string;
   myFirstImportedAddress?: string;
   myCurrentAddress?: string;
@@ -320,7 +318,8 @@ type PostUserFeedbackParams = {
   pageInfo?: ScreenshotFeedbackPageInfo;
   totalBalanceText?: string;
   /**
-   * Addresses are only attached when the user explicitly opts in.
+   * Addresses are only attached when the "share my addresses" checkbox is
+   * ticked (it is ticked by default; the user can untick it).
    */
   includeAddress?: boolean;
 };
@@ -7111,7 +7110,14 @@ export class WalletController extends BaseController {
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
   removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
   clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
-  getScreenshotShareAddress = feedbackService.getScreenshotShareAddress;
+  /**
+   * Initial state of the "share my addresses" checkbox in screenshot
+   * feedback: ticked by default, but unticked when the user has turned off
+   * "Help improve Rabby" (userDataTrackingOptOut) or unticked it before.
+   */
+  getScreenshotShareAddress = () =>
+    !preferenceService.getUserDataTrackingOptOut() &&
+    feedbackService.getScreenshotShareAddress();
   setScreenshotShareAddress = feedbackService.setScreenshotShareAddress;
   setScreenshotContextMenuVisible =
     feedbackService.setScreenshotContextMenuVisible;
@@ -7158,25 +7164,24 @@ export class WalletController extends BaseController {
         (typeof navigator !== 'undefined' ? navigator.platform : undefined),
     };
 
-    try {
-      const accounts = await keyringService.getAllVisibleAccountsArray();
-      const importedAccounts = accounts.filter(
-        (item) =>
-          item.type !== KEYRING_TYPE.WatchAddressKeyring &&
-          item.type !== KEYRING_TYPE.GnosisKeyring
-      );
+    if (shouldIncludeAddress) {
+      try {
+        const accounts = await keyringService.getAllVisibleAccountsArray();
+        const importedAccounts = accounts.filter(
+          (item) =>
+            item.type !== KEYRING_TYPE.WatchAddressKeyring &&
+            item.type !== KEYRING_TYPE.GnosisKeyring
+        );
 
-      extra.myCallableAddressCount = accounts.length;
-      extra.myUncallableAddressCount = importedAccounts.length;
-      if (shouldIncludeAddress) {
         extra.myFirstAddress = accounts[0]?.address;
         extra.myFirstImportedAddress = importedAccounts[0]?.address;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback accounts extra',
+          error
+        );
       }
-    } catch (error) {
-      console.error('Failed to get screenshot feedback accounts extra', error);
-    }
 
-    if (shouldIncludeAddress) {
       try {
         const currentAccount = preferenceService.getCurrentAccount();
 

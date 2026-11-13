@@ -18,7 +18,6 @@ const createStyledComponentsTransformer = require('typescript-plugin-styled-comp
   .default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
-const useForkTsChecker = process.env.FORK_TS_CHECKER === 'enable';
 
 const paths = require('./paths');
 
@@ -43,6 +42,9 @@ const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
 const FINAL_DIST = IS_MANIFEST_MV3 ? paths.dist : paths.distMv2;
 const IS_FIREFOX = MANIFEST_TYPE.includes('firefox');
 const BUILD_ENV = process.env.RABBY_BUILD_ENV || '';
+// Type checking and lint run as their own CI steps (yarn typecheck / yarn lint).
+// Inside the build they only run for dev builds, outside ts-loader.
+const IS_DEV_BUILD = BUILD_ENV === 'dev';
 const disableStyleSourceMap =
   !!process.env.sourcemap || BUILD_ENV === 'sourcemap';
 const DEXIE_IMPORT_WRAPPER =
@@ -77,12 +79,21 @@ const config = {
     filename: '[name].js',
     publicPath: '/',
   },
-  ...(useForkTsChecker
+  // production builds always start clean
+  ...(IS_DEV_BUILD
     ? {
         cache: {
           type: 'filesystem',
+          // mv2 and mv3 define different constants, keep their caches apart
+          name: `${BUILD_ENV}-${MANIFEST_TYPE}`,
           buildDependencies: {
-            config: [__filename],
+            // webpack.config.js requires every build/*.config.js
+            config: [
+              paths.rootResolve('webpack.config.js'),
+              paths.rootResolve('tsconfig.json'),
+              paths.rootResolve('postcss.config.js'),
+              paths.rootResolve('tailwind.config.js'),
+            ],
           },
         },
       }
@@ -98,13 +109,9 @@ const config = {
             sideEffects: true,
             test: /[\\/]pageProvider[\\/]index.ts/,
             loader: 'ts-loader',
-            ...(useForkTsChecker
-              ? {
-                  options: {
-                    transpileOnly: true,
-                  },
-                }
-              : {}),
+            options: {
+              transpileOnly: true,
+            },
           },
           {
             test: /[\\/]ui[\\/]index.tsx/,
@@ -151,7 +158,7 @@ const config = {
           {
             loader: 'ts-loader',
             options: {
-              ...(useForkTsChecker ? { transpileOnly: true } : {}),
+              transpileOnly: true,
               getCustomTransformers: () => ({
                 before: [
                   // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
@@ -256,12 +263,14 @@ const config = {
     ],
   },
   plugins: [
-    new ESLintWebpackPlugin({
-      extensions: ['ts', 'tsx', 'js', 'jsx'],
-      ...(useForkTsChecker ? { lintDirtyModulesOnly: true } : {}),
-    }),
-    ...(useForkTsChecker
+    ...(IS_DEV_BUILD
       ? [
+          new ESLintWebpackPlugin({
+            extensions: ['ts', 'tsx', 'js', 'jsx'],
+            lintDirtyModulesOnly: true,
+            cache: true,
+            cacheLocation: paths.rootResolve('node_modules/.cache/eslint/'),
+          }),
           new ForkTsCheckerWebpackPlugin({
             async: isEnvDevelopment,
             typescript: {
@@ -320,6 +329,8 @@ const config = {
       'process.env.RABBY_SENTRY_DSN': JSON.stringify(
         process.env.RABBY_SENTRY_DSN
       ),
+      // lets code drop the other manifest's modules at build time
+      'process.env.IS_MANIFEST_MV3': JSON.stringify(IS_MANIFEST_MV3),
     }),
     new CopyPlugin({
       patterns: [
@@ -391,7 +402,7 @@ const config = {
       http: require.resolve('stream-http'),
       vm: false,
     },
-    extensions: ['.js', 'jsx', '.ts', '.tsx'],
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
   },
   stats: 'minimal',
   optimization: {

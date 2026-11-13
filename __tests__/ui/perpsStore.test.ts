@@ -729,4 +729,86 @@ describe('perps store', () => {
       expect(usePerpsStore.getState().dexClearinghouseStates).toBe(seeded);
     });
   });
+
+  describe('loginPerpsAccount user-data subscription', () => {
+    let unsubscribe: jest.Mock;
+    let subscribeToUserFills: jest.Mock;
+
+    beforeEach(() => {
+      jest.useFakeTimers();
+      unsubscribe = jest.fn();
+      const sub = () => jest.fn().mockReturnValue({ unsubscribe });
+      subscribeToUserFills = sub();
+      (getPerpsSDK as jest.Mock).mockReturnValue({
+        ws: {
+          subscribeToAllDexsAssetCtxs: sub(),
+          subscribeToFastAssetCtxs: sub(),
+          subscribeToAllDexsClearinghouseState: sub(),
+          subscribeToSpotState: sub(),
+          subscribeToOpenOrders: sub(),
+          subscribeToUserFunding: sub(),
+          subscribeToUserHistoricalOrders: sub(),
+          subscribeToTwapStates: sub(),
+          subscribeToUserTwapHistory: sub(),
+          subscribeToUserTwapSliceFills: sub(),
+          subscribeToUserNonFundingLedgerUpdates: sub(),
+          subscribeToUserFills,
+        },
+        info: {
+          getUserHistoricalOrders: jest.fn().mockResolvedValue([]),
+          getUserAbstraction: jest
+            .fn()
+            .mockResolvedValue(UserAbstractionResp.default),
+          getSpotMeta: jest.fn().mockResolvedValue(null),
+        },
+      });
+      Object.assign(wallet, {
+        setPerpsCurrentAccount: jest.fn().mockResolvedValue(undefined),
+        switchDesktopPerpsAccount: jest.fn(),
+      });
+      ((wallet.openapi as unknown) as {
+        getPerpPermission: jest.Mock;
+      }).getPerpPermission = jest
+        .fn()
+        .mockResolvedValue({ has_permission: true });
+      // Module-level subscription bookkeeping outlives the store reset.
+      usePerpsStore.getState().unsubscribeAll(undefined);
+      // The wallet home follows accountA before the perps page logs in.
+      usePerpsStore.getState().subscribeToUserData({
+        address: accountA.address,
+        type: accountA.type,
+        isPro: false,
+      });
+    });
+
+    afterEach(() => {
+      jest.clearAllTimers();
+      jest.useRealTimers();
+    });
+
+    test('simple login keeps the channels already following the address', async () => {
+      await usePerpsStore.getState().loginPerpsAccount({
+        account: { ...accountA, address: accountA.address.toUpperCase() },
+        isPro: false,
+      });
+
+      expect(subscribeToUserFills).toHaveBeenCalledTimes(1);
+      expect(unsubscribe).not.toHaveBeenCalled();
+    });
+
+    test('re-subscribes for another address, after unsubscribing, and for Pro', async () => {
+      const login = (account: typeof accountA, isPro: boolean) =>
+        usePerpsStore.getState().loginPerpsAccount({ account, isPro });
+
+      await login(accountB, false);
+      expect(subscribeToUserFills).toHaveBeenCalledTimes(2);
+
+      usePerpsStore.getState().unsubscribeAll(undefined);
+      await login(accountB, false);
+      expect(subscribeToUserFills).toHaveBeenCalledTimes(3);
+
+      await login(accountB, true);
+      expect(subscribeToUserFills).toHaveBeenCalledTimes(4);
+    });
+  });
 });

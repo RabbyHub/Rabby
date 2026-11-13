@@ -1113,7 +1113,7 @@
       "To": "Untuk",
       "Balance": "Saldo: ",
       "Select": "Pilih",
-      "no-quote-found": "Penawaran harga tidak ditemukan. Silakan coba pasangan token lain.",
+      "no-quote-found": "Penawaran harga tidak ditemukan.",
       "From": "Dari",
       "select-chain": "Pilih Rantai",
       "Amount": "Jumlah",
@@ -1152,7 +1152,6 @@
       "bridge-cost": "Biaya Jembatan",
       "no-route-found": "Tidak ada rute ditemukan",
       "est-receiving": "Est. Menerima:",
-      "recommendFromToken": "Bridge dari <1></1> untuk mendapatkan penawaran harga",
       "loss-tips": "Anda akan rugi {{usd}}. Coba jumlah lain.",
       "max-tips": "Nilai ini dihitung dengan mengurangi biaya gas untuk bridge.",
       "est-payment": "Est. Pembayaran:",
@@ -1472,7 +1471,8 @@
           "perpsFloatWidget": "Widget Mengambang Perps",
           "currency": "Mata Uang",
           "searchCurrency": "Cari mata uang",
-          "dataAnalysis": "Analisis Data",
+          "helpImproveRabby": "Bantu tingkatkan Rabby",
+          "helpImproveRabbyDesc": "Bagikan data penggunaan anonim untuk membantu meningkatkan Rabby. Data yang dikumpulkan tidak dikaitkan dengan Anda atau akun Anda.",
           "extraFeeProtection": "Perlindungan Biaya Tambahan",
           "extraFeeProtectionDesc": "Memblokir permintaan tanda tangan yang memungkinkan ekstensi browser memungut biaya tambahan"
         },
@@ -2908,7 +2908,11 @@
           }
         },
         "title": "Atur Kata Sandi",
-        "agree": "Saya setuju dengan <1/> <2>Ketentuan Penggunaan</2> dan <4>Kebijakan Privasi</4>",
+        "dataCollection": {
+          "title": "Bantu tingkatkan Rabby",
+          "desc": "Bagikan data penggunaan anonim untuk membantu meningkatkan Rabby. Data yang dikumpulkan tidak dikaitkan dengan Anda atau akun Anda. Anda dapat mengubahnya kapan saja di Pengaturan."
+        },
+        "termsNotice": "Dengan melanjutkan, Anda menyetujui <terms>Ketentuan Penggunaan</terms> dan mengakui <privacy>Kebijakan Privasi</privacy>.",
         "desc": "Ini akan digunakan untuk membuka dompet dan mengenkripsi data."
       },
       "successful": {
@@ -3177,6 +3181,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Mencari alamat...",
       "emptyWhitelist": {
         "title": "Tambahkan alamat ke daftar putih",
         "desc": "Tambahkan alamat tepercaya ke daftar putih untuk transfer cepat - tidak diperlukan konfirmasi di lain waktu",
@@ -3880,7 +3885,7 @@
           "closedPnl": "Pnl terealisasi",
           "direction": "Arah",
           "fundingTipsV2": "Pendanaan bersih sejak posisi dibuka. Nilai merah (negatif) menunjukkan pendanaan yang dibayar, sedangkan nilai hijau (positif) menunjukkan pendanaan yang diterima.",
-          "fundingTipsBold": "Ini menunjukkan total pendanaan yang diselesaikan sejak posisi dibuka. Nilai <bold>hijau (positif)</bold> berarti Anda menerima pendanaan dari trader lain, sedangkan nilai <bold>merah (negatif)</bold> adalah biaya pendanaan yang Anda bayarkan kepada mereka.",
+          "fundingTipsBold": "Ini menunjukkan total pendanaan yang diselesaikan sejak posisi dibuka. Nilai <positive>hijau (positif)</positive> berarti Anda menerima pendanaan dari trader lain, sedangkan nilai <negative>merah (negatif)</negative> adalah biaya pendanaan yang Anda bayarkan kepada mereka.",
           "assets": "Aset",
           "about": "Tentang"
         },
@@ -4480,7 +4485,20 @@
         "stopLossTipsShortLiquidation": "Harga lebih tinggi dari harga likuidasi ({{price}})",
         "takeProfitTipsLong": "Harga ambil untung harus lebih tinggi dari harga saat ini"
       },
-      "needDepositFirst": "Anda perlu melakukan setoran dana terlebih dahulu."
+      "needDepositFirst": "Anda perlu melakukan setoran dana terlebih dahulu.",
+      "simpleAccount": {
+        "margin": "Margin",
+        "averageEntry": "Harga masuk rata-rata",
+        "estimatedLiquidationPrice": "Estimasi harga likuidasi",
+        "estimatedLiquidationDistance": "Estimasi jarak likuidasi",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Harga ambil untung",
+        "stopLossPrice": "Harga hentikan rugi",
+        "funding": "Pendanaan",
+        "nextFundingRate": "Tingkat Pendanaan Berikutnya",
+        "estimatedPnl": "Estimasi PNL",
+        "fundingPaymentsTips": "Ini menunjukkan total pendanaan yang diselesaikan sejak posisi dibuka. Nilai <positive>hijau (positif)</positive> berarti Anda menerima pendanaan dari trader lain, sedangkan nilai <negative>merah (negatif)</negative> adalah biaya pendanaan yang Anda bayarkan kepada mereka."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

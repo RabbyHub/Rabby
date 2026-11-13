@@ -12,7 +12,6 @@ import {
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { EVENTS, CHAINS_ENUM, LANGS, DARK_MODE_TYPE } from 'consts';
 import browser from 'webextension-polyfill';
-import semver from 'semver-compare';
 import { syncStateToUI } from '../utils/broadcastToUI';
 import { BROADCAST_TO_UI_EVENTS } from '@/utils/broadcastToUI';
 import dayjs from 'dayjs';
@@ -27,6 +26,25 @@ import {
 import { findChain } from '@/utils/chain';
 
 const version = process.env.release || '0';
+
+/**
+ * Compare the first three dot-separated numbers of two versions: 1 if `a` is
+ * newer, -1 if older, 0 if equal. Never throws, unlike `semver`, because
+ * `version` above can be a bare '0'.
+ */
+const compareVersions = (a: string, b: string) => {
+  const pa = a.split('.');
+  const pb = b.split('.');
+  for (let i = 0; i < 3; i++) {
+    const na = Number(pa[i]);
+    const nb = Number(pb[i]);
+    if (na > nb) return 1;
+    if (nb > na) return -1;
+    if (!isNaN(na) && isNaN(nb)) return 1;
+    if (isNaN(na) && !isNaN(nb)) return -1;
+  }
+  return 0;
+};
 
 export interface Account {
   type: string;
@@ -379,7 +397,7 @@ class PreferenceService {
     }
     if (
       !this.store.currentVersion ||
-      semver(version, this.store.currentVersion) > 0
+      compareVersions(version, this.store.currentVersion) > 0
     ) {
       this.store.firstOpen = true;
     }

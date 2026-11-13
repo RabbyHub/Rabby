@@ -3,6 +3,7 @@ import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import { formatUsdValue, sinceTime, splitNumberByStep } from '@/ui/utils';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
+import dayjs from 'dayjs';
 import { ReactComponent as RcIconDeposit } from '@/ui/assets/perps/IconDeposit.svg';
 import { ReactComponent as RcIconPending } from '@/ui/assets/perps/IconPending.svg';
 import { ReactComponent as RcIconWithdraw } from '@/ui/assets/perps/IconWithdraw.svg';
@@ -12,7 +13,6 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useTranslation } from 'react-i18next';
 import { TokenImg } from './TokenImg';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
-import { PerpsDisplayCoinName } from './PerpsDisplayCoinName';
 import { SPOT_STABLE_COIN_NAME, PerpsQuoteAsset } from '../constants';
 import { ReactComponent as RcIconUSDT } from '@/ui/assets/perps/IconUSDT.svg';
 import { ReactComponent as RcIconUSDE } from '@/ui/assets/perps/IconUSDE.svg';
@@ -38,6 +38,16 @@ interface HistoryAccountItemProps {
   data: AccountHistoryItem;
   onClick?: (data: AccountHistoryItem) => void;
 }
+
+// sinceTime, minus the year for this year's records so the row keeps room
+// for the price.
+const formatHistoryTime = (ms: number) => {
+  if (Date.now() - ms < 24 * 3600 * 1000) return sinceTime(ms / 1000);
+  const time = dayjs(ms);
+  return time.format(
+    time.isSame(dayjs(), 'year') ? 'MM/DD HH:mm' : 'YYYY/MM/DD HH:mm'
+  );
+};
 
 const getPnlColor = (pnl: string | number) => {
   const pnlValue = Number(pnl);
@@ -92,68 +102,68 @@ export const HistoryAccountItem: React.FC<HistoryAccountItemProps> = ({
     ? t('page.perps.deposit')
     : t('page.perps.withdraw');
 
+  const isSuccess = status === 'success';
+  const amountSign = isSuccess
+    ? isTransfer
+      ? ''
+      : isRealDeposit
+      ? '+'
+      : '-'
+    : isTransfer || isRealDeposit
+    ? '+'
+    : '-';
+  const amountColor =
+    isSuccess && isTransfer
+      ? 'text-r-neutral-title-1'
+      : isTransfer || isRealDeposit
+      ? 'text-r-green-default'
+      : 'text-r-red-default';
+
   return (
     <div
       className={clsx(
-        'w-full bg-r-neutral-card1 rounded-[12px] px-16 py-12 flex items-center justify-between mb-8 h-[60px]',
+        // 11px + 1px border = 12px inset; height stays 60.
+        'w-full bg-r-neutral-card1 rounded-[8px] p-[11px] border border-transparent flex items-center gap-12 mb-8 h-[60px]',
         isTransfer &&
-          'border border-transparent hover:bg-r-blue-light1 hover:border-rabby-blue-default cursor-pointer'
+          'hover:bg-r-blue-light1 hover:border-rabby-blue-default cursor-pointer'
       )}
       onClick={isTransfer ? () => onClick?.(data) : undefined}
     >
-      <div className="flex items-center">
-        {ImgAvatar}
-        <div className="flex flex-col ml-12">
-          <div className="text-13 text-r-neutral-title-1 font-medium">
+      <div className="flex-shrink-0 flex">{ImgAvatar}</div>
+      <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex items-center justify-between gap-8">
+          <div className="text-15 leading-[20px] font-medium text-r-neutral-title-1 truncate">
             {titleText}
           </div>
-          {status === 'pending' ? (
-            <div className="text-13 text-r-orange-default font-medium">
-              {t('page.perps.pending')}
-            </div>
-          ) : (
-            <div className="text-13 text-r-neutral-foot font-medium">
-              {t('page.perps.completed')}
+          <div
+            className={clsx(
+              'flex-shrink-0 text-15 leading-[20px] font-medium',
+              amountColor
+            )}
+          >
+            {amountSign}
+            {formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}
+          </div>
+        </div>
+        <div className="flex items-center justify-between gap-8 text-13 leading-[16px] font-normal">
+          <div
+            className={clsx(
+              'truncate',
+              status === 'pending'
+                ? 'text-r-orange-default'
+                : 'text-r-neutral-foot'
+            )}
+          >
+            {status === 'pending'
+              ? t('page.perps.pending')
+              : t('page.perps.completed')}
+          </div>
+          {isSuccess && (
+            <div className="flex-shrink-0 text-r-neutral-foot">
+              {formatHistoryTime(time)}
             </div>
           )}
         </div>
-      </div>
-
-      <div className="flex flex-col items-end">
-        {status === 'success' ? (
-          <>
-            <div
-              className={clsx(
-                'text-14 font-medium',
-                isTransfer
-                  ? 'text-r-neutral-title-1'
-                  : isRealDeposit
-                  ? 'text-r-green-default'
-                  : 'text-r-red-default'
-              )}
-            >
-              {isTransfer ? '' : isRealDeposit ? '+' : '-'}
-              {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
-            </div>
-            <div className="text-13 text-r-neutral-foot">
-              {sinceTime(time / 1000)}
-            </div>
-          </>
-        ) : (
-          <div
-            className={clsx(
-              'text-14 font-medium',
-              isTransfer
-                ? 'text-r-green-default'
-                : isRealDeposit
-                ? 'text-r-green-default'
-                : 'text-r-red-default'
-            )}
-          >
-            {isTransfer || isRealDeposit ? '+' : '-'}
-            {`${formatUsdValue(usdValue, BigNumber.ROUND_DOWN)}`}
-          </div>
-        )}
       </div>
     </div>
   );
@@ -236,14 +246,15 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
   return (
     <div
       className={clsx(
-        'w-full bg-r-neutral-card1 rounded-[12px] px-16 py-12 flex items-center justify-between mb-8 h-[60px]',
+        // 11px + 1px border = 12px inset; height stays 60.
+        'w-full bg-r-neutral-card1 rounded-[8px] p-[11px] flex items-center gap-12 mb-8 h-[60px]',
         'border border-transparent',
         'hover:bg-r-blue-light1',
         'hover:border-rabby-blue-default cursor-pointer'
       )}
       onClick={() => onClick?.(fill)}
     >
-      <div className="flex items-center">
+      <div className="flex-shrink-0 flex">
         {stableCoinSwap ? (
           (() => {
             const Icon = STABLECOIN_SVG[stableCoinSwap.symbol];
@@ -256,20 +267,35 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
             withDirection={true}
           />
         )}
-        <div className="flex flex-col ml-12">
-          <div className="text-13 text-r-neutral-title-1 font-medium">
+      </div>
+      {/* Always two lines: long pair names truncate instead of wrapping. */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        <div className="flex items-center justify-between gap-8">
+          <div className="text-15 leading-[20px] font-medium text-r-neutral-title-1 truncate">
             {titleString}
           </div>
-          <div className="text-13 text-r-neutral-foot font-medium">
-            {stableCoinSwap ? (
-              t('page.swap.Completed')
-            ) : (
-              <PerpsDisplayCoinName
-                item={itemData}
-                baseClassName="text-r-neutral-foot"
-                quoteClassName="text-r-neutral-foot"
-              />
-            )}
+          {isClose ? (
+            <div
+              className={clsx(
+                'flex-shrink-0 text-15 leading-[20px] font-medium',
+                getPnlColor(pnlValue)
+              )}
+            >
+              {pnlValue > 0 ? '+' : '-'}$
+              {splitNumberByStep(Math.abs(pnlValue).toFixed(2))}
+            </div>
+          ) : null}
+        </div>
+        {/* Plain text so the whole line inherits the foot color —
+            PerpsDisplayCoinName's default title color on the base can win
+            over a passed foot class. */}
+        <div className="flex items-center justify-between gap-8 text-13 leading-[16px] font-normal text-r-neutral-foot">
+          <div className="truncate">
+            {stableCoinSwap
+              ? t('page.swap.Completed')
+              : `${formatPerpsCoin(
+                  itemData?.displayName || itemData?.name || ''
+                )}/${itemData?.quoteAsset || 'USDC'}`}
             {!stableCoinSwap && fill.px ? (
               <span className="ml-4">
                 @$
@@ -277,25 +303,8 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
               </span>
             ) : null}
           </div>
+          <div className="flex-shrink-0">{formatHistoryTime(fill.time)}</div>
         </div>
-      </div>
-
-      <div className="flex flex-col items-end">
-        {isClose ? (
-          <>
-            <div className={clsx('text-14 font-medium', getPnlColor(pnlValue))}>
-              {pnlValue > 0 ? '+' : '-'}$
-              {splitNumberByStep(Math.abs(pnlValue).toFixed(2))}
-            </div>
-            <div className="text-13 text-r-neutral-foot">
-              {sinceTime(fill.time / 1000)}
-            </div>
-          </>
-        ) : (
-          <div className="text-13 text-r-neutral-foot">
-            {sinceTime(fill.time / 1000)}
-          </div>
-        )}
       </div>
     </div>
   );

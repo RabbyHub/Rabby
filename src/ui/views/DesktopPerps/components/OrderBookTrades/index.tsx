@@ -5,6 +5,7 @@ import { OrderBook } from './components/OrderBook';
 import { Trades } from './components/Trades';
 import { useRabbySelector } from '@/ui/store';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
+import { publishLastTradePrice } from '../../lastTradePrice';
 export interface Trade {
   time: number;
   price: string;
@@ -46,6 +47,10 @@ export const OrderBookTrades: React.FC = () => {
           size: trade.sz as string,
           side: (trade.side === 'B' ? 'buy' : 'sell') as 'buy' | 'sell',
         }));
+
+        // Outside the rAF flush below on purpose: the tab title follows this
+        // and must keep updating while the tab is hidden.
+        publishLastTradePrice(selectedCoin, newTrades[0].price);
 
         // Newest first, keep only the latest 300 — accumulate across burst calls.
         tradesBufferRef.current = [

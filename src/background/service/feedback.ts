@@ -13,7 +13,10 @@ export interface FeedbackServiceStore {
   screenshotFeedbacks: LocalUserFeedbackItem[];
   /**
    * Last state of the "share my addresses" checkbox in the screenshot
-   * feedback modal. Opt-in: false until the user ticks it.
+   * feedback modal. Ticked by default when nothing is stored yet (e.g. a new
+   * install); a value already persisted by an earlier version is kept as is.
+   * The modal also starts unticked when the user turned off
+   * "Help improve Rabby" (see WalletController.getScreenshotShareAddress).
    */
   screenshotShareAddress?: boolean;
 }
@@ -31,7 +34,7 @@ const getScreenshotContextMenuTitle = () =>
 class FeedbackService {
   store: FeedbackServiceStore = {
     screenshotFeedbacks: [],
-    screenshotShareAddress: false,
+    screenshotShareAddress: true,
   };
 
   init = async () => {
@@ -39,7 +42,7 @@ class FeedbackService {
       name: 'feedback',
       template: {
         screenshotFeedbacks: [],
-        screenshotShareAddress: false,
+        screenshotShareAddress: true,
       },
     });
 

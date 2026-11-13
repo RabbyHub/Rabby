@@ -1368,7 +1368,8 @@
           "biometricUnlockHint": "Bu cihazda açmak için biyometrik verileri kullanın.",
           "currency": "Para Birimi",
           "searchCurrency": "Para birimi ara",
-          "dataAnalysis": "Veri Analizi",
+          "helpImproveRabby": "Rabby'yi geliştirmemize yardımcı olun",
+          "helpImproveRabbyDesc": "Rabby'yi geliştirmeye yardımcı olmak için anonim kullanım verilerini paylaşın. Toplanan veriler sizinle veya hesabınızla ilişkilendirilmez.",
           "extraFeeProtection": "Ek Ücret Koruması",
           "extraFeeProtectionDesc": "Tarayıcı uzantılarının ek ücret almasına izin veren imza isteklerini engeller"
         },
@@ -2335,7 +2336,7 @@
       "title": "Köprü",
       "Balance": "Bakiye: ",
       "the-following-bridge-route-are-found": "Bulunan rota",
-      "no-quote-found": "Teklif bulunamadı. Lütfen diğer token çiftlerini deneyin.",
+      "no-quote-found": "Teklif bulunamadı.",
       "gas-x-price": "Gas fiyatı: {{price}} Gwei.",
       "unlimited-allowance": "Sınırsız harcama limiti",
       "actual": "Mevcut:",
@@ -2365,7 +2366,6 @@
       "est-receiving": "Tahmini Alınan:",
       "loss-tips": "{{usd}} kaybediyorsunuz. Farklı bir miktar deneyin.",
       "estimated-value": "≈ {{value}}",
-      "recommendFromToken": "Kullanılabilir bir teklif almak için <1></1> ağından köprüleyin",
       "max-tips": "Bu değer, köprü için gaz maliyeti çıkarılarak hesaplanır.",
       "enable-it": "Etkinleştir",
       "no-route-found": "Rota bulunamadı",
@@ -2915,7 +2915,11 @@
         },
         "title": "Parola Belirle",
         "desc": "Cüzdanı açmak ve verileri şifrelemek için kullanılacaktır",
-        "agree": "<2>Kullanım Koşulları</2><1/> ve <4>Gizlilik Politikası</4>'nı kabul ediyorum"
+        "dataCollection": {
+          "title": "Rabby'yi geliştirmemize yardımcı olun",
+          "desc": "Rabby'yi geliştirmeye yardımcı olmak için anonim kullanım verilerini paylaşın. Toplanan veriler sizinle veya hesabınızla ilişkilendirilmez. Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
+        },
+        "termsNotice": "Devam ederek <terms>Kullanım Koşulları</terms>'nı kabul etmiş ve <privacy>Gizlilik Politikası</privacy>'nı onaylamış olursunuz."
       },
       "successful": {
         "import": "Başarıyla İçe Aktarıldı",
@@ -3183,6 +3187,7 @@
       }
     },
     "selectToAddress": {
+      "resolvingAddress": "Adres aranıyor...",
       "emptyWhitelist": {
         "title": "Adresi beyaz listeye ekle",
         "desc": "Güvenilir adresleri hızlı transferler için beyaz listeye ekleyin - bir sonraki sefer onay gerekmez",
@@ -3886,7 +3891,7 @@
           "closedPnl": "Gerçekleşen PnL",
           "fee": "Ücret",
           "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir.",
-          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <bold>Yeşil (pozitif)</bold> değerler, diğer ticaretçilerden kazandığınızı, <bold>Kırmızı (negatif)</bold> değerler ise onlara ödediğiniz finansman maliyetleridir.",
+          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <positive>Yeşil (pozitif)</positive> değerler, diğer ticaretçilerden kazandığınızı, <negative>Kırmızı (negatif)</negative> değerler ise onlara ödediğiniz finansman maliyetleridir.",
           "assets": "Varlıklar",
           "about": "Hakkında"
         },
@@ -4486,7 +4491,20 @@
         "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından daha yüksektir ({{price}})",
         "takeProfitExpectedPNL": "Kâr Al Beklenen PnL"
       },
-      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir."
+      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir.",
+      "simpleAccount": {
+        "margin": "Marj",
+        "averageEntry": "Ort. giriş fiyatı",
+        "estimatedLiquidationPrice": "Tahmini lik. fiyatı",
+        "estimatedLiquidationDistance": "Tahmini lik. mesafesi",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Kâr alma fiyatı",
+        "stopLossPrice": "Zarar durdurma fiyatı",
+        "funding": "Fonlama",
+        "nextFundingRate": "Sonraki Fonlama Oranı",
+        "estimatedPnl": "Tahmini PNL",
+        "fundingPaymentsTips": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <positive>Yeşil (pozitif)</positive> değerler, diğer ticaretçilerden kazandığınızı, <negative>Kırmızı (negatif)</negative> değerler ise onlara ödediğiniz finansman maliyetleridir."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

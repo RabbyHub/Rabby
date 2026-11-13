@@ -355,7 +355,11 @@ export const TakeOrStopMarketTradingContainer: React.FC<TakeOrStopMarketTradingC
         <PerpsCheckbox
           checked={reduceOnly}
           onChange={setReduceOnly}
-          tooltipText={t('page.perpsPro.tradingPanel.reduceOnlyTips')}
+          tooltipText={t(
+            currentPosition
+              ? 'page.perpsPro.tradingPanel.reduceOnlyTips'
+              : 'page.perpsPro.tradingPanel.reduceOnlyNoPositionTips'
+          )}
           title={t('page.perpsPro.tradingPanel.reduceOnly')}
           disabled={!currentPosition}
         />
