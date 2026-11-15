@@ -2,6 +2,7 @@ import {
   OffscreenCommunicationTarget,
   KnownOrigins,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 async function openConnectorTab(url: string) {
   const browserTab = window.open(url);
@@ -28,8 +29,11 @@ export default function initLattice() {
    * is then sent back to the offscreen bridge for lattice, which extends from
    * the eth-lattice-keyring Keyring class.
    */
-  chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
-    if (msg.target !== OffscreenCommunicationTarget.latticeOffscreen) {
+  chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
+    if (
+      msg.target !== OffscreenCommunicationTarget.latticeOffscreen ||
+      !isPrivilegedOffscreenSender(sender)
+    ) {
       return;
     }
 

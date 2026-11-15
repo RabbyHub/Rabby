@@ -412,6 +412,99 @@ test('prepareInitialGasSelection rejects when gas market fails', async () => {
   ).rejects.toBe(error);
 });
 
+describe('prepareInitialGasSelection above Number.MAX_SAFE_INTEGER (RABBY-5QC)', () => {
+  // 12,345,678 gwei, seen in production as a custom gas price
+  const BIG_PRICE = 12345678000000000;
+  const BIG_PRICE_HEX = `0x${BigInt(BIG_PRICE).toString(16)}`;
+  const createGasList = (price: number) => [
+    {
+      level: 'normal',
+      price,
+      priority_price: price,
+      front_tx_count: 0,
+      estimated_seconds: 1,
+      base_fee: 0,
+    },
+    {
+      level: 'custom',
+      price,
+      priority_price: price,
+      front_tx_count: 0,
+      estimated_seconds: 1,
+      base_fee: 0,
+    },
+  ];
+  const baseTx = {
+    chainId: 1,
+    from: '0xfrom',
+    to: '0xto',
+    data: '0x',
+    value: '0x0',
+  } as any;
+
+  test('writes exact type-2 fee fields', async () => {
+    const result = await prepareInitialGasSelection({
+      tx: baseTx,
+      chainId: 1,
+      support1559: true,
+      lastTimeGas: null,
+      loadGasMarket: jest.fn().mockResolvedValue(createGasList(BIG_PRICE)),
+    });
+
+    expect(result.tx).toMatchObject({
+      maxFeePerGas: BIG_PRICE_HEX,
+      maxPriorityFeePerGas: BIG_PRICE_HEX,
+    });
+    expect(result.tx).not.toHaveProperty('gasPrice');
+  });
+
+  test('writes an exact legacy gasPrice for a cached custom price', async () => {
+    const loadGasMarket = jest.fn().mockResolvedValue(createGasList(BIG_PRICE));
+    const result = await prepareInitialGasSelection({
+      tx: baseTx,
+      chainId: 1,
+      support1559: false,
+      lastTimeGas: {
+        lastTimeSelect: 'gasPrice',
+        gasPrice: BIG_PRICE,
+      } as any,
+      loadGasMarket,
+    });
+
+    expect(loadGasMarket).toHaveBeenCalledWith(BIG_PRICE);
+    expect(result.gas.level).toBe('custom');
+    expect(result.tx.gasPrice).toBe(BIG_PRICE_HEX);
+    expect(result.tx).not.toHaveProperty('maxFeePerGas');
+  });
+
+  test('keeps ordinary prices unchanged', async () => {
+    const result = await prepareInitialGasSelection({
+      tx: baseTx,
+      chainId: 1,
+      support1559: false,
+      lastTimeGas: null,
+      loadGasMarket: jest.fn().mockResolvedValue(createGasList(30_000_000_000)),
+    });
+
+    expect(result.tx.gasPrice).toBe(intToHex(30_000_000_000));
+  });
+
+  test.each([NaN, Infinity, -1])(
+    'fails closed on a %p gas price',
+    async (price) => {
+      await expect(
+        prepareInitialGasSelection({
+          tx: baseTx,
+          chainId: 1,
+          support1559: true,
+          lastTimeGas: null,
+          loadGasMarket: jest.fn().mockResolvedValue(createGasList(price)),
+        })
+      ).rejects.toThrow('Invalid hex quantity');
+    }
+  );
+});
+
 describe('buildSignTx', () => {
   // Verbatim copy of the construction SignTx used before it was extracted.
   // buildSignTx must keep producing exactly this - it decides what the user
@@ -532,6 +625,23 @@ describe('buildSignTx', () => {
     expect(tx.chainId).toBe(1);
     expect(tx.gasPrice).toBe('0x3b9aca00');
     expect(tx.maxPriorityFeePerGas).toBeUndefined();
+  });
+
+  test('buildSignTx converts a non-hex gas price past MAX_SAFE_INTEGER exactly', () => {
+    const base = { from: '0xfrom', to: '0xto', chainId: 1 } as any;
+
+    expect(
+      buildSignTx({
+        tx: { ...base, gasPrice: '9007199254740993' },
+        chainId: 1,
+      }).gasPrice
+    ).toBe('0x20000000000001');
+    expect(
+      buildSignTx({
+        tx: { ...base, maxFeePerGas: 12345678000000000 },
+        chainId: 1,
+      }).gasPrice
+    ).toBe(`0x${BigInt(12345678000000000).toString(16)}`);
   });
 
   test('buildSignTx uses the Tempo signing semantics for display', () => {

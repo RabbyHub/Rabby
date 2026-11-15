@@ -30,6 +30,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { findChain } from '@/utils/chain';
 import { getTxScanLink } from '@/utils';
 import { is7702Tx } from '@/utils/transaction';
+import { toHexQuantity } from '@/utils/hexQuantity';
 import { omit } from 'lodash';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
@@ -225,7 +226,7 @@ export const TransactionItem = ({
     const cancelTx: Tx = {
       from: maxGasTx.rawTx.from,
       to: maxGasTx.rawTx.from,
-      gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+      gasPrice: toHexQuantity(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
       value: '0x0',
       chainId: item.chainId,
       nonce: intToHex(item.nonce),
@@ -325,9 +326,7 @@ export const TransactionItem = ({
       nonce: originTx.rawTx.nonce,
       chainId: originTx.rawTx.chainId,
       to: originTx.rawTx.to,
-      gasPrice: intToHex(
-        Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
-      ),
+      gasPrice: toHexQuantity(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
       // @ts-expect-error extend tx metadata
       isSpeedUp: true,
       reqId: maxGasTx.reqId,

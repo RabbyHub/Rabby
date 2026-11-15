@@ -34,6 +34,7 @@ import {
 } from '@ledgerhq/device-transport-kit-web-hid';
 import { SignerEthBuilder } from '@ledgerhq/device-signer-kit-ethereum';
 import {
+  ClearSignContextType,
   ContextModuleBuilder,
   ContextModuleChainID,
 } from '@ledgerhq/context-module';
@@ -45,6 +46,7 @@ import type {
 import type {
   BlindSigningReportParams,
   BlindSigningReporter,
+  ContextModule,
 } from '@ledgerhq/context-module';
 import {
   firstValueFrom,
@@ -78,7 +80,9 @@ import {
   LedgerAction,
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 import { isManifestV3 } from '@/utils/env';
+import preferenceService from '../preference';
 import * as Sentry from '@sentry/browser';
 
 const HD_PATH_BASE = {
@@ -259,7 +263,8 @@ const onLedgerDeviceConnect = () => {
 };
 
 if (isManifestV3) {
-  Browser.runtime.onMessage.addListener((request) => {
+  Browser.runtime.onMessage.addListener((request, sender) => {
+    if (!isPrivilegedOffscreenSender(sender)) return;
     if (request.target !== OffscreenCommunicationTarget.extension) return;
     if (request.event === LedgerAction.ledgerDeviceDisconnect) {
       onLedgerDeviceDisconnect(request.productId);
@@ -268,6 +273,21 @@ if (isManifestV3) {
     }
   });
 }
+
+// Clear signing disabled: no contexts, so the device falls back to its default flow.
+const disabledClearSigningError = new Error('Ledger clear signing disabled');
+const disabledContextModule: ContextModule = {
+  getContexts: async () => [],
+  getFieldContext: async () => ({
+    type: ClearSignContextType.ERROR,
+    error: disabledClearSigningError,
+  }),
+  getTypedDataFilters: async () => ({
+    type: 'error',
+    error: disabledClearSigningError,
+  }),
+  report: async () => {},
+};
 
 const getEthContextModule = (
   onBlindSigningReport?: (params: BlindSigningReportParams) => void
@@ -756,21 +776,23 @@ class LedgerBridgeKeyring {
       sessionId,
     })
       .withContextModule(
-        getEthContextModule((params) => {
-          if (
-            !attempt ||
-            this.activeSigningAttempts.size !== 1 ||
-            !params.ethContext
-          )
-            return;
-          attempt.clear_signing_context_errors = Math.max(
-            0,
-            Math.min(99, Math.trunc(params.ethContext.partialContextErrors))
-          );
-          attempt.clear_signing_type = String(
-            params.ethContext.clearSigningType
-          ).slice(0, 32);
-        })
+        preferenceService.getIsLedgerClearSigningEnabled()
+          ? getEthContextModule((params) => {
+              if (
+                !attempt ||
+                this.activeSigningAttempts.size !== 1 ||
+                !params.ethContext
+              )
+                return;
+              attempt.clear_signing_context_errors = Math.max(
+                0,
+                Math.min(99, Math.trunc(params.ethContext.partialContextErrors))
+              );
+              attempt.clear_signing_type = String(
+                params.ethContext.clearSigningType
+              ).slice(0, 32);
+            })
+          : disabledContextModule
       )
       .build();
     return ethSigner;

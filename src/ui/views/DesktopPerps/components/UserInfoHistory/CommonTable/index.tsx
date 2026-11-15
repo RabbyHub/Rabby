@@ -13,7 +13,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 const activeIconColor = 'var(--rb-neutral-title-1)';
 const inactiveIconColor = 'var(--rb-neutral-secondary)';
 
-const SortIcon: React.FC<{ order: 'ascend' | 'descend' | null }> = ({
+export const SortIcon: React.FC<{ order: 'ascend' | 'descend' | null }> = ({
   order,
 }) => {
   const upColor = order === 'ascend' ? activeIconColor : inactiveIconColor;

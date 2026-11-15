@@ -8,6 +8,7 @@ jest.mock('@/utils/user-data-tracking', () => ({
 import * as Sentry from '@sentry/browser';
 import { SENTRY_IGNORED_SAMPLES } from '../fixtures/sentry-ignored-samples';
 import { getSentryConfig } from '@/utils/sentry-config';
+import { createBridgeSdkSentryEvent } from '@/utils/bridge-sdk-report';
 import { applySigningContext, attachSigningContext } from '@/utils/sentry';
 import type { SigningOperation } from '@/background/service/keyring/signing-diagnostics';
 
@@ -77,6 +78,63 @@ const createRecordingClient = (events: any[]) => {
 
 describe('Sentry configuration', () => {
   const config = getSentryConfig();
+
+  test('keeps Bridge diagnostics without inherited wallet or request data', async () => {
+    const events: any[] = [];
+    const { client, scope } = createRecordingClient(events);
+    const secret = 'bridge-private-context';
+    scope.setUser({ id: secret, ip_address: '127.0.0.1' });
+    scope.setTag('private_tag', secret);
+    scope.setExtra('private_extra', { amount: '123.456', secret });
+    scope.setContext('wallet', { secret });
+    scope.addBreadcrumb({ message: secret });
+    const reportEvent = createBridgeSdkSentryEvent({
+      errors: [
+        {
+          error_code: 'BRIDGE_RECEIVER_MISMATCH',
+          aggregatorId: 'relay',
+          chainId: 'arb',
+          operation: 'buildTx',
+          pass: false,
+          routerPass: true,
+          receiverPass: false,
+          blocking: true,
+          wallet: secret,
+          amount: '123.456',
+          calldata: secret,
+        },
+      ],
+    });
+    expect(reportEvent).not.toBeNull();
+    scope.captureEvent(
+      { ...reportEvent!, request: { url: `https://example.com/${secret}` } },
+      { data: { bridge_sdk_report: reportEvent!.extra.bridge_sdk_report } }
+    );
+    await client.flush(2000);
+
+    expect(events).toHaveLength(1);
+    expect(events[0].tags).toMatchObject({
+      bridge_sdk: 'validation',
+      bridge_error_code: 'BRIDGE_RECEIVER_MISMATCH',
+      bridge_operation: 'buildTx',
+      bridge_blocking: 'true',
+    });
+    for (const field of ['user', 'request', 'breadcrumbs', 'contexts'])
+      expect(events[0][field]).toBeUndefined();
+    expect(events[0].extra.bridge_sdk_report.errors[0].receiverPass).toBe(
+      false
+    );
+    expect(JSON.stringify(events[0])).not.toContain(secret);
+    expect(JSON.stringify(events[0])).not.toContain('123.456');
+
+    const hint = {
+      attachments: [{ filename: 'private.txt', data: secret }],
+      data: { bridge_sdk_report: reportEvent!.extra.bridge_sdk_report },
+    };
+    await config.beforeSend!(reportEvent!, hint);
+    expect(hint.attachments).toEqual([]);
+    await client.close(2000);
+  });
 
   test('preserves the parsed stacktrace when canonicalizing signing errors', () => {
     const error = new Error('device failed');

@@ -3,13 +3,14 @@ import { mainnet } from 'viem/chains';
 import { normalize } from 'viem/ens';
 import { findChainByID } from '@/utils/chain';
 import type { WalletControllerType } from '@/ui/utils';
+import { isPossibleEnsName } from './ensName';
 
 export const resolveEnsAddressByName = async (
   name: string,
   wallet: WalletControllerType
 ): Promise<{ addr: string; name: string } | null> => {
   const input = name?.trim();
-  if (!input) return null;
+  if (!input || !isPossibleEnsName(input)) return null;
 
   const ethServerId = findChainByID(1)?.serverId || 'eth';
   const ensClient = createPublicClient({

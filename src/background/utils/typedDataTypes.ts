@@ -204,7 +204,7 @@ export const reportInvalidTypedDataValue = (
       },
     });
   } catch (e) {
-    // Reporting must not block the approval.
+    // Reporting failures must not affect validation.
   }
 };
 

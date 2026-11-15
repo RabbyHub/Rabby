@@ -5,7 +5,6 @@ import arcadeLightImg from '@/ui/assets/ecology/sonic/arcade-light.svg';
 import arcadeMinesImg from '@/ui/assets/ecology/sonic/arcade-mines.png';
 import arcadePlinkoImg from '@/ui/assets/ecology/sonic/arcade-plinko.png';
 import arcadeWheelImg from '@/ui/assets/ecology/sonic/arcade-wheel.png';
-import { ReactComponent as RcDiscord } from '@/ui/assets/ecology/sonic/discord.svg';
 import { ReactComponent as RcGlobe } from '@/ui/assets/ecology/sonic/globe.svg';
 import { ReactComponent as RcTelegram } from '@/ui/assets/ecology/sonic/telegram.svg';
 import { ReactComponent as RcX } from '@/ui/assets/ecology/sonic/x.svg';
@@ -50,10 +49,6 @@ const links: HomeLink[] = [
   {
     icon: RcTelegram,
     url: 'https://t.me/SonicAnnouncements',
-  },
-  {
-    icon: RcDiscord,
-    url: 'https://discord.gg/3Ynr2QDSnB',
   },
 ];
 

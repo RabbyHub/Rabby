@@ -3,6 +3,7 @@ import {
   ImKeyAction,
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 export function initImKey() {
   const bridge = new ImKeyBridge();
@@ -14,10 +15,13 @@ export function initImKey() {
         action: ImKeyAction;
         params: any[];
       },
-      _sender,
+      sender,
       sendResponse
     ) => {
-      if (msg.target !== OffscreenCommunicationTarget.imkeyOffscreen) {
+      if (
+        msg.target !== OffscreenCommunicationTarget.imkeyOffscreen ||
+        !isPrivilegedOffscreenSender(sender)
+      ) {
         return;
       }
 

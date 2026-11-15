@@ -1,17 +1,16 @@
-import abi from 'human-standard-token-abi';
 import { ethers } from 'ethers';
 import BigNumber from 'bignumber.js';
 import { ExplainTxResponse } from '@/background/service/openapi';
-import { hexToString, isHex, stringToHex } from 'viem';
+import { erc20Abi, hexToString, isHex, stringToHex } from 'viem';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { WalletController, WalletControllerType } from './WalletContext';
 
-const hstInterface = new ethers.utils.Interface(abi);
+const erc20Interface = new ethers.utils.Interface(erc20Abi);
 
 export function getTokenData(data: string) {
   try {
-    return hstInterface.parseTransaction({ data });
+    return erc20Interface.parseTransaction({ data });
   } catch (error) {
     return undefined;
   }

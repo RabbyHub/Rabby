@@ -1,11 +1,10 @@
-import React, { useState, useMemo, useEffect, useCallback } from 'react';
-import { Input, Form } from 'antd';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Input, Form, Spin } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from '@ethereumjs/util';
-import { debounce } from 'lodash';
 import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
@@ -19,7 +18,7 @@ import IconBack from 'ui/assets/icon-back.svg';
 import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
 import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
-import { resolveEnsAddressByName } from '@/ui/utils/ens';
+import { useEnsInputResolver } from '@/ui/hooks/useEnsInputResolver';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
 import { useCreateAddressActions } from './AddAddress/useCreateAddress';
 import { RcWatchAddressScan } from '../assets/add-address';
@@ -34,21 +33,20 @@ const ImportWatchAddress: React.FC<{
   const wallet = useWallet();
   const { openSuccessPage } = useCreateAddressActions({ onNavigate });
   const [form] = Form.useForm();
-  const [disableKeydown, setDisableKeydown] = useState(false);
+  const inputAddress = Form.useWatch('address', form) || '';
+  const { ensResult, isPending, isNameNotFound } = useEnsInputResolver(
+    inputAddress,
+    wallet
+  );
 
   const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
-  const [ensResult, setEnsResult] = useState<null | {
-    addr: string;
-    name: string;
-  }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const isWide = useMedia('(min-width: 401px)');
-  const [isValidAddr, setIsValidAddr] = useState(false);
+  const isValidAddr = isValidAddress(inputAddress.trim());
   const { show, contextHolder } = useRepeatImportConfirm();
   const ModalComponent = isWide ? Modal : Popup;
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
-      setDisableKeydown(false);
       openSuccessPage(
         {
           addresses: accounts.map((item) => ({
@@ -69,7 +67,6 @@ const ImportWatchAddress: React.FC<{
           type: KEYRING_CLASS.WATCH,
         });
       } else {
-        setDisableKeydown(false);
         form.setFields([
           {
             name: 'address',
@@ -81,34 +78,40 @@ const ImportWatchAddress: React.FC<{
       }
     },
   });
-  const handleConfirmENS = (result: string) => {
-    form.setFieldsValue({
-      address: result,
-    });
-    setIsValidAddr(true);
-    setTags([`ENS: ${ensResult!.name}`]);
-    setEnsResult(null);
-  };
-  const handleKeyDown = useMemo(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'enter') {
-        if (ensResult && form.getFieldValue('address') === ensResult.name) {
-          e.preventDefault();
-          handleConfirmENS(ensResult.addr);
-        }
-      }
-    };
-    return handler;
-  }, [ensResult]);
-  const handleScanAccount = useCallback((data) => {
-    const address = data.address;
-    form.setFieldsValue({
-      address,
-    });
-    if (isValidAddress(address)) {
-      setIsValidAddr(true);
+  const setInputAddress = useCallback(
+    (address: string) => {
+      const trimmedAddress = address.trim();
+      form.setFieldsValue({
+        address: isValidAddress(trimmedAddress) ? trimmedAddress : address,
+      });
+      setTags([]);
+    },
+    [form]
+  );
+  const handleConfirmENS = useCallback(() => {
+    if (
+      !ensResult ||
+      form.getFieldValue('address') !== inputAddress ||
+      !isValidAddress(ensResult.addr)
+    ) {
+      return;
     }
-  }, []);
+    setInputAddress(ensResult.addr);
+    setTags([`ENS: ${ensResult.name}`]);
+  }, [ensResult, form, inputAddress, setInputAddress]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'enter' && ensResult) {
+        e.preventDefault();
+        handleConfirmENS();
+      }
+    },
+    [ensResult, handleConfirmENS]
+  );
+  const handleScanAccount = useCallback(
+    (data) => setInputAddress(data.address),
+    [setInputAddress]
+  );
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
     eventBus.addEventListener(
@@ -122,15 +125,10 @@ const ImportWatchAddress: React.FC<{
         handleScanAccount
       );
     };
-  }, [handleKeyDown]);
+  }, [handleKeyDown, handleScanAccount]);
 
   const handleScanQRCodeSuccess = (data) => {
-    form.setFieldsValue({
-      address: data,
-    });
-    if (isValidAddress(data)) {
-      setIsValidAddr(true);
-    }
+    setInputAddress(data);
     setQRScanModalVisible(false);
     wallet.clearPageStateCache();
   };
@@ -145,49 +143,21 @@ const ImportWatchAddress: React.FC<{
     });
     openInternalPageInTab('request-permission?type=camera');
   };
-  const handleLoadCache = async () => {
-    const cache = await wallet.getPageStateCache();
-    if (cache && cache.path === history.location.pathname) {
-      form.setFieldsValue(cache.states);
-    }
-  };
   const handleImportByQrcode = () => {
     setQRScanModalVisible(true);
   };
-  const debouncedResolveENS = useMemo(
-    () =>
-      debounce(async (address: string) => {
-        try {
-          const result = await resolveEnsAddressByName(address, wallet);
-          setDisableKeydown(true);
-          if (result && result.addr && result.addr.startsWith('0x')) {
-            setEnsResult(result);
-          }
-        } catch (e) {
-          setEnsResult(null);
-        }
-      }, 300),
-    [wallet]
-  );
-
   const handleValuesChange = ({ address }: { address: string }) => {
     setTags([]);
-    setEnsResult(null);
     const trimmedAddress = address?.trim();
     if (isValidAddress(trimmedAddress)) {
-      setIsValidAddr(true);
-      debouncedResolveENS.cancel();
-      form.setFieldsValue({
-        address: trimmedAddress,
-      });
-      return;
+      setInputAddress(trimmedAddress);
     }
-
-    setIsValidAddr(false);
-    debouncedResolveENS(trimmedAddress);
   };
   const handleNextClick = () => {
-    const address = form.getFieldValue('address');
+    const address = form.getFieldValue('address')?.trim();
+    if (!isValidAddress(address) || loading) {
+      return;
+    }
     run(address);
   };
   const handleClickBack = () => {
@@ -202,12 +172,19 @@ const ImportWatchAddress: React.FC<{
     }
   };
   useEffect(() => {
+    let active = true;
+    const handleLoadCache = async () => {
+      const cache = await wallet.getPageStateCache();
+      if (active && cache && cache.path === history.location.pathname) {
+        setInputAddress(cache.states?.address || '');
+      }
+    };
     handleLoadCache();
     return () => {
-      debouncedResolveENS.cancel();
+      active = false;
       wallet.clearPageStateCache();
     };
-  }, [debouncedResolveENS]);
+  }, [history.location.pathname, setInputAddress, wallet]);
   return (
     <StrayPageWithButton
       custom={isWide}
@@ -224,11 +201,10 @@ const ImportWatchAddress: React.FC<{
       formProps={{
         onValuesChange: handleValuesChange,
       }}
-      disableKeyDownEvent={disableKeydown}
       onBackClick={handleClickBack}
       NextButtonContent={t('global.confirm')}
       footerClassName="lg:bottom-0"
-      nextDisabled={!isValidAddr}
+      nextDisabled={!isValidAddr || isPending || loading}
     >
       {contextHolder}
       <header className="create-new-header create-password-header h-[180px] py-[20px] dark:bg-r-blue-disable">
@@ -255,6 +231,12 @@ const ImportWatchAddress: React.FC<{
           <Form.Item
             className="pt-32 px-20"
             name="address"
+            validateStatus={isNameNotFound ? 'error' : undefined}
+            help={
+              isNameNotFound
+                ? t('page.newAddress.addContacts.notAValidAddress')
+                : undefined
+            }
             rules={[
               {
                 required: true,
@@ -264,6 +246,16 @@ const ImportWatchAddress: React.FC<{
           >
             <InputWithScanIcon handleImportByQrcode={handleImportByQrcode} />
           </Form.Item>
+
+          {isPending && (
+            <div
+              role="status"
+              className="px-20 mb-16 flex items-center gap-8 text-r-neutral-body text-13"
+            >
+              <Spin size="small" />
+              {t('page.selectToAddress.resolvingAddress')}
+            </div>
+          )}
 
           {tags.length > 0 && (
             <ul className="tags">
@@ -275,10 +267,7 @@ const ImportWatchAddress: React.FC<{
             </ul>
           )}
           {ensResult && (
-            <div
-              className="ens-search"
-              onClick={() => handleConfirmENS(ensResult.addr)}
-            >
+            <div className="ens-search" onClick={handleConfirmENS}>
               <div className="ens-search__inner">
                 {ensResult.addr}
                 <img className="icon icon-enter" src={IconEnter} />
