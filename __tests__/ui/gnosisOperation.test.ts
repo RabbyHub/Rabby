@@ -20,7 +20,9 @@ describe('getSafeOperation', () => {
   });
 
   test.each([2, '2', true, -1])('rejects unsupported operation %p', (input) => {
-    expect(() => getSafeOperation(input)).toThrow('Unsupported Safe operation');
+    expect(() => getSafeOperation(input)).toThrow(
+      'Invalid Safe transaction operation'
+    );
   });
 
   it('uses the same normalized operation for preview and signing', () => {
@@ -35,6 +37,8 @@ describe('getSafeOperation', () => {
     expect(source).toContain(
       'operation: getSafeOperation(params.data[0].operation)'
     );
-    expect(source).toContain('gnosisGenerateTypedData(transactionHash)');
+    expect(source).toMatch(
+      /gnosisGenerateTypedData\(\s*transactionHash,\s*approvalId!,\s*Number\(realNonce\)\s*\)/
+    );
   });
 });

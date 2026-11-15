@@ -5,6 +5,7 @@ import {
   toChecksumAddress,
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { KEYRING_IMPORT_EXPIRED } from '@/constant/message';
 import { ethers, Contract } from 'ethers';
 import {
@@ -3583,13 +3584,40 @@ export class WalletController extends BaseController {
     }
   };
 
-  gnosisGenerateTypedData = (expectedHash?: string) => {
+  gnosisGenerateTypedData = (
+    expectedHash: string,
+    approvalId: string,
+    nonce: number
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    if (!keyring.currentTransaction) {
-      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
+    const approval = notificationService.getApproval();
+    const params = approval?.data.params;
+    const proposalHash = params?.$ctx?.safeTxHash;
+    const typedData = keyring.generateTypedData(expectedHash);
+    if (
+      !keyringService.isUnlocked() ||
+      !approvalId ||
+      approval?.id !== approvalId ||
+      approval.data.approvalComponent !== 'SignTx' ||
+      !expectedHash ||
+      !typedData ||
+      typedData.message.nonce !== nonce ||
+      (params?.data[0].isViewGnosisSafe &&
+        (!proposalHash ||
+          proposalHash.toLowerCase() !== expectedHash.toLowerCase() ||
+          Number(keyring.safeInstance?.network) !==
+            Number(params.data[0].chainId))) ||
+      `0x${TypedDataUtils.eip712Hash(
+        typedData as any,
+        SignTypedDataVersion.V4
+      ).toString('hex')}`.toLowerCase() !== expectedHash.toLowerCase()
+    ) {
+      throw ethErrors.provider.userRejectedRequest(
+        'The Safe proposal changed. Please review it again.'
+      );
     }
-    return keyring.generateTypedData(expectedHash);
+    return typedData;
   };
 
   gnosisAddConfirmation = async (
