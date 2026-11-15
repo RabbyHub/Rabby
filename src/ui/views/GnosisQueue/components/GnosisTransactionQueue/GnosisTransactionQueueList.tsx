@@ -21,7 +21,7 @@ import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
 import { useMemoizedFn, useRequest } from 'ahooks';
-import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
+import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
 import { Virtuoso } from 'react-virtuoso';
@@ -353,37 +353,20 @@ const GnosisTransactionItem = ({
 
   const handleView = async () => {
     setIsLoading(true);
-    const account = (await wallet.getCurrentAccount())!;
     const params = {
       chainId: Number(networkId),
       from: toChecksumAddress(data.safe),
       to: data.to,
       data: data.data || '0x',
-      value: `0x${Number(data.value).toString(16)}`,
+      value: numberToHex(BigInt(data.value)),
       nonce: intToHex(Number(data.nonce)),
       safeTxGas: data.safeTxGas,
-      gasPrice: Number(data.gasPrice),
+      gasPrice: numberToHex(BigInt(data.gasPrice)),
       baseGas: data.baseGas,
       operation: data.operation,
+      gasToken: data.gasToken,
+      refundReceiver: data.refundReceiver,
     };
-    const tmpBuildAccount: Account = {
-      address: safeInfo.owners[0],
-      type: KEYRING_CLASS.WATCH,
-      brandName: KEYRING_CLASS.WATCH,
-    };
-    await wallet.buildGnosisTransaction(
-      account.address,
-      tmpBuildAccount,
-      params,
-      safeInfo.version,
-      networkId
-    );
-    await wallet.setGnosisTransactionHash(data.safeTxHash);
-    await Promise.all(
-      data.confirmations.map((confirm) => {
-        return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
-      })
-    );
     setIsLoading(false);
     wallet.sendRequest({
       method: 'eth_sendTransaction',
@@ -393,6 +376,12 @@ const GnosisTransactionItem = ({
           isViewGnosisSafe: true,
         },
       ],
+      $ctx: {
+        gnosisTransaction: {
+          hash: data.safeTxHash,
+          confirmations: data.confirmations,
+        },
+      },
     });
     if (UI_TYPE.isPop) {
       window.close();

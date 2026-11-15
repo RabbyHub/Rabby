@@ -1,3 +1,4 @@
+import type { ApprovalSigningBinding } from '@/background/controller/walletUtils/approvalSigning';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
@@ -27,7 +28,7 @@ import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
-interface ApprovalParams {
+interface ApprovalParams extends ApprovalSigningBinding {
   from?: string;
   nonce?: string;
   address: string;
@@ -176,13 +177,12 @@ export const CommonWaiting = ({
                 signerAddress: params.account!.address!,
               });
             } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, data.data);
-              } else {
-                await wallet.gnosisAddSignature(account.address, data.data);
-                await wallet.postGnosisTransaction();
-              }
+              await wallet.submitGnosisTransactionSignature(
+                params.sourceApprovalId,
+                params.gnosisTransactionHash,
+                account.address,
+                data.data
+              );
             }
           }
         } catch (e) {

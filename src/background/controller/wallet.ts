@@ -3277,6 +3277,7 @@ export class WalletController extends BaseController {
 
   clearGnosisTransaction = () => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
+    keyring.clearApprovalTransaction();
     if (keyring.currentTransaction || keyring.safeInstance) {
       keyring.currentTransaction = null;
       keyring.safeInstance = null;
@@ -3587,6 +3588,92 @@ export class WalletController extends BaseController {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
     return keyring.generateTypedData();
+  };
+
+  prepareGnosisTransaction = async ({
+    approvalId,
+    account,
+    tx,
+    version,
+    networkId,
+  }: {
+    approvalId: string;
+    account: Account;
+    tx: Parameters<GnosisKeyring['buildTransaction']>[1] & { from: string };
+    version: string;
+    networkId: string;
+  }) => {
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const approval = notificationService.getApproval();
+    const assertCurrentApproval = () => {
+      if (
+        !keyringService.isUnlocked() ||
+        !approvalId ||
+        notificationService.getApproval() !== approval ||
+        approval?.id !== approvalId ||
+        approval.data.approvalComponent !== 'SignTx' ||
+        !isSameAddress(approval.data.account?.address || '', tx.from || '') ||
+        this.#getKeyringByType(KEYRING_CLASS.GNOSIS) !== keyring
+      ) {
+        throw ethErrors.provider.userRejectedRequest(
+          'The Safe transaction approval is no longer current.'
+        );
+      }
+    };
+    assertCurrentApproval();
+    const proposal = approval!.data.params.$ctx?.gnosisTransaction;
+    if (approval!.data.params.data[0].isViewGnosisSafe && !proposal?.hash) {
+      throw new Error('Missing reviewed Safe proposal');
+    }
+    const currentProvider = new EthereumProvider();
+    currentProvider.currentAccount = account.address;
+    currentProvider.currentAccountType = account.type;
+    currentProvider.currentAccountBrand = account.brandName;
+    currentProvider.chainId = networkId;
+    return keyring.prepareTransactionForApproval({
+      approvalId,
+      address: tx.from!,
+      transaction: tx,
+      provider: new ethers.providers.Web3Provider(currentProvider),
+      version,
+      networkId,
+      expectedHash: proposal?.hash,
+      confirmations: proposal?.confirmations,
+      assertCurrentApproval,
+    });
+  };
+
+  submitGnosisTransactionSignature = async (
+    sourceApprovalId: string | undefined,
+    transactionHash: string | undefined,
+    address: string,
+    signature: string
+  ) => {
+    const approval = notificationService.getApproval();
+    const params = approval?.data.params;
+    if (
+      !keyringService.isUnlocked() ||
+      !sourceApprovalId ||
+      !transactionHash ||
+      params?.sourceApprovalId !== sourceApprovalId ||
+      params?.gnosisTransactionHash !== transactionHash ||
+      params?.isGnosis !== true ||
+      params?.safeMessage ||
+      !params?.approvalComponent ||
+      approval?.data.approvalComponent !== params.approvalComponent ||
+      !isSameAddress(params?.account?.address || '', address)
+    ) {
+      throw ethErrors.provider.userRejectedRequest(
+        'The Safe transaction approval is no longer current.'
+      );
+    }
+    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
+    await keyring.submitApprovalSignature(
+      sourceApprovalId,
+      transactionHash,
+      address,
+      signature
+    );
   };
 
   gnosisAddConfirmation = async (address: string, signature: string) => {
@@ -5005,8 +5092,31 @@ export class WalletController extends BaseController {
       data,
       options,
     });
+    if (options?.gnosisTransactionHash) {
+      const gnosisKeyring: GnosisKeyring = this.#getKeyringByType(
+        KEYRING_CLASS.GNOSIS
+      );
+      if (
+        !keyringService.isUnlocked() ||
+        !isEqual(
+          data,
+          gnosisKeyring.getApprovalTypedData(
+            options.sourceApprovalId,
+            options.gnosisTransactionHash
+          )
+        )
+      ) {
+        throw ethErrors.provider.userRejectedRequest(
+          'The Safe transaction does not match its approval.'
+        );
+      }
+    }
     const signingOptions = options
-      ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+      ? omit(options, [
+          'sourceApprovalId',
+          'approvalComponent',
+          'gnosisTransactionHash',
+        ])
       : options;
     const res = await keyringService.signTypedMessage(
       keyring,

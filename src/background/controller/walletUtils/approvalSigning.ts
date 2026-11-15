@@ -5,6 +5,7 @@ import { isEqual } from 'lodash';
 export interface ApprovalSigningBinding {
   sourceApprovalId?: string;
   approvalComponent?: Approval['data']['approvalComponent'];
+  gnosisTransactionHash?: string;
 }
 
 type SigningRequest = {
@@ -45,6 +46,9 @@ export const assertApprovalSigningBinding = (
     !options?.sourceApprovalId ||
     !options?.approvalComponent ||
     approval?.data.approvalComponent !== options.approvalComponent ||
+    (!params?.safeMessage &&
+      (!options.gnosisTransactionHash ||
+        params?.gnosisTransactionHash !== options.gnosisTransactionHash)) ||
     params?.sourceApprovalId !== options.sourceApprovalId ||
     params?.isGnosis !== true ||
     params?.type !== type ||

@@ -147,13 +147,12 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
                 signerAddress: params.account!.address!,
               });
             } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
-              } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
-              }
+              await wallet.submitGnosisTransactionSignature(
+                params.sourceApprovalId,
+                params.gnosisTransactionHash,
+                account.address,
+                sig
+              );
             }
           }
         } catch (e) {

@@ -1,3 +1,4 @@
+import type { ApprovalSigningBinding } from '@/background/controller/walletUtils/approvalSigning';
 import eventBus from '@/eventBus';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
@@ -24,7 +25,7 @@ import {
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
-interface ApprovalParams {
+interface ApprovalParams extends ApprovalSigningBinding {
   address: string;
   chainId?: number;
   isGnosis?: boolean;
@@ -165,7 +166,6 @@ const LedgerHardwareWaiting = ({
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
             const safeMessage = params.safeMessage;
             if (safeMessage) {
               await wallet.handleGnosisMessage({
@@ -173,12 +173,12 @@ const LedgerHardwareWaiting = ({
                 signerAddress: params.account!.address!,
               });
             } else {
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
-              } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
-              }
+              await wallet.submitGnosisTransactionSignature(
+                params.sourceApprovalId,
+                params.gnosisTransactionHash,
+                account.address,
+                sig
+              );
             }
           }
         } catch (e) {

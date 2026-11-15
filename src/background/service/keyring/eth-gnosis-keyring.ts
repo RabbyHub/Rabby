@@ -24,6 +24,7 @@ import {
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { TypedTransaction } from '@ethereumjs/tx';
 import BigNumber from 'bignumber.js';
+import { normalizeSafeOperation } from '@/utils/gnosis';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -180,6 +181,13 @@ type SignatureHolder = {
   addSignature(signature: SafeSignature): void;
 };
 
+type ApprovalTransaction = {
+  approvalId: string;
+  hash: string;
+  safe: Safe;
+  transaction: SafeTransaction;
+};
+
 /**
  * Adds `signature` to `holder` for the duration of `submit` and removes it
  * again if `submit` fails, so in-memory signatures only ever mirror what the
@@ -211,6 +219,7 @@ export const submitWithSignature = async <T>(
 };
 
 class GnosisKeyring extends EventEmitter {
+  private approvalTransaction: ApprovalTransaction | null = null;
   signingDiagnosticsProvider = 'gnosis';
   static type = keyringType;
   type = keyringType;
@@ -294,7 +303,16 @@ class GnosisKeyring extends EventEmitter {
 
   generateTypedData = () => {
     if (!this.safeInstance || !this.currentTransaction) return;
-    const safe = this.safeInstance;
+    return this.generateTransactionTypedData(
+      this.safeInstance,
+      this.currentTransaction
+    );
+  };
+
+  private generateTransactionTypedData = (
+    safe: Safe,
+    transaction: SafeTransaction
+  ) => {
     const { version } = safe;
     const {
       data,
@@ -307,7 +325,7 @@ class GnosisKeyring extends EventEmitter {
       refundReceiver,
       operation,
       gasToken,
-    } = this.currentTransaction.data;
+    } = transaction.data;
     return generateTypedDataFrom({
       safeAddress: safe.safeAddress,
       data,
@@ -324,6 +342,105 @@ class GnosisKeyring extends EventEmitter {
       networkId: safe.network,
     });
   };
+
+  clearApprovalTransaction = () => {
+    this.approvalTransaction = null;
+  };
+
+  cleanUp = () => {
+    this.clearApprovalTransaction();
+  };
+
+  getApprovalTransaction = (approvalId: string, hash: string) => {
+    const snapshot = this.approvalTransaction;
+    if (
+      !approvalId ||
+      !hash ||
+      snapshot?.approvalId !== approvalId ||
+      snapshot.hash.toLowerCase() !== hash.toLowerCase()
+    ) {
+      throw new Error('The Safe transaction approval is no longer current');
+    }
+    return snapshot;
+  };
+
+  getApprovalTypedData = (approvalId: string, hash: string) => {
+    const { safe, transaction } = this.getApprovalTransaction(approvalId, hash);
+    return this.generateTransactionTypedData(safe, transaction);
+  };
+
+  async prepareTransactionForApproval({
+    approvalId,
+    address,
+    transaction,
+    provider,
+    version,
+    networkId,
+    expectedHash,
+    confirmations = [],
+    assertCurrentApproval,
+  }: {
+    approvalId: string;
+    address: string;
+    transaction: SafeTransactionDataPartial;
+    provider: any;
+    version: string;
+    networkId: string;
+    expectedHash?: string;
+    confirmations?: { owner: string; signature: string }[];
+    assertCurrentApproval: () => void;
+  }) {
+    assertCurrentApproval();
+    const snapshot = await this.createTransaction(
+      address,
+      transaction,
+      provider,
+      version,
+      networkId
+    );
+    if (
+      expectedHash !== undefined &&
+      snapshot.hash.toLowerCase() !== expectedHash.toLowerCase()
+    ) {
+      throw new Error(
+        'The Safe proposal does not match the reviewed transaction'
+      );
+    }
+    confirmations.forEach(({ owner, signature }) => {
+      snapshot.transaction.addSignature(new EthSafeSignature(owner, signature));
+    });
+    // No shared proposal state is read after this asynchronous construction.
+    // Recheck consent before publishing the snapshot for the waiting view.
+    assertCurrentApproval();
+    this.approvalTransaction = { ...snapshot, approvalId };
+    return {
+      transactionHash: snapshot.hash,
+      typedData: this.generateTransactionTypedData(
+        snapshot.safe,
+        snapshot.transaction
+      ),
+    };
+  }
+
+  async submitApprovalSignature(
+    approvalId: string,
+    hash: string,
+    address: string,
+    signature: string
+  ) {
+    const snapshot = this.getApprovalTransaction(approvalId, hash);
+    const { safe, transaction } = snapshot;
+    const isExistingProposal = transaction.signatures.size > 0;
+    const sig = new EthSafeSignature(address, signature);
+    await submitWithSignature(transaction, sig, () =>
+      isExistingProposal
+        ? safe.request.confirmTransaction(hash, { signature: sig.data })
+        : this.postSafeTransaction(safe, transaction, hash)
+    );
+    if (this.approvalTransaction === snapshot) {
+      this.clearApprovalTransaction();
+    }
+  }
 
   async getAccounts() {
     return this.accounts;
@@ -481,6 +598,14 @@ class GnosisKeyring extends EventEmitter {
     const safeTransaction = this.currentTransaction;
     if (!safe || !safeTransaction) return;
     const transactionHash = await safe.getTransactionHash(safeTransaction);
+    return this.postSafeTransaction(safe, safeTransaction, transactionHash);
+  }
+
+  private async postSafeTransaction(
+    safe: Safe,
+    safeTransaction: SafeTransaction,
+    transactionHash: string
+  ) {
     try {
       await safe.postTransaction(safeTransaction, transactionHash);
     } catch (e) {
@@ -509,6 +634,30 @@ class GnosisKeyring extends EventEmitter {
     version: string,
     networkId: string
   ) {
+    const {
+      safe,
+      transaction: safeTransaction,
+      hash,
+    } = await this.createTransaction(
+      address,
+      transaction,
+      provider,
+      version,
+      networkId
+    );
+    this.safeInstance = safe;
+    this.currentTransaction = safeTransaction;
+    this.currentTransactionHash = hash;
+    return safeTransaction;
+  }
+
+  private async createTransaction(
+    address: string,
+    transaction: SafeTransactionDataPartial,
+    provider: any,
+    version: string,
+    networkId: string
+  ) {
     if (
       !this.accounts.find(
         (account) => account.toLowerCase() === address.toLowerCase()
@@ -524,19 +673,21 @@ class GnosisKeyring extends EventEmitter {
       to: this._normalize(transaction.to),
       value: !bigVal.isNaN() && bigVal.toFixed() ? bigVal.toFixed() : '0',
       safeTxGas: transaction.safeTxGas,
-      nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
+      nonce: transaction.nonce == null ? undefined : Number(transaction.nonce),
       baseGas: transaction.baseGas,
-      operation: transaction.operation,
+      gasPrice:
+        transaction.gasPrice == null
+          ? undefined
+          : new BigNumber(transaction.gasPrice).toFixed(),
+      gasToken: transaction.gasToken,
+      refundReceiver: transaction.refundReceiver,
+      operation: normalizeSafeOperation(transaction.operation),
     };
 
     const safe = new Safe(checksumAddress, version, provider, networkId);
-    this.safeInstance = safe;
     const safeTransaction = await safe.buildTransaction(tx);
-    this.currentTransaction = safeTransaction;
-    this.currentTransactionHash = await safe.getTransactionHash(
-      safeTransaction
-    );
-    return safeTransaction;
+    const hash = await safe.getTransactionHash(safeTransaction);
+    return { safe, transaction: safeTransaction, hash };
   }
 
   async validateTransaction(
@@ -555,30 +706,14 @@ class GnosisKeyring extends EventEmitter {
     },
     hash: string
   ) {
-    if (
-      !this.accounts.find(
-        (account) => account.toLowerCase() === address.toLowerCase()
-      )
-    ) {
-      throw new Error('Can not find this address');
-    }
-    const checksumAddress = toChecksumAddress(address);
-    const tx = {
-      data: transaction.data,
-      from: address,
-      to: this._normalize(transaction.to),
-      value: transaction.value || '0', // prevent 0x
-      safeTxGas: transaction.safeTxGas,
-      nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
-      baseGas: transaction.baseGas,
-      operation: transaction.operation,
-    };
-    const safe = new Safe(checksumAddress, version, provider, networkId);
-    const safeTransaction = await safe.buildTransaction(tx);
-    const currentTransactionHash = await safe.getTransactionHash(
-      safeTransaction
+    const snapshot = await this.createTransaction(
+      address,
+      transaction,
+      provider,
+      version,
+      networkId
     );
-    return currentTransactionHash === hash;
+    return snapshot.hash.toLowerCase() === hash.toLowerCase();
   }
 
   async signTransaction(

@@ -1,3 +1,4 @@
+import type { ApprovalSigningBinding } from '@/background/controller/walletUtils/approvalSigning';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
@@ -17,7 +18,7 @@ import { adjustV } from '@/ui/utils/gnosis';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
 
-interface ApprovalParams {
+interface ApprovalParams extends ApprovalSigningBinding {
   address: string;
   chainId?: number;
   nonce?: string;
@@ -135,13 +136,12 @@ const WatchAddressWaiting = ({
                 signerAddress: params.account!.address!,
               });
             } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
-              if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
-              } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
-              }
+              await wallet.submitGnosisTransactionSignature(
+                params.sourceApprovalId,
+                params.gnosisTransactionHash,
+                account.address,
+                sig
+              );
             }
           }
         } catch (e) {

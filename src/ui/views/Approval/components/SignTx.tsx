@@ -97,7 +97,7 @@ import SignMainnetGasSelectorHeader from './TxComponents/GasSelector/SignMainnet
 import { useEffectiveApprovalGasMethod } from './TxComponents/GasSelector/useEffectiveApprovalGasMethod';
 import type { ApprovalGasMethod } from './TxComponents/GasSelector/approvalGasDisplay';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
-import { adjustV } from '@/ui/utils/gnosis';
+import { normalizeSafeOperation } from '@/utils/gnosis';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
 import { useGasAccountTxsCheck } from '../../GasAccount/hooks/checkTxs';
 import {
@@ -1159,7 +1159,7 @@ const SignTx = ({
     }
     const explainNonce = (updateNonce ? recommendNonce : tx.nonce) || '0x1';
     const delegateCall = isGnosisAccount
-      ? !!params?.data?.[0]?.operation
+      ? normalizeSafeOperation(params.data[0].operation) === 1
       : false;
 
     const parseTxPromise = preparedParseTx
@@ -1510,24 +1510,37 @@ const SignTx = ({
       await invokeEnterPassphrase(account.address);
     }
 
-    if (!isViewGnosisSafe) {
-      const params: any = {
-        from: tx.from,
-        to: tx.to,
-        data: tx.data,
-        value: tx.value,
-        safeTxGas: safeTxGas,
-      };
-      params.nonce = realNonce;
-      await wallet.buildGnosisTransaction(
-        tx.from,
-        account,
-        params,
-        safeInfo.version,
-        chain.network
-      );
+    if (!WaitingSignMessageComponent[account.type]) {
+      throw new Error('Unsupported Safe signer');
     }
-    const typedData = await wallet.gnosisGenerateTypedData();
+
+    const safeTransaction = {
+      ...(isViewGnosisSafe
+        ? {
+            gasPrice: params.data[0].gasPrice,
+            baseGas: params.data[0].baseGas,
+            gasToken: params.data[0].gasToken,
+            refundReceiver: params.data[0].refundReceiver,
+          }
+        : {}),
+      from: tx.from,
+      to: tx.to,
+      data: tx.data,
+      value: tx.value,
+      safeTxGas: safeTxGas,
+      operation: normalizeSafeOperation(params.data[0].operation),
+      nonce: Number(realNonce),
+    };
+    const {
+      typedData,
+      transactionHash,
+    } = await wallet.prepareGnosisTransaction({
+      approvalId: approvalId!,
+      account,
+      tx: safeTransaction,
+      version: safeInfo.version,
+      networkId: chain.network,
+    });
     if (!typedData) {
       throw new Error('Failed to generate typed data');
     }
@@ -1542,6 +1555,7 @@ const SignTx = ({
           brandName: account.brandName,
           version: 'V4',
           sourceApprovalId: approvalId,
+          gnosisTransactionHash: transactionHash,
           approvalComponent: WaitingSignMessageComponent[account.type],
         }
       );
@@ -1550,11 +1564,13 @@ const SignTx = ({
       }
       resolveApproval({
         uiRequestComponent: WaitingSignMessageComponent[account.type],
+        approvalComponent: WaitingSignMessageComponent[account.type],
         type: account.type,
         address: account.address,
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         sourceApprovalId: approvalId,
+        gnosisTransactionHash: transactionHash,
         account: account,
         $account: account,
         extra: {
@@ -1565,36 +1581,6 @@ const SignTx = ({
           },
         },
       });
-    } else {
-      // it should never go to here
-      try {
-        let result = await wallet.signTypedData(
-          account.type,
-          account.address,
-          typedData as any,
-          {
-            version: 'V4',
-          }
-        );
-        result = adjustV('eth_signTypedData', result);
-
-        const sigs = await wallet.getGnosisTransactionSignatures();
-        if (sigs.length > 0) {
-          await wallet.gnosisAddConfirmation(account.address, result);
-        } else {
-          await wallet.gnosisAddSignature(account.address, result);
-          await wallet.postGnosisTransaction();
-        }
-        if (isSend) {
-          wallet.clearPageStateCache();
-        }
-        resolveApproval();
-      } catch (e) {
-        message.error({
-          content: e.message,
-          className: 'modal-support-darkmode',
-        });
-      }
     }
     return;
   };
@@ -2798,6 +2784,9 @@ const SignTx = ({
           >
             <GnosisDrawer
               safeInfo={safeInfo}
+              confirmations={
+                params.$ctx?.gnosisTransaction?.confirmations || []
+              }
               onCancel={handleDrawerCancel}
               onConfirm={handleGnosisConfirm}
             />

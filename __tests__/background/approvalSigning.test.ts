@@ -18,6 +18,7 @@ const request = {
   data: typedData,
   options: {
     sourceApprovalId: 'reviewed-request',
+    gnosisTransactionHash: '0xsafe-transaction',
     approvalComponent: 'PrivatekeyWaiting' as const,
   },
 };
@@ -30,6 +31,7 @@ const makeApproval = (): Approval => ({
     approvalComponent: 'PrivatekeyWaiting',
     params: {
       sourceApprovalId: request.options.sourceApprovalId,
+      gnosisTransactionHash: request.options.gnosisTransactionHash,
       isGnosis: true,
       type: request.type,
       address,
@@ -63,6 +65,12 @@ describe('bound deferred Safe signing', () => {
   });
 
   test.each([
+    [
+      'Safe transaction hash',
+      (approval: Approval) => {
+        approval.data.params.gnosisTransactionHash = '0xother-transaction';
+      },
+    ],
     [
       'source id',
       (approval: Approval) => {
@@ -178,6 +186,19 @@ describe('bound deferred Safe signing', () => {
     ).toThrow();
     expect(() =>
       assertApprovalSigningBinding(null, { ...request, options: undefined })
+    ).not.toThrow();
+  });
+
+  test('transaction signing requires a hash while Safe message signing retains its separate binding', () => {
+    const options = { ...request.options, gnosisTransactionHash: undefined };
+    expect(() =>
+      assertApprovalSigningBinding(currentApproval, { ...request, options })
+    ).toThrow();
+    currentApproval!.data.params.safeMessage = {
+      safeMessageHash: 'message-hash',
+    };
+    expect(() =>
+      assertApprovalSigningBinding(currentApproval, { ...request, options })
     ).not.toThrow();
   });
 });
