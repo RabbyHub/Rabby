@@ -5,6 +5,7 @@ import {
   toChecksumAddress,
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { KEYRING_IMPORT_EXPIRED } from '@/constant/message';
 import { ethers, Contract } from 'ethers';
 import {
@@ -3348,7 +3349,7 @@ export class WalletController extends BaseController {
       currentProvider.currentAccountType = account.type;
       currentProvider.currentAccountBrand = account.brandName;
       currentProvider.chainId = networkId;
-      await keyring.buildTransaction(
+      return keyring.buildTransaction(
         safeAddress,
         tx,
         new ethers.providers.Web3Provider(currentProvider),
@@ -3580,13 +3581,35 @@ export class WalletController extends BaseController {
     }
   };
 
-  gnosisGenerateTypedData = () => {
+  gnosisGenerateTypedData = (approvalId: string, nonce: number) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    return keyring.generateTypedData();
+    const approval = notificationService.getApproval();
+    const expectedHash = approval?.data.params.$ctx?.safeTxHash;
+    const typedData = keyring.generateTypedData();
+    if (
+      !keyringService.isUnlocked() ||
+      !approvalId ||
+      approval?.id !== approvalId ||
+      approval.data.approvalComponent !== 'SignTx' ||
+      !expectedHash ||
+      !typedData ||
+      typedData.message.nonce !== nonce ||
+      Number(keyring.safeInstance?.network) !==
+        Number(approval.data.params.data[0].chainId) ||
+      `0x${TypedDataUtils.eip712Hash(
+        typedData as any,
+        SignTypedDataVersion.V4
+      ).toString('hex')}`.toLowerCase() !== expectedHash.toLowerCase()
+    ) {
+      throw ethErrors.provider.userRejectedRequest(
+        'The Safe proposal changed. Please review it again.'
+      );
+    }
+    return typedData;
   };
 
   gnosisAddConfirmation = async (address: string, signature: string) => {

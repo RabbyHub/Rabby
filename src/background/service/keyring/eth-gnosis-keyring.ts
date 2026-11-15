@@ -24,6 +24,7 @@ import {
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { TypedTransaction } from '@ethereumjs/tx';
 import BigNumber from 'bignumber.js';
+import { normalizeSafeOperation } from '@/utils/gnosis';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -292,9 +293,11 @@ class GnosisKeyring extends EventEmitter {
     this.accountToAdd = account;
   };
 
-  generateTypedData = () => {
-    if (!this.safeInstance || !this.currentTransaction) return;
-    const safe = this.safeInstance;
+  generateTypedData = (
+    safe = this.safeInstance,
+    transaction = this.currentTransaction
+  ) => {
+    if (!safe || !transaction) return;
     const { version } = safe;
     const {
       data,
@@ -307,7 +310,7 @@ class GnosisKeyring extends EventEmitter {
       refundReceiver,
       operation,
       gasToken,
-    } = this.currentTransaction.data;
+    } = transaction.data;
     return generateTypedDataFrom({
       safeAddress: safe.safeAddress,
       data,
@@ -526,17 +529,17 @@ class GnosisKeyring extends EventEmitter {
       safeTxGas: transaction.safeTxGas,
       nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
       baseGas: transaction.baseGas,
-      operation: transaction.operation,
+      operation: normalizeSafeOperation(transaction.operation),
     };
 
     const safe = new Safe(checksumAddress, version, provider, networkId);
-    this.safeInstance = safe;
     const safeTransaction = await safe.buildTransaction(tx);
+    const hash = await safe.getTransactionHash(safeTransaction);
+    // Publish a complete pair; another build must not mix Safe A with tx B.
+    this.safeInstance = safe;
     this.currentTransaction = safeTransaction;
-    this.currentTransactionHash = await safe.getTransactionHash(
-      safeTransaction
-    );
-    return safeTransaction;
+    this.currentTransactionHash = hash;
+    return this.generateTypedData(safe, safeTransaction);
   }
 
   async validateTransaction(

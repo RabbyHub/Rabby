@@ -393,6 +393,7 @@ const GnosisTransactionItem = ({
           isViewGnosisSafe: true,
         },
       ],
+      $ctx: { safeTxHash: data.safeTxHash },
     });
     if (UI_TYPE.isPop) {
       window.close();
