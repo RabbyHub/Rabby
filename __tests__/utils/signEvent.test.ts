@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+jest.mock('@/constant', () => ({ EVENTS: {} }));
 import {
   createSigningOperation,
   isSameSigningOperation,

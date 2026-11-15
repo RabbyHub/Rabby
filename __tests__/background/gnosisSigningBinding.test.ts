@@ -1,6 +1,11 @@
 import { EthSafeTransaction } from '@safe-global/protocol-kit';
 import GnosisKeyring from '@/background/service/keyring/eth-gnosis-keyring';
 
+jest.mock('@rabby-wallet/gnosis-sdk', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 const OWNER = '0x57f2000000000000000000000000000000007758';
 const SAFE = '0xd553500000000000000000000000000000a533c0';
 const ZERO = '0x0000000000000000000000000000000000000000';

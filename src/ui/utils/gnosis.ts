@@ -6,6 +6,7 @@ import {
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
 import semverSatisfies from 'semver/functions/satisfies';
 import { isSameAddress } from './index';
+import { normalizeSafeOperation } from '@/utils/gnosis';
 
 const EIP712_DOMAIN_BEFORE_V130 = [
   {
@@ -102,11 +103,8 @@ export const validateEOASign = (
   return isSameAddress(address, owner);
 };
 
-export const getSafeOperation = (operation: unknown): 0 | 1 => {
-  if (operation == null || operation === 0 || operation === '0') return 0;
-  if (operation === 1 || operation === '1') return 1;
-  throw new Error('Unsupported Safe operation');
-};
+export const getSafeOperation = (operation: unknown): 0 | 1 =>
+  normalizeSafeOperation(operation ?? undefined);
 
 export const crossCompareOwners = (owners1: string[], owners2: string[]) => {
   return owners1.filter(

@@ -97,7 +97,7 @@ import SignMainnetGasSelectorHeader from './TxComponents/GasSelector/SignMainnet
 import { useEffectiveApprovalGasMethod } from './TxComponents/GasSelector/useEffectiveApprovalGasMethod';
 import type { ApprovalGasMethod } from './TxComponents/GasSelector/approvalGasDisplay';
 import { GasLessConfig } from './FooterBar/GasLessComponents';
-import { adjustV, getSafeOperation } from '@/ui/utils/gnosis';
+import { getSafeOperation } from '@/ui/utils/gnosis';
 import { createSigningOperation } from '@/utils/signEvent';
 import { abstractTokenToTokenItem } from '@/ui/utils/token';
 import { useGasAccountTxsCheck } from '../../GasAccount/hooks/checkTxs';
@@ -1533,7 +1533,11 @@ const SignTx = ({
     if (!transactionHash) {
       throw new Error('Failed to determine the Safe transaction hash');
     }
-    const typedData = await wallet.gnosisGenerateTypedData(transactionHash);
+    const typedData = await wallet.gnosisGenerateTypedData(
+      transactionHash,
+      approvalId!,
+      Number(realNonce)
+    );
     if (!typedData) {
       throw new Error('Failed to generate typed data');
     }
@@ -1582,46 +1586,7 @@ const SignTx = ({
         },
       });
     } else {
-      // it should never go to here
-      try {
-        let result = await wallet.signTypedData(
-          account.type,
-          account.address,
-          typedData as any,
-          {
-            version: 'V4',
-            signingOperation,
-          }
-        );
-        result = adjustV('eth_signTypedData', result);
-
-        const sigs = await wallet.getGnosisTransactionSignatures(
-          transactionHash
-        );
-        if (sigs.length > 0) {
-          await wallet.gnosisAddConfirmation(
-            account.address,
-            result,
-            transactionHash
-          );
-        } else {
-          await wallet.gnosisAddSignature(
-            account.address,
-            result,
-            transactionHash
-          );
-          await wallet.postGnosisTransaction(transactionHash);
-        }
-        if (isSend) {
-          wallet.clearPageStateCache();
-        }
-        resolveApproval();
-      } catch (e) {
-        message.error({
-          content: e.message,
-          className: 'modal-support-darkmode',
-        });
-      }
+      throw new Error('Unsupported Safe signer');
     }
     return;
   };
@@ -1631,6 +1596,12 @@ const SignTx = ({
     runAsync: runHandleGnosisSign,
   } = useRequest(handleGnosisSign, {
     manual: true,
+    onError: (error) => {
+      message.error({
+        content: error.message,
+        className: 'modal-support-darkmode',
+      });
+    },
   });
 
   const handleCoboArugsConfirm = async (account: Account) => {

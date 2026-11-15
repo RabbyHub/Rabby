@@ -24,6 +24,7 @@ import {
 import { SafeClientTxStatus } from '@safe-global/sdk-starter-kit/dist/src/constants';
 import { TypedTransaction } from '@ethereumjs/tx';
 import BigNumber from 'bignumber.js';
+import { normalizeSafeOperation } from '@/utils/gnosis';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -569,7 +570,7 @@ class GnosisKeyring extends EventEmitter {
       safeTxGas: transaction.safeTxGas,
       nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
       baseGas: transaction.baseGas,
-      operation: transaction.operation,
+      operation: normalizeSafeOperation(transaction.operation),
     };
 
     const safe = new Safe(checksumAddress, version, provider, networkId);
