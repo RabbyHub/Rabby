@@ -12,7 +12,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@adraffy/ens-normalize@npm:1.11.1, @adraffy/ens-normalize@npm:^1.11.0":
+"@adraffy/ens-normalize@npm:^1.11.0":
   version: 1.11.1
   resolution: "@adraffy/ens-normalize@npm:1.11.1"
   checksum: 10c0/b364e2a57131db278ebf2f22d1a1ac6d8aea95c49dd2bbbc1825870b38aa91fd8816aba580a1f84edc50a45eb6389213dacfd1889f32893afc8549a82d304767
@@ -17522,27 +17522,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ox@npm:0.14.20":
-  version: 0.14.20
-  resolution: "ox@npm:0.14.20"
-  dependencies:
-    "@adraffy/ens-normalize": "npm:^1.11.0"
-    "@noble/ciphers": "npm:^1.3.0"
-    "@noble/curves": "npm:1.9.1"
-    "@noble/hashes": "npm:^1.8.0"
-    "@scure/bip32": "npm:^1.7.0"
-    "@scure/bip39": "npm:^1.6.0"
-    abitype: "npm:^1.2.3"
-    eventemitter3: "npm:5.0.1"
-  peerDependencies:
-    typescript: ">=5.4.0"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  checksum: 10c0/fe1c34577536aea3bda5ec47e083be9069d99cb35a270527921f1c7b406283f12bc4b7e9348b46aa3ba88555fc8abc963129c6b5b8b3b375d5e1549f65f2ce9a
-  languageName: node
-  linkType: hard
-
 "ox@npm:0.14.7":
   version: 0.14.7
   resolution: "ox@npm:0.14.7"
@@ -18530,7 +18509,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "rabby@workspace:."
   dependencies:
-    "@adraffy/ens-normalize": "npm:1.11.1"
     "@bitboxswiss/bitbox-api": "npm:0.1.1"
     "@coinbase/wallet-sdk": "npm:3.8.0-beta.3"
     "@debank/common": "npm:0.3.60"
@@ -18669,7 +18647,6 @@ __metadata:
     minimizer-webpack-plugin: "npm:5.13.0"
     multiformats: "npm:13.3.2"
     nanoid: "npm:3.3.6"
-    ox: "npm:0.14.20"
     p-queue: "npm:7.3.0"
     p-retry: "npm:5.1.2"
     patch-package: "npm:6.4.7"
