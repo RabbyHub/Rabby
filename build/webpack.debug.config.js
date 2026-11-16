@@ -1,6 +1,5 @@
 const webpack = require('webpack');
-const path = require('path');
-const SecSDK = require('warden-for-js').WardenPlugin;
+const { WardenPlugin } = require('warden-for-js');
 
 const config = {
   mode: 'production',
@@ -14,11 +13,13 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
       'process.env.DEBUG': true,
     }),
-    true &&
-      new SecSDK({
-        dev: false,
-        forceCheck: false,
-      }),
+    new WardenPlugin({
+      dev: false,
+      forceCheck: true,
+      freezePrototypes: true,
+      prototypeFreezeMode: 'compat',
+      protectWebpackRequire: true,
+    }),
   ].filter(Boolean),
 };
 
