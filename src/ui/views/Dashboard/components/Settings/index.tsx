@@ -58,6 +58,7 @@ import { ReactComponent as RcIconI18n } from 'ui/assets/dashboard/settings/i18n.
 import { ReactComponent as RcIconRemovedToken } from 'ui/assets/settings/removed-token.svg';
 import { ReactComponent as RcIconFeedback } from 'ui/assets/dashboard/settings/feedback.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
+import { ReactComponent as RcIconClearSigningCC } from 'ui/assets/dashboard/settings/clear-signing-cc.svg';
 import { ReactComponent as RcIconDataAnalysisCC } from 'ui/assets/dashboard/settings/data-analysis-cc.svg';
 import { ReactComponent as RcIconExtraFeeProtectionCC } from 'ui/assets/dashboard/settings/extra-fee-protection-cc.svg';
 import { ReactComponent as RcIconInfoCC } from 'ui/assets/info-cc.svg';
@@ -81,7 +82,6 @@ import { useMemoizedFn } from 'ahooks';
 import RateModalTriggerOnSettings from '@/ui/component/RateModal/RateModalTriggerOnSettings';
 import { useMakeMockDataForRateGuideExposure } from '@/ui/component/RateModal/hooks';
 import { PwdForNonWhitelistedTxModal } from '@/ui/component/Whitelist/Modal';
-import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { isExtraFeeProtectionOn } from '@/utils/extraFeeProtection';
 import { useCurrency } from '@/ui/hooks/useCurrency';
 import { useExtensionUpdateSettingsCard } from '@/ui/hooks/useExtensionUpdateSettingsCard';
@@ -683,6 +683,8 @@ const SettingsInner = ({
   const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
   const [dataAnalysisPending, setDataAnalysisPending] = useState(false);
+  const [clearSigningPending, setClearSigningPending] = useState(false);
+  const [extraFeePending, setExtraFeePending] = useState(false);
 
   const [perpsIncludeWatchForTest, setPerpsIncludeWatchForTest] = useState(
     () => localStorage.getItem(PERPS_TEST_INCLUDE_WATCH_KEY) === '1'
@@ -701,6 +703,9 @@ const SettingsInner = ({
 
   const isEnabledDappAccount = useRabbySelector(
     (state) => state.preference.isEnabledDappAccount
+  );
+  const isLedgerClearSigningEnabled = useRabbySelector(
+    (state) => !!state.preference.isLedgerClearSigningEnabled
   );
   const isExtraFeeProtectionEnabled = useRabbySelector((state) =>
     isExtraFeeProtectionOn(state.preference.isExtraFeeProtectionEnabled)
@@ -748,21 +753,17 @@ const SettingsInner = ({
   });
 
   const handleToggleExtraFeeProtection = useMemoizedFn(async () => {
-    if (!isExtraFeeProtectionEnabled) {
-      await dispatch.preference.enableExtraFeeProtection();
-      return;
-    }
     try {
-      await AuthenticationModalPromise({
-        title: t('page.dashboard.settings.settings.extraFeeProtection'),
-        confirmText: t('global.confirm'),
-        cancelText: t('global.Cancel'),
-        validationHandler: (password: string) =>
-          dispatch.preference.disableExtraFeeProtection(password),
-        wallet,
-      });
-    } catch (e) {
-      // cancelled: protection stays on
+      setExtraFeePending(true);
+      if (isExtraFeeProtectionEnabled) {
+        await dispatch.preference.disableExtraFeeProtection();
+      } else {
+        await dispatch.preference.enableExtraFeeProtection();
+      }
+    } catch (error) {
+      message.error((error as Error)?.message || 'Failed to update setting');
+    } finally {
+      setExtraFeePending(false);
     }
   });
 
@@ -822,6 +823,19 @@ const SettingsInner = ({
       setPerpsWidgetBusy(false);
     }
   });
+
+  const handleToggleLedgerClearSigning = useMemoizedFn(
+    async (checked: boolean) => {
+      try {
+        setClearSigningPending(true);
+        await dispatch.preference.setIsLedgerClearSigningEnabled(checked);
+      } catch (error) {
+        message.error((error as Error)?.message || 'Failed to update setting');
+      } finally {
+        setClearSigningPending(false);
+      }
+    }
+  );
 
   const handleToggleUserDataTrackingOptOut = useMemoizedFn(
     async (checked: boolean) => {
@@ -1043,6 +1057,21 @@ const SettingsInner = ({
             <Switch
               checked={isExtraFeeProtectionEnabled}
               onChange={handleToggleExtraFeeProtection}
+              loading={extraFeePending}
+              disabled={extraFeePending}
+            />
+          ),
+        },
+        {
+          leftIcon: RcIconClearSigningCC,
+          leftIconClassName: 'text-r-neutral-body',
+          content: t('page.dashboard.settings.settings.ledgerClearSigning'),
+          rightIcon: (
+            <Switch
+              checked={isLedgerClearSigningEnabled}
+              onChange={handleToggleLedgerClearSigning}
+              loading={clearSigningPending}
+              disabled={clearSigningPending}
             />
           ),
         },

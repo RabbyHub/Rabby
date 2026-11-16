@@ -407,9 +407,13 @@ const signTypedDataVlidation = ({
   if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
-  reportInvalidTypedDataValue(findInvalidTypedDataValue(jsonData), {
+  const invalidValue = findInvalidTypedDataValue(jsonData);
+  reportInvalidTypedDataValue(invalidValue, {
     rawTypedData: data,
   });
+  if (invalidValue) {
+    throw ethErrors.rpc.invalidParams('invalid typed data');
+  }
   if (!permissionService.isInternalOrigin(session!.origin)) {
     const currentChain = permissionService.getConnectedSite(session!.origin)
       ?.chain;

@@ -305,6 +305,7 @@ export const BridgeContent = () => {
     ) {
       const buildKey =
         expectedBuildKey || selectedBridgeQuoteBuildKeyRef.current;
+      const requestId = quoteRequestIdRef.current;
       if (
         expectedBuildKey &&
         buildKey !== selectedBridgeQuoteBuildKeyRef.current
@@ -363,7 +364,12 @@ export const BridgeContent = () => {
         return result;
       } catch (error) {
         setQuotesList((pre) =>
-          pre?.filter((item) => !isSameBridgeQuote(item, selectedBridgeQuote))
+          buildKey !== selectedBridgeQuoteBuildKeyRef.current ||
+          requestId !== quoteRequestIdRef.current
+            ? pre
+            : pre?.filter(
+                (item) => !isSameBridgeQuote(item, selectedBridgeQuote)
+              )
         );
         // message.error(error?.message || String(error));
         console.error(error);

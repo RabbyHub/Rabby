@@ -4864,13 +4864,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-bridge@npm:0.0.13":
-  version: 0.0.13
-  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.13"
+"@rabby-wallet/rabby-bridge@npm:0.0.15":
+  version: 0.0.15
+  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.15"
+  dependencies:
+    "@ethersproject/hash": "npm:5.8.0"
+    "@ethersproject/strings": "npm:5.8.0"
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.9.58"
-  checksum: 10c0/6c1b649a3d44359871702678d0d986df458a120aa648986e1867b18425b399dd350a0058d268efa39d6aa33c4efa984af087c35797c48ddd29f91fdedd19a339
+  checksum: 10c0/18c32eaa03f200ff50b593f9a07759b101afa8b32e597e91f5be0c01bb087bc0ecf4b5a8a76b77ee5491732e3d0141b2e5b11e90599e3b70888f10a1e68934cb
   languageName: node
   linkType: hard
 
@@ -16165,14 +16168,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:4.17.21":
-  version: 4.17.21
-  resolution: "lodash@npm:4.17.21"
-  checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
-  languageName: node
-  linkType: hard
-
-"lodash@npm:^4.16.3, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
+"lodash@npm:4.18.1, lodash@npm:^4.16.3, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.20, lodash@npm:^4.17.21":
   version: 4.18.1
   resolution: "lodash@npm:4.18.1"
   checksum: 10c0/757228fc68805c59789e82185135cf85f05d0b2d3d54631d680ca79ec21944ec8314d4533639a14b8bcfbd97a517e78960933041a5af17ecb693ec6eecb99a27
@@ -18584,7 +18580,7 @@ __metadata:
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.17"
     "@rabby-wallet/rabby-api": "npm:0.9.69"
-    "@rabby-wallet/rabby-bridge": "npm:0.0.13"
+    "@rabby-wallet/rabby-bridge": "npm:0.0.15"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.13"
     "@rabby-wallet/rabby-swap": "npm:0.0.95"
     "@rabby-wallet/staking-sdk": "npm:0.1.0"
@@ -18667,7 +18663,7 @@ __metadata:
     less-loader: "npm:8.1.1"
     less-vars-to-js: "npm:1.3.0"
     lightweight-charts: "npm:5.0.8"
-    lodash: "npm:4.17.21"
+    lodash: "npm:4.18.1"
     lottie-react: "npm:2.4.0"
     lru-cache: "npm:6.0.0"
     minimizer-webpack-plugin: "npm:5.13.0"

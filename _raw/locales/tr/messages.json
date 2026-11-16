@@ -3891,7 +3891,7 @@
           "closedPnl": "Gerçekleşen PnL",
           "fee": "Ücret",
           "fundingTipsV2": "Pozisyon açıldıktan sonra net finansman. Kırmızı (negatif) bir finansman değeri, ödenen finansmanı; yeşil (pozitif) bir değer ise alınan finansmanı gösterir.",
-          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <bold>Yeşil (pozitif)</bold> değerler, diğer ticaretçilerden kazandığınızı, <bold>Kırmızı (negatif)</bold> değerler ise onlara ödediğiniz finansman maliyetleridir.",
+          "fundingTipsBold": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <positive>Yeşil (pozitif)</positive> değerler, diğer ticaretçilerden kazandığınızı, <negative>Kırmızı (negatif)</negative> değerler ise onlara ödediğiniz finansman maliyetleridir.",
           "assets": "Varlıklar",
           "about": "Hakkında"
         },
@@ -4125,6 +4125,7 @@
         "reduceOnly": "Sadece Azalt",
         "insufficientBalance": "Yetersiz bakiye",
         "reduceOnlyTips": "Bu emir, emir büyüklüğü ne olursa olsun yeni bir pozisyon açmayacaktır. Bu emir yürütülme anında mevcut pozisyonla karşılaştırılacaktır.",
+        "reduceOnlyNoPositionTips": "Bu piyasada açık pozisyonunuz olmadığı için Sadece Azalt kullanılamaz. Bu özellik yalnızca mevcut bir pozisyonu azaltır ve asla yeni bir pozisyon açmaz.",
         "numberOfOrders": "Emir sayısı",
         "marginUsage": "Marjin Kullanımı",
         "type": "Tür",
@@ -4203,6 +4204,7 @@
         "totalTime": "Toplam Zaman (5d-24s)",
         "bboTips": "En İyi Alış ve Satış (BBO), emir defterindeki mevcut en iyi satış ve alış fiyatlarını ifade eder. BBO emirleri, görüntüleme tercihlerinden bağımsız olarak ayrıntılı ve doğru fiyatlandırma sağlayan kesin minimum fiyat adımıyla verilir.",
         "maxDurationTwap": "TWAP emrinin çalışacağı maksimum süre:",
+        "twapPresetDisabledTips": "Emir büyüklüğü bu süre için çok küçük. Her alt emir en az $10 olmalıdır.",
         "orderTypeTooltipScale": "Ölçekli emirler, piyasa etkisini azaltmak için bir miktarı birden fazla alt emre bölmenizi sağlar.",
         "orderTypeTooltipTwap": "TWAP (Zaman Ağırlıklı Ortalama Fiyat), kullanıcının belirttiği dönem boyunca zaman ağırlıklı ortalama fiyata yakın bir ortalama işlem fiyatı elde etmeyi amaçlayan bir algoritmik işlem yürütme stratejisidir.",
         "swapStableCoins": "Stablecoin Swap"
@@ -4491,7 +4493,20 @@
         "stopLossTipsShortLiquidation": "Fiyat likidasyon fiyatından daha yüksektir ({{price}})",
         "takeProfitExpectedPNL": "Kâr Al Beklenen PnL"
       },
-      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir."
+      "needDepositFirst": "Öncelikle fonları yatırmanız gerekir.",
+      "simpleAccount": {
+        "margin": "Marj",
+        "averageEntry": "Ort. giriş fiyatı",
+        "estimatedLiquidationPrice": "Tahmini lik. fiyatı",
+        "estimatedLiquidationDistance": "Tahmini lik. mesafesi",
+        "tpSl": "TP/SL",
+        "takeProfitPrice": "Kâr alma fiyatı",
+        "stopLossPrice": "Zarar durdurma fiyatı",
+        "funding": "Fonlama",
+        "nextFundingRate": "Sonraki Fonlama Oranı",
+        "estimatedPnl": "Tahmini PNL",
+        "fundingPaymentsTips": "Bu, pozisyon açıldığından beri toplam finansmanınızı gösterir. <positive>Yeşil (pozitif)</positive> değerler, diğer ticaretçilerden kazandığınızı, <negative>Kırmızı (negatif)</negative> değerler ise onlara ödediğiniz finansman maliyetleridir."
+      }
     },
     "desktopSmallSwap": {
       "failReason": {

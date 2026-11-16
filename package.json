@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.94.15",
+  "version": "0.94.16",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "node build/clean.js",
@@ -80,7 +80,7 @@
     "@rabby-wallet/page-provider": "0.4.11",
     "@rabby-wallet/rabby-action": "0.1.17",
     "@rabby-wallet/rabby-api": "0.9.69",
-    "@rabby-wallet/rabby-bridge": "0.0.13",
+    "@rabby-wallet/rabby-bridge": "0.0.15",
     "@rabby-wallet/rabby-security-engine": "2.0.13",
     "@rabby-wallet/rabby-swap": "0.0.95",
     "@rabby-wallet/staking-sdk": "0.1.0",
@@ -119,7 +119,7 @@
     "immer": "9.0.21",
     "koa-compose": "4.1.0",
     "lightweight-charts": "5.0.8",
-    "lodash": "4.17.21",
+    "lodash": "4.18.1",
     "lottie-react": "2.4.0",
     "lru-cache": "6.0.0",
     "multiformats": "13.3.2",

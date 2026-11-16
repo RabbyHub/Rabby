@@ -3935,7 +3935,7 @@
           "size": "倉位大小",
           "orderHistory": "委託單歷史",
           "fundingTipsV2": "自開倉以來的淨資金費用。紅色（負值）表示已支付資金費用，綠色（正值）表示已收取資金費用。",
-          "fundingTipsBold": "這裡顯示自開倉以來結算的資金費總額。<bold>綠色（正數）</bold>表示從其他交易者獲得的資金費收益，<bold>紅色（負數）</bold>表示已支付的資金費。",
+          "fundingTipsBold": "這裡顯示自開倉以來結算的資金費總額。<positive>綠色（正數）</positive>表示從其他交易者獲得的資金費收益，<negative>紅色（負數）</negative>表示已支付的資金費。",
           "assets": "資產",
           "about": "關於"
         },
@@ -4191,6 +4191,7 @@
         "tpSellMustBeHigherThanMidPrice": "掛賣單價格必須高於中間價。",
         "tpMustBeHigherThanCurrentPrice": "止賺價格必須高於現價",
         "reduceOnlyTips": "此筆委託無論下單量有多大，都不會開啟新倉位。它會於執行時與現有倉位作比較。",
+        "reduceOnlyNoPositionTips": "你在此市場沒有未平倉倉位，因此無法使用僅減倉。此功能只會減少現有倉位，不會開立新倉位。",
         "invalidTpPrice": "無效的止賺價格",
         "end": "結束",
         "liquidationPriceTooltip": "倉位風險較低，因此暫時沒有強平價。請注意，增加倉位或降低保證金將會增加風險。",
@@ -4244,6 +4245,7 @@
         "hour": "小時",
         "min": "分鐘",
         "maxDurationTwap": "TWAP 訂單最長執行時間為",
+        "twapPresetDisabledTips": "訂單金額不足以支援此執行時間。每個子訂單的金額必須至少為 $10。",
         "orderTypeTooltipStopLimit": "止蝕限價委託會在指定止蝕價格到達時變為限價委託。請指定觸發價格來啟動訂單。",
         "totalTime": "總時間 (5分鐘-24小時)",
         "orderTypeTooltipScale": "分批訂單可將一筆金額拆分為多個子訂單，以降低市場衝擊。",
@@ -4535,7 +4537,20 @@
         "whenPriceBelow": "當價格低於",
         "stopLossWhenPriceBelow": "止蝕單：當價格跌破"
       },
-      "needDepositFirst": "你需要先存入資金。"
+      "needDepositFirst": "你需要先存入資金。",
+      "simpleAccount": {
+        "margin": "保證金",
+        "averageEntry": "平均開倉價",
+        "estimatedLiquidationPrice": "預計強平價",
+        "estimatedLiquidationDistance": "預計強平距離",
+        "tpSl": "止盈/止損",
+        "takeProfitPrice": "止盈價格",
+        "stopLossPrice": "止損價格",
+        "funding": "資金費",
+        "nextFundingRate": "下一期資金費率",
+        "estimatedPnl": "預計盈虧",
+        "fundingPaymentsTips": "這裡顯示自開倉以來結算的資金費總額。<positive>綠色（正數）</positive>表示從其他交易者獲得的資金費收益，<negative>紅色（負數）</negative>表示已支付的資金費。"
+      }
     },
     "desktopSmallSwap": {
       "failReason": {
