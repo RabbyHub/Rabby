@@ -80,7 +80,10 @@ import {
   TypeDataActionItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
-import { tokenizeSignTypedDataMessage } from './signMessageHighlighter';
+import {
+  tokenizeSignTypedDataMessage,
+  tokenizeSignTypedDataV1Message,
+} from './signMessageHighlighter';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
 
 interface SignTypedDataProps {
@@ -328,11 +331,8 @@ const SignTypedData = ({
       // signTypeDataV1 [Message, from]
       let message;
       let displayMessage;
-      if (/^eth_signTypedData(_v1)?$/.test(method)) {
-        message = data[0].reduce((m, n) => {
-          m[n.name] = n.value;
-          return m;
-        }, {});
+      if (isSignTypedDataV1) {
+        message = data[0];
         displayMessage = message;
       } else {
         // [from, Message]
@@ -352,34 +352,13 @@ const SignTypedData = ({
       setParsedMessage('');
       console.log('parse message error', err);
     }
-  }, [data, method, signTypedData]);
+  }, [data, isSignTypedDataV1, signTypedData]);
 
   const messageTokens = useMemo(() => {
     if (!parsedMessage) return undefined;
     if (isSignTypedDataV1) {
-      const fields = (Array.isArray(data[0]) ? data[0] : []) as Array<{
-        name: string;
-        type: string;
-        value: unknown;
-      }>;
-      const message = fields.reduce<Record<string, unknown>>(
-        (result, field) => {
-          result[field.name] = field.value;
-          return result;
-        },
-        {}
-      );
-      return tokenizeSignTypedDataMessage(
-        {
-          primaryType: 'RabbySignTypedDataV1',
-          types: {
-            RabbySignTypedDataV1: fields.map(({ name, type }) => ({
-              name,
-              type,
-            })),
-          },
-          message,
-        },
+      return tokenizeSignTypedDataV1Message(
+        Array.isArray(data[0]) ? data[0] : [],
         parsedMessage
       );
     }
