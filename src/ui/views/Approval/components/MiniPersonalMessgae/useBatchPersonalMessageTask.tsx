@@ -6,6 +6,7 @@ import {
   isLedgerConnectionRecoverableError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 
@@ -120,7 +121,8 @@ export const useBatchSignPersonalMessageTask = ({
             !(
               isLedgerLockError(msg) ||
               isLedgerConnectionRecoverableError(msg) ||
-              msg === 'No OneKey Device found'
+              isOneKeyDisconnectError(e) ||
+              isOneKeyDisconnectError(msg)
             )
           ) {
             setError(msg);

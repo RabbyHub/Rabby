@@ -9,6 +9,7 @@ import {
   isLedgerConnectionRecoverableError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { useSetDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import BigNumber from 'bignumber.js';
 
@@ -173,7 +174,8 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             !(
               isLedgerLockError(msg) ||
               isLedgerConnectionRecoverableError(msg) ||
-              msg === 'No OneKey Device found'
+              isOneKeyDisconnectError(e) ||
+              isOneKeyDisconnectError(msg)
             )
           ) {
             try {

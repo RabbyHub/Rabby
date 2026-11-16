@@ -157,11 +157,9 @@ export const NewUserImportOneKey = () => {
 
   useEffect(() => {
     // init onekey sdk
-    wallet.requestKeyring(
-      HARDWARE_KEYRING_TYPES.Onekey.type,
-      'searchDevices',
-      null
-    );
+    void wallet
+      .requestKeyring(HARDWARE_KEYRING_TYPES.Onekey.type, 'searchDevices', null)
+      .catch(console.error);
   }, []);
 
   const usbPendingRef = useRef(false);
@@ -229,7 +227,9 @@ export const NewUserImportOneKey = () => {
       if (!isActive()) return;
       await wallet.unlockHardwareAccount(type, [accounts[0].index - 1], id);
       if (!isActive()) return;
-      setStore({ clearKeyringId: id });
+      // Import succeeded; clear any leftover cleanup target so Success.tsx
+      // does not call cleanUp(true) on the live shared keyring when closing.
+      setStore({ clearKeyringId: undefined });
       usbKeyringIdRef.current = null;
       history.push({
         pathname: '/new-user/success',

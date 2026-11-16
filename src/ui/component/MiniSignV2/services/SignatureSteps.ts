@@ -60,6 +60,7 @@ import {
   isLedgerConnectionRecoverableError,
   isLedgerLockError,
 } from '@/ui/utils/ledger';
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { t } from 'i18next';
 import AuthenticationModalPromise from '../../AuthenticationModal';
 import { DrawerProps, ModalProps } from 'antd';
@@ -1123,7 +1124,8 @@ export class SignatureSteps {
         !(
           isLedgerLockError(msg) ||
           isLedgerConnectionRecoverableError(msg) ||
-          msg === 'No OneKey Device found'
+          isOneKeyDisconnectError(e) ||
+          isOneKeyDisconnectError(msg)
         )
       ) {
         try {

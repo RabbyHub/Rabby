@@ -24,6 +24,7 @@ import {
   useBatchSignPersonalMessageTask,
 } from './useBatchPersonalMessageTask';
 import { Account } from '@/background/service/preference';
+import { useCancelOneKeySigningOnClose } from '@/ui/hooks/useCancelOneKeySigningOnClose';
 
 export const MiniSignPersonalMessage = ({
   txs,
@@ -47,6 +48,17 @@ export const MiniSignPersonalMessage = ({
   const currentAccount = account || _currentAccount;
 
   const task = useBatchSignPersonalMessageTask({});
+
+  const cancelOneKeySigning = useCancelOneKeySigningOnClose({
+    accountType: currentAccount?.type,
+    address: currentAccount?.address,
+    active: task.status === 'active',
+  });
+
+  const handleReject = useMemoizedFn(() => {
+    cancelOneKeySigning();
+    onReject?.();
+  });
 
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
@@ -137,7 +149,7 @@ export const MiniSignPersonalMessage = ({
           status={'FAILED'}
           content={content}
           description={desc}
-          onCancel={onReject}
+          onCancel={onReject ? handleReject : undefined}
           onRetry={async () => {
             const hash = await task.retry();
             onResolve?.(hash);
@@ -153,7 +165,7 @@ export const MiniSignPersonalMessage = ({
         originLogo={INTERNAL_REQUEST_SESSION.icon}
         // TODO: REMOVE chain
         chain={CHAINS.ETH}
-        onCancel={() => onReject?.()}
+        onCancel={handleReject}
         onSubmit={handleAllow}
         isTestnet={false}
         onIgnoreAllRules={noop}
