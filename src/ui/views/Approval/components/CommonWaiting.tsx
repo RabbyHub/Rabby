@@ -126,9 +126,13 @@ export const CommonWaiting = ({
     }
   }, [brandName]);
 
+  const mountedRef = React.useRef(false);
+  const subscriptionsRef = React.useRef<Array<() => void>>([]);
+
   const init = async () => {
     const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
+    if (!mountedRef.current || !approval) return;
 
     const isSignText = params.isGnosis
       ? true
@@ -137,6 +141,7 @@ export const CommonWaiting = ({
       const signingTxId = approval.data.params.signingTxId;
       if (signingTxId) {
         const signingTx = await wallet.getSigningTx(signingTxId);
+        if (!mountedRef.current) return;
 
         if (!signingTx?.explain && chain && !chain?.isTestnet) {
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
@@ -145,22 +150,26 @@ export const CommonWaiting = ({
       }
     }
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
+    const subscribe = (event: string, listener: (data?: any) => void) => {
+      eventBus.addEventListener(event, listener);
+      subscriptionsRef.current.push(() =>
+        eventBus.removeEventListener(event, listener)
+      );
+    };
+
+    subscribe(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
       setErrorMessage(data);
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     });
 
-    eventBus.addEventListener(
-      EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
-      async () => {
-        openInternalPageInTab('request-permission?type=onekey&from=approval');
-      }
-    );
+    subscribe(EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB, async () => {
+      openInternalPageInTab('request-permission?type=onekey&from=approval');
+    });
 
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    subscribe(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    subscribe(EVENTS.SIGN_FINISHED, async (data) => {
       console.log('finished', data);
       if (data.success) {
         let sig = data.data;
@@ -205,6 +214,7 @@ export const CommonWaiting = ({
   };
 
   React.useEffect(() => {
+    mountedRef.current = true;
     (async () => {
       const account = params.isGnosis ? params.account! : $account;
       setTitle(
@@ -218,8 +228,13 @@ export const CommonWaiting = ({
         </div>
       );
       setHeight('fit-content');
-      init();
+      void init().catch(console.error);
     })();
+    return () => {
+      mountedRef.current = false;
+      subscriptionsRef.current.forEach((unsubscribe) => unsubscribe());
+      subscriptionsRef.current = [];
+    };
   }, []);
 
   React.useEffect(() => {

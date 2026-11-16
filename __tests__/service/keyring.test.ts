@@ -37,6 +37,23 @@ describe('KeyringService setup', () => {
   });
 
   describe('setLocked', () => {
+    it('invalidates OneKey work without changing cleanup for other keyrings', async () => {
+      const onekey = {
+        type: KEYRING_CLASS.HARDWARE.ONEKEY,
+        cancelPendingWork: jest.fn(),
+        cleanUp: jest.fn(),
+      };
+      const other = {
+        type: KEYRING_CLASS.HARDWARE.TREZOR,
+        cleanUp: jest.fn(),
+      };
+      keyringService.keyrings = [onekey, other];
+      await keyringService.setLocked();
+      expect(onekey.cancelPendingWork).toHaveBeenCalledTimes(1);
+      expect(onekey.cleanUp).toHaveBeenCalledWith();
+      expect(other.cleanUp).toHaveBeenCalledWith();
+    });
+
     it('setLocked correctly sets lock state', async () => {
       await keyringService.setLocked();
       expect(keyringService.password).toBeNull();

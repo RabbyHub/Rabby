@@ -502,9 +502,21 @@ export class KeyringService extends EventEmitter {
   async setLocked(): Promise<MemStoreState> {
     // set locked
     // release all transport before lock wallet
+    const oneKeyCleanUps: Promise<unknown>[] = [];
     this.keyrings.forEach((keyring) => {
       if (keyring.cleanUp) {
-        keyring.cleanUp();
+        if (keyring.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+          // Locking must stop in-flight OneKey work (unlock, 113 recovery,
+          // signing) even when an approval owns the signing.
+          void Promise.resolve(keyring.cancelPendingWork()).catch(
+            console.error
+          );
+          oneKeyCleanUps.push(
+            Promise.resolve(keyring.cleanUp()).catch(console.error)
+          );
+        } else {
+          keyring.cleanUp();
+        }
       }
     });
     this.password = null;
@@ -512,7 +524,7 @@ export class KeyringService extends EventEmitter {
     this.memStore.updateState({ isUnlocked: false });
     // remove keyrings
     this.keyrings = [];
-    await this._updateMemStoreKeyrings();
+    await Promise.all([this._updateMemStoreKeyrings(), ...oneKeyCleanUps]);
     this.emit('lock');
     return this.fullUpdate();
   }
@@ -903,6 +915,13 @@ export class KeyringService extends EventEmitter {
             keyring?.consumePairingCredsRefreshed?.()
           ) {
             await this.persistAllKeyrings();
+          }
+          if (
+            keyring?.type === KEYRING_CLASS.HARDWARE.ONEKEY &&
+            keyring?.consumePassphraseStateCleared?.() &&
+            this.isUnlocked()
+          ) {
+            await this.persistUpdate();
           }
         }
       },

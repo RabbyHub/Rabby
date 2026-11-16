@@ -5,7 +5,7 @@ import { Chain } from '@debank/common';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import clsx from 'clsx';
-import { EVENTS } from 'consts';
+import { EVENTS, KEYRING_CLASS } from 'consts';
 import React, { ReactNode, useRef } from 'react';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 
@@ -25,6 +25,8 @@ import {
 } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { OneKey } from '@/ui/views/CommonPopup/OneKey';
 import { ProcessActions } from '../FooterBar/ProcessActions';
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
+import { useCancelOneKeySigningOnClose } from '@/ui/hooks/useCancelOneKeySigningOnClose';
 
 interface Props extends ActionGroupProps {
   chain?: Chain;
@@ -83,9 +85,15 @@ export const MiniOneKeyAction: React.FC<Props> = ({
 
   const [disconnectTipsModal, setDisconnectTipsModal] = React.useState(false);
 
+  useCancelOneKeySigningOnClose({
+    accountType: account.type || KEYRING_CLASS.HARDWARE.ONEKEY,
+    address: account.address,
+    active: task.status === 'active',
+  });
+
   React.useEffect(() => {
     const listener = (msg) => {
-      if (msg === 'No OneKey Device found') {
+      if (isOneKeyDisconnectError(msg)) {
         console.log('msgmsg', msg);
         setDisconnectTipsModal(true);
         task.stop();

@@ -23,6 +23,7 @@ import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { useTranslation } from 'react-i18next';
 import { isLedgerLockError } from '@/ui/utils/ledger';
 import { Account } from '@/background/service/preference';
+import { useCancelOneKeySigningOnClose } from '@/ui/hooks/useCancelOneKeySigningOnClose';
 
 export const MiniSignTypedDate = ({
   txs,
@@ -49,6 +50,17 @@ export const MiniSignTypedDate = ({
   }, [account, _currentAccount]);
 
   const task = useBatchSignTypedDataTask({});
+
+  const cancelOneKeySigning = useCancelOneKeySigningOnClose({
+    accountType: currentAccount?.type,
+    address: currentAccount?.address,
+    active: task.status === 'active',
+  });
+
+  const handleReject = useMemoizedFn(() => {
+    cancelOneKeySigning();
+    onReject?.();
+  });
 
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
@@ -138,7 +150,7 @@ export const MiniSignTypedDate = ({
           status={'FAILED'}
           content={content}
           description={desc}
-          onCancel={onReject}
+          onCancel={onReject ? handleReject : undefined}
           onRetry={async () => {
             const hash = await task.retry();
             onResolve?.(hash);
@@ -152,7 +164,7 @@ export const MiniSignTypedDate = ({
         originLogo={INTERNAL_REQUEST_SESSION.icon}
         // TODO: REMOVE chain
         chain={CHAINS.ETH}
-        onCancel={() => onReject?.()}
+        onCancel={handleReject}
         onSubmit={handleAllow}
         isTestnet={false}
         onIgnoreAllRules={noop}

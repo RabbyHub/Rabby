@@ -10,6 +10,7 @@ import { Dots } from '@/ui/views/Approval/components/Popup/Dots';
 import eventBus from '@/eventBus';
 import { OneKey } from '@/ui/views/CommonPopup/OneKey';
 import { Popup } from '@/ui/component';
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { BatchRevokeTaskType } from '../../hooks/useBatchRevokeTask';
 
 const buttonBaseClass = clsx(
@@ -49,7 +50,7 @@ export const RevokeActionOnekeyButton: React.FC<{
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (msg === 'DISCONNECTED' || msg.startsWith('901:')) {
+      if (isOneKeyDisconnectError(msg)) {
         handledDisconnectRef.current = true;
         setDisconnectTipsModal(true);
         task?.pause();

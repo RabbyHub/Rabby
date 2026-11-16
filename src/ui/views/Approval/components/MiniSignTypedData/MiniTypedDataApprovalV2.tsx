@@ -14,6 +14,7 @@ import { isLedgerLockError } from '@/ui/utils/ledger';
 import { MiniFooterBar } from '../MiniSignTx/MiniFooterBar';
 import { noop } from 'lodash';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
+import { useCancelOneKeySigningOnClose } from '@/ui/hooks/useCancelOneKeySigningOnClose';
 import clsx from 'clsx';
 
 export const MiniTypedDataApprovalV2: React.FC<{
@@ -28,7 +29,16 @@ export const MiniTypedDataApprovalV2: React.FC<{
   const currentAccount = request?.config.account;
   const config = request?.config;
 
-  const handleClose = () => typedDataSignatureStore.close();
+  const cancelOneKeySigning = useCancelOneKeySigningOnClose({
+    accountType: currentAccount?.type,
+    address: currentAccount?.address,
+    active: status === 'signing',
+  });
+
+  const handleClose = () => {
+    cancelOneKeySigning();
+    typedDataSignatureStore.close();
+  };
   const handleAllow = () => typedDataSignatureStore.retry();
 
   const hdType =

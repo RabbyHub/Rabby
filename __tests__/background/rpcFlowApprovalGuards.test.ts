@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { waitSignComponentAmounted } from '@/utils/signEvent';
 
 // Perps invite (the only caller of sendRequest's approvalRequestId/onApproval
 // option) must never let its inline SignTypedData request queue behind
@@ -12,19 +13,24 @@ const state = {
   hasPermission: true,
 };
 
+const mockOneKeyCancel = jest.fn();
 const mockKeyringService = {
+  getKeyringForAccount: jest.fn(async () => ({ cancel: mockOneKeyCancel })),
   memStore: { getState: () => ({ isUnlocked: state.isUnlocked }) },
   isUnlocked: () => state.isUnlocked,
 };
 const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
+  setCurrentRequestDeferFn: jest.fn(),
   unLock: jest.fn(),
 };
 const mockPermissionService = {
   hasPermission: jest.fn(() => state.hasPermission),
   getConnectedSite: jest.fn(() => undefined),
   addConnectedSiteV2: jest.fn(),
+  updateConnectSite: jest.fn(),
+  touchConnectedSite: jest.fn(),
 };
 const mockPreferenceService = {
   getPreference: jest.fn(),
@@ -85,6 +91,10 @@ jest.mock('consts', () => ({
     CoboArgusKeyring: 'CoboArgusKeyring',
   },
   SUPPORT_1559_KEYRING_TYPE: [],
+}));
+
+jest.mock('@/utils/signEvent', () => ({
+  waitSignComponentAmounted: jest.fn(async () => undefined),
 }));
 
 import rpcFlow from '@/background/controller/provider/rpcFlow';
@@ -162,6 +172,82 @@ describe('rpcFlow: inline (onApproval) requests fail closed instead of queuing o
     await rpcFlow(baseRequest() as any).catch(() => undefined);
     expect(mockNotificationService.requestApproval).toHaveBeenCalled();
   });
+});
+
+test('cancels the captured OneKey signing task when its waiting approval is rejected', async () => {
+  state.isUnlocked = true;
+  state.currentApproval = null;
+  state.hasPermission = true;
+  mockOneKeyCancel.mockClear();
+  mockNotificationService.requestApproval
+    .mockResolvedValueOnce({
+      uiRequestComponent: 'CommonWaiting',
+      type: 'Onekey Hardware',
+      address: '0xaccount',
+    })
+    .mockRejectedValueOnce(new Error('user cancel'));
+  ethSignTypedDataV4.mockImplementationOnce(() => new Promise(() => {}));
+  await expect(rpcFlow(baseRequest() as any)).rejects.toThrow('user cancel');
+  expect(mockKeyringService.getKeyringForAccount).toHaveBeenCalledWith(
+    '0xaccount',
+    'Onekey Hardware'
+  );
+  expect(mockOneKeyCancel).toHaveBeenCalledTimes(1);
+});
+
+test('does not start OneKey signing if approval is cancelled before the waiting UI mounts', async () => {
+  let mounted!: () => void;
+  jest.mocked(waitSignComponentAmounted).mockImplementationOnce(
+    () =>
+      new Promise<void>((resolve) => {
+        mounted = resolve;
+      })
+  );
+  ethSignTypedDataV4.mockClear();
+  mockNotificationService.requestApproval
+    .mockResolvedValueOnce({
+      uiRequestComponent: 'CommonWaiting',
+      type: 'Onekey Hardware',
+      address: '0xaccount',
+    })
+    .mockRejectedValueOnce(new Error('user cancel'));
+  await expect(rpcFlow(baseRequest() as any)).rejects.toThrow('user cancel');
+  mounted();
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+});
+
+test('does not fail the approval when the OneKey account was removed mid-approval', async () => {
+  let mounted!: () => void;
+  jest.mocked(waitSignComponentAmounted).mockImplementationOnce(
+    () =>
+      new Promise<void>((resolve) => {
+        mounted = resolve;
+      })
+  );
+  state.isUnlocked = true;
+  state.currentApproval = null;
+  state.hasPermission = true;
+  mockOneKeyCancel.mockClear();
+  ethSignTypedDataV4.mockClear();
+  mockKeyringService.getKeyringForAccount.mockRejectedValueOnce(
+    new Error('Address 0xaccount not found in this keyring')
+  );
+  mockNotificationService.requestApproval
+    .mockResolvedValueOnce({
+      uiRequestComponent: 'CommonWaiting',
+      type: 'Onekey Hardware',
+      address: '0xaccount',
+    })
+    .mockRejectedValueOnce(new Error('user cancel'));
+
+  await expect(rpcFlow(baseRequest() as any)).rejects.toThrow('user cancel');
+  mounted();
+  await Promise.resolve();
+  await Promise.resolve();
+  expect(mockOneKeyCancel).not.toHaveBeenCalled();
+  expect(ethSignTypedDataV4).not.toHaveBeenCalled();
 });
 
 describe('rpcFlow method dispatch', () => {
