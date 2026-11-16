@@ -14,6 +14,8 @@ const dappOrigin = 'https://dapp.example';
 const internalOrigin = 'chrome-extension://rabby';
 const stopAtApproval = new Error('stop at approval');
 const stopAtSigning = new Error('stop at signing');
+const mockKeyring = {};
+const mockSigningTx = { rawTx: {} };
 
 const mockNotificationService = {
   requestApproval: jest.fn(async (..._args: any[]) => {
@@ -23,10 +25,11 @@ const mockNotificationService = {
   getApproval: jest.fn(() => null),
 };
 const mockKeyringService = {
+  keyrings: [mockKeyring],
   hasVault: jest.fn(() => true),
   memStore: { getState: () => ({ isUnlocked: true }) },
   isUnlocked: jest.fn(() => true),
-  getKeyringForAccount: jest.fn(async () => ({})),
+  getKeyringForAccount: jest.fn(async () => mockKeyring),
   signTransaction: jest.fn(async () => {
     throw stopAtSigning;
   }),
@@ -60,7 +63,7 @@ jest.mock('background/service', () => ({
   notificationService: mockNotificationService,
   sessionService: { deleteSessionsByTabId: jest.fn() },
   transactionHistoryService: {
-    getSigningTx: jest.fn(() => ({ rawTx: {} })),
+    getSigningTx: jest.fn(() => mockSigningTx),
   },
   RPCService: { probeBestRPC: jest.fn() },
   i18n: { t: (key: string) => key },
@@ -267,8 +270,8 @@ describe('dApp transaction account and chain binding', () => {
       ).rejects.toBe(stopAtApproval);
 
       expect(mockNotificationService.requestApproval).toHaveBeenCalledTimes(1);
-      const approval =
-        mockNotificationService.requestApproval.mock.calls[0]![0];
+      const approval = mockNotificationService.requestApproval.mock
+        .calls[0]![0];
       expect(approval.account).toBe(accountA);
       expect(approval.params.data[0]).not.toHaveProperty('isSpeedUp');
       expect(approval.params.data[0]).not.toHaveProperty('isCancel');
