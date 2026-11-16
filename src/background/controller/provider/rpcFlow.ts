@@ -19,7 +19,8 @@ import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
-import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
+import { intToHex } from '@ethereumjs/util';
+import { normalizeSignText } from '@/utils/signText';
 import { findChain } from '@/utils/chain';
 import { waitSignComponentAmounted } from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
@@ -237,12 +238,7 @@ const flowContext = flow
         from = second;
         message = first;
       }
-      const hexReg = /^[0-9A-Fa-f]+$/gu;
-      const stripped = stripHexPrefix(message);
-      if (stripped.match(hexReg)) {
-        message = addHexPrefix(stripped);
-      }
-      ctx.request.data.params[0] = message;
+      ctx.request.data.params[0] = normalizeSignText(message);
       ctx.request.data.params[1] = from;
     }
     if (approvalType && (!condition || !condition(ctx.request))) {

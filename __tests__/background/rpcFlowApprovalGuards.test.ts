@@ -20,11 +20,14 @@ const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
   unLock: jest.fn(),
+  setCurrentRequestDeferFn: jest.fn(),
 };
 const mockPermissionService = {
   hasPermission: jest.fn(() => state.hasPermission),
   getConnectedSite: jest.fn(() => undefined),
   addConnectedSiteV2: jest.fn(),
+  updateConnectSite: jest.fn(),
+  touchConnectedSite: jest.fn(),
 };
 const mockPreferenceService = {
   getPreference: jest.fn(),
@@ -44,7 +47,14 @@ jest.mock('background/service', () => ({
 // controller.ts), enough to drive rpcFlow's real middleware chain without
 // importing the full controller and its heavy transaction/keyring surface.
 const ethSignTypedDataV4 = jest.fn(async () => 'signature-result');
-const fakeController = { ethSignTypedDataV4 };
+const personalSign = jest.fn(async (_req: any) => 'personal-signature');
+const fakeController = { ethSignTypedDataV4, personalSign };
+Reflect.defineMetadata(
+  'APPROVAL',
+  ['SignText', () => false],
+  fakeController,
+  'personalSign'
+);
 Reflect.defineMetadata(
   'APPROVAL',
   ['SignTypedData', () => false],
@@ -88,6 +98,7 @@ jest.mock('consts', () => ({
 }));
 
 import rpcFlow from '@/background/controller/provider/rpcFlow';
+import { hex2Text } from '@/utils/signText';
 
 const baseRequest = () => ({
   data: { method: 'eth_signTypedData_v4', params: [] },
@@ -97,6 +108,54 @@ const baseRequest = () => ({
     icon: '',
   },
   account: { address: '0xaccount', type: 'SimpleKeyring' },
+});
+
+describe('rpcFlow personal-sign review bytes', () => {
+  const from = `0x${'11'.repeat(20)}`;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    state.isUnlocked = true;
+    state.currentApproval = null;
+    state.hasPermission = true;
+    mockNotificationService.requestApproval.mockResolvedValue({});
+  });
+
+  test.each([false, true])(
+    'normalizes odd hex before review and signing (reversed parameters: %s)',
+    async (reversed) => {
+      const params = reversed ? [from, '0x415'] : ['0x415', from];
+      await expect(
+        rpcFlow({
+          ...baseRequest(),
+          data: { method: 'personal_sign', params },
+        } as any)
+      ).resolves.toBe('personal-signature');
+
+      const reviewed =
+        mockNotificationService.requestApproval.mock.calls[0][0].params.data;
+      const signed = personalSign.mock.calls[0][0].data.params;
+      expect(reviewed).toEqual(['0x0415', from]);
+      expect(signed).toEqual(reviewed);
+      expect(hex2Text(reviewed[0])).toBe('\x04\x15');
+    }
+  );
+
+  test.each(['Sign in\nNonce: 123', '0x4142', '0x'])(
+    'preserves normal request %s',
+    async (message) => {
+      await expect(
+        rpcFlow({
+          ...baseRequest(),
+          data: { method: 'personal_sign', params: [message, from] },
+        } as any)
+      ).resolves.toBe('personal-signature');
+      expect(personalSign.mock.calls[0][0].data.params).toEqual([
+        message,
+        from,
+      ]);
+    }
+  );
 });
 
 describe('rpcFlow: inline (onApproval) requests fail closed instead of queuing or crossing a session boundary', () => {

@@ -1,4 +1,30 @@
-jest.mock('@/constant', () => ({ CUSTOM_RPC_ENABLED: false }));
+const mockGetApproval = jest.fn();
+const mockGetCurrentAccount = jest.fn();
+const mockGetConnectedSite = jest.fn();
+let mockUnlocked = true;
+const mockLockListeners = new Set<(state: { isUnlocked: boolean }) => void>();
+jest.mock('background/service', () => ({
+  notificationService: { getApproval: mockGetApproval },
+  preferenceService: {
+    getCurrentAccount: mockGetCurrentAccount,
+    getPreference: () => true,
+  },
+  permissionService: { getConnectedSite: mockGetConnectedSite },
+  keyringService: {
+    isUnlocked: () => mockUnlocked,
+    memStore: {
+      subscribe: (fn: (state: { isUnlocked: boolean }) => void) =>
+        mockLockListeners.add(fn),
+      unsubscribe: (fn: (state: { isUnlocked: boolean }) => void) =>
+        mockLockListeners.delete(fn),
+    },
+  },
+}));
+
+jest.mock('@/constant', () => ({
+  CUSTOM_RPC_ENABLED: false,
+  EVENTS: { broadcastToUI: 'broadcastToUI' },
+}));
 
 jest.mock('@/utils/chain', () => ({
   findChain: jest.fn(),
@@ -10,14 +36,14 @@ jest.mock('@/ui/utils/token', () => ({
 }));
 
 jest.mock('@/background/utils', () => ({ createPersistStore: jest.fn() }));
-jest.mock('@/background/utils/http', () => ({ http: {} }));
+jest.mock('@/background/utils/http', () => ({ http: { post: jest.fn() } }));
 jest.mock('@/background/utils/ipfs', () => ({
   getFormattedIpfsUrl: jest.fn(),
 }));
 jest.mock('@/background/webapi', () => ({ storage: {} }));
 jest.mock('@/background/service/rpc', () => ({
   __esModule: true,
-  default: {},
+  default: { hasCustomRPC: () => false },
 }));
 
 jest.mock('viem/actions', () => ({
@@ -35,6 +61,10 @@ import {
   getTransactionReceipt,
 } from 'viem/actions';
 import { findChain } from '@/utils/chain';
+import { http as axios } from '@/background/utils/http';
+import { addCustomTestnetFromApproval } from '@/background/controller/walletUtils/addChain';
+import eventBus from '@/eventBus';
+import type { ApprovalRef } from '@/background/service/notification';
 import {
   createTestnetChain,
   customTestnetService,
@@ -46,6 +76,196 @@ const chain = createTestnetChain({
   name: 'Custom network',
   nativeTokenSymbol: 'ETH',
   rpcUrl: 'https://rpc.example',
+});
+
+describe('custom network writes are bound to active approval', () => {
+  const account = {
+    address: '0xaaa',
+    type: 'HD Key Tree',
+    brandName: 'HD Key Tree',
+  };
+  const origin = 'https://dapp.example';
+  const post = axios.post as jest.Mock;
+  let approval: any;
+  let site: any;
+  const ref = (): ApprovalRef => ({
+    id: approval.id,
+    component: approval.data.approvalComponent,
+  });
+  const deferredRpc = () => {
+    let finish!: (value: any) => void;
+    post.mockImplementationOnce(
+      () => new Promise((resolve) => (finish = resolve))
+    );
+    return () => finish({ data: { result: chain.hex } });
+  };
+  const expectNoWrites = () => {
+    expect(customTestnetService.store.customTestnet).toEqual({});
+    expect(customTestnetService.chains).toEqual({});
+    expect(customTestnetService.syncChainList).not.toHaveBeenCalled();
+    expect(customTestnetService.detectEip1559).not.toHaveBeenCalled();
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUnlocked = true;
+    approval = {
+      id: 'network-request',
+      data: {
+        approvalComponent: 'AddChain',
+        origin,
+        params: { data: [{ chainId: chain.hex }] },
+      },
+    };
+    site = { account, chain: 'ETH', isConnected: true };
+    mockGetApproval.mockImplementation(() => approval);
+    mockGetConnectedSite.mockImplementation(() => site);
+    mockGetCurrentAccount.mockReturnValue(account);
+    jest.mocked(findChain).mockReturnValue(undefined);
+    post.mockResolvedValue({ data: { result: chain.hex } });
+    customTestnetService.store.customTestnet = {};
+    customTestnetService.chains = {};
+    jest.spyOn(customTestnetService, 'syncChainList');
+    jest
+      .spyOn(customTestnetService, 'detectEip1559')
+      .mockResolvedValue(undefined);
+  });
+  afterEach(() => {
+    expect(mockLockListeners.size).toBe(0);
+    expect(eventBus.events.broadcastToUI || []).toHaveLength(0);
+    jest.restoreAllMocks();
+  });
+
+  test.each(['AddChain', 'SwitchChain'])(
+    'adds and initializes a network with an active %s approval',
+    async (component) => {
+      approval.data.approvalComponent = component;
+      await expect(
+        addCustomTestnetFromApproval(chain, ref())
+      ).resolves.toMatchObject({ id: chain.id, rpcUrl: chain.rpcUrl });
+      expect(customTestnetService.store.customTestnet[chain.id]).toBeDefined();
+      expect(customTestnetService.getClient(chain.id)).toBeDefined();
+      expect(customTestnetService.syncChainList).toHaveBeenCalledTimes(1);
+      expect(customTestnetService.detectEip1559).toHaveBeenCalledWith(chain.id);
+    }
+  );
+
+  test.each(['cancel', 'close', 'replacement'])(
+    'does not install a network after %s while the RPC is pending',
+    async (action) => {
+      const finish = deferredRpc();
+      const pending = addCustomTestnetFromApproval(chain, ref());
+      expect(post).toHaveBeenCalledTimes(1);
+      approval =
+        action === 'replacement'
+          ? { ...approval, id: 'another-request' }
+          : null;
+      finish();
+      await expect(pending).rejects.toMatchObject({ code: 4001 });
+      expectNoWrites();
+    }
+  );
+
+  test('locking and unlocking cannot revive a pending network write', async () => {
+    const finish = deferredRpc();
+    const pending = addCustomTestnetFromApproval(chain, ref());
+    mockUnlocked = false;
+    mockLockListeners.forEach((fn) => fn({ isUnlocked: false }));
+    mockUnlocked = true;
+    finish();
+    await expect(pending).rejects.toMatchObject({ code: 4001 });
+    expectNoWrites();
+  });
+
+  test.each(['global account', 'site account', 'chain', 'connection'])(
+    'changing %s away and back cannot revive consent',
+    async (change) => {
+      const finish = deferredRpc();
+      const pending = addCustomTestnetFromApproval(chain, ref());
+      if (change === 'global account')
+        mockGetCurrentAccount.mockReturnValue({ ...account, address: '0xbbb' });
+      if (change === 'site account')
+        site.account = { ...account, address: '0xbbb' };
+      if (change === 'chain') site.chain = 'BSC';
+      if (change === 'connection') site = undefined;
+      eventBus.emit('broadcastToUI');
+      site = { account, chain: 'ETH', isConnected: true };
+      mockGetCurrentAccount.mockReturnValue(account);
+      eventBus.emit('broadcastToUI');
+      finish();
+      await expect(pending).rejects.toMatchObject({ code: 4001 });
+      expectNoWrites();
+    }
+  );
+
+  test('ignores unrelated metadata updates and does not change the reviewed form after dispatch', async () => {
+    const values = { ...chain };
+    const finish = deferredRpc();
+    const pending = addCustomTestnetFromApproval(values, ref());
+    site = { ...site, isTop: true };
+    mockGetCurrentAccount.mockReturnValue({ ...account, balance: 100 });
+    eventBus.emit('broadcastToUI');
+    values.name = 'Changed after dispatch';
+    finish();
+    await expect(pending).resolves.toMatchObject({ name: chain.name });
+  });
+
+  test.each([
+    'missing ref',
+    'wrong id',
+    'wrong component',
+    'unsupported component',
+    'missing approval',
+    'wrong chain',
+    'locked',
+  ])('rejects %s before RPC validation', async (change) => {
+    let reference = ref();
+    if (change === 'wrong id')
+      reference = { ...reference, id: 'other-request' };
+    if (change === 'wrong component')
+      reference = { ...reference, component: 'SwitchChain' };
+    if (change === 'unsupported component') {
+      reference = { ...reference, component: 'SignText' };
+      approval.data.approvalComponent = 'SignText';
+    }
+    if (change === 'missing approval') approval = null;
+    if (change === 'wrong chain') approval.data.params.data[0].chainId = '0x1';
+    if (change === 'locked') mockUnlocked = false;
+    await expect(
+      addCustomTestnetFromApproval(
+        chain,
+        change === 'missing ref' ? (undefined as any) : reference
+      )
+    ).rejects.toMatchObject({ code: 4001 });
+    expect(post).not.toHaveBeenCalled();
+    expectNoWrites();
+  });
+
+  test.each(['mismatched chain', 'unavailable RPC', 'existing chain'])(
+    'preserves validation errors for %s',
+    async (failure) => {
+      if (failure === 'mismatched chain')
+        post.mockResolvedValue({ data: { result: '0x1' } });
+      if (failure === 'unavailable RPC')
+        post.mockRejectedValue(new Error('offline'));
+      if (failure === 'existing chain')
+        jest.mocked(findChain).mockReturnValue(chain);
+      await expect(
+        addCustomTestnetFromApproval(chain, ref())
+      ).resolves.toHaveProperty('error');
+      expectNoWrites();
+    }
+  );
+
+  test('keeps manual add and edit available without a dapp approval', async () => {
+    approval = null;
+    await expect(
+      customTestnetService.add({ ...chain })
+    ).resolves.toMatchObject({ id: chain.id });
+    await expect(
+      customTestnetService.update({ ...chain, name: 'Edited' })
+    ).resolves.toMatchObject({ name: 'Edited' });
+  });
 });
 
 describe('customTestnetService.getTx receipt status', () => {
