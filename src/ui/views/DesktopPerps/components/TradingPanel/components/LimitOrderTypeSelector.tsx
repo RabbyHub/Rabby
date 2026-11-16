@@ -2,7 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { LimitOrderType } from '../../../types';
-import { PerpsDropdown } from './PerpsDropdown';
+import { PerpsDropdown, PERPS_DROPDOWN_TRIGGER_CLASS } from './PerpsDropdown';
 import { RcIconArrowDownCC } from '@/ui/assets/desktop/common';
 
 interface LimitOrderTypeSelectorProps {
@@ -41,9 +41,12 @@ export const LimitOrderTypeSelector: React.FC<LimitOrderTypeSelectorProps> = ({
         options={options}
         onSelect={(key) => onChange(key as LimitOrderType)}
       >
-        <div className="text-12 text-rb-neutral-title-1 flex items-center gap-[3px] cursor-pointer h-14">
+        <div className={PERPS_DROPDOWN_TRIGGER_CLASS}>
           {OPTIONS.find((opt) => opt.value === value)?.label}
-          <RcIconArrowDownCC className="text-rb-neutral-secondary" />
+          <RcIconArrowDownCC
+            viewBox="0 0 16 16"
+            className="w-[14px] h-[14px] text-rb-neutral-secondary"
+          />
         </div>
       </PerpsDropdown>
     </div>

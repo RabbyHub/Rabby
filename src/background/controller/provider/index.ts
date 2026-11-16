@@ -41,6 +41,18 @@ export default async <T = void>(req: ProviderRequest): Promise<T> => {
   } = req;
 
   const origin = req.session?.origin || req.origin;
+  if (
+    method === 'eth_sendTransaction' &&
+    origin !== INTERNAL_REQUEST_ORIGIN &&
+    !req.session?.isFromRabby
+  ) {
+    const tx = req.data?.params?.[0];
+    if (tx && typeof tx === 'object') {
+      delete tx.isSpeedUp;
+      delete tx.isCancel;
+    }
+  }
+
   let account: Account | undefined = undefined;
   if (preferenceService.getPreference('isEnabledDappAccount')) {
     if (origin) {

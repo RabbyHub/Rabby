@@ -8,6 +8,7 @@ import {
 } from '@ethereumjs/util';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import {
+  SafeSignature,
   SafeTransaction,
   SafeTransactionDataPartial,
 } from '@safe-global/types-kit';
@@ -172,6 +173,41 @@ export const generateTypedDataFrom = ({
   };
 
   return typedData;
+};
+
+type SignatureHolder = {
+  signatures: Map<string, SafeSignature>;
+  addSignature(signature: SafeSignature): void;
+};
+
+/**
+ * Adds `signature` to `holder` for the duration of `submit` and removes it
+ * again if `submit` fails, so in-memory signatures only ever mirror what the
+ * Safe Transaction Service accepted.
+ *
+ * Callers choose between "create" and "append a signature" by whether any
+ * signature is already present. A signature left behind by a failed create
+ * sends the retry to the append endpoint for an object that was never
+ * created, which the service answers with 404 on every retry.
+ */
+export const submitWithSignature = async <T>(
+  holder: SignatureHolder,
+  signature: SafeSignature,
+  submit: () => Promise<T>
+): Promise<T> => {
+  const key = signature.signer.toLowerCase();
+  const previous = holder.signatures.get(key);
+  holder.addSignature(signature);
+  try {
+    return await submit();
+  } catch (e) {
+    if (previous) {
+      holder.signatures.set(key, previous);
+    } else {
+      holder.signatures.delete(key);
+    }
+    throw e;
+  }
 };
 
 class GnosisKeyring extends EventEmitter {
@@ -379,12 +415,12 @@ class GnosisKeyring extends EventEmitter {
       throw new Error('No transaction in Gnosis keyring');
     }
     const safe = this.safeInstance;
-    this.addSignature(address, signature);
     const hash = await this.getTransactionHash();
-    const sig = this.currentTransaction.signatures.get(address.toLowerCase());
-    if (sig) {
-      await safe.request.confirmTransaction(hash, { signature: sig.data });
-    }
+    if (!hash) throw new Error('No transaction hash in Gnosis keyring');
+    const sig = new EthSafeSignature(address, signature);
+    await submitWithSignature(this.currentTransaction, sig, () =>
+      safe.request.confirmTransaction(hash, { signature: sig.data })
+    );
   }
 
   async addPureSignature(address: string, signature: string) {
@@ -448,6 +484,11 @@ class GnosisKeyring extends EventEmitter {
     try {
       await safe.postTransaction(safeTransaction, transactionHash);
     } catch (e) {
+      // The transaction was not created, so the service holds none of the
+      // signatures collected for it. Drop them: callers confirm instead of
+      // creating whenever a signature is present, and confirming a
+      // transaction that does not exist fails with 404 on every retry.
+      safeTransaction.signatures.clear();
       let errMsg = 'Post transaction to Gnosis Server failed';
       if (e?.response?.data) {
         const keys = Object.keys(e.response.data);
@@ -663,11 +704,12 @@ class GnosisKeyring extends EventEmitter {
       SigningMethod.ETH_SIGN_TYPED_DATA,
       signature
     );
+    const safe = this.safeInstance;
+    const safeMessage = this.currentSafeMessage;
     const safeSignature = new EthSafeSignature(signerAddress, signature);
-    this.currentSafeMessage.addSignature(safeSignature);
-    return this.safeInstance.addMessage({
-      safeMessage: this.currentSafeMessage,
-    });
+    return submitWithSignature(safeMessage, safeSignature, () =>
+      safe.addMessage({ safeMessage })
+    );
   }
 
   async addMessageSignature({
@@ -688,12 +730,14 @@ class GnosisKeyring extends EventEmitter {
       SigningMethod.ETH_SIGN_TYPED_DATA,
       signature
     );
+    const safe = this.safeInstance;
+    const safeMessageHash = this.currentSafeMessageHash;
     const safeSignature = new EthSafeSignature(signerAddress, signature);
-    this.currentSafeMessage.addSignature(safeSignature);
-
-    return this.safeInstance.addMessageSignature(
-      this.currentSafeMessageHash,
-      buildSignatureBytes([safeSignature])
+    return submitWithSignature(this.currentSafeMessage, safeSignature, () =>
+      safe.addMessageSignature(
+        safeMessageHash,
+        buildSignatureBytes([safeSignature])
+      )
     );
   }
 

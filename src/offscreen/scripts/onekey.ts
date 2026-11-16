@@ -3,6 +3,7 @@ import {
   OneKeyAction,
   OffscreenCommunicationTarget,
 } from '@/constant/offscreen-communication';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 export function serializeError(err: any) {
   return {
@@ -25,9 +26,8 @@ export function initOneKey() {
       sendResponse
     ) => {
       if (
-        sender.id !== chrome.runtime.id ||
-        sender.tab ||
-        msg.target !== OffscreenCommunicationTarget.onekeyOffscreen
+        msg.target !== OffscreenCommunicationTarget.onekeyOffscreen ||
+        !isPrivilegedOffscreenSender(sender)
       ) {
         return;
       }

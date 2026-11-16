@@ -1,15 +1,42 @@
-import gulp from 'gulp';
-import sort from 'gulp-sort';
-import gulpZip from 'gulp-zip';
-import { pipeline } from 'node:stream/promises';
+import fs from 'node:fs';
+import path from 'node:path';
+import archiver from 'archiver';
 
-export async function createZipTask(dist, zipFileName) {
-  return pipeline(
-    gulp.src(dist),
-    // sort files and set `mtime` to epoch to ensure zip build is deterministic
-    sort(),
-    // Modified time set to an arbitrary static date to ensure build the is reproducible.
-    gulpZip(zipFileName, { modifiedTime: new Date('2024-07-16T00:00:00') }),
-    gulp.dest('.')
-  );
+// Fixed date (UTC) and file mode keep the zip byte-for-byte reproducible on
+// any machine and in any time zone.
+const MODIFIED_TIME = new Date('2024-07-16T00:00:00Z');
+const FILE_MODE = 0o644;
+
+/**
+ * Zip every file in `distDir` (at the zip root), sorted by path, so the same
+ * build always gives the same zip.
+ */
+export async function createZipTask(distDir, zipFileName) {
+  const files = fs
+    .readdirSync(distDir, { recursive: true })
+    .map((p) => p.split(path.sep).join('/'))
+    .filter((p) => fs.statSync(path.join(distDir, p)).isFile())
+    .sort();
+
+  const output = fs.createWriteStream(zipFileName);
+  const archive = archiver('zip', { zlib: { level: 9 } });
+
+  const done = new Promise((resolve, reject) => {
+    output.on('close', resolve);
+    output.on('error', reject);
+    archive.on('error', reject);
+    archive.on('warning', reject);
+  });
+
+  archive.pipe(output);
+  // `append` keeps entries in the order given; `archive.file` does not.
+  for (const file of files) {
+    archive.append(fs.readFileSync(path.join(distDir, file)), {
+      name: file,
+      date: MODIFIED_TIME,
+      mode: FILE_MODE,
+    });
+  }
+  await archive.finalize();
+  await done;
 }

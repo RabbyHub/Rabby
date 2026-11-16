@@ -5,10 +5,10 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import { Input, Form, Button } from 'antd';
+import { Input, Form, Button, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
-import { debounce, flatten } from 'lodash';
+import { flatten } from 'lodash';
 import styled from 'styled-components';
 import clsx from 'clsx';
 
@@ -18,7 +18,7 @@ import { isSameAddress, useAlias, useCexId, useWallet } from 'ui/utils';
 
 import { IconClearCC } from '@/ui/assets/component/IconClear';
 import { ReactComponent as RcIconWarningCC } from '@/ui/assets/warning-cc.svg';
-import { resolveEnsAddressByName } from '@/ui/utils/ens';
+import { useEnsInputResolver } from '@/ui/hooks/useEnsInputResolver';
 import { AccountList } from './AccountList';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
@@ -89,21 +89,17 @@ export const EnterAddress = ({
   const whitelist = useWhitelistStore((state) => state.whitelists);
 
   const inputRef = useRef<InputRef>(null);
-  const ensRequestIdRef = useRef(0);
-
   const [inputAddress, setInputAddress] = useState('');
-  const [ensResult, setEnsResult] = useState<null | {
-    addr: string;
-    name: string;
-    query: string;
-  }>(null);
+  const {
+    ensResult: currentEnsResult,
+    isPending,
+    isNameNotFound,
+  } = useEnsInputResolver(inputAddress, wallet);
   const [tags, setTags] = useState<string[]>([]);
-  const currentEnsResult = ensResult?.query === inputAddress ? ensResult : null;
   const isValidAddr = useMemo(() => {
     return isValidAddress(inputAddress);
   }, [inputAddress]);
-  const hasError = !!inputAddress && !isValidAddr && !currentEnsResult?.addr;
-  const disableSubmit = !inputAddress || hasError;
+  const disableSubmit = !isValidAddr && !currentEnsResult;
 
   const [isFocusAddress, setIsFocusAddress] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
@@ -126,7 +122,7 @@ export const EnterAddress = ({
     });
   }, [allSortedAccountList, inputAddress]);
 
-  const showSearchError = hasError && !filteredAccounts.length;
+  const showSearchError = isNameNotFound && !filteredAccounts.length;
 
   useEffect(() => {
     // delay footer render to avoid layout animation
@@ -143,61 +139,10 @@ export const EnterAddress = ({
     fetchAllAccounts();
   }, [fetchAllAccounts]);
 
-  const debouncedResolveEns = useMemo(
-    () =>
-      debounce(
-        async ({
-          address,
-          requestId,
-        }: {
-          address: string;
-          requestId: number;
-        }) => {
-          try {
-            const result = await resolveEnsAddressByName(address, wallet);
-            if (requestId !== ensRequestIdRef.current) {
-              return;
-            }
-            setEnsResult(
-              result?.addr
-                ? {
-                    ...result,
-                    query: address,
-                  }
-                : null
-            );
-          } catch (e) {
-            if (requestId === ensRequestIdRef.current) {
-              setEnsResult(null);
-            }
-          }
-        },
-        300
-      ),
-    [wallet]
-  );
-
-  useEffect(() => {
-    return () => {
-      ensRequestIdRef.current += 1;
-      debouncedResolveEns.cancel();
-    };
-  }, [debouncedResolveEns]);
-
-  const handleInputAddressChange = useCallback(
-    (address: string) => {
-      const requestId = ++ensRequestIdRef.current;
-      debouncedResolveEns.cancel();
-      setInputAddress(address);
-      setTags([]);
-      setEnsResult(null);
-
-      if (address && !isValidAddress(address)) {
-        debouncedResolveEns({ address, requestId });
-      }
-    },
-    [debouncedResolveEns]
-  );
+  const handleInputAddressChange = useCallback((address: string) => {
+    setInputAddress(address);
+    setTags([]);
+  }, []);
 
   const handlePasteAddress = useCallback(
     (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -304,6 +249,15 @@ export const EnterAddress = ({
               />
             </div>
           </StyledInputWrapper>
+          {isPending && (
+            <div
+              role="status"
+              className="text-r-neutral-body text-[13px] flex gap-[8px] items-center mt-[8px]"
+            >
+              <Spin size="small" />
+              <span>{t('page.selectToAddress.resolvingAddress')}</span>
+            </div>
+          )}
           {showSearchError && (
             <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center mt-[8px]">
               <div className="text-r-red-default">

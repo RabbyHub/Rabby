@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { Tooltip } from 'antd';
 import { PerpsDropdown } from './PerpsDropdown';
+import { PerpsTooltip } from '../../PerpsTooltip';
 import { useTranslation } from 'react-i18next';
 import { MarginMode, OrderType } from '../../../types';
 import { useRabbySelector } from '@/ui/store';
@@ -244,10 +244,10 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
       <div className="flex flex-col gap-[6px]">
         {/* Row 1: Margin mode + Leverage — fill width */}
         <div className="flex items-center gap-[6px]">
-          <Tooltip
+          <PerpsTooltip
             title={marginModeDisabledReason}
             placement="top"
-            overlayClassName="rectangle w-[max-content]"
+            overlayClassName="w-[max-content]"
           >
             <div
               ref={marginBoxRef}
@@ -263,7 +263,7 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
                 ? t('page.perpsPro.marginMode.isolated')
                 : t('page.perpsPro.marginMode.cross')}
             </div>
-          </Tooltip>
+          </PerpsTooltip>
 
           <div
             ref={leverageBoxRef}
@@ -337,13 +337,11 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
               width: indicatorStyle.width,
             }}
           />
-          <Tooltip
-            title={orderTypeTooltip}
-            placement="topRight"
-            overlayClassName="rectangle"
-          >
+          {/* Opens downward (design): the tabs sit too close to the top of the
+              page for a multi-line bubble to fit above. */}
+          <PerpsTooltip title={orderTypeTooltip} placement="bottomRight">
             <RcIconInfo className="ml-auto w-[16px] h-[16px] text-rb-neutral-secondary" />
-          </Tooltip>
+          </PerpsTooltip>
         </div>
       </div>
 

@@ -135,7 +135,10 @@ export const FundingHistory: React.FC = () => {
               <Trans
                 i18nKey={'page.perpsPro.userInfo.tab.fundingTipsBold'}
                 components={{
-                  bold: <span className="font-bold" />,
+                  positive: (
+                    <span className="font-bold text-rb-green-default" />
+                  ),
+                  negative: <span className="font-bold text-rb-red-default" />,
                 }}
               />
             )}

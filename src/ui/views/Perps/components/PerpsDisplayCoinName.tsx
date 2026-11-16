@@ -17,6 +17,8 @@ interface Props {
   /** Classname for quote part. Defaults to text-r-neutral-foot */
   quoteClassName?: string;
   showDexTag?: boolean;
+  /** Spacing before the dex tag (default `ml-[6px]`). */
+  dexTagClassName?: string;
 }
 
 /**
@@ -33,6 +35,7 @@ export const PerpsDisplayCoinName: React.FC<Props> = ({
   baseClassName,
   quoteClassName,
   showDexTag = false,
+  dexTagClassName = 'ml-[6px]',
 }) => {
   const coinName = item?.displayName || item?.name || '';
   const base = formatPerpsCoin(coinName);
@@ -74,7 +77,12 @@ export const PerpsDisplayCoinName: React.FC<Props> = ({
         </span>
       </span>
       {Boolean(dexName) && showDexTag && (
-        <span className="ml-[6px] px-[3px] h-16 flex items-center text-[10px] font-medium text-rb-neutral-body bg-rb-neutral-bg-4 rounded-[3px]">
+        <span
+          className={clsx(
+            dexTagClassName,
+            'px-[3px] h-16 flex items-center text-[10px] font-medium text-rb-neutral-body bg-rb-neutral-bg-4 rounded-[3px]'
+          )}
+        >
           {dexName}
         </span>
       )}
