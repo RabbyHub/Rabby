@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const MinimizerPlugin = require('minimizer-webpack-plugin');
 const sentrySourceMap = !!process.env.sourcemap || false;
-const SecSDK = require('warden-for-js').WardenPlugin;
+const { WardenPlugin } = require('warden-for-js');
 // Minifier workers are threads inside the webpack process, so each one adds its
 // own copy of the asset it minifies to the build's memory. Memory-limited CI
 // runners lower this via TERSER_PARALLEL (named before the switch to SWC);
@@ -21,10 +21,13 @@ const config = {
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
-    true &&
-      new SecSDK({
-        dev: false,
-      }),
+    new WardenPlugin({
+      dev: false,
+      forceCheck: true,
+      freezePrototypes: true,
+      prototypeFreezeMode: 'compat',
+      protectWebpackRequire: true,
+    }),
   ].filter(Boolean),
 
   optimization: {
