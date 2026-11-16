@@ -14,6 +14,8 @@ const dappOrigin = 'https://dapp.example';
 const internalOrigin = 'chrome-extension://rabby';
 const stopAtApproval = new Error('stop at approval');
 const stopAtSigning = new Error('stop at signing');
+const mockKeyring = {};
+const mockSigningTx = { rawTx: {} };
 
 const mockNotificationService = {
   requestApproval: jest.fn(
@@ -26,10 +28,11 @@ const mockNotificationService = {
   setCurrentRequestDeferFn: jest.fn(),
 };
 const mockKeyringService = {
+  keyrings: [mockKeyring],
   hasVault: jest.fn(() => true),
   memStore: { getState: () => ({ isUnlocked: true }) },
   isUnlocked: jest.fn(() => true),
-  getKeyringForAccount: jest.fn(async () => ({})),
+  getKeyringForAccount: jest.fn(async () => mockKeyring),
   signPersonalMessage: jest.fn(async () => {
     throw new Error('Safe messages must return the approved signature');
   }),
@@ -69,7 +72,7 @@ jest.mock('background/service', () => ({
   notificationService: mockNotificationService,
   sessionService: { deleteSessionsByTabId: jest.fn() },
   transactionHistoryService: {
-    getSigningTx: jest.fn(() => ({ rawTx: {} })),
+    getSigningTx: jest.fn(() => mockSigningTx),
   },
   RPCService: { probeBestRPC: jest.fn() },
   i18n: { t: (key: string) => key },
