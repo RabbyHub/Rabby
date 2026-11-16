@@ -18,6 +18,8 @@ import {
 import { ReactComponent as RcIconBackTopCC } from '@/ui/assets/perps/IconBackTopCC.svg';
 import { ReactComponent as RcIconBoldJump } from '@/ui/assets/perps/IconBoldJump.svg';
 import { ReactComponent as RcIconHyperLogo } from '@/ui/assets/perps/IconHyperLogo.svg';
+import { PerpsModeTabs } from '@/ui/views/PerpsSpot/components/PerpsModeTabs';
+import { openPerpsSpotMarkets } from '@/ui/views/PerpsSpot/navigation';
 import { AssetPosition, HyperliquidSDK } from '@rabby-wallet/hyperliquid-sdk';
 import { Button, message, Modal } from 'antd';
 import { PerpsLoginPopup } from '../popup/LoginPopup';
@@ -395,7 +397,14 @@ export const Perps: React.FC = () => {
       >
         <span className="flex items-center justify-center gap-6">
           <RcIconHyperLogo className="w-[20px] h-[20px]" />
-          {t('page.perps.title')}
+          {hasPermission ? (
+            <PerpsModeTabs
+              activeMode="perps"
+              onSelectSpot={() => openPerpsSpotMarkets(history)}
+            />
+          ) : (
+            t('page.perps.title')
+          )}
         </span>
       </PageHeader>
       {!hasPermission ? <TopPermissionTips /> : null}
