@@ -466,7 +466,6 @@ class OneKeyKeyring extends EventEmitter {
                 passphraseState = await this._resolvePassphraseStateForImport({
                   connectId,
                   protocol: state.payload.protocol,
-                  unlockedAttachPin: deviceStatus?.unlockedAttachPin,
                   walletType: walletSession.payload.walletType,
                   passphraseState: walletSession.payload.passphraseState,
                   cancellationVersion,
@@ -1404,8 +1403,10 @@ class OneKeyKeyring extends EventEmitter {
    * that identity with a useEmptyPassphrase probe and, if they match, treat the
    * session as the standard wallet so the id is never persisted. The probe runs
    * only for an ambiguous V2 session (hidden type + non-empty state), excluding
-   * attach-PIN sessions where it would request an extra Main PIN. A failed probe
-   * keeps the hidden id so import can still proceed, unless cancelled.
+   * attach-PIN sessions where it would request an extra Main PIN. After opening
+   * a new session, refresh device status before skipping the probe; only the
+   * legacy resume path supplies the pre-session unlockedAttachPin flag. A failed
+   * probe keeps the hidden id so import can still proceed, unless cancelled.
    */
   private async _resolvePassphraseStateForImport({
     connectId,

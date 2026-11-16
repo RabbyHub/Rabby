@@ -195,8 +195,8 @@ describe('OneKey offscreen error serialization', () => {
   it.each([
     ['another-extension', undefined, false],
     [undefined, undefined, false],
-    [chrome.runtime.id, { id: 1 }, false],
-    [chrome.runtime.id, undefined, true],
+    ['rabby-test-extension', { id: 1 }, false],
+    ['rabby-test-extension', undefined, true],
   ])(
     'only accepts extension pages (sender %s, tab %p)',
     async (id, tab, allowed) => {
@@ -259,7 +259,11 @@ jest.mock('webextension-polyfill', () => ({
       remove: jest.fn().mockResolvedValue(undefined),
     },
   },
-  runtime: { sendMessage: jest.fn() },
+  runtime: {
+    sendMessage: jest.fn(),
+    // isPrivilegedOffscreenSender() reads the extension id from the polyfill.
+    id: 'rabby-test-extension',
+  },
 }));
 jest.mock('@/background/utils', () => ({
   isSameAddress: (first: string, second: string) =>
@@ -905,7 +909,7 @@ describe('OneKey V1/V2 account import', () => {
       expect(openWalletSession).toHaveBeenCalledWith('usb-path', {
         mode: 'select-hidden',
       });
-      expect(bridge.getDeviceState).toHaveBeenCalledTimes(1);
+      expect(bridge.getDeviceState).toHaveBeenCalledTimes(2);
       expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
       expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
         'usb-path',
@@ -996,6 +1000,61 @@ describe('OneKey V1/V2 account import', () => {
         'usb-path',
         'authoritative-device-id',
         expect.objectContaining({ passphraseState, useEmptyPassphrase: false })
+      );
+    }
+  );
+
+  it.each([false, true])(
+    'rechecks a pre-session attach-PIN flag after select-hidden with current unlockedAttachPin=%s',
+    async (unlockedAttachPin) => {
+      const passphraseState = 'standard-wallet-id';
+      const openWalletSession = hiddenWalletSession(passphraseState);
+      const { bridge, keyring } = setup(
+        'V2',
+        undefined,
+        { passphraseProtection: true, unlocked: true, unlockedAttachPin: true },
+        { openWalletSession }
+      );
+      bridge.getDeviceState.mockResolvedValueOnce({
+        success: true,
+        payload: {
+          protocol: 'V2',
+          identity: { deviceId: 'authoritative-device-id' },
+          status: {
+            passphraseProtection: true,
+            unlocked: true,
+            unlockedAttachPin: true,
+          },
+        },
+      });
+      bridge.getDeviceState.mockResolvedValue({
+        success: true,
+        payload: { status: { unlocked: true, unlockedAttachPin } },
+      });
+
+      await expect(keyring.unlock()).resolves.toBe('just unlocked');
+      expect(openWalletSession).toHaveBeenCalledWith('usb-path', {
+        mode: 'select-hidden',
+      });
+      expect(bridge.getDeviceState).toHaveBeenCalledTimes(2);
+      expect(bridge.getDeviceState).toHaveBeenNthCalledWith(2, 'usb-path');
+      if (unlockedAttachPin) {
+        expect(bridge.getPassphraseState).not.toHaveBeenCalled();
+      } else {
+        expect(bridge.getPassphraseState).toHaveBeenCalledTimes(1);
+        expect(bridge.getPassphraseState).toHaveBeenCalledWith('usb-path', {
+          useEmptyPassphrase: true,
+        });
+      }
+      const expectedState = unlockedAttachPin ? passphraseState : undefined;
+      expect(keyring.passphraseState).toBe(expectedState);
+      expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+        'usb-path',
+        'authoritative-device-id',
+        expect.objectContaining({
+          passphraseState: expectedState,
+          useEmptyPassphrase: !unlockedAttachPin,
+        })
       );
     }
   );
