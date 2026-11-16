@@ -9,6 +9,7 @@ export interface PerpsLivePosition {
   /** e.g. `SHIB/USDC`, rendered as-is */
   displayName: string;
   tokenLabel: string;
+  /** Inline image data; empty while loading. Never a remote URL on a host page. */
   logoUrl: string;
   direction: 'long' | 'short';
   leverage: { type: 'cross' | 'isolated'; value: number };

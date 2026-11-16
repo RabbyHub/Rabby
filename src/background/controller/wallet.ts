@@ -4390,6 +4390,17 @@ export class WalletController extends BaseController {
       perpsService.removeAgentWallet(address);
       this.forceExpireInMemoryAddressBalance(address);
     }
+    const sites = permissionService.getSites();
+    sites.forEach((item) => {
+      if (
+        item.account &&
+        isSameAccount(item.account, { address, type, brandName: brand || type })
+      ) {
+        item.account = undefined;
+        this.removeConnectedSite(item.origin);
+      }
+    });
+
     const current = preferenceService.getCurrentAccount();
     if (
       current?.address === address &&
@@ -4398,18 +4409,6 @@ export class WalletController extends BaseController {
     ) {
       await this.resetCurrentAccount();
     }
-    const sites = permissionService.getSites();
-    sites.forEach((item) => {
-      if (
-        item.account &&
-        isSameAccount(item.account, { address, type, brandName: brand || type })
-      ) {
-        this.setSiteAccount({
-          origin: item.origin,
-          account: preferenceService.getCurrentAccount(),
-        });
-      }
-    });
 
     syncDbService.deleteForAddress(address);
     historyDbService.deleteForAddress(address);

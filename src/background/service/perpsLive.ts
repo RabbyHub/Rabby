@@ -17,6 +17,7 @@ import {
 import browser from 'webextension-polyfill';
 import type { Runtime } from 'webextension-polyfill';
 import type { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
+import LRU from 'lru-cache';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import {
@@ -35,6 +36,7 @@ import {
 import openapiService from './openapi';
 import perpsService from './perps';
 import preferenceService from './preference';
+import { fetchPerpsWidgetLogo } from '../utils/perpsWidgetLogo';
 
 type Port = Runtime.Port;
 /** Cross-env timer handle (NodeJS.Timeout in @types/node, number in DOM lib) */
@@ -191,6 +193,10 @@ export class PerpsLiveService {
 
   /** Keyed by Hyperliquid coin string. DeBank's `t.name` is already in that format — `t.dex_id` is redundant */
   private tokenCatalog = new Map<string, PerpTopTokenV3>();
+  private logoCache = new LRU<string, string>({
+    max: 64,
+    maxAge: CATALOG_CACHE_TTL_MS,
+  });
   private catalogFetchedAt = 0;
   private catalogLoadPromise: Promise<void> | null = null;
   private catalogRetryAt = 0;
@@ -572,6 +578,7 @@ export class PerpsLiveService {
 
   private buildSnapshot(address: string): PerpsLiveSnapshot {
     const positions: PerpsLivePosition[] = [];
+    const topCoins = new Set(this.getTopCoins(TOP_N_KLINE));
     let accountValueSum = 0;
     let totalMarginUsedSum = 0;
     let totalPnlSum = 0;
@@ -616,7 +623,7 @@ export class PerpsLiveService {
           quoteAsset,
           displayName: tokenLabel,
           tokenLabel,
-          logoUrl,
+          logoUrl: this.getLogoDataUrl(logoUrl, topCoins.has(p.coin)),
           direction: szi >= 0 ? 'long' : 'short',
           leverage: {
             type: p.leverage?.type ?? 'cross',
@@ -646,6 +653,24 @@ export class PerpsLiveService {
       positions,
       ts: Date.now(),
     };
+  }
+
+  private getLogoDataUrl(url: string, load: boolean): string {
+    const cached = this.logoCache.get(url);
+    if (cached !== undefined) return cached;
+    if (load) {
+      // The placeholder deduplicates pending loads and backs off after failures.
+      this.logoCache.set(url, '', CATALOG_RETRY_BASE_MS);
+      void fetchPerpsWidgetLogo(url).then((dataUrl) => {
+        this.logoCache.set(
+          url,
+          dataUrl,
+          dataUrl ? CATALOG_CACHE_TTL_MS : CATALOG_RETRY_BASE_MS
+        );
+        if (this.currentAddress) this.scheduleRebuild();
+      });
+    }
+    return '';
   }
 
   private async refreshKlines(): Promise<void> {

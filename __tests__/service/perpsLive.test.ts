@@ -6,6 +6,7 @@ const mockGetPerpDexs = jest.fn();
 const mockSubscribeAllDexs = jest.fn();
 const mockSdkConstructor = jest.fn();
 const mockEventBusAddListener = jest.fn();
+const mockFetchLogo = jest.fn();
 
 let mockWidgetEnabled = true;
 const mockPerpsStore: {
@@ -69,6 +70,10 @@ jest.mock('@/background/service/preference', () => ({
   default: {
     getPerpsWidgetEnabled: () => mockWidgetEnabled,
   },
+}));
+
+jest.mock('@/background/utils/perpsWidgetLogo', () => ({
+  fetchPerpsWidgetLogo: (...args: unknown[]) => mockFetchLogo(...args),
 }));
 
 import { PerpsLiveService } from '@/background/service/perpsLive';
@@ -270,5 +275,151 @@ describe('PerpsLiveService lazy catalogs', () => {
     expect(mockSessionSet).toHaveBeenCalledTimes(1);
     expect((service as any).catalogRetryAt).toBe(0);
     expect((service as any).catalogRetryDelayMs).toBe(CATALOG_RETRY_BASE_MS);
+  });
+});
+
+describe('PerpsLiveService private widget logos', () => {
+  const address = '0xaccount';
+  const dataUrl = 'data:image/png;base64,aWNvbg==';
+  let service: any;
+  let port: ReturnType<typeof createPort>;
+
+  const setPositions = (coins: string[]) => {
+    service.rawDexStates = [
+      [
+        '',
+        {
+          marginSummary: { accountValue: '1000', totalMarginUsed: '10' },
+          assetPositions: coins.map((coin, index) => ({
+            position: {
+              coin,
+              szi: '1',
+              positionValue: String(1000 - index * 100),
+              entryPx: '100',
+              unrealizedPnl: '20',
+              marginUsed: '10',
+              returnOnEquity: '2',
+              leverage: { type: 'cross', value: 3 },
+            },
+          })),
+        },
+      ],
+    ];
+  };
+  const snapshot = () =>
+    port.postMessage.mock.calls
+      .map(([message]: any[]) => message)
+      .filter((message: any) => message.type === 'SNAPSHOT')
+      .pop().snapshot;
+  const settleLogos = async () => {
+    await Promise.resolve();
+    jest.advanceTimersByTime(150);
+  };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.setSystemTime(NOW);
+    mockFetchLogo.mockReset().mockResolvedValue(dataUrl);
+    service = new PerpsLiveService();
+    service.currentAddress = address;
+    port = createPort();
+    service.ports.add(port);
+    setPositions(['BTC', 'ETH', 'SOL', 'HYPE']);
+  });
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.useRealTimers();
+  });
+
+  test('broadcasts prices immediately, then inline logos only for the visible top three', async () => {
+    service.rebuildAndBroadcast();
+    service.rebuildAndBroadcast();
+    expect(snapshot().positions.map((p: any) => p.logoUrl)).toEqual([
+      '',
+      '',
+      '',
+      '',
+    ]);
+    expect(snapshot().positions[0]).toMatchObject({
+      coin: 'BTC',
+      markPx: '1000',
+      unrealizedPnl: '20',
+    });
+    expect(mockFetchLogo.mock.calls.map(([url]) => url)).toEqual([
+      'https://app.hyperliquid.xyz/coins/BTC.svg',
+      'https://app.hyperliquid.xyz/coins/ETH.svg',
+      'https://app.hyperliquid.xyz/coins/SOL.svg',
+    ]);
+    await settleLogos();
+    expect(snapshot().positions.map((p: any) => p.logoUrl)).toEqual([
+      dataUrl,
+      dataUrl,
+      dataUrl,
+      '',
+    ]);
+    service.rebuildAndBroadcast();
+    expect(mockFetchLogo).toHaveBeenCalledTimes(3);
+
+    const joined = createPort();
+    service.attachPort(joined);
+    const replay = joined.postMessage.mock.calls.find(
+      ([m]: any[]) => m.type === 'SNAPSHOT'
+    )![0];
+    expect(replay.snapshot.positions[0].logoUrl).toBe(dataUrl);
+  });
+
+  test('preserves catalog logos and refreshes the displayed set after rankings change', async () => {
+    service.tokenCatalog.set('BTC', {
+      full_logo_url: 'https://static.debank.com/btc.png',
+    });
+    service.rebuildAndBroadcast();
+    await settleLogos();
+    expect(mockFetchLogo).toHaveBeenCalledWith(
+      'https://static.debank.com/btc.png'
+    );
+    setPositions(['HYPE', 'BTC', 'ETH', 'SOL']);
+    service.rebuildAndBroadcast();
+    await settleLogos();
+    expect(mockFetchLogo).toHaveBeenCalledTimes(4);
+    expect(snapshot().positions[0]).toMatchObject({
+      coin: 'HYPE',
+      logoUrl: dataUrl,
+    });
+  });
+
+  test('backs off failed downloads and retries without falling back to remote URLs', async () => {
+    mockFetchLogo.mockResolvedValue('');
+    setPositions(['BTC']);
+    service.rebuildAndBroadcast();
+    await settleLogos();
+    expect(mockFetchLogo).toHaveBeenCalledTimes(1);
+    expect(snapshot().positions[0].logoUrl).toBe('');
+    jest.advanceTimersByTime(CATALOG_RETRY_BASE_MS + 1);
+    mockFetchLogo.mockResolvedValue(dataUrl);
+    service.rebuildAndBroadcast();
+    await settleLogos();
+    expect(mockFetchLogo).toHaveBeenCalledTimes(2);
+    expect(snapshot().positions[0].logoUrl).toBe(dataUrl);
+  });
+
+  test('a late logo never rebroadcasts the old account after a switch or disable', async () => {
+    let finish!: (value: string) => void;
+    mockFetchLogo.mockImplementation(
+      () => new Promise((resolve) => (finish = resolve))
+    );
+    setPositions(['BTC']);
+    service.rebuildAndBroadcast();
+    service.currentAddress = '0xnew';
+    setPositions(['ETH']);
+    finish(dataUrl);
+    await settleLogos();
+    expect(snapshot().address).toBe('0xnew');
+    expect(snapshot().positions.map((p: any) => p.coin)).toEqual(['ETH']);
+
+    service.applyAddress(null);
+    port.postMessage.mockClear();
+    finish(dataUrl);
+    await settleLogos();
+    expect(port.postMessage).not.toHaveBeenCalled();
   });
 });
