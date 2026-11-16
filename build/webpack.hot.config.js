@@ -159,7 +159,9 @@ const commonPlugins = [
         new ForkTsCheckerWebpackPlugin({
           async: isEnvDevelopment,
           typescript: {
-            memoryLimit: 2048,
+            // 完整检查一次峰值约 3GB；2048 时检查进程还没报出结果就内存溢出，
+            // 之后每次重新编译都从头再查一遍
+            memoryLimit: 4096,
           },
         }),
       ]
