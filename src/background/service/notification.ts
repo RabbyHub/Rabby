@@ -511,6 +511,10 @@ class NotificationService extends Events {
     this.currentRequestDeferFn = fn;
   };
 
+  clearCurrentRequestDeferFn = () => {
+    this.currentRequestDeferFn = undefined;
+  };
+
   callCurrentRequestDeferFn = (retry?: boolean) => {
     return this.currentRequestDeferFn?.(retry);
   };
