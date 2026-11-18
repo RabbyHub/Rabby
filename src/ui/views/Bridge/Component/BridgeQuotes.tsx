@@ -41,7 +41,7 @@ export const Quotes = ({
   const { t } = useTranslation();
 
   const sortedList = useMemo(() => {
-    return list?.sort((b, a) => {
+    return list?.slice().sort((b, a) => {
       return bridgeQuoteEstimatedValueBn(a, other.receiveToken)
         .minus(bridgeQuoteEstimatedValueBn(b, other.receiveToken))
         .toNumber();

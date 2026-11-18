@@ -582,10 +582,6 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     });
   });
 
-  if (!state.publicKey) {
-    return null;
-  }
-
   const displayRows = rows.length
     ? rows
     : loading
@@ -621,6 +617,10 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     },
     [handleToggle, selectedAddressSet]
   );
+
+  if (!state.publicKey) {
+    return null;
+  }
 
   return (
     <div

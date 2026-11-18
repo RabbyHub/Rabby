@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { getUiType } from 'ui/utils';
+import { useLocation } from 'react-router-dom';
 import { KEYRING_CLASS } from 'consts';
 import './style.less';
 import { HDManager } from '../HDManager/HDManager';
@@ -17,7 +16,6 @@ type State = {
 };
 
 const SelectAddress = () => {
-  const history = useHistory();
   const { state = {} as State, search } = useLocation<{
     keyring: string;
     isMnemonics?: boolean;
@@ -35,19 +33,6 @@ const SelectAddress = () => {
     state.keyringId = Number(query.get('keyringId') as string);
   }
 
-  if (!state) {
-    if (getUiType().isTab) {
-      if (history.length) {
-        history.goBack();
-      } else {
-        window.close();
-      }
-    } else {
-      history.replace('/dashboard');
-    }
-    return null;
-  }
-
   const [isMounted, setIsMounted] = React.useState(false);
   const initMnemonics = async () => {
     if (isMnemonic) {
@@ -58,9 +43,11 @@ const SelectAddress = () => {
 
     setIsMounted(true);
   };
+  // Keyed on the search string: `query` is a new object on every render, which
+  // re-ran this (and switchKeyring) after every render.
   React.useEffect(() => {
     initMnemonics();
-  }, [query]);
+  }, [search]);
 
   const { keyring, brand } = state;
   const keyringId = useRef<number | null | undefined>(state.keyringId);

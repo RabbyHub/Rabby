@@ -59,7 +59,8 @@ const PoolItem = ({
   protocolLogo?: string;
   protocolName?: string;
 }) => {
-  const types = item._originPortfolio.detail_types?.reverse();
+  // Copy first: reverse() in place flipped the stored array on every render.
+  const types = item._originPortfolio.detail_types?.slice().reverse();
   const type =
     types?.find((t) => (t in TemplateDict ? t : '')) || 'unsupported';
   const PortfolioDetail = TemplateDict[type as keyof typeof TemplateDict];

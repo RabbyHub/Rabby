@@ -28,7 +28,7 @@ type IFormStates = {
   passphrase: string;
 };
 
-export const ImportSeedPhrase = () => {
+const ImportSeedPhraseContent = () => {
   const history = useHistory();
   const { store, setStore } = useNewUserGuideStore();
 
@@ -65,12 +65,6 @@ export const ImportSeedPhrase = () => {
     },
     [isSlip39]
   );
-
-  // if is pop, redirect to dashboard
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
 
   useEffect(() => {
     (async () => {
@@ -252,4 +246,19 @@ export const ImportSeedPhrase = () => {
       </Form>
     </div>
   );
+};
+
+// The popup check lives here so it does not sit in front of the content
+// component's hooks (rules of hooks). In the popup, redirect to the dashboard.
+export const ImportSeedPhrase = () => {
+  const history = useHistory();
+  const isPop = getUiType().isPop;
+
+  useEffect(() => {
+    if (isPop) {
+      history.replace('/dashboard');
+    }
+  }, [isPop, history]);
+
+  return isPop ? null : <ImportSeedPhraseContent />;
 };

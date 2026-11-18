@@ -56,6 +56,7 @@ export const ChainList: React.FC<{
     }
   }
   const result = matteredChainBalances
+    .slice()
     .sort(sortChainWithValueDesc)
     .map((item) => (
       <img
