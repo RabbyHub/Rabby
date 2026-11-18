@@ -119,73 +119,71 @@ export default memo(
                     </Table.Body>
                   </Table>
                 ) : null}
-                {p?.detail?.borrow_token_list?.length &&
-                  p?.detail?.borrow_token_list?.length > 0 && (
-                    <Table>
-                      <Table.Header headers={borrowHeaders} />
-                      <Table.Body>
-                        {ArraySort(
-                          p?.detail?.borrow_token_list,
-                          (v) => v.amount * (v.price || 0)
-                        )?.map((token) => {
-                          return (
-                            <Table.Row
-                              key={token?.id}
-                              className="border-b-0 px-16 py-[5px]"
-                            >
-                              <Value.Token value={token} />
-                              <Value.Balance value={token} />
-                              <Value.USDValue
-                                value={token.amount * token.price}
-                              />
-                            </Table.Row>
-                          );
-                        })}
-                      </Table.Body>
-                    </Table>
-                  )}
+                {!!p?.detail?.borrow_token_list?.length && (
+                  <Table>
+                    <Table.Header headers={borrowHeaders} />
+                    <Table.Body>
+                      {ArraySort(
+                        p?.detail?.borrow_token_list,
+                        (v) => v.amount * (v.price || 0)
+                      )?.map((token) => {
+                        return (
+                          <Table.Row
+                            key={token?.id}
+                            className="border-b-0 px-16 py-[5px]"
+                          >
+                            <Value.Token value={token} />
+                            <Value.Balance value={token} />
+                            <Value.USDValue
+                              value={token.amount * token.price}
+                            />
+                          </Table.Row>
+                        );
+                      })}
+                    </Table.Body>
+                  </Table>
+                )}
 
-                {p?.detail?.reward_token_list?.length &&
-                  p?.detail?.reward_token_list?.length > 0 && (
-                    <Table>
-                      <Table.Header headers={rewardHeaders} />
-                      <Table.Body>
-                        {ArraySort(
-                          p?.detail?.reward_token_list,
-                          (v) => v.amount * (v.price || 0)
-                        )?.map((token, index) => {
-                          const last =
-                            index ===
-                            (p?.detail?.reward_token_list?.length || 0) - 1;
-                          return (
-                            <Table.Row
-                              key={token?.id}
-                              className={cx(
-                                last && showClaimActionRow
-                                  ? 'px-16 pb-0 border-b-0'
-                                  : 'px-16 py-[5px]'
-                              )}
-                            >
-                              <Value.Token value={token} />
-                              <Value.Balance value={token} />
-                              <Value.USDValue
-                                value={token.amount * token.price}
-                              />
-                            </Table.Row>
-                          );
-                        })}
-                        {showClaimActionRow && (
-                          <ActionRow
-                            className="px-16 pt-[0] pb-[17px] mt-[-6px]"
-                            actionKeys={['default', 'claim', 'default']}
-                            portfolio={p}
-                            protocolLogo={protocolLogo || ''}
-                            protocolName={protocolName}
-                          />
-                        )}
-                      </Table.Body>
-                    </Table>
-                  )}
+                {!!p?.detail?.reward_token_list?.length && (
+                  <Table>
+                    <Table.Header headers={rewardHeaders} />
+                    <Table.Body>
+                      {ArraySort(
+                        p?.detail?.reward_token_list,
+                        (v) => v.amount * (v.price || 0)
+                      )?.map((token, index) => {
+                        const last =
+                          index ===
+                          (p?.detail?.reward_token_list?.length || 0) - 1;
+                        return (
+                          <Table.Row
+                            key={token?.id}
+                            className={cx(
+                              last && showClaimActionRow
+                                ? 'px-16 pb-0 border-b-0'
+                                : 'px-16 py-[5px]'
+                            )}
+                          >
+                            <Value.Token value={token} />
+                            <Value.Balance value={token} />
+                            <Value.USDValue
+                              value={token.amount * token.price}
+                            />
+                          </Table.Row>
+                        );
+                      })}
+                      {showClaimActionRow && (
+                        <ActionRow
+                          className="px-16 pt-[0] pb-[17px] mt-[-6px]"
+                          actionKeys={['default', 'claim', 'default']}
+                          portfolio={p}
+                          protocolLogo={protocolLogo || ''}
+                          protocolName={protocolName}
+                        />
+                      )}
+                    </Table.Body>
+                  </Table>
+                )}
               </div>
             </Panel>
           );

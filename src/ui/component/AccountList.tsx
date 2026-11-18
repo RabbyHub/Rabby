@@ -42,8 +42,8 @@ const AccountList = () => {
           ({ type, name }) =>
             accounts[type] &&
             accounts[type].map(
-              ({ type: keyringType, accounts: keyringAccounts }) => (
-                <div className="mb-16">
+              ({ type: keyringType, accounts: keyringAccounts }, index) => (
+                <div className="mb-16" key={`${keyringType}-${index}`}>
                   <div>{name}</div>
                   <div></div>
                 </div>
