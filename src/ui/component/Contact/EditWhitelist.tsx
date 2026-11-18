@@ -139,7 +139,9 @@ const EditWhitelist = ({
       </p>
       <ListScrollWrapper>
         {accountsList.map((account) => (
-          <AccountItemSelector>
+          <AccountItemSelector
+            key={`${account.type}-${account.brandName}-${account.address}`}
+          >
             <Checkbox
               width="20px"
               height="20px"
