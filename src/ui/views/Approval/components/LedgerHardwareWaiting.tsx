@@ -1,4 +1,4 @@
-import eventBus from '@/eventBus';
+import { useScopedEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
 import { emitSignComponentAmounted } from '@/utils/signEvent';
@@ -72,6 +72,8 @@ const LedgerHardwareWaiting = ({
   const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
+  // Removed on unmount; see useScopedEventBusListener.
+  const addScopedListener = useScopedEventBusListener();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
     bindApproval(approvalId, 'LedgerHardwareWaiting')
   );
@@ -146,7 +148,7 @@ const LedgerHardwareWaiting = ({
         }
       }
     }
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
+    addScopedListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
       setErrorMessage(data);
       if (/DisconnectedDeviceDuringOperation/i.test(data)) {
         await rejectApproval('User rejected the request.');
@@ -154,10 +156,10 @@ const LedgerHardwareWaiting = ({
       }
       setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
     });
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    addScopedListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    addScopedListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);

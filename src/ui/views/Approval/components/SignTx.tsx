@@ -108,6 +108,7 @@ import {
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
 import { EIP7702Warning } from './EIP7702Warning';
+import { shouldBlockEIP7702Tx } from './shouldBlockEIP7702Tx';
 import { getEIP7702MiniGasLimit } from '@/background/utils/7702';
 import { MultiActionProps } from './TypedDataActions';
 import { getCexInfo } from '@/ui/state/exchange';
@@ -618,17 +619,8 @@ const SignTx = ({
 
   const is7702 = is7702Tx({ authorizationList } as any);
 
-  if (
-    (is7702 || params?.$ctx?.eip7702Revoke) &&
-    origin !== INTERNAL_REQUEST_ORIGIN
-  ) {
-    return <EIP7702Warning approvalId={approvalId} />;
-  }
-
-  if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
-    return <EIP7702Warning approvalId={approvalId} />;
-  }
-
+  // EIP-7702 requests that must not be signed never reach this component:
+  // SignTxWrap renders EIP7702Warning for them instead (see shouldBlockEIP7702Tx).
   const enable7702 = (is7702 && isSpeedUp) || params?.$ctx?.eip7702Revoke;
 
   const [pushInfo, setPushInfo] = useState<{
@@ -3035,15 +3027,30 @@ const SignTx = ({
 };
 
 const SignTxWrap = (props: SignTxProps) => {
-  const { params, origin } = props;
+  const { params, origin, approvalId } = props;
   const chainId = params?.data?.[0]?.chainId;
   const chain = chainId ? findChain({ id: +chainId }) : undefined;
 
-  return chain?.isTestnet ? (
-    <SignTestnetTx {...props} />
-  ) : (
-    <SignTx {...props} />
-  );
+  if (chain?.isTestnet) {
+    return <SignTestnetTx {...props} />;
+  }
+  // This gate used to be an early return inside SignTx, between its hook calls
+  // (rules of hooks). On an unsupported chain it is skipped so SignTx still throws
+  // first, as before.
+  if (
+    chain &&
+    shouldBlockEIP7702Tx({
+      tx: normalizeTxParams(
+        params.data[0],
+        !params.session.isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
+      ),
+      origin,
+      isEIP7702Revoke: params?.$ctx?.eip7702Revoke,
+    })
+  ) {
+    return <EIP7702Warning approvalId={approvalId} />;
+  }
+  return <SignTx {...props} />;
 };
 
 export default SignTxWrap;
