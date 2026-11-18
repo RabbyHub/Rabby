@@ -16,6 +16,7 @@ import {
   getGasTokenBalance,
   getPendingTxs,
   is7702Tx,
+  resolveTempoProtocolFallbackGasToken,
 } from '@/utils/transaction';
 import {
   ExplainTxResponse,
@@ -277,6 +278,19 @@ export const sendTransaction = async ({
     gasTokenDecimals: gasToken.token.decimals,
   });
 
+  // Tempo: without feeToken the chain falls back to OUSD when pathUSD cannot
+  // cover the max fee, so check against the token it will actually charge.
+  const chargedGasToken = ignoreGasNotEnoughCheck
+    ? gasToken
+    : await resolveTempoProtocolFallbackGasToken({
+        wallet,
+        address,
+        chainId: chain.id,
+        gasTokenBalance: gasToken,
+        txFeeToken: (tx as TxWithTempoExtras<Tx>).feeToken,
+        maxGasCostRawAmount: gasCost.maxGasCostRawAmount,
+      });
+
   // check gas errors
   const checkErrors = ignoreGasNotEnoughCheck
     ? []
@@ -290,10 +304,10 @@ export const sendTransaction = async ({
         isCancel: false,
         tx,
         isGnosisAccount: false,
-        nativeTokenBalance: balance,
+        nativeTokenBalance: chargedGasToken.rawBalance,
         recommendGasLimitRatio,
-        gasTokenDecimals: gasToken.token.decimals,
-        gasTokenId: gasToken.token.tokenId,
+        gasTokenDecimals: chargedGasToken.token.decimals,
+        gasTokenId: chargedGasToken.token.tokenId,
         checkTxValueInBalance,
       });
 

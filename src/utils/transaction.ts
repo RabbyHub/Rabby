@@ -35,9 +35,13 @@ import {
 import {
   buildTempoTransaction,
   getTempoFeeTokenInfo,
+  getTempoTokenBalanceInfo,
   isTempoChain,
+  isTempoRawBalanceEnoughForGas,
+  shouldUseTempoProtocolFeeTokenFallback,
   shouldUseTempoTransaction,
 } from './tempo';
+import { TEMPO_OUSD_TOKEN, TEMPO_PATH_USD_TOKEN } from '@/constant/tempo';
 
 export interface ApprovalRes extends Tx {
   type?: string;
@@ -651,6 +655,12 @@ export type GasTokenInfo = {
 export type GasTokenBalanceInfo = {
   rawBalance: string;
   token: GasTokenInfo;
+  /**
+   * Tempo only: whether `token` is the user's stored FeeManager preference.
+   * false means the protocol fallback (pathUSD, then OUSD) applies to
+   * transactions without `feeToken`.
+   */
+  isTempoUserFeeTokenPreference?: boolean;
 };
 
 export async function calcGasLimit({
@@ -823,6 +833,7 @@ export const getGasTokenBalance = async ({
         decimals: feeToken.decimals,
         logoUrl: feeToken.logoUrl,
       },
+      isTempoUserFeeTokenPreference: feeToken.isUserPreference,
     };
   }
 
@@ -842,6 +853,90 @@ export const getGasTokenBalance = async ({
       logoUrl: chain.nativeTokenLogo,
     },
   };
+};
+
+/**
+ * Tempo T13 protocol fallback. `getGasTokenBalance` reports pathUSD when the
+ * user stored no fee token, but a transaction without `feeToken` pays in OUSD
+ * when pathUSD cannot cover its max fee. Once the max gas cost is known, this
+ * returns the token the chain will actually charge, so the gas check matches
+ * the chain. Returns `gasTokenBalance` unchanged in every other case.
+ */
+export const resolveTempoProtocolFallbackGasToken = async ({
+  wallet,
+  address,
+  chainId,
+  gasTokenBalance,
+  txFeeToken,
+  maxGasCostRawAmount,
+}: {
+  wallet: WalletControllerType;
+  address: string;
+  chainId: number;
+  gasTokenBalance: GasTokenBalanceInfo;
+  txFeeToken?: unknown;
+  /** Max gas cost in `gasTokenBalance.token.decimals`. */
+  maxGasCostRawAmount?: BigNumber | string | number;
+}): Promise<GasTokenBalanceInfo> => {
+  const chain = findChain({ id: chainId });
+  if (
+    !chain ||
+    !shouldUseTempoProtocolFeeTokenFallback({
+      chainServerId: chain.serverId,
+      txFeeToken: typeof txFeeToken === 'string' ? txFeeToken : undefined,
+      // Unknown means we cannot tell a stored preference apart: keep as is.
+      hasUserFeeTokenPreference:
+        gasTokenBalance.isTempoUserFeeTokenPreference ?? true,
+    }) ||
+    gasTokenBalance.token.tokenId.toLowerCase() !==
+      TEMPO_PATH_USD_TOKEN.toLowerCase()
+  ) {
+    return gasTokenBalance;
+  }
+
+  const maxGasCostRawAmountDecimals = gasTokenBalance.token.decimals;
+  if (
+    isTempoRawBalanceEnoughForGas({
+      rawBalance: gasTokenBalance.rawBalance,
+      decimals: gasTokenBalance.token.decimals,
+      maxGasCostRawAmount,
+      maxGasCostRawAmountDecimals,
+    })
+  ) {
+    return gasTokenBalance;
+  }
+
+  try {
+    const ousd = await getTempoTokenBalanceInfo({
+      wallet,
+      userAddress: address,
+      chainServerId: chain.serverId,
+      tokenId: TEMPO_OUSD_TOKEN,
+    });
+    const ousdRawBalance = rawAmountToBn(ousd.rawBalanceHex || 0).toFixed(0);
+    if (
+      !isTempoRawBalanceEnoughForGas({
+        rawBalance: ousdRawBalance,
+        decimals: ousd.decimals,
+        maxGasCostRawAmount,
+        maxGasCostRawAmountDecimals,
+      })
+    ) {
+      return gasTokenBalance;
+    }
+    return {
+      rawBalance: ousdRawBalance,
+      token: {
+        tokenId: ousd.tokenId,
+        symbol: ousd.symbol,
+        decimals: ousd.decimals,
+        logoUrl: ousd.logoUrl,
+      },
+      isTempoUserFeeTokenPreference: false,
+    };
+  } catch {
+    return gasTokenBalance;
+  }
 };
 
 export const getPendingTxs = async ({
