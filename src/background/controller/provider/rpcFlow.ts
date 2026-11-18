@@ -556,7 +556,12 @@ const flowContext = flow
 
     const requestDeferFn = createRequestDeferFn(approvalRes);
 
-    if (!approvalRes?.isGnosis) {
+    // resendSign() re-runs this from a waiting component, so only a request
+    // that hands off to one may become the retry target. Every request ends
+    // up here, including a dapp polling eth_chainId or eth_accounts while the
+    // user is still signing: letting those replace it makes "Retry" re-run
+    // the poll instead of the signature. Safe owner signing registers its own.
+    if (uiRequestComponent && !approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
     const requestDefer = requestDeferFn();
@@ -583,11 +588,21 @@ const flowContext = flow
 
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      const result = await requestApprovalLoop({
-        uiRequestComponent,
-        ...rest,
-        signingOperation,
-      });
+      let result;
+      try {
+        result = await requestApprovalLoop({
+          uiRequestComponent,
+          ...rest,
+          signingOperation,
+        });
+      } finally {
+        // The retry target re-runs an approved request, so it must not
+        // outlive the waiting component it was registered for: a later
+        // "Retry" that found it would replay this request. No other request
+        // can have registered one meanwhile - that takes a sign page handing
+        // off, which cannot happen while this waiting approval is pending.
+        notificationService.clearCurrentRequestDeferFn();
+      }
       if (rest?.safeMessage) {
         const safeMessage: {
           safeAddress: string;

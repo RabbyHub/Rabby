@@ -210,7 +210,7 @@ import {
 } from './walletUtils/extraFeeProtection';
 import {
   assertApprovalSigningBinding,
-  waitForApprovalSigning,
+  signForWaitingApproval,
 } from './walletUtils/approvalSigning';
 import { gasMarketV2 as loadGasMarketV2 } from '../service/gasMarket';
 import {
@@ -5086,15 +5086,26 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const fn = () =>
-      waitForApprovalSigning({
+      signForWaitingApproval({
         type,
         from,
         data,
         options,
         getApproval: notificationService.getApproval,
         waitForUI: waitSignComponentAmounted,
-      }).then(() => {
-        return this.signTypedData(type, from, data as any, options);
+        sign: () => this.signTypedData(type, from, data as any, options),
+        onFailed: (e: any) => {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.SIGN_FINISHED,
+            params: {
+              success: false,
+              errorMsg: e?.message || JSON.stringify(e),
+              // Waiting components drop a SIGN_FINISHED that is not for
+              // their own signing operation.
+              signingOperation: options?.signingOperation,
+            },
+          });
+        },
       });
 
     notificationService.setCurrentRequestDeferFn(fn);
