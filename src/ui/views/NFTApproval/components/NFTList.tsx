@@ -1,6 +1,5 @@
 import { NFTApproval } from '@/background/service/openapi';
 import { Empty } from '@/ui/component';
-import { connectStore } from '@/ui/store';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
@@ -47,4 +46,4 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
   );
 };
 
-export default connectStore()(NFTList);
+export default NFTList;

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { AuthenticationModal } from 'ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import './style.less';
 
@@ -276,4 +276,4 @@ const Dashboard = () => {
   );
 };
 
-export default connectStore()(Dashboard);
+export default Dashboard;

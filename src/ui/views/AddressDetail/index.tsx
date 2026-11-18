@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { Switch } from 'antd';
-import { connectStore } from 'ui/store';
 import { useWhitelistStore } from '@/ui/state/whitelist';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { PageHeader } from 'ui/component';
@@ -115,4 +114,4 @@ const AddressDetail: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   );
 };
 
-export default connectStore()(AddressDetail);
+export default AddressDetail;

@@ -5,7 +5,6 @@ import styled from 'styled-components';
 import clsx from 'clsx';
 import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import { connectStore } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
@@ -249,4 +248,4 @@ const ImportMnemonicsGate = () => {
   return isPop ? null : <ImportMnemonicsContent />;
 };
 
-export default connectStore()(ImportMnemonicsGate);
+export default ImportMnemonicsGate;
