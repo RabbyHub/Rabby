@@ -58,9 +58,14 @@ const SelectAddress = () => {
 
     setIsMounted(true);
   };
+  // Run once per mount: `switchKeyring` resets the import store, including the
+  // queried-account cache the address toggles read from. `query` is rebuilt on
+  // every render, so keying the effect on it wiped that cache whenever an
+  // ancestor re-rendered, and the next toggle threw on the missing account.
+  // `keyringId` is a ref fixed at mount, so there is nothing to re-sync.
   React.useEffect(() => {
     initMnemonics();
-  }, [query]);
+  }, []);
 
   const { keyring, brand } = state;
   const keyringId = useRef<number | null | undefined>(state.keyringId);
