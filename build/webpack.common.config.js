@@ -341,47 +341,6 @@ const config = {
           ),
           to: path.resolve(FINAL_DIST, 'manifest.json'),
         },
-        IS_MANIFEST_MV3
-          ? {
-              from: require.resolve(
-                '@trezor/connect-webextension/build/content-script.js'
-              ),
-              to: path.resolve(
-                FINAL_DIST,
-                './vendor/trezor/trezor-content-script.js'
-              ),
-            }
-          : {
-              from: require.resolve(
-                '@trezor/connect-web/lib/webextension/trezor-content-script.js'
-              ),
-              to: path.resolve(
-                FINAL_DIST,
-                './vendor/trezor/trezor-content-script.js'
-              ),
-            },
-        {
-          from: require.resolve(
-            '@trezor/connect-web/lib/webextension/trezor-usb-permissions.js'
-          ),
-          to: path.resolve(
-            FINAL_DIST,
-            './vendor/trezor-usb-permissions.js'
-          ),
-        },
-        ...(IS_MANIFEST_MV3
-          ? [
-              {
-                from: require.resolve(
-                  '@trezor/connect-web/lib/webextension/trezor-usb-permissions.html'
-                ),
-                to: path.resolve(
-                  FINAL_DIST,
-                  './trezor-usb-permissions.html'
-                ),
-              },
-            ]
-          : []),
       ],
     }),
     tsStyledComponentPlugin,

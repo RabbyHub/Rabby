@@ -12,9 +12,11 @@ const CATEGORY_BY_CODE: Record<string, SigningErrorCategory> = {
   Device_UsedElsewhere: 'disconnected',
   Transport_Missing: 'disconnected',
   Popup_ConnectionMissing: 'disconnected',
+  // Connect 10 routes calls through Trezor Suite (desktop or web).
+  Desktop_ConnectionMissing: 'disconnected',
+  Browser_LocalNetworkPermissionMissing: 'disconnected',
   Failure_PinInvalid: 'device_locked',
   Failure_PinExpected: 'device_locked',
-  Init_IframeTimeout: 'timeout',
   Failure_DataError: 'invalid_payload',
   Method_InvalidParameter: 'invalid_payload',
   Method_Unsupported: 'unsupported',
@@ -37,6 +39,7 @@ const CODE_BY_MESSAGE: [RegExp, string][] = [
   [/Device disconnected/, 'Device_Disconnected'],
   [/Device not found/, 'Device_NotFound'],
   [/Transport is missing/, 'Transport_Missing'],
+  [/Unable to establish connection with Suite/, 'Desktop_ConnectionMissing'],
 ];
 
 const codeFromMessage = (error: unknown) => {
