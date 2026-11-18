@@ -576,6 +576,7 @@ export const TransactionItem = ({
               </Tooltip>
             </div>
             {item.txs
+              .slice()
               .sort((a, b) => b.createdAt - a.createdAt)
               .map((tx, index) => (
                 <div
