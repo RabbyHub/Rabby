@@ -7,6 +7,7 @@ import { uniqBy } from 'lodash';
 import { useRef } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
+import { shallow } from 'zustand/shallow';
 import {
   useGasAccountRefreshId,
   useGasAccountSetRefreshId,
@@ -34,6 +35,9 @@ import {
   assertGasAccountSignText,
   isInvalidGasAccountSignTextError,
 } from '@/utils/gasAccount';
+
+// Stable fallback so the shallow-compared selectors below see the same array.
+const EMPTY_ACCOUNTS_WITH_BALANCE: never[] = [];
 
 const { isTab, isDesktop } = getUiType();
 
@@ -117,15 +121,19 @@ export const useGasAccountHistoryRefresh = () => {
 };
 
 export const useGasAccountSign = () => {
-  return useRabbySelector((s) => ({
-    sig: s.gasAccount.sig,
-    accountId: s.gasAccount.accountId,
-    account: s.gasAccount.account,
-    pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
-    autoLoginAccount: s.gasAccount.autoLoginAccount,
-    accountsWithGasAccountBalance:
-      s.gasAccount.accountsWithGasAccountBalance || [],
-  }));
+  return useRabbySelector(
+    (s) => ({
+      sig: s.gasAccount.sig,
+      accountId: s.gasAccount.accountId,
+      account: s.gasAccount.account,
+      pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
+      autoLoginAccount: s.gasAccount.autoLoginAccount,
+      accountsWithGasAccountBalance:
+        s.gasAccount.accountsWithGasAccountBalance ||
+        EMPTY_ACCOUNTS_WITH_BALANCE,
+    }),
+    shallow
+  );
 };
 
 export const useGasAccountInfo = ({
@@ -387,12 +395,16 @@ export const useGasAccountDiscovery = ({
   autoRefresh?: boolean;
 } = {}) => {
   const dispatch = useRabbyDispatch();
-  const discovery = useRabbySelector((s) => ({
-    pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
-    autoLoginAccount: s.gasAccount.autoLoginAccount,
-    accountsWithGasAccountBalance:
-      s.gasAccount.accountsWithGasAccountBalance || [],
-  }));
+  const discovery = useRabbySelector(
+    (s) => ({
+      pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
+      autoLoginAccount: s.gasAccount.autoLoginAccount,
+      accountsWithGasAccountBalance:
+        s.gasAccount.accountsWithGasAccountBalance ||
+        EMPTY_ACCOUNTS_WITH_BALANCE,
+    }),
+    shallow
+  );
   const autoLoginAttemptedAddress = useRef<string>();
   const { login } = useGasAccountMethods();
 
