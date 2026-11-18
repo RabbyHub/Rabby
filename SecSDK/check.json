@@ -131,6 +131,7 @@
     "^node_modules/@rabby-wallet/rabby-sign",
     "^node_modules/@sentry/utils",
     "^node_modules/@trezor/connect-web",
+    "^node_modules/@trezor/connect-common/lib/messageChannel/serviceworker-window",
     "^node_modules/lightweight-charts",
     "^node_modules/webextension-polyfill",
     "^node_modules/@tanstack/query-core"
