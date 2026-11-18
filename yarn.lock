@@ -6186,18 +6186,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@trezor/connect-webextension@npm:10.0.1":
-  version: 10.0.1
-  resolution: "@trezor/connect-webextension@npm:10.0.1"
-  dependencies:
-    "@trezor/connect-common": "npm:10.0.1"
-    "@trezor/connect-web": "npm:10.0.1"
-  peerDependencies:
-    tslib: ^2.6.2
-  checksum: 10c0/c1e1cc55bbb19addff1f92d670aa7d20ed3a4cfc7aabb04d66bc615aa97bd623390d62e987038b760eaf0643da607835abb4de6883813217af9d2468d9d3341c
-  languageName: node
-  linkType: hard
-
 "@trezor/crypto-utils@npm:10.0.1":
   version: 10.0.1
   resolution: "@trezor/crypto-utils@npm:10.0.1"
@@ -17722,7 +17710,6 @@ __metadata:
     "@tailwindcss/postcss": "npm:4.3.0"
     "@tanstack/react-query": "npm:5.102.2"
     "@trezor/connect-web": "npm:10.0.1"
-    "@trezor/connect-webextension": "npm:10.0.1"
     "@types/chrome": "npm:0.0.263"
     "@types/jest": "npm:27.4.0"
     "@types/koa-compose": "npm:3.2.5"

@@ -331,6 +331,9 @@ const config = {
       ),
       // lets code drop the other manifest's modules at build time
       'process.env.IS_MANIFEST_MV3': JSON.stringify(IS_MANIFEST_MV3),
+      // Trezor Connect reads this global to pick the Suite Web URL. Pin it to
+      // Trezor's default so no global can point the signing popup elsewhere.
+      __SUITE_WEB_URL__: JSON.stringify('https://suite.trezor.io/web'),
     }),
     new CopyPlugin({
       patterns: [
@@ -350,6 +353,12 @@ const config = {
       dexie$: paths.rootResolve(`node_modules/dexie/${DEXIE_IMPORT_WRAPPER}`),
       moment: require.resolve('dayjs'),
       '@debank/common': require.resolve('@debank/common/dist/index-rabby'),
+      // Trezor Connect picks its Suite Web popup by env, and Rabby always runs
+      // it as `webextension`. Leave out the plain-web popup so its `open`,
+      // iframe and `document` access are not bundled or granted.
+      [paths.rootResolve(
+        'node_modules/@trezor/connect-web/lib/popup/web.js'
+      )]: false,
     },
     plugins: [new TSConfigPathsPlugin()],
     fallback: {

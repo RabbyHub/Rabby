@@ -1,5 +1,9 @@
 import type { TrezorBridgeInterface } from '@rabby-wallet/eth-trezor-keyring/dist/trezor-bridge-interface';
-import TrezorConnect from '@trezor/connect-webextension';
+// Not `@trezor/connect-webextension`: importing it starts a proxy channel on
+// `chrome.runtime.onConnect` that lets any extension page call every Connect
+// method. Rabby calls Connect from the service worker only, and
+// `@trezor/connect-web` is the same client without that proxy.
+import TrezorConnect from '@trezor/connect-web';
 import EventEmitter from 'events';
 
 import type {

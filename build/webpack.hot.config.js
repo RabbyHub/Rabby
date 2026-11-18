@@ -92,6 +92,11 @@ const commonConfig = {
     alias: {
       moment: require.resolve('dayjs'),
       '@debank/common': require.resolve('@debank/common/dist/index-rabby'),
+      // Same as webpack.common.config.js: Rabby never runs Trezor Connect's
+      // plain-web popup.
+      [paths.rootResolve(
+        'node_modules/@trezor/connect-web/lib/popup/web.js'
+      )]: false,
     },
     plugins: [new TSConfigPathsPlugin()],
     fallback: {
@@ -178,6 +183,8 @@ const commonPlugins = [
     ),
     // lets code drop the other manifest's modules at build time
     'process.env.IS_MANIFEST_MV3': JSON.stringify(IS_MANIFEST_MV3),
+    // Same as webpack.common.config.js: pin Trezor's Suite Web URL.
+    __SUITE_WEB_URL__: JSON.stringify('https://suite.trezor.io/web'),
   }),
   new CopyPlugin({
     patterns: [

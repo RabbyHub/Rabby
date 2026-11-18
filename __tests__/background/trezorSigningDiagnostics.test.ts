@@ -13,7 +13,7 @@ const mockTrezorConnect = {
 };
 
 // jest.mock is hoisted above the const, so read it lazily.
-jest.mock('@trezor/connect-webextension', () => ({
+jest.mock('@trezor/connect-web', () => ({
   __esModule: true,
   get default() {
     return mockTrezorConnect;
