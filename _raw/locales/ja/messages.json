@@ -5064,7 +5064,12 @@
         "notAllowInBootloaderMode": "通常モードで使用してください",
         "deviceCheckPassphraseStateError": "アカウントと現在のデバイスのロック解除アドレスが一致しません。デバイスとアカウントアドレスが一致していることを確認してから再試行してください",
         "actionCancel": "操作がキャンセルされました",
-        "deviceNeedsWebHIDPermission": "デバイスが見つからないか、WebHIDの権限が必要です"
+        "deviceNeedsWebHIDPermission": "デバイスが見つからないか、WebUSBの権限が必要です",
+        "deviceNotOpenedPassphrase": "パスフレーズ保護がオフです。隠しウォレットを開くにはオンにしてください。",
+        "pinInvalid": "PIN が正しくありません。OneKey でもう一度お試しください。",
+        "deviceBusy": "OneKey は使用中です。現在の操作が完了してからもう一度お試しください。",
+        "deviceInterrupted": "OneKey との接続が中断されました。デバイスを再接続してください。",
+        "webUSBUnavailable": "このブラウザーは WebUSB に対応していません。"
       }
     },
     "feedback": {

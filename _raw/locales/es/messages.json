@@ -5064,7 +5064,12 @@
         "notAllowInBootloaderMode": "Usa el modo normal",
         "deviceCheckPassphraseStateError": "La cuenta no coincide con la dirección de desbloqueo del dispositivo actual. Comprueba que el dispositivo y la dirección de la cuenta coincidan e inténtalo de nuevo",
         "actionCancel": "Operación cancelada",
-        "deviceNeedsWebHIDPermission": "Dispositivo no encontrado o necesita permiso WebHID"
+        "deviceNeedsWebHIDPermission": "Dispositivo no encontrado o necesita permiso WebUSB",
+        "deviceNotOpenedPassphrase": "La protección con frase de contraseña está desactivada. Actívala para abrir la billetera oculta.",
+        "pinInvalid": "PIN incorrecto. Inténtalo de nuevo en tu OneKey.",
+        "deviceBusy": "OneKey está ocupado. Termina la operación actual e inténtalo de nuevo.",
+        "deviceInterrupted": "Se interrumpió la conexión con OneKey. Vuelve a conectar el dispositivo.",
+        "webUSBUnavailable": "Este navegador no admite WebUSB."
       }
     },
     "feedback": {

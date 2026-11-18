@@ -5061,7 +5061,12 @@
         "notAllowInBootloaderMode": "Silakan gunakan dalam mode normal",
         "deviceCheckPassphraseStateError": "Akun tidak cocok dengan alamat buka kunci perangkat saat ini. Silakan konfirmasi bahwa perangkat dan alamat akun konsisten dan coba lagi",
         "actionCancel": "Operasi dibatalkan",
-        "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebHID"
+        "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebUSB",
+        "deviceNotOpenedPassphrase": "Perlindungan frasa sandi nonaktif. Aktifkan untuk membuka dompet tersembunyi.",
+        "pinInvalid": "PIN salah. Coba lagi di OneKey Anda.",
+        "deviceBusy": "OneKey sedang sibuk. Selesaikan operasi saat ini, lalu coba lagi.",
+        "deviceInterrupted": "Koneksi ke OneKey terputus. Hubungkan kembali perangkat.",
+        "webUSBUnavailable": "Browser ini tidak mendukung WebUSB."
       }
     },
     "feedback": {

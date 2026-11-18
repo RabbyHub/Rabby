@@ -13,6 +13,8 @@ const state = {
 };
 
 const mockKeyringService = {
+  keyrings: [] as any[],
+  getKeyringForAccount: jest.fn(),
   memStore: { getState: () => ({ isUnlocked: state.isUnlocked }) },
   isUnlocked: () => state.isUnlocked,
 };
@@ -20,11 +22,13 @@ const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
   unLock: jest.fn(),
+  setCurrentRequestDeferFn: jest.fn(),
 };
 const mockPermissionService = {
   hasPermission: jest.fn(() => state.hasPermission),
   getConnectedSite: jest.fn(() => undefined),
   addConnectedSiteV2: jest.fn(),
+  updateConnectSite: jest.fn(),
 };
 const mockPreferenceService = {
   getPreference: jest.fn(),
@@ -72,14 +76,18 @@ jest.mock('@/background/service/signTxPreparation', () => ({
   cancelAllSignTxPreparations: jest.fn(),
 }));
 jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
-jest.mock('@/eventBus', () => ({
-  __esModule: true,
-  default: { emit: jest.fn(), addEventListener: jest.fn() },
-}));
+import eventBus from '@/eventBus';
 jest.mock('consts', () => ({
-  EVENTS: {},
+  EVENTS: {
+    SIGN_WAITING_AMOUNTED: 'mount',
+    broadcastToUI: 'ui',
+    SIGN_FINISHED: 'complete',
+  },
   INTERNAL_REQUEST_ORIGIN: 'https://rabby.io',
-  KEYRING_CLASS: { GnosisKeyring: 'Gnosis Safe' },
+  KEYRING_CLASS: {
+    GnosisKeyring: 'Gnosis Safe',
+    HARDWARE: { ONEKEY: 'Onekey Hardware' },
+  },
   KEYRING_TYPE: {
     GnosisKeyring: 'GnosisKeyring',
     CoboArgusKeyring: 'CoboArgusKeyring',
@@ -189,5 +197,139 @@ describe('rpcFlow method dispatch', () => {
     });
     expect(mockNotificationService.requestApproval).not.toHaveBeenCalled();
     expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+  });
+});
+
+describe('OneKey waiting approval', () => {
+  const oneKey = { type: 'Onekey Hardware', address: '0xaccount' };
+  const cancel = jest.fn(async () => undefined);
+
+  function begin() {
+    let rejectWaiting!: (error: Error) => void;
+    let ready!: () => void;
+    const mounted = new Promise<void>((resolve) => {
+      ready = resolve;
+    });
+    mockNotificationService.requestApproval
+      .mockResolvedValueOnce({
+        ...oneKey,
+        $account: oneKey,
+        uiRequestComponent: 'CommonWaiting',
+      })
+      .mockImplementationOnce(
+        (_, __, options) =>
+          new Promise((_, reject) => {
+            options.onCurrent({
+              id: 'onekey-waiting',
+              component: 'CommonWaiting',
+            });
+            rejectWaiting = reject;
+            ready();
+          })
+      );
+    const result = rpcFlow({ ...baseRequest(), account: oneKey } as any);
+    return {
+      result,
+      mounted,
+      dismiss: () => rejectWaiting(new Error('User cancelled')),
+    };
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    state.isUnlocked = true;
+    state.currentApproval = null;
+    state.hasPermission = true;
+    const keyring = { cancel };
+    mockKeyringService.keyrings = [keyring];
+    mockKeyringService.getKeyringForAccount.mockResolvedValue(keyring);
+  });
+
+  it.each([
+    undefined,
+    { ...oneKey, $account: oneKey, uiRequestComponent: 'PrivatekeyWaiting' },
+    {
+      ...oneKey,
+      address: '0xother',
+      $account: oneKey,
+      uiRequestComponent: 'CommonWaiting',
+    },
+    {
+      ...oneKey,
+      $account: { ...oneKey, type: 'Watch Address' },
+      uiRequestComponent: 'CommonWaiting',
+    },
+  ])(
+    'fails closed for missing or mismatched OneKey approval results',
+    async (answer) => {
+      mockNotificationService.requestApproval.mockResolvedValueOnce(answer);
+      await expect(
+        rpcFlow({ ...baseRequest(), account: oneKey } as any)
+      ).rejects.toMatchObject({ code: 4001 });
+      expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+      expect(mockNotificationService.requestApproval).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('withdraws the pending mount listener when the waiting page closes before mounting', async () => {
+    const request = begin();
+    await request.mounted;
+    request.dismiss();
+    await expect(request.result).rejects.toThrow('User cancelled');
+    expect(eventBus.events.mount).toHaveLength(0);
+    eventBus.emit('mount');
+    expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+    expect(cancel).not.toHaveBeenCalled();
+  });
+
+  it('cancels an active device call and ignores a late success', async () => {
+    let finish!: (signature: string) => void;
+    ethSignTypedDataV4.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          finish = resolve;
+        })
+    );
+    const finished = jest.fn();
+    eventBus.addEventListener('ui', finished);
+    try {
+      const request = begin();
+      await request.mounted;
+      eventBus.emit('mount', 'another-approval');
+      await Promise.resolve();
+      expect(ethSignTypedDataV4).not.toHaveBeenCalled();
+      eventBus.emit('mount', 'onekey-waiting');
+      await Promise.resolve();
+      expect(ethSignTypedDataV4).toHaveBeenCalledTimes(1);
+      request.dismiss();
+      await expect(request.result).rejects.toThrow('User cancelled');
+      expect(cancel).toHaveBeenCalledTimes(1);
+      finish('discarded');
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(finished).not.toHaveBeenCalled();
+    } finally {
+      eventBus.removeEventListener('ui', finished);
+    }
+  });
+
+  it('sends a device failure back to the waiting approval that started signing', async () => {
+    const failure = Object.assign(new Error('Device disconnected'), {
+      method: 'hardware-rejected',
+    });
+    ethSignTypedDataV4.mockRejectedValueOnce(failure);
+    const received = new Promise((resolve) => eventBus.once('ui', resolve));
+    const request = begin();
+    await request.mounted;
+    eventBus.emit('mount', 'onekey-waiting');
+    await expect(received).resolves.toEqual({
+      method: 'complete',
+      params: {
+        approvalId: 'onekey-waiting',
+        success: false,
+        errorMsg: 'Device disconnected',
+      },
+    });
+    request.dismiss();
+    await expect(request.result).rejects.toThrow('User cancelled');
   });
 });

@@ -23,6 +23,7 @@ jest.mock('background/service', () => ({
   RPCService: { probeBestRPC: jest.fn() },
 }));
 jest.mock('consts', () => ({
+  KEYRING_CLASS: { HARDWARE: { ONEKEY: 'Onekey Hardware' } },
   KEYRING_TYPE: { SimpleKeyring: 'Simple Key Pair', HdKeyring: 'HD Key Tree' },
   KEYRING_CATEGORY_MAP: {},
   EVENTS: { COMMON_HARDWARE: { REJECTED: 'REJECTED' } },

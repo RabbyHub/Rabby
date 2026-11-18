@@ -94,7 +94,10 @@ jest.mock('@/constant', () => ({
     GnosisKeyring: 'Gnosis',
     CoboArgusKeyring: 'Cobo',
   },
-  KEYRING_CLASS: { GnosisKeyring: 'Gnosis' },
+  KEYRING_CLASS: {
+    GnosisKeyring: 'Gnosis',
+    HARDWARE: { ONEKEY: 'Onekey Hardware' },
+  },
   SUPPORT_1559_KEYRING_TYPE: [],
   SAFE_RPC_METHODS: [],
   CHAINS_ENUM: { ETH: 'ETH', BASE: 'BASE' },

@@ -1,159 +1,31 @@
-import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 import browser from 'webextension-polyfill';
 import {
   OffscreenCommunicationTarget,
   OneKeyAction,
 } from '@/constant/offscreen-communication';
+import { OneKeyBridgeInterface } from './onekey-bridge-interface';
+
+const relay = (action: OneKeyAction) => async (...params: unknown[]) => {
+  const response = await browser.runtime.sendMessage({
+    target: OffscreenCommunicationTarget.onekeyOffscreen,
+    action,
+    params,
+  });
+  if (typeof response?.error === 'string') {
+    throw Object.assign(new Error(response.error), { code: response.code });
+  }
+  return response;
+};
 
 export default class OneKeyOffscreenBridge implements OneKeyBridgeInterface {
-  init: OneKeyBridgeInterface['init'] = async () => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.init,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
-
-  getFeatures: OneKeyBridgeInterface['getFeatures'] = () => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.getFeatures,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
-
-  searchDevices: OneKeyBridgeInterface['searchDevices'] = () => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.searchDevices,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
-
-  evmGetPublicKey: OneKeyBridgeInterface['evmGetPublicKey'] = (
-    ...params
-  ): any => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.evmGetPublicKey,
-          params,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
-
-  evmSignMessage: OneKeyBridgeInterface['evmSignMessage'] = (
-    ...params
-  ): any => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.evmSignMessage,
-          params,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
-
-  evmSignTransaction: OneKeyBridgeInterface['evmSignTransaction'] = (
-    ...params
-  ): any => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.evmSignTransaction,
-          params,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
-
-  evmSignTypedData: OneKeyBridgeInterface['evmSignTypedData'] = (
-    ...params
-  ): any => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.evmSignTypedData,
-          params,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
-
-  getPassphraseState: OneKeyBridgeInterface['getPassphraseState'] = (
-    ...params
-  ): any => {
-    return new Promise((resolve, reject) => {
-      browser.runtime
-        .sendMessage({
-          target: OffscreenCommunicationTarget.onekeyOffscreen,
-          action: OneKeyAction.getPassphraseState,
-          params,
-        })
-        .then((res) => {
-          if (res?.error) {
-            reject(res.error);
-          } else {
-            resolve(res);
-          }
-        });
-    });
-  };
+  init = relay(OneKeyAction.init);
+  searchDevices = relay(OneKeyAction.searchDevices);
+  getDeviceState = relay(OneKeyAction.getDeviceState);
+  openWalletSession = relay(OneKeyAction.openWalletSession);
+  getPassphraseState = relay(OneKeyAction.getPassphraseState);
+  evmGetPublicKey = relay(OneKeyAction.evmGetPublicKey);
+  evmSignMessage = relay(OneKeyAction.evmSignMessage);
+  evmSignTransaction = relay(OneKeyAction.evmSignTransaction);
+  evmSignTypedData = relay(OneKeyAction.evmSignTypedData);
+  cancel = relay(OneKeyAction.cancel);
 }

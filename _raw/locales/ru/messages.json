@@ -5066,7 +5066,12 @@
         "notAllowInBootloaderMode": "Используйте в обычном режиме",
         "deviceCheckPassphraseStateError": "Аккаунт не соответствует текущему адресу разблокировки устройства. Пожалуйста, подтвердите, что устройство и адрес аккаунта согласованы, и попробуйте снова",
         "actionCancel": "Операция отменена",
-        "deviceNeedsWebHIDPermission": "Устройство не найдено или требует разрешения WebHID"
+        "deviceNeedsWebHIDPermission": "Устройство не найдено или требует разрешения WebUSB",
+        "deviceNotOpenedPassphrase": "Защита парольной фразой отключена. Включите её, чтобы открыть скрытый кошелёк.",
+        "pinInvalid": "Неверный PIN-код. Попробуйте ещё раз на OneKey.",
+        "deviceBusy": "OneKey занят. Завершите текущую операцию и попробуйте ещё раз.",
+        "deviceInterrupted": "Соединение с OneKey прервано. Подключите устройство заново.",
+        "webUSBUnavailable": "Этот браузер не поддерживает WebUSB."
       }
     },
     "feedback": {
