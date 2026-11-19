@@ -16,17 +16,26 @@ const stopAtApproval = new Error('stop at approval');
 const stopAtSigning = new Error('stop at signing');
 
 const mockNotificationService = {
-  requestApproval: jest.fn(async (..._args: any[]) => {
-    throw stopAtApproval;
-  }),
+  requestApproval: jest.fn(
+    async (..._args: any[]): Promise<any> => {
+      throw stopAtApproval;
+    }
+  ),
   unLock: jest.fn(),
   getApproval: jest.fn(() => null),
+  setCurrentRequestDeferFn: jest.fn(),
 };
 const mockKeyringService = {
   hasVault: jest.fn(() => true),
   memStore: { getState: () => ({ isUnlocked: true }) },
   isUnlocked: jest.fn(() => true),
   getKeyringForAccount: jest.fn(async () => ({})),
+  signPersonalMessage: jest.fn(async () => {
+    throw new Error('Safe messages must return the approved signature');
+  }),
+  signTypedMessage: jest.fn(async () => {
+    throw new Error('Safe messages must return the approved signature');
+  }),
   signTransaction: jest.fn(async () => {
     throw stopAtSigning;
   }),
@@ -137,7 +146,9 @@ jest.mock('@/utils/chain', () => {
   };
 });
 jest.mock('@/i18n', () => ({ t: (key: string) => key }));
-jest.mock('@/utils', () => ({}));
+jest.mock('@/utils', () => ({
+  resemblesETHAddress: (value: string) => /^0x[0-9a-f]{40}$/i.test(value),
+}));
 jest.mock('@/utils/sentry', () => ({
   takeSigningCarrier: () => undefined,
   getSigningContext: () => undefined,
@@ -155,6 +166,7 @@ jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 
 import provider from '@/background/controller/provider';
 import providerController from '@/background/controller/provider/controller';
+import rpcFlow from '@/background/controller/provider/rpcFlow';
 
 const createRequest = ({
   from,
@@ -267,8 +279,8 @@ describe('dApp transaction account and chain binding', () => {
       ).rejects.toBe(stopAtApproval);
 
       expect(mockNotificationService.requestApproval).toHaveBeenCalledTimes(1);
-      const approval =
-        mockNotificationService.requestApproval.mock.calls[0]![0];
+      const approval = mockNotificationService.requestApproval.mock
+        .calls[0]![0];
       expect(approval.account).toBe(accountA);
       expect(approval.params.data[0]).not.toHaveProperty('isSpeedUp');
       expect(approval.params.data[0]).not.toHaveProperty('isCancel');
@@ -346,4 +358,54 @@ describe('approved transaction binding before signing', () => {
     });
     expect(mockKeyringService.signTransaction).not.toHaveBeenCalled();
   });
+});
+
+describe('completed Safe message approvals', () => {
+  const account = { ...accountA, type: 'Gnosis' };
+  const signature = `0x${'ab'.repeat(65)}`;
+  const typedData = JSON.stringify({
+    types: {
+      EIP712Domain: [{ name: 'chainId', type: 'uint256' }],
+      Message: [{ name: 'contents', type: 'string' }],
+    },
+    primaryType: 'Message',
+    domain: { chainId: 8453 },
+    message: { contents: 'hello' },
+  });
+
+  beforeEach(() => jest.clearAllMocks());
+
+  test.each([
+    'personal_sign',
+    'eth_signTypedData',
+    'eth_signTypedData_v1',
+    'eth_signTypedData_v3',
+    'eth_signTypedData_v4',
+  ])(
+    'returns the approved signature for %s without signing again',
+    async (method) => {
+      const params =
+        method === 'personal_sign'
+          ? ['0x68656c6c6f', account.address]
+          : method === 'eth_signTypedData' || method === 'eth_signTypedData_v1'
+          ? [
+              [{ name: 'message', type: 'string', value: 'hello' }],
+              account.address,
+            ]
+          : [account.address, typedData];
+      mockNotificationService.requestApproval.mockResolvedValueOnce(signature);
+
+      await expect(
+        rpcFlow({
+          data: { method, params },
+          session: { origin: dappOrigin, name: 'dApp', icon: '' },
+          account,
+        })
+      ).resolves.toBe(signature);
+
+      expect(mockKeyringService.getKeyringForAccount).not.toHaveBeenCalled();
+      expect(mockKeyringService.signPersonalMessage).not.toHaveBeenCalled();
+      expect(mockKeyringService.signTypedMessage).not.toHaveBeenCalled();
+    }
+  );
 });

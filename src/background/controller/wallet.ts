@@ -5,6 +5,7 @@ import {
   toChecksumAddress,
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { KEYRING_IMPORT_EXPIRED } from '@/constant/message';
 import { ethers, Contract } from 'ethers';
 import {
@@ -3321,8 +3322,9 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  getGnosisTransactionSignatures = () => {
+  getGnosisTransactionSignatures = (expectedHash?: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
+    keyring.assertExpectedTransactionHash(expectedHash);
     if (keyring.currentTransaction) {
       const sigs = Array.from(keyring.currentTransaction.signatures.values());
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
@@ -3349,7 +3351,9 @@ export class WalletController extends BaseController {
       currentProvider.currentAccountType = account.type;
       currentProvider.currentAccountBrand = account.brandName;
       currentProvider.chainId = networkId;
-      await keyring.buildTransaction(
+      // Return this build's hash; another build can replace the shared state
+      // before this async controller resumes.
+      return keyring.buildTransaction(
         safeAddress,
         tx,
         new ethers.providers.Web3Provider(currentProvider),
@@ -3398,12 +3402,12 @@ export class WalletController extends BaseController {
     }
   };
 
-  postGnosisTransaction = () => {
+  postGnosisTransaction = (expectedHash?: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    return keyring.postTransaction();
+    return keyring.postTransaction(expectedHash);
   };
 
   getGnosisAllPendingTxs = async (address: string) => {
@@ -3581,40 +3585,79 @@ export class WalletController extends BaseController {
     }
   };
 
-  gnosisGenerateTypedData = () => {
+  gnosisGenerateTypedData = (
+    expectedHash: string,
+    approvalId: string,
+    nonce: number
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    if (!keyring.currentTransaction) {
-      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
+    const approval = notificationService.getApproval();
+    const params = approval?.data.params;
+    const proposalHash = params?.$ctx?.safeTxHash;
+    const typedData = keyring.generateTypedData(expectedHash);
+    if (
+      !keyringService.isUnlocked() ||
+      !approvalId ||
+      approval?.id !== approvalId ||
+      approval.data.approvalComponent !== 'SignTx' ||
+      !expectedHash ||
+      !typedData ||
+      typedData.message.nonce !== nonce ||
+      (params?.data[0].isViewGnosisSafe &&
+        (!proposalHash ||
+          proposalHash.toLowerCase() !== expectedHash.toLowerCase() ||
+          Number(keyring.safeInstance?.network) !==
+            Number(params.data[0].chainId))) ||
+      `0x${TypedDataUtils.eip712Hash(
+        typedData as any,
+        SignTypedDataVersion.V4
+      ).toString('hex')}`.toLowerCase() !== expectedHash.toLowerCase()
+    ) {
+      throw ethErrors.provider.userRejectedRequest(
+        'The Safe proposal changed. Please review it again.'
+      );
     }
-    return keyring.generateTypedData();
+    return typedData;
   };
 
-  gnosisAddConfirmation = async (address: string, signature: string) => {
+  gnosisAddConfirmation = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addConfirmation(address, signature);
+    await keyring.addConfirmation(address, signature, expectedHash);
   };
 
-  gnosisAddPureSignature = async (address: string, signature: string) => {
+  gnosisAddPureSignature = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addPureSignature(address, signature);
+    await keyring.addPureSignature(address, signature, expectedHash);
   };
 
-  gnosisAddSignature = async (address: string, signature: string) => {
+  gnosisAddSignature = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addSignature(address, signature);
+    await keyring.addSignature(address, signature, expectedHash);
   };
 
   buildGnosisMessage = async ({
@@ -4391,6 +4434,17 @@ export class WalletController extends BaseController {
       perpsService.removeAgentWallet(address);
       this.forceExpireInMemoryAddressBalance(address);
     }
+    const sites = permissionService.getSites();
+    sites.forEach((item) => {
+      if (
+        item.account &&
+        isSameAccount(item.account, { address, type, brandName: brand || type })
+      ) {
+        item.account = undefined;
+        this.removeConnectedSite(item.origin);
+      }
+    });
+
     const current = preferenceService.getCurrentAccount();
     if (
       current?.address === address &&
@@ -4399,18 +4453,6 @@ export class WalletController extends BaseController {
     ) {
       await this.resetCurrentAccount();
     }
-    const sites = permissionService.getSites();
-    sites.forEach((item) => {
-      if (
-        item.account &&
-        isSameAccount(item.account, { address, type, brandName: brand || type })
-      ) {
-        this.setSiteAccount({
-          origin: item.origin,
-          account: preferenceService.getCurrentAccount(),
-        });
-      }
-    });
 
     syncDbService.deleteForAddress(address);
     historyDbService.deleteForAddress(address);
@@ -4963,16 +5005,20 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    const signingOptions = options
+      ? omit(options, ['signingOperation'])
+      : options;
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },
-      options
+      signingOptions
     );
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.SIGN_FINISHED,
       params: {
         success: true,
         data: res,
+        signingOperation: options?.signingOperation,
       },
     });
     return res;
@@ -5007,7 +5053,11 @@ export class WalletController extends BaseController {
       options,
     });
     const signingOptions = options
-      ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+      ? omit(options, [
+          'sourceApprovalId',
+          'approvalComponent',
+          'signingOperation',
+        ])
       : options;
     const res = await keyringService.signTypedMessage(
       keyring,
@@ -5019,6 +5069,7 @@ export class WalletController extends BaseController {
       params: {
         success: true,
         data: res,
+        signingOperation: options?.signingOperation,
       },
     });
     return res;

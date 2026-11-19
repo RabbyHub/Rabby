@@ -73,6 +73,7 @@ import { useGetMessageHash } from '../hooks/useGetCurrentMessageHash';
 import { useCheckCurrentSafeMessage } from '../hooks/useCheckCurrentSafeMessage';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import { generateTypedData } from '@safe-global/protocol-kit';
+import { createSigningOperation } from '@/utils/signEvent';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { getCexInfo } from '@/ui/state/exchange';
 import {
@@ -225,9 +226,13 @@ const SignTypedData = ({
   const { data, session, method, isGnosis } = params;
   const [parsedMessage, setParsedMessage] = useState('');
   const [_message, setMessage] = useState('');
+  const [messageParseError, setMessageParseError] = useState(false);
 
   const isSignTypedDataV1 = useMemo(
-    () => /^eth_signTypedData(_v1)?$/.test(method),
+    () =>
+      ['ethSignTypedData', 'ethSignTypedDataV1'].includes(
+        underline2Camelcase(method)
+      ),
     [method]
   );
   const [signTypedData, rawMessage, normalizeFailures]: [
@@ -328,7 +333,7 @@ const SignTypedData = ({
       // signTypeDataV1 [Message, from]
       let message;
       let displayMessage;
-      if (/^eth_signTypedData(_v1)?$/.test(method)) {
+      if (isSignTypedDataV1) {
         message = data[0].reduce((m, n) => {
           m[n.name] = n.value;
           return m;
@@ -347,12 +352,14 @@ const SignTypedData = ({
 
       setMessage(message);
       setParsedMessage(JSON.stringify(displayMessage, null, 4));
+      setMessageParseError(false);
     } catch (err) {
       setMessage('');
       setParsedMessage('');
+      setMessageParseError(true);
       console.log('parse message error', err);
     }
-  }, [data, method, signTypedData]);
+  }, [data, isSignTypedDataV1, signTypedData]);
 
   const messageTokens = useMemo(() => {
     if (!parsedMessage) return undefined;
@@ -462,6 +469,8 @@ const SignTypedData = ({
     securityEvaluation.userData === userData &&
     securityEvaluation.revision === securityRevision &&
     securityEvaluation.message === parsedMessage;
+  const parseFailed =
+    messageParseError || (!isSignTypedDataV1 && !signTypedData);
   const evaluationReady =
     // Resolving the site chain changes requestKey. Wait before showing content
     // so fast testnet/V1 parsing cannot render once with an incomplete context.
@@ -470,6 +479,8 @@ const SignTypedData = ({
     !loading &&
     !error &&
     !preparationError &&
+    !parseFailed &&
+    !!parsedMessage &&
     evaluationIsCurrent &&
     securityEvaluation?.status === 'ready';
   const evaluationResults = evaluationReady ? securityEvaluation!.results : [];
@@ -487,6 +498,7 @@ const SignTypedData = ({
     'typedData'
   );
   const securityCheckFailed =
+    parseFailed ||
     currentChainIdError ||
     !!error ||
     preparationError ||
@@ -700,9 +712,11 @@ const SignTypedData = ({
 
   const getRequireData = async (data: ParsedTypedDataActionData) => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
-      const site = await wallet.getConnectedSite(params.session.origin);
-      if (site) {
-        data.chainId = findChain({ enum: site.chain })?.id.toString();
+      // Bind policy to the signed domain, or this approval's captured chain
+      // for domainless payloads. A later site-chain change is not this request.
+      const chainId = payloadChainId || currentChainId;
+      if (chainId) {
+        data.chainId = chainId.toString();
       }
     }
     if (!currentAccount) throw new Error('No current account found');
@@ -863,6 +877,13 @@ const SignTypedData = ({
       data: signTypedData as any,
     });
 
+    const signingOperation = createSigningOperation({
+      id: approvalId!,
+      origin: session.origin,
+      account,
+      method: 'eth_signTypedData_v4',
+      params: [account.address, JSON.stringify(typedData)],
+    });
     if (WaitingSignMessageComponent[account.type]) {
       const approval = await wallet.getApproval();
       if (
@@ -882,6 +903,7 @@ const SignTypedData = ({
           version: 'V4',
           sourceApprovalId: approvalId,
           approvalComponent: WaitingSignMessageComponent[account.type],
+          signingOperation,
         }
       );
 
@@ -892,6 +914,7 @@ const SignTypedData = ({
         data: [account.address, JSON.stringify(typedData)],
         isGnosis: true,
         sourceApprovalId: approvalId,
+        signingOperation,
         account: account,
         $account: account,
         safeMessage: {
