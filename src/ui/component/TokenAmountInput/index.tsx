@@ -7,6 +7,7 @@ import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { DrawerProps, Input, InputRef, Modal, Skeleton } from 'antd';
 import { TokenItem } from 'background/service/openapi';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import uniqBy from 'lodash/uniqBy';
 import React, {
   useCallback,
@@ -29,7 +30,7 @@ import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
 import { ReactComponent as RcArrowDown } from './icons/arrow-down.svg';
 import { ReactComponent as RcIconAmountModeSwitch } from '@/ui/assets/send-token/amount-mode-switch.svg';
-import styled from 'styled-components';
+import styles from './index.module.css';
 import { RiskWarningTitle } from '../RiskWarningTitle';
 import BigNumber from 'bignumber.js';
 import { ChainSelectorInSend } from '@/ui/views/SendToken/components/ChainSelectorInSend';
@@ -80,36 +81,6 @@ const DEFAULT_EXCLUDE_TOKENS: TokenItem['id'][] = [];
 const AMOUNT_MAX_FONT_SIZE = 28;
 const AMOUNT_MIN_FONT_SIZE = 18;
 const AMOUNT_FONT_SIZE_STEP = 2;
-
-const StyledInput = styled(Input)<{
-  $fontSize: number;
-  $hasDisplayText?: boolean;
-}>`
-  color: var(--r-neutral-title1, #192945);
-  font-size: ${({ $fontSize }) => $fontSize}px !important;
-  font-style: normal;
-  font-weight: 700;
-  line-height: 36px;
-  background: transparent !important;
-  min-width: 0;
-  flex: 1;
-  padding-left: 0;
-  padding-right: 0;
-  &::placeholder {
-    color: ${({ $hasDisplayText }) =>
-      $hasDisplayText ? 'transparent' : 'var(--r-neutral-foot, #6a7587)'};
-    font-size: ${({ $fontSize }) => $fontSize}px !important;
-    font-style: normal;
-    font-weight: 700;
-    line-height: 36px;
-  }
-
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
 
 function getDefaultSelectorChainId(
   chainServerId: Chain['serverId'] | undefined,
@@ -460,12 +431,19 @@ const TokenAmountInput = ({
                     {displayValueText}
                   </span>
                 )}
-                <StyledInput
+                <Input
                   ref={tokenInputRef}
                   placeholder={displayValueText ? '' : '0'}
-                  $fontSize={amountFontSize}
-                  $hasDisplayText={!!displayValueText}
-                  className={clsx(
+                  style={
+                    {
+                      '--amount-font-size': `${amountFontSize}px`,
+                    } as React.CSSProperties
+                  }
+                  className={cn(
+                    styles.amountInput,
+                    displayValueText
+                      ? styles.placeholderTransparent
+                      : styles.placeholderFoot,
                     'h-[36px]',
                     insufficientError && 'text-rabby-red-default'
                   )}

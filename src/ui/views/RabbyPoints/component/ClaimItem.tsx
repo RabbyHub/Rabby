@@ -4,21 +4,8 @@ import SkeletonInput from 'antd/lib/skeleton/Input';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as IconInputLoading } from 'ui/assets/rabby-points/loading.svg';
-
-const Wrapper = styled.div`
-  position: relative;
-  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-  border-radius: 8px;
-  padding: 12px 0;
-  padding-top: 14px;
-  .loading-button-wrapper {
-    svg g path {
-      stroke: rgba(255, 255, 255, 0.6);
-    }
-  }
-`;
+import styles from './ClaimItem.module.css';
 
 interface ClaimItemProps {
   id: number;
@@ -42,7 +29,8 @@ export const ClaimItem = (props: ClaimItemProps) => {
 
   const showDisabledTip = props.claimable_points <= 0 || !props.claimable;
   return (
-    <Wrapper
+    <div
+      className={styles.wrapper}
       style={
         props.claimable
           ? {
@@ -110,20 +98,25 @@ export const ClaimItem = (props: ClaimItemProps) => {
       <div className="pt-[12px] text-r-neutral-foot text-[12px] font-normal px-[16px]">
         {props.description}
       </div>
-    </Wrapper>
+    </div>
   );
 };
 
 export const ClaimItemLoading = () => {
   return (
-    <Wrapper className="border-[0.5px] border-rabby-neutral-line">
+    <div
+      className={clsx(
+        styles.wrapper,
+        'border-[0.5px] border-rabby-neutral-line'
+      )}
+    >
       <div className="flex items-center justify-between pb-[12px] px-[16px]  border-b-[0.5px] border-rabby-neutral-line">
         <SkeletonInput active style={{ width: 146, height: 18 }} />
       </div>
       <div className="pt-[12px] text-r-neutral-foot text-[12px] px-[16px]">
         <SkeletonInput active style={{ width: 300, height: 14 }} />
       </div>
-    </Wrapper>
+    </div>
   );
 };
 

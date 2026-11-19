@@ -1,0 +1,27 @@
+.list :global(.item) {
+  height: 52px;
+  min-height: 52px;
+}
+
+.list :global(.icon-keyring) {
+  margin-right: 6px;
+}
+
+.list :global(.alian-name) {
+  color: var(--r-neutral-title-1);
+  font-size: 13px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.list :global(.address-viewer-text) {
+  color: #4b4d59;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.list :global(.item-container) {
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 12px;
+}

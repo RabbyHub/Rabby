@@ -12,50 +12,12 @@ import { formatTokenAmount, formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { SelectedBridgeQuote, useSetQuoteVisible } from '../hooks';
 import { Tooltip } from 'antd';
-import styled from 'styled-components';
 import { bridgeQuoteEstimatedValueBn } from '../utils/bridgeQuote';
 import {
   formatBridgeDuration,
   getBridgeDurationColor,
 } from '../utils/duration';
-
-const ItemWrapper = styled.div`
-  --quote-border-width: 1px;
-  position: relative;
-
-  &.bridge-quote-compact {
-    border: none;
-    border-radius: 8px;
-    background: var(--r-neutral-card-1, #fff);
-    box-shadow: none;
-
-    &::after {
-      border-radius: 8px;
-    }
-
-    &:hover:not(.active)::after,
-    &.active::after {
-      position: absolute;
-      z-index: 2;
-      content: '';
-      border: var(--quote-border-width) solid var(--r-blue-default, #7084ff);
-      pointer-events: none;
-    }
-
-    &:hover:not(.active)::after {
-      inset: calc(0px - var(--quote-border-width)) 0;
-    }
-
-    &.active {
-      border: var(--quote-border-width) solid transparent;
-      background: var(--r-blue-light-1, #eef1ff);
-
-      &::after {
-        inset: calc(0px - var(--quote-border-width));
-      }
-    }
-  }
-`;
+import styles from './BridgeQuoteItem.module.css';
 
 interface QuoteItemProps extends SelectedBridgeQuote {
   payAmount: string;
@@ -139,8 +101,9 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
       align={{ offset: [0, 30] }}
       arrowPointAtCenter
     >
-      <ItemWrapper
+      <div
         className={clsx(
+          styles.itemWrapper,
           props.onlyShow
             ? 'flex h-auto flex-col gap-12 bg-transparent'
             : props.inSufficient
@@ -297,7 +260,7 @@ export const BridgeQuoteItem = (props: QuoteItemProps) => {
             {props.isBestQuote ? t('page.bridge.best') : diffPercent}
           </div>
         )}
-      </ItemWrapper>
+      </div>
     </Tooltip>
   );
 };

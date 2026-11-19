@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import {
   NftCollection,
   PortfolioItemNft,
@@ -26,64 +25,20 @@ type TokenItem = {
   tip?: string;
 };
 
-const AssetAvatarWrapper = styled.img`
-  width: 24px;
-  height: 24px;
-  border-radius: 100%;
-  &.is-nft {
-    border-radius: 4px;
-  }
-`;
-
 const AssetAvatar = ({ token }: { token: TokenItem }) => {
   return (
-    <AssetAvatarWrapper
-      className={clsx({ 'is-nft': !token.isToken })}
+    <img
+      className={clsx(
+        'w-24 h-24',
+        token.isToken ? 'rounded-[100%]' : 'is-nft rounded-[4px]'
+      )}
       src={token._logo || IconUnknown}
     />
   );
 };
 
-const TokenListWrapper = styled.div`
-  .header {
-    display: flex;
-    margin-top: 16px;
-    padding-left: 4px;
-    padding-right: 4px;
-    .td {
-      font-size: 12px;
-      line-height: 14px;
-      color: var(--r-neutral-foot, #6a7587);
-      text-align: left;
-      width: 120px;
-      margin-bottom: 12px;
-      &:nth-last-child(1) {
-        flex: 1;
-        text-align: right;
-      }
-    }
-  }
-  .row {
-    display: flex;
-    margin-bottom: 16px;
-    padding-left: 4px;
-    padding-right: 4px;
-    .td {
-      width: 120px;
-      font-size: 13px;
-      line-height: 15px;
-      color: var(--r-neutral-title-1, #192945);
-      text-align: left;
-      &:nth-last-child(1) {
-        text-align: right;
-        flex: 1;
-      }
-    }
-    &:nth-last-child(1) {
-      margin-bottom: 0;
-    }
-  }
-`;
+const rowCellClassName =
+  'td w-[120px] text-[13px] leading-[15px] text-r-neutral-title-1 text-left last:flex-1 last:text-right';
 
 export const TokenList = ({
   name,
@@ -185,11 +140,14 @@ export const TokenList = ({
   }, [_fraction, _nfts, _tokens]);
 
   return list.length ? (
-    <TokenListWrapper>
-      <div className="header">
+    <div>
+      <div className="header flex mt-16 px-4">
         {headers.map((h) => {
           return (
-            <div className="td" key={h}>
+            <div
+              className="td w-[120px] mb-12 text-12 text-r-neutral-foot text-left last:flex-1 last:text-right"
+              key={h}
+            >
               {h}
             </div>
           );
@@ -197,15 +155,22 @@ export const TokenList = ({
       </div>
       {list.map((l) => {
         return (
-          <div className="row" key={l.id}>
-            <div className="td flex items-center pr-4">
+          <div className="row flex mb-16 px-4 last:mb-0" key={l.id}>
+            <div className={clsx(rowCellClassName, 'flex items-center pr-4')}>
               <AssetAvatar token={l} />
               <span className="ml-8 overflow-hidden text-ellipsis whitespace-nowrap">
                 {l._symbol}
               </span>
             </div>
-            <div className="td flex items-center">{l._amount}</div>
-            <div className="td flex items-center justify-end relative">
+            <div className={clsx(rowCellClassName, 'flex items-center')}>
+              {l._amount}
+            </div>
+            <div
+              className={clsx(
+                rowCellClassName,
+                'flex items-center justify-end relative'
+              )}
+            >
               <span>{l._netWorthStr}</span>
               {l.tip ? (
                 <TooltipWithMagnetArrow
@@ -219,36 +184,9 @@ export const TokenList = ({
           </div>
         );
       })}
-    </TokenListWrapper>
+    </div>
   ) : null;
 };
-
-const SupplementsWrapper = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  padding: 12px;
-  margin-left: -10px;
-  margin-right: -10px;
-  width: calc(100% + 20px);
-  background: linear-gradient(
-    90deg,
-    var(--r-blue-light-1, #eef1ff) 0%,
-    rgba(134, 151, 255, 0) 100%
-  );
-  row-gap: 8px;
-  .item {
-    width: 50%;
-    font-size: 12px;
-    line-height: 14px;
-    .label {
-      color: var(--r-neutral-body, #babec5);
-    }
-    .content {
-      color: var(--r-neutral-title-1, #192945);
-      margin-left: 4px;
-    }
-  }
-`;
 
 type SupplementType = {
   label: string;
@@ -265,14 +203,21 @@ export const Supplements = ({ data }: SupplementsProps) => {
   ]);
 
   return list?.length ? (
-    <SupplementsWrapper>
+    <div
+      className={clsx(
+        'flex flex-wrap gap-y-8 p-12 -mx-10 w-[calc(100%_+_20px)]',
+        'bg-[linear-gradient(90deg,var(--r-blue-light-1,#eef1ff)_0%,rgba(134,151,255,0)_100%)]'
+      )}
+    >
       {list.map((s) => (
-        <div key={s.label} className="item flex">
-          <span className="label">{s.label}:</span>
-          <span className="content">{s.content}</span>
+        <div key={s.label} className="item flex w-1/2 text-12">
+          <span className="label text-r-neutral-body">{s.label}:</span>
+          <span className="content ml-4 text-r-neutral-title-1">
+            {s.content}
+          </span>
         </div>
       ))}
-    </SupplementsWrapper>
+    </div>
   ) : null;
 };
 

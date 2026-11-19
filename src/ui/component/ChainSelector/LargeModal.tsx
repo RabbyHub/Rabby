@@ -34,18 +34,7 @@ import NetSwitchTabs, {
 } from '../PillsSwitch/NetSwitchTabs';
 import { useTranslation } from 'react-i18next';
 import { LoadingBalances } from './LoadingBalances';
-import styled from 'styled-components';
-
-const Warper = styled.div`
-  .ant-input {
-    &::placeholder {
-      color: var(--r-neutral-foot);
-    }
-  }
-  .select-chain-item::after {
-    border-bottom-width: 0.5px !important;
-  }
-`;
+import styles from './LargeModal.module.css';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -206,7 +195,7 @@ export const ChainSelectorLargeModal = ({
       destroyOnClose
       {...rest}
     >
-      <Warper>
+      <div className={styles.wrapper}>
         <header>
           <div className="modal-title">{title}</div>
           {isShowTestnet && (
@@ -264,7 +253,7 @@ export const ChainSelectorLargeModal = ({
             ) : null}
           </div>
         )}
-      </Warper>
+      </div>
     </Modal>
   );
 };

@@ -46,100 +46,12 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { last, sum, uniqBy } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { useListenTxReload } from '../../../hooks/useListenTxReload';
 import { useTranslation } from 'react-i18next';
 import { useNFTListingOrders } from '../hooks/useNFTListingOrders';
-
-const Container = styled.div`
-  table {
-    th,
-    td {
-      padding: 12px 6px;
-
-      &:first-child {
-        padding-left: 0;
-      }
-
-      &:not(:first-child) {
-        text-align: right;
-      }
-
-      &:last-child {
-        padding-right: 0;
-      }
-    }
-  }
-
-  .custom-input {
-    border-radius: 8px;
-    border: 1px solid var(--r-blue-default, #4c65ff);
-    height: 40px;
-    width: 148px;
-    background-color: transparent;
-
-    &.ant-input-affix-wrapper-disabled {
-      border-color: var(--r-neutral-line);
-    }
-
-    .ant-input {
-      color: var(--r-neutral-title1, #192945);
-      font-size: 13px;
-      line-height: 16px;
-      font-weight: 500;
-      background-color: transparent;
-    }
-
-    input::-webkit-outer-spin-button,
-    input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .ant-input-suffix {
-      color: var(--r-neutral-foot, #6a7587);
-      font-size: 13px;
-      line-height: 16px;
-      font-weight: 500;
-    }
-  }
-
-  .custom-select.custom-select {
-    &.ant-select-disabled {
-      .ant-select-selector {
-        background: transparent;
-      }
-    }
-    .ant-select-selector {
-      border-radius: 8px;
-      border: 1px solid var(--r-neutral-line, #e0e5ec);
-      width: 160px;
-      height: 44px;
-      background-color: transparent;
-
-      .ant-select-selection-item {
-        line-height: 44px;
-        color: var(--r-neutral-title1, #192945);
-        font-size: 15px;
-        font-weight: 500;
-      }
-    }
-
-    .ant-select-arrow {
-      width: 16px;
-      height: 16px;
-      top: 50%;
-    }
-    &.ant-select-focused {
-      .ant-select-selector {
-        border: 1px solid var(--r-blue-default, #4c65ff);
-        background: var(--r-blue-light1, #edf0ff);
-      }
-    }
-  }
-`;
+import styles from './CreateListingModal.module.css';
 
 const options = [
   {
@@ -843,7 +755,7 @@ export const Content: React.FC<Props> = (props) => {
   // );
 
   return (
-    <Container>
+    <div className={styles.container}>
       <h1 className="text-r-neutral-title1 text-[20px] leading-[24px] font-medium text-center py-[16px] m-0">
         {isEdit
           ? t('page.desktopProfile.nft.listingModal.editListing')
@@ -1342,7 +1254,7 @@ export const Content: React.FC<Props> = (props) => {
           </div>
         </footer>
       </div>
-    </Container>
+    </div>
   );
 };
 export const CreateListingModal: React.FC<Props> = (props) => {

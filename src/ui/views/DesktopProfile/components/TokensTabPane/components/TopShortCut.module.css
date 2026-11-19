@@ -1,0 +1,24 @@
+.anchorWrapper {
+  background-color: var(--r-neutral-bg-1);
+  padding: 10px 0;
+  width: 100%;
+  border-bottom: 1px solid var(--r-neutral-line);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: space-between;
+}
+
+.centerWrapper {
+  overflow: auto;
+  position: static;
+  scrollbar-width: none;
+  margin: 0 auto;
+  flex: 1;
+  /* firefox */
+  -ms-overflow-style: none;
+  /* IE 10+ */
+  white-space: nowrap;
+  overflow: auto;
+  max-width: 100%;
+}

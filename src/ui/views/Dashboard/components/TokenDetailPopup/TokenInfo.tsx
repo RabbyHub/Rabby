@@ -29,7 +29,6 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { getTokenSymbol } from '@/ui/utils/token';
 import { getUiType } from '@/ui/utils';
 import { TokenDetailPopup } from '.';
-import styled from 'styled-components';
 import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { copyAddress } from '@/ui/utils/clipboard';
@@ -37,13 +36,6 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useLocation } from 'react-router-dom';
 
 const isDesktop = getUiType().isDesktop;
-const Divide = styled.div`
-  height: 1px;
-  height: 0.5px;
-  background-color: var(--r-neutral-card2, #f2f4f7);
-  display: flex;
-  flex: 1;
-`;
 const BridgeOrNative = ({
   token,
   tokenEntity,
@@ -66,7 +58,7 @@ const BridgeOrNative = ({
             {isVerified && (
               <>
                 <div className="flex flex-row gap-2 justify-center items-center px-16 gap-6 w-full flex flex-row">
-                  <Divide className="bg-r-neutral-line" />
+                  <div className="flex flex-1 h-[0.5px] bg-r-neutral-line" />
                   {isBridgeDomain ? (
                     <div className="text-r-neutral-foot text-12 flex flex-row">
                       <img src={IconBridged} className="w-14 mr-4" />
@@ -78,7 +70,7 @@ const BridgeOrNative = ({
                       {t('page.dashboard.tokenDetail.OriginIssue')}
                     </div>
                   )}
-                  <Divide className="bg-r-neutral-line" />
+                  <div className="flex flex-1 h-[0.5px] bg-r-neutral-line" />
                 </div>
               </>
             )}

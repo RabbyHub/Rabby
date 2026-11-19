@@ -1,21 +1,10 @@
-import styled from 'styled-components';
 import { Modal } from '@/ui/component';
 import React from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
-
-const StyledModal = styled(Modal)`
-  padding-bottom: 0;
-  .ant-modal-content {
-    border-radius: 16px;
-    overflow: initial;
-  }
-  .ant-modal-body {
-    padding: 0;
-  }
-`;
+import styles from './VerifyAddressModal.module.css';
 
 const NoIcon = () => null;
 
@@ -29,7 +18,8 @@ export const ClaimRabbyVerifyModal = ({
   onConfirm: () => void;
 }) => {
   return (
-    <StyledModal
+    <Modal
+      className={styles.styledModal}
       visible={visible}
       title={null}
       onCancel={onCancel}
@@ -37,7 +27,7 @@ export const ClaimRabbyVerifyModal = ({
       closeIcon={NoIcon}
     >
       <Inner onCancel={onCancel} onConfirm={onConfirm} />
-    </StyledModal>
+    </Modal>
   );
 };
 

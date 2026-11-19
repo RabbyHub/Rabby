@@ -5,17 +5,12 @@ import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { ReactComponent as IconClose } from 'ui/assets/close-16-cc.svg';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
-import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
 import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useDebounce } from 'react-use';
-
-const ButtonStyled = styled(Button)`
-  &:hover {
-    box-shadow: 0px 6px 8px 0px rgba(112, 132, 255, 0.25);
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './SubmitActions.module.css';
 
 export const SubmitActions: React.FC<Props> = ({
   disabledProcess,
@@ -110,10 +105,11 @@ export const SubmitActions: React.FC<Props> = ({
           }
         >
           <GasLessAnimatedWrapper>
-            <ButtonStyled
+            <Button
               disabled={disabledProcess}
               type="primary"
-              className={clsx(
+              className={cn(
+                styles.button,
                 gasLess && 'gasLess',
                 gasLessThemeColor && 'gasLessConfig',
                 'w-[246px] h-[48px] rounded-[8px]',
@@ -133,7 +129,7 @@ export const SubmitActions: React.FC<Props> = ({
               onClick={handleClickSign}
             >
               {t('page.signFooterBar.signAndSubmitButton')}
-            </ButtonStyled>
+            </Button>
           </GasLessAnimatedWrapper>
         </TooltipV6>
       )}

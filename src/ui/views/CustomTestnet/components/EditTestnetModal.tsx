@@ -8,7 +8,6 @@ import { Button, Form, Modal } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconFlash } from 'ui/assets/custom-testnet/icon-flash.svg';
 import { ReactComponent as RcIconRight } from 'ui/assets/custom-testnet/icon-right.svg';
 import { PageHeader, Popup } from 'ui/component';
@@ -18,26 +17,6 @@ import { CustomTestnetForm } from './CustomTestnetForm';
 import { ConfirmModifyRpcModal } from './ConfirmModifyRpcModal';
 import { useHistory } from 'react-router-dom';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
-
-const Wrapper = styled.div`
-  height: 100%;
-  padding: 20px 0 76px 0;
-`;
-
-const Footer = styled.div`
-  height: 84px;
-  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  background: var(--r-neutral-bg1, #fff);
-  padding: 18px 20px;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`;
 
 export const EditCustomTestnetModal = ({
   data,
@@ -140,7 +119,7 @@ export const EditCustomTestnetModal = ({
       maskStyle={maskStyle}
       // isSupportDarkMode
     >
-      <Wrapper>
+      <div className="h-full pt-20 pb-[76px] px-0">
         <PageHeader className="pt-0" forceShowBack={false} canBack={false}>
           {t('page.customRpc.EditCustomTestnetModal.title')}
         </PageHeader>
@@ -174,7 +153,7 @@ export const EditCustomTestnetModal = ({
             }}
           />
         </div>
-        <Footer>
+        <div className="h-[84px] border-t-[0.5px] border-t-r-neutral-line bg-r-neutral-bg1 py-18 px-20 flex justify-between gap-16 w-full absolute left-0 right-0 bottom-0">
           <Button
             type="primary"
             size="large"
@@ -193,8 +172,8 @@ export const EditCustomTestnetModal = ({
           >
             {loading ? t('global.Loading') : t('global.Confirm')}
           </Button>
-        </Footer>
-      </Wrapper>
+        </div>
+      </div>
       <AddFromChainList
         visible={isShowAddFromChainList}
         onClose={() => {

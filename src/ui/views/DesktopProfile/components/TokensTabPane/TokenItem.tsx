@@ -6,7 +6,6 @@ import { Image, Tooltip } from 'antd';
 import { findChain } from '@/utils/chain';
 import { useHistory } from 'react-router-dom';
 import { DesktopTokenLabel } from '../TransactionsTabPane/DesktopTokenLabel';
-import styled from 'styled-components';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { useTranslation } from 'react-i18next';
 import { isNil } from 'lodash';
@@ -14,6 +13,7 @@ import clsx from 'clsx';
 import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from './components/LpTokenTag';
 import { UnknownTag } from '@/ui/component';
+import styles from './TokenItem.module.css';
 
 const PADDING = 8;
 
@@ -287,32 +287,13 @@ const TokenItemUSDValue: React.FC<Props> = ({ item }) => {
   );
 };
 
-const TokenRowWrapper = styled(TRow)`
-  border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
-  height: 60px;
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-  .swap-action-btn {
-    display: none !important;
-  }
-  &:hover {
-    background-color: var(--rb-neutral-bg-2, #f2f4f7);
-    .swap-action-btn {
-      display: block !important;
-    }
-  }
-  &:last-child {
-    border-bottom-color: transparent;
-  }
-`;
-
 export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
   return (
-    <TokenRowWrapper onClick={onClick} style={style}>
+    <TRow className={styles.tokenRowWrapper} onClick={onClick} style={style}>
       <TokenItemAsset item={item} />
       <TokenItemPrice item={item} />
       <TokenItemAmount item={item} />
       <TokenItemUSDValue item={item} />
-    </TokenRowWrapper>
+    </TRow>
   );
 };

@@ -2,30 +2,12 @@ import { Popup } from '@/ui/component';
 import { Button, Input, InputRef, message } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { ReactComponent as IconDice } from 'ui/assets/rabby-points/dice-cc.svg';
 import { useRabbyPointsInvitedCodeCheck } from '../hooks';
 import { customAlphabet } from 'nanoid';
 import { useTranslation } from 'react-i18next';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
-
-const StyledInput = styled(Input)`
-  border-radius: 8px;
-  border: 1px solid var(--r-neutral-line, #d3d8e0);
-  height: 52px;
-  font-size: 14px;
-  font-weight: 510;
-  text-align: left;
-  background: var(--r-neutral-bg1, #fff);
-  & > input.ant-input {
-    background: var(--r-neutral-bg1, #fff);
-    color: var(--r-neutral-title1, #192945);
-  }
-  &:hover,
-  &.ant-input-affix-wrapper-focused {
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-`;
+import styles from './ReferrralCode.module.css';
 
 export const SetReferralCode = ({
   onSetCode,
@@ -158,7 +140,7 @@ export const SetReferralCode = ({
         destroyOnClose
       >
         <div className="flex flex-col h-full">
-          <StyledInput
+          <Input
             bordered
             autoCapitalize="false"
             autoComplete="false"
@@ -166,6 +148,7 @@ export const SetReferralCode = ({
             value={input}
             onChange={inputChange}
             className={clsx(
+              styles.styledInput,
               'border-[1px] bg-transparent',
               isError && 'border-rabby-red-default',
               isValidCode && 'border-rabby-blue-default'

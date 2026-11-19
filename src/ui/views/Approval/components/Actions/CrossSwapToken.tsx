@@ -1,6 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
 import { BigNumber } from 'bignumber.js';
-import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useTranslation } from 'react-i18next';
 import { Table, Col, Row } from './components/Table';
@@ -21,25 +20,8 @@ import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
+import styles from './CrossSwapToken.module.css';
 
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
 const CrossSwapToken = ({
   data,
   requireData,
@@ -112,7 +94,7 @@ const CrossSwapToken = ({
   const hasRequiredData = requireData && Object.keys(requireData).length > 0;
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
@@ -312,7 +294,7 @@ const CrossSwapToken = ({
           </>
         )}
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

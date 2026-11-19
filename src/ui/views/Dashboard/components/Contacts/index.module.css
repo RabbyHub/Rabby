@@ -1,0 +1,32 @@
+.contactItem {
+  padding: 11px 16px;
+  background-color: #f5f6fa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.contactItem :global(.name) {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  margin-bottom: 0;
+}
+
+.contactItem :global(.address) {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  margin: 0;
+  display: flex;
+}
+
+.contactItem :global(.icon-copy) {
+  width: 14px;
+  height: 14px;
+  margin-left: 4px;
+  cursor: pointer;
+}
+
+.contactItem:nth-last-child(1) {
+  margin-bottom: 0;
+}

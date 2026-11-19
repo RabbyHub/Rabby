@@ -1,0 +1,30 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+}
+
+.wrapper :global(.nft-item-avatar) {
+  margin-right: 6px;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border: none;
+}
+
+.wrapper :global(.nft-item-avatar) :global(.ant-image) img {
+  border-radius: 2px;
+}
+
+.wrapper :global(.nft-item-avatar) :global(.nft-avatar-cover) img {
+  display: none !important;
+}
+
+.wrapper :global(.name) {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--r-neutral-title-1, #192945);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

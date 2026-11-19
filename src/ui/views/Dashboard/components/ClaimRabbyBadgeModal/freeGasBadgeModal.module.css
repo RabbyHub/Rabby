@@ -1,0 +1,289 @@
+.wrapper {
+  width: 360px;
+  height: 480px;
+  border-radius: 16px;
+  border-radius: 16px;
+  background: var(--r-neutral-bg1, #1c1f2b);
+  color: var(--r-neutral-foot, #babec5);
+  box-shadow: 0px 24px 40px 0px rgba(19, 20, 26, 0.16);
+  background-image: var(--free-gas-badge-bg);
+  background-size: 360px 243px;
+  background-repeat: no-repeat;
+  background-size: contain;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.wrapper [ant-click-animating-without-extra-node='true']::after {
+  display: none;
+}
+
+.wrapper:global(.noCode) {
+  background-image: var(--free-gas-badge-bg-no-code);
+  background-size: 360px 300px;
+}
+
+.wrapper:global(.noCode) :global(.badge) {
+  width: 160px;
+  height: 160px;
+}
+
+.wrapper:global(.noCode) :global(.account) {
+  margin-bottom: 78px;
+}
+
+.wrapper :global(.badge) {
+  width: 120px;
+  height: 120px;
+}
+
+.wrapper :global(.learn-more-tips) {
+  padding-left: 24px;
+  padding-right: 20px;
+  color: var(--r-neutral-foot, #6a7587);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.wrapper :global(.title) {
+  margin-top: 14px;
+  margin-bottom: 12px;
+  color: #fff;
+  text-align: center;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.wrapper :global(.account) {
+  margin-bottom: 67px;
+}
+
+.wrapper :global(.codeInput) {
+  width: 320px;
+  padding: 12px;
+  color: var(--r-neutral-title1, #f7fafc);
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  /* background: #f5f6fa; */
+  border: 1px solid #dcdfe4;
+}
+
+.wrapper :global(.codeInput)::placeholder {
+  color: var(--r-neutral-foot, #6a7587);
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.wrapper :global(.codeInput):hover,
+.wrapper :global(.codeInput):focus {
+  border-color: var(--r-blue-default, #7084ff);
+}
+
+.wrapper :global(.codeInput.red),
+.wrapper :global(.codeInput.red):hover,
+.wrapper :global(.codeInput.red):focus {
+  border-color: var(--r-red-default, #e34935);
+}
+
+.wrapper :global(.box) {
+  position: relative;
+}
+
+.wrapper :global(.box.swap) {
+  top: -20px;
+}
+
+.wrapper :global(.box) :global(.error) {
+  position: absolute;
+  bottom: -30px;
+  left: 0;
+  margin-top: 12px;
+  color: var(--r-red-default, #e34935);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+}
+
+.wrapper :global(.box) :global(.swapTips) {
+  position: absolute;
+  bottom: -8px;
+  transform: translateY(100%);
+  left: 0;
+  margin-top: 12px;
+  position: absolute;
+  border-radius: 4px;
+  background: var(--r-neutral-card2, #f2f4f7);
+  height: 72px;
+  padding: 8px 12px;
+  padding-left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+}
+
+.wrapper :global(.box) :global(.swapTips) :global(.toSwap) {
+  cursor: pointer;
+  color: var(--r-blue-default, #7084ff);
+  text-decoration-line: underline;
+}
+
+.wrapper :global(.btn) {
+  margin-top: 58px;
+  width: 320px;
+  height: 44px;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  border-radius: 6px;
+  background: #109d63;
+  color: var(--r-neutral-title2, #fff);
+  border-color: transparent;
+  transition: none !important;
+}
+
+.wrapper :global(.btn.ant-btn)[disabled],
+.wrapper :global(.btn.ant-btn)[disabled]:hover {
+  background: #109d63;
+  border-color: transparent;
+  opacity: 0.4;
+}
+
+.wrapper :global(.btn.ant-btn):hover,
+.wrapper :global(.btn.ant-btn):focus,
+.wrapper :global(.btn.ant-btn):active {
+  color: var(--r-neutral-title2, #fff);
+  background: #109d63;
+  border-color: transparent;
+  border-color: transparent;
+  box-shadow: 0px 8px 16px 0px rgba(58, 178, 128, 0.16);
+}
+
+.wrapper :global(.btn.more) {
+  margin-top: 32px;
+  width: 291px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.wrapper :global(.tips) {
+  margin-top: 16px;
+  color: var(--r-neutral-foot, #6a7587);
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 18px;
+  text-decoration-line: underline;
+  cursor: pointer;
+}
+
+.claimSuccess {
+  width: 360px;
+  height: 480px;
+  border-radius: 16px;
+  /* background-color: #fff; */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.claimSuccess :global(.badge) {
+  width: 160px;
+  height: 160px;
+}
+
+.claimSuccess :global(.title),
+.claimSuccess :global(.desc) {
+  text-align: center;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.claimSuccess :global(.title) {
+  color: var(--r-neutral-title1, #192945);
+}
+
+.claimSuccess :global(.desc) {
+  font-size: 17px;
+  margin-top: 24px;
+  margin-bottom: 32px;
+  color: var(--r-green-default, #2abb7f);
+}
+
+.claimSuccess :global(.title) {
+  margin-bottom: 16px;
+}
+
+.claimSuccess :global(.account) {
+  margin-bottom: 54px;
+  background: var(--r-neutral-card2, rgba(255, 255, 255, 0.06));
+}
+
+.claimSuccess :global(.btn) {
+  width: 252px;
+  height: 50px;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  border-radius: 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  background: #109d63;
+  border: none;
+}
+
+.claimSuccess :global(.btn.ant-btn):hover {
+  box-shadow: 0px 8px 16px 0px rgba(58, 178, 128, 0.16);
+}
+
+.claimSuccess :global(.confetti) {
+  position: absolute;
+  top: 20px;
+  left: 0;
+  pointer-events: none;
+}
+
+.modal {
+  padding-bottom: 0;
+}
+
+.modal :global(.ant-modal-content) {
+  border-radius: 16px;
+  overflow: initial;
+}
+
+.modal :global(.ant-modal-body) {
+  padding: 0;
+  max-height: 526px;
+}
+
+.modal :global(.ant-modal-close) {
+  top: -10px;
+  right: -10px;
+}
+
+.modal :global(.ant-modal-close-x) {
+  width: auto;
+  height: auto;
+}

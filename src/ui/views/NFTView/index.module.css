@@ -1,0 +1,48 @@
+.tabs {
+  & :global(.ant-tabs-tab) {
+    border-radius: 4px;
+    color: var(--r-neutral-body, #3e495e);
+    font-size: 12px;
+    transition: background-color 0.3s ease-in-out;
+    margin: 0 !important;
+    width: 100px;
+    height: 28px;
+    font-weight: 500;
+    padding: 0;
+    text-align: center;
+
+    &:global(.ant-tabs-tab-active) {
+      background: var(--r-neutral-card-1, #fff);
+      color: var(--r-blue-default, #7084ff);
+    }
+
+    &:hover {
+      color: var(--r-blue-default, #7084ff);
+    }
+  }
+
+  & :global(.ant-tabs-tab-btn) {
+    margin: auto;
+  }
+
+  &:global(.ant-tabs-top) > :global(.ant-tabs-nav)::before {
+    border-bottom-color: transparent;
+  }
+
+  & :global(.ant-tabs-nav-list) {
+    margin: auto;
+    background: var(--r-neutral-line, #d3d8e0);
+    border-radius: 6px;
+    padding: 2px;
+  }
+
+  & :global(.ant-tabs-ink-bar) {
+    display: none;
+  }
+
+  & :global(.ant-tabs-tabpane) {
+    /* height: calc(100vh - 100px); */
+    height: 500px;
+    overflow: auto;
+  }
+}

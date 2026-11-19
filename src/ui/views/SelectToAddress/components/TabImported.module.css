@@ -1,0 +1,26 @@
+.accountItemWrapper {
+  background-color: var(--r-neutral-card1);
+  position: relative;
+  border-radius: 12px;
+  margin-top: 12px;
+  &:first-child {
+    margin-top: 0;
+  }
+  & :global(.whitelist-item) {
+    gap: 12px !important;
+  }
+  & :global(.icon-delete-container) {
+    display: flex;
+    opacity: 0;
+    &:hover {
+      & g {
+        stroke: #ec5151;
+      }
+    }
+  }
+  &:hover {
+    & :global(.icon-delete-container) {
+      opacity: 1;
+    }
+  }
+}

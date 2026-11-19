@@ -1,0 +1,60 @@
+.styledModal {
+  padding-bottom: 0;
+  & :global(.ant-modal-content) {
+    border-radius: 16px;
+    overflow: initial;
+  }
+  & :global(.ant-modal-body) {
+    padding: 0;
+    max-height: 600px;
+  }
+}
+
+.styledInput {
+  background: var(--r-neutral-bg1, #fff);
+  &:global(.ant-input-affix-wrapper) {
+    border-radius: 8px;
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
+  }
+  &:global(.ant-input-affix-wrapper > input.ant-input) {
+    height: 44px;
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+    background: var(--r-neutral-bg1, #fff);
+    color: var(--r-neutral-title1, #192945);
+    transition: none;
+
+    &:placeholder-shown {
+      color: var(--r-neutral-foot, #6a7587);
+      font-size: 13px;
+      font-weight: normal;
+    }
+  }
+  &:hover,
+  &:global(.ant-input-affix-wrapper-focused) {
+    border: 1px solid var(--r-blue-default, #7084ff);
+  }
+}
+
+.gradientLoading {
+  animation: gradientLoading 1s ease infinite;
+}
+
+@keyframes gradientLoading {
+  0% {
+    background-position: 0% 0%;
+  }
+  25% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  75% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}

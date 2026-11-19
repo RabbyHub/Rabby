@@ -1,0 +1,62 @@
+.bg {
+  background: var(--r-blue-default, #7084ff);
+  overflow-x: auto;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.bgDark {
+  background: linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.5) 0%,
+      rgba(0, 0, 0, 0.5) 100%
+    ),
+    var(--r-blue-default, #7084ff);
+}
+
+.card {
+  width: 400px;
+  min-height: 520px;
+  border-radius: 16px;
+  background-color: var(--r-neutral-bg1, #fff);
+  box-shadow: 0px 40px 80px 0px rgba(43, 57, 143, 0.4);
+  padding: 0px 20px 20px;
+
+  & :global(.header) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--r-neutral-title1, #192945);
+    text-align: center;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    position: relative;
+    min-height: 20px;
+  }
+  & :global(.header .back-icon) {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: var(--r-neutral-body, #3e495e);
+    border-radius: 8px;
+    padding: 6px;
+  }
+  & :global(.header .back-icon:hover) {
+    background: var(--r-neutral-card2, #f2f4f7);
+  }
+
+  & :global(input.ant-input::placeholder) {
+    color: var(--r-neutral-foot, #6a7587);
+  }
+
+  & :global(button.ant-btn.ant-btn-primary.ant-btn-loading) {
+    border-color: #5a6acc;
+    background: #5a6acc;
+  }
+}

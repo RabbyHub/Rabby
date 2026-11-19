@@ -1,0 +1,9 @@
+.globalActive :global(.dapp-search-card-tooltip) {
+  & :global(.ant-tooltip-inner) {
+    background-color: var(--r-neutral-black, #000) !important;
+  }
+
+  & :global(.ant-tooltip-arrow-content) {
+    background-color: var(--r-neutral-black, #000) !important;
+  }
+}

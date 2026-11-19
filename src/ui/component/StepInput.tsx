@@ -1,63 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import { RcIconMinusCC, RcIconPlusCC } from '../assets/desktop/common';
 import clsx from 'clsx';
 import { Tooltip } from 'antd';
-
-const Root = styled.div`
-  display: flex;
-  align-items: center;
-
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  .step-btn {
-    padding: 6px;
-    color: var(--r-neutral-body, #3e495e);
-    border: 1px solid var(--r-neutral-line, #e0e5ec);
-
-    &:first-child {
-      border-right: none;
-      border-radius: 8px 0 0 8px;
-    }
-    &:last-child {
-      border-left: none;
-      border-radius: 0 8px 8px 0;
-    }
-
-    &:disabled {
-      cursor: not-allowed;
-      svg {
-        opacity: 0.5;
-      }
-    }
-  }
-
-  .step-input-field {
-    color: var(--r-neutral-title1, #192945);
-    text-align: center;
-    font-size: 13px;
-    font-weight: 500;
-    line-height: 16px;
-    width: 64px;
-    height: 34px;
-
-    border: 1px solid var(--r-neutral-line, #e0e5ec);
-    background-color: transparent;
-
-    &:disabled {
-      cursor: not-allowed;
-    }
-
-    &:focus {
-      outline: none;
-      border-color: var(--r-blue-default, #4c65ff);
-    }
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './StepInput.module.css';
 
 export interface StepInputProps {
   value?: number | null; // controlled value
@@ -150,7 +96,7 @@ export const StepInput: React.FC<StepInputProps> = ({
   const canIncrement = !disabled && (max === undefined || current < max);
 
   return (
-    <Root className={clsx('step-input', className)}>
+    <div className={cn(styles.root, 'step-input', className)}>
       <button
         type="button"
         onClick={decrement}
@@ -199,6 +145,6 @@ export const StepInput: React.FC<StepInputProps> = ({
           <RcIconPlusCC />
         </button>
       )}
-    </Root>
+    </div>
   );
 };

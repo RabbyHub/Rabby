@@ -20,7 +20,6 @@ import BigNumber from 'bignumber.js';
 import { MaxButton } from '../../SendToken/components/MaxButton';
 import { tokenAmountBn } from '@/ui/utils/token';
 import SkeletonInput from 'antd/lib/skeleton/Input';
-import styled from 'styled-components';
 import BridgeToTokenSelect from './BridgeToTokenSelect';
 import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
@@ -31,36 +30,7 @@ import {
 } from '@/utils/transaction';
 import { isTempoChain } from '@/utils/tempo';
 import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
-
-const StyledInput = styled(Input)`
-  color: var(--r-neutral-title1, #192945);
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 500;
-  line-height: normal;
-  background: transparent !important;
-  padding-left: 0;
-  padding-right: 0;
-  & > .ant-input {
-    color: var(--r-neutral-title1, #192945);
-    font-size: 24px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    border-width: 0px !important;
-    border-color: transparent;
-  }
-
-  &::placeholder {
-    color: var(--r-neutral-foot, #6a7587);
-  }
-
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
+import styles from './BridgeToken.module.css';
 
 export const BridgeToken = ({
   type = 'from',
@@ -441,8 +411,9 @@ export const BridgeToken = ({
               className="min-w-0 flex-1"
             >
               {(fontSize) => (
-                <StyledInput
+                <Input
                   className={clsx(
+                    styles.input,
                     inSufficient && 'text-rabby-red-default',
                     valueLoading && 'opacity-50'
                   )}

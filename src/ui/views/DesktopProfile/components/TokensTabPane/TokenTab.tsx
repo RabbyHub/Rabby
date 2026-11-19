@@ -16,8 +16,9 @@ import MainnetTestnetSwitchTabs from './components/switchTestTab';
 import { TokenList } from './TokenList';
 import { LpTokenSwitch } from './components/LpTokenSwitch';
 import { isLpToken } from '@/ui/utils/portfolio/lpToken';
-import styled from 'styled-components';
 import { ReactComponent as SearchSVG } from '@/ui/assets/search.svg';
+import { cn } from '@/ui/utils/cn';
+import styles from './TokenTab.module.css';
 // import { DESKTOP_NAV_HEIGHT } from '@/ui/component/DesktopNav';
 const DESKTOP_NAV_HEIGHT = 0;
 
@@ -32,13 +33,6 @@ interface Props {
   searchValue: string;
   setSearchValue: (value: string) => void;
 }
-
-const StyledInput = styled(Input)`
-  .ant-input {
-    background: transparent;
-    color: var(--rb-neutral-title-1, #192945);
-  }
-`;
 
 export const TokenTab = ({
   sortTokens,
@@ -111,13 +105,14 @@ export const TokenTab = ({
         style={{ top: DESKTOP_NAV_HEIGHT + 57 }}
       >
         <div className="flex items-center gap-[16px] widget-has-ant-input">
-          <StyledInput
+          <Input
             prefix={<SearchSVG className="w-[14px] h-[14px]" />}
             autoCapitalize="off"
             autoComplete="off"
             autoCorrect="off"
             spellCheck={false}
-            className={clsx(
+            className={cn(
+              styles.styledInput,
               { active: inputActive },
               'w-[345px] h-[40px]',
               'px-12 text-rb-neutral-title-1 text-[14px]',

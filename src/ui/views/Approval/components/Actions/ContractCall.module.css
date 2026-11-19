@@ -1,0 +1,39 @@
+.wrapper :global(.contract-call-header) {
+  border-bottom: 1px solid #ededed;
+  padding-bottom: 15px;
+}
+
+.wrapper :global(.contract-call-header) :global(.alert) {
+  display: flex;
+  margin-bottom: 9px;
+  align-items: center;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 14px;
+  color: #333333;
+}
+
+.wrapper :global(.contract-call-header) :global(.alert) :global(.icon-alert) {
+  margin-right: 6px;
+  width: 15px;
+}
+
+.wrapper :global(.header) {
+  margin-top: 15px;
+}
+
+.wrapper :global(.icon-edit-alias) {
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+
+.wrapper :global(.icon-scam-token) {
+  margin-left: 4px;
+  width: 13px;
+}
+
+.wrapper :global(.icon-fake-token) {
+  margin-left: 4px;
+  width: 13px;
+}

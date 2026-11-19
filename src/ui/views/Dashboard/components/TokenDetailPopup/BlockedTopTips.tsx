@@ -2,30 +2,7 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { Switch } from 'antd';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-
-const SwitchStyled = styled(Switch)`
-  &.ant-switch-checked {
-    background-color: #2abb7f;
-  }
-
-  &.ant-switch-small {
-    min-width: 32px;
-    height: 16px;
-    line-height: 16px;
-  }
-
-  &.ant-switch-small .ant-switch-handle {
-    width: 14px;
-    height: 14px;
-    top: 1px;
-    left: 1px;
-  }
-
-  &.ant-switch-small.ant-switch-checked .ant-switch-handle {
-    left: 16px;
-  }
-`;
+import styles from './BlockedTopTips.module.css';
 
 interface Props {
   isAdded?: boolean;
@@ -53,7 +30,8 @@ export const BlockedTopTips = ({ onOpen, onClose, isAdded, token }: Props) => {
           ? t('page.dashboard.tokenDetail.customizedHasAddedTips')
           : t('page.dashboard.tokenDetail.blockedTips')}
       </div>
-      <SwitchStyled
+      <Switch
+        className={styles.switch}
         size="small"
         checked={isAdded}
         onChange={(val) => {

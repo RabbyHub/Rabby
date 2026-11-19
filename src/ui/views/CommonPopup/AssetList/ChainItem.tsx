@@ -6,7 +6,8 @@ import React from 'react';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/info-cc.svg';
 import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
-import { createGlobalStyle } from 'styled-components';
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import styles from './ChainItem.module.css';
 
 export interface ChainItemType extends DisplayChainWithWhiteLogo {
   percent: number;
@@ -19,14 +20,6 @@ export interface Props {
   inactive?: boolean;
 }
 
-const StyledTooltipGlobalStyle = createGlobalStyle`
-  .app-chain-tooltip {
-    .ant-tooltip-arrow {
-      display: block !important;
-    }
-  }
-`;
-
 export const ChainItem: React.FC<Props> = ({
   item: { logo_url, name, usd_value, percent, isAppChain },
   className,
@@ -35,6 +28,7 @@ export const ChainItem: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const currentBalance = splitNumberByStep(usd_value.toFixed(2));
+  useDocumentClass(styles.globalActive);
 
   return (
     <div
@@ -92,7 +86,6 @@ export const ChainItem: React.FC<Props> = ({
           {percent?.toFixed(0)}%
         </span>
       )}
-      <StyledTooltipGlobalStyle />
     </div>
   );
 };

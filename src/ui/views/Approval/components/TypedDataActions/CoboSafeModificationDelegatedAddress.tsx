@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Col, Row, Table } from '../Actions/components/Table';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
@@ -7,8 +6,6 @@ import * as Values from '../Actions/components/Values';
 import LogoWithText from '../Actions/components/LogoWithText';
 import IconSafe from '@/ui/assets/walletlogo/safe.svg';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
-
-const Wrapper = styled.div``;
 
 const CoboSafeModificationDelegatedAddress = ({
   data,
@@ -19,7 +16,7 @@ const CoboSafeModificationDelegatedAddress = ({
   const actionData = data!;
 
   return (
-    <Wrapper>
+    <div>
       <Table>
         <Col>
           <Row isTitle>
@@ -71,7 +68,7 @@ const CoboSafeModificationDelegatedAddress = ({
           <Row wrap>{actionData.desc}</Row>
         </Col>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

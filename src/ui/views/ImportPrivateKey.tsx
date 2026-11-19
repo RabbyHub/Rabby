@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Input, Form, message } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import IconSuccess from 'ui/assets/success.svg';
 
@@ -16,28 +15,7 @@ import { safeJSONParse } from '@/utils';
 import { UI_TYPE } from '@/constant/ui';
 import qs from 'qs';
 import { useDesktopProfileStore } from '@/ui/state/desktopProfile';
-
-const TipTextList = styled.div`
-  margin-top: 32px;
-  h3 {
-    font-weight: 700;
-    font-size: 13px;
-    line-height: 15px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    margin-top: 0;
-    margin-bottom: 8px;
-  }
-  p {
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 15px;
-    color: var(--r-neutral-body, #d3d8e0);
-    margin: 0;
-  }
-  section + section {
-    margin-top: 16px;
-  }
-`;
+import styles from './ImportPrivateKey.module.css';
 
 const ImportPrivateKey: React.FC<{
   isInModal?: boolean;
@@ -200,7 +178,7 @@ const ImportPrivateKey: React.FC<{
                 }}
               />
             </Form.Item>
-            <TipTextList className="mt-32">
+            <div className={clsx(styles.tipTextList, 'mt-32')}>
               <section>
                 <h3>
                   {t('page.newAddress.privateKey.whatIsAPrivateKey.question')}
@@ -249,7 +227,7 @@ const ImportPrivateKey: React.FC<{
                   </Trans>
                 </p>
               </section>
-            </TipTextList>
+            </div>
           </div>
         </div>
       </StrayPageWithButton>

@@ -1,0 +1,70 @@
+.container {
+  & :global(.token-list) {
+    border: 0.5px solid var(--r-neutral-line, #d8e0ea);
+    border-radius: 8px;
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+
+    /* height: 525px; */
+  }
+
+  & :global(.token-list-header) {
+    height: 40px;
+    background-color: var(--r-neutral-bg2, #f2f4f7);
+    color: var(--r-neutral-body, #3e495e);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 17px;
+    padding-left: 16px;
+    padding-right: 16px;
+    flex-shrink: 0;
+
+    & :global(.token-list-cell) {
+      height: 40px;
+    }
+  }
+
+  & :global(.token-list-body) {
+    overflow-y: auto;
+    min-height: 0;
+    flex: 1;
+  }
+
+  & :global(.token-list-cell) {
+    height: 48px;
+    padding: 0 16px;
+    color: var(--r-neutral-title1, #192945);
+    font-size: 14px;
+    line-height: 17px;
+  }
+
+  & :global(.token-list-cell--amount) {
+    padding-left: 4px;
+  }
+
+  & :global(.token-list-row) {
+    background: transparent;
+    cursor: pointer;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  & :global(.token-list-row.is-disabled) {
+    cursor: not-allowed;
+  }
+
+  & :global(.token-list-row:not(.is-disabled):hover) {
+    background: rgba(112, 132, 255, 0.04);
+  }
+
+  & :global(.token-list-row + .token-list-row) {
+    margin-top: 0;
+  }
+
+  & :global(.token-list-footer) {
+    background: transparent;
+    flex-shrink: 0;
+  }
+}

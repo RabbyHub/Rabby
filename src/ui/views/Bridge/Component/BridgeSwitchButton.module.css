@@ -1,0 +1,11 @@
+.wrapper {
+  & :global(.loading-spin) {
+    animation: loading-spin 0.5s linear infinite !important;
+  }
+}
+
+@keyframes loading-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

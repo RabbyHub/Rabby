@@ -1,0 +1,50 @@
+.whitelistItemWrapper {
+  background-color: var(--r-neutral-card1);
+  position: relative;
+  border-radius: 12px;
+  margin-top: 12px;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  & :global(.whitelist-item) {
+    gap: 12px !important;
+  }
+  & :global(.icon-delete-container) {
+    display: flex;
+    opacity: 0;
+    &:hover {
+      & g {
+        stroke: #ec5151;
+      }
+    }
+  }
+  &:hover {
+    & :global(.icon-delete-container) {
+      opacity: 1;
+    }
+  }
+
+  &:global(.is-whitelist-item-dragging) {
+    & :global(.icon-delete-container),
+    & :global(.edit-pen),
+    & :global(.copy-icon) {
+      display: none !important;
+      opacity: 0 !important;
+      pointer-events: none !important;
+    }
+  }
+
+  &:global(.is-whitelist-item-drag-overlay) {
+    box-sizing: border-box;
+    border: 1px solid var(--r-blue-default, #7084ff);
+    background-color: var(--r-blue-light1, #eef1ff);
+    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.13);
+
+    & :global(.whitelist-item) {
+      border-color: transparent !important;
+      background-color: var(--r-blue-light1, #eef1ff) !important;
+    }
+  }
+}

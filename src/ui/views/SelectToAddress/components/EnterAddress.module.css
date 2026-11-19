@@ -1,0 +1,19 @@
+.inputWrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  & :global(.ant-input) {
+    font-size: 15px;
+  }
+  & :global(.ant-input-clear-icon) {
+    top: unset !important;
+    bottom: 8px !important;
+    & svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.hasError :global(.ant-input) {
+  border-color: var(--r-red-default) !important;
+}

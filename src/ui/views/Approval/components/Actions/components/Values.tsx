@@ -1,6 +1,5 @@
 import React, { useMemo, ReactNode, useState, useEffect } from 'react';
 import { message } from 'antd';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain, TokenItem } from 'background/service/openapi';
 import AddressMemo from './AddressMemo';
@@ -27,16 +26,12 @@ import { findChain } from '@/utils/chain';
 import clsx from 'clsx';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { useSignStore } from '@/ui/state/sign';
+import styles from './Values.module.css';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
 };
 
-const TokenAmountWrapper = styled.div`
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-`;
 const TokenAmount = ({
   value,
   hasTitle = true,
@@ -45,9 +40,9 @@ const TokenAmount = ({
   hasTitle?: boolean;
 }) => {
   return (
-    <TokenAmountWrapper title={hasTitle ? String(value) : ''}>
+    <div className={styles.tokenAmount} title={hasTitle ? String(value) : ''}>
       {formatAmount(value)}
-    </TokenAmountWrapper>
+    </div>
   );
 };
 
@@ -127,14 +122,6 @@ const TimeSpanFuture = ({
   return <>{timeSpan}</>;
 };
 
-const AddressMarkWrapper = styled.div`
-  display: inline-flex;
-  cursor: pointer;
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-  }
-`;
 const AddressMark = ({
   onWhitelist,
   onBlacklist,
@@ -244,14 +231,14 @@ const AddressMark = ({
     });
   };
   return (
-    <AddressMarkWrapper onClick={handleEditMark}>
+    <div className={styles.addressMark} onClick={handleEditMark}>
       <span className="mr-6">
         {onWhitelist && t('page.signTx.trusted')}
         {onBlacklist && t('page.signTx.blocked')}
         {!onBlacklist && !onWhitelist && t('page.signTx.noMark')}
       </span>
       <img src={IconEdit} className="icon-edit-alias icon" />
-    </AddressMarkWrapper>
+    </div>
   );
 };
 
@@ -317,27 +304,6 @@ const TokenLabel = ({
   );
 };
 
-const AddressWrapper = styled.div`
-  display: flex;
-  .address-box {
-    padding: 3px 6px;
-    border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-    cursor: pointer;
-    color: var(--r-neutral-title1, #192945);
-    font-size: 14px;
-    font-weight: 500;
-    border-radius: 900px;
-    display: flex;
-    .icon-arrow-right {
-      margin-left: 2px;
-      color: var(--r-neutral-foot, #6a7587);
-    }
-    &:hover {
-      border-color: var(--r-blue-default, #7084ff);
-      background-color: var(--r-blue-light1, #eef1ff);
-    }
-  }
-`;
 const Address = ({
   address,
   chain,
@@ -352,7 +318,7 @@ const Address = ({
   id?: string;
 }) => {
   return (
-    <AddressWrapper className="value-address relative">
+    <div className={clsx(styles.address, 'value-address relative')}>
       <TooltipWithMagnetArrow
         inApproval
         title={address}
@@ -363,7 +329,7 @@ const Address = ({
           <IconArrowRight className="icon-arrow-right" />
         </div>
       </TooltipWithMagnetArrow>
-    </AddressWrapper>
+    </div>
   );
 };
 
@@ -392,7 +358,7 @@ const AddressWithCopy = ({
   const [isHoverToolbar, hoverToolbarProps] = useHover();
 
   return (
-    <AddressWrapper className="value-address relative" id={id}>
+    <div className={clsx(styles.address, 'value-address relative')} id={id}>
       <TooltipWithMagnetArrow
         inApproval
         title={address}
@@ -423,7 +389,7 @@ const AddressWithCopy = ({
           className="ml-6 cursor-pointer icon-copy text-r-neutral-foot hover:text-r-blue-default"
         />
       </div>
-    </AddressWrapper>
+    </div>
   );
 };
 

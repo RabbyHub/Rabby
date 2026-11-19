@@ -6,26 +6,11 @@ import { CurveChartData } from '@/ui/views/Dashboard/components/BalanceView/useC
 import { Popover } from 'antd';
 import QRCode from 'qrcode.react';
 import React from 'react';
-import { createGlobalStyle } from 'styled-components';
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
 import { BalanceView } from './BalanceView';
 import { SeedPhraseBackupAlert } from '@/ui/component/SeedPhraseBackupAlert';
 import clsx from 'clsx';
-
-const GlobalStyle = createGlobalStyle`
-  .global-qr-code-popover {
-    .ant-popover-arrow {
-      display: none;
-    }
-    .ant-popover-inner {
-      border-radius: 8px;
-      border: 1px solid var(--r-neutral-line, #E0E5EC);
-      box-shadow: none;
-    }
-    .ant-popover-inner-content {
-      padding: 14px;
-    }
-  }
-`;
+import styles from './index.module.css';
 
 export const ProfileHeader: React.FC<{
   balance?: number | null;
@@ -37,6 +22,7 @@ export const ProfileHeader: React.FC<{
   onRefresh?(): void;
 }> = (props) => {
   const currentAccount = useCurrentAccount();
+  useDocumentClass(styles.globalActive, !!currentAccount);
 
   if (!currentAccount) {
     return null;
@@ -44,7 +30,6 @@ export const ProfileHeader: React.FC<{
 
   return (
     <>
-      <GlobalStyle />
       <div className="px-[20px] pt-[24px] pb-[8px] relative">
         <div className="mb-[20px] flex items-center gap-[8px]">
           <div className="text-r-neutral-title1 text-[18px] leading-[21px] font-semibold">

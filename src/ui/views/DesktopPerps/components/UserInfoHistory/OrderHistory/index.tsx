@@ -5,7 +5,6 @@ import { message, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useCallback, useMemo, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import { UserHistoricalOrders, WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import dayjs from 'dayjs';
@@ -17,22 +16,6 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { formatPerpsOrderStatus } from '@/ui/views/DesktopPerps/utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
-
-// The order table has many columns. Instead of squeezing them until values
-// overflow, give the whole table a minimum width: above it the columns stretch
-// to fill, below it the entire table (header + virtualized body together)
-// scrolls horizontally. Only one overall min-width is set — no per-column
-// widths — so antd distributes the space across columns automatically.
-const TableScrollX = styled.div`
-  height: 100%;
-  overflow-x: auto;
-  overflow-y: hidden;
-`;
-
-const TableMinWidth = styled.div`
-  height: 100%;
-  min-width: 1300px;
-`;
 
 export const OrderHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -301,9 +284,14 @@ export const OrderHistory: React.FC = () => {
     ],
     [marketDataMap, t]
   );
+  // The order table has many columns. Instead of squeezing them until values
+  // overflow, give the whole table a minimum width: above it the columns stretch
+  // to fill, below it the entire table (header + virtualized body together)
+  // scrolls horizontally. Only one overall min-width is set — no per-column
+  // widths — so antd distributes the space across columns automatically.
   return (
-    <TableScrollX>
-      <TableMinWidth>
+    <div className="h-full overflow-x-auto overflow-y-hidden">
+      <div className="h-full min-w-[1300px]">
         <CommonTable
           emptyMessage={t('page.perpsPro.userInfo.emptyMessage.openOrders')}
           dataSource={list}
@@ -317,7 +305,7 @@ export const OrderHistory: React.FC = () => {
           virtual
           rowHeight={28}
         />
-      </TableMinWidth>
-    </TableScrollX>
+      </div>
+    </div>
   );
 };

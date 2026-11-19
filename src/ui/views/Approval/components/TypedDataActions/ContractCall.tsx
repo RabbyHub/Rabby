@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -15,42 +14,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 import { ContractRequireData } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .contract-call-header {
-    border-bottom: 1px solid #ededed;
-    padding-bottom: 15px;
-    .alert {
-      display: flex;
-      margin-bottom: 9px;
-      align-items: center;
-      font-weight: 500;
-      font-size: 12px;
-      line-height: 14px;
-      color: #333333;
-      .icon-alert {
-        margin-right: 6px;
-        width: 15px;
-      }
-    }
-  }
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './ContractCall.module.css';
 
 const ContractCall = ({
   requireData,
@@ -93,7 +57,7 @@ const ContractCall = ({
   }, [engineResults]);
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle itemsCenter>
@@ -176,7 +140,7 @@ const ContractCall = ({
           </Row>
         </Col>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

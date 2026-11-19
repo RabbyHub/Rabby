@@ -1,46 +1,14 @@
 import { AbstractProject } from '@/ui/utils/portfolio/types';
 import React, { memo, useEffect, useRef, useState } from 'react';
 import { ScrollToDomById } from '../utils';
-import styled from 'styled-components';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { ReactComponent as RcIconCircleRight } from '@/ui/views/DesktopProfile/components/ApprovalsTabPane/icons/right-cc.svg';
+import styles from './TopShortCut.module.css';
 
-const AnchorWrapper = styled.div`
-  background-color: var(--r-neutral-bg-1);
-  padding: 10px 0;
-  width: 100%;
-  border-bottom: 1px solid var(--r-neutral-line);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  justify-content: space-between;
-`;
+const directionIconClassName =
+  'w-24 h-24 mt-[-3px] bg-r-neutral-bg-2 rounded-[50%] flex items-center justify-center cursor-pointer';
 
-const CenterWrapper = styled.div`
-  overflow: auto;
-  position: static;
-  scrollbar-width: none;
-  margin: 0 auto;
-  flex: 1;
-  /* firefox */
-  -ms-overflow-style: none;
-  /* IE 10+ */
-  white-space: nowrap;
-  overflow: auto;
-  max-width: 100%;
-`;
-
-const DirectionIcon = styled.div`
-  width: 24px;
-  height: 24px;
-  margin-top: -3px;
-  background-color: var(--r-neutral-bg-2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-`;
 export const TOP_SHORTCUT_SLOT_ID = 'top-shortcut-slot';
 
 export const PORTFOLIO_LIST_ID = 'protocol-list-wrapper';
@@ -166,14 +134,15 @@ export const TopShortcut = memo(
     };
 
     return (
-      <AnchorWrapper
+      <div
+        className={styles.anchorWrapper}
         id="_anchor"
         style={{
           display: !show ? 'none' : 'flex',
         }}
       >
-        <DirectionIcon
-          className={clsx('rotate-180', {
+        <div
+          className={cn(directionIconClassName, 'rotate-180', {
             'opacity-0': !leftShow,
           })}
           onClick={() => {
@@ -181,8 +150,9 @@ export const TopShortcut = memo(
           }}
         >
           <RcIconCircleRight className="w-[16px] h-[16px] text-rb-neutral-secondary" />
-        </DirectionIcon>
-        <CenterWrapper
+        </div>
+        <div
+          className={styles.centerWrapper}
           ref={ref}
           onScroll={(e) => {
             if (!ref.current) return;
@@ -220,9 +190,9 @@ export const TopShortcut = memo(
               </a>
             );
           })}
-        </CenterWrapper>
-        <DirectionIcon
-          className={clsx({
+        </div>
+        <div
+          className={cn(directionIconClassName, {
             'opacity-0': !rShow,
           })}
           onClick={() => {
@@ -230,8 +200,8 @@ export const TopShortcut = memo(
           }}
         >
           <RcIconCircleRight className="w-[16px] h-[16px] text-rb-neutral-secondary" />
-        </DirectionIcon>
-      </AnchorWrapper>
+        </div>
+      </div>
     );
   }
 );

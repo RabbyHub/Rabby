@@ -8,7 +8,6 @@ import { ReactComponent as RcIconInfo } from 'ui/assets/info-cc.svg';
 import { ReactComponent as RcIconArrowRight } from '@/ui/assets/dashboard/settings/icon-right-arrow-cc.svg';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { PerpsBlueBorderedButton } from './BlueBorderedButton';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { format } from 'path';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';

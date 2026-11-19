@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { SignMultiSigActions } from '@rabby-wallet/rabby-api/dist/types';
 import { Col, Row, Table } from '../Actions/components/Table';
@@ -11,8 +10,6 @@ import { Result } from '@rabby-wallet/rabby-security-engine';
 import { CHAINS } from 'consts';
 import { findChain } from '@/utils/chain';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
-
-const Wrapper = styled.div``;
 
 const PushMultiSig = ({
   data,
@@ -49,7 +46,7 @@ const PushMultiSig = ({
   }, [requireData, chain]);
 
   return (
-    <Wrapper>
+    <div>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.submitMultisig.multisigAddress')}</Row>
@@ -90,7 +87,7 @@ const PushMultiSig = ({
           )}
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

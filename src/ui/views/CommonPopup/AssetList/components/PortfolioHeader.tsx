@@ -1,37 +1,6 @@
 import React from 'react';
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
-import styled from 'styled-components';
 
-const Wrapper = styled.div`
-  display: flex;
-  align-items: start;
-  margin-bottom: 16px;
-  .name {
-    background: var(--r-blue-light-1, #eef1ff);
-    border-radius: 10px;
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
-    color: var(--r-blue-default, #7084ff);
-    padding: 4px 6px;
-  }
-  .description {
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
-    color: var(--r-neutral-title-1, #192945);
-    margin-bottom: 0;
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
-  }
-  .net-worth {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    color: var(--r-neutral-title-1, #192945);
-  }
-`;
 const PortfolioHeader = ({
   data,
   name,
@@ -44,16 +13,18 @@ const PortfolioHeader = ({
   showHistory?: boolean;
 }) => {
   return (
-    <Wrapper>
+    <div className="flex items-start mb-16">
       <div className="flex items-center flex-1 overflow-hidden">
-        <div className="name mr-6">{name}</div>
+        <div className="name mr-6 py-4 px-6 rounded-[10px] bg-r-blue-light-1 text-12 font-medium text-r-blue-default">
+          {name}
+        </div>
         {showDescription ? (
-          <p className="description">
+          <p className="description mb-0 text-12 font-medium text-r-neutral-title-1 overflow-hidden text-ellipsis whitespace-nowrap">
             {data?._originPortfolio?.detail?.description || ''}
           </p>
         ) : null}
       </div>
-      <div className="net-worth text-13">
+      <div className="net-worth text-13 flex justify-end items-center text-r-neutral-title-1">
         <span>{data._netWorth}</span>
         {showHistory ? (
           <span>
@@ -63,7 +34,7 @@ const PortfolioHeader = ({
           </span>
         ) : null}
       </div>
-    </Wrapper>
+    </div>
   );
 };
 

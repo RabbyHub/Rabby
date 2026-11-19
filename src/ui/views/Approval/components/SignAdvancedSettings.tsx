@@ -7,22 +7,7 @@ import { MINIMUM_GAS_LIMIT } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { Popup } from 'ui/component';
-import styled from 'styled-components';
-
-const ManuallySetGasLimitAlert = styled.li`
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 15px;
-  color: var(--r-neutral-body);
-`;
-
-const Div = styled.div`
-  .ant-input.popup-input {
-    &:hover {
-      border-color: var(--r-blue-default, #7084ff) !important;
-    }
-  }
-`;
+import styles from './SignAdvancedSettings.module.css';
 
 export interface GasSelectorResponse {
   gasLimit: number;
@@ -174,9 +159,9 @@ export const SignAdvancedSettings = ({
       >
         {manuallyChangeGasLimit && (
           <ul className="p-16 ml-16 mb-0 list-disc">
-            <ManuallySetGasLimitAlert>
+            <li className="font-normal text-13 leading-[15px] text-r-neutral-body">
               {t('page.signTx.manuallySetGasLimitAlert')} {Number(gasLimit)}
-            </ManuallySetGasLimitAlert>
+            </li>
           </ul>
         )}
       </Card>
@@ -192,7 +177,7 @@ export const SignAdvancedSettings = ({
         className="gas-modal"
         title={t('page.signTx.advancedSettings')}
       >
-        <Div>
+        <div className={styles.div}>
           <Form onFinish={handleConfirmGas}>
             <div className="gas-limit">
               <p
@@ -279,7 +264,7 @@ export const SignAdvancedSettings = ({
               </div>
             </div>
           </Form>
-        </Div>
+        </div>
         <div className="flex justify-center mt-32 popup-footer">
           <Button
             type="primary"

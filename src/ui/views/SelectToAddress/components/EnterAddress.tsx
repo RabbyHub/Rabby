@@ -9,7 +9,6 @@ import { Input, Form, Button, Spin } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { isValidAddress } from '@ethereumjs/util';
 import { flatten } from 'lodash';
-import styled from 'styled-components';
 import clsx from 'clsx';
 
 import type { Input as AntdInput, InputRef } from 'antd';
@@ -26,24 +25,7 @@ import { KEYRING_TYPE } from '@/constant';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useWhitelistStore } from '@/ui/state/whitelist';
 import { getNormalizedAddressInputAfterPaste } from '@/ui/utils/addressInput';
-
-const StyledInputWrapper = styled.div<{ $hasError?: boolean }>`
-  border-radius: 12px;
-  overflow: hidden;
-  .ant-input {
-    font-size: 15px;
-    ${({ $hasError }) =>
-      $hasError && 'border-color: var(--r-red-default) !important;'}
-  }
-  .ant-input-clear-icon {
-    top: unset !important;
-    bottom: 8px !important;
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-`;
+import styles from './EnterAddress.module.css';
 
 const WhitelistAddressTypeCard = ({
   address,
@@ -212,10 +194,13 @@ export const EnterAddress = ({
         }}
       >
         <Form.Item name="address">
-          <StyledInputWrapper
+          <div
             onClick={(e) => e.stopPropagation()}
-            className="relative"
-            $hasError={showSearchError}
+            className={clsx(
+              styles.inputWrapper,
+              showSearchError && styles.hasError,
+              'relative'
+            )}
           >
             <Input.TextArea
               maxLength={44}
@@ -248,7 +233,7 @@ export const EnterAddress = ({
                 )}
               />
             </div>
-          </StyledInputWrapper>
+          </div>
           {isPending && (
             <div
               role="status"

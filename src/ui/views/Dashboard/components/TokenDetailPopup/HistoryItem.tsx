@@ -1,4 +1,3 @@
-import styled from 'styled-components';
 import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import { TokenChange, TxInterAddressExplain } from '@/ui/component';
 import clsx from 'clsx';
@@ -20,14 +19,6 @@ type HistoryItemProps = {
   onClose?: () => void;
   isInDesktopActionModal?: boolean;
 };
-
-const EtherscanLink = styled.div`
-  cursor: pointer;
-  text-decoration: underline;
-  color: var(--r-neutral-foot, #6a7587);
-  font-size: 12px;
-  line-height: 14px;
-`;
 
 export const HistoryItem = ({
   data,
@@ -71,9 +62,12 @@ export const HistoryItem = ({
               {t('page.dashboard.tokenDetail.txFailed')}
             </span>
           )}
-          <EtherscanLink onClick={handleClickTxHash}>
+          <div
+            className="cursor-pointer underline text-r-neutral-foot text-12"
+            onClick={handleClickTxHash}
+          >
             {ellipsis(data.id)}
-          </EtherscanLink>
+          </div>
         </div>
       </div>
       <div

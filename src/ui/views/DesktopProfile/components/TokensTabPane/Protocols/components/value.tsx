@@ -14,15 +14,8 @@ import {
   PortfolioItemToken,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils/number';
-import styled from 'styled-components';
 import LabelWithIcon from './LabelWithIcons';
 import { TokenAvatar } from './TokenAvatar';
-
-const BalanceToken = styled.div`
-  margin-bottom: 4px;
-  font-size: 14px;
-  color: var(--r-neutral-title1);
-`;
 
 const Col = Table.Col;
 
@@ -174,9 +167,9 @@ export const BlancesWithNfts = ({
     <Col>
       {hasNft &&
         nfts.map((n) => (
-          <BalanceToken>
+          <div className="mb-4 text-[14px] text-r-neutral-title1">
             <span>{getCollectionDisplayName(n.collection)}</span> x{n.amount}
-          </BalanceToken>
+          </div>
         ))}
       <TokensAmount tokens={tokens} />
     </Col>

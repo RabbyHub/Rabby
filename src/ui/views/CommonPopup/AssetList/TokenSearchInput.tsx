@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
-import styled from 'styled-components';
+import styles from './TokenSearchInput.module.css';
 
 export interface Props {
   onSearch?: (value: string) => void;
@@ -14,21 +14,6 @@ export interface Props {
   className?: string;
   placeholder?: string;
 }
-
-const InputStyled = styled(Input)`
-  background-color: var(--r-neutral-card1, #fff) !important;
-  &.ant-input-affix-wrapper-focused {
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-  &:hover {
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-
-  input::placeholder {
-    font-size: 12px;
-    color: var(--r-neutral-foot, #6a7587);
-  }
-`;
 
 export const TokenSearchInput = React.forwardRef<InputRef, Props>(
   ({ onSearch, onBlur, onFocus, className, placeholder }, ref) => {
@@ -51,7 +36,7 @@ export const TokenSearchInput = React.forwardRef<InputRef, Props>(
     );
 
     return (
-      <InputStyled
+      <Input
         ref={ref}
         value={input}
         onChange={(e) => setInput(e.target.value)}
@@ -62,6 +47,7 @@ export const TokenSearchInput = React.forwardRef<InputRef, Props>(
         onBlur={onBlur}
         allowClear
         className={clsx(
+          styles.input,
           'text-12 text-black py-0 px-[9px] h-[32px]',
           'rounded-[6px]',
           'transform-none',

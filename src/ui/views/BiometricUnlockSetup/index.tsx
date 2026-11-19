@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Input, InputRef, message } from 'antd';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 import clsx from 'clsx';
@@ -15,81 +14,7 @@ import {
   isBiometricUserCanceledError,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
-
-const Container = styled.div`
-  position: relative;
-  box-sizing: border-box;
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-`;
-
-const Body = styled.div`
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 52px 20px 0;
-`;
-
-const Heading = styled.h1`
-  font-size: 20px;
-  line-height: 1;
-  font-weight: 500;
-  color: var(--r-neutral-title-1);
-  margin-bottom: 8px;
-  margin-top: 24px;
-`;
-
-const Desc = styled.p`
-  line-height: 1;
-  color: var(--r-neutral-foot);
-  margin-bottom: 16px;
-`;
-
-const InputWrap = styled.div`
-  width: 100%;
-
-  .biometric-pwd-input {
-    border-radius: 8px;
-    background: var(--r-neutral-card1, #fff) !important;
-    border: 1px solid var(--r-neutral-line) !important;
-    height: 56px;
-    padding: 18px;
-  }
-
-  .biometric-pwd-input:focus,
-  .biometric-pwd-input.ant-input-focused {
-    border: 1px solid var(--r-blue-default, #4c65ff) !important;
-  }
-
-  .biometric-pwd-input.error {
-    border: 1px solid var(--r-red-default, #f04b36) !important;
-  }
-
-  .biometric-pwd-input.error:focus,
-  .biometric-pwd-input.error.ant-input-focused {
-    border: 1px solid var(--r-red-default, #f04b36) !important;
-  }
-`;
-
-const ErrorText = styled.div`
-  margin-top: 8px;
-  color: var(--r-red-default, #f04b36);
-  font-size: 14px;
-  line-height: 18px;
-  min-height: 18px;
-`;
-
-const Footer = styled.footer`
-  width: 100%;
-  flex-shrink: 0;
-  padding: 18px 20px;
-  border-top: 0.5px solid var(--r-neutral-line, #e0e5ec);
-  display: flex;
-  gap: 16px;
-`;
+import styles from './index.module.css';
 
 export const BiometricUnlockSetup = () => {
   const { t } = useTranslation();
@@ -185,20 +110,22 @@ export const BiometricUnlockSetup = () => {
   };
 
   return (
-    <Container className="page-has-ant-input">
+    <div className="page-has-ant-input relative box-border flex min-h-[100vh] flex-col">
       <BackgroundSVG
         className="absolute inset-0 z-[-1] w-full h-full"
         preserveAspectRatio="none"
       />
-      <Body>
+      <div className="flex-1 flex flex-col items-center w-full pt-[52px] px-20 pb-0">
         <BiometricsSVG className="w-[100]" />
 
-        <Heading>
+        <h1 className="text-20 leading-none font-medium text-r-neutral-title-1 mb-8 mt-24">
           {t('page.dashboard.settings.biometricUnlockSetupTitle')}
-        </Heading>
-        <Desc>{t('page.dashboard.settings.biometricUnlockSetupDesc')}</Desc>
+        </h1>
+        <p className="leading-none text-r-neutral-foot mb-16">
+          {t('page.dashboard.settings.biometricUnlockSetupDesc')}
+        </p>
 
-        <InputWrap>
+        <div className={styles.inputWrap}>
           <Input
             ref={inputRef}
             type="password"
@@ -216,13 +143,16 @@ export const BiometricUnlockSetup = () => {
             }}
             onPressEnter={handleConfirm}
           />
-          <ErrorText style={{ visibility: inputError ? 'visible' : 'hidden' }}>
+          <div
+            className="mt-8 text-r-red-default text-14 min-h-[18px]"
+            style={{ visibility: inputError ? 'visible' : 'hidden' }}
+          >
             {inputError || ' '}
-          </ErrorText>
-        </InputWrap>
-      </Body>
+          </div>
+        </div>
+      </div>
 
-      <Footer>
+      <footer className="w-full shrink-0 py-18 px-20 border-t-[0.5px] border-t-r-neutral-line flex gap-16">
         <Button
           className="rabby-btn-ghost h-[48px] rounded-[8px] text-[16px]"
           type="primary"
@@ -246,8 +176,8 @@ export const BiometricUnlockSetup = () => {
         >
           {t('global.Confirm')}
         </Button>
-      </Footer>
-    </Container>
+      </footer>
+    </div>
   );
 };
 

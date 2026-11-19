@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { KEYRING_TYPE } from 'consts';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
@@ -10,75 +9,8 @@ import IconDanger from '@/ui/assets/sign/security-engine/danger.svg';
 import { ReactComponent as IconArrowRight } from '@/ui/assets/sign/arrow-right-lite.svg';
 import ViewMore from './Actions/components/ViewMore';
 import { SignMessageAddressData } from './signMessageAddressData';
-
-const Trigger = styled.button<{
-  $danger: boolean;
-}>`
-  box-sizing: content-box;
-  position: absolute;
-  top: 0;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  max-width: 40px;
-  padding: 2px 2px 2px 6px;
-  overflow: hidden;
-  border: 0.5px solid
-    ${({ $danger }) =>
-      $danger
-        ? 'var(--r-red-default, #E34935)'
-        : 'var(--r-neutral-line, #E0E5EC)'};
-  border-radius: 4px;
-  background: ${({ $danger }) =>
-    $danger ? 'var(--r-red-light, #fce5e5)' : 'var(--r-neutral-bg2, #f2f4f7)'};
-  color: ${({ $danger }) =>
-    $danger
-      ? 'var(--r-red-default, #ec5151)'
-      : 'var(--r-neutral-body, #3e495e)'};
-  font-size: 13px;
-  line-height: normal;
-  font-weight: 400;
-  white-space: nowrap;
-  cursor: pointer;
-  pointer-events: auto;
-  transform: translateY(-50%);
-  transition: box-shadow 0.3s;
-
-  &:hover,
-  &:focus-visible {
-    z-index: 4;
-    width: max-content;
-    max-width: 170px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  &:hover .sign-message-address-tag__text,
-  &:focus-visible .sign-message-address-tag__text {
-    display: block;
-  }
-
-  .sign-message-address-tag__icon {
-    width: 16px;
-    height: 16px;
-    flex: 0 0 16px;
-    margin-right: 2px;
-    object-fit: cover;
-  }
-
-  .sign-message-address-tag__arrow {
-    width: 16px;
-    height: 16px;
-    flex: 0 0 16px;
-  }
-
-  .sign-message-address-tag__text {
-    display: none;
-    max-width: 128px;
-    margin-right: 2px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './SignMessageAddressTag.module.css';
 
 interface Props {
   chain: Chain;
@@ -117,10 +49,10 @@ const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
     ? token.logo_url
     : protocol?.logo_url;
   const trigger = (
-    <Trigger
+    <button
       ref={triggerRef}
       type="button"
-      $danger={danger}
+      className={cn(styles.trigger, danger ? styles.danger : styles.normal)}
       aria-label={label}
       title={label}
       style={{ visibility: 'hidden' }}
@@ -141,7 +73,7 @@ const SignMessageAddressTag = ({ chain, data, danger, triggerRef }: Props) => {
       ) : null}
       <span className="sign-message-address-tag__text">{label}</span>
       <IconArrowRight className="sign-message-address-tag__arrow" />
-    </Trigger>
+    </button>
   );
 
   if (opensTokenDetail) return trigger;

@@ -1,5 +1,4 @@
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconAlert } from '@/ui/assets/sign/tx/alert-currentcolor.svg';
 import React from 'react';
 import { useAccount } from '@/ui/store-hooks';
@@ -7,24 +6,6 @@ import { useWallet } from '@/ui/utils';
 import { NoActionBody } from './NoActionBody';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { Account } from '@/background/service/preference';
-
-const NoActionAlertStyled = styled.div`
-  display: flex;
-  flex-direction: column;
-  background: var(--r-neutral-card-1);
-  border-radius: 6px;
-  padding: 15px;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 18px;
-  color: var(--r-neutral-body);
-  width: 360px;
-  .icon-alert {
-    margin-right: 4px;
-    width: 15px;
-    margin-top: 2px;
-  }
-`;
 
 type SupportOrigin = {
   origin: string;
@@ -77,12 +58,12 @@ export const NoActionAlert: React.FC<Props> = ({
   }, [data, currentAccount]);
 
   return (
-    <NoActionAlertStyled>
+    <div className="flex flex-col bg-r-neutral-card-1 rounded-[6px] p-[15px] font-medium text-13 leading-[18px] text-r-neutral-body w-[360px]">
       <div className="flex items-start">
         {/* <img src={IconAlert} className="icon icon-alert" /> */}
         <ThemeIcon
           src={RcIconAlert}
-          className="icon icon-alert text-r-neutral-body"
+          className="icon icon-alert text-r-neutral-body mr-4 w-[15px] mt-2"
         />
         {t('page.signTx.sigCantDecode')}
       </div>
@@ -92,6 +73,6 @@ export const NoActionAlert: React.FC<Props> = ({
         isRequested={isRequested}
         isRequesting={isRequesting}
       />
-    </NoActionAlertStyled>
+    </div>
   );
 };

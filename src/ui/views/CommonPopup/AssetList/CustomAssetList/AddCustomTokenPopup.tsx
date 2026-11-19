@@ -18,12 +18,12 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Loading3QuartersOutlined } from '@ant-design/icons';
 import { ReactComponent as RcIconDown } from '@/ui/assets/dashboard/portfolio/cc-down.svg';
 import { ReactComponent as RcIconCheck } from '@/ui/assets/dashboard/portfolio/cc-check.svg';
 import { ReactComponent as RcIconChecked } from '@/ui/assets/dashboard/portfolio/cc-checked.svg';
 import clsx from 'clsx';
+import styles from './AddCustomTokenPopup.module.css';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import {
   useOperateCustomToken,
@@ -42,74 +42,6 @@ interface Props {
     } | null
   ) => void;
 }
-
-const Wraper = styled.div`
-  .ant-form-item {
-    margin-bottom: 16px;
-  }
-  .ant-form-item-label > label {
-    color: var(--r-neutral-body, #3e495e);
-    font-size: 13px;
-    line-height: 16px;
-  }
-
-  .ant-input {
-    height: 52px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    background: transparent;
-    border: 1px solid var(--r-neutral-line, #d3d8e0);
-    border-radius: 6px;
-
-    color: var(--r-neutral-title1, #192945);
-    font-size: 15px;
-    font-weight: 500;
-
-    &:focus {
-      border-color: var(--r-blue-default, #7084ff);
-    }
-
-    &::placeholder {
-      font-size: 14px;
-      font-weight: 400;
-    }
-  }
-  .ant-input[disabled] {
-    background: var(--r-neutral-card2, #f2f4f7);
-    border-color: transparent;
-    &:hover {
-      border-color: transparent;
-    }
-  }
-  .ant-form-item-has-error .ant-input,
-  .ant-form-item-has-error .ant-input:hover {
-    border: 1px solid var(--r-red-default, #e34935);
-    background: transparent;
-  }
-
-  .ant-form-item-explain.ant-form-item-explain-error {
-    color: var(--r-red-default, #e34935);
-    font-size: 13px;
-    line-height: 16px;
-    min-height: 16px;
-  }
-`;
-
-const Footer = styled.div`
-  height: 84px;
-  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-`;
 
 /**
  * @description now this popup only server mainnet chains' token list
@@ -272,7 +204,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
             : undefined
         }
       >
-        <Wraper>
+        <div className={styles.wrapper}>
           <Form layout="vertical" form={form}>
             <Form.Item label="Chain">
               <div
@@ -379,7 +311,14 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
               </>
             )}
           </Form>
-          <Footer>
+          <div
+            className={clsx(
+              'flex justify-between gap-16 w-full h-[84px] py-16 px-20',
+              'absolute left-0 right-0 bottom-0',
+              'border-t-[0.5px] border-t-r-neutral-line',
+              'bg-r-neutral-card-1'
+            )}
+          >
             <Button
               type="primary"
               size="large"
@@ -401,8 +340,8 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
             >
               {t('global.Confirm')}
             </Button>
-          </Footer>
-        </Wraper>
+          </div>
+        </div>
       </Popup>
       <ChainSelectorModal
         value={chainSelectorState.chain || CHAINS_ENUM.ETH}

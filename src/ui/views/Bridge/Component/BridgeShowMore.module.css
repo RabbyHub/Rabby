@@ -1,0 +1,71 @@
+.preferMEVGuardSwitch {
+  min-width: 20px;
+  height: 12px;
+
+  &:global(.ant-switch-checked) {
+    background-color: var(--r-blue-default, #7084ff);
+    & :global(.ant-switch-handle) {
+      left: calc(100% - 10px - 1px);
+      top: 1px;
+    }
+  }
+  & :global(.ant-switch-handle) {
+    height: 10px;
+    width: 10px;
+    top: 1px;
+    left: 1px;
+  }
+}
+
+.infoCardWrapper {
+  max-height: 124px;
+
+  &:has(:global(.security-level-tip)):not(:has(:global(.price-impact-warning))) {
+    max-height: 150px;
+  }
+}
+
+.gasTipsWrapper {
+  position: relative;
+
+  & :global(.security-level-tip) {
+    margin-top: 10px;
+    border-radius: 4px;
+    padding: 6px 10px 6px 8px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    display: flex;
+    position: relative;
+    & :global(.icon-level) {
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+    }
+  }
+
+  &:global(.info-card-style) {
+    & :global(.security-level-tip) {
+      min-height: 32px !important;
+      margin-top: 6px !important;
+      padding: 4px 8px;
+      gap: 10px;
+      border-width: 0.5px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: normal;
+
+      & :global(.ant-btn) {
+        min-width: 72px;
+        height: 24px;
+        padding: 5px 12px;
+        border-radius: 4px;
+        box-shadow: none;
+        font-size: 12px;
+        font-weight: 500;
+        line-height: normal;
+      }
+    }
+  }
+}

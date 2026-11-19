@@ -18,6 +18,7 @@ const IGNORE_MODULES = [
 module.exports = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
+    '\\.module\\.css$': '<rootDir>/__tests__/styleModuleMock.js',
     '^utils/(.*)$': '<rootDir>/src/utils/$1',
     '^utils': '<rootDir>/src/utils',
     '^consts/(.*)$': '<rootDir>/src/constant/$1',

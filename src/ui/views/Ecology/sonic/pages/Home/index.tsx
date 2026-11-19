@@ -13,24 +13,9 @@ import { openExternalWebsiteInTab } from '@/ui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import styled from 'styled-components';
 import { MigrationBanner } from '../../components/MigrationBanner';
 import { SonicButton } from '../../components/SonicButton';
 import { SonicCard } from '../../components/SonicCard';
-
-const CardTitle = styled.h3`
-  font-size: 32px;
-  line-height: 32px;
-  font-weight: bold;
-  color: var(--r-sonic-foreground);
-`;
-
-const CardDesc = styled.div`
-  font-size: 14px;
-  line-height: 20px;
-  font-weight: medium;
-  color: var(--r-sonic-foreground);
-`;
 
 type HomeLink = {
   icon: React.ElementType;
@@ -79,8 +64,12 @@ export const SonicHome = () => {
       <MigrationBanner />
       <SonicCard className="relative flex flex-col items-start justify-between h-[160px]">
         <div className="flex flex-col items-start gap-y-[4px] w-[141px]">
-          <CardTitle>{t('page.ecology.sonic.home.airdrop')}</CardTitle>
-          <CardDesc>{t('page.ecology.sonic.home.airdropDesc')}</CardDesc>
+          <h3 className="text-[32px] leading-[32px] font-bold text-r-sonic-foreground">
+            {t('page.ecology.sonic.home.airdrop')}
+          </h3>
+          <div className="text-[14px] leading-[20px] text-r-sonic-foreground">
+            {t('page.ecology.sonic.home.airdropDesc')}
+          </div>
         </div>
         <SonicButton
           rounded
@@ -105,9 +94,9 @@ export const SonicHome = () => {
             alt=""
             className="h-[40px] w-auto"
           />
-          <CardDesc className="max-w-[60%]">
+          <div className="text-[14px] leading-[20px] text-r-sonic-foreground max-w-[60%]">
             {t('page.ecology.sonic.home.arcadeDesc')}
-          </CardDesc>
+          </div>
         </div>
         <SonicButton
           rounded
@@ -145,12 +134,14 @@ export const SonicHome = () => {
       <div className="grid grid-cols-2 gap-[10px]">
         <SonicCard className="flex flex-col items-start justify-between relative overflow-hidden h-[160px]">
           <div className="flex flex-col items-start gap-y-[4px]">
-            <CardTitle>{t('page.ecology.sonic.home.migrateTitle')}</CardTitle>
-            <CardDesc className="flex items-center gap-x-[4px] text-[16px] leading-[24px] font-semibold">
+            <h3 className="text-[32px] leading-[32px] font-bold text-r-sonic-foreground">
+              {t('page.ecology.sonic.home.migrateTitle')}
+            </h3>
+            <div className="text-r-sonic-foreground flex items-center gap-x-[4px] text-[16px] leading-[24px] font-semibold">
               <span className="text-[#1969FF]">$FTM</span>
               {t('page.ecology.sonic.home.migrateDesc')}
               <span className="text-[#FE9A4C]">$S</span>
-            </CardDesc>
+            </div>
           </div>
           <SonicButton disabled rounded className="rounded-full">
             {t('page.ecology.sonic.home.migrateBtn')}
@@ -158,8 +149,12 @@ export const SonicHome = () => {
         </SonicCard>
         <SonicCard className="flex flex-col items-start justify-between relative overflow-hidden h-[160px]">
           <div className="flex flex-col items-start gap-y-[4px]">
-            <CardTitle>{t('page.ecology.sonic.home.earnTitle')}</CardTitle>
-            <CardDesc>{t('page.ecology.sonic.home.earnDesc')}</CardDesc>
+            <h3 className="text-[32px] leading-[32px] font-bold text-r-sonic-foreground">
+              {t('page.ecology.sonic.home.earnTitle')}
+            </h3>
+            <div className="text-[14px] leading-[20px] text-r-sonic-foreground">
+              {t('page.ecology.sonic.home.earnDesc')}
+            </div>
           </div>
           <SonicButton disabled rounded className="rounded-full">
             {t('page.ecology.sonic.home.earnBtn')}

@@ -1,0 +1,120 @@
+/* Was a createGlobalStyle under .rabby-dashboard-panel-container, which only
+   this component's root carries; scoped to that root instead. */
+.container :global(.dashboard-panel-grid) {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+
+  scroll-snap-align: end;
+}
+
+.container :global(.panel-item) {
+  height: 88px;
+  width: 100%;
+
+  background: var(--r-neutral-card1, #fff);
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.container :global(.panel-item):hover {
+  background: var(--r-blue-light1, #edf0ff);
+}
+
+.container :global(.panel-item):has(:global(.panel-item-jump-button):hover) {
+  background: var(--r-neutral-card1, #fff);
+}
+
+.container :global(.panel-item-jump-button) {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 1;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+
+  color: var(--r-neutral-title1, #192945);
+  background: var(--r-neutral-card3, #f7fafc);
+  border: 0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.container :global(.panel-item-jump-button):hover {
+  color: var(--r-blue-default, #4c65ff);
+  background: var(--r-blue-light1, #edf0ff);
+}
+
+.container :global(.panel-item):hover > :global(.panel-item-jump-button) {
+  display: flex;
+}
+
+.container :global(.panel-item-icon) {
+  width: 24px;
+  height: 24px;
+  justify-self: center;
+  margin-bottom: 6px;
+  color: var(--r-neutral-title1, #192945);
+}
+
+.container :global(.panel-item-icon.icon-spin) {
+  animation: icnSpin 1.5s linear infinite;
+}
+
+.container :global(.panel-item-icon.icon-rabby-mobile) {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.container :global(.panel-item-icon.icon-points) {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 4px;
+}
+
+.container :global(.panel-item-label) {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
+  text-align: center;
+}
+
+@keyframes icnSpin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.container :global(.panel-item) :global(.icon-alert) {
+  position: absolute;
+  right: 33px;
+  top: 7px;
+}
+
+.container :global(.ant-badge) :global(.ant-badge-count) {
+  background-color: var(--r-blue-default, #7084ff);
+  padding: 2px 6px;
+  font-size: 13px;
+  line-height: 1;
+  height: 18px;
+  border-radius: 90px;
+  box-shadow: none;
+}
+
+.container :global(.ant-badge.alert) :global(.ant-badge-count) {
+  background-color: #ec5151;
+}
+
+.container :global(.ant-badge.round) :global(.ant-badge-count) {
+  padding: 2px 4.5px !important;
+}
