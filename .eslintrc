@@ -16,15 +16,15 @@
     "no-restricted-syntax": [
       "error",
       {
-        "selector": "CallExpression[callee.name='useRabbySelector'][arguments.length=1] > ArrowFunctionExpression > :matches(ObjectExpression, ArrayExpression).body",
-        "message": "This selector returns a new object or array on every call, so the component re-renders on every store update. Wrap the selector in `useShallow` from 'zustand/react/shallow'."
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/][arguments.length=1] > ArrowFunctionExpression > :matches(ObjectExpression, ArrayExpression).body",
+        "message": "This selector returns a new object or array on every call. Wrap it in `useShallow` from 'zustand/react/shallow'. Otherwise useRabbySelector re-renders on every store update, and a plain `create` store hook can loop forever (zustand v5)."
       },
       {
-        "selector": "CallExpression[callee.name='useRabbySelector'][arguments.length=1] > ArrowFunctionExpression > BlockStatement > ReturnStatement > :matches(ObjectExpression, ArrayExpression)",
-        "message": "This selector returns a new object or array on every call, so the component re-renders on every store update. Wrap the selector in `useShallow` from 'zustand/react/shallow'."
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/][arguments.length=1] > ArrowFunctionExpression > BlockStatement > ReturnStatement > :matches(ObjectExpression, ArrayExpression)",
+        "message": "This selector returns a new object or array on every call. Wrap it in `useShallow` from 'zustand/react/shallow'. Otherwise useRabbySelector re-renders on every store update, and a plain `create` store hook can loop forever (zustand v5)."
       },
       {
-        "selector": "CallExpression[callee.name='useRabbySelector'] > ArrowFunctionExpression > LogicalExpression > :matches(ObjectExpression, ArrayExpression).right",
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/] > ArrowFunctionExpression > LogicalExpression > :matches(ObjectExpression, ArrayExpression).right",
         "message": "A `|| []` / `?? {}` fallback in a selector is a new value on every call. Use a constant defined outside the component."
       }
     ],
