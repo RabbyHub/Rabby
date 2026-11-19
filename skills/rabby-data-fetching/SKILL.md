@@ -25,6 +25,7 @@ Do not use Query for:
 - **Approval, signing, unlock, permission, or transaction-submission workflows.** Neither Query nor Mutation state may drive them.
   - The one precedent is the current-chain lookup in `src/ui/views/Approval/components/SignTypedData.tsx`. It is a read-only context lookup. Its key includes `approvalId`, and it sets `gcTime: 0`, `staleTime: 0`, `refetchOnMount: 'always'`, `retry: false` and `networkMode: 'always'`. The approval treats pending and error as not ready.
   - Any new Query use in these areas needs `skills/rabby-security-review/SKILL.md` and the invariants in `AGENTS.md`.
+  - New reads in these flows use the existing patterns instead; see Guardrails.
 - **Background-authoritative wallet state** such as accounts, preferences, keyrings and whitelists. Use a background-synced store instead; see `skills/rabby-create-store/SKILL.md`.
 - **Dexie-managed data.** Do not mirror it into Query just to add a cache layer.
 - **Subscriptions and event streams.** Use `useSyncExternalStore`, or an effect that cleans up its listener.
@@ -126,7 +127,7 @@ const { data, isPending, isFetching, isError, refetch } = useQuery(
 
 ## 4. Migrate an Existing Request
 
-Migrate only the requests in files you are already changing. Keep behaviour the same: loading UI, error handling, and when the request fires.
+Migrate only the requests in files you are already changing, and never in approval, signing, unlock or permission flows (section 1). Keep behaviour the same: loading UI, error handling, and when the request fires.
 
 | Existing | TanStack Query |
 | --- | --- |
@@ -161,7 +162,8 @@ Migrate only the requests in files you are already changing. Keep behaviour the 
 
 ## Guardrails
 
-- Do not add new `useEffect` + `setState` fetches, `useRequest`, or `useAsync` for server reads.
+- For new server reads, prefer `useQuery` (or `openapiQueryOptions`) over `useEffect` + `setState`, ahooks `useRequest`, or react-use `useAsync`. Reviewers check this; CI does not. If an effect that fetches is still the right tool, guard it against late responses with a `cancelled` flag, an `AbortController` or a request id.
+- In approval, signing, unlock and permission flows, where Query is not allowed (section 1), new reads keep the existing patterns: `useRequest`, `useAsync`, or an effect with that guard. Review them with `skills/rabby-security-review/SKILL.md`.
 - Do not put a response-changing input anywhere except the key.
 - Do not reshape data inside an `openapiQueryOptions` query; use `select`, because every caller of that method and arguments shares the entry.
 - Do not use Query in approval, signing, unlock or permission flows without a security review.
