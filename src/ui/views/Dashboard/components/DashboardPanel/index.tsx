@@ -362,8 +362,6 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const dispatch = useRabbyDispatch();
 
-  const [approvalRiskAlert, setApprovalRiskAlert] = useState(0);
-
   const { value: approvalState } = useAsync(async () => {
     if (
       account?.address &&
@@ -379,19 +377,15 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   //   return account?.type === KEYRING_TYPE.GnosisKeyring;
   // }, [account]);
 
-  useEffect(() => {
-    if (approvalState) {
-      setApprovalRiskAlert(
-        approvalState.reduce(
-          (pre, now) =>
-            pre + now.nft_approval_danger_cnt + now.token_approval_danger_cnt,
-          0
-        )
-      );
-    } else {
-      setApprovalRiskAlert(0);
-    }
-  }, [approvalState]);
+  const approvalRiskAlert = useMemo(
+    () =>
+      approvalState?.reduce(
+        (pre, now) =>
+          pre + now.nft_approval_danger_cnt + now.token_approval_danger_cnt,
+        0
+      ) ?? 0,
+    [approvalState]
+  );
 
   type IPanelItem = {
     icon: ThemeIconType;
