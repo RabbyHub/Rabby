@@ -61,4 +61,25 @@ describe('shared OpenAPI client', () => {
       'Unknown OpenAPI method: store'
     );
   });
+
+  test('ready proxy can be serialized and inspected without calling the API', async () => {
+    const getReady = jest.fn(() => Promise.resolve());
+    const getHost = jest.fn(() => 'https://api.example.com');
+    const proxy = createReadyOpenapiProxy({ getHost }, getReady) as any;
+
+    expect(proxy.toJSON).toBeUndefined();
+    expect(proxy[Symbol.toPrimitive]).toBeUndefined();
+    expect(proxy[Symbol.toStringTag]).toBeUndefined();
+    expect(proxy[Symbol.iterator]).toBeUndefined();
+    expect(JSON.stringify(proxy)).toBe('{}');
+    expect(JSON.stringify({ openapi: proxy })).toBe('{"openapi":{}}');
+    expect(Object.prototype.toString.call(proxy)).toBe('[object Object]');
+    // Before the fix, toJSON was an API call that awaited readiness and then
+    // rejected with "Unknown OpenAPI method: toJSON".
+    expect(getReady).not.toHaveBeenCalled();
+
+    await expect(proxy.notAMethod()).rejects.toThrow(
+      'Unknown OpenAPI method: notAMethod'
+    );
+  });
 });
