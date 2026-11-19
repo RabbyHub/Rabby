@@ -497,3 +497,26 @@
     background-color: var(--r-neutral-card1, #fff) !important;
   }
 }
+
+// Backend Service URL panel. These rules used to ship with the removed
+// /settings/advanced page and also styled this panel.
+.openapi-modal {
+  .ant-form-item {
+    margin-bottom: 8px;
+  }
+  .restore {
+    padding: 0;
+    line-height: 1;
+    height: auto;
+    &::before {
+      display: none;
+    }
+    span {
+      font-size: 12px;
+      line-height: 14px;
+      color: #707880;
+      text-decoration: underline;
+      font-weight: normal;
+    }
+  }
+}
