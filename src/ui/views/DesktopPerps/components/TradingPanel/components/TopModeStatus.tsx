@@ -67,24 +67,14 @@ export const TopModeStatus: React.FC<TopModeStatusProps> = ({
   const [showLeverageModal, setShowLeverageModal] = React.useState(false);
   const { t } = useTranslation();
 
-  // Each modal anchors to its own trigger box: the margin-mode modal aligns to
-  // the margin-mode button's right edge, the leverage modal to the leverage
-  // button's right edge.
-  const marginBoxRef = useRef<HTMLDivElement | null>(null);
-  const leverageBoxRef = useRef<HTMLDivElement | null>(null);
-  const [modalPos, setModalPos] = useState<{
-    top: number;
-    left: number;
-  } | null>(null);
-
   const computeModalPos = useMemoizedFn((el: HTMLElement | null) => {
     if (!el) return;
     const rect = el.getBoundingClientRect();
     // Sit just below the box; align the modal's right edge to the box's right
     // edge so the fixed-width panel expands leftward.
     setModalPos({
-      top: rect.bottom + 6,
-      left: rect.right - ANCHOR_MODAL_WIDTH,
+      top: rect.bottom + window.scrollY + 6,
+      left: rect.right + window.scrollX - ANCHOR_MODAL_WIDTH,
     });
   });
 
