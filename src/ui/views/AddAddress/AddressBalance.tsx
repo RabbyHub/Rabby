@@ -1,7 +1,7 @@
 import React from 'react';
 import { useInViewport } from 'ahooks';
 import { formatUsdValue } from '@/ui/utils/number';
-import type { createAddressBalanceLoader } from './addressBalanceLoader';
+import type { createAddressBalanceLoader } from '@/ui/utils/addressBalanceLoader';
 
 type BalanceState =
   | { address: string; status: 'loading' | 'error' }

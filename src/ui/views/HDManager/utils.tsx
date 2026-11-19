@@ -8,80 +8,22 @@ import * as Sentry from '@sentry/browser';
 import { KEYRING_CLASS } from '@/constant';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useTranslation } from 'react-i18next';
-import { isFunction } from 'lodash';
 import { useMemoizedFn } from 'ahooks';
+import { getAccountInfoLoader } from './accountInfo';
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
-
-// cached chains, balance, firstTxTime
-const cachedAccountInfo = new Map<string, Account>();
 
 export const fetchAccountsInfo = async (
   wallet: WalletControllerType,
   accounts: Account[]
 ) => {
-  return await Promise.all(
-    accounts.map(async (account) => {
-      let firstTxTime;
-      let balance;
-      const address = account.address?.toLowerCase();
-      if (!address) return account;
-
-      let needCache = true;
-
-      if (cachedAccountInfo.has(address)) {
-        const cached = cachedAccountInfo.get(address);
-        if (cached) {
-          return {
-            ...account,
-            chains: cached.chains,
-            balance: cached.balance,
-            firstTxTime: cached.firstTxTime,
-          };
-        }
-      }
-
-      let chains: Account['chains'] = [];
-      try {
-        chains = await wallet.openapi.usedChainList(account.address);
-      } catch (e) {
-        console.error('ignore usedChainList error', e);
-        needCache = false;
-      }
-      try {
-        // if has chains, get balance from api
-        if (chains?.length) {
-          const res = await wallet.openapi.getTotalBalance(account.address);
-          balance = res.total_usd_value;
-        }
-      } catch (e) {
-        console.error('ignore getTotalBalance error', e);
-        needCache = false;
-      }
-
-      // find firstTxTime
-      if (isFunction(chains?.forEach)) {
-        chains?.forEach((chain: any) => {
-          if (chain.born_at) {
-            firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
-          }
-        });
-      }
-
-      const accountInfo: Account = {
-        ...account,
-        chains,
-        balance,
-        firstTxTime,
-      };
-
-      if (needCache) {
-        cachedAccountInfo.set(address, accountInfo);
-      }
-
-      return accountInfo;
-    })
+  const loader = getAccountInfoLoader(wallet);
+  return Promise.all(
+    accounts.map(async (account) => ({
+      ...account,
+      ...(await loader.load(account.address)),
+    }))
   );
 };
 

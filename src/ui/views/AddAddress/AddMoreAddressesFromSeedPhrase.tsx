@@ -20,7 +20,7 @@ import {
 import { HDPathType } from '../HDManager/HDPathTypeButton';
 import type { Account } from '../HDManager/AccountList';
 import { AddressBalance } from './AddressBalance';
-import { createAddressBalanceLoader } from './addressBalanceLoader';
+import { createAddressBalanceLoader } from '@/ui/utils/addressBalanceLoader';
 import {
   useCreateAddressActions,
   AddMoreAddressesState,
