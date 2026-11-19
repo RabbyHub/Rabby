@@ -10,13 +10,16 @@ import { AbstractPortfolioToken } from '@/ui/utils/portfolio/types';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import produce from 'immer';
 import React from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const useCustomizedToken = () => {
   const wallet = useWallet();
   const [tokens, setTokens] = React.useState<AbstractPortfolioToken[]>();
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
   const add = React.useCallback(async (token: CustomizedToken) => {
     await wallet.addCustomizedToken(token);
     getAll();

@@ -40,6 +40,7 @@ import { LoadingBalances } from './LoadingBalances';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { Account } from '@/background/service/preference';
 import { TDisableCheckChainFn } from './components/SelectChainItem';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -63,6 +64,9 @@ interface ChainSelectorModalProps {
   account?: Account | null;
 }
 
+// Stable value for the testnet tab, so the selector below keeps returning the same object.
+const EMPTY_CHAIN_BALANCES = {};
+
 const useChainSelectorList = ({
   supportChains,
   netTabKey,
@@ -71,16 +75,26 @@ const useChainSelectorList = ({
   netTabKey?: NetSwitchTabsKey;
 }) => {
   const [search, setSearch] = useState('');
-  const { pinned, chainBalances } = useRabbySelector((state) => {
-    return {
-      pinned: (state.preference.pinnedChain?.filter((item) =>
-        findChain({ enum: item })
-      ) || []) as CHAINS_ENUM[],
-      chainBalances:
-        netTabKey === 'testnet' ? {} : state.account.matteredChainBalances,
-      isShowTestnet: state.preference.isShowTestnet,
-    };
-  });
+  // `filter` returns a new array on every call; `useShallow` compares it by item.
+  const pinned = useRabbySelector(
+    useShallow(
+      (state) =>
+        (state.preference.pinnedChain?.filter((item) =>
+          findChain({ enum: item })
+        ) || []) as CHAINS_ENUM[]
+    )
+  );
+  const { chainBalances } = useRabbySelector(
+    useShallow((state) => {
+      return {
+        chainBalances:
+          netTabKey === 'testnet'
+            ? EMPTY_CHAIN_BALANCES
+            : state.account.matteredChainBalances,
+        isShowTestnet: state.preference.isShowTestnet,
+      };
+    })
+  );
 
   const dispatch = useRabbyDispatch();
 
@@ -94,12 +108,14 @@ const useChainSelectorList = ({
   const handleSort = (chains: Chain[]) => {
     dispatch.preference.updatePinnedChainList(chains.map((item) => item.enum));
   };
-  const { mainnetList, testnetList } = useRabbySelector((state) => {
-    return {
-      mainnetList: state.chains.mainnetList,
-      testnetList: state.chains.testnetList,
-    };
-  });
+  const { mainnetList, testnetList } = useRabbySelector(
+    useShallow((state) => {
+      return {
+        mainnetList: state.chains.mainnetList,
+        testnetList: state.chains.testnetList,
+      };
+    })
+  );
   const { allSearched, matteredList, unmatteredList } = useMemo(() => {
     const searchKw = search?.trim().toLowerCase();
     const result = varyAndSortChainItems({

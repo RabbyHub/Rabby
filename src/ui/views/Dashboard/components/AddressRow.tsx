@@ -21,6 +21,7 @@ import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useIsMountedRef from '@/ui/hooks/useMountedRef';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
+import { useShallow } from 'zustand/react/shallow';
 
 function AddressRow({
   data,
@@ -38,9 +39,11 @@ function AddressRow({
   onCopy?: (account: Account) => void;
 }) {
   const wallet = useWallet();
-  const { highlightedAddresses } = useRabbySelector((s) => ({
-    highlightedAddresses: s.addressManagement.highlightedAddresses,
-  }));
+  const { highlightedAddresses } = useRabbySelector(
+    useShallow((s) => ({
+      highlightedAddresses: s.addressManagement.highlightedAddresses,
+    }))
+  );
   const dispatch = useRabbyDispatch();
 
   const account = data[index];
