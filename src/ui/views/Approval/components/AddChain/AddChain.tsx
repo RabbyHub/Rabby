@@ -31,7 +31,7 @@ const AddChain = ({
   );
   const { t } = useTranslation();
 
-  const { data, session } = params;
+  const { data } = params;
   const [addChainParams] = data;
 
   const [form] = useForm<TestnetChainBase>();
@@ -49,7 +49,10 @@ const AddChain = ({
     async () => {
       const values = form.getFieldsValue();
 
-      const res = await wallet.addCustomTestnet(values);
+      const res = await wallet.addCustomTestnetFromApproval(values, {
+        id: approvalId!,
+        component: 'AddChain',
+      });
       if ('error' in res) {
         form.setFields([
           {
@@ -58,14 +61,6 @@ const AddChain = ({
           },
         ]);
         throw new Error(res.error.message);
-      }
-
-      const site = await wallet.getConnectedSite(session.origin)!;
-      if (site) {
-        await wallet.updateConnectSite(site?.origin, {
-          ...site,
-          chain: res.enum,
-        });
       }
     },
     {
@@ -80,7 +75,12 @@ const AddChain = ({
       // The form shows the error; the approval stays pending.
       return;
     }
-    await runAddChain();
+    try {
+      await runAddChain();
+    } catch (error) {
+      if (error?.code === 4001) return;
+      throw error;
+    }
     resolveApproval();
   };
 

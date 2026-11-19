@@ -26,7 +26,11 @@ import {
 import { useImKeyStatus } from '@/ui/component/ConnectStatus/useImKeyStatus';
 import * as Sentry from '@sentry/browser';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import {
+  emitSignComponentAmounted,
+  isSignFinishedFor,
+} from '@/utils/signEvent';
+import type { SigningOperation } from '@/utils/signEvent';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
@@ -46,6 +50,8 @@ interface ApprovalParams {
     chainId: number;
   };
   stay?: boolean;
+  safeTxHash?: string;
+  signingOperation?: SigningOperation;
 }
 
 export const ImKeyHardwareWaiting = ({
@@ -160,6 +166,7 @@ export const ImKeyHardwareWaiting = ({
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+      if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -174,12 +181,22 @@ export const ImKeyHardwareWaiting = ({
                 signerAddress: params.account!.address!,
               });
             } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
+              const sigs = await wallet.getGnosisTransactionSignatures(
+                params.safeTxHash
+              );
               if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
+                await wallet.gnosisAddConfirmation(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
               } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
+                await wallet.gnosisAddSignature(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
+                await wallet.postGnosisTransaction(params.safeTxHash);
               }
             }
           }

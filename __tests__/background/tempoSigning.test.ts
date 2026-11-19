@@ -15,10 +15,15 @@ const to = '0x20c0000000000000000000000000000000000000';
 const data = `0xa9059cbb${'dead'.padStart(64, '0')}${'2710'.padStart(64, '0')}`;
 const keyring = new SimpleKeyring(['1'.padStart(64, '0')]);
 const stopAfterSigning = new Error('stop before broadcast');
+const mockSigningTx = { rawTx: {} };
 let serializedTransaction: `0x76${string}` | `0x78${string}`;
 
 jest.mock('background/service', () => ({
   keyringService: {
+    get keyrings() {
+      return [keyring];
+    },
+    isUnlocked: () => true,
     getKeyringForAccount: jest.fn(async () => keyring),
     signTransaction: jest.fn(async (_keyring, tx, address) => {
       ({ serializedTransaction } = await keyring.signTransaction(address, tx));
@@ -26,7 +31,7 @@ jest.mock('background/service', () => ({
     }),
   },
   transactionHistoryService: {
-    getSigningTx: () => ({ rawTx: {} }),
+    getSigningTx: () => mockSigningTx,
   },
   RPCService: { probeBestRPC: jest.fn() },
 }));

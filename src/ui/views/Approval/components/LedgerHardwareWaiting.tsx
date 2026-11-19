@@ -1,7 +1,11 @@
 import eventBus from '@/eventBus';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import {
+  emitSignComponentAmounted,
+  isSignFinishedFor,
+} from '@/utils/signEvent';
+import type { SigningOperation } from '@/utils/signEvent';
 import * as Sentry from '@sentry/browser';
 import { message } from 'antd';
 import { Account } from 'background/service/preference';
@@ -43,6 +47,8 @@ interface ApprovalParams {
     chainId: number;
   };
   stay?: boolean;
+  safeTxHash?: string;
+  signingOperation?: SigningOperation;
 }
 
 const LedgerHardwareWaiting = ({
@@ -158,6 +164,7 @@ const LedgerHardwareWaiting = ({
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+      if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -165,7 +172,9 @@ const LedgerHardwareWaiting = ({
         try {
           if (params.isGnosis) {
             sig = adjustV('eth_signTypedData', sig);
-            const sigs = await wallet.getGnosisTransactionSignatures();
+            const sigs = await wallet.getGnosisTransactionSignatures(
+              params.safeTxHash
+            );
             const safeMessage = params.safeMessage;
             if (safeMessage) {
               await wallet.handleGnosisMessage({
@@ -174,10 +183,18 @@ const LedgerHardwareWaiting = ({
               });
             } else {
               if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
+                await wallet.gnosisAddConfirmation(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
               } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
+                await wallet.gnosisAddSignature(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
+                await wallet.postGnosisTransaction(params.safeTxHash);
               }
             }
           }

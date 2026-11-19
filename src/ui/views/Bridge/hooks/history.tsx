@@ -3,10 +3,21 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRabbySelector } from '@/ui/store';
 import { useAsync } from 'react-use';
 import { uniqBy } from 'lodash';
+import type { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import { useWallet } from '@/ui/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import { refreshBridgeHistoryTop10 } from '../utils/historyCache';
+import {
+  refreshBridgeHistoryTop10,
+  TOP_HISTORY_LIMIT,
+} from '../utils/historyCache';
+
+const bridgeHistoryKey = (item: BridgeHistory) =>
+  `${item.from_token?.chain ?? ''}:${(
+    item.from_tx?.tx_id ||
+    item.detail_url ||
+    ''
+  ).toLowerCase()}`;
 
 export const useBridgeHistory = () => {
   const addr = useRabbySelector(
@@ -20,23 +31,27 @@ export const useBridgeHistory = () => {
 
   const wallet = useWallet();
   const getBridgeHistoryList = React.useCallback(
-    async (addr: string, start = 0, limit = 5) => {
+    async (address: string, start = 0, limit = TOP_HISTORY_LIMIT) => {
+      // 首屏缓存是 10 条，这一页也按 10 条计。
+      const requestedLimit = start === 0 ? TOP_HISTORY_LIMIT : limit;
       const data =
         start === 0
-          ? await refreshBridgeHistoryTop10(wallet, addr)
+          ? await refreshBridgeHistoryTop10(wallet, address)
           : await wallet.openapi.getBridgeHistoryList({
-              user_addr: addr,
+              user_addr: address,
               start,
-              limit,
+              limit: requestedLimit,
               is_all: true,
             });
       if (data?.history_list && start === 0) {
         eventBus.emit(EVENTS.BRIDGE_HISTORY_UPDATED, data.history_list);
       }
       return {
-        list: data?.history_list?.slice(0, limit),
+        list: data?.history_list?.slice(0, requestedLimit) ?? [],
         last: data,
         totalCount: data?.total_cnt,
+        // 按请求行数翻页，不用已展示条数。
+        nextStart: start + requestedLimit,
       };
     },
     [wallet]
@@ -50,18 +65,27 @@ export const useBridgeHistory = () => {
     noMore,
     mutate,
   } = useInfiniteScroll(
-    (d) =>
-      getBridgeHistoryList(
+    async (d) => {
+      const page = await getBridgeHistoryList(
         addr,
-        d?.list?.length && d?.list?.length > 1 ? d?.list?.length : 0,
-        5
-      ),
+        d?.nextStart ?? 0,
+        TOP_HISTORY_LIMIT
+      );
+      if (!d?.list?.length || !page.list?.length) {
+        return page;
+      }
+      const seen = new Set(d.list.map(bridgeHistoryKey));
+      return {
+        ...page,
+        list: page.list.filter((item) => !seen.has(bridgeHistoryKey(item))),
+      };
+    },
     {
       isNoMore(data) {
-        if (data) {
-          return data?.list.length >= data?.totalCount;
+        if (!data || typeof data.totalCount !== 'number') {
+          return !data;
         }
-        return true;
+        return (data.nextStart ?? 0) >= data.totalCount;
       },
       manual: !addr,
     }
@@ -69,7 +93,7 @@ export const useBridgeHistory = () => {
 
   const { value } = useAsync(async () => {
     if (addr) {
-      return getBridgeHistoryList(addr, 0, 5);
+      return getBridgeHistoryList(addr, 0, TOP_HISTORY_LIMIT);
     }
   }, [addr, refreshTxListCount]);
 
@@ -77,14 +101,15 @@ export const useBridgeHistory = () => {
     if (value?.list) {
       mutate((d) => {
         if (!d) {
-          return;
+          return value;
         }
         return {
           last: d?.last,
-          totalCount: d?.totalCount,
+          totalCount: value.totalCount ?? d?.totalCount,
+          nextStart: d.nextStart,
           list: uniqBy(
             [...(value.list || []), ...(d?.list || [])],
-            (e) => `${e.chain}-${e.detail_url}`
+            bridgeHistoryKey
           ),
         };
       });

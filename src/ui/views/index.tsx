@@ -107,12 +107,22 @@ const SyncHook = () => {
   return null;
 };
 
-const Main = () => {
+// Side-effect-only hooks. They subscribe to the route, the theme preference,
+// the system color scheme and the wallet context, but only toggle classes on
+// <html>, add listeners and redirect on lock. Calling them here instead of in
+// Main means those changes re-render this component, not the whole route tree.
+const GlobalEffects = () => {
   useAutoLock();
   useThemeModeOnMain();
   useSubscribeCurrentAccountChanged();
   useSyncCurrentAccount();
 
+  return null;
+};
+
+// Keep Main free of state and context subscriptions: any re-render here
+// re-creates every route element below and re-renders the current page.
+const Main = () => {
   return (
     <>
       <Route exact path="/">
@@ -135,6 +145,8 @@ const Main = () => {
       </Suspense>
 
       <SyncHook />
+      {/* Last child, so its effects still run after the routes' effects. */}
+      <GlobalEffects />
     </>
   );
 };
