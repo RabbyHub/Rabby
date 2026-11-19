@@ -165,6 +165,7 @@
     "@svgr/webpack": "5.5.0",
     "@swc/core": "1.16.18",
     "@tailwindcss/postcss": "4.3.0",
+    "@tanstack/eslint-plugin-query": "5.91.4",
     "@types/chrome": "0.0.263",
     "@types/jest": "27.4.0",
     "@types/koa-compose": "3.2.5",

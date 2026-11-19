@@ -6,6 +6,7 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:react-you-might-not-need-an-effect/legacy-recommended",
+    "plugin:@tanstack/query/recommended",
     "plugin:prettier/recommended"
   ],
   "rules": {
