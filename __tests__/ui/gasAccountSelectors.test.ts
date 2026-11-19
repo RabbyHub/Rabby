@@ -3,7 +3,7 @@ import { createRoot, Root } from 'react-dom/client';
 import { createWithEqualityFn } from 'zustand/traditional';
 
 // Same construction as useCombinedStore in src/ui/store.ts: one store that every
-// slice update replaces, read through a selector with an optional equalityFn.
+// slice update replaces, read through a selector compared with Object.is.
 type TestRoot = {
   gasAccount: Record<string, any>;
   preference: Record<string, any>;
@@ -21,8 +21,7 @@ const mockStore = createWithEqualityFn<TestRoot>()(() => ({
 }));
 
 jest.mock('@/ui/store', () => ({
-  useRabbySelector: (selector: any, equalityFn?: any) =>
-    mockStore(selector, equalityFn),
+  useRabbySelector: (selector: any) => mockStore(selector),
   useRabbyDispatch: () => ({
     gasAccount: {
       discoverRuntimeState: jest.fn().mockResolvedValue(undefined),

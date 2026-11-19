@@ -120,11 +120,11 @@ export const connectStore = () => <Component>(component: Component) =>
 export const useRabbyDispatch = () => rabbyDispatch;
 
 /**
- * `equalityFn` defaults to Object.is. A selector that builds a new object or
- * array on every call re-renders its component on every update of any store
- * merged into useCombinedStore; pass `shallow` (zustand/shallow) for those.
+ * Compares the selected value with Object.is. A selector that builds a new
+ * object or array on every call re-renders its component on every update of
+ * any store merged into useCombinedStore; wrap those in `useShallow`
+ * (zustand/react/shallow).
  */
 export const useRabbySelector = <Selected>(
-  selector: (state: RabbyRootState) => Selected,
-  equalityFn?: (a: Selected, b: Selected) => boolean
-) => useCombinedStore(selector, equalityFn);
+  selector: (state: RabbyRootState) => Selected
+) => useCombinedStore(selector);

@@ -7,7 +7,7 @@ import { uniqBy } from 'lodash';
 import { useRef } from 'react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
-import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import {
   useGasAccountRefreshId,
   useGasAccountSetRefreshId,
@@ -36,7 +36,7 @@ import {
   isInvalidGasAccountSignTextError,
 } from '@/utils/gasAccount';
 
-// Stable fallback so the shallow-compared selectors below see the same array.
+// Stable fallback so the useShallow selectors below see the same array.
 const EMPTY_ACCOUNTS_WITH_BALANCE: never[] = [];
 
 const { isTab, isDesktop } = getUiType();
@@ -122,7 +122,7 @@ export const useGasAccountHistoryRefresh = () => {
 
 export const useGasAccountSign = () => {
   return useRabbySelector(
-    (s) => ({
+    useShallow((s) => ({
       sig: s.gasAccount.sig,
       accountId: s.gasAccount.accountId,
       account: s.gasAccount.account,
@@ -131,8 +131,7 @@ export const useGasAccountSign = () => {
       accountsWithGasAccountBalance:
         s.gasAccount.accountsWithGasAccountBalance ||
         EMPTY_ACCOUNTS_WITH_BALANCE,
-    }),
-    shallow
+    }))
   );
 };
 
@@ -396,14 +395,13 @@ export const useGasAccountDiscovery = ({
 } = {}) => {
   const dispatch = useRabbyDispatch();
   const discovery = useRabbySelector(
-    (s) => ({
+    useShallow((s) => ({
       pendingHardwareAccount: s.gasAccount.pendingHardwareAccount,
       autoLoginAccount: s.gasAccount.autoLoginAccount,
       accountsWithGasAccountBalance:
         s.gasAccount.accountsWithGasAccountBalance ||
         EMPTY_ACCOUNTS_WITH_BALANCE,
-    }),
-    shallow
+    }))
   );
   const autoLoginAttemptedAddress = useRef<string>();
   const { login } = useGasAccountMethods();
