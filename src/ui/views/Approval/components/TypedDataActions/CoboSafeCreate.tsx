@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Col, Row, Table } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
@@ -7,8 +6,6 @@ import LogoWithText from '../Actions/components/LogoWithText';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import IconSafe from '@/ui/assets/walletlogo/safe.svg';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
-
-const Wrapper = styled.div``;
 
 const CoboSafeCreate = ({
   data,
@@ -19,7 +16,7 @@ const CoboSafeCreate = ({
   const actionData = data!;
 
   return (
-    <Wrapper>
+    <div>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.coboSafeCreate.safeWalletTitle')}</Row>
@@ -63,7 +60,7 @@ const CoboSafeCreate = ({
           <Row wrap>{actionData.desc}</Row>
         </Col>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

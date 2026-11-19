@@ -5,7 +5,6 @@ import { message, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import dayjs from 'dayjs';

@@ -1,43 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import i18n from '@/i18n';
-import styled, { createGlobalStyle } from 'styled-components';
 import { Popup, Checkbox } from 'ui/component';
 import { Chain } from 'background/service/openapi';
 
-const Footer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  .item {
-    display: flex;
-    cursor: pointer;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
-    color: var(--r-neutral-title1, #192945);
-    position: relative;
-    border: 1px solid transparent;
-    border-radius: 8px;
-    background: var(--r-neutral-card1, #fff);
-    .rabby-checkbox__wrapper {
-      .rabby-checkbox {
-      }
-      &.checked {
-        .rabby-checkbox {
-        }
-      }
-    }
-    &:hover {
-      background: var(--r-blue-light-1, #eef1ff);
-      border: 1px solid var(--r-blue-default, #7084ff);
-    }
-  }
-`;
+const itemClassName =
+  'item flex cursor-pointer justify-between items-center p-16 font-medium text-15 text-r-neutral-title1 relative border border-transparent rounded-[8px] bg-r-neutral-card1 hover:bg-r-blue-light-1 hover:border-r-blue-default';
 
 interface Props {
   address: string;
@@ -61,9 +29,9 @@ const UserListDrawer = ({
   const { t } = useTranslation();
   return (
     <div>
-      <Footer>
+      <div className="flex flex-col gap-12">
         <div
-          className="item"
+          className={itemClassName}
           onClick={() => onChange({ onBlacklist: false, onWhitelist: false })}
         >
           <div>{t('page.signTx.noMark')}</div>
@@ -79,7 +47,7 @@ const UserListDrawer = ({
           </div>
         </div>
         <div
-          className="item"
+          className={itemClassName}
           onClick={() => onChange({ onBlacklist: false, onWhitelist: true })}
         >
           <div className="text-green">{t('page.signTx.trusted')}</div>
@@ -95,7 +63,7 @@ const UserListDrawer = ({
           </div>
         </div>
         <div
-          className="item"
+          className={itemClassName}
           onClick={() => onChange({ onBlacklist: true, onWhitelist: false })}
         >
           <div className="text-red">{t('page.signTx.blocked')}</div>
@@ -110,7 +78,7 @@ const UserListDrawer = ({
             />
           </div>
         </div>
-      </Footer>
+      </div>
     </div>
   );
 };

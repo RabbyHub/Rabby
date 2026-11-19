@@ -1,0 +1,10 @@
+.formItemWrapper
+  :global(.mnemonics-with-error
+    .ant-form-item-control-input
+    + .ant-form-item-explain.ant-form-item-explain-error),
+.formItemWrapper
+  :global(.ant-form-item-has-error
+    .ant-form-item-control-input
+    + .ant-form-item-explain.ant-form-item-explain-error) {
+  display: none;
+}

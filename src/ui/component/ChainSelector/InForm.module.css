@@ -1,0 +1,121 @@
+.globalActive :global(.chain-selector-disable-item-tips) {
+  & :global(.ant-modal-body) {
+    background: var(--r-neutral-bg1, #fff);
+    padding-top: 24px !important;
+    padding-left: 20px !important;
+    padding-right: 20px !important;
+    padding-bottom: 20px !important;
+  }
+  & :global(.ant-modal-confirm-content) {
+    margin-top: 0 !important;
+    padding: 0 !important;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--r-neutral-title1, #192945);
+  }
+  & :global(.ant-modal-confirm-btns) {
+    margin-top: 35px !important;
+  }
+  & :global(.ant-modal-confirm-btns .ant-btn) {
+    font-size: 13px !important;
+    font-weight: 500;
+  }
+  & :global(.ant-modal-confirm-btns .ant-btn-ghost) {
+    border-color: var(--r-blue-default);
+    color: var(--r-blue-default);
+  }
+  & :global(.ant-modal-confirm-btns .ant-btn-ghost:hover) {
+    background: var(--r-blue-light1, #eef1ff) !important;
+  }
+}
+
+.chainWrapper {
+  /* height: 40px; */
+  background: var(--r-neutral-card-2, #f2f4f7);
+  border-radius: 6px;
+  padding: 12px 12px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.chainWrapper:global(.bridge) {
+  width: auto;
+  height: 28px;
+  font-size: 13px;
+  padding: 0 8px;
+  gap: 0;
+}
+
+.chainWrapper:global(.bridge) > :global(.down) {
+  margin-left: auto;
+  width: 14px;
+  height: 14px;
+}
+
+.chainWrapper:global(.bridge) > :global(.name) {
+  color: var(--r-neutral-title-1, #192945);
+  line-height: normal;
+  margin-left: 6px;
+  margin-right: 4px;
+}
+
+.chainWrapper:global(.swap) {
+  gap: 8px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  background: var(--r-neutral-card1, #fff);
+  border-radius: 8px 8px 0 0;
+  height: 52px;
+  position: relative;
+}
+
+.chainWrapper:global(.swap) > :global(.name) {
+  color: var(--r-neutral-title-1, #192945);
+  font-size: 15px;
+}
+
+.chainWrapper:global(.swap) > :global(.down) {
+  width: 16px;
+  height: 16px;
+}
+
+.chainWrapper:hover {
+  background: var(--r-blue-light2, #eef1ff);
+}
+
+.chainWrapper:global(.swap):hover {
+  background: var(--r-blue-light1, #edf0ff);
+  border: 1px solid var(--r-blue-default, #4c65ff);
+  border-radius: 8px;
+}
+
+.chainWrapper:global(.swap):hover > :global(.name) {
+  color: var(--r-blue-default, #4c65ff);
+}
+
+.chainWrapper:global(.swap):hover > :global(.down) {
+  color: var(--r-blue-default, #4c65ff) !important;
+}
+
+.chainWrapper:global(.swap):hover > :global(.down) path {
+  stroke: var(--r-blue-default, #4c65ff) !important;
+}
+
+.chainWrapper > :global(.down) {
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  color: var(--r-neutral-body, #3e495e);
+}
+
+.chainWrapper > :global(.name) {
+  color: var(--r-neutral-title-1, #192945);
+  line-height: 15px;
+}

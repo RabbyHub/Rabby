@@ -6,7 +6,6 @@ import { Button, Switch, message } from 'antd';
 import type { RPCItem } from 'background/service/rpc';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconDelete } from 'ui/assets/custom-rpc/delete.svg';
 import { ReactComponent as RcIconEdit } from 'ui/assets/custom-rpc/edit.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -17,89 +16,7 @@ import EditRPCModal from './components/EditRPCModal';
 import './style.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useMemoizedFn } from 'ahooks';
-
-const RPCItemWrapper = styled.div`
-  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
-  border-radius: 6px;
-  padding: 12px;
-  display: flex;
-  margin-bottom: 8px;
-  height: 56px;
-  border: 1px solid transparent;
-  align-items: center;
-  .switch-wrapper {
-    margin-right: 12px;
-  }
-  .right {
-    margin-left: 12px;
-    max-width: 194px;
-    p {
-      max-width: 194px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      margin: 0;
-      &:nth-child(1) {
-        margin-bottom: 2px;
-        font-size: 13px;
-        font-weight: 500;
-        line-height: 18px;
-        color: var(--r-neutral-title-1, #f7fafc);
-      }
-      &:nth-child(2) {
-        font-weight: 400;
-        font-size: 13px;
-        line-height: 15px;
-        color: var(--r-neutral-body, #d3d8e0);
-      }
-    }
-  }
-  .operation {
-    justify-content: flex-end;
-    opacity: 0;
-    align-items: center;
-    display: flex;
-    flex: 1;
-    .icon {
-      width: 16px;
-      height: 16px;
-      cursor: pointer;
-      user-select: none;
-      &:nth-child(1) {
-        margin-right: 12px;
-      }
-    }
-  }
-  .chain-icon-comp {
-    img {
-      width: 24px;
-      height: 24px;
-    }
-  }
-  &:hover {
-    background: var(--r-blue-light-1, #eef1ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-    border-radius: 6px;
-    .operation {
-      opacity: 1;
-    }
-  }
-`;
-
-const RPCListContainer = styled.div`
-  flex: 1;
-  overflow: auto;
-  padding: 0 20px;
-`;
-
-const Footer = styled.div`
-  height: 84px;
-  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  background: var(--r-neutral-bg1, rgba(255, 255, 255, 0.06));
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-`;
+import styles from './index.module.css';
 
 const RPCItemComp = ({
   item,
@@ -156,7 +73,7 @@ const RPCItemComp = ({
   };
 
   return (
-    <RPCItemWrapper>
+    <div className={styles.rpcItemWrapper}>
       <div className="switch-wrapper">
         <Switch checked={item.rpc.enable} onChange={handleSwitchRPCEnable} />
       </div>
@@ -181,7 +98,7 @@ const RPCItemComp = ({
           onClick={handleDelete}
         />
       </div>
-    </RPCItemWrapper>
+    </div>
   );
 };
 
@@ -318,17 +235,17 @@ const CustomRPC = () => {
       {rpcList.length <= 0 ? (
         NoAddressUI
       ) : (
-        <RPCListContainer>
+        <div className="flex-1 overflow-auto px-20 py-0">
           {rpcList.map((rpc) => (
             <RPCItemComp item={rpc} onEdit={handleEditRPC} key={rpc.id} />
           ))}
-        </RPCListContainer>
+        </div>
       )}
-      <Footer>
+      <div className="h-[84px] border-t-[0.5px] border-t-r-neutral-line bg-r-neutral-bg1 p-20 flex justify-center">
         <Button size="large" type="primary" block onClick={handleClickAdd}>
           {t('page.customRpc.add')}
         </Button>
-      </Footer>
+      </div>
       <ChainSelectorModal
         visible={chainSelectorVisible}
         onChange={handleChainChanged}

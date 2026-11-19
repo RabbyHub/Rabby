@@ -1,0 +1,7 @@
+.wrapper :global(.ant-input)::placeholder {
+  color: var(--r-neutral-foot);
+}
+
+.wrapper :global(.select-chain-item)::after {
+  border-bottom-width: 0.5px !important;
+}

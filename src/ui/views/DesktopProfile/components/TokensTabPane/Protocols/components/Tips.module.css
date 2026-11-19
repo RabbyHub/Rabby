@@ -1,0 +1,11 @@
+.tipsWrapper {
+  display: inline-flex;
+  align-items: center;
+  color: var(--r-neutral-foot);
+  gap: 2px;
+}
+
+.tipsWrapper :global(.icon) {
+  margin-left: 4px;
+  flex-shrink: 0;
+}

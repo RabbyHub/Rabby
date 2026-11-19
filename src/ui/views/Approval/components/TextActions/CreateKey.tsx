@@ -1,12 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { CreateKeyAction } from '@rabby-wallet/rabby-api/dist/types';
 import { Col, Row, Table } from '../Actions/components/Table';
 import * as Values from '../Actions/components/Values';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-
-const Wrapper = styled.div``;
 
 const CreateKey = ({
   data,
@@ -16,7 +13,7 @@ const CreateKey = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <Wrapper>
+    <div>
       <Table>
         <Col>
           <Row isTitle>{t('page.signText.createKey.interactDapp')}</Row>
@@ -29,7 +26,7 @@ const CreateKey = ({
           <Row wrap>{data.desc}</Row>
         </Col>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

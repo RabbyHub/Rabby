@@ -1,0 +1,30 @@
+.tooltipGlobalActive :global(.alias-tooltip .ant-tooltip-arrow) {
+  display: block !important;
+}
+
+.authFormItem :global(.ant-form-item) {
+  margin-bottom: 20px !important;
+}
+
+.authFormItem :global(.ant-form-item-has-error .ant-input) {
+  border-color: #f24822 !important;
+}
+
+.authFormItem :global(.ant-input.ant-input-lg.popup-input) {
+  border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
+  background: var(--r-neutral-card1, #ffffff) !important;
+}
+
+/* Less specific than the :focus/:hover rule below, which still wins. */
+.hasError :global(.ant-input.ant-input-lg.popup-input) {
+  border-color: var(--r-red-default) !important;
+}
+
+.authFormItem :global(.ant-input.ant-input-lg.popup-input)::placeholder {
+  color: var(--r-neutral-foot, #6a7587) !important;
+}
+
+.authFormItem :global(.ant-input.ant-input-lg.popup-input):focus,
+.authFormItem :global(.ant-input.ant-input-lg.popup-input):hover {
+  border-color: var(--r-blue-default, #7084ff) !important;
+}

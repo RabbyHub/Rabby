@@ -2,7 +2,6 @@ import { getGasLevelI18nKey } from '@/ui/utils/trans';
 import { GasLevel } from '@rabby-wallet/rabby-api/dist/types';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
 import { Dropdown, Menu, Skeleton } from 'antd';
 import { ReactComponent as GasLevelCustomSVG } from '@/ui/assets/sign/gas-level-custom.svg';
@@ -17,122 +16,24 @@ import clsx from 'clsx';
 import { ReactComponent as IconArrowDownCC } from 'ui/assets/swap/arrow-down-cc.svg';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import type { GasTokenInfo } from '@/utils/transaction';
+import { cn } from '@/ui/utils/cn';
+import styles from './GasMenuButton.module.css';
 
-export const MenuButtonStyled = styled.div`
-  display: flex;
-  align-items: center;
-  border-radius: 100px;
-  padding: 4px 8px;
-  line-height: 16px;
-  font-size: 14px;
-  color: var(--r-neutral-body, #3e495e);
-  font-weight: 500;
-  border-width: 1px;
-  /* border-width: 0.5px; */
-  border-style: solid;
-  border-color: var(--r-neutral-line, #d3d8e0);
-  cursor: pointer;
-
-  &:hover {
-    border-color: var(--r-blue-default, #7084ff);
-    background: var(--r-blue-light1, #eef1ff);
-  }
-`;
-
-const MenuItemStyled = styled(Menu.Item)`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 6px;
-  border-width: 0.5px;
-  border-style: solid;
-  border-color: transparent;
-
-  &:hover {
-    background: var(--r-blue-light1, #eef1ff);
-  }
-  .ant-dropdown-menu-title-content {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-`;
-
-const LevelTextWrapStyled = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  flex: 1;
-`;
-
-const LevelTextStyled = styled.div`
-  font-size: 13px;
-  line-height: 16px;
-  color: var(--r-neutral-title1, #192945);
-  font-weight: 500;
-`;
-
-const LevelPriceStyled = styled.div`
-  font-size: 12px;
-  line-height: 14px;
-  color: var(--r-neutral-foot, #6a7587);
-`;
-
-const MenuStyled = styled(Menu)`
-  border-radius: 8px;
-  box-shadow: 0px 8px 12px 0px rgba(0, 0, 0, 0.2);
-  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
-  background: var(--r-neutral-bg1, #fff);
-  padding: 4px;
-  margin-right: 10px;
-
-  .ant-dropdown-menu-item-group-title {
-    padding: 0;
-    color: var(--r-neutral-title1, #192945);
-  }
-
-  .ant-dropdown-menu-item-group-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-`;
-
-const MenuTitleStyled = styled.div`
-  padding: 8px 20px 12px;
-  color: var(--r-neutral-title1, #192945);
-  text-align: center;
-  font-size: 13px;
-  font-style: normal;
-  font-weight: 600;
-  position: relative;
-  white-space: nowrap;
-`;
-
-const DivideStyled = styled(Divide)`
-  position: absolute;
-  left: 16px;
-  right: 16px;
-  width: auto;
-  bottom: 4px;
-`;
-
-const GweiStyled = styled.span`
-  color: var(--r-neutral-foot, #6a7587);
-  display: flex;
-  align-items: center;
-
-  &::before {
-    content: ' ';
-    width: 2px;
-    height: 2px;
-    border-radius: 50%;
-    background: var(--r-neutral-foot, #6a7587);
-    display: block;
-    margin: 0 4px;
-  }
-`;
+export const MenuButtonStyled = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'flex items-center rounded-[100px] py-4 px-8 text-[14px] leading-[16px]',
+      'text-r-neutral-body font-medium border border-solid border-r-neutral-line',
+      'cursor-pointer hover:border-r-blue-default hover:bg-r-blue-light1',
+      className
+    )}
+    {...rest}
+  />
+));
 
 interface Props {
   gasList: GasLevel[];
@@ -193,19 +94,19 @@ export const GasMenuButton: React.FC<Props> = ({
       placement="topCenter"
       trigger={['click']}
       overlay={
-        <MenuStyled>
+        <Menu className={styles.menu}>
           <Menu.ItemGroup
             title={
-              <MenuTitleStyled>
+              <div className="pt-8 px-20 pb-12 text-r-neutral-title1 text-center text-13 not-italic font-semibold relative whitespace-nowrap">
                 <div>{t('page.sign.transactionSpeed')}</div>
-                <DivideStyled />
-              </MenuTitleStyled>
+                <Divide className="absolute left-16 right-16 w-auto bottom-4" />
+              </div>
             }
           >
             {showTempoGasTokenSelector ? (
               <>
-                <MenuItemStyled
-                  className="justify-between"
+                <Menu.Item
+                  className={cn(styles.menuItem, 'justify-between')}
                   key="tempo-gas-token"
                   onClick={(e) => {
                     e.domEvent.stopPropagation();
@@ -225,14 +126,14 @@ export const GasMenuButton: React.FC<Props> = ({
                     </span>
                     <IconArrowDownCC className="text-r-neutral-foot" />
                   </div>
-                </MenuItemStyled>
+                </Menu.Item>
               </>
             ) : null}
             {orderedGasList.map((gas) => {
               const isSelected = selectedGas?.level === gas.level;
 
               return (
-                <MenuItemStyled
+                <Menu.Item
                   key={gas.level}
                   onClick={(e) => {
                     e.domEvent.stopPropagation();
@@ -241,17 +142,17 @@ export const GasMenuButton: React.FC<Props> = ({
                       onCustom();
                     }
                   }}
-                  className={clsx({
+                  className={cn(styles.menuItem, {
                     'bg-r-blue-light-1 border-r-blue-default': isSelected,
                   })}
                 >
                   <GasLevelIcon isActive={isSelected} level={gas.level} />
-                  <LevelTextWrapStyled>
-                    <LevelTextStyled>
+                  <div className="flex flex-col gap-2 flex-1">
+                    <div className="text-13 leading-[16px] text-r-neutral-title1 font-medium">
                       {t(getGasLevelI18nKey(gas.level))}
-                    </LevelTextStyled>
+                    </div>
                     {(gas.level !== 'custom' || showCustomGasPrice) && (
-                      <LevelPriceStyled>
+                      <div className="text-12 text-r-neutral-foot">
                         {new BigNumber(
                           (gas.level === 'custom'
                             ? customGasInfo.price
@@ -260,18 +161,18 @@ export const GasMenuButton: React.FC<Props> = ({
                           .toFixed()
                           .slice(0, 8)}{' '}
                         Gwei
-                      </LevelPriceStyled>
+                      </div>
                     )}
-                  </LevelTextWrapStyled>
+                  </div>
                   {isSelected && <CheckSVG className="text-r-blue-default" />}
                   {!isSelected && gas.level === 'custom' && (
                     <RcIconArrowRight className="text-r-neutral-foot" />
                   )}
-                </MenuItemStyled>
+                </Menu.Item>
               );
             })}
           </Menu.ItemGroup>
-        </MenuStyled>
+        </Menu>
       }
       // getPopupContainer={() =>
       //   document.querySelector('.js-rabby-popup-container') || document.body

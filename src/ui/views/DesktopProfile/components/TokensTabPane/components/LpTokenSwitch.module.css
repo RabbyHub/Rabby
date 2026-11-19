@@ -1,0 +1,16 @@
+.lpTokenSwitchWrapper {
+  width: fit-content;
+}
+
+.lpTokenSwitchWrapper :global(.ant-switch-checked) {
+  background-color: var(--r-green-default) !important;
+}
+
+.lpTokenSwitchWrapper :global(.ant-switch:focus) {
+  box-shadow: none !important;
+}
+
+.lpTokenSwitchWrapper :global(.ant-switch:focus-visible) {
+  outline: none !important;
+  box-shadow: none !important;
+}

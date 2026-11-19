@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { maxBy } from 'lodash';
@@ -11,71 +10,7 @@ import {
   CancelTxRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .container {
-    flex: 1;
-    background: var(--r-blue-light-1, #eef1ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-    border-radius: 6px;
-    padding: 12px;
-    // margin-top: 14px;
-    margin-bottom: 12px;
-    position: relative;
-    .internal-transaction {
-      padding: 0 5px;
-      position: absolute;
-      text-align: center;
-      z-index: 1;
-      color: var(--r-blue-default, #7084ff);
-      font-size: 12px;
-      line-height: 12px;
-      top: -7px;
-      left: 10px;
-      .bg {
-        position: absolute;
-        bottom: 0;
-        left: 0.5px;
-        width: 100%;
-        height: 6px;
-        background: var(--r-blue-light-1, #424962);
-        z-index: -1;
-      }
-    }
-    .tx-item {
-      padding-bottom: 13px;
-      margin-bottom: 13px;
-      border-bottom: 1px solid #e0e3f1;
-      span {
-        font-weight: 500;
-        font-size: 14px;
-        line-height: 16px;
-        &:nth-child(1) {
-          color: var(--r-neutral-title-1, #f7fafc);
-        }
-        &:nth-child(2) {
-          color: var(--r-neutral-foot, #babec5);
-        }
-      }
-      &:nth-last-child(1) {
-        padding-bottom: 0;
-        margin-bottom: 0;
-        border: none;
-      }
-    }
-  }
-`;
-
-const GasPriceTip = styled.div`
-  display: flex;
-  align-items: flex-start;
-  margin-bottom: 24px;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 16px;
-  color: #333333;
-  margin-top: 15px;
-`;
+import styles from './CancelTx.module.css';
 
 const CancelTx = ({
   data,
@@ -127,7 +62,7 @@ const CancelTx = ({
   }, [raw, pendingTx]);
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       {requireData.pendingTxs.length > 0 && (
         <>
           <div className="container">
@@ -143,16 +78,16 @@ const CancelTx = ({
             )}
           </div>
           {pendingTx && !canCancel && (
-            <GasPriceTip>
+            <div className="flex items-start mt-[15px] mb-24 font-medium text-[14px] leading-[16px] text-[#333333]">
               <img src={IconAlert} className="w-[15px] mr-10" />
               {t('page.signTx.cancelTx.gasPriceAlert', {
                 value: pendingTx.gasPrice / 1e9,
               })}
-            </GasPriceTip>
+            </div>
           )}
         </>
       )}
-    </Wrapper>
+    </div>
   );
 };
 

@@ -9,6 +9,8 @@ import * as approvalHooks from '@/ui/utils/hooks';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import eventBus from '@/eventBus';
 
+const styleModuleMock = require('../styleModuleMock');
+
 const mockWallet = {
   getApproval: jest.fn(),
   getCurrentAccount: jest.fn(),
@@ -158,10 +160,7 @@ describe('invitation-owned hardware signature', () => {
         KEYRING_TYPE: {},
       },
       'react-i18next': { useTranslation: () => ({ t: (key: string) => key }) },
-      'styled-components': {
-        div: () => ({ children }: any) =>
-          React.createElement('div', null, children),
-      },
+      './PerpsInviteContent.module.css': styleModuleMock,
       'ui/utils': { ...approvalHooks, useWallet: () => mockWallet },
       'ui/component': { FallbackSiteLogo: empty },
       '@/eventBus': eventBus,

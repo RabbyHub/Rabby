@@ -1,0 +1,157 @@
+.ruleDrawerWrapper :global(.main) {
+  border-radius: 8px;
+  padding: 20px 16px;
+  position: relative;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--r-neutral-title-1, #f7fafc);
+  display: flex;
+  flex-direction: column;
+  margin: 20px 16px 32px;
+  gap: 10px;
+  text-align: center;
+}
+
+.ruleDrawerWrapper :global(.main .level-logo) {
+  display: flex;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 18px;
+  justify-content: center;
+  align-items: center;
+}
+
+.ruleDrawerWrapper :global(.main .level-icon) {
+  width: 16px;
+  height: 16px;
+}
+
+.ruleDrawerWrapper :global(.rule-threshold-footer) {
+  padding: 18px 20px;
+  border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
+}
+
+.ruleDrawerWrapper :global(.rule-threshold-footer .forbidden-tip) {
+  margin-bottom: 12px;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: center;
+  color: #13141a;
+}
+
+.ruleDrawerWrapper :global(.rule-threshold-footer .button-ignore) {
+  padding: 12px;
+  width: 100%;
+  height: 44px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  text-align: center;
+  text-shadow: none;
+  color: #ffffff;
+}
+
+.ruleDrawerWrapper :global(.rule-threshold-footer .button-ignore[disabled]) {
+  opacity: 0.4;
+}
+
+.ruleDrawerWrapper:global(.safe .main) {
+  background: rgba(0, 192, 135, 0.06);
+}
+
+.ruleDrawerWrapper:global(.safe .main .level-text) {
+  color: #27c193;
+}
+
+.ruleDrawerWrapper:global(.warning .main) {
+  background: rgba(255, 176, 32, 0.06);
+}
+
+.ruleDrawerWrapper:global(.warning .main .level-text) {
+  color: #ffb020;
+}
+
+.ruleDrawerWrapper:global(.warning .rule-threshold-footer .button-ignore) {
+  background: #ffb020;
+  border-color: #ffb020;
+}
+
+.ruleDrawerWrapper:global(.warning .rule-threshold-footer .button-ignore:hover) {
+  background: #ffb020;
+  border-color: #ffb020;
+  box-shadow: 0px 8px 16px rgba(255, 176, 32, 0.3);
+}
+
+.ruleDrawerWrapper:global(.warning .rule-threshold-footer .button-ignore:focus) {
+  box-shadow: 0px 8px 16px rgba(255, 176, 32, 0.3);
+}
+
+.ruleDrawerWrapper:global(.danger .main) {
+  background: rgba(236, 81, 81, 0.06);
+}
+
+.ruleDrawerWrapper:global(.danger .main .level-text) {
+  color: #ec5151;
+}
+
+.ruleDrawerWrapper:global(.danger .rule-threshold-footer .button-ignore) {
+  background: #ec5151;
+  border-color: #ec5151;
+}
+
+.ruleDrawerWrapper:global(.danger .rule-threshold-footer .button-ignore:hover) {
+  background: #ec5151;
+  border-color: #ec5151;
+  box-shadow: 0px 8px 16px rgba(236, 81, 81, 0.3);
+}
+
+.ruleDrawerWrapper:global(.danger .rule-threshold-footer .button-ignore:focus) {
+  box-shadow: 0px 8px 16px rgba(236, 81, 81, 0.3);
+}
+
+.ruleDrawerWrapper:global(.forbidden .main) {
+  background: rgba(175, 22, 14, 0.06);
+}
+
+.ruleDrawerWrapper:global(.forbidden .main .level-text) {
+  color: #af160e;
+}
+
+.ruleDrawerWrapper:global(.forbidden .rule-threshold-footer .button-ignore) {
+  background: #af160e;
+  border-color: #af160e;
+}
+
+.ruleDrawerWrapper:global(.error .main) {
+  background: transparent;
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+}
+
+.ruleDrawerWrapper:global(.proceed .main) {
+  background: var(--r-neutral-card-2, #f5f6fa);
+}
+
+.ruleDrawerWrapper:global(.proceed .main .level-text) {
+  color: var(--r-neutral-foot, #babec5);
+}
+
+.ruleDrawerWrapper:global(.proceed .rule-threshold-footer .rabby-checkbox__label) {
+  color: var(--r-neutral-foot, #babec5);
+}
+
+.ruleDrawerWrapper:global(.proceed .rule-threshold-footer .button-ignore) {
+  background: #707280;
+  border-color: transparent;
+}
+
+.ruleDrawerWrapper:global(.proceed .rule-threshold-footer .button-ignore:hover) {
+  background: #707280;
+  border-color: #707280;
+  box-shadow: 0px 8px 16px rgba(112, 114, 128, 0.3);
+}
+
+.ruleDrawerWrapper:global(.proceed .rule-threshold-footer .button-ignore:focus) {
+  box-shadow: 0px 8px 16px rgba(112, 114, 128, 0.3);
+}

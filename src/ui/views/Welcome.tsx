@@ -2,45 +2,25 @@ import React, { useState } from 'react';
 import { Button } from 'antd';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import WelcomeHeaderImg from 'ui/assets/welcome-header.svg';
-
-const Container = styled.div`
-  .step {
-    padding: 42px 20px 32px 20px;
-    background: var(--r-neutral-bg1);
-  }
-  .step-title {
-    font-weight: 700;
-    font-size: 22px;
-    line-height: 24px;
-    text-align: center;
-    color: var(--r-neutral-title1);
-    margin-bottom: 13px;
-  }
-  .step-content {
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 24px;
-    text-align: center;
-    color: var(--r-neutral-title1);
-    margin-bottom: 48px;
-  }
-`;
 
 const Welcome = () => {
   const { t } = useTranslation();
   const [step, setStep] = useState<1 | 2>(1);
 
   return (
-    <Container className="h-full">
+    <div className="h-full">
       <div className="header">
         <img src={WelcomeHeaderImg} alt="" />
       </div>
       {step === 1 ? (
-        <section className="step">
-          <div className="step-title">{t('page.welcome.step1.title')}</div>
-          <div className="step-content">{t('page.welcome.step1.desc')}</div>
+        <section className="step pt-[42px] px-20 pb-32 bg-r-neutral-bg1">
+          <div className="step-title font-bold text-[22px] leading-[24px] text-center text-r-neutral-title1 mb-[13px]">
+            {t('page.welcome.step1.title')}
+          </div>
+          <div className="step-content font-normal text-[14px] leading-[24px] text-center text-r-neutral-title1 mb-[48px]">
+            {t('page.welcome.step1.desc')}
+          </div>
           <img
             src="/images/welcome-step-1.png"
             className="w-[317px] h-[199px] mx-auto rounded-[10px]"
@@ -59,9 +39,13 @@ const Welcome = () => {
           </footer>
         </section>
       ) : (
-        <section className="step">
-          <div className="step-title">{t('page.welcome.step2.title')}</div>
-          <div className="step-content">{t('page.welcome.step2.desc')}</div>
+        <section className="step pt-[42px] px-20 pb-32 bg-r-neutral-bg1">
+          <div className="step-title font-bold text-[22px] leading-[24px] text-center text-r-neutral-title1 mb-[13px]">
+            {t('page.welcome.step2.title')}
+          </div>
+          <div className="step-content font-normal text-[14px] leading-[24px] text-center text-r-neutral-title1 mb-[48px]">
+            {t('page.welcome.step2.desc')}
+          </div>
           <img
             src="/images/welcome-step-2.png"
             className="bg-r-neutral-card2 w-[317px] h-[199px] mx-auto rounded-[10px]"
@@ -75,7 +59,7 @@ const Welcome = () => {
           </footer>
         </section>
       )}
-    </Container>
+    </div>
   );
 };
 

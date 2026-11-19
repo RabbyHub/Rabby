@@ -18,9 +18,6 @@ const {
 } = require('./manifest-utils');
 const ReactRefreshTypeScript = require('react-refresh-typescript');
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
-  .default;
-
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 // hot builds are dev builds: type-check in ForkTsChecker, never in ts-loader
 const useForkTsChecker = true;
@@ -33,15 +30,6 @@ const BUILD_GIT_HASH = child_process
   .trim()
   .slice(0, 8);
 
-const {
-  transformer: tsStyledComponentTransformer,
-  webpackPlugin: tsStyledComponentPlugin,
-} = createStyledComponentsTransformer({
-  ssr: true, // always enable it to make all styled generated component has id.
-  displayName: isEnvDevelopment,
-  minify: false, // it's still an experimental feature
-  componentIdPrefix: 'rabby-',
-});
 // 'chrome-mv2', 'chrome-mv3', 'firefox-mv2', 'firefox-mv3'
 const MANIFEST_TYPE = process.env.MANIFEST_TYPE || 'chrome-mv2';
 const IS_MANIFEST_MV3 = MANIFEST_TYPE.includes('-mv3');
@@ -228,7 +216,6 @@ const commonPlugins = [
         : []),
     ],
   }),
-  tsStyledComponentPlugin,
 ];
 
 // UI 入口配置 - 启用 HMR 和 codeInspectorPlugin
@@ -299,10 +286,7 @@ const uiConfig = {
             options: {
               ...(useForkTsChecker ? { transpileOnly: true } : {}),
               getCustomTransformers: () => ({
-                before: [
-                  tsStyledComponentTransformer,
-                  isHot && ReactRefreshTypeScript(),
-                ].filter(Boolean),
+                before: [isHot && ReactRefreshTypeScript()].filter(Boolean),
               }),
             },
           },
@@ -470,9 +454,6 @@ const otherConfig = {
             loader: 'ts-loader',
             options: {
               ...(useForkTsChecker ? { transpileOnly: true } : {}),
-              getCustomTransformers: () => ({
-                before: [tsStyledComponentTransformer].filter(Boolean),
-              }),
             },
           },
         ],

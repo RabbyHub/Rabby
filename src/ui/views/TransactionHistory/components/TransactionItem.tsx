@@ -12,7 +12,6 @@ import maxBy from 'lodash/maxBy';
 import minBy from 'lodash/minBy';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { SvgPendingSpin } from 'ui/assets';
 import { ReactComponent as RcIconCancel } from 'ui/assets/cancel.svg';
 import IconQuestionMark from 'ui/assets/question-mark-black.svg';
@@ -38,11 +37,6 @@ import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 const isDesktop = getUiType().isDesktop;
-
-const ChildrenWrapper = styled.div`
-  padding: 2px;
-  padding-top: 0;
-`;
 
 export const TransactionItem = ({
   item,
@@ -560,7 +554,7 @@ export const TransactionItem = ({
         )}
       </div>
       {isPending && item.txs.length > 1 && (
-        <ChildrenWrapper>
+        <div className="px-2 pb-2 pt-0">
           <div className="tx-history__item--children">
             <div className="pending-detail">
               {t('page.activities.signedTx.common.pendingDetail')}
@@ -596,7 +590,7 @@ export const TransactionItem = ({
                 </div>
               ))}
           </div>
-        </ChildrenWrapper>
+        </div>
       )}
       {canCancel ? (
         <CancelTxPopup

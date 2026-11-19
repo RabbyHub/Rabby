@@ -32,7 +32,6 @@ import {
   formatGasAccountUSDValue,
 } from '@/ui/utils/number';
 import { calcMaxPriorityFee, GasTokenInfo } from '@/utils/transaction';
-import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { useShallow } from 'zustand/react/shallow';
@@ -138,27 +137,6 @@ interface GasSelectorProps {
 }
 
 const CardBody = GasCardBody;
-
-const HeaderStyled = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  height: 24px;
-`;
-
-const GasStyled = styled.div`
-  display: flex;
-  align-items: center;
-  position: relative;
-  flex: 1;
-
-  .gas-amount {
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    overflow: hidden;
-  }
-`;
 
 const GasPriceDesc = SharedGasPriceDesc;
 const GasPriceBold = SharedGasPriceBold;
@@ -802,10 +780,10 @@ const GasSelectorHeader = ({
 
   if (!isReady && isFirstTimeLoad) {
     return (
-      <HeaderStyled>
+      <div className="flex items-center justify-between mb-10 h-24">
         <Skeleton.Input className="rounded w-[130px] h-[20px]" active />
         <Skeleton.Input className="rounded w-[100px] h-[20px]" active />
-      </HeaderStyled>
+      </div>
     );
   }
 
@@ -815,8 +793,8 @@ const GasSelectorHeader = ({
 
   return (
     <>
-      <HeaderStyled>
-        <GasStyled {...gasHoverProps}>
+      <div className="flex items-center justify-between mb-10 h-24">
+        <div className="flex items-center relative flex-1" {...gasHoverProps}>
           {gasMethod ? (
             <div
               className={clsx(
@@ -974,7 +952,7 @@ const GasSelectorHeader = ({
             )}
           </div>
           {!gasMethod && gas.success ? (
-            <div className="mt-2 shrink-1 text-r-neutral-body text-14 gas-amount">
+            <div className="mt-2 shrink-1 text-r-neutral-body text-14 gas-amount text-ellipsis whitespace-nowrap overflow-hidden">
               {isGasHovering
                 ? calcGasEstimated(selectedGas?.estimated_seconds)
                 : `~${gasCostAmountStr}`}
@@ -993,7 +971,7 @@ const GasSelectorHeader = ({
               className="security-level-tag"
             />
           )}
-        </GasStyled>
+        </div>
         <GasMenuButton
           gasList={gasList}
           selectedGas={selectedGas}
@@ -1001,7 +979,7 @@ const GasSelectorHeader = ({
           onCustom={handleClickEdit}
           showCustomGasPrice={changedCustomGas}
         />
-      </HeaderStyled>
+      </div>
       <Popup
         isNew
         height={'auto'}

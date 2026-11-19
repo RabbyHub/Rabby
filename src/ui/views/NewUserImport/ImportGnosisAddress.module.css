@@ -1,0 +1,45 @@
+.container {
+  & :global(.ant-input) {
+    border-radius: 8px;
+    border: 1px solid var(--r-neutral-line, #e0e5ec);
+    color: var(--r-neutral-title1, #192945);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 18px;
+
+    &::placeholder {
+      color: var(--r-neutral-foot, #6a7587);
+      font-weight: 400;
+    }
+  }
+
+  & :global(.ant-input:focus),
+  & :global(.ant-input-focused) {
+    border-color: var(--r-blue-default, #7084ff);
+  }
+
+  & :global(.ant-form-item-has-error .ant-input) {
+    border: 1px solid var(--r-red-default, #e34935);
+  }
+
+  & :global(.ant-form-item-explain) {
+    display: none !important;
+  }
+  & :global(.error) {
+    margin-top: 12px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    color: var(--r-red-default, #e34935);
+  }
+  & :global(.loading) {
+    margin-top: 20px;
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    color: var(--r-neutral-body, #3e495e);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+}

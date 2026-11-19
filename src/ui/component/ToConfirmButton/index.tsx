@@ -13,7 +13,8 @@ import {
   useSignatureStoreOf,
 } from '@/ui/component/MiniSignV2/state';
 import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
+import styles from './index.module.css';
 
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
@@ -157,12 +158,6 @@ export const ToConfirmBtn = (props: {
   );
 };
 
-const RiskTipsContainer = styled.div`
-  .risk-tips-checkbox .rabby-checkbox__label {
-    margin-left: 4px;
-  }
-`;
-
 export const RiskTipsWrapper = ({
   showRiskTips,
   riskLabel,
@@ -195,8 +190,12 @@ export const RiskTipsWrapper = ({
   }, [riskReset]);
 
   return (
-    <RiskTipsContainer
-      className={clsx('w-full flex flex-col gap-[8px]', containerClassName)}
+    <div
+      className={cn(
+        styles.riskTipsContainer,
+        'w-full flex flex-col gap-[8px]',
+        containerClassName
+      )}
     >
       {children({ riskDisabled, resetRiskChecked })}
       {showRiskTips ? (
@@ -241,7 +240,7 @@ export const RiskTipsWrapper = ({
           </Checkbox>
         </div>
       ) : null}
-    </RiskTipsContainer>
+    </div>
   );
 };
 

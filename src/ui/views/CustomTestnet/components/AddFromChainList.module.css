@@ -1,0 +1,49 @@
+.wraper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  background-color: var(--r-neutral-bg1, #fff);
+  translate: 100%;
+  transition: translate 0.3s;
+  border-radius: 16px 16px 0px 0px;
+  padding: 20px 0 0 0;
+
+  display: flex;
+  flex-direction: column;
+
+  & :global(.ant-input-affix-wrapper) {
+    color: var(--r-neutral-foot, #6a7587);
+    font-size: 13px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    height: 44px;
+
+    border-radius: 6px;
+    background: var(--r-neutral-card1, #fff);
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
+
+    & :global(.ant-input) {
+      background-color: transparent;
+      color: var(--r-neutral-title1, #192945);
+    }
+
+    & :global(.anticon) {
+      color: var(--r-neutral-foot, #6a7587);
+    }
+  }
+  & :global(.ant-input-affix-wrapper:focus),
+  & :global(.ant-input-affix-wrapper-focused) {
+    border-color: var(--r-blue-default, #7084ff);
+  }
+
+  & :global(.chain-list-item:not(:last-child))::after {
+    position: absolute;
+    content: ' ';
+    left: 16px;
+    right: 16px;
+    bottom: 0;
+    border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  }
+}

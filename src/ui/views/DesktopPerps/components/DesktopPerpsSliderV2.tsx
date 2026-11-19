@@ -2,79 +2,8 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { Slider, SliderSingleProps } from 'antd';
 import React from 'react';
 import { createPortal } from 'react-dom';
-import styled from 'styled-components';
-
-const StyledSlider = styled(Slider)<{ isDark: boolean }>`
-  margin-top: 6px;
-  margin-bottom: 6px;
-
-  .ant-slider-rail,
-  &:hover .ant-slider-rail {
-    height: 2px;
-    background-color: ${({ isDark }) =>
-      isDark ? 'var(--rb-neutral-bg-2)' : 'var(--r-neutral-line)'};
-  }
-
-  .ant-slider-track,
-  &:hover .ant-slider-track {
-    height: 2px;
-    background: var(--r-blue-default, #7084ff);
-  }
-
-  &:hover > .ant-slider-handle {
-    border: none !important;
-    box-shadow: none !important;
-  }
-
-  .ant-slider-handle {
-    margin-top: -12px;
-    width: 24px;
-    height: 24px;
-    background-color: transparent;
-    border: none;
-    box-shadow: none;
-
-    &::before {
-      display: none;
-    }
-
-    &::after {
-      position: absolute;
-      content: '';
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      border-radius: 50%;
-      width: 12px;
-      height: 12px;
-      background-color: var(--rb-brand-default, #7084ff);
-      border: 1.3px solid var(--r-neutral-body, #d3d8e0);
-      box-shadow: 0px 2px 4px rgba(112, 132, 255, 0.4);
-    }
-
-    &:hover {
-      border: none;
-      box-shadow: none;
-    }
-  }
-
-  /* Inactive marks (right of handle): 9px, bg-4 fill + line ring */
-  .ant-slider-dot,
-  &:hover .ant-slider-dot {
-    width: 9px;
-    height: 9px;
-    border: 1px solid var(--rb-neutral-line, #2f3135);
-    background-color: var(--rb-neutral-bg-4, #383b41);
-    top: -4px;
-  }
-
-  /* Active marks (passed, left of handle): 9px, brand fill + neutral-body ring */
-  .ant-slider-dot-active,
-  &:hover .ant-slider-dot-active {
-    border-color: var(--r-neutral-body, #d3d8e0);
-    background-color: var(--rb-brand-default, #7084ff);
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './DesktopPerpsSliderV2.module.css';
 
 export const DesktopPerpsSliderV2 = (
   props: SliderSingleProps & { showTooltip?: boolean }
@@ -148,13 +77,17 @@ export const DesktopPerpsSliderV2 = (
         lastMousePos.current = { x: e.clientX, y: e.clientY };
       }}
     >
-      <StyledSlider
+      <Slider
         {...sliderProps}
+        className={cn(
+          styles.slider,
+          isDarkTheme && styles.dark,
+          sliderProps.className
+        )}
         tooltip={{
           open: tooltipVisible,
           prefixCls: showTooltip ? 'perps-slider-tip' : undefined,
         }}
-        isDark={isDarkTheme}
         onAfterChange={handleAfterChange}
         onChange={(value) => {
           setDragging(true);

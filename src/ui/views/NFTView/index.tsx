@@ -7,60 +7,11 @@ import { Modal, Tabs } from 'antd';
 import { NFTItem } from '@rabby-wallet/rabby-api/dist/types';
 import NFTModal from '../Dashboard/components/NFT/NFTModal';
 import { CollectionListSkeleton } from './CollectionListSkeleton';
-import styled, { css } from 'styled-components';
 import { useCollection } from './useCollection';
 import { NFTListEmpty, NFTStarredListEmpty } from './NFTEmpty';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-
-const TabsStyled = styled(Tabs)`
-  .ant-tabs-tab {
-    border-radius: 4px;
-    color: var(--r-neutral-body, #3e495e);
-    font-size: 12px;
-    transition: background-color 0.3s ease-in-out;
-    margin: 0 !important;
-    width: 100px;
-    height: 28px;
-    font-weight: 500;
-    padding: 0;
-    text-align: center;
-
-    &.ant-tabs-tab-active {
-      background: var(--r-neutral-card-1, #fff);
-      color: var(--r-blue-default, #7084ff);
-    }
-
-    &:hover {
-      color: var(--r-blue-default, #7084ff);
-    }
-  }
-
-  .ant-tabs-tab-btn {
-    margin: auto;
-  }
-
-  &.ant-tabs-top > .ant-tabs-nav::before {
-    border-bottom-color: transparent;
-  }
-
-  .ant-tabs-nav-list {
-    margin: auto;
-    background: var(--r-neutral-line, #d3d8e0);
-    border-radius: 6px;
-    padding: 2px;
-  }
-
-  .ant-tabs-ink-bar {
-    display: none;
-  }
-
-  .ant-tabs-tabpane {
-    /* height: calc(100vh - 100px); */
-    height: 500px;
-    overflow: auto;
-  }
-`;
+import styles from './index.module.css';
 
 export const NFTView: React.FC<{
   isInModal?: boolean;
@@ -109,7 +60,12 @@ export const NFTView: React.FC<{
         </PageHeader>
       )}
       <div>
-        <TabsStyled defaultActiveKey={tab} centered onChange={setTab}>
+        <Tabs
+          className={styles.tabs}
+          defaultActiveKey={tab}
+          centered
+          onChange={setTab}
+        >
           <Tabs.TabPane tab={t('page.nft.all')} key="all">
             {isLoading ? (
               <CollectionListSkeleton />
@@ -153,7 +109,7 @@ export const NFTView: React.FC<{
               <NFTStarredListEmpty />
             )}
           </Tabs.TabPane>
-        </TabsStyled>
+        </Tabs>
       </div>
 
       <Modal

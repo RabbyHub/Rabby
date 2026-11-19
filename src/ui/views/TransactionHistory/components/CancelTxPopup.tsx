@@ -6,56 +6,9 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { CancelTxConfirmPopup } from './CancelTxConfirmPopup';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
-
-const OptionsList = styled.div`
-  .option-item {
-    display: flex;
-    align-items: center;
-
-    border-radius: 6px;
-    background: var(--r-neutral-card-2, #f2f4f7);
-    padding: 12px 15px;
-    border: 1px solid transparent;
-    cursor: pointer;
-
-    & + .option-item {
-      margin-top: 12px;
-    }
-
-    /* &.is-selected {
-      border: 1px solid var(--r-blue-default, #7084ff);
-      background: var(--r-blue-light-1, #eef1ff);
-    } */
-
-    &:not(.is-disabled):hover {
-      border: 1px solid var(--r-blue-default, #7084ff);
-      background: var(--r-blue-light-1, #eef1ff);
-    }
-
-    &.is-disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    &-title {
-      color: var(--r-neutral-title-1, #192945);
-      font-size: 15px;
-      font-weight: 500;
-      line-height: 18px;
-      margin-bottom: 4px;
-    }
-
-    &-desc {
-      color: var(--r-neutral-body, #3e495e);
-      font-size: 13px;
-      font-weight: 400;
-      line-height: 16px;
-    }
-  }
-`;
+import styles from './CancelTxPopup.module.css';
 
 interface Props {
   visible?: boolean;
@@ -116,7 +69,7 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
         isSupportDarkMode
         getContainer={getContainer}
       >
-        <OptionsList>
+        <div className={styles.optionsList}>
           {options.map((item) => {
             return (
               <TooltipWithMagnetArrow
@@ -149,7 +102,7 @@ export const CancelTxPopup = ({ visible, onClose, onCancelTx, tx }: Props) => {
               </TooltipWithMagnetArrow>
             );
           })}
-        </OptionsList>
+        </div>
       </Popup>
       <CancelTxConfirmPopup
         visible={isShowRemoveLocalPendingTxTips}

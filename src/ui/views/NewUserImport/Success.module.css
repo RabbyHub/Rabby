@@ -1,0 +1,11 @@
+.scrollBarDiv {
+  overflow-y: scroll;
+  &::-webkit-scrollbar {
+    background-color: transparent;
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 90px;
+    background: var(--r-neutral-foot, #6a7587);
+  }
+}

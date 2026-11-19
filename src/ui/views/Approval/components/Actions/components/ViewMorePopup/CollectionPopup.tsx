@@ -5,7 +5,6 @@ import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
 import { CollectionWithFloorPrice } from '@rabby-wallet/rabby-api/dist/types';
 import { formatAmount } from '@/ui/utils/number';
-import styled from 'styled-components';
 
 interface CollectionData {
   collection: CollectionWithFloorPrice;
@@ -20,34 +19,16 @@ export interface CollectionPopupProps extends Props {
   type: 'collection';
 }
 
-const Title = styled.div`
-  font-size: 15px;
-  font-weight: 18px;
-  color: #333;
-  display: flex;
-  font-weight: 500;
-  margin-bottom: 10px;
-  .left {
-    color: #4b4d59;
-    margin-right: 6px;
-    font-weight: normal;
-  }
-  .right {
-    flex: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-`;
-
 export const CollectionPopup: React.FC<Props> = ({ data }) => {
   const { t } = useTranslation();
   return (
     <div>
-      <Title>
-        <span className="left">{t('page.signTx.nftCollection')}</span>
-        <span className="right">{data.collection.name}</span>
-      </Title>
+      <div className="flex mb-10 text-[15px] font-medium text-[#333]">
+        <span className="left mr-6 font-normal text-[#4b4d59]">
+          {t('page.signTx.nftCollection')}
+        </span>
+        <span className="right flex-1 truncate">{data.collection.name}</span>
+      </div>
       <Table className="view-more-table">
         <Col>
           <Row>{t('page.signTx.floorPrice')}</Row>

@@ -5,8 +5,6 @@ import Welcome from './Welcome';
 import NoAddress from './NoAddress';
 import CreatePassword from './CreatePassword';
 import ImportMode from './ImportMode';
-import ImportPrivateKey from './ImportPrivateKey';
-import ImportJson from './ImportJson';
 import ImportWatchAddress from './ImportWatchAddress';
 import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
@@ -14,22 +12,16 @@ import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedger from './ImportHardware/LedgerConnect';
 import ConnectTrezor from './ImportHardware/TrezorConnect';
 import ConnectOneKey from './ImportHardware/OneKeyConnect';
-import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
-import TokenApproval from './TokenApproval';
-import NFTApproval from './NFTApproval';
 import AddAddress from './AddAddress';
 import ChainList from './ChainList';
 import AddressManagement from './AddressManagement';
-import SwitchLang from './SwitchLang';
 import Activities from './Activities';
 import { HistoryPage } from './History';
 import PerpsSingleCoin from './Perps/screen/SingleCoin';
 import { HistoryPage as PerpsHistoryPage } from './Perps/screen/HistoryPage';
-import ExploreMore from './Perps/screen/ExploreMore';
 import Staking from './Staking';
 import StakingDetail from './Staking/Detail';
-import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
 import SendNFT from './SendNFT';
@@ -41,7 +33,6 @@ import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
 import CustomRPC from './CustomRPC';
-import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { CommonPopup } from './CommonPopup';
 import ManageAddress from './ManageAddress';
 import { NFTView } from './NFTView';
@@ -53,10 +44,8 @@ import { DappSearchPage } from './DappSearch';
 import RabbyPoints from './RabbyPoints';
 import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
 import InputMnemonics from './ImportMnemonics/InputMnemonics';
-import CreateMnemonics from './CreateMnemonics';
 import ImportHardware from './ImportHardware';
 import { CustomTestnet } from './CustomTestnet';
-import { AddFromCurrentSeedPhrase } from './AddFromCurrentSeedPhrase';
 import { AddNewAddress } from './AddAddress/AddNewAddress';
 import { AddMoreAddressesFromSeedPhrase } from './AddAddress/AddMoreAddressesFromSeedPhrase';
 import { CreateAddressSuccess } from './AddAddress/CreateAddressSuccess';
@@ -87,7 +76,6 @@ import {
   MetamaskModeDappsGuide,
   MetamaskModeDappsList,
 } from './MetamaskModeDapps';
-import { NewUserSelectAddress } from './NewUserImport/SelectAddress';
 import { ga4 } from '@/utils/ga4';
 import { getPageViewPath } from '../utils/ga-event';
 import { ConnectApproval } from './Approval/components/Connect/SelectWalletApproval';
@@ -230,10 +218,6 @@ const Main = () => {
           <ReadyToUse />
         </Route>
 
-        <Route exact path="/new-user/import/select-address">
-          <NewUserSelectAddress />
-        </Route>
-
         <Route exact path="/password">
           <CreatePassword />
         </Route>
@@ -246,20 +230,11 @@ const Main = () => {
           <ConnectApproval />
         </Route>
 
-        <PrivateRoute exact path="/mnemonics/create">
-          <CreateMnemonics />
-        </PrivateRoute>
         <Route exact path="/biometric-unlock-setup">
           <BiometricUnlockSetup />
         </Route>
         <PrivateRoute exact path="/import">
           <ImportMode />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/key">
-          <ImportPrivateKey />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/json">
-          <ImportJson />
         </PrivateRoute>
         <PrivateRoute exact path="/import/mnemonics">
           <InputMnemonics />
@@ -301,10 +276,6 @@ const Main = () => {
           <ImportSuccess />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/import/add-from-current-seed-phrase">
-          <AddFromCurrentSeedPhrase />
-        </PrivateRoute>
-
         <PrivateRoute exact path="/add-address/new-address">
           <AddNewAddress />
         </PrivateRoute>
@@ -340,9 +311,6 @@ const Main = () => {
         <PrivateRoute exact path="/history">
           <HistoryPage />
         </PrivateRoute>
-        <PrivateRoute exact path="/history/filter-scam">
-          <HistoryPage />
-        </PrivateRoute>
         <PrivateRoute exact path="/activities">
           <Activities />
         </PrivateRoute>
@@ -370,12 +338,6 @@ const Main = () => {
         <PrivateRoute exact path="/revoke-approvals">
           <ManageApprovals />
         </PrivateRoute>
-        <PrivateRoute exact path="/token-approval">
-          <TokenApproval />
-        </PrivateRoute>
-        <PrivateRoute exact path="/nft-approval">
-          <NFTApproval />
-        </PrivateRoute>
         <PrivateRoute exact path="/settings/address">
           <ManageAddress />
         </PrivateRoute>
@@ -388,17 +350,8 @@ const Main = () => {
         <PrivateRoute exact path="/settings/address-backup/mneonics">
           <AddressBackupMnemonics />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings/sites">
-          <ConnectedSites />
-        </PrivateRoute>
         <PrivateRoute exact path="/settings/chain-list">
           <ChainList />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/switch-lang">
-          <SwitchLang />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/advanced">
-          <AdvancedSettings />
         </PrivateRoute>
         <PrivateRoute exact path="/request-permission">
           <RequestPermission />
@@ -425,10 +378,6 @@ const Main = () => {
 
         <PrivateRoute exact path="/dapp-search">
           <DappSearchPage />
-        </PrivateRoute>
-
-        <PrivateRoute exact path="/import/metamask">
-          <ImportMyMetaMaskAccount />
         </PrivateRoute>
 
         <PrivateRoute exact path="/switch-address">
@@ -467,9 +416,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/perps/single-coin/:coin">
           <PerpsSingleCoin />
-        </PrivateRoute>
-        <PrivateRoute exact path="/perps/explore">
-          <ExploreMore />
         </PrivateRoute>
         <PrivateRoute exact path="/perps/history/:coin">
           <PerpsHistoryPage />

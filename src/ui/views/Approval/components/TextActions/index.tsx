@@ -1,7 +1,6 @@
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Tabs } from 'antd';
 import { getActionTypeText } from './utils';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
@@ -33,82 +32,17 @@ import {
   SignMessageAddressDataMap,
 } from '../signMessageAddressData';
 import { getSignMessageAddressTagLayouts } from '../signMessageAddressTagLayout';
+import { cn } from '@/ui/utils/cn';
+import styles from './index.module.css';
 
 const { TabPane } = Tabs;
 
-export const MessageWrapper = styled.div`
-  position: relative;
-
-  .title {
-    display: flex;
-    justify-content: center;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    overflow: hidden;
-
-    .title-text {
-      font-size: 14px;
-      color: var(--r-blue-default, #7084ff);
-      text-align: center;
-      font-weight: 500;
-      padding: 0 8px;
-      position: relative;
-
-      &::before,
-      &::after {
-        content: '';
-        width: 400px;
-        height: 1px;
-        border-top: 1px dashed var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-        position: absolute;
-        top: 50%;
-      }
-
-      &::before {
-        transform: translateX(-100%);
-        left: 0px;
-      }
-
-      &::after {
-        transform: translateX(100%);
-        right: 0px;
-      }
-    }
-  }
-  .content {
-    position: relative;
-    word-break: break-all;
-    white-space: pre-wrap;
-    font-size: 13px;
-    line-height: 16px;
-    font-weight: 400;
-    color: var(--r-neutral-body, #3e495e);
-    max-height: 544px;
-    overflow-y: auto;
-    padding: 0 16px 16px;
-    /* font-family: 'Roboto Mono'; */
-  }
-  .message-highlight {
-    color: var(--r-blue-default, #7084ff);
-    font-weight: 500;
-  }
-  &.no-action {
-    .content {
-    }
-  }
-`;
-
-const AddressTagAnchor = styled.span`
-  display: inline-block;
-  width: 0;
-  height: 16px;
-`;
-
-const AddressTagRail = styled.div`
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-`;
+export const MessageWrapper = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div ref={ref} className={cn(styles.messageWrapper, className)} {...rest} />
+));
 
 type AddressTag = {
   id: string;
@@ -249,7 +183,8 @@ export const SignMessageContent = ({
               })}
             >
               {hasTag ? (
-                <AddressTagAnchor
+                <span
+                  className="inline-block w-0 h-16"
                   ref={(element) => {
                     anchorRefs.current[index] = element;
                   }}
@@ -260,7 +195,7 @@ export const SignMessageContent = ({
           );
         })}
       </div>
-      <AddressTagRail>
+      <div className="absolute inset-0 pointer-events-none">
         {chain
           ? addressTags.map(({ id, data, danger }) => (
               <SignMessageAddressTag
@@ -274,7 +209,7 @@ export const SignMessageContent = ({
               />
             ))
           : null}
-      </AddressTagRail>
+      </div>
     </>
   );
 };

@@ -1,6 +1,5 @@
 import React, { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -19,25 +18,8 @@ import { useShallow } from 'zustand/react/shallow';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
+import styles from './Swap.module.css';
 
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
 const Swap = ({
   data,
   requireData,
@@ -110,7 +92,7 @@ const Swap = ({
   const hasRequiredData = requireData && Object.keys(requireData).length > 0;
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
@@ -362,7 +344,7 @@ const Swap = ({
           </>
         )}
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

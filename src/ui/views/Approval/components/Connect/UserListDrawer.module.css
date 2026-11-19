@@ -1,0 +1,71 @@
+.userListDrawerWrapper :global(.origin) {
+  display: flex;
+  margin-bottom: 80px;
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 26px;
+  color: var(--r-neutral-title-1, #192945);
+}
+
+.userListDrawerWrapper :global(.origin .logo) {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+}
+
+.footer {
+  background: var(--r-neutral-card-2, #f2f4f7);
+  border-radius: 6px;
+}
+
+.footer :global(.item) {
+  display: flex;
+  cursor: pointer;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  color: var(--r-neutral-title-1, #192945);
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.footer :global(.item .rabby-checkbox__wrapper .rabby-checkbox) {
+  border: 1px solid var(--r-neutral-line);
+  background-color: var(--r-neutral-foot) !important;
+}
+
+.footer :global(.item .rabby-checkbox__wrapper.checked .rabby-checkbox) {
+  background-color: var(--r-blue-default, #7084ff) !important;
+  border: none;
+}
+
+.footer :global(.item)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 18px;
+  width: 328px;
+  height: 1px;
+  background-color: var(--r-neutral-line, #e5e9ef);
+}
+
+.footer :global(.item:hover) {
+  background: var(--r-blue-light-1, #eef1ff);
+  border: 1px solid var(--r-blue-default, #7084ff);
+  border-radius: 6px;
+}
+
+.footer :global(.item:nth-last-child(1))::after {
+  display: none;
+}
+
+.globalActive :global(.user-list-drawer .ant-drawer-title) {
+  text-align: left;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 18px;
+  color: #13141a;
+}

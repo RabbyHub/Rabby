@@ -5,9 +5,9 @@ import React, { SVGProps } from 'react';
 import { useSwapStore } from '@/ui/state/swap';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import styles from './loading.module.css';
 
 type QuoteListLoadingProps = {
   fetchedList?: string[];
@@ -91,45 +91,13 @@ export const QuoteListLoading = ({
   );
 };
 
-const DotsStyled = styled.span`
-  span {
-    display: inline-block;
-    color: var(--r-neutral-foot, #6a7587);
-  }
-
-  .dot1 {
-    animation: SwapLoadingJump 1.5s infinite -0.2s;
-  }
-
-  .dot2 {
-    animation: SwapLoadingJump 1.5s infinite;
-  }
-
-  .dot3 {
-    animation: SwapLoadingJump 1.5s infinite 0.2s;
-  }
-
-  @keyframes SwapLoadingJump {
-    30% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-2px);
-    }
-
-    70% {
-      transform: translateY(2px);
-    }
-  }
-`;
-
 const Dots: React.FC = () => {
   return (
-    <DotsStyled className="relative -top-2">
+    <span className={clsx(styles.dots, 'relative -top-2')}>
       <span className="dot1">.</span>
       <span className="dot2">.</span>
       <span className="dot3">.</span>
-    </DotsStyled>
+    </span>
   );
 };
 
@@ -209,109 +177,16 @@ const SvgComponent = (props: SVGProps<SVGSVGElement>) => {
   );
 };
 
-const StyledLoading = styled.div`
-  position: relative;
-  width: 272.429px;
-  height: 136.214px;
-  margin: 0 auto;
-
-  .item {
-    position: absolute;
-    left: 50%;
-    top: 30px;
-    animation: 3s infinite;
-    width: 300px;
-    height: 100px;
-  }
-  .item-1 {
-    animation-name: loopingLoad1;
-  }
-  .item-2 {
-    animation-name: loopingLoad2;
-  }
-  .item-3 {
-    animation-name: loopingLoad3;
-  }
-
-  @keyframes loopingLoad1 {
-    0%,
-    14.28%,
-    85.71%,
-    100% {
-      transform: translateX(-50%) translateY(0) scale(1);
-      opacity: 1;
-      z-index: 2;
-    }
-    28.57%,
-    42.85% {
-      transform: translateX(-50%) translateY(-32px) scale(0.741);
-      opacity: 0.5;
-      z-index: 1;
-    }
-    57.14%,
-    71.42% {
-      transform: translateX(-50%) translateY(30px) scale(0.741);
-      opacity: 0.5;
-      z-index: 1;
-    }
-  }
-  @keyframes loopingLoad2 {
-    0%,
-    14.28%,
-    85.71%,
-    100% {
-      transform: translateX(-50%) translateY(-32px) scale(0.741);
-      opacity: 0.5;
-      z-index: 1;
-    }
-    28.57%,
-    42.85% {
-      transform: translateX(-50%) translateY(30px) scale(0.741);
-      opacity: 0.5;
-      z-index: 1;
-    }
-    57.14%,
-    71.42% {
-      transform: translateX(-50%) translateY(0) scale(1);
-      opacity: 1;
-      z-index: 2;
-    }
-  }
-
-  @keyframes loopingLoad3 {
-    0%,
-    14.28%,
-    85.71%,
-    100% {
-      transform: translateX(-50%) translateY(30px) scale(0.74);
-      opacity: 0.5;
-      z-index: 1;
-    }
-    28.57%,
-    42.85% {
-      transform: translateX(-50%) translateY(0) scale(1);
-      opacity: 1;
-      z-index: 2;
-    }
-    57.14%,
-    71.42% {
-      transform: translateX(-50%) translateY(-32px) scale(0.74);
-      opacity: 0.5;
-      z-index: 1;
-    }
-  }
-`;
-
 export const BestQuoteLoading = () => {
   const { t } = useTranslation();
 
   return (
     <div>
-      <StyledLoading>
+      <div className={styles.loading}>
         <SvgComponent className="item item-1" />
         <SvgComponent className="item item-2" />
         <SvgComponent className="item item-3" />
-      </StyledLoading>
+      </div>
 
       <div className="mt-18 flex items-center justify-center gap-4">
         <img src={ImgRabbyWallet} className="w-14 h-14 rounded-full" />

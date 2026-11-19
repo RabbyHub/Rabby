@@ -1,7 +1,6 @@
 import React from 'react';
 import { Popover } from 'antd';
 import clsx from 'clsx';
-import styled, { createGlobalStyle } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import {
   RABBY_FEE_DISCOUNT_CASES,
@@ -11,77 +10,8 @@ import {
 import type { RabbyFeeTier } from '../hooks/fee';
 import feeRabby from '@/ui/assets/swap/fee-rabby.svg';
 import { ReactComponent as RcFeeQuestion } from '@/ui/assets/swap/fee-question.svg';
-
-const PopoverStyle = createGlobalStyle`
-  .rabby-fee-discount-popover {
-    &.ant-popover-placement-topRight {
-      /* Visible height of Ant Design's 8px arrow with a 2px rounded tip. */
-      padding-bottom: calc(10px - 2px * 1.41421356237);
-    }
-    .ant-popover-content {
-      border-radius: 8px;
-      backdrop-filter: blur(8.718px);
-    }
-    .ant-popover-inner {
-      width: 240px;
-      border: 0.5px solid var(--r-neutral-line);
-      border-radius: 8px;
-      background: rgba(var(--r-neutral-bg-1-rgb), 0.9);
-      box-shadow: 0 13px 15px rgba(0, 0, 0, 0.05),
-        0 4px 6.5px rgba(0, 0, 0, 0.05);
-    }
-    &.ant-popover-placement-topRight .ant-popover-arrow {
-      right: 12px;
-      bottom: 1px;
-    }
-    .ant-popover-inner-content {
-      width: 100%;
-      padding: 10px 8px;
-    }
-    .ant-popover-arrow-content {
-      --antd-arrow-background-color: rgba(var(--r-neutral-bg-1-rgb), 0.9);
-
-      &::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-right: 0.5px solid var(--r-neutral-line);
-        border-bottom: 0.5px solid var(--r-neutral-line);
-        border-radius: inherit;
-        pointer-events: none;
-      }
-    }
-  }
-`;
-
-const FeeTag = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 1px 6px;
-  border: 0;
-  border-radius: 4px;
-  background: var(--r-green-default);
-  color: var(--r-neutral-title-2);
-  font-size: 12px;
-  font-weight: 500;
-  line-height: 14px;
-  cursor: pointer;
-
-  &.half {
-    background: transparent;
-    color: var(--r-green-default);
-    box-shadow: inset 0 0 0 1px var(--r-green-default);
-  }
-
-  img,
-  svg {
-    width: 12px;
-    height: 12px;
-    flex-shrink: 0;
-  }
-`;
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import styles from './RabbyFeeTag.module.css';
 
 /** Displays the fee and explains the current discount in a popover. */
 export const RabbyFeeTag = ({
@@ -98,6 +28,7 @@ export const RabbyFeeTag = ({
   const feeLabel = isFree
     ? t('page.swap.rabbyFee.free')
     : `${RABBY_FEE_TIERS[feeTier]}%`;
+  useDocumentClass(styles.globalActive, feeTier !== 'default');
 
   if (feeTier === 'default') {
     return (
@@ -113,7 +44,6 @@ export const RabbyFeeTag = ({
 
   return (
     <div className="flex shrink-0 items-center gap-4 text-12">
-      <PopoverStyle />
       {!isFree && (
         <span className="font-normal text-r-neutral-foot line-through">
           {SWAP_FEE_RATE.DEFAULT}%
@@ -157,15 +87,15 @@ export const RabbyFeeTag = ({
           </>
         }
       >
-        <FeeTag
+        <button
           type="button"
-          className={clsx(!isFree && 'half')}
+          className={clsx(styles.feeTag, !isFree && 'half')}
           aria-label={`${feeLabel}: ${t('page.swap.rabbyFee.discountTitle')}`}
         >
           {isFree && <img src={feeRabby} alt="" />}
           <span className={clsx(isFree && 'italic')}>{feeLabel}</span>
           <RcFeeQuestion aria-hidden />
-        </FeeTag>
+        </button>
       </Popover>
     </div>
   );

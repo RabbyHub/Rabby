@@ -1,44 +1,8 @@
 import React from 'react';
 import { Input, InputProps } from 'antd';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 import { useThousandsInput } from '../hooks/useThousandsInput';
-
-// 使用 styled-components 修改 antd Input 的样式
-const StyledInput = styled(Input)`
-  input::-webkit-inner-spin-button,
-  input::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-
-  &.ant-input-affix-wrapper {
-    border-radius: 8px;
-    border: 1px solid var(--rb-neutral-line, #e0e5ec);
-    background: var(--rb-neutral-bg-1, #fff);
-    padding: 11px;
-    line-height: 1;
-
-    .ant-input {
-      background: transparent;
-      border: none;
-      border-radius: 0;
-      box-shadow: none;
-      font-size: 13px;
-      line-height: 16px;
-      color: var(--rb-neutral-body, #111827);
-      font-weight: 500;
-
-      &::placeholder {
-        color: var(--rb-neutral-foot, #6b7280);
-        opacity: 1;
-      }
-    }
-
-    &.text-right .ant-input {
-      text-align: right;
-    }
-  }
-`;
+import styles from './DesktopPerpsInput.module.css';
 
 interface DesktopPerpsInputProps extends InputProps {}
 
@@ -48,9 +12,10 @@ export const DesktopPerpsInput: React.FC<DesktopPerpsInputProps> = (props) => {
     props.onChange
   );
   return (
-    <StyledInput
+    <Input
       placeholder="0"
       {...props}
+      className={cn(styles.input, props.className)}
       value={value}
       onChange={onChange}
       ref={ref}

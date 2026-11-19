@@ -1,0 +1,41 @@
+.optionsList {
+  & :global(.option-item) {
+    display: flex;
+    align-items: center;
+
+    border-radius: 6px;
+    background: var(--r-neutral-card-2, #f2f4f7);
+    padding: 12px 15px;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+
+  & :global(.option-item + .option-item) {
+    margin-top: 12px;
+  }
+
+  & :global(.option-item:not(.is-disabled):hover) {
+    border: 1px solid var(--r-blue-default, #7084ff);
+    background: var(--r-blue-light-1, #eef1ff);
+  }
+
+  & :global(.option-item.is-disabled) {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  & :global(.option-item-title) {
+    color: var(--r-neutral-title-1, #192945);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 18px;
+    margin-bottom: 4px;
+  }
+
+  & :global(.option-item-desc) {
+    color: var(--r-neutral-body, #3e495e);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 16px;
+  }
+}

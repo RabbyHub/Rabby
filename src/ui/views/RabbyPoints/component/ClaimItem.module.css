@@ -1,0 +1,10 @@
+.wrapper {
+  position: relative;
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  border-radius: 8px;
+  padding: 12px 0;
+  padding-top: 14px;
+  & :global(.loading-button-wrapper) svg g path {
+    stroke: rgba(255, 255, 255, 0.6);
+  }
+}

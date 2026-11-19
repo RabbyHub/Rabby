@@ -1,0 +1,4 @@
+.passwordFormItem :global(.ant-form-item-control) {
+  position: relative;
+  overflow: visible;
+}

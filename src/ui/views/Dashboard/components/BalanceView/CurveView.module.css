@@ -1,0 +1,5 @@
+/* Was a createGlobalStyle on :root; applies while CurveThumbnail is mounted. */
+:global(html).globalActive {
+  --color-curve-green: #28e43b;
+  --color-curve-red: #ff6a6b;
+}

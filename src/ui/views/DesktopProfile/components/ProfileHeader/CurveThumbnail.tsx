@@ -2,10 +2,13 @@ import dayjs from 'dayjs';
 import React from 'react';
 import { useMemo, useState, useRef, useEffect } from 'react';
 import { AreaChart, YAxis, Area, XAxis, Tooltip } from 'recharts';
-import styled, { createGlobalStyle } from 'styled-components';
+import { cn } from '@/ui/utils/cn';
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
 import { useTranslation } from 'react-i18next';
 import { getAppChainNames } from '@/ui/hooks/useAppChain';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/tips-cc.svg';
+import styles from './CurveThumbnail.module.css';
+
 export type CurvePoint = {
   value: number;
   netWorth: string;
@@ -35,31 +38,6 @@ type CurveThumbnailProps = {
   height?: number;
 };
 
-const CurveWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-`;
-
-const CurveGlobalStyle = createGlobalStyle`
-  :root {
-    --color-curve-green: var(--rb-green-default);
-    --color-curve-red: var(--rb-red-default);
-  }
-`;
-
-const AppChainTips = styled.div`
-  position: absolute;
-  bottom: 6px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  align-items: center;
-  font-size: 9px;
-  opacity: 70%;
-  pointer-events: none;
-`;
-
 export const CurveThumbnail = ({
   data,
   height,
@@ -79,6 +57,7 @@ export const CurveThumbnail = ({
   const mouseMoveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const mouseMoveCountRef = useRef(0);
   const { t } = useTranslation();
+  useDocumentClass(styles.globalActive);
 
   useEffect(() => {
     return () => {
@@ -135,8 +114,7 @@ export const CurveThumbnail = ({
   const isEmpty = !data;
 
   return (
-    <CurveWrapper ref={divRef} className={className}>
-      <CurveGlobalStyle />
+    <div ref={divRef} className={cn('w-full h-full z-[1]', className)}>
       {isEmpty ? null : (
         <AreaChart
           data={data?.list}
@@ -201,7 +179,7 @@ export const CurveThumbnail = ({
         </AreaChart>
       )}
       {showTips && appChainIds && appChainIds.length > 0 && (
-        <AppChainTips>
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center text-[9px] opacity-70 pointer-events-none">
           <div className="text-rb-neutral-title-1 mr-[2px]">
             <RcIconInfoCC width={12} height={12} />
           </div>
@@ -210,8 +188,8 @@ export const CurveThumbnail = ({
               appChainNames: getAppChainNames(appChainIds || []),
             })}
           </div>
-        </AppChainTips>
+        </div>
       )}
-    </CurveWrapper>
+    </div>
   );
 };

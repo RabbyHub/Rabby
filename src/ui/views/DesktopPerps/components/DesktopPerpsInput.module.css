@@ -1,0 +1,35 @@
+.input {
+  & input::-webkit-inner-spin-button,
+  & input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  &:global(.ant-input-affix-wrapper) {
+    border-radius: 8px;
+    border: 1px solid var(--rb-neutral-line, #e0e5ec);
+    background: var(--rb-neutral-bg-1, #fff);
+    padding: 11px;
+    line-height: 1;
+
+    & :global(.ant-input) {
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      font-size: 13px;
+      line-height: 16px;
+      color: var(--rb-neutral-body, #111827);
+      font-weight: 500;
+
+      &::placeholder {
+        color: var(--rb-neutral-foot, #6b7280);
+        opacity: 1;
+      }
+    }
+
+    &:global(.text-right) :global(.ant-input) {
+      text-align: right;
+    }
+  }
+}

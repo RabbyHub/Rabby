@@ -14,7 +14,6 @@ import { formatUsdValue, useAlias, useWallet } from '@/ui/utils';
 import { useRabbySelector } from '@/ui/store';
 import { GasAccountCloseIcon } from './PopupCloseIcon';
 import { findChainByServerID } from '@/utils/chain';
-import styled from 'styled-components';
 import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import {
@@ -31,12 +30,6 @@ enum SelectorStatus {
   Address,
   Chain,
 }
-
-const WrapperDiv = styled.div`
-  .ant-btn-primary {
-    height: 48px;
-  }
-`;
 
 const AddressRightAreaInItem = ({
   account,
@@ -598,7 +591,7 @@ const WithdrawContent = ({
         />
       </div>
 
-      <WrapperDiv
+      <div
         className={clsx(
           'flex items-center justify-center gap-10',
           'w-full mt-24 px-20 py-14 border-t-[0.5px] border-solid border-rabby-neutral-line flex-col'
@@ -636,7 +629,7 @@ const WithdrawContent = ({
             {` ${BalanceSuffix}`}
           </Button>
         </Tooltip>
-      </WrapperDiv>
+      </div>
       {
         <Selector
           accountsList={accountsList}

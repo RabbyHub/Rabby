@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
@@ -15,25 +14,7 @@ import { ProtocolListItem } from '../Actions/components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 import { TokenAmountItem } from '../Actions/components/TokenAmountItem';
 import { ApproveTokenRequireData } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './Permit.module.css';
 
 const Permit = ({
   data,
@@ -65,7 +46,7 @@ const Permit = ({
   }, [requireData]);
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle className="flex-none items-center">
@@ -191,7 +172,7 @@ const Permit = ({
           />
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

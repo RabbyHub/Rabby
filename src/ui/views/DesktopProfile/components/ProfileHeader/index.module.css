@@ -1,0 +1,14 @@
+/* Was a createGlobalStyle; applies while ProfileHeader is mounted. */
+.globalActive :global(.global-qr-code-popover .ant-popover-arrow) {
+  display: none;
+}
+
+.globalActive :global(.global-qr-code-popover .ant-popover-inner) {
+  border-radius: 8px;
+  border: 1px solid var(--r-neutral-line, #e0e5ec);
+  box-shadow: none;
+}
+
+.globalActive :global(.global-qr-code-popover .ant-popover-inner-content) {
+  padding: 14px;
+}

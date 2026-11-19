@@ -1,0 +1,89 @@
+.col {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  padding: 12px 0;
+}
+
+.row {
+  position: relative;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--r-neutral-body, #3e495e);
+  white-space: nowrap;
+  display: flex;
+  align-items: flex-start;
+  flex: 1;
+}
+
+.row:has(:global(.security-level-tag)) {
+  padding-right: 8px;
+}
+
+.row:global(.wrap) {
+  white-space: normal;
+  text-align: left;
+  padding-left: 30px;
+  flex: initial;
+  word-break: break-all;
+}
+
+.row:global(.wrap):not(:global(.title)) {
+  text-align: left;
+}
+
+.row:not(:global(.title)) {
+  text-align: right;
+  text-overflow: ellipsis;
+  justify-content: flex-end;
+}
+
+.row:has(:global(.desc-list)) {
+  padding-right: 0;
+}
+
+.row:global(.title) {
+  flex-shrink: 0;
+  flex: 1;
+  color: var(--r-neutral-title-1, #192945);
+  font-weight: 400;
+}
+
+.row:global(.title) :global(.icon-tip) {
+  display: inline;
+}
+
+.row :global(.desc-list) {
+  font-size: 13px;
+  line-height: 16px;
+  color: var(--r-neutral-foot, #6a7587);
+  margin: 0;
+  font-weight: 400;
+}
+
+.row :global(.desc-list) li {
+  padding-left: 10px;
+  margin-bottom: 4px;
+  padding-right: 0;
+  position: relative;
+}
+
+.row :global(.desc-list) li::before {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background-color: var(--r-neutral-foot, #6a7587);
+  border-radius: 100%;
+  top: 6px;
+  margin-left: -6px;
+}
+
+.row :global(.desc-list) li:nth-child(1) {
+  margin-top: 4px;
+}
+
+.row :global(.desc-list) li:nth-last-child(1) {
+  margin-bottom: 0;
+}

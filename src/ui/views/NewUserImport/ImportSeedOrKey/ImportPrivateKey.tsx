@@ -8,39 +8,10 @@ import { Link, useHistory } from 'react-router-dom';
 import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import { clearClipboard } from '@/ui/utils/clipboard';
 import IconSuccess from 'ui/assets/success.svg';
-import styled from 'styled-components';
 import { useWallet } from '@/ui/utils';
 import { privateKeyToAddress } from 'viem/accounts';
 import { ellipsisAddress } from '@/ui/utils/address';
-
-const Container = styled.div`
-  .ant-input {
-    border-radius: 8px;
-    border: 1px solid var(--r-neutral-line, #e0e5ec);
-    font-size: 15px;
-    line-height: 18px;
-    color: var(--r-neutral-title-1, #192945) !important;
-    background: var(--r-neutral-card1, #fff) !important;
-    &::placeholder {
-      color: var(--r-neutral-foot, #6a7587);
-      font-weight: 400;
-      font-size: 15px;
-      line-height: 18px;
-    }
-  }
-
-  .ant-input:focus,
-  .ant-input-focused {
-    border-color: var(--r-blue-default, #7084ff);
-  }
-
-  .ant-form-item-has-error .ant-input {
-    border: 1px solid var(--r-red-default, #e34935);
-  }
-  .ant-form-item-explain.ant-form-item-explain-error {
-    font-size: 14px !important;
-  }
-`;
+import styles from './ImportPrivateKey.module.css';
 
 const getPrivateKeyAddress = (value: string) => {
   const normalized = value.trim().replace(/^0x/i, '');
@@ -97,7 +68,7 @@ export const ImportPrivateKey = () => {
   );
 
   return (
-    <Container className="flex flex-col flex-1">
+    <div className={clsx(styles.container, 'flex flex-col flex-1')}>
       <div className="flex-1">
         <Form form={form} className="mt-[20px]">
           <Form.Item
@@ -181,6 +152,6 @@ export const ImportPrivateKey = () => {
           {t('global.next')}
         </Button>
       </footer>
-    </Container>
+    </div>
   );
 };

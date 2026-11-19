@@ -1,47 +1,15 @@
 import React, { ReactNode } from 'react';
-import styled from 'styled-components';
-
-// Styled components
-const Container = styled.span`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const Line = styled.div`
-  width: 100%;
-  justify-content: start;
-  flex-wrap: wrap;
-  display: flex;
-  flex-direction: row;
-`;
-
-const KVContainer = styled.div`
-  min-width: 220px;
-  display: flex;
-`;
-
-const KVKey = styled.span`
-  font-size: 13px;
-  color: var(--r-neutral-title1);
-  line-height: 16px;
-  margin-right: 8px;
-`;
-
-const KVValue = styled.span<{ vClassName?: string }>`
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--r-neutral-title1);
-  line-height: 16px;
-`;
+import { cn } from '@/ui/utils/cn';
 
 export const More: React.FC<{ children?: ReactNode; className?: string }> = (
   props
 ) => {
   return (
-    <Container className={props.className}>
-      <Line>{props.children}</Line>
-    </Container>
+    <span className={cn('w-full flex flex-col', props.className)}>
+      <div className="w-full justify-start flex-wrap flex flex-row">
+        {props.children}
+      </div>
+    </span>
   );
 };
 
@@ -51,9 +19,18 @@ export const KV = (props: {
   vClassName?: string;
 }) => {
   return (
-    <KVContainer>
-      <KVKey>{props.k}</KVKey>
-      <KVValue className={props.vClassName}>{props.v}</KVValue>
-    </KVContainer>
+    <div className="min-w-[220px] flex">
+      <span className="text-13 text-r-neutral-title1 leading-[16px] mr-8">
+        {props.k}
+      </span>
+      <span
+        className={cn(
+          'text-13 font-medium text-r-neutral-title1 leading-[16px]',
+          props.vClassName
+        )}
+      >
+        {props.v}
+      </span>
+    </div>
   );
 };

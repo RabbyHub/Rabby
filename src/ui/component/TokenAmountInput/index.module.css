@@ -1,0 +1,33 @@
+/* --amount-font-size is set inline from the auto-sized font size. */
+.amountInput {
+  color: var(--r-neutral-title1, #192945);
+  font-size: var(--amount-font-size) !important;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 36px;
+  background: transparent !important;
+  min-width: 0;
+  flex: 1;
+  padding-left: 0;
+  padding-right: 0;
+  &::placeholder {
+    font-size: var(--amount-font-size) !important;
+    font-style: normal;
+    font-weight: 700;
+    line-height: 36px;
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
+
+.placeholderFoot::placeholder {
+  color: var(--r-neutral-foot, #6a7587);
+}
+
+.placeholderTransparent::placeholder {
+  color: transparent;
+}

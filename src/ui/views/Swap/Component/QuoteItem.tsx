@@ -4,7 +4,6 @@ import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import clsx from 'clsx';
 import React, { useMemo, useCallback, useEffect } from 'react';
-import styled from 'styled-components';
 import { QuoteLogo } from './QuoteLogo';
 import BigNumber from 'bignumber.js';
 import ImgLock from '@/ui/assets/swap/lock.svg';
@@ -22,134 +21,9 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { useTranslation } from 'react-i18next';
 import { TokenWithChain } from '@/ui/component';
 import { Tooltip } from 'antd';
+import styles from './QuoteItem.module.css';
 
 const GAS_USE_AMOUNT_LIMIT = 2_000_000;
-
-const ItemWrapper = styled.div`
-  --quote--border-width: 1px;
-  position: relative;
-  height: 60px;
-  font-size: 13px;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  background: var(--r-neutral-card-1, #fff);
-
-  border-radius: 6px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
-  border-radius: 6px;
-  border: var(--quote--border-width) solid transparent;
-  cursor: pointer;
-
-  &:hover:not(.disabled, .inSufficient, .active) {
-    &::after {
-      position: absolute;
-      content: '';
-      inset: calc(0px - var(--quote--border-width));
-      border: var(--quote--border-width) solid var(--r-blue-default, #7084ff);
-      background: transparent;
-      border-radius: 6px;
-      z-index: 2;
-      pointer-events: none;
-    }
-  }
-
-  &.active:not(.disabled, .inSufficient) {
-    background: var(--r-blue-light-1, #eef1ff);
-    &::after {
-      position: absolute;
-      content: '';
-      inset: calc(0px - var(--quote--border-width));
-      border: var(--quote--border-width) solid var(--r-blue-default, #7084ff);
-      background: transparent;
-      border-radius: 6px;
-      z-index: 2;
-      pointer-events: none;
-    }
-  }
-
-  &.disabled {
-    border-color: transparent;
-    box-shadow: none;
-    background-color: transparent;
-    cursor: not-allowed;
-  }
-
-  &:not(.cex).inSufficient,
-  &:not(.cex).disabled {
-    border: var(--quote--border-width) solid var(--r-neutral-line, #d3d8e0);
-    box-shadow: none;
-  }
-
-  &.dex {
-    justify-content: space-between;
-    height: 88px;
-    align-items: flex-start;
-    padding-top: 20px;
-    padding-bottom: 16px;
-
-    &.error {
-      height: auto;
-      padding: 14px 16px;
-    }
-  }
-
-  &.combined {
-    height: 76px;
-    border-radius: 8px;
-    border: none;
-    box-shadow: none;
-
-    &::after {
-      border-radius: 8px !important;
-    }
-
-    &:hover:not(.disabled, .inSufficient, .active)::after {
-      inset: calc(0px - var(--quote--border-width)) 0;
-    }
-
-    .percent {
-      font-size: 12px;
-    }
-
-    .quote-tag .percent {
-      color: inherit !important;
-      font-size: 12px;
-      font-weight: 500;
-    }
-
-    .receiveNum {
-      max-width: 110px;
-      font-size: 13px;
-    }
-  }
-
-  &.combined.active {
-    height: 78px;
-    border: var(--quote--border-width) solid transparent;
-  }
-
-  .receiveNum {
-    font-size: 16px;
-    max-width: 130px;
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 500;
-    color: var(--r-neutral-title-1, #192945);
-  }
-
-  .percent {
-    font-weight: 500;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--r-blue-default, #7084ff);
-    &.red {
-      color: var(--r-red-default, #e34935);
-    }
-  }
-`;
 
 export interface QuoteItemProps {
   onlyShowErrorQuote?: boolean;
@@ -443,9 +317,10 @@ export const DexQuoteItem = (
       align={{ offset: [0, 30] }}
       arrowPointAtCenter
     >
-      <ItemWrapper
+      <div
         onClick={onlyShow ? undefined : handleClick}
         className={clsx(
+          styles.itemWrapper,
           'dex',
           active && 'active',
           props.combined && 'combined',
@@ -604,7 +479,7 @@ export const DexQuoteItem = (
             {bestQuotePercent}
           </span>
         )}
-      </ItemWrapper>
+      </div>
     </Tooltip>
   );
 };

@@ -1,0 +1,40 @@
+.tokenAmount {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.addressMark {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.addressMark :global(.icon-edit-alias) {
+  width: 13px;
+  height: 13px;
+}
+
+.address {
+  display: flex;
+}
+
+.address :global(.address-box) {
+  padding: 3px 6px;
+  border: 0.5px solid var(--r-neutral-line, #d3d8e0);
+  cursor: pointer;
+  color: var(--r-neutral-title1, #192945);
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 900px;
+  display: flex;
+}
+
+.address :global(.address-box) :global(.icon-arrow-right) {
+  margin-left: 2px;
+  color: var(--r-neutral-foot, #6a7587);
+}
+
+.address :global(.address-box):hover {
+  border-color: var(--r-blue-default, #7084ff);
+  background-color: var(--r-blue-light1, #eef1ff);
+}

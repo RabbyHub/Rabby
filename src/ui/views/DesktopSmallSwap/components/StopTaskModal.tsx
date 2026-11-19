@@ -2,16 +2,8 @@ import { Modal } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { createGlobalStyle } from 'styled-components';
-
-const GlobalStyle = createGlobalStyle`
-  .small-swap-stop-task-modal {
-    .ant-modal-content {
-      border-radius: 16px;
-      border: none;
-    }
-  }
-`;
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import styles from './StopTaskModal.module.css';
 
 export const StopTaskModal: React.FC<{
   visible: boolean;
@@ -19,6 +11,7 @@ export const StopTaskModal: React.FC<{
   onStop?: () => void;
 }> = ({ visible, onContinue, onStop }) => {
   const { t } = useTranslation();
+  useDocumentClass(styles.globalActive);
   return (
     <Modal
       visible={visible}
@@ -37,7 +30,6 @@ export const StopTaskModal: React.FC<{
       destroyOnClose
       className="modal-support-darkmode small-swap-stop-task-modal"
     >
-      <GlobalStyle />
       <div className="flex flex-col h-full p-[24px]">
         <header className="mb-[16px]">
           <h3 className="text-[20px] leading-[24px] font-medium text-r-neutral-title-1 text-center m-0">

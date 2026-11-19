@@ -1,0 +1,24 @@
+.inputWrapper {
+  border-radius: 12px;
+  overflow: hidden;
+  & :global(.ant-input) {
+    font-size: 16px !important;
+    background: var(--r-neutral-card1, #ffffff) !important;
+    &:hover,
+    &:focus {
+      border-color: var(--r-blue-default) !important;
+    }
+  }
+  & :global(.ant-input-clear-icon) {
+    top: unset !important;
+    bottom: 8px !important;
+    & svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+.aliasInputWrapper :global(.ant-input) {
+  font-size: 15px !important;
+}

@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Button, Menu, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import { useRemovedTokens } from '@/ui/hooks/useRemovedTokens';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import DropdownWithMask from '@/ui/component/DropdownWithMask';
 import { ReactComponent as RcIconMore } from '@/ui/assets/desktop/profile/more-cc.svg';
+import styles from './RemovedTokenActions.module.css';
 
 export type RemovedTokenAction = {
   key: string;
@@ -18,16 +18,6 @@ export type RemovedTokenAction = {
   disabled?: boolean;
   disabledReason?: string;
 };
-
-const MoreActionsMenu = styled(Menu)`
-  &.ant-dropdown-menu {
-    background: linear-gradient(
-      68.5094deg,
-      rgba(var(--r-neutral-bg-1-rgb), 1) 3.7701%,
-      rgba(var(--r-neutral-bg-1-rgb), 0.9) 67.021%
-    );
-  }
-`;
 
 /** Keeps restoration visible and folds the existing token actions into More. */
 export const RemovedTokenActions = ({
@@ -74,8 +64,11 @@ export const RemovedTokenActions = ({
         open={moreOpen}
         onOpenChange={setMoreOpen}
         overlay={
-          <MoreActionsMenu
-            className="w-[260px] p-0 overflow-hidden border border-r-neutral-bg-1 rounded-[16px] backdrop-blur-[14.5px] shadow-[0_18px_40px_rgba(55,56,63,0.04)]"
+          <Menu
+            className={clsx(
+              styles.moreActionsMenu,
+              'w-[260px] p-0 overflow-hidden border border-r-neutral-bg-1 rounded-[16px] backdrop-blur-[14.5px] shadow-[0_18px_40px_rgba(55,56,63,0.04)]'
+            )}
             items={actions.map((action) => ({
               key: action.key,
               disabled: action.disabled,

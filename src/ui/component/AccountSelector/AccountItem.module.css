@@ -1,0 +1,29 @@
+.wrapper {
+  position: relative;
+}
+
+.wrapper :global(.edit-pen) {
+  opacity: 0;
+}
+
+.wrapper :global(.copy-icon) {
+  display: block;
+}
+
+.hideBalance :global(.copy-icon) {
+  display: none;
+}
+
+.wrapper:hover :global(.edit-pen) {
+  opacity: 1;
+}
+
+.wrapper:hover :global(.copy-icon) {
+  opacity: 1;
+  display: block;
+  color: var(--r-neutral-body) !important;
+}
+
+.wrapper:hover :global(.copy-icon):hover {
+  color: var(--r-blue-default) !important;
+}

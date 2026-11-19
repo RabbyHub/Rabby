@@ -91,7 +91,6 @@ import { PendingTxItem } from '../Swap/Component/PendingTxItem';
 import { SendTxHistoryItem } from '@/background/service/transactionHistory';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import ChainSelectorInForm from '@/ui/component/ChainSelector/InForm';
-import styled from 'styled-components';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import { AddressInfoFrom } from '@/ui/component/SendLike/AddressInfoFrom';
 import { AddressInfoTo } from '@/ui/component/SendLike/AddressInfoTo';
@@ -321,16 +320,6 @@ function normalizeSearchString(search = '') {
   if (!search) return '';
   return search.startsWith('?') ? search : `?${search}`;
 }
-
-const ChainSelectWrapper = styled.div`
-  border: 1px solid transparent;
-  border-bottom: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  &:hover {
-    border: 1px solid var(--r-blue-default, #7084ff);
-    background-color: var(--r-blue-light-1, #eef1ff);
-    border-radius: 8px;
-  }
-`;
 
 const SendToken = () => {
   const { useForm } = Form;

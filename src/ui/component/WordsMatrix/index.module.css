@@ -1,0 +1,88 @@
+/*
+ * --matrix-item-width is set inline from rowCount; .rowEnd and .lastRow stand
+ * in for :nth-child(<rowCount>n) and :nth-last-child(-n + <rowCount>).
+ */
+.numberFlag {
+  color: var(--r-neutral-foot);
+  font-weight: 400;
+  font-size: 12px;
+  height: 14px;
+}
+
+.focusingBox {
+  border: 1px solid var(--r-blue-default, #7084ff);
+  border-radius: 6px;
+}
+
+.errorBox {
+  border-color: var(--r-red-default);
+}
+
+.matrix {
+  display: flex;
+  flex-wrap: wrap;
+  overflow: hidden;
+
+  border-radius: 6px;
+  background: var(--r-neutral-card1, #fff);
+}
+
+.matrix :global(.matrix-word-item) {
+  box-sizing: border-box;
+  height: 52px;
+  text-align: center;
+  display: block;
+
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--r-neutral-title-1);
+  position: relative;
+
+  border-right: 1px solid var(--r-neutral-line);
+  border-bottom: 1px solid var(--r-neutral-line);
+  border-right: 0.5px solid var(--r-neutral-line);
+  border-bottom: 0.5px solid var(--r-neutral-line);
+
+  width: var(--matrix-item-width);
+}
+
+.matrix :global(.matrix-word-item).rowEnd {
+  border-right: 0;
+}
+
+.matrix :global(.matrix-word-item).lastRow {
+  border-bottom: 0;
+}
+
+.matrix .focusingBox,
+.matrix .errorBox {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.matrix :global(.text) {
+  height: 100%;
+  display: inline-block;
+  line-height: 52px;
+}
+
+.matrix .numberFlag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+}
+
+.matrix :global(.close-icon-wrapper) {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}

@@ -19,35 +19,19 @@ import { useRequest } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Area, AreaChart, Tooltip, XAxis, YAxis } from 'recharts';
-import styled, { createGlobalStyle } from 'styled-components';
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import { cn } from '@/ui/utils/cn';
+import styles from './index.module.css';
 import { Skeleton } from 'antd';
-
-const CurveWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-`;
 
 const DATE_FORMATTER = 'MMM DD, YYYY';
 
 const isRealTimeKey = (key: TabKey) => REAL_TIME_TAB_LIST.includes(key);
 
-const Wrapper = styled.div`
-  border-radius: 8px;
-  background: var(--r-neutral-card1, #fff);
-`;
-
 type TokenChartsProps = {
   token: TokenItem;
   className?: string;
 };
-
-const CurveGlobalStyle = createGlobalStyle`
-  :root {
-    --color-curve-token-green: #2abb7f;
-    --color-curve-token-red: #e34935;
-  }
-`;
 
 export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
   const { t } = useTranslation();
@@ -55,6 +39,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
   const [activeKey, setActiveKey] = useState<TabKey>(TIME_TAB_LIST[0].key);
 
   const [ready, setReady] = useState(false);
+  useDocumentClass(styles.curveGlobalActive);
 
   const currentAccount = useCurrentAccount();
   const wallet = useWallet();
@@ -251,7 +236,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
   }, []);
 
   return (
-    <Wrapper className={className}>
+    <div className={cn('rounded-[8px] bg-r-neutral-card1', className)}>
       {!unHold && (
         <div
           className={clsx(
@@ -315,8 +300,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
         )}
       </div>
       <div className="h-80">
-        <CurveWrapper ref={divRef}>
-          <CurveGlobalStyle />
+        <div className="w-full h-full z-[1]" ref={divRef}>
           {curveIsLoading ? (
             <Skeleton.Input
               active
@@ -392,12 +376,12 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
               />
             </AreaChart>
           )}
-        </CurveWrapper>
+        </div>
       </div>
       <div className="m-16 mt-6">
         <TimeTab activeKey={activeKey} onSelect={onSelectActiveKey} />
       </div>
-    </Wrapper>
+    </div>
   );
 };
 

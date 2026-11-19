@@ -1,118 +1,13 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
 import clsx from 'clsx';
-
-import { styid } from 'ui/utils/styled';
+import { cn } from '@/ui/utils/cn';
 
 import IconCloseSvg from 'ui/assets/close-icon.svg';
 
 import MnemonicsInputs from './MnemonicsInputs';
+import styles from './index.module.css';
 
-const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
-
-const NumberFlag = styled.div`
-  color: var(--r-neutral-foot);
-  font-weight: 400;
-  font-size: 12px;
-  height: 14px;
-`;
-
-const CloseIcon = styled.img.attrs({
-  src: IconCloseSvg,
-})`
-  width: 8px;
-  height: 8px;
-  cursor: pointer;
-`;
-
-const FocusingBox = styled.div`
-  border: 1px solid var(--r-blue-default, #7084ff);
-  border-radius: 6px;
-`;
-
-const ErrorBox = styled(FocusingBox)`
-  border-color: var(--r-red-default);
-`;
-
-const MatrixWrapper = styled.div.withConfig<{
-  rowCount?: number;
-}>({
-  shouldForwardProp: (prop, defaultValidatorFn) => {
-    return !['rowCount'].includes(prop) && defaultValidatorFn(prop);
-  },
-})`
-  display: flex;
-  flex-wrap: wrap;
-  overflow: hidden;
-
-  border-radius: 6px;
-  background: var(--r-neutral-card1, #fff);
-
-  .matrix-word-item {
-    box-sizing: border-box;
-    height: ${ITEM_H}px;
-    text-align: center;
-    display: block;
-
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--r-neutral-title-1);
-    position: relative;
-
-    border-right: 1px solid var(--r-neutral-line);
-    border-bottom: 1px solid var(--r-neutral-line);
-    border-right: 0.5px solid var(--r-neutral-line);
-    border-bottom: 0.5px solid var(--r-neutral-line);
-
-    ${(props) => {
-      const rowCount = props.rowCount || ROW_COUNT;
-      return css`
-        width: ${(1 / rowCount) * 100}%;
-
-        &:nth-child(${rowCount}n) {
-          border-right: 0;
-        }
-
-        &:nth-last-child(-n + ${rowCount}) {
-          border-bottom: 0;
-        }
-      `;
-    }}
-  }
-
-  ${styid(FocusingBox)}, ${styid(ErrorBox)} {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
-  .text {
-    height: 100%;
-    display: inline-block;
-    line-height: ${ITEM_H}px;
-  }
-
-  ${styid(NumberFlag)} {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-  }
-
-  .close-icon-wrapper {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    top: 8px;
-    right: 8px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
-`;
 
 function WordsMatrix({
   className,
@@ -135,6 +30,7 @@ function WordsMatrix({
   closable?: boolean;
   onCloseWord?: (_: { word: string; index: number }) => any;
 }>) {
+  const matrixRowCount = rowCount || ROW_COUNT;
   const [checkedWords, setCheckedWords] = React.useState<string[]>(
     words.slice()
   );
@@ -144,9 +40,13 @@ function WordsMatrix({
   }, [words]);
 
   return (
-    <MatrixWrapper
-      className={clsx('rounded-[6px] text-center', className)}
-      rowCount={rowCount}
+    <div
+      className={cn(styles.matrix, 'rounded-[6px] text-center', className)}
+      style={
+        {
+          '--matrix-item-width': `${(1 / matrixRowCount) * 100}%`,
+        } as React.CSSProperties
+      }
     >
       {checkedWords.map((word, idx) => {
         const number = idx + 1;
@@ -156,16 +56,24 @@ function WordsMatrix({
         return (
           <div
             key={`word-item-${word}-${idx}`}
-            className={clsx('matrix-word-item')}
+            className={cn(
+              'matrix-word-item',
+              (idx + 1) % matrixRowCount === 0 && styles.rowEnd,
+              idx >= checkedWords.length - matrixRowCount && styles.lastRow
+            )}
             onClick={() => {
               if (focusable) {
                 onFocusWord?.({ word: word, index: idx });
               }
             }}
           >
-            {!errored && focusingIndex === idx && <FocusingBox />}
-            {errored && <ErrorBox />}
-            <NumberFlag>{number}.</NumberFlag>
+            {!errored && focusingIndex === idx && (
+              <div className={styles.focusingBox} />
+            )}
+            {errored && (
+              <div className={clsx(styles.focusingBox, styles.errorBox)} />
+            )}
+            <div className={styles.numberFlag}>{number}.</div>
             <span className="text">{word}</span>
 
             {clearable && (
@@ -176,13 +84,16 @@ function WordsMatrix({
                   evt.stopPropagation();
                 }}
               >
-                <CloseIcon />
+                <img
+                  src={IconCloseSvg}
+                  className="w-[8px] h-[8px] cursor-pointer"
+                />
               </div>
             )}
           </div>
         );
       })}
-    </MatrixWrapper>
+    </div>
   );
 }
 

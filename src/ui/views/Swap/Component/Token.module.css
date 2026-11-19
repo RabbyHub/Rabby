@@ -1,0 +1,41 @@
+.input {
+  &,
+  & > :global(.ant-input) {
+    height: 40px;
+    font-weight: 500;
+    box-shadow: none;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    background: transparent !important;
+    font-size: 24px;
+    text-align: right;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  &:global(.ant-input-affix-wrapper):not(:global(.ant-input-affix-wrapper-disabled)):hover {
+    border-width: 1px !important;
+  }
+
+  &:active {
+    border: 1px solid transparent;
+  }
+  &:focus,
+  &:focus-within {
+    border-width: 1px !important;
+    border-color: transparent;
+  }
+  &:hover {
+    border-width: 1px !important;
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  &:placeholder-shown {
+    color: var(--r-neutral-foot, #6a7587);
+  }
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}
