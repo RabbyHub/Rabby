@@ -1,4 +1,4 @@
-import { createAddressBalanceLoader } from '@/ui/views/AddAddress/addressBalanceLoader';
+import { createAddressBalanceLoader } from '@/ui/utils/addressBalanceLoader';
 
 const deferred = <T>() => {
   let resolve!: (value: T) => void;

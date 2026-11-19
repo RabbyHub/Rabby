@@ -61,7 +61,7 @@ jest.mock('@/ui/views/HDManager/HDPathTypeButton', () => ({
 jest.mock('@/ui/views/HDManager/utils', () => ({
   fetchAccountsInfo: (...args: unknown[]) => mockFetchAccountsInfo(...args),
 }));
-jest.mock('@/ui/views/AddAddress/addressBalanceLoader', () => ({
+jest.mock('@/ui/utils/addressBalanceLoader', () => ({
   createAddressBalanceLoader: () => mockBalanceLoader,
 }));
 jest.mock('react-router-dom', () => ({

@@ -10,7 +10,7 @@ import { isSameAddress, splitNumberByStep, useWallet } from '@/ui/utils';
 import dayjs from 'dayjs';
 import { ReactComponent as RcArrowSVG } from 'ui/assets/ledger/arrow.svg';
 import clsx from 'clsx';
-import { fetchAccountsInfo, HDManagerStateContext } from './utils';
+import { HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
 import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
@@ -406,14 +406,16 @@ export const AccountList: React.FC<Props> = ({
             key="usedChains"
             width={140}
             render={(value, record) => {
-              const account = accountsMap[record.address] || record;
+              const account =
+                accountsMap[record.address?.toLowerCase()] || record;
               return (
                 <InViewport
                   callback={() => {
                     createQueryAccountJob(record);
                   }}
                 >
-                  {!record.address || pendingMap[record.address] ? (
+                  {!record.address ||
+                  pendingMap[record.address?.toLowerCase()] ? (
                     <AccountListSkeleton width={100} />
                   ) : account.chains?.length ? (
                     <ChainList account={account} />
@@ -430,9 +432,11 @@ export const AccountList: React.FC<Props> = ({
             key="firstTxTime"
             width={160}
             render={(_, record) => {
-              const account = accountsMap[record.address] || record;
+              const account =
+                accountsMap[record.address?.toLowerCase()] || record;
               const value = account.firstTxTime;
-              return !record.address || pendingMap[record.address] ? (
+              return !record.address ||
+                pendingMap[record.address?.toLowerCase()] ? (
                 <AccountListSkeleton width={100} />
               ) : value && !isNaN(value) ? (
                 dayjs.unix(value).format('YYYY-MM-DD')
@@ -448,10 +452,13 @@ export const AccountList: React.FC<Props> = ({
             width={200}
             ellipsis
             render={(balance, record) => {
-              const account = accountsMap[record.address] || record;
-              return !record.address || pendingMap[record.address] ? (
+              const account =
+                accountsMap[record.address?.toLowerCase()] || record;
+              return !record.address ||
+                pendingMap[record.address?.toLowerCase()] ? (
                 <AccountListSkeleton width={100} />
-              ) : account.chains?.length && account.balance ? (
+              ) : typeof account.balance === 'number' &&
+                Number.isFinite(account.balance) ? (
                 `$${splitNumberByStep(account.balance.toFixed(2))}`
               ) : (
                 '-'
