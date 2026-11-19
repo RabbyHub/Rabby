@@ -5,9 +5,9 @@
   "scripts": {
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",
-    "build:dev:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS=--max-old-space-size=8192 webpack --progress --env config=dev",
-    "build:hot": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS=--max-old-space-size=8192 node build/dev-server.js",
-    "build:dev:turbo": "npm run build:dev:default --",
+    "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && cross-env NODE_OPTIONS=--max-old-space-size=8192 webpack --progress --env config=dev",
+    "build:hot": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && cross-env NODE_OPTIONS=--max-old-space-size=8192 node build/dev-server.js",
+    "build:dev:turbo": "cross-env NODE_OPTIONS='--max-old-space-size=24576' TAILWIND_MODE=watch npm run clean && npm run make-theme && NODE_OPTIONS='--max-old-space-size=24576' webpack --progress --env config=dev",
     "build:pro:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS='--max-old-space-size=12288' webpack --progress --env config=pro",
     "build:debug:default": "npm run clean && npm run make-theme && cross-env NODE_OPTIONS='--max-old-space-size=12288' webpack --progress --env config=debug",
     "build:dev:mv2": "cross-env MANIFEST_TYPE=firefox-mv2 npm run build:dev:default",
