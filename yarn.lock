@@ -4915,16 +4915,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-bridge@npm:0.0.16-alpha.0":
-  version: 0.0.16-alpha.0
-  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.16-alpha.0"
+"@rabby-wallet/rabby-bridge@npm:0.0.16":
+  version: 0.0.16
+  resolution: "@rabby-wallet/rabby-bridge@npm:0.0.16"
   dependencies:
     "@ethersproject/hash": "npm:5.8.0"
     "@ethersproject/strings": "npm:5.8.0"
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.9.58"
-  checksum: 10c0/01327fdf43c6cafd512771655631fb7b90b38d865aab84e062687e202144d4b29a014a7985bc7aba8996a3db8a6e2cf46cf93cd12578ff23ce9cd1f7b58ff7a0
+  checksum: 10c0/3592a5e8e2e5bb3e0e974695894bcd66ad8ccd20472d73c68a13a53d580d417c24bd24d984fbb7121b01c634b81de000988240eb1020e23c00d9cdceb9054031
   languageName: node
   linkType: hard
 
@@ -4950,9 +4950,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rabby-wallet/rabby-swap@npm:0.0.96-alpha.1":
-  version: 0.0.96-alpha.1
-  resolution: "@rabby-wallet/rabby-swap@npm:0.0.96-alpha.1"
+"@rabby-wallet/rabby-swap@npm:0.0.96":
+  version: 0.0.96
+  resolution: "@rabby-wallet/rabby-swap@npm:0.0.96"
   dependencies:
     "@ethersproject/abi": "npm:^5.7.0"
     "@uniswap/universal-router-sdk": "npm:5.14.0"
@@ -4963,7 +4963,7 @@ __metadata:
   peerDependencies:
     "@debank/common": ">=0.3.60"
     "@rabby-wallet/rabby-api": ">=0.6.28"
-  checksum: 10c0/2c84cb91476b2c13cc2d8e8d947e7ad02388b3df91c8f340dbf315d43497a6fb03ac64be9365a2523b772c2d697281357eb5b9aae9180413a54ac59a723a8fe0
+  checksum: 10c0/8dd24682eacef004ac792572af00518ecbf554266796d9dc4565f2de5637eabc23190cfe8223f6aad0c296d5af06ae426b03f83d87cc76366388494d83cd9572
   languageName: node
   linkType: hard
 
@@ -18821,9 +18821,9 @@ __metadata:
     "@rabby-wallet/page-provider": "npm:0.4.11"
     "@rabby-wallet/rabby-action": "npm:0.1.17"
     "@rabby-wallet/rabby-api": "npm:0.9.69"
-    "@rabby-wallet/rabby-bridge": "npm:0.0.16-alpha.0"
+    "@rabby-wallet/rabby-bridge": "npm:0.0.16"
     "@rabby-wallet/rabby-security-engine": "npm:2.0.13"
-    "@rabby-wallet/rabby-swap": "npm:0.0.96-alpha.1"
+    "@rabby-wallet/rabby-swap": "npm:0.0.96"
     "@rabby-wallet/staking-sdk": "npm:0.1.0"
     "@safe-global/protocol-kit": "npm:5.0.3"
     "@safe-global/sdk-starter-kit": "npm:1.1.1"
