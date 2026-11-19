@@ -65,11 +65,10 @@ describe('shouldUpdateNonce', () => {
   });
 });
 
+const mockTempoChain = { serverId: 'tempo', enum: 'TEMPO' };
+let mockChain = mockTempoChain;
 jest.mock('@/utils/chain', () => ({
-  findChain: () => ({
-    serverId: 'tempo',
-    enum: 'TEMPO',
-  }),
+  findChain: () => mockChain,
 }));
 
 jest.mock('@/utils/tempo', () => {
@@ -161,40 +160,109 @@ describe('checkGasAndNonce tempo fee token', () => {
 });
 
 describe('getPendingTxs', () => {
-  test('returns same-chain pending txs sorted by nonce for pre-exec', async () => {
-    const pending = (chainId: number, nonce: number) => ({
-      chainId,
-      nonce,
-      createdAt: nonce * 1000,
-      txs: [
-        {
-          rawTx: {
-            from: '0xfrom',
-            to: `0xto${nonce}`,
-            chainId,
-            data: `0x${nonce}`,
-            nonce: `0x${nonce}`,
-            value: '0x0',
-            gasPrice: `0x${nonce}`,
-            gas: '0x5208',
-          },
+  const pending = (chainId: number, nonce: number) => ({
+    chainId,
+    nonce,
+    createdAt: nonce * 1000,
+    txs: [
+      {
+        rawTx: {
+          from: '0xfrom',
+          to: `0xto${nonce}`,
+          chainId,
+          data: `0x${nonce}`,
+          nonce: `0x${nonce}`,
+          value: '0x0',
+          gasPrice: `0x${nonce}`,
+          gas: '0x5208',
         },
-      ],
-    });
-    const wallet = {
-      getTransactionHistory: jest.fn().mockResolvedValue({
-        pendings: [pending(1, 3), pending(1, 1), pending(2, 2), pending(1, 2)],
-      }),
-    };
+      },
+    ],
+  });
+  const createWallet = (
+    pendings: ReturnType<typeof pending>[],
+    requestETHRpc = jest.fn()
+  ) => ({
+    getTransactionHistory: jest.fn().mockResolvedValue({ pendings }),
+    requestETHRpc,
+  });
+  const pendingNonces = async (wallet: ReturnType<typeof createWallet>) =>
+    (
+      await getPendingTxs({
+        recommendNonce: '0x4',
+        wallet: wallet as any,
+        address: '0xfrom',
+        chainId: 1,
+      })
+    ).map((tx) => tx.nonce);
 
-    const txs = await getPendingTxs({
-      recommendNonce: '0x4',
-      wallet: wallet as any,
-      address: '0xfrom',
-      chainId: 1,
+  afterEach(() => {
+    mockChain = mockTempoChain;
+  });
+
+  test('returns same-chain pending txs sorted by nonce for pre-exec', async () => {
+    const wallet = createWallet([
+      pending(1, 3),
+      pending(1, 1),
+      pending(2, 2),
+      pending(1, 2),
+    ]);
+
+    expect(await pendingNonces(wallet)).toEqual(['0x1', '0x2', '0x3']);
+  });
+
+  describe('on a chain where the account nonce orders every tx', () => {
+    beforeEach(() => {
+      mockChain = { serverId: 'bsc', enum: 'BSC' };
     });
 
-    expect(txs.map((tx) => tx.nonce)).toEqual(['0x1', '0x2', '0x3']);
+    test('leaves out pending txs below the on-chain nonce', async () => {
+      const wallet = createWallet(
+        [pending(1, 3), pending(1, 1), pending(1, 2)],
+        jest.fn().mockResolvedValue('0x2')
+      );
+
+      expect(await pendingNonces(wallet)).toEqual(['0x2', '0x3']);
+      expect(wallet.requestETHRpc).toHaveBeenCalledWith(
+        { method: 'eth_getTransactionCount', params: ['0xfrom', 'latest'] },
+        'bsc'
+      );
+    });
+
+    test('keeps every pending tx when the on-chain nonce cannot be read', async () => {
+      const wallet = createWallet(
+        [pending(1, 1), pending(1, 2)],
+        jest.fn().mockRejectedValue(new Error('network'))
+      );
+
+      expect(await pendingNonces(wallet)).toEqual(['0x1', '0x2']);
+    });
+
+    test('keeps every pending tx when the on-chain nonce is not a number', async () => {
+      const wallet = createWallet(
+        [pending(1, 1), pending(1, 2)],
+        jest.fn().mockResolvedValue({ jsonrpc: '2.0', id: 1, result: null })
+      );
+
+      expect(await pendingNonces(wallet)).toEqual(['0x1', '0x2']);
+    });
+
+    test('does not read the on-chain nonce when the chain has nothing pending', async () => {
+      const wallet = createWallet([pending(2, 2)]);
+
+      expect(await pendingNonces(wallet)).toEqual([]);
+      expect(wallet.requestETHRpc).not.toHaveBeenCalled();
+    });
+  });
+
+  test('does not filter by the account nonce on Tempo', async () => {
+    const wallet = createWallet(
+      [pending(1, 1), pending(1, 2)],
+      jest.fn().mockResolvedValue('0x2')
+    );
+
+    expect(await pendingNonces(wallet)).toEqual(['0x1', '0x2']);
+    expect(wallet.requestETHRpc).not.toHaveBeenCalled();
   });
 });
 

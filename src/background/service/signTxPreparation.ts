@@ -1,12 +1,15 @@
+import { INTERNAL_REQUEST_SESSION } from '@/constant';
 import { findChain } from '@/utils/chain';
 import {
   buildParseTxRequest,
   buildPendingTxList,
   buildPreExecTxRequest,
+  excludeMinedPendingTxs,
   prepareInitialGasSelection,
   shouldUpdateNonce,
 } from '@/utils/transaction';
 import type { InitialGasSelection, TxIntent } from '@/utils/transaction';
+import providerController from '../controller/provider/controller';
 import { getRecommendNonce } from '../controller/walletUtils/sign';
 import { gasMarketV2 } from './gasMarket';
 import openapiService from './openapi';
@@ -104,10 +107,23 @@ export const startSignTxPreparation = ({
     ({ tx: selectedTx }) => selectedTx
   );
   const pendingTxs = getPendingHistory(address, chainId);
-  const pendingTxList = Promise.all([
-    recommendNonce,
-    pendingTxs,
-  ]).then(([nonce, pendings]) => buildPendingTxList(pendings, nonce));
+  const pendingTxList = Promise.all([recommendNonce, pendingTxs]).then(
+    async ([nonce, pendings]) =>
+      buildPendingTxList(
+        await excludeMinedPendingTxs({
+          pendings,
+          recommendNonce: nonce,
+          address,
+          chainId,
+          requestETHRpc: (data, chainServerId) =>
+            providerController.ethRpc(
+              { data, session: INTERNAL_REQUEST_SESSION },
+              chainServerId
+            ),
+        }),
+        nonce
+      )
+  );
   const explainNonce = recommendNonce.then(
     (nonce) => nonce || tx.nonce || '0x1'
   );
