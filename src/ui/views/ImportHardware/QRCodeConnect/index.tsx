@@ -18,7 +18,22 @@ type Valueof<T> = T[keyof T];
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
+// Checks `brand` before QRCodeConnectContent mounts, so its hooks always run in
+// the same order.
 export const QRCodeConnect = () => {
+  const history = useHistory();
+  const { search } = useLocation();
+  const brand = new URLSearchParams(search).get('brand');
+
+  if (!brand) {
+    history.goBack();
+    return null;
+  }
+
+  return <QRCodeConnectContent brand={brand} />;
+};
+
+const QRCodeConnectContent = ({ brand }: { brand: string }) => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -26,14 +41,7 @@ export const QRCodeConnect = () => {
   const decoder = useRef(new URDecoder());
   const [errorMessage, setErrorMessage] = useState('');
   const [scan, setScan] = useState(false);
-  const { search } = useLocation();
-  const brand = new URLSearchParams(search).get('brand');
   const stashKeyringIdRef = useRef<number | null>(null);
-
-  if (!brand) {
-    history.goBack();
-    return null;
-  }
 
   const brandInfo: Valueof<typeof WALLET_BRAND_CONTENT> =
     WALLET_BRAND_CONTENT[brand] || WALLET_BRAND_CONTENT.Keystone;

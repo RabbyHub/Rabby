@@ -250,7 +250,7 @@ export const useBridge = () => {
     : !inSufficient;
 
   const getRecommendToChain = async (chain: CHAINS_ENUM) => {
-    const useRemoteRecommendChain = async () => {
+    const fetchRemoteRecommendChain = async () => {
       const data = await wallet.openapi.getRecommendBridgeToChain({
         from_chain_id: findChainByEnum(chain)!.serverId,
       });
@@ -270,10 +270,10 @@ export const useBridge = () => {
           switchToChain(lastBridgeChain.enum);
           setToToken(latestToToken);
         } else {
-          await useRemoteRecommendChain();
+          await fetchRemoteRecommendChain();
         }
       } else {
-        await useRemoteRecommendChain();
+        await fetchRemoteRecommendChain();
       }
     }
   };

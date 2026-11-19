@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 export const useLedgerStatus = () => {
   const { activePopup } = useCommonPopupView();
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
-  const [content, setContent] = React.useState<string>();
 
   const status: 'CONNECTED' | 'DISCONNECTED' = React.useMemo(() => {
     return hasConnectedLedgerHID ? 'CONNECTED' : 'DISCONNECTED';
@@ -18,13 +17,10 @@ export const useLedgerStatus = () => {
     activePopup('Ledger');
   };
 
-  React.useEffect(() => {
-    if (status === 'DISCONNECTED') {
-      setContent(t('component.ConnectStatus.ledgerNotConnected'));
-    } else {
-      setContent(t('component.ConnectStatus.ledgerConnected'));
-    }
-  }, [status]);
+  const content =
+    status === 'DISCONNECTED'
+      ? t('component.ConnectStatus.ledgerNotConnected')
+      : t('component.ConnectStatus.ledgerConnected');
 
   return {
     content,

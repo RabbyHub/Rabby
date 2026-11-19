@@ -26,7 +26,7 @@ type IFormStates = {
   mnemonics: string;
   passphrase: string;
 };
-const ImportMnemonics = () => {
+const ImportMnemonicsContent = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm<IFormStates>();
@@ -113,12 +113,6 @@ const ImportMnemonics = () => {
       },
     }
   );
-
-  // if is pop, redirect to dashboard
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
 
   useEffect(() => {
     (async () => {
@@ -238,6 +232,19 @@ const ImportMnemonics = () => {
       </Form>
     </Card>
   );
+};
+
+const ImportMnemonics = () => {
+  const history = useHistory();
+
+  // if is pop, redirect to dashboard. Checked before ImportMnemonicsContent
+  // mounts, so its hooks always run in the same order.
+  if (getUiType().isPop) {
+    history.replace('/dashboard');
+    return null;
+  }
+
+  return <ImportMnemonicsContent />;
 };
 
 export default connectStore()(ImportMnemonics);
