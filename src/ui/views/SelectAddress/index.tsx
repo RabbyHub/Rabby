@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
-import { useLocation, useHistory } from 'react-router-dom';
-import { getUiType } from 'ui/utils';
+import { useLocation } from 'react-router-dom';
 import { KEYRING_CLASS } from 'consts';
 import './style.less';
 import { HDManager } from '../HDManager/HDManager';
@@ -17,7 +16,6 @@ type State = {
 };
 
 const SelectAddress = () => {
-  const history = useHistory();
   const { state = {} as State, search } = useLocation<{
     keyring: string;
     isMnemonics?: boolean;
@@ -33,19 +31,6 @@ const SelectAddress = () => {
   state.brand = state?.brand || (query.get('brand') as string);
   if (query.get('keyringId') && !state.keyringId) {
     state.keyringId = Number(query.get('keyringId') as string);
-  }
-
-  if (!state) {
-    if (getUiType().isTab) {
-      if (history.length) {
-        history.goBack();
-      } else {
-        window.close();
-      }
-    } else {
-      history.replace('/dashboard');
-    }
-    return null;
   }
 
   const [isMounted, setIsMounted] = React.useState(false);

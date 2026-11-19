@@ -58,233 +58,234 @@ export interface AddressItemProps {
   showEditIcon?: boolean;
 }
 
-const AddressItem = memo(
-  forwardRef(
-    (
-      {
-        account,
-        keyring,
-        ActionButton,
-        hiddenAddresses = [],
-        className,
-        onClick,
-        index,
-        editing = true,
-        showImportIcon = true,
-        showIndex = false,
-        importedAccount = false,
-        isMnemonics = false,
-        canEditing,
-        stopEditing = false,
-        retriveAlianName,
-        ellipsis = true,
-        showEditIcon = true,
-      }: AddressItemProps,
-      ref
-    ) => {
-      if (!account) {
-        return null;
+const AddressItemContent = forwardRef(
+  (
+    {
+      account,
+      keyring,
+      ActionButton,
+      hiddenAddresses = [],
+      className,
+      onClick,
+      index,
+      editing = true,
+      showImportIcon = true,
+      showIndex = false,
+      importedAccount = false,
+      isMnemonics = false,
+      canEditing,
+      stopEditing = false,
+      retriveAlianName,
+      ellipsis = true,
+      showEditIcon = true,
+    }: AddressItemProps,
+    ref
+  ) => {
+    const { t } = useTranslation();
+    const wallet = useWallet();
+    const [alianName, setAlianName] = useState<string>(
+      account?.alianName || ''
+    );
+    const [displayName, setDisplayName] = useState<string>(
+      account?.alianName || ''
+    );
+    const isDisabled = hiddenAddresses.find(
+      (item) => item.address === account.address && item.type === keyring.type
+    );
+
+    const formatAddressTooltip = (type: string, brandName: string) => {
+      if (KEYRING_TYPE_TEXT[type]) {
+        return t(KEYRING_TYPE_TEXT[type]);
       }
-      const { t } = useTranslation();
-      const wallet = useWallet();
-      const [alianName, setAlianName] = useState<string>(
-        account?.alianName || ''
-      );
-      const [displayName, setDisplayName] = useState<string>(
-        account?.alianName || ''
-      );
-      const isDisabled = hiddenAddresses.find(
-        (item) => item.address === account.address && item.type === keyring.type
-      );
-
-      const formatAddressTooltip = (type: string, brandName: string) => {
-        if (KEYRING_TYPE_TEXT[type]) {
-          return t(KEYRING_TYPE_TEXT[type]);
-        }
-        if (WALLET_BRAND_CONTENT[brandName]) {
-          return (
-            <Trans
-              i18nKey="component.AddressList.AddressItem.addressTypeTip"
-              values={{
-                type: WALLET_BRAND_CONTENT[brandName].name,
-              }}
-            />
-          );
-        }
-        return '';
-      };
-
-      const handleAlianNameChange = (
-        e: React.ChangeEvent<HTMLInputElement>
-      ) => {
-        e.stopPropagation();
-        setAlianName(e.target.value);
-      };
-
-      const alianNameConfirm = async (e?) => {
-        e && e.stopPropagation();
-
-        if (!alianName || alianName.trim() === '') {
-          return;
-        }
-        canEditing && canEditing(false);
-        await updateAlianName(alianName);
-        setDisplayName(alianName);
-        if (editing) {
-          return;
-        }
-      };
-
-      useImperativeHandle(ref, () => ({
-        alianNameConfirm,
-      }));
-
-      useDebounce(
-        () => {
-          if (!showEditIcon) {
-            alianNameConfirm();
-          }
-        },
-        200,
-        [alianName, showEditIcon]
-      );
-
-      const updateAlianName = async (alianName) => {
-        await wallet.updateAlianName(
-          account?.address?.toLowerCase(),
-          alianName
+      if (WALLET_BRAND_CONTENT[brandName]) {
+        return (
+          <Trans
+            i18nKey="component.AddressList.AddressItem.addressTypeTip"
+            values={{
+              type: WALLET_BRAND_CONTENT[brandName].name,
+            }}
+          />
         );
-        retriveAlianName && retriveAlianName();
-      };
+      }
+      return '';
+    };
 
-      const inputName = (e) => {
-        e.stopPropagation();
-        canEditing && canEditing(true);
-      };
+    const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.stopPropagation();
+      setAlianName(e.target.value);
+    };
 
-      useEffect(() => {
-        (async () => {
-          if (!alianName) {
-            const alias = await wallet.getAlianName(account.address);
-            setAlianName(alias || '');
-            setDisplayName(alias || '');
-          }
-        })();
-      }, []);
+    const alianNameConfirm = async (e?) => {
+      e && e.stopPropagation();
 
-      return (
-        <li
-          className={className}
+      if (!alianName || alianName.trim() === '') {
+        return;
+      }
+      canEditing && canEditing(false);
+      await updateAlianName(alianName);
+      setDisplayName(alianName);
+      if (editing) {
+        return;
+      }
+    };
+
+    useImperativeHandle(ref, () => ({
+      alianNameConfirm,
+    }));
+
+    useDebounce(
+      () => {
+        if (!showEditIcon) {
+          alianNameConfirm();
+        }
+      },
+      200,
+      [alianName, showEditIcon]
+    );
+
+    const updateAlianName = async (alianName) => {
+      await wallet.updateAlianName(account?.address?.toLowerCase(), alianName);
+      retriveAlianName && retriveAlianName();
+    };
+
+    const inputName = (e) => {
+      e.stopPropagation();
+      canEditing && canEditing(true);
+    };
+
+    useEffect(() => {
+      (async () => {
+        if (!alianName) {
+          const alias = await wallet.getAlianName(account.address);
+          setAlianName(alias || '');
+          setDisplayName(alias || '');
+        }
+      })();
+    }, []);
+
+    return (
+      <li
+        className={className}
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick && onClick(account.address, keyring, account.brandName);
+          canEditing && canEditing(false);
+        }}
+      >
+        <div
+          className={clsx(
+            'flex items-center relative',
+            isDisabled && 'opacity-40'
+          )}
           onClick={(e) => {
             e.stopPropagation();
-            onClick && onClick(account.address, keyring, account.brandName);
-            canEditing && canEditing(false);
           }}
         >
-          <div
-            className={clsx(
-              'flex items-center relative',
-              isDisabled && 'opacity-40'
-            )}
-            onClick={(e) => {
-              e.stopPropagation();
-            }}
-          >
-            {showImportIcon && (
-              <Tooltip
-                overlayClassName="rectangle addressType__tooltip"
-                placement="topRight"
-                align={{ offset: [12, 5] }}
-                title={formatAddressTooltip(
-                  account.type,
-                  BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName
-                )}
-              >
-                <img
-                  src={
-                    WALLET_BRAND_CONTENT[account.brandName]?.image ||
-                    KEYRING_ICONS[account.type]
-                  }
-                  className={clsx('icon icon-hardware', {
-                    'opacity-40': isDisabled,
-                  })}
-                />
-              </Tooltip>
-            )}
-            {importedAccount && isMnemonics && (
-              <div className="number-index">{account.index}</div>
-            )}
-            <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
-              {(showImportIcon || editing) && (
-                <div className="brand-name flex">
-                  {!stopEditing && editing ? (
-                    <Input
-                      className="text-r-neutral-title-1"
-                      value={alianName}
-                      defaultValue={alianName}
-                      onChange={handleAlianNameChange}
-                      onPressEnter={alianNameConfirm}
-                      onClick={(e) => e.stopPropagation()}
-                      autoFocus={!stopEditing}
-                      maxLength={50}
-                      min={0}
-                    />
-                  ) : (
-                    <div className="display-name">{displayName}</div>
-                  )}
-                  {stopEditing && editing && (
-                    <img
-                      className="edit-name"
-                      src={IconEditPen}
-                      onClick={inputName}
-                    />
-                  )}
-                  {!stopEditing && editing && showEditIcon && (
-                    <img
-                      className="edit-name w-[16px] h-[16px]"
-                      src={IconCorrect}
-                      onClick={alianNameConfirm}
-                    />
-                  )}
-                </div>
+          {showImportIcon && (
+            <Tooltip
+              overlayClassName="rectangle addressType__tooltip"
+              placement="topRight"
+              align={{ offset: [12, 5] }}
+              title={formatAddressTooltip(
+                account.type,
+                BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName
               )}
-              <div className="flex items-center">
-                <AddressViewer
-                  address={account?.address?.toLowerCase()}
-                  showArrow={false}
-                  index={account.index || index}
-                  showImportIcon={showImportIcon}
-                  className={
-                    showImportIcon || !showIndex
-                      ? 'subtitle'
-                      : 'import-color flex'
-                  }
-                  showIndex={showIndex}
-                  ellipsis={ellipsis}
-                />
-                <Copy
-                  variant="address"
-                  data={account?.address}
-                  className="w-14 h-14 ml-4"
-                ></Copy>
+            >
+              <img
+                src={
+                  WALLET_BRAND_CONTENT[account.brandName]?.image ||
+                  KEYRING_ICONS[account.type]
+                }
+                className={clsx('icon icon-hardware', {
+                  'opacity-40': isDisabled,
+                })}
+              />
+            </Tooltip>
+          )}
+          {importedAccount && isMnemonics && (
+            <div className="number-index">{account.index}</div>
+          )}
+          <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
+            {(showImportIcon || editing) && (
+              <div className="brand-name flex">
+                {!stopEditing && editing ? (
+                  <Input
+                    className="text-r-neutral-title-1"
+                    value={alianName}
+                    defaultValue={alianName}
+                    onChange={handleAlianNameChange}
+                    onPressEnter={alianNameConfirm}
+                    onClick={(e) => e.stopPropagation()}
+                    autoFocus={!stopEditing}
+                    maxLength={50}
+                    min={0}
+                  />
+                ) : (
+                  <div className="display-name">{displayName}</div>
+                )}
+                {stopEditing && editing && (
+                  <img
+                    className="edit-name"
+                    src={IconEditPen}
+                    onClick={inputName}
+                  />
+                )}
+                {!stopEditing && editing && showEditIcon && (
+                  <img
+                    className="edit-name w-[16px] h-[16px]"
+                    src={IconCorrect}
+                    onClick={alianNameConfirm}
+                  />
+                )}
               </div>
+            )}
+            <div className="flex items-center">
+              <AddressViewer
+                address={account?.address?.toLowerCase()}
+                showArrow={false}
+                index={account.index || index}
+                showImportIcon={showImportIcon}
+                className={
+                  showImportIcon || !showIndex
+                    ? 'subtitle'
+                    : 'import-color flex'
+                }
+                showIndex={showIndex}
+                ellipsis={ellipsis}
+              />
+              <Copy
+                variant="address"
+                data={account?.address}
+                className="w-14 h-14 ml-4"
+              ></Copy>
             </div>
           </div>
-          {keyring && (
-            <div className="action-button flex items-center shrink-0 cursor-pointer">
-              {ActionButton && (
-                <ActionButton
-                  data={account.address}
-                  account={account}
-                  keyring={keyring}
-                />
-              )}
-            </div>
-          )}
-        </li>
-      );
+        </div>
+        {keyring && (
+          <div className="action-button flex items-center shrink-0 cursor-pointer">
+            {ActionButton && (
+              <ActionButton
+                data={account.address}
+                account={account}
+                keyring={keyring}
+              />
+            )}
+          </div>
+        )}
+      </li>
+    );
+  }
+);
+
+// Checks `account` before AddressItemContent mounts, so its hooks always run
+// in the same order.
+const AddressItem = memo(
+  forwardRef((props: AddressItemProps, ref) => {
+    if (!props.account) {
+      return null;
     }
-  )
+    return <AddressItemContent {...props} ref={ref} />;
+  })
 );
 
 export default AddressItem;

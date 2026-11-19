@@ -20,7 +20,7 @@ type Props = {
   type: string;
   brandName?: string;
 };
-export const AddressBackup = ({ address, type }: Props) => {
+const AddressBackupContent = ({ address, type }: Props) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
@@ -28,11 +28,6 @@ export const AddressBackup = ({ address, type }: Props) => {
 
   const [form] = useForm();
 
-  if (
-    ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type as any)
-  ) {
-    return null;
-  }
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
   const { hasBackup } = useCheckSeedPhraseBackup({ address, type });
@@ -148,4 +143,17 @@ export const AddressBackup = ({ address, type }: Props) => {
       </div>
     </div>
   );
+};
+
+// Only HD and private-key keyrings can be backed up. Checking here, before
+// AddressBackupContent mounts, keeps its hooks unconditional.
+export const AddressBackup = (props: Props) => {
+  if (
+    ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(
+      props.type as any
+    )
+  ) {
+    return null;
+  }
+  return <AddressBackupContent {...props} />;
 };

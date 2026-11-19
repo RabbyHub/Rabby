@@ -582,23 +582,6 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     });
   });
 
-  if (!state.publicKey) {
-    return null;
-  }
-
-  const displayRows = rows.length
-    ? rows
-    : loading
-    ? Array.from({
-        length: maxAccountCount,
-      }).map((_, index) => ({
-        address: '',
-        index: setting.startNo + index,
-        imported: false,
-        placeholder: true,
-      }))
-    : [];
-
   const selectedAddressSet = React.useMemo(
     () => new Set(selectedAddresses.map((address) => address.toLowerCase())),
     [selectedAddresses]
@@ -621,6 +604,23 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     },
     [handleToggle, selectedAddressSet]
   );
+
+  if (!state.publicKey) {
+    return null;
+  }
+
+  const displayRows = rows.length
+    ? rows
+    : loading
+    ? Array.from({
+        length: maxAccountCount,
+      }).map((_, index) => ({
+        address: '',
+        index: setting.startNo + index,
+        imported: false,
+        placeholder: true,
+      }))
+    : [];
 
   return (
     <div

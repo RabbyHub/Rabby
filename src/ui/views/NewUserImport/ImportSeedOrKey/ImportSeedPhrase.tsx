@@ -28,7 +28,7 @@ type IFormStates = {
   passphrase: string;
 };
 
-export const ImportSeedPhrase = () => {
+const ImportSeedPhraseContent = () => {
   const history = useHistory();
   const { store, setStore } = useNewUserGuideStore();
 
@@ -65,12 +65,6 @@ export const ImportSeedPhrase = () => {
     },
     [isSlip39]
   );
-
-  // if is pop, redirect to dashboard
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
 
   useEffect(() => {
     (async () => {
@@ -252,4 +246,17 @@ export const ImportSeedPhrase = () => {
       </Form>
     </div>
   );
+};
+
+export const ImportSeedPhrase = () => {
+  const history = useHistory();
+
+  // if is pop, redirect to dashboard. Checked before ImportSeedPhraseContent
+  // mounts, so its hooks always run in the same order.
+  if (getUiType().isPop) {
+    history.replace('/dashboard');
+    return null;
+  }
+
+  return <ImportSeedPhraseContent />;
 };

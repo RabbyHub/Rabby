@@ -616,18 +616,9 @@ const SignTx = ({
     validAfter,
   } = normalizedTx;
 
+  // Refused EIP-7702 requests never reach here: SignTxWithEIP7702Guard
+  // renders EIP7702Warning instead of mounting SignTx.
   const is7702 = is7702Tx({ authorizationList } as any);
-
-  if (
-    (is7702 || params?.$ctx?.eip7702Revoke) &&
-    origin !== INTERNAL_REQUEST_ORIGIN
-  ) {
-    return <EIP7702Warning approvalId={approvalId} />;
-  }
-
-  if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
-    return <EIP7702Warning approvalId={approvalId} />;
-  }
 
   const enable7702 = (is7702 && isSpeedUp) || params?.$ctx?.eip7702Revoke;
 
@@ -3034,6 +3025,35 @@ const SignTx = ({
   );
 };
 
+// Refuses EIP-7702 requests before SignTx mounts. The checks are the ones SignTx
+// used to return early on; doing them here keeps SignTx's hooks unconditional,
+// and a refused request starts none of SignTx's effects (simulation, gas).
+const SignTxWithEIP7702Guard = (props: SignTxProps) => {
+  const { params, origin, approvalId } = props;
+
+  const normalizedTx = useMemo(() => {
+    return normalizeTxParams(
+      params.data[0],
+      !params.session.isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
+    );
+  }, [params.data]);
+  const { authorizationList, isSpeedUp } = normalizedTx;
+  const is7702 = is7702Tx({ authorizationList } as any);
+
+  if (
+    (is7702 || params?.$ctx?.eip7702Revoke) &&
+    origin !== INTERNAL_REQUEST_ORIGIN
+  ) {
+    return <EIP7702Warning approvalId={approvalId} />;
+  }
+
+  if (is7702 && !(isSpeedUp || params?.$ctx?.eip7702Revoke)) {
+    return <EIP7702Warning approvalId={approvalId} />;
+  }
+
+  return <SignTx {...props} />;
+};
+
 const SignTxWrap = (props: SignTxProps) => {
   const { params, origin } = props;
   const chainId = params?.data?.[0]?.chainId;
@@ -3042,7 +3062,7 @@ const SignTxWrap = (props: SignTxProps) => {
   return chain?.isTestnet ? (
     <SignTestnetTx {...props} />
   ) : (
-    <SignTx {...props} />
+    <SignTxWithEIP7702Guard {...props} />
   );
 };
 

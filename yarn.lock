@@ -12648,6 +12648,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-react-you-might-not-need-an-effect@npm:1.1.0":
+  version: 1.1.0
+  resolution: "eslint-plugin-react-you-might-not-need-an-effect@npm:1.1.0"
+  peerDependencies:
+    eslint: ">=8.40.0"
+  checksum: 10c0/368d089484d653207a15adaa10b6c650c5d38fff58a158bd17c43aab8191451a5f6aa84d7115b6c9267c91292583c9fa2cff23872a519b42ace594b6a69bc56f
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-react@npm:7.23.2":
   version: 7.23.2
   resolution: "eslint-plugin-react@npm:7.23.2"
@@ -18882,6 +18891,7 @@ __metadata:
     eslint-plugin-prettier: "npm:3.4.0"
     eslint-plugin-react: "npm:7.23.2"
     eslint-plugin-react-hooks: "npm:4.6.0"
+    eslint-plugin-react-you-might-not-need-an-effect: "npm:1.1.0"
     eslint-webpack-plugin: "npm:2.5.4"
     eth-rpc-errors: "npm:4.0.3"
     ethers: "npm:5.8.0"
