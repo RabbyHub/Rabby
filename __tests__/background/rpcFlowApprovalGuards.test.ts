@@ -20,6 +20,7 @@ const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
   setCurrentRequestDeferFn: jest.fn(),
+  clearCurrentRequestDeferFn: jest.fn(),
   unLock: jest.fn(),
 };
 const mockPermissionService = {
