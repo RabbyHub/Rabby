@@ -37,17 +37,37 @@ Do not use Query for:
 
 Choose the first shape that covers the use:
 
-1. **One component reads it, and nothing prefetches or invalidates it: call `useQuery` inline.** The key still comes from `createQueryKey`. See `src/ui/views/NewUserImport/PinGuideTips.tsx`.
+1. **A single OpenAPI read, from any number of components: use `openapiQueryOptions`** from `@/ui/query/openapiQuery`. No resource file is needed.
 
    ```ts
    const { data } = useQuery({
-     queryKey: createQueryKey('tokenPrice', {}, { tokenId }),
-     queryFn: () => wallet.openapi.tokenPrice(tokenId),
-     enabled: Boolean(tokenId),
+     ...openapiQueryOptions('getToken', [address, chainServerId, tokenId], {
+       address,
+       chainId: chainServerId,
+     }),
+     enabled: Boolean(address && chainServerId && tokenId),
+     select: (token) => token.logo_url,
+     staleTime: 10_000,
    });
    ```
 
-2. **Several places read it, or code prefetches it, invalidates it, or calls `getQueryData` / `setQueryData` on it: export a resource** from `src/ui/query/resources/<name>.ts`. A resource is a key builder plus a `queryOptions` factory. Because `queryOptions` tags the key with the data type, `getQueryData(tokenPriceQueryKey(id))` is typed too.
+   - **The key is built from the method name and arguments.** EVM addresses in the arguments are lower-cased in the key only; the request still gets the originals. Every caller with the same method and arguments shares one cache entry.
+   - **`queryFn` returns the raw response.** Shape the data with `select`, never by wrapping `queryFn`, so the shared entry keeps one shape.
+   - **Pass `scope` (the third argument) when the cache must be invalidated per account or chain.** Positional arguments cannot be matched by name. Invalidation filters: `['rabby', 'openapi', { address }]` for one account, `['rabby', 'openapi', {}, { method: 'getToken' }]` for one method, `['rabby', 'openapi']` for everything (for example after the OpenAPI host changes, since the host is not in the key).
+   - **The types accept only methods that resolve to data.** Client setters and `void` writes are rejected, and the arguments are checked against the method. A write that returns data still type-checks, so never pass one.
+   - **Use it only for HTTP reads.** Wallet controller methods such as `gasMarketV2` depend on background state (custom RPC, testnet) and need their own resource or inline query.
+
+2. **Anything else read by one component, with nothing prefetching or invalidating it: call `useQuery` inline.** Typical cases are a browser API or a wallet controller method. The key still comes from `createQueryKey`. See `src/ui/views/NewUserImport/PinGuideTips.tsx`.
+
+   ```ts
+   const { data: isPinned } = useQuery({
+     queryKey: createQueryKey('actionUserSettings'),
+     queryFn: () =>
+       browser.action.getUserSettings().then((s) => !!s.isOnToolbar),
+   });
+   ```
+
+3. **Several places share logic beyond one OpenAPI call (combining calls, or choosing a method by chain), or code prefetches, invalidates or calls `getQueryData` / `setQueryData` on it: export a resource** from `src/ui/query/resources/<name>.ts`. A resource is a key builder plus a `queryOptions` factory. Because `queryOptions` tags the key with the data type, `getQueryData(tokenPriceQueryKey(id))` is typed too.
 
    ```ts
    import { queryOptions } from '@tanstack/react-query';
@@ -70,7 +90,7 @@ Choose the first shape that covers the use:
      });
    ```
 
-3. **Add a hook only when it adds logic** on top of the options, such as an extra `enabled` condition (`src/ui/hooks/useTokenInfo.ts`), a `select`, or combining several queries. A hook that only returns `useQuery(xQueryOptions(...))` adds nothing; call `useQuery` with the options directly.
+4. **Add a hook only when it adds logic** on top of the options, such as an extra `enabled` condition (`src/ui/hooks/useTokenInfo.ts`), a `select`, or combining several queries. A hook that only returns `useQuery(xQueryOptions(...))` adds nothing; call `useQuery` with the options directly.
 
 Promote a shape when a second use appears, not in advance.
 
@@ -113,6 +133,7 @@ Migrate only the requests in files you are already changing. Keep behaviour the 
 | `useEffect` + `await` / `.then` + `setState` | `useQuery` with the effect's dependencies in the key |
 | `useAsync(fn, deps)` (react-use) | `useQuery`, with `deps` in the key |
 | `useRequest(fn, { refreshDeps })` (ahooks) | `useQuery`, with `refreshDeps` in the key |
+| any of the above wrapping a single `wallet.openapi.x(...args)` call | `useQuery(openapiQueryOptions('x', args))`, with any post-processing moved to `select` |
 | `ready` | `enabled` |
 | `loading` | `isPending` for first load, `isFetching` for any request in flight |
 | `refresh()` / `retry()` | `refetch()` |
@@ -142,6 +163,7 @@ Migrate only the requests in files you are already changing. Keep behaviour the 
 
 - Do not add new `useEffect` + `setState` fetches, `useRequest`, or `useAsync` for server reads.
 - Do not put a response-changing input anywhere except the key.
+- Do not reshape data inside an `openapiQueryOptions` query; use `select`, because every caller of that method and arguments shares the entry.
 - Do not use Query in approval, signing, unlock or permission flows without a security review.
 - Do not call `useQuery` in a component that can mount outside the app's `QueryClientProvider`.
 - Do not change the global `QueryClient` defaults for one resource; override them on that resource.
