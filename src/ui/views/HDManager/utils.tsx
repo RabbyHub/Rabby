@@ -156,8 +156,15 @@ const useTaskQueue = ({ keyring }) => {
       }
       console.error(e);
       Sentry.captureException(e);
+      // A seed phrase has no device to reconnect, so the hardware wording
+      // misleads; surface the real reason (e.g. an expired import session).
+      const content =
+        keyring === KEYRING_CLASS.MNEMONIC
+          ? (typeof e?.message === 'string' && e.message) ||
+            t('page.newAddress.hd.tooltip.connectError')
+          : t('page.newAddress.hd.tooltip.disconnected');
       message.error({
-        content: t('page.newAddress.hd.tooltip.disconnected'),
+        content,
         key: 'ledger-error',
       });
       if (keyring !== KEYRING_CLASS.HARDWARE.GRIDPLUS) {

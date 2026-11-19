@@ -13,8 +13,11 @@ export const AddToRabby: React.FC<Props> = ({ checked, onChange }) => {
 
   const handleOnChange = React.useCallback(async (value: boolean) => {
     setLocked(true);
-    await onChange?.(value);
-    setLocked(false);
+    try {
+      await onChange?.(value);
+    } finally {
+      setLocked(false);
+    }
   }, []);
   return (
     <RcSwitch

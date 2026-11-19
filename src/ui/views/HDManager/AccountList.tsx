@@ -15,6 +15,7 @@ import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
 import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
+import type { Account as ImportMnemonicsAccount } from '@/background/service/preference';
 import { useTranslation } from 'react-i18next';
 import { detectClientOS } from '@/ui/utils/os';
 import { useQueryAccountsInfo } from './hooks/useQueryAccontsInfo';
@@ -105,6 +106,16 @@ export const AccountList: React.FC<Props> = ({
       if (checked) {
         await createTask(async () => {
           if (keyring === KEYRING_CLASS.MNEMONIC) {
+            // The row was derived from this keyring, so it is authoritative;
+            // re-seed the store's cache in case it was reset since loading.
+            useImportMnemonicsStore.getState().memorizeQuriedAccounts({
+              accounts: [
+                {
+                  address: account.address,
+                  index: account.index,
+                } as ImportMnemonicsAccount,
+              ],
+            });
             await useImportMnemonicsStore
               .getState()
               .setSelectedAccounts([account.address]);
