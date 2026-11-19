@@ -1904,10 +1904,7 @@
       "onekey": {
         "onekeyPermission1": "Kết nối với thiết bị USB",
         "allowRabbyPermissionsTitle": "Cho phép Rabby thực hiện:",
-        "onekeyPermissionTip": "Vui lòng nhấn \"Cho phép\" bên dưới để cấp quyền truy cập vào OneKey trong cửa sổ bật lên tiếp theo. Nếu OneKey không xuất hiện, hãy kiểm tra xem thiết bị đã được kết nối đúng cách với máy tính chưa.",
-        "whyOneKey": "Tại sao chọn OneKey?",
-        "buyOneKey": "Mua OneKey",
-        "haveOneKey": "Chưa có OneKey?"
+        "onekeyPermissionTip": "Vui lòng nhấn \"Cho phép\" bên dưới để cấp quyền truy cập vào OneKey trong cửa sổ bật lên tiếp theo. Nếu OneKey không xuất hiện, hãy kiểm tra xem thiết bị đã được kết nối đúng cách với máy tính chưa."
       },
       "walletConnect": {
         "clockSkewError": "WalletConnect không thể kết nối vì thời gian trên máy tính của bạn không đồng bộ. Hãy bật cài đặt ngày và giờ tự động, rồi thử lại.",
