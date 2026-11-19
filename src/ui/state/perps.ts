@@ -354,6 +354,11 @@ let marketDataInFlight: Promise<void> | null = null;
 const stakingSummaryInFlight = new Map<string, Promise<void>>();
 const portfolioInFlight = new Map<string, Promise<void>>();
 
+// Address the simple-mode user-data channels currently follow. The wallet
+// home subscribes before the perps page logs in; re-subscribing the same
+// channels would make the userFills snapshot re-fetch the fill history.
+let simpleUserDataAddress: string | null = null;
+
 // The `portfolio` info endpoint ignores any period parameter and always
 // returns all periods at once, so 1D/1W/1M/All is a client-side slice —
 // switching range must NOT refetch. This is the freshness window before a
@@ -1503,11 +1508,18 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     }
 
     // 订阅实时数据更新
-    dispatch.perps.subscribeToUserData({
-      address: account.address,
-      type: account.type,
-      isPro,
-    });
+    // Simple mode keeps channels already following this address. Pro always
+    // re-subscribes: resetProAccountInfo clears its data without unsubscribing,
+    // and only fresh snapshots refill it.
+    const alreadySubscribed =
+      !isPro && simpleUserDataAddress === account.address.toLowerCase();
+    if (!alreadySubscribed) {
+      dispatch.perps.subscribeToUserData({
+        address: account.address,
+        type: account.type,
+        isPro,
+      });
+    }
 
     // dispatch.perps.startPolling(undefined);
     dispatch.perps.fetchUserAbstraction(account.address);
@@ -2086,6 +2098,7 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     dispatch.perps.patchState({
       wsSubscriptions: [...rootState.perps.wsSubscriptions, ...subscriptions],
     });
+    simpleUserDataAddress = isPro ? null : address.toLowerCase();
   },
 
   // startPolling(_: void | undefined, rootState: PerpsRootState) {
@@ -2116,6 +2129,7 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
       }
     });
     dispatch.perps.patchState({ wsSubscriptions: [] });
+    simpleUserDataAddress = null;
   },
 
   logout() {

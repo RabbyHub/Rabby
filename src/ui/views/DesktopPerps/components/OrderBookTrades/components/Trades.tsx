@@ -23,6 +23,9 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
   const szDecimals = useRabbySelector(
     (state) => state.perps.marketDataMap[selectedCoin]?.szDecimals ?? 5
   );
+  const quoteAsset = useRabbySelector(
+    (state) => state.perps.marketDataMap[selectedCoin]?.quoteAsset ?? 'USDC'
+  );
 
   const formatTime = (timestamp: number) => {
     return dayjs(timestamp).format('HH:mm:ss');
@@ -35,13 +38,12 @@ export const Trades: React.FC<{ trades: Trade[]; selectedCoin: string }> = ({
   return (
     <div className="h-full flex flex-col bg-rb-neutral-bg-1">
       {/* Header */}
-      <div className="flex items-center justify-between px-[8px] py-[6px] text-[11px] text-rb-neutral-secondary shrink-0">
+      <div className="flex items-center justify-between px-[8px] py-[6px] text-[12px] text-rb-neutral-secondary shrink-0">
         <span className="min-w-[60px] text-left">
-          {t('page.perpsPro.orderBook.price')} (USD)
+          {t('page.perpsPro.orderBook.price')} ({quoteAsset})
         </span>
         <span className="min-w-[90px] text-right">
-          {t('page.perpsPro.orderBook.amount')} ({formatPerpsCoin(selectedCoin)}
-          )
+          {t('page.perpsPro.orderBook.size')} ({formatPerpsCoin(selectedCoin)})
         </span>
         <span className="min-w-[60px] text-right">
           {t('page.perpsPro.orderBook.time')}

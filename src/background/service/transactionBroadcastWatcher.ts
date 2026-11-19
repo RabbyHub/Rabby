@@ -7,7 +7,7 @@ import {
   transactionWatchService,
 } from 'background/service';
 import { createPersistStore, isSameAddress } from 'background/utils';
-import interval from 'interval-promise';
+import { interval } from '@/background/utils/interval';
 import transactionHistory from './transactionHistory';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';

@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { pick } from 'lodash';
 
 import { getSentryEnv } from '@/utils/env';
+import { createBridgeSdkSentryEvent } from '@/utils/bridge-sdk-report';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
 import { isWalletConnectClockSkewError } from '@/utils/walletconnect-error';
 import {
@@ -95,6 +96,25 @@ export const getSentryConfig = (): BrowserOptions => {
     beforeSend: async (event, hint) => {
       if (!(await shouldReportUserBehaviorData())) {
         return null;
+      }
+
+      if (event.tags?.bridge_sdk === 'validation') {
+        if (!hint?.data?.bridge_sdk_report) return null;
+        const reportEvent = createBridgeSdkSentryEvent(
+          hint.data.bridge_sdk_report
+        );
+        if (!reportEvent) return null;
+        if (hint?.attachments) hint.attachments = [];
+        // Keep only SDK-approved diagnostics, without inherited wallet/request context.
+        return {
+          ...reportEvent,
+          event_id: event.event_id,
+          timestamp: event.timestamp,
+          release: event.release,
+          environment: event.environment,
+          platform: event.platform,
+          sdkProcessingMetadata: event.sdkProcessingMetadata,
+        };
       }
       const originalException = hint?.originalException;
 

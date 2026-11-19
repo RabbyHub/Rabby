@@ -10,7 +10,7 @@ import { CHAINS_ENUM, EVENTS_IN_BG } from 'consts';
 import { getTxScanLink } from '@/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
-import interval from 'interval-promise';
+import { interval } from '@/background/utils/interval';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { customTestnetService } from './customTestnet';
 import { Chain } from '@debank/common';

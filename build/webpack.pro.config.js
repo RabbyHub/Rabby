@@ -2,10 +2,11 @@ const webpack = require('webpack');
 const MinimizerPlugin = require('minimizer-webpack-plugin');
 const sentrySourceMap = !!process.env.sourcemap || false;
 const SecSDK = require('warden-for-js').WardenPlugin;
-// Terser workers are threads inside the webpack process, so each one adds its
+// Minifier workers are threads inside the webpack process, so each one adds its
 // own copy of the asset it minifies to the build's memory. Memory-limited CI
-// runners lower this via TERSER_PARALLEL; unset keeps Terser's default.
-const terserParallel = process.env.TERSER_PARALLEL
+// runners lower this via TERSER_PARALLEL (named before the switch to SWC);
+// unset keeps the plugin's default.
+const minifyParallel = process.env.TERSER_PARALLEL
   ? Number(process.env.TERSER_PARALLEL)
   : true;
 
@@ -30,9 +31,11 @@ const config = {
     minimize: true,
     minimizer: [
       new MinimizerPlugin({
-        parallel: terserParallel,
+        parallel: minifyParallel,
         minify: {
-          implementation: MinimizerPlugin.terserMinify,
+          // SWC takes the same compress options and minifies far faster than
+          // Terser, with less memory
+          implementation: MinimizerPlugin.swcMinify,
           options: {
             compress: {
               pure_funcs: ['console.log', 'console.debug', 'console.info'],

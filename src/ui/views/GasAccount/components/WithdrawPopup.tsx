@@ -93,9 +93,10 @@ const Selector = ({
   const sortedList = useMemo(
     () =>
       isSelectChain
-        ? [...(selectAddressChainList?.recharge_chain_list || [])].sort(
-            (a, b) => b.withdraw_limit - a.withdraw_limit
-          )
+        ? (selectAddressChainList?.recharge_chain_list || [])
+            // Server may still return chains that are offline locally; drop them.
+            .filter((item) => findChainByServerID(item.chain_id))
+            .sort((a, b) => b.withdraw_limit - a.withdraw_limit)
         : withdrawList,
     [selectAddressChainList, withdrawList, isSelectChain]
   );

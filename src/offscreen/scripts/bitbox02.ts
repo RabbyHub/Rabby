@@ -6,6 +6,7 @@ import {
 } from '@/constant/offscreen-communication';
 import browser from 'webextension-polyfill';
 import * as bitbox from '@bitboxswiss/bitbox-api';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 export function initBitBox02() {
   const bridge = new BitBox02Bridge();
@@ -17,10 +18,13 @@ export function initBitBox02() {
         action: BitBox02Action;
         params: any[];
       },
-      _sender,
+      sender,
       sendResponse
     ) => {
-      if (msg.target !== OffscreenCommunicationTarget.bitbox02Offscreen) {
+      if (
+        msg.target !== OffscreenCommunicationTarget.bitbox02Offscreen ||
+        !isPrivilegedOffscreenSender(sender)
+      ) {
         return;
       }
 

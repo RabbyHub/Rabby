@@ -6,6 +6,7 @@ import {
   BitBox02Action,
 } from '@/constant/offscreen-communication';
 import HDKey from 'hdkey';
+import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 
 async function openPopup(url: string) {
   await browser.windows.create({
@@ -30,10 +31,11 @@ function maybeClosePopup() {
 // the listener is registered once per service worker. A per-instance guard used
 // to leak one listener per bridge, and a lock/unlock cycle or a reopened import
 // page builds a new bridge, so every pairing then opened N popups.
-browser.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (
     msg.target !== OffscreenCommunicationTarget.extension ||
-    msg.event !== OffscreenCommunicationEvents.bitbox02DeviceConnect
+    msg.event !== OffscreenCommunicationEvents.bitbox02DeviceConnect ||
+    !isPrivilegedOffscreenSender(sender)
   ) {
     return;
   }

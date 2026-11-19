@@ -4,6 +4,7 @@ import {
   recordPrimitiveSigningCarrier,
 } from '@/utils/sentry';
 import * as Sentry from '@sentry/browser';
+import { getTrezorSigningDiagnostics } from './eth-trezor-keyring/signing-error';
 
 export type SigningOperation =
   | 'transaction'
@@ -465,4 +466,6 @@ export const withSigningDiagnostics = (
 };
 
 registerSimpleProvider('onekey', 'usb');
-registerSimpleProvider('trezor', 'usb');
+registerSigningDiagnosticsProvider('trezor', (_keyring, error) =>
+  getTrezorSigningDiagnostics(error)
+);

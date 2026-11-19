@@ -2,7 +2,6 @@ import { act, createElement } from 'react';
 import { createRoot, Root } from 'react-dom/client';
 import { Modal } from 'antd';
 import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import { FirstNoticeDialog } from '@/ui/views/Dashboard/components/FirstNoticeDialog';
 
 jest.mock('react-i18next', () => ({
@@ -15,7 +14,6 @@ jest.mock('react-markdown', () => ({
     require('react').createElement('div', { className }, children)
   ),
 }));
-jest.mock('remark-gfm', () => ({ __esModule: true, default: jest.fn() }));
 
 jest.mock('antd', () => ({
   Modal: jest.fn(({ visible, title, children, footer, onCancel }: any) =>
@@ -74,7 +72,7 @@ describe('first notice dialog', () => {
       );
     });
 
-  it('shows the installed version and passes the original changelog to GFM Markdown', () => {
+  it('shows the installed version and passes the original changelog to Markdown', () => {
     render();
     expect(container.querySelector('.first-notice-title')?.textContent).toBe(
       'title'
@@ -86,7 +84,6 @@ describe('first notice dialog', () => {
       ((ReactMarkdown as unknown) as jest.Mock).mock.calls[0][0]
     ).toMatchObject({
       children: updateContent,
-      remarkPlugins: [remarkGfm],
     });
     expect(((Modal as unknown) as jest.Mock).mock.calls[0][0]).toMatchObject({
       width: 360,

@@ -5,6 +5,7 @@ import {
   toChecksumAddress,
 } from '@ethereumjs/util';
 import { ethErrors } from 'eth-rpc-errors';
+import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import { KEYRING_IMPORT_EXPIRED } from '@/constant/message';
 import { ethers, Contract } from 'ethers';
 import {
@@ -298,8 +299,6 @@ type ScreenshotFeedbackExtra = {
   extensionVersion: string;
   extensionName?: string;
   totalBalanceText?: string;
-  myCallableAddressCount?: number;
-  myUncallableAddressCount?: number;
   myFirstAddress?: string;
   myFirstImportedAddress?: string;
   myCurrentAddress?: string;
@@ -320,7 +319,8 @@ type PostUserFeedbackParams = {
   pageInfo?: ScreenshotFeedbackPageInfo;
   totalBalanceText?: string;
   /**
-   * Addresses are only attached when the user explicitly opts in.
+   * Addresses are only attached when the "share my addresses" checkbox is
+   * ticked (it is ticked by default; the user can untick it).
    */
   includeAddress?: boolean;
 };
@@ -2193,6 +2193,14 @@ export class WalletController extends BaseController {
     return preferenceService.setIsShowTestnet(value);
   };
 
+  getIsLedgerClearSigningEnabled = () => {
+    return preferenceService.getIsLedgerClearSigningEnabled();
+  };
+
+  setIsLedgerClearSigningEnabled = (value: boolean) => {
+    return preferenceService.setIsLedgerClearSigningEnabled(value);
+  };
+
   getUserDataTrackingOptOut = () => {
     return preferenceService.getUserDataTrackingOptOut();
   };
@@ -3313,8 +3321,9 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  getGnosisTransactionSignatures = () => {
+  getGnosisTransactionSignatures = (expectedHash?: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
+    keyring.assertExpectedTransactionHash(expectedHash);
     if (keyring.currentTransaction) {
       const sigs = Array.from(keyring.currentTransaction.signatures.values());
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
@@ -3341,7 +3350,9 @@ export class WalletController extends BaseController {
       currentProvider.currentAccountType = account.type;
       currentProvider.currentAccountBrand = account.brandName;
       currentProvider.chainId = networkId;
-      await keyring.buildTransaction(
+      // Return this build's hash; another build can replace the shared state
+      // before this async controller resumes.
+      return keyring.buildTransaction(
         safeAddress,
         tx,
         new ethers.providers.Web3Provider(currentProvider),
@@ -3390,12 +3401,12 @@ export class WalletController extends BaseController {
     }
   };
 
-  postGnosisTransaction = () => {
+  postGnosisTransaction = (expectedHash?: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring || !keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    return keyring.postTransaction();
+    return keyring.postTransaction(expectedHash);
   };
 
   getGnosisAllPendingTxs = async (address: string) => {
@@ -3573,40 +3584,79 @@ export class WalletController extends BaseController {
     }
   };
 
-  gnosisGenerateTypedData = () => {
+  gnosisGenerateTypedData = (
+    expectedHash: string,
+    approvalId: string,
+    nonce: number
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    if (!keyring.currentTransaction) {
-      throw new Error(t('background.error.notFoundTxGnosisKeyring'));
+    const approval = notificationService.getApproval();
+    const params = approval?.data.params;
+    const proposalHash = params?.$ctx?.safeTxHash;
+    const typedData = keyring.generateTypedData(expectedHash);
+    if (
+      !keyringService.isUnlocked() ||
+      !approvalId ||
+      approval?.id !== approvalId ||
+      approval.data.approvalComponent !== 'SignTx' ||
+      !expectedHash ||
+      !typedData ||
+      typedData.message.nonce !== nonce ||
+      (params?.data[0].isViewGnosisSafe &&
+        (!proposalHash ||
+          proposalHash.toLowerCase() !== expectedHash.toLowerCase() ||
+          Number(keyring.safeInstance?.network) !==
+            Number(params.data[0].chainId))) ||
+      `0x${TypedDataUtils.eip712Hash(
+        typedData as any,
+        SignTypedDataVersion.V4
+      ).toString('hex')}`.toLowerCase() !== expectedHash.toLowerCase()
+    ) {
+      throw ethErrors.provider.userRejectedRequest(
+        'The Safe proposal changed. Please review it again.'
+      );
     }
-    return keyring.generateTypedData();
+    return typedData;
   };
 
-  gnosisAddConfirmation = async (address: string, signature: string) => {
+  gnosisAddConfirmation = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addConfirmation(address, signature);
+    await keyring.addConfirmation(address, signature, expectedHash);
   };
 
-  gnosisAddPureSignature = async (address: string, signature: string) => {
+  gnosisAddPureSignature = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addPureSignature(address, signature);
+    await keyring.addPureSignature(address, signature, expectedHash);
   };
 
-  gnosisAddSignature = async (address: string, signature: string) => {
+  gnosisAddSignature = async (
+    address: string,
+    signature: string,
+    expectedHash?: string
+  ) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
     if (!keyring.currentTransaction) {
       throw new Error(t('background.error.notFoundTxGnosisKeyring'));
     }
-    await keyring.addSignature(address, signature);
+    await keyring.addSignature(address, signature, expectedHash);
   };
 
   buildGnosisMessage = async ({
@@ -4955,16 +5005,20 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    const signingOptions = options
+      ? omit(options, ['signingOperation'])
+      : options;
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },
-      options
+      signingOptions
     );
     eventBus.emit(EVENTS.broadcastToUI, {
       method: EVENTS.SIGN_FINISHED,
       params: {
         success: true,
         data: res,
+        signingOperation: options?.signingOperation,
       },
     });
     return res;
@@ -4999,7 +5053,11 @@ export class WalletController extends BaseController {
       options,
     });
     const signingOptions = options
-      ? omit(options, ['sourceApprovalId', 'approvalComponent'])
+      ? omit(options, [
+          'sourceApprovalId',
+          'approvalComponent',
+          'signingOperation',
+        ])
       : options;
     const res = await keyringService.signTypedMessage(
       keyring,
@@ -5011,6 +5069,7 @@ export class WalletController extends BaseController {
       params: {
         success: true,
         data: res,
+        signingOperation: options?.signingOperation,
       },
     });
     return res;
@@ -5040,6 +5099,9 @@ export class WalletController extends BaseController {
             params: {
               success: false,
               errorMsg: e?.message || JSON.stringify(e),
+              // Waiting components drop a SIGN_FINISHED that is not for
+              // their own signing operation.
+              signingOperation: options?.signingOperation,
             },
           });
         },
@@ -7111,7 +7173,14 @@ export class WalletController extends BaseController {
   onScreenshotFeedbackSubmitted = feedbackService.onScreenshotFeedbackSubmitted;
   removeScreenshotFeedback = feedbackService.removeScreenshotFeedback;
   clearScreenshotFeedbacks = feedbackService.clearScreenshotFeedbacks;
-  getScreenshotShareAddress = feedbackService.getScreenshotShareAddress;
+  /**
+   * Initial state of the "share my addresses" checkbox in screenshot
+   * feedback: ticked by default, but unticked when the user has turned off
+   * "Help improve Rabby" (userDataTrackingOptOut) or unticked it before.
+   */
+  getScreenshotShareAddress = () =>
+    !preferenceService.getUserDataTrackingOptOut() &&
+    feedbackService.getScreenshotShareAddress();
   setScreenshotShareAddress = feedbackService.setScreenshotShareAddress;
   setScreenshotContextMenuVisible =
     feedbackService.setScreenshotContextMenuVisible;
@@ -7158,25 +7227,24 @@ export class WalletController extends BaseController {
         (typeof navigator !== 'undefined' ? navigator.platform : undefined),
     };
 
-    try {
-      const accounts = await keyringService.getAllVisibleAccountsArray();
-      const importedAccounts = accounts.filter(
-        (item) =>
-          item.type !== KEYRING_TYPE.WatchAddressKeyring &&
-          item.type !== KEYRING_TYPE.GnosisKeyring
-      );
+    if (shouldIncludeAddress) {
+      try {
+        const accounts = await keyringService.getAllVisibleAccountsArray();
+        const importedAccounts = accounts.filter(
+          (item) =>
+            item.type !== KEYRING_TYPE.WatchAddressKeyring &&
+            item.type !== KEYRING_TYPE.GnosisKeyring
+        );
 
-      extra.myCallableAddressCount = accounts.length;
-      extra.myUncallableAddressCount = importedAccounts.length;
-      if (shouldIncludeAddress) {
         extra.myFirstAddress = accounts[0]?.address;
         extra.myFirstImportedAddress = importedAccounts[0]?.address;
+      } catch (error) {
+        console.error(
+          'Failed to get screenshot feedback accounts extra',
+          error
+        );
       }
-    } catch (error) {
-      console.error('Failed to get screenshot feedback accounts extra', error);
-    }
 
-    if (shouldIncludeAddress) {
       try {
         const currentAccount = preferenceService.getCurrentAccount();
 

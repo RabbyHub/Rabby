@@ -72,6 +72,8 @@ jest.mock('@/background/service/signTxPreparation', () => ({
   cancelSignTxPreparation: jest.fn(),
 }));
 jest.mock('@/utils/signEvent', () => ({
+  // rpcFlow also builds the signing operation with this module.
+  ...jest.requireActual('@/utils/signEvent'),
   waitSignComponentAmounted: jest.fn(() => Promise.resolve()),
 }));
 jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
