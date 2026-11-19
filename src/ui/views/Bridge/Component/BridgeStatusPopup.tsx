@@ -95,12 +95,17 @@ const StepBadge = ({ status }: { status: BridgePopupStep }) => {
   return (
     <div
       className={clsx(
-        'flex items-center gap-[4px] rounded-[4px] px-[8px] py-[6px]',
+        'flex max-w-[55%] shrink-0 items-center gap-[4px] rounded-sm px-[8px] py-[6px]',
         tone
       )}
     >
       {icon}
-      <span className="text-13 font-medium leading-[16px]">{label}</span>
+      <span
+        title={label}
+        className="min-w-0 line-clamp-2 wrap-anywhere text-13 font-medium leading-[16px]"
+      >
+        {label}
+      </span>
     </div>
   );
 };
@@ -127,43 +132,59 @@ const StepCard = ({
   const headerTone =
     status === 'queued' ? 'text-r-neutral-foot' : 'text-r-neutral-title-1';
   const amountTone = status === 'queued' ? 'opacity-40' : '';
+  const prefix = approx ? '≈' : '';
+  const tokenAmount = `${sign} ${prefix}${formatTokenAmount(
+    amount || 0
+  )} ${getTokenSymbol(token)}`;
+  const usdAmount = `${sign}${prefix}${formatUsdValue(usd || 0)}`;
 
   return (
-    <div className="flex w-full flex-col overflow-hidden rounded-[8px] bg-r-neutral-card-1">
-      <div className="flex h-[44px] items-center justify-between border-b-[0.5px] border-solid border-rabby-neutral-line pl-[12px] pr-[10px]">
-        <div className={clsx('flex items-center gap-[6px]', headerTone)}>
-          <span className="text-20 font-bold leading-[24px]">{index}</span>
-          <span className="text-15 font-bold">{title}</span>
+    <div className="flex w-full flex-col overflow-hidden rounded-lg bg-r-neutral-card-1">
+      <div className="flex min-h-[44px] items-center gap-[8px] border-b-[0.5px] border-solid border-rabby-neutral-line py-[6px] pl-[12px] pr-[10px]">
+        <div
+          className={clsx(
+            'flex min-w-0 flex-1 items-center gap-[6px]',
+            headerTone
+          )}
+        >
+          <span className="shrink-0 text-20 font-bold leading-[24px]">
+            {index}
+          </span>
+          <span
+            title={title}
+            className="min-w-0 line-clamp-2 wrap-anywhere text-15 font-bold"
+          >
+            {title}
+          </span>
         </div>
         <StepBadge status={status} />
       </div>
       <div
         className={clsx(
-          'flex h-[48px] items-center justify-between',
+          'flex min-h-[48px] items-center gap-[8px] py-[6px]',
           status === 'refund' ? 'px-[16px]' : 'px-[12px]'
         )}
       >
-        <div className="flex items-center gap-[10px]">
+        <div className="flex min-w-0 flex-1 items-center gap-[10px]">
           <TokenWithChain token={token?.logo_url} chain={token?.chain} />
           <span
+            title={tokenAmount}
             className={clsx(
-              'text-13 font-bold leading-[16px] text-r-neutral-title-1',
+              'min-w-0 line-clamp-2 wrap-anywhere text-13 font-bold leading-[16px] text-r-neutral-title-1',
               amountTone
             )}
           >
-            {sign} {approx ? '≈' : ''}
-            {formatTokenAmount(amount || 0)} {getTokenSymbol(token)}
+            {tokenAmount}
           </span>
         </div>
         <span
+          title={usdAmount}
           className={clsx(
-            'text-13 leading-[16px] text-r-neutral-title-1',
+            'max-w-[48%] shrink-0 truncate text-13 leading-[16px] text-r-neutral-title-1',
             amountTone
           )}
         >
-          {sign}
-          {approx ? '≈' : ''}
-          {formatUsdValue(usd || 0)}
+          {usdAmount}
         </span>
       </div>
     </div>
@@ -239,8 +260,10 @@ export const BridgeStatusPopup = ({
 
   return (
     <div className="flex h-[440px] w-full shrink-0 flex-col px-[20px] pb-[20px]">
-      <div className="flex h-[52px] shrink-0 items-center justify-center text-center text-20 font-medium text-r-neutral-title-1">
-        {title}
+      <div className="flex min-h-[52px] shrink-0 items-center justify-center px-[42px] py-[4px] text-center text-20 font-medium leading-[24px] text-r-neutral-title-1">
+        <span title={title} className="line-clamp-2 wrap-anywhere">
+          {title}
+        </span>
       </div>
       <div
         className={clsx(
@@ -385,7 +408,7 @@ const PopupButton = ({
     <button
       type="button"
       disabled={disabled}
-      className="h-[48px] w-full rounded-[6px] bg-r-blue-default text-[16px] font-medium text-r-neutral-title-2 disabled:opacity-40"
+      className="h-[48px] w-full rounded-md bg-r-blue-default text-[16px] font-medium text-r-neutral-title-2 disabled:opacity-40"
       onClick={onClick}
     >
       {label}
