@@ -85905,7 +85905,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
-      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/component/MiniSignV2/index.ts",
       "src/ui/hooks/useAccounts.ts",
