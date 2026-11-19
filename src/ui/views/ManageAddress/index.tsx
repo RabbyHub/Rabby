@@ -112,12 +112,11 @@ const ManageAddress = () => {
   const updateInfoAndSetCurrentIndex = useCallback(
     async (cond = true) => {
       await dispatch.accountToDisplay.getAllAccountsToDisplay();
-      setCurrentIndex((pre) => {
-        if (cond && TypedWalletObj && typedWalletIdList.length - 1 <= pre) {
-          setCurrentIndex(pre - 1);
-        }
-        return pre;
-      });
+      setCurrentIndex((pre) =>
+        cond && TypedWalletObj && typedWalletIdList.length - 1 <= pre
+          ? pre - 1
+          : pre
+      );
     },
     [typedWalletIdList, dispatch?.accountToDisplay?.getAllAccountsToDisplay]
   );
@@ -291,6 +290,7 @@ const ManageAddress = () => {
                     }
                     return (
                       <GroupItem
+                        key={id}
                         item={list?.[0]}
                         active={i === currentIndex}
                         count={list?.length || 0}

@@ -34,6 +34,7 @@ const SwitchLang = () => {
       <PageHeader>{t('Languages')}</PageHeader>
       {LANGS.map((current) => (
         <FieldCheckbox
+          key={current.code}
           // leftIcon={<img src={current.icon} className="icon-lang" />}
           checked={current.code === lang}
           onChange={(checked) => handleSwitchLang(checked, current.code)}

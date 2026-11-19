@@ -24,6 +24,16 @@ interface SpotSwapContentProps {
   onDeposit?: () => void;
 }
 
+const CoinOption = ({ coin }: { coin: PerpsQuoteAsset }) => {
+  const Icon = QUOTE_ASSET_ICON_MAP[coin];
+  return (
+    <div className="flex items-center gap-8 text-r-neutral-title-1">
+      <Icon className="w-20 h-20" />
+      <span>{coin}</span>
+    </div>
+  );
+};
+
 const Content: React.FC<SpotSwapContentProps> = ({
   visible,
   targetAsset,
@@ -60,16 +70,6 @@ const Content: React.FC<SpotSwapContentProps> = ({
     onSuccess,
     onClose,
   });
-
-  const CoinOption = ({ coin }: { coin: PerpsQuoteAsset }) => {
-    const Icon = QUOTE_ASSET_ICON_MAP[coin];
-    return (
-      <div className="flex items-center gap-8 text-r-neutral-title-1">
-        <Icon className="w-20 h-20" />
-        <span>{coin}</span>
-      </div>
-    );
-  };
 
   const renderCoinMenu = (onSelect: (v: PerpsQuoteAsset) => void) => (
     <Menu
