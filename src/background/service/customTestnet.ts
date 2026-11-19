@@ -194,15 +194,19 @@ class CustomTestnetService {
       }
     });
   };
-  add = async (chain: TestnetChainBase) => {
-    return this._update(chain, true);
+  add = async (chain: TestnetChainBase, beforeCommit?: () => void) => {
+    return this._update(chain, true, beforeCommit);
   };
 
   update = async (chain: TestnetChainBase) => {
     return this._update(chain);
   };
 
-  _update = async (chain: TestnetChainBase, isAdd?: boolean) => {
+  _update = async (
+    chain: TestnetChainBase,
+    isAdd?: boolean,
+    beforeCommit?: () => void
+  ) => {
     chain.id = +chain.id;
     const local = findChain({
       id: +chain.id,
@@ -255,6 +259,7 @@ class CustomTestnetService {
         },
       };
     }
+    beforeCommit?.();
     const testnetChain = createTestnetChain(chain);
     this.store.customTestnet = {
       ...this.store.customTestnet,

@@ -203,6 +203,7 @@ import {
 } from '@/utils/tempo';
 import { getRecommendGas, getRecommendNonce } from './walletUtils/sign';
 import { bootWallet } from './walletUtils/boot';
+import { addCustomTestnetFromApproval } from './walletUtils/addChain';
 import {
   disableExtraFeeProtection,
   enableExtraFeeProtection,
@@ -6673,6 +6674,7 @@ export class WalletController extends BaseController {
   };
 
   addCustomTestnet = customTestnetService.add;
+  addCustomTestnetFromApproval = addCustomTestnetFromApproval;
   updateCustomTestnet = customTestnetService.update;
   removeCustomTestnet = (chainId: number) => {
     const chain = findChain({
