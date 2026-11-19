@@ -81,7 +81,10 @@ import {
   TypeDataActionItem,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
-import { tokenizeSignTypedDataMessage } from './signMessageHighlighter';
+import {
+  tokenizeSignTypedDataMessage,
+  tokenizeSignTypedDataV1Message,
+} from './signMessageHighlighter';
 import { useSignMessageAddressData } from './useSignMessageAddressData';
 
 interface SignTypedDataProps {
@@ -334,10 +337,11 @@ const SignTypedData = ({
       let message;
       let displayMessage;
       if (isSignTypedDataV1) {
-        message = data[0].reduce((m, n) => {
-          m[n.name] = n.value;
-          return m;
-        }, {});
+        const fields = data[0];
+        if (!Array.isArray(fields) || fields.some((field) => field == null)) {
+          throw new Error('Invalid V1 typed-data fields');
+        }
+        message = fields;
         displayMessage = message;
       } else {
         // [from, Message]
@@ -364,29 +368,8 @@ const SignTypedData = ({
   const messageTokens = useMemo(() => {
     if (!parsedMessage) return undefined;
     if (isSignTypedDataV1) {
-      const fields = (Array.isArray(data[0]) ? data[0] : []) as Array<{
-        name: string;
-        type: string;
-        value: unknown;
-      }>;
-      const message = fields.reduce<Record<string, unknown>>(
-        (result, field) => {
-          result[field.name] = field.value;
-          return result;
-        },
-        {}
-      );
-      return tokenizeSignTypedDataMessage(
-        {
-          primaryType: 'RabbySignTypedDataV1',
-          types: {
-            RabbySignTypedDataV1: fields.map(({ name, type }) => ({
-              name,
-              type,
-            })),
-          },
-          message,
-        },
+      return tokenizeSignTypedDataV1Message(
+        Array.isArray(data[0]) ? data[0] : [],
         parsedMessage
       );
     }

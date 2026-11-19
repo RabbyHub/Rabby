@@ -329,7 +329,9 @@ describe('SignTypedData security lifecycle', () => {
       'ui/assets/walletlogo/safe.svg': '',
       '@/ui/state/exchange': { getCexInfo: async () => ({}) },
       '@/ui/utils/ledger-dmk': { requestLedgerHIDPermission: noop },
-      './signMessageHighlighter': { tokenizeSignTypedDataMessage: () => [] },
+      './signMessageHighlighter': jest.requireActual(
+        '@/ui/views/Approval/components/signMessageHighlighter'
+      ),
       './useSignMessageAddressData': { useSignMessageAddressData: () => ({}) },
     };
     const compiled = transpileModule(
@@ -449,16 +451,27 @@ describe('SignTypedData security lifecycle', () => {
     'ethSignTypedDataV1',
     'eth_sign_typed_data_v1',
   ])(
-    '%s shows the legacy payload in the main, raw and copy views',
+    '%s shows every original field in the main, raw and copy views',
     async (method) => {
-      const fields = [{ name: 'Message', type: 'string', value: 'Hello' }];
+      const fields = [
+        { name: 'amount', type: 'uint256', value: '1000000' },
+        { name: 'amount', type: 'uint256', value: '1' },
+        {
+          name: '__proto__',
+          type: 'address',
+          value: '0xde709f2102306220921060314715629080e2fb77',
+        },
+      ];
       props.params.method = method;
       props.params.data = [fields, '0xaccount'];
       act(render);
       await flush();
-      expect(JSON.parse(actions.message)).toEqual({ Message: 'Hello' });
+      expect(JSON.parse(actions.message)).toEqual(fields);
       expect(actions.raw).toBe(fields);
-      expect(JSON.parse(actions.copyMessage)).toEqual(fields);
+      expect(actions.copyMessage).toBe(JSON.stringify(fields));
+      expect(
+        actions.messageTokens.map((token: any) => token.value).join('')
+      ).toBe(actions.message);
       expect(wallet.openapi.parseCommon).not.toHaveBeenCalled();
       expect(footer.securityBlocked).toBe(false);
       await act(async () => footer.onSubmit());
