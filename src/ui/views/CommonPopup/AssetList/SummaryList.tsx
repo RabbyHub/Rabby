@@ -9,6 +9,7 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { TokenListSkeleton } from './TokenListViewSkeleton';
 import { ReactComponent as SkeletonSummarySVG } from '@/ui/assets/dashboard/skeleton-summary.svg';
 import { useTranslation } from 'react-i18next';
+import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
   chainId: string | null;
@@ -28,9 +29,11 @@ export const SummaryList: React.FC<Props> = () => {
 };
 
 export const SummaryListTemp: React.FC<Props> = ({ chainId }) => {
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
   const { list, loading } = useSummary(currentAccount!.address, chainId);
   const { t } = useTranslation();
 

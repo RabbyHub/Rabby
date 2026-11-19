@@ -19,6 +19,7 @@ import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
+import { useShallow } from 'zustand/react/shallow';
 
 export type DisplayedAccount = IDisplayedAccountWithBalance & {
   hdPathBasePublicKey?: string;
@@ -119,10 +120,12 @@ export const useWalletTypeData = () => {
     accountsList,
     highlightedAddresses = [],
     loadingAccounts,
-  } = useRabbySelector((s) => ({
-    ...s.accountToDisplay,
-    highlightedAddresses: s.addressManagement.highlightedAddresses,
-  }));
+  } = useRabbySelector(
+    useShallow((s) => ({
+      ...s.accountToDisplay,
+      highlightedAddresses: s.addressManagement.highlightedAddresses,
+    }))
+  );
 
   const sortedRef = useRef(false);
   const sortIdList = useRef<string[]>([]);

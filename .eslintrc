@@ -13,6 +13,21 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.name='useRabbySelector'][arguments.length=1] > ArrowFunctionExpression > :matches(ObjectExpression, ArrayExpression).body",
+        "message": "This selector returns a new object or array on every call, so the component re-renders on every store update. Wrap the selector in `useShallow` from 'zustand/react/shallow'."
+      },
+      {
+        "selector": "CallExpression[callee.name='useRabbySelector'][arguments.length=1] > ArrowFunctionExpression > BlockStatement > ReturnStatement > :matches(ObjectExpression, ArrayExpression)",
+        "message": "This selector returns a new object or array on every call, so the component re-renders on every store update. Wrap the selector in `useShallow` from 'zustand/react/shallow'."
+      },
+      {
+        "selector": "CallExpression[callee.name='useRabbySelector'] > ArrowFunctionExpression > LogicalExpression > :matches(ObjectExpression, ArrayExpression).right",
+        "message": "A `|| []` / `?? {}` fallback in a selector is a new value on every call. Use a constant defined outside the component."
+      }
+    ],
     "prettier/prettier": [
       "error",
       {

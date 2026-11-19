@@ -38,6 +38,7 @@ import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getUiType } from '@/ui/utils';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { PendingTxStatusPopup } from './PendingTxStatusPopup';
+import { useShallow } from 'zustand/react/shallow';
 
 const isDesktop = getUiType().isDesktop;
 type PendingTxData =
@@ -126,9 +127,11 @@ export const PendingTxItem = forwardRef<
     const history = useHistory();
     const [data, setData] = useState<PendingTxData | null>(null);
     const [visible, setVisible] = useState(false);
-    const { userAddress } = useRabbySelector((state) => ({
-      userAddress: state.account.currentAccount?.address || '',
-    }));
+    const { userAddress } = useRabbySelector(
+      useShallow((state) => ({
+        userAddress: state.account.currentAccount?.address || '',
+      }))
+    );
     const preFulfilledRef = useRef<boolean>(true);
 
     useEffect(() => {
