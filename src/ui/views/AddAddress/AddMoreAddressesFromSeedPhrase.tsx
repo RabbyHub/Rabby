@@ -9,7 +9,7 @@ import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbyDispatch } from '@/ui/store';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
-import { formatUsdValue, useWallet } from '@/ui/utils';
+import { useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,8 +18,9 @@ import {
   SettingData,
 } from '../HDManager/AdvancedSettings';
 import { HDPathType } from '../HDManager/HDPathTypeButton';
-import { fetchAccountsInfo } from '../HDManager/utils';
-import { Account } from '../HDManager/AccountList';
+import type { Account } from '../HDManager/AccountList';
+import { AddressBalance } from './AddressBalance';
+import { createAddressBalanceLoader } from '@/ui/utils/addressBalanceLoader';
 import {
   useCreateAddressActions,
   AddMoreAddressesState,
@@ -132,10 +133,12 @@ const AddressRow = ({
   item,
   checked,
   onToggle,
+  balanceLoader,
 }: {
   item: AddressRowData;
   checked: boolean;
   onToggle: () => void;
+  balanceLoader: ReturnType<typeof createAddressBalanceLoader>;
 }) => {
   const { t } = useTranslation();
 
@@ -161,9 +164,7 @@ const AddressRow = ({
         <span className="text-[15px] leading-normal font-medium text-r-neutral-title-1">
           {ellipsisAddress(item.address)}
         </span>
-        <span className="text-[13px] leading-normal text-r-neutral-foot relative top-1">
-          {formatUsdValue(item.balance || 0)}
-        </span>
+        <AddressBalance address={item.address} loader={balanceLoader} />
       </div>
 
       <div className="ml-auto flex items-center gap-[14px]">
@@ -311,6 +312,10 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
   const history = useHistory();
   const location = useLocation<AddMoreAddressesState>();
   const wallet = useWallet();
+  const balanceLoader = React.useMemo(
+    () => createAddressBalanceLoader(wallet.openapi),
+    [wallet]
+  );
   const dispatch = useRabbyDispatch();
   const { getContainer } = usePopupContainer();
   const { t } = useTranslation();
@@ -349,6 +354,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     type: HDPathType.BIP44,
   });
   const [rows, setRows] = React.useState<AddressRowData[]>([]);
+  const loadAccountsRequestIdRef = React.useRef(0);
   const [selectedAddresses, setSelectedAddresses] = React.useState<string[]>(
     []
   );
@@ -382,7 +388,11 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       return;
     }
 
+    const requestId = ++loadAccountsRequestIdRef.current;
+    const isCurrentRequest = () =>
+      loadAccountsRequestIdRef.current === requestId;
     setLoading(true);
+    setRows([]);
     try {
       if (activeSetting.type) {
         await wallet.requestKeyring(
@@ -391,6 +401,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
           keyringId,
           activeSetting.type
         );
+        if (!isCurrentRequest()) return;
       }
 
       const maxCount =
@@ -400,6 +411,7 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
           keyringId,
           null
         )) ?? MAX_ACCOUNT_COUNT;
+      if (!isCurrentRequest()) return;
       setMaxAccountCount(maxCount);
 
       const start = activeSetting.startNo - 1;
@@ -411,10 +423,10 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
           start: i,
           end: Math.min(i + FETCH_STEP, end),
         });
+        if (!isCurrentRequest()) return;
         rawAccounts.push(
           ...batch.map((item) => ({
             address: item.address,
-            balance: item.balance,
             index: item.index || 0,
           }))
         );
@@ -423,12 +435,11 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       const importedAccounts = await useImportMnemonicsStore
         .getState()
         .getImportedAccounts({});
+      if (!isCurrentRequest()) return;
       const importedSet = new Set(
         importedAccounts.map((item) => item.address.toLowerCase())
       );
-      const accountsWithInfo = await fetchAccountsInfo(wallet, rawAccounts);
-
-      const list = accountsWithInfo.map((item) => ({
+      const list = rawAccounts.map((item) => ({
         ...item,
         imported: importedSet.has(item.address.toLowerCase()),
       }));
@@ -455,11 +466,15 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
         return nextSelected;
       });
     } catch (error) {
+      if (!isCurrentRequest()) return;
+      setSelectedAddresses([]);
       message.error(
         error instanceof Error ? error.message : 'Failed to load addresses'
       );
     } finally {
-      setLoading(false);
+      if (isCurrentRequest()) {
+        setLoading(false);
+      }
     }
   });
 
@@ -499,6 +514,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
       return;
     }
     loadAccounts(setting);
+    return () => {
+      loadAccountsRequestIdRef.current++;
+    };
   }, [keyringId, loadAccounts, setting]);
 
   const handleToggle = useMemoizedFn((item: AddressRowData) => {
@@ -522,19 +540,28 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
   });
 
   const handleConfirm = useMemoizedFn(async () => {
-    if (!selectedAddresses.length || keyringId == null) {
+    if (
+      loading ||
+      submitting ||
+      !selectedAddresses.length ||
+      keyringId == null
+    ) {
       return;
     }
 
     try {
       setSubmitting(true);
       const selectedRows = rows
-        .filter((item) =>
-          selectedAddresses.some(
-            (address) => address.toLowerCase() === item.address.toLowerCase()
-          )
+        .filter(
+          (item) =>
+            !item.imported &&
+            selectedAddresses.some(
+              (address) => address.toLowerCase() === item.address.toLowerCase()
+            )
         )
         .sort((a, b) => (a.index || 0) - (b.index || 0));
+
+      if (!selectedRows.length) return;
 
       const selectedRowAddresses = selectedRows.map((item) => item.address);
 
@@ -582,10 +609,6 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     });
   });
 
-  if (!state.publicKey) {
-    return null;
-  }
-
   const displayRows = rows.length
     ? rows
     : loading
@@ -615,12 +638,17 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
               selectedAddressSet.has(item.address.toLowerCase())
             }
             onToggle={() => handleToggle(item)}
+            balanceLoader={balanceLoader}
           />
         </div>
       );
     },
-    [handleToggle, selectedAddressSet]
+    [balanceLoader, handleToggle, selectedAddressSet]
   );
+
+  if (!state.publicKey) {
+    return null;
+  }
 
   return (
     <div
@@ -656,6 +684,9 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
             style={{ height: '100%' }}
             fixedItemHeight={LIST_ITEM_HEIGHT}
             overscan={240}
+            computeItemKey={(_index, item) =>
+              item.address || `placeholder-${item.index}`
+            }
             itemContent={renderAddressRow}
           />
         </div>

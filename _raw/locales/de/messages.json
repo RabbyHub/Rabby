@@ -1982,10 +1982,7 @@
       "onekey": {
         "onekeyPermission1": "Mit einem USB-Gerät verbinden",
         "allowRabbyPermissionsTitle": "Rabby folgende Berechtigung erteilen:",
-        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren OneKey im folgenden Popup-Fenster zu autorisieren. Wenn OneKey nicht im Popup erscheint, prüfen Sie bitte, ob Ihr Gerät ordnungsgemäß mit dem Computer verbunden ist.",
-        "whyOneKey": "Warum OneKey?",
-        "buyOneKey": "OneKey kaufen",
-        "haveOneKey": "Sie haben noch kein OneKey-Gerät?"
+        "onekeyPermissionTip": "Bitte klicken Sie unten auf \"Erlauben\", um den Zugriff auf Ihren OneKey im folgenden Popup-Fenster zu autorisieren. Wenn OneKey nicht im Popup erscheint, prüfen Sie bitte, ob Ihr Gerät ordnungsgemäß mit dem Computer verbunden ist."
       },
       "firefoxLedgerDisableTips": "Ledger ist nicht mit Firefox kompatibel",
       "addFromCurrentSeedPhrase": "Aus der aktuellen Seed-Phrase hinzufügen",

@@ -2,7 +2,9 @@ import {
   TEMPO_CHAIN_SERVER_ID,
   TEMPO_FEE_MANAGER_ADDRESS,
   TEMPO_FEE_TOKEN_DECIMALS,
+  TEMPO_OUSD_TOKEN,
   TEMPO_PATH_USD_TOKEN,
+  TEMPO_PROTOCOL_FALLBACK_FEE_TOKENS,
 } from '@/constant/tempo';
 import { KEYRING_TYPE } from 'consts';
 import type { WalletControllerType } from '@/ui/utils';
@@ -89,6 +91,10 @@ const TEMPO_FEE_TOKEN_WHITELIST = [
   {
     tokenId: '0x20C0000000000000000000003554d28269E0f3c2',
     symbol: 'frxUSD',
+  },
+  {
+    tokenId: TEMPO_OUSD_TOKEN,
+    symbol: 'OUSD',
   },
 ] as const;
 const TEMPO_FEE_TOKEN_WHITELIST_MAP = new Map(
@@ -195,6 +201,12 @@ export type TempoFeeTokenInfo = {
   decimals: number;
   logoUrl: string;
   rawBalanceHex: string;
+  /**
+   * true when `tokenId` comes from the user's stored FeeManager preference.
+   * false means no preference is stored, so a transaction without `feeToken`
+   * goes through the protocol fallback (pathUSD, then OUSD).
+   */
+  isUserPreference: boolean;
 };
 
 export type TempoFeeTokenOption = TokenItem & {
@@ -506,7 +518,11 @@ const readAddressByMethod = async (params: {
   return decoded;
 };
 
-export const getTempoFeeTokenAddress = async (params: {
+/**
+ * Reads the fee token the user stored in FeeManager (`setUserToken`).
+ * Returns null when no preference is stored (or it cannot be read).
+ */
+export const getTempoUserFeeTokenPreference = async (params: {
   wallet: WalletControllerType;
   userAddress?: string | null;
   chainServerId?: string | null;
@@ -514,7 +530,7 @@ export const getTempoFeeTokenAddress = async (params: {
   const { wallet, userAddress, chainServerId } = params;
   const targetServerId = chainServerId || TEMPO_CHAIN_SERVER_ID;
   if (!userAddress || !isAddress(userAddress)) {
-    return TEMPO_PATH_USD_TOKEN;
+    return null;
   }
 
   for (const functionName of FEE_MANAGER_READ_METHODS) {
@@ -533,7 +549,15 @@ export const getTempoFeeTokenAddress = async (params: {
     }
   }
 
-  return TEMPO_PATH_USD_TOKEN;
+  return null;
+};
+
+export const getTempoFeeTokenAddress = async (params: {
+  wallet: WalletControllerType;
+  userAddress?: string | null;
+  chainServerId?: string | null;
+}) => {
+  return (await getTempoUserFeeTokenPreference(params)) || TEMPO_PATH_USD_TOKEN;
 };
 
 const readErc20Balance = async (params: {
@@ -655,11 +679,39 @@ export const getTempoFeeTokenInfo = async (params: {
 }): Promise<TempoFeeTokenInfo> => {
   const { wallet, userAddress, chainServerId } = params;
   const targetServerId = chainServerId || TEMPO_CHAIN_SERVER_ID;
-  const tokenId = await getTempoFeeTokenAddress({
+  const userPreference = await getTempoUserFeeTokenPreference({
     wallet,
     userAddress,
     chainServerId: targetServerId,
   });
+  return getTempoTokenBalanceInfo({
+    wallet,
+    userAddress,
+    chainServerId: targetServerId,
+    tokenId: userPreference || TEMPO_PATH_USD_TOKEN,
+    isUserPreference: !!userPreference,
+  });
+};
+
+/**
+ * Balance and metadata of one Tempo TIP-20 token for `userAddress`, shaped as
+ * fee token info.
+ */
+export const getTempoTokenBalanceInfo = async (params: {
+  wallet: WalletControllerType;
+  userAddress?: string | null;
+  chainServerId?: string | null;
+  tokenId: string;
+  isUserPreference?: boolean;
+}): Promise<TempoFeeTokenInfo> => {
+  const {
+    wallet,
+    userAddress,
+    chainServerId,
+    tokenId,
+    isUserPreference = false,
+  } = params;
+  const targetServerId = chainServerId || TEMPO_CHAIN_SERVER_ID;
   let token: TokenItem | null = null;
 
   if (userAddress) {
@@ -703,7 +755,8 @@ export const getTempoFeeTokenInfo = async (params: {
       tokenAddress: tokenId,
       chainServerId: targetServerId,
     })) ||
-    (isSameTokenId(tokenId, TEMPO_PATH_USD_TOKEN) ? 'pathUSD' : 'USD');
+    TEMPO_FEE_TOKEN_WHITELIST_MAP.get(tokenId.toLowerCase())?.symbol ||
+    'USD';
 
   return {
     tokenId,
@@ -711,6 +764,7 @@ export const getTempoFeeTokenInfo = async (params: {
     decimals,
     logoUrl: token?.logo_url || '',
     rawBalanceHex,
+    isUserPreference,
   };
 };
 
@@ -835,6 +889,31 @@ const isTempoFeeTokenBalanceEnoughForGas = (
     token.decimals ?? TEMPO_FEE_TOKEN_DECIMALS
   );
   return balanceRaw.gte(requiredByRawIn18);
+};
+
+/**
+ * Whether a raw token balance (decimal or hex string) covers the max gas cost.
+ * `maxGasCostRawAmount` is expressed in `maxGasCostRawAmountDecimals`.
+ */
+export const isTempoRawBalanceEnoughForGas = (params: {
+  rawBalance?: string | number | BigNumber;
+  decimals?: number;
+  maxGasCostRawAmount?: string | number | BigNumber;
+  maxGasCostRawAmountDecimals?: number;
+}) => {
+  const {
+    rawBalance,
+    decimals,
+    maxGasCostRawAmount,
+    maxGasCostRawAmountDecimals,
+  } = params;
+  return isTempoFeeTokenBalanceEnoughForGas(
+    {
+      raw_amount_hex_str: toBigNumberFromValue(rawBalance).toFixed(0),
+      decimals: decimals ?? TEMPO_FEE_TOKEN_DECIMALS,
+    } as TokenItem,
+    { maxGasCostRawAmount, maxGasCostRawAmountDecimals }
+  );
 };
 
 const markTempoFeeTokenOptionsByGas = (
@@ -988,12 +1067,25 @@ export const listTempoFeeTokenOptions = async (params: {
     }
 
     const isDefault = key === defaultFeeToken.tokenId.toLowerCase();
+    let rawAmountHex = isDefault
+      ? defaultFeeToken.rawBalanceHex || '0x0'
+      : '0x0';
+    if (!isDefault && isSameTokenId(white.tokenId, TEMPO_OUSD_TOKEN)) {
+      // OUSD pays fees through the protocol fallback without being selected,
+      // so read its balance on chain when the API has no entry for it.
+      rawAmountHex = await readErc20Balance({
+        wallet,
+        tokenAddress: white.tokenId,
+        userAddress,
+        chainServerId: targetServerId,
+      }).catch(() => '0x0');
+    }
     const fallback = createTempoTokenItem({
       tokenId: white.tokenId,
       symbol: white.symbol,
       decimals: isDefault ? defaultFeeToken.decimals : TEMPO_FEE_TOKEN_DECIMALS,
       logoUrl: isDefault ? defaultFeeToken.logoUrl : '',
-      rawAmountHex: isDefault ? defaultFeeToken.rawBalanceHex || '0x0' : '0x0',
+      rawAmountHex,
       usdValue: 0,
       chainServerId: targetServerId,
     });
@@ -1049,6 +1141,39 @@ const findEnabledTempoFeeTokenOption = (
   );
 };
 
+/**
+ * Mirrors the protocol fallback for a transaction that selects no fee token:
+ * pathUSD if it covers the max fee, otherwise OUSD if it covers it. Returns
+ * null when neither covers it (the chain rejects the transaction).
+ */
+export const pickTempoProtocolFallbackFeeTokenId = (
+  options: TempoFeeTokenOption[]
+) => {
+  for (const tokenId of TEMPO_PROTOCOL_FALLBACK_FEE_TOKENS) {
+    const option = findEnabledTempoFeeTokenOption(options, tokenId);
+    if (option) return option.id;
+  }
+  return null;
+};
+
+/**
+ * A transaction goes through the protocol fallback only when nothing selects
+ * a fee token for it: no `feeToken` on the transaction and no stored user
+ * preference.
+ */
+export const shouldUseTempoProtocolFeeTokenFallback = (params: {
+  chainServerId?: string | null;
+  txFeeToken?: string | null;
+  hasUserFeeTokenPreference?: boolean;
+}) => {
+  const { chainServerId, txFeeToken, hasUserFeeTokenPreference } = params;
+  return (
+    isTempoChain(chainServerId) &&
+    !(txFeeToken && txFeeToken.trim()) &&
+    !hasUserFeeTokenPreference
+  );
+};
+
 export const loadTempoFeeTokenOptionsState = async (params: {
   wallet: WalletControllerType;
   userAddress?: string | null;
@@ -1056,6 +1181,12 @@ export const loadTempoFeeTokenOptionsState = async (params: {
   tokenList?: TokenItem[];
   txFeeToken?: string | null;
   currentFeeTokenId?: string | null;
+  /**
+   * Pass along with `currentFeeTokenId` (both from a previous call's result).
+   * Without it, a pathUSD `currentFeeTokenId` cannot be told apart from the
+   * no-preference default and is treated as no preference.
+   */
+  hasUserFeeTokenPreference?: boolean;
   maxGasCostRawAmountIn18?: string | number | BigNumber;
   maxGasCostRawAmount?: string | number | BigNumber;
   maxGasCostRawAmountDecimals?: number;
@@ -1067,6 +1198,7 @@ export const loadTempoFeeTokenOptionsState = async (params: {
     tokenList = [],
     txFeeToken,
     currentFeeTokenId,
+    hasUserFeeTokenPreference,
     maxGasCostRawAmountIn18,
     maxGasCostRawAmount,
     maxGasCostRawAmountDecimals,
@@ -1090,11 +1222,13 @@ export const loadTempoFeeTokenOptionsState = async (params: {
         });
   const resolvedCurrentFeeTokenId =
     currentFeeTokenId || fetchedCurrentFeeTokenInfo?.tokenId || '';
-  const preferredTokenId = resolveTempoPreferredFeeTokenId({
-    chainServerId: targetServerId,
-    txFeeToken,
-    currentFeeTokenId: resolvedCurrentFeeTokenId,
-  });
+  const resolvedHasUserFeeTokenPreference = fetchedCurrentFeeTokenInfo
+    ? fetchedCurrentFeeTokenInfo.isUserPreference
+    : hasUserFeeTokenPreference ??
+      // Without the flag, only a non-pathUSD current token is known to be a
+      // stored preference (pathUSD is also the no-preference default).
+      (!!currentFeeTokenId &&
+        !isSameTokenId(currentFeeTokenId, TEMPO_PATH_USD_TOKEN));
   const options: TempoFeeTokenOption[] = userAddress
     ? await listTempoFeeTokenOptions({
         wallet,
@@ -1106,6 +1240,19 @@ export const loadTempoFeeTokenOptionsState = async (params: {
         currentFeeTokenInfo: fetchedCurrentFeeTokenInfo,
       })
     : [];
+  const preferredTokenId = shouldUseTempoProtocolFeeTokenFallback({
+    chainServerId: targetServerId,
+    txFeeToken,
+    hasUserFeeTokenPreference: resolvedHasUserFeeTokenPreference,
+  })
+    ? pickTempoProtocolFallbackFeeTokenId(
+        options.length ? options : cachedOptions
+      ) || TEMPO_PATH_USD_TOKEN
+    : resolveTempoPreferredFeeTokenId({
+        chainServerId: targetServerId,
+        txFeeToken,
+        currentFeeTokenId: resolvedCurrentFeeTokenId,
+      });
   const selectedOption =
     findEnabledTempoFeeTokenOption(options, preferredTokenId) ||
     findEnabledTempoFeeTokenOption(cachedOptions, preferredTokenId) ||
@@ -1116,6 +1263,7 @@ export const loadTempoFeeTokenOptionsState = async (params: {
     cachedOptions,
     options,
     currentFeeTokenId: resolvedCurrentFeeTokenId,
+    hasUserFeeTokenPreference: resolvedHasUserFeeTokenPreference,
     preferredTokenId,
     selectedOption,
   };

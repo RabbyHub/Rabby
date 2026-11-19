@@ -1904,10 +1904,7 @@
       "onekey": {
         "onekeyPermission1": "USB 장치에 연결하세요.",
         "allowRabbyPermissionsTitle": "Rabby에 대한 권한 허용:",
-        "onekeyPermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 OneKey에 대한 액세스를 승인하고, OneKey가 홈페이지에 있는지 확인하세요.",
-        "whyOneKey": "왜 OneKey인가요?",
-        "buyOneKey": "OneKey 구매하기",
-        "haveOneKey": "아직 OneKey가 없으신가요?"
+        "onekeyPermissionTip": "아래 \"허용\"을 클릭하여 다음 팝업 창에서 OneKey에 대한 액세스를 승인하고, OneKey가 홈페이지에 있는지 확인하세요."
       },
       "walletConnect": {
         "clockSkewError": "컴퓨터 시간이 동기화되지 않아 WalletConnect에 연결할 수 없습니다. 날짜 및 시간 자동 설정을 켠 후 다시 시도하세요.",

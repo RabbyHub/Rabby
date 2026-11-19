@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const paths = require('./paths');
+const devPort = require('./dev-port');
 const child_process = require('child_process');
 const path = require('path');
 
@@ -158,7 +159,9 @@ const commonPlugins = [
         new ForkTsCheckerWebpackPlugin({
           async: isEnvDevelopment,
           typescript: {
-            memoryLimit: 2048,
+            // 完整检查一次峰值约 3GB；2048 时检查进程还没报出结果就内存溢出，
+            // 之后每次重新编译都从头再查一遍
+            memoryLimit: 4096,
           },
         }),
       ]
@@ -235,7 +238,7 @@ const uiConfig = {
   entry: isHot
     ? {
         ui: [
-          'webpack-hot-middleware/client?path=http://localhost:3173/__webpack_hmr&timeout=20000&reload=true',
+          `webpack-hot-middleware/client?path=http://localhost:${devPort}/__webpack_hmr&timeout=20000&reload=true`,
           paths.rootResolve('src/ui/index.tsx'),
         ],
       }
