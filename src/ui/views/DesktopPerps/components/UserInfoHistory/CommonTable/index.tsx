@@ -1,11 +1,12 @@
 import { Table } from 'antd';
 import { TableProps, ColumnType } from 'antd/lib/table';
 import React, { useState, useMemo, useRef, useCallback } from 'react';
-import styled from 'styled-components';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/perps/IconHistoryEmpty.svg';
 import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
 import ResizeObserver from 'rc-resize-observer';
 import { useThemeMode } from '@/ui/hooks/usePreference';
+import clsx from 'clsx';
+import styles from './index.module.css';
 
 // Two stacked triangles used as the column sort indicator. The active direction
 // (up = ascend, down = descend) is painted with the title colour, the other
@@ -43,326 +44,6 @@ export const SortIcon: React.FC<{ order: 'ascend' | 'descend' | null }> = ({
     </svg>
   );
 };
-
-const Wrapper = styled.div<{ $rowHeight?: number }>`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  .ant-table-wrapper {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .ant-spin-nested-loading {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .ant-spin-container {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .ant-table {
-    background-color: transparent;
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  /* Columns keep their fixed widths as a baseline; when the container is wider
-     the extra space is distributed across the columns (option A: stretch),
-     and when narrower the body scrolls horizontally. */
-  .ant-table table {
-    min-width: 100%;
-  }
-
-  .ant-table-container {
-    flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .ant-table-container:after {
-    box-shadow: none !important;
-  }
-
-  .ant-table-header {
-    flex-shrink: 0;
-    .ant-table-thead > tr > th.ant-table-cell-scrollbar:last-child {
-      padding: 0;
-      border: none;
-      background: transparent;
-      box-shadow: none;
-    }
-  }
-
-  .ant-table-body {
-    flex: 1;
-    overflow-y: auto !important;
-  }
-
-  .ant-table-expanded-row {
-    .ant-table-cell {
-      background-color: transparent;
-    }
-  }
-
-  .ant-table-thead > tr > th {
-    color: var(--rb-neutral-secondary, #9a9ca9);
-    font-size: 12px;
-    line-height: 14px;
-    /* antd forces table headers to 500; keep an explicit 350 so they match the
-       page's regular weight (plain inheritance can't override antd here). */
-    font-weight: 350;
-    background-color: var(--rb-neutral-bg-1, #fff);
-    border: none;
-
-    height: 38px;
-    padding: 0 8px;
-
-    &::before {
-      display: none !important;
-    }
-
-    &:first-child {
-      padding-left: 12px;
-    }
-
-    &:last-child {
-      padding-right: 12px;
-    }
-
-    &.ant-table-column-has-sorters {
-      padding-top: 0;
-      padding-bottom: 0;
-      cursor: pointer;
-      transition: none;
-
-      .ant-table-column-sorters {
-        padding: 0;
-      }
-
-      /* Hover state */
-      &:hover {
-        color: var(--rb-neutral-title-1, #192945);
-        background-color: transparent;
-      }
-
-      /* Active (sorted) state */
-      &.ant-table-column-sort {
-        color: var(--rb-neutral-title-1, #192945);
-      }
-    }
-
-    /* Hide default antd sort icons */
-    .ant-table-column-sorter {
-      display: none;
-    }
-
-    /* Custom sort indicator: hidden until the header is hovered (muted look) or
-       the column is the active sort (highlighted look). */
-    .sort-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 12px;
-      height: 12px;
-      margin-left: 4px;
-      vertical-align: middle;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    &:hover .sort-icon,
-    &.ant-table-column-sort .sort-icon {
-      opacity: 1;
-    }
-  }
-
-  .ant-table-tbody > tr > td {
-    height: ${({ $rowHeight }) => $rowHeight ?? 44}px;
-    vertical-align: middle;
-    /* 1px gap between content rows, painted in the panel background colour. */
-    border-bottom: 1px solid var(--rb-neutral-bg-1, #fff);
-
-    padding: 0 8px;
-
-    &:first-child {
-      padding-left: 12px;
-    }
-
-    &:last-child {
-      padding-right: 12px;
-    }
-
-    .is-long-bg {
-      background: linear-gradient(
-        to right,
-        rgba(var(--rb-green-default-rgb), 0.125),
-        rgba(var(--rb-green-default-rgb), 0)
-      );
-      border-left: 2px solid var(--rb-green-default, #2abb7f);
-    }
-    .is-short-bg {
-      background: linear-gradient(
-        to right,
-        rgba(var(--rb-red-default-rgb), 0.125),
-        rgba(var(--rb-red-default-rgb), 0)
-      );
-      border-left: 2px solid var(--rb-red-default, #e34935);
-    }
-  }
-
-  .ant-table-tbody > tr > td.ant-table-cell-row-hover {
-    /* background-color: transparent; */
-    background-color: var(--rb-neutral-bg-3, #e0e5ec);
-  }
-  .ant-table-tbody > tr.ant-table-row:hover > td {
-    background-color: var(--rb-neutral-bg-3, #e0e5ec);
-  }
-
-  .ant-table-tbody {
-    td.ant-table-column-sort {
-      background-color: transparent;
-    }
-  }
-`;
-
-// Virtual table wrapper - renders header separately from virtualized body
-const VirtualWrapper = styled.div<{ isDarkTheme: boolean }>`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-
-  .virtual-table-header {
-    flex-shrink: 0;
-
-    .ant-table-wrapper {
-      .ant-table {
-        background-color: transparent;
-      }
-    }
-
-    .ant-table-thead > tr > th {
-      color: var(--rb-neutral-secondary, #9a9ca9);
-      font-size: 12px;
-      line-height: 14px;
-      /* antd forces table headers to 500; keep an explicit 350 so they match the
-         page's regular weight (plain inheritance can't override antd here). */
-      font-weight: 350;
-      background-color: var(--rb-neutral-bg-1, #fff);
-      border: none;
-      height: 38px;
-      padding: 0 8px;
-
-      &::before {
-        display: none !important;
-      }
-
-      &:first-child {
-        padding-left: 12px;
-      }
-
-      &:last-child {
-        padding-right: 12px;
-      }
-
-      &.ant-table-column-has-sorters {
-        padding-top: 0;
-        padding-bottom: 0;
-        cursor: pointer;
-        transition: none;
-
-        .ant-table-column-sorters {
-          padding: 0;
-        }
-
-        &:hover {
-          color: var(--rb-neutral-title-1, #192945);
-          background-color: transparent;
-        }
-
-        &.ant-table-column-sort {
-          color: var(--rb-neutral-title-1, #192945);
-        }
-      }
-
-      .ant-table-column-sorter {
-        display: none;
-      }
-
-      /* Custom sort indicator: hidden until hovered (muted) or active sort
-         (highlighted). */
-      .sort-icon {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 12px;
-        height: 12px;
-        margin-left: 4px;
-        vertical-align: middle;
-        opacity: 0;
-        transition: opacity 0.2s ease;
-      }
-
-      &:hover .sort-icon,
-      &.ant-table-column-sort .sort-icon {
-        opacity: 1;
-      }
-    }
-
-    /* Hide the empty body in header-only table */
-    .ant-table-tbody {
-      display: none;
-    }
-  }
-
-  .virtual-table-body {
-    flex: 1;
-    overflow: hidden;
-  }
-
-  .virtual-row {
-    &:hover {
-      background-color: ${({ isDarkTheme }) =>
-        !isDarkTheme ? 'var(--rb-neutral-bg-0)' : 'var(--r-neutral-card-1)'};
-    }
-    display: flex;
-    align-items: center;
-    box-sizing: border-box;
-
-    .virtual-cell {
-      flex: 1;
-      // flex-shrink: 0;
-      /* No vertical padding: the row height is fixed and content is centred via
-         align-items:center, so vertical padding would only push content past the
-         row edge once the height shrinks (28px single-line / 44px two-line). */
-      padding: 0 8px;
-      // overflow: hidden;
-      box-sizing: border-box;
-
-      &:first-child {
-        padding-left: 12px;
-      }
-
-      &:last-child {
-        padding-right: 12px;
-      }
-    }
-  }
-`;
 
 // Types for virtual row data
 interface VirtualRowData<T> {
@@ -608,21 +289,33 @@ export const CommonTable = <T extends object>({
 
   if (dataSource.length === 0) {
     return (
-      <Wrapper $rowHeight={rowHeight}>
+      <div
+        className={styles.wrapper}
+        style={
+          {
+            '--common-table-row-height': `${rowHeight}px`,
+          } as React.CSSProperties
+        }
+      >
         <div className="flex flex-col items-center justify-center gap-[4px] pt-[100px]">
           <RcIconEmpty className="text-rb-neutral-foot" />
           <div className="text-[12px] leading-[14px] text-rb-neutral-foot text-center">
             {emptyMessage || 'No data'}
           </div>
         </div>
-      </Wrapper>
+      </div>
     );
   }
 
   if (virtual) {
     return (
       <ResizeObserver onResize={handleContainerResize}>
-        <VirtualWrapper isDarkTheme={isDarkTheme}>
+        <div
+          className={clsx(
+            styles.virtualWrapper,
+            isDarkTheme && styles.virtualWrapperDark
+          )}
+        >
           {/* Header-only table */}
           <div className="virtual-table-header" ref={headerRef}>
             <Table<T>
@@ -651,13 +344,20 @@ export const CommonTable = <T extends object>({
               )}
             </div>
           </ResizeObserver>
-        </VirtualWrapper>
+        </div>
       </ResizeObserver>
     );
   }
 
   return (
-    <Wrapper $rowHeight={rowHeight}>
+    <div
+      className={styles.wrapper}
+      style={
+        {
+          '--common-table-row-height': `${rowHeight}px`,
+        } as React.CSSProperties
+      }
+    >
       <Table<T>
         {...restProps}
         dataSource={sortedData}
@@ -665,6 +365,6 @@ export const CommonTable = <T extends object>({
         onChange={handleTableChange}
         scroll={{ x: 'max-content', y: bodyHeight || 'auto' }}
       />
-    </Wrapper>
+    </div>
   );
 };

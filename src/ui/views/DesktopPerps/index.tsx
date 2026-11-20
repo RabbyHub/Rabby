@@ -1,5 +1,4 @@
 import React, { useLayoutEffect, useState } from 'react';
-import styled from 'styled-components';
 import { ChartArea } from './components/ChartArea';
 import { OrderBookTrades } from './components/OrderBookTrades';
 import { TradingPanel } from './components/TradingPanel';
@@ -24,18 +23,6 @@ import { usePerpsActions } from '@/ui/views/Perps/hooks/usePerpsActions';
 import { useMount } from 'ahooks';
 import { reportWebPageView } from '@/ui/utils/ga-event';
 import { useLocation } from 'react-router-dom';
-
-const Wrap = styled.div`
-  width: 100%;
-  /* Definite height, not min-height: min-height computes to auto (indefinite),
-     which breaks h-full resolution on the right rail and lets TradingPanel's
-     content push the whole row taller. */
-  height: 100vh;
-  overflow: hidden;
-  background: var(--rb-neutral-bg-page, #f6f7f7);
-  display: flex;
-  flex-direction: column;
-`;
 
 // Fixed so TradingPanel's bottom edge lines up with the left top block; also the
 // left rail's default top-block height.
@@ -92,7 +79,10 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
 
   return (
     <OrderConfirmProvider>
-      <Wrap>
+      {/* Definite height, not min-height: min-height computes to auto
+          (indefinite), which breaks h-full resolution on the right rail and
+          lets TradingPanel's content push the whole row taller. */}
+      <div className="w-full h-[100vh] overflow-hidden bg-rb-neutral-bg-page flex flex-col">
         {/* Fixed top bar — mirrors the fixed StatusBar at the bottom (sticky;
             content scrolls underneath). bg-page masks content behind the card.
             Its 50px footprint (6 + 38 + 6 gap) is reserved by the row's pt below. */}
@@ -168,7 +158,7 @@ export const DesktopPerps: React.FC<{ isActive?: boolean }> = ({
         </div>
 
         <StatusBar onOpenSettings={() => setSettingsVisible(true)} />
-      </Wrap>
+      </div>
       {/* <AddAddressModal
         visible={action === 'add-address'}
         onCancel={() => {

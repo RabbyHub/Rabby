@@ -3,55 +3,11 @@ import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import styled from 'styled-components';
 import SecurityLevelTag from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
 import clsx from 'clsx';
-
-const RuleResultWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  min-height: 56px;
-  padding: 18px 16px;
-  padding-right: 24px;
-  border: none;
-  position: relative;
-
-  &:has(.security-level-tag) {
-    .rule-value {
-      padding-right: 8px;
-    }
-  }
-
-  .rule-desc {
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 15px;
-    color: var(--r-neutral-body, #3e495e);
-    width: 49%;
-  }
-  .rule-value {
-    display: flex;
-    justify-content: flex-end;
-    flex: 1;
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
-    color: var(--r-neutral-title-1, #192945);
-  }
-  .collect-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    &-item {
-      img {
-        width: 20px;
-        height: 20px;
-        border-radius: 100%;
-      }
-    }
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './RuleResult.module.css';
 
 const RuleResult = ({
   rule,
@@ -131,8 +87,12 @@ const RuleResult = ({
   };
 
   return (
-    <RuleResultWrapper
-      className={clsx(className, rule.id === '1004' ? 'items-start' : '')}
+    <div
+      className={cn(
+        styles.ruleResultWrapper,
+        className,
+        rule.id === '1004' ? 'items-start' : ''
+      )}
     >
       <div
         className={clsx(
@@ -224,7 +184,7 @@ const RuleResult = ({
           right="-12px"
         />
       )}
-    </RuleResultWrapper>
+    </div>
   );
 };
 

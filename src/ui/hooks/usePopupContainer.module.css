@@ -1,0 +1,5 @@
+.container {
+  width: 100% !important;
+  overflow: hidden;
+  transform: translateX(0);
+}

@@ -1,0 +1,57 @@
+.wrapper :global(.container) {
+  flex: 1;
+  background: var(--r-blue-light-1, #eef1ff);
+  border: 1px solid var(--r-blue-default, #7084ff);
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 12px;
+  position: relative;
+}
+
+.wrapper :global(.container) :global(.internal-transaction) {
+  padding: 0 5px;
+  position: absolute;
+  text-align: center;
+  z-index: 1;
+  color: var(--r-blue-default, #7084ff);
+  font-size: 12px;
+  line-height: 12px;
+  top: -7px;
+  left: 10px;
+}
+
+.wrapper :global(.container) :global(.internal-transaction) :global(.bg) {
+  position: absolute;
+  bottom: 0;
+  left: 0.5px;
+  width: 100%;
+  height: 6px;
+  background: var(--r-blue-light-1, #424962);
+  z-index: -1;
+}
+
+.wrapper :global(.container) :global(.tx-item) {
+  padding-bottom: 13px;
+  margin-bottom: 13px;
+  border-bottom: 1px solid #e0e3f1;
+}
+
+.wrapper :global(.container) :global(.tx-item) span {
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.wrapper :global(.container) :global(.tx-item) span:nth-child(1) {
+  color: var(--r-neutral-title-1, #f7fafc);
+}
+
+.wrapper :global(.container) :global(.tx-item) span:nth-child(2) {
+  color: var(--r-neutral-foot, #babec5);
+}
+
+.wrapper :global(.container) :global(.tx-item):nth-last-child(1) {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border: none;
+}

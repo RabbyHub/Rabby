@@ -1,32 +1,10 @@
 import React, { ReactNode, useMemo } from 'react';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import styled from 'styled-components';
-import clsx from 'clsx';
 import { SecurityEngineLevel } from 'consts';
 import { ReactComponent as IconArrowRight } from 'ui/assets/sign/arrow-right-lite.svg';
 import { useHover } from 'ui/utils';
-
-const Wrapper = styled.div`
-  display: flex;
-  font-size: 12px;
-  line-height: 14px;
-  align-items: center;
-  font-weight: normal;
-  .icon-level {
-    width: 16px;
-    height: 16px;
-    margin-right: 2px;
-  }
-  span {
-    display: none;
-  }
-  &.showText {
-    padding: 0;
-    span {
-      display: block;
-    }
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './SecurityLevelTagNoText.module.css';
 
 const SecurityLevelTagNoText = ({
   enable,
@@ -45,74 +23,15 @@ const SecurityLevelTagNoText = ({
   }, [level, enable]);
 
   return (
-    <Wrapper
-      className={clsx({ showText })}
+    <div
+      className={cn(styles.wrapper, { showText })}
       style={{ color: currentLevel.color }}
     >
       <img src={currentLevel.icon} className="icon-level" />
       <span>{currentLevel.text}</span>
-    </Wrapper>
+    </div>
   );
 };
-
-const SecurityLevelTagWrapper = styled.div`
-  padding: 4px;
-  display: flex;
-  position: absolute;
-  top: 50%;
-  margin-top: -10px;
-  right: -6px;
-  padding: 2px;
-  padding-left: 6px;
-  border-radius: 3px;
-  transition: all 0.3s;
-  max-width: 40px;
-  overflow: hidden;
-  align-items: center;
-  &.translucent {
-    opacity: 0.7;
-  }
-  &.showText {
-    width: max-content;
-    max-width: 170px;
-    white-space: nowrap;
-  }
-  &.safe {
-    color: #27c193;
-    background: #dff6ef;
-    border: 0.5px solid rgba(39, 193, 147, 0.5);
-  }
-  &.forbidden {
-    color: #af160e;
-    background: #f3dcdb;
-    border: 0.5px solid rgba(175, 22, 14, 0.5);
-  }
-  &.danger {
-    color: var(--r-red-default, #e34935);
-    background: var(--r-red-light, #fff2f0);
-    border: 0.5px solid var(--r-red-default, #e34935);
-  }
-  &.warning {
-    color: #ffb020;
-    background: #fff3de;
-    border: 0.5px solid rgba(255, 176, 32, 0.5);
-  }
-  &.proceed {
-    color: #707280;
-    background: #eaeaec;
-    border: 0.5px solid rgba(112, 114, 128, 0.5);
-  }
-  &.closed,
-  &.error {
-    color: #b4bdcc;
-    background: #eaeaec;
-    border: 0.5px solid rgba(112, 114, 128, 0.5);
-  }
-  &:hover {
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-    opacity: 1;
-  }
-`;
 
 const SecurityLevelTag = ({
   enable,
@@ -138,8 +57,9 @@ const SecurityLevelTag = ({
   }
 
   return (
-    <SecurityLevelTagWrapper
-      className={clsx(
+    <div
+      className={cn(
+        styles.securityLevelTagWrapper,
         'security-level-tag',
         enable ? level : '',
         {
@@ -162,7 +82,7 @@ const SecurityLevelTag = ({
         showText={isHovering}
       />
       <IconArrowRight className="icon-arrow-right" />
-    </SecurityLevelTagWrapper>
+    </div>
   );
 };
 

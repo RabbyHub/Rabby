@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
@@ -19,25 +18,7 @@ import { useShallow } from 'zustand/react/shallow';
 import { SecurityListItem } from './components/SecurityListItem';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './AddLiquidity.module.css';
 
 const AddLiquidity = ({
   data,
@@ -101,7 +82,7 @@ const AddLiquidity = ({
   };
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.addLiquidity.token0')}</Row>
@@ -259,7 +240,7 @@ const AddLiquidity = ({
           />
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

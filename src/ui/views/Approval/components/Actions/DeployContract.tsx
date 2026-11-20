@@ -1,11 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { formatTokenAmount } from 'ui/utils/number';
 import { Col, Row, Table } from './components/Table';
-
-const Wrapper = styled.div``;
 
 const DeployContract = ({
   payNativeTokenAmount,
@@ -17,7 +14,7 @@ const DeployContract = ({
   const { t } = useTranslation();
 
   return (
-    <Wrapper>
+    <div>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.deployContract.descriptionTitle')}</Row>
@@ -39,7 +36,7 @@ const DeployContract = ({
           </Col>
         )}
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

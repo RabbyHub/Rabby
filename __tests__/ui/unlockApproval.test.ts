@@ -66,12 +66,7 @@ const Form = Object.assign(
     useForm: () => [{}],
   }
 );
-const styledComponent = ({ children }: any) =>
-  React.createElement('div', null, children);
-const styledMock: any = (...args: any[]) =>
-  Array.isArray(args[0]) ? styledComponent : () => styledComponent;
-styledMock.div = styledMock;
-styledMock.button = styledMock;
+const styleModuleMock = require('../styleModuleMock');
 describe('Unlock approval binding', () => {
   let root: Root;
   let container: HTMLDivElement;
@@ -139,7 +134,7 @@ describe('Unlock approval binding', () => {
       clsx: () => '',
       lodash: { isString: (value: unknown) => typeof value === 'string' },
       qs: { parse: () => ({}) },
-      'styled-components': styledMock,
+      './index.module.css': styleModuleMock,
       ahooks,
     };
     runInNewContext(compiled, {

@@ -1,0 +1,26 @@
+.wrapper {
+  background-color: transparent;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+  & :global(.ant-input) {
+    background-color: transparent;
+    border-color: transparent;
+    color: #161819;
+    flex: 1;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 26px;
+
+    text-align: right;
+    color: #13141a;
+    padding-right: 0;
+
+    &:placeholder {
+      color: #707280;
+    }
+  }
+}

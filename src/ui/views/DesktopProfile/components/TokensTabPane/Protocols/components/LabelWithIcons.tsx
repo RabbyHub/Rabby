@@ -1,6 +1,7 @@
 import cx from 'clsx';
 import React from 'react';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
+import styles from './LabelWithIcons.module.css';
 
 type Props = {
   label: string | JSX.Element | undefined;
@@ -12,29 +13,11 @@ type Props = {
   className?: string;
 };
 
-const Container = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
-  justify-content: start;
-  flex-wrap: wrap;
-  gap: 6px;
-  div {
-    text-overflow: ellipsis;
-    overflow-wrap: break-word;
-    word-break: break-all;
-  }
-  img {
-    /* margin-right: 6px; */
-  }
-`;
-
 export const LabelWithIcon: React.FC<Props> = (props) => {
   return (
-    <Container
+    <div
       title={typeof props.label === 'string' ? props.label : ''}
-      className={props.className}
+      className={cn(styles.container, props.className)}
       style={Object.assign(
         props.maxWidth ? { maxWidth: props.maxWidth } : {},
         props.style
@@ -44,7 +27,7 @@ export const LabelWithIcon: React.FC<Props> = (props) => {
       <div className={cx(props.textHidden && 'ellipsis', props.labelClassName)}>
         {props.label}
       </div>
-    </Container>
+    </div>
   );
 };
 

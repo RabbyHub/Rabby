@@ -1,0 +1,15 @@
+.searchInput {
+  background-color: var(--r-neutral-card1, #fff) !important;
+  height: 46px !important;
+  border-radius: 6px !important;
+
+  &:global(.ant-input-affix-wrapper-focused) {
+    border-color: var(--r-blue-default, #7084ff) !important;
+  }
+  & input::placeholder {
+    color: var(--r-neutral-foot, #6a7587) !important;
+  }
+  &:hover {
+    border-color: var(--r-blue-default, #7084ff) !important;
+  }
+}

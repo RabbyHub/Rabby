@@ -9,26 +9,11 @@ import { RcIconExternal1CC } from '@/ui/assets/dashboard';
 import { openNFTLinkFromChainItem } from '../../utils';
 import { findChain } from '@/utils/chain';
 import { RiskBanner } from '../RiskBanner';
-import styled from 'styled-components';
 import clsx from 'clsx';
+import styles from './ApprovalCardContract.module.css';
 
 const dangerBg = 'var(--r-red-light1, #fff1f0)';
 const dangerBorder = 'var(--r-red-light2, #ffd7d2)';
-
-const Container = styled.div`
-  width: 100%;
-  min-height: 56px;
-  cursor: pointer;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: var(--r-neutral-card1, #fff);
-
-  &.is-danger {
-    border-radius: 8px;
-    border-color: var(--r-red-default, #e34935);
-    background: var(--r-red-light, #fff2f0);
-  }
-`;
 
 type ApprovalCardContractProps = {
   contract: ContractApprovalItem;
@@ -50,8 +35,8 @@ export const ApprovalCardContract: React.FC<ApprovalCardContractProps> = ({
   );
 
   return (
-    <Container
-      className={clsx('shrink-0 rounded-[8px] p-[16px]', {
+    <div
+      className={clsx(styles.container, 'shrink-0 rounded-[8px] p-[16px]', {
         'is-danger': isRisky,
       })}
     >
@@ -106,6 +91,6 @@ export const ApprovalCardContract: React.FC<ApprovalCardContractProps> = ({
           </button>
         </div>
       </div>
-    </Container>
+    </div>
   );
 };

@@ -14,7 +14,7 @@ import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { ApprovalItem, getSpenderApprovalAmount } from '@/utils/approval';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 import ApprovalsNameAndAddr from './NameAndAddr';
 import {
   decodeRevokeItem,
@@ -35,18 +35,9 @@ import { NFTItemBadge, Permit2Badge } from './Badges';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { appIsDebugPkg } from '@/utils/env';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import styles from './RevokeApprovalModal.module.css';
 
 const BOTTOM_BUTTON_AREA = 76;
-const ModalStyled = styled(Modal)`
-  .ant-modal-header {
-    border-bottom: none;
-  }
-
-  .ant-modal-body {
-    padding-top: 16px;
-    padding-bottom: ${BOTTOM_BUTTON_AREA}px;
-  }
-`;
 
 function ApprovalAmountInfo({
   className,
@@ -502,12 +493,13 @@ export const RevokeApprovalModal = (props: {
   if (!item) return null;
 
   return (
-    <ModalStyled
+    <Modal
       centered
       width={480}
       visible={visible}
       onCancel={onClose}
-      className={clsx(
+      className={cn(
+        styles.modalStyled,
         'revoke-approval-modal modal-support-darkmode',
         className
       )}
@@ -579,6 +571,6 @@ export const RevokeApprovalModal = (props: {
           })}
         </Button>
       </div>
-    </ModalStyled>
+    </Modal>
   );
 };

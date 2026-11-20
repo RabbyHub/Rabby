@@ -7,21 +7,11 @@ import clsx from 'clsx';
 import { useRabbyDispatch } from '@/ui/store';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { useRequest } from 'ahooks';
-
-const FormItemWrapper = styled.div`
-  .mnemonics-with-error,
-  .ant-form-item-has-error {
-    .ant-form-item-control-input
-      + .ant-form-item-explain.ant-form-item-explain-error {
-      display: none;
-    }
-  }
-`;
+import styles from './ImportSeedPhrase.module.css';
 
 type IFormStates = {
   mnemonics: string;
@@ -183,7 +173,7 @@ const ImportSeedPhraseContent = () => {
           setSlip39ErrorIndex(-1);
         }}
       >
-        <FormItemWrapper className="relative">
+        <div className={clsx(styles.formItemWrapper, 'relative')}>
           <Form.Item
             name="mnemonics"
             className={clsx(
@@ -216,7 +206,7 @@ const ImportSeedPhraseContent = () => {
               />
             </Form.Item>
           )}
-        </FormItemWrapper>
+        </div>
 
         <footer className="mt-auto">
           {!formValues.mnemonics?.trim() ? (

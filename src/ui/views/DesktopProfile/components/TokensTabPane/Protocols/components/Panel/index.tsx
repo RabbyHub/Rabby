@@ -1,21 +1,7 @@
 import React, { ReactNode } from 'react';
 
 import BookMark from '../BookMark';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  padding-top: 12px;
-`;
-
-const PanelHead = styled.div`
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-`;
-
-const Card = styled.div`
-  padding: 0;
-`;
+import { cn } from '@/ui/utils/cn';
 
 export const Panel: React.FC<{
   tag?: string;
@@ -37,15 +23,15 @@ export const Panel: React.FC<{
     ...rest
   } = props;
   return (
-    <Container className={className} {...rest}>
-      <PanelHead>
+    <div className={cn('pt-12', className)} {...rest}>
+      <div className="flex items-center mb-12">
         {tag && <BookMark content={tag} />}
         {proposalTag}
         {subTag}
         {moreContent}
         {rightContent}
-      </PanelHead>
-      <Card>{props.children}</Card>
-    </Container>
+      </div>
+      <div className="p-0">{props.children}</div>
+    </div>
   );
 };

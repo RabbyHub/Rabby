@@ -1,72 +1,31 @@
+import React from 'react';
 import { Button } from 'antd';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
+import styles from './Button.module.css';
 
-export const GasAccountRedBorderedButton = styled(Button)`
-  height: 48px;
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 500;
-  background-color: transparent;
-  color: var(--r-red-default, #e34935);
-  border: 1px solid var(--r-red-default, #e34935);
+export const GasAccountRedBorderedButton = React.forwardRef<
+  HTMLElement,
+  React.ComponentProps<typeof Button>
+>(({ className, ...rest }, ref) => (
+  <Button
+    ref={ref}
+    className={cn(styles.gasAccountRedBorderedButton, className)}
+    {...rest}
+  />
+));
 
-  &:hover {
-    background: var(--r-red-light, #fff2f0);
-    color: var(--r-red-default, #e34935);
-    border: 1px solid var(--r-red-default, #e34935);
-  }
+export const GasAccountBlueBorderedButton = React.forwardRef<
+  HTMLElement,
+  React.ComponentProps<typeof Button>
+>(({ className, ...rest }, ref) => (
+  <Button
+    ref={ref}
+    className={cn(styles.gasAccountBlueBorderedButton, className)}
+    {...rest}
+  />
+));
 
-  &:focus {
-    background-color: transparent;
-    color: var(--r-red-default, #e34935);
-    border: 1px solid var(--r-red-default, #e34935);
-  }
-
-  &:hover:before {
-    background-color: transparent;
-  }
-
-  &::before {
-    transition: none;
-    background-color: transparent;
-  }
-`;
-
-export const GasAccountBlueBorderedButton = styled(Button)`
-  height: 48px;
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 500;
-  background-color: transparent;
-  color: var(--r-blue-default, #7084ff);
-  border: 1px solid var(--r-blue-default, #7084ff);
-
-  &:focus {
-    background-color: transparent;
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-
-  &:hover {
-    background: var(--r-blue-light1, #eef1ff);
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-
-  &:hover:before {
-    background-color: transparent;
-  }
-
-  &::before {
-    transition: none;
-    background-color: transparent;
-  }
-  &.ant-btn[disabled],
-  &.ant-btn[disabled]:hover,
-  &.ant-btn[disabled]:focus,
-  &.ant-btn[disabled]:active {
-    background-color: transparent;
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-`;
+// antd's Tooltip reads this static to wrap a disabled Button in a span.
+// styled(Button) used to copy it over; keep it on the wrappers.
+Object.assign(GasAccountRedBorderedButton, { __ANT_BUTTON: true });
+Object.assign(GasAccountBlueBorderedButton, { __ANT_BUTTON: true });

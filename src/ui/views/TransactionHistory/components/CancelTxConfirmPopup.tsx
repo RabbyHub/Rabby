@@ -7,7 +7,6 @@ import { Button, DrawerProps } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 
 interface Props {

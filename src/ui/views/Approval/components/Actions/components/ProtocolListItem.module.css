@@ -1,0 +1,8 @@
+/* Same specificity as LogoWithText's `.text` rule; wins because this file is
+   imported after LogoWithText. */
+.logoWithText :global(.text) {
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  line-height: inherit;
+}

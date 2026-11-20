@@ -1,0 +1,34 @@
+.currentAccount {
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.13);
+  display: inline-flex;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  align-items: center;
+  padding: 0 15px;
+
+  & :global(.icon) {
+    width: 20px;
+    height: 20px;
+  }
+  & :global(.name) {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    max-width: 112px;
+  }
+  & :global(.addr) {
+    font-size: 13px;
+    color: #fff;
+  }
+  &:global(.success) {
+    background: var(--r-neutral-card2, rgba(255, 255, 255, 0.06));
+    & :global(.name) {
+      color: var(--r-neutral-title1, #f7fafc);
+    }
+    & :global(.addr) {
+      color: var(--r-neutral-body, #d3d8e0);
+    }
+  }
+}

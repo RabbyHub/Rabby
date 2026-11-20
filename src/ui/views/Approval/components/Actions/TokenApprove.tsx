@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Form, Input, InputRef } from 'antd';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -26,25 +25,7 @@ import { Divide } from '../Divide';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { TokenAmountItem } from './components/TokenAmountItem';
 import { Chain } from '@/types/chain';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './TokenApprove.module.css';
 
 interface ApproveAmountModalProps {
   amount: number | string;
@@ -241,7 +222,7 @@ const TokenApprove = ({
   const [isHoverEdit, editHoverProps] = useHover();
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle className="flex-none items-center">
@@ -394,7 +375,7 @@ const TokenApprove = ({
           onCancel={() => setEditApproveModalVisible(false)}
         />
       </Popup>
-    </Wrapper>
+    </div>
   );
 };
 

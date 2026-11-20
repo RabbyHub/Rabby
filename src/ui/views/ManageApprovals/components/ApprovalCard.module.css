@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  min-height: 56px;
+  cursor: pointer;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background: var(--r-neutral-card1, #fff);
+
+  &:global(.is-danger) {
+    border-radius: 8px;
+    border-color: var(--r-red-default, #e34935);
+    background: var(--r-red-light, #fff2f0);
+  }
+
+  &:not(:global(.is-danger)):global(.is-selected) {
+    border-color: var(--r-blue-default, #4c65ff);
+    background: var(--r-blue-light1, #edf0ff);
+  }
+  &:not(:global(.is-danger)):hover {
+    border-color: var(--r-blue-default, #4c65ff);
+  }
+}

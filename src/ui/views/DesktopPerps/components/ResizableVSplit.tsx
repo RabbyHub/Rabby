@@ -1,39 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
+import clsx from 'clsx';
+import styles from './ResizableVSplit.module.css';
 
 const HANDLE_HEIGHT = 6;
 // Drag starts only past this threshold (px) so a click — with its few px of
 // jitter — never nudges the layout and the blocks stay aligned.
 const DRAG_THRESHOLD = 3;
-
-const VResizeHandle = styled.div`
-  position: relative;
-  flex-shrink: 0;
-  height: ${HANDLE_HEIGHT}px;
-  border-radius: 6px;
-  cursor: row-resize;
-  /* Stops touch drags from scrolling the page instead of resizing. */
-  touch-action: none;
-  background-color: var(--rb-neutral-bg-page, #f6f7f7);
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 2px;
-    transform: translateY(-50%);
-    border-radius: 6px;
-    background-color: transparent;
-    transition: background-color 0.2s ease;
-  }
-
-  &:hover::after,
-  &.dragging::after {
-    background-color: var(--rb-neutral-info, #c5c5cf);
-  }
-`;
 
 const readStoredHeight = (key: string, fallback: number) => {
   const raw = Number(localStorage.getItem(key));
@@ -160,8 +132,8 @@ export const ResizableVSplit: React.FC<ResizableVSplitProps> = ({
       >
         {top}
       </div>
-      <VResizeHandle
-        className={isDragging ? 'dragging' : undefined}
+      <div
+        className={clsx(styles.vResizeHandle, isDragging && 'dragging')}
         onPointerDown={handleResizeStart}
       />
       <div

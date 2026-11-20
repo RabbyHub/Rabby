@@ -2,32 +2,13 @@ import { Switch } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import styles from './CustomizedButton.module.css';
 
 export interface Props {
   selected?: boolean;
   onOpen(): void;
   onClose(): void;
 }
-
-const SwitchStyled = styled(Switch)`
-  &.ant-switch-small {
-    min-width: 24px;
-    height: 12px;
-    line-height: 12px;
-  }
-
-  &.ant-switch-small .ant-switch-handle {
-    width: 10px;
-    height: 10px;
-    top: 1px;
-    left: 1px;
-  }
-
-  &.ant-switch-small.ant-switch-checked .ant-switch-handle {
-    left: 13px;
-  }
-`;
 
 export const CustomizedSwitch: React.FC<Props> = ({
   selected,
@@ -51,7 +32,8 @@ export const CustomizedSwitch: React.FC<Props> = ({
       <span className="text-r-neutral-foot text-12">
         {t('page.dashboard.tokenDetail.customized')}
       </span>
-      <SwitchStyled
+      <Switch
+        className={styles.switch}
         size="small"
         checked={selected}
         onChange={(val) => {

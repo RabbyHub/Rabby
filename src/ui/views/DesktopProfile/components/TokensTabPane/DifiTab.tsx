@@ -6,16 +6,8 @@ import { useExpandList } from './useExpandList';
 import ProjectOverview from './ProjectOverview';
 import { TokenListEmpty } from './TokenListEmpty';
 import { DisplayedProject } from '@/ui/utils/portfolio/project';
-import styled from 'styled-components';
 import { TokenListViewSkeleton } from '@/ui/views/CommonPopup/AssetList/TokenListViewSkeleton';
 import { HomePerpsPositionList } from '@/ui/views/CommonPopup/AssetList/HomePerpsPositionList';
-
-const ListContainer = styled.div`
-  background-color: var(--rb-neutral-bg-3, #f9f9f9);
-  border-radius: 16px;
-  padding: 16px;
-  margin: 0 20px 20px;
-`;
 
 interface Props {
   onProjectOverviewListChange?: (projects: AbstractProject[]) => void;
@@ -76,9 +68,9 @@ export const DIFITab = ({
 
   if (!currentList?.length && !isLoading) {
     return (
-      <ListContainer className="mt-20">
+      <div className="bg-rb-neutral-bg-3 rounded-[16px] p-16 mx-20 mb-20 mt-20">
         <TokenListEmpty text={t('page.dashboard.assets.table.noMatch')} />
-      </ListContainer>
+      </div>
     );
   }
 

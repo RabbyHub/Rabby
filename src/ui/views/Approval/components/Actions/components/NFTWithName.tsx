@@ -6,39 +6,10 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 import React from 'react';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import styled from 'styled-components';
 import { TokenLabel } from './Values';
 import clsx from 'clsx';
-
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-
-  .nft-item-avatar {
-    margin-right: 6px;
-    flex-shrink: 0;
-    width: 16px;
-    height: 16px;
-    border: none;
-    .ant-image {
-      img {
-        border-radius: 2px;
-      }
-    }
-    .nft-avatar-cover img {
-      display: none !important;
-    }
-  }
-  .name {
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
-    color: var(--r-neutral-title-1, #192945);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './NFTWithName.module.css';
 
 const NFTWithName = ({
   nft,
@@ -58,7 +29,7 @@ const NFTWithName = ({
   const [focusingNFT, setFocusingNFT] = React.useState<NFTItem | null>(null);
   return (
     <>
-      <Wrapper className={className}>
+      <div className={cn(styles.wrapper, className)}>
         <NFTAvatar
           onPreview={(e) => {
             e.stopPropagation();
@@ -94,7 +65,7 @@ const NFTWithName = ({
             />
           </div>
         )}
-      </Wrapper>
+      </div>
       {focusingNFT && (
         <ModalPreviewNFTItem
           nft={(focusingNFT as unknown) as TransferingNFTItem}

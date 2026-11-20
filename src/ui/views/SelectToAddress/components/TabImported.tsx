@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { ellipsisAddress } from '@/ui/utils/address';
@@ -15,33 +14,7 @@ import { findAccountByPriority, filterMyAccounts } from '@/utils/account';
 
 import type { Account } from '@/background/service/preference';
 import { VerifyPwdForNonWhitelisted } from '@/ui/component/Whitelist/Modal';
-
-const AccountItemWrapper = styled.div`
-  background-color: var(--r-neutral-card1);
-  position: relative;
-  border-radius: 12px;
-  margin-top: 12px;
-  &:first-child {
-    margin-top: 0;
-  }
-  .whitelist-item {
-    gap: 12px !important;
-  }
-  .icon-delete-container {
-    display: flex;
-    opacity: 0;
-    &:hover {
-      g {
-        stroke: #ec5151;
-      }
-    }
-  }
-  &:hover {
-    .icon-delete-container {
-      opacity: 1;
-    }
-  }
-`;
+import styles from './TabImported.module.css';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -112,9 +85,12 @@ export default function TabImported({
         <div className="h-full">
           {sortedAccounts.length > 0 &&
             sortedAccounts.map((item) => (
-              <AccountItemWrapper
+              <div
                 key={`${item.address}-${item.type}`}
-                className={clsx(item._isFirstOtherAccount && 'mt-[30px]')}
+                className={clsx(
+                  styles.accountItemWrapper,
+                  item._isFirstOtherAccount && 'mt-[30px]'
+                )}
               >
                 <AccountItem
                   getContainer={getContainer}
@@ -131,7 +107,7 @@ export default function TabImported({
                     handleChange(item);
                   }}
                 />
-              </AccountItemWrapper>
+              </div>
             ))}
         </div>
       </div>

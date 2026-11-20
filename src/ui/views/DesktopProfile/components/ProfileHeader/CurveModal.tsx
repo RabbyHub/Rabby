@@ -1,7 +1,7 @@
 import { Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDebounce } from 'react-use';
-import styled, { createGlobalStyle } from 'styled-components';
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
 import { CurveThumbnail } from './CurveThumbnail';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
@@ -9,6 +9,8 @@ import dayjs from 'dayjs';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/tips-cc.svg';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
+import styles from './CurveModal.module.css';
+
 export type CurvePoint = {
   value: number;
   netWorth: string;
@@ -27,28 +29,6 @@ type Curve = {
   isEmptyAssets: boolean;
 };
 
-const CurveWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-`;
-
-const GlobalStyle = createGlobalStyle`
-  .global-curve-modal {
-    padding-bottom: 0;
-
-    .ant-modal-content {
-      border-radius: 8px;
-      border: 2px solid var(--r-neutral-line, #E0E5EC);
-      background: var(--r-neutral-bg2, #F2F4F7);
-    }
-
-    .ant-modal-body {
-      padding: 20px 20px 16px 20px;
-    }
-  }
-`;
-
 export const CurveModal: React.FC<{
   className?: string;
   curveChartData?: Curve;
@@ -61,6 +41,7 @@ export const CurveModal: React.FC<{
   const [curvePoint, setCurvePoint] = useState<CurvePoint>();
   const [isDebounceHover, setIsDebounceHover] = useState(false);
   const { t } = useTranslation();
+  useDocumentClass(styles.globalActive);
 
   const handleHoverCurve = (data) => {
     setCurvePoint(data);
@@ -119,7 +100,6 @@ export const CurveModal: React.FC<{
 
   return (
     <>
-      <GlobalStyle />
       <Modal
         className="global-curve-modal"
         width={704}

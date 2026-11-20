@@ -1,18 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import { Account } from '@/background/service/preference';
 import { useWallet } from '@/ui/utils';
 import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
-
-const Wrapper = styled.div`
-  display: flex;
-  font-size: 13px;
-  color: var(--r-neutral-body, #3e495e);
-  .icon-account {
-    width: 16px;
-    margin-right: 4px;
-  }
-`;
 
 const AccountAlias = ({ address }: { address: string }) => {
   const wallet = useWallet();
@@ -34,9 +23,9 @@ const AccountAlias = ({ address }: { address: string }) => {
   if (!account) return null;
 
   return (
-    <Wrapper>
+    <div className="flex text-13 text-r-neutral-body">
       <img
-        className="icon-account"
+        className="icon-account w-16 mr-4"
         src={
           WALLET_BRAND_CONTENT[account.brandName]?.image ||
           KEYRING_ICONS[account.type]
@@ -45,7 +34,7 @@ const AccountAlias = ({ address }: { address: string }) => {
       <span className="flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
         {account.alianName}
       </span>
-    </Wrapper>
+    </div>
   );
 };
 

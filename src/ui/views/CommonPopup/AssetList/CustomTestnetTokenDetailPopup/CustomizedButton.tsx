@@ -2,32 +2,13 @@ import { Switch } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
+import styles from './CustomizedButton.module.css';
 
 export interface Props {
   selected?: boolean;
   onOpen(): void;
   onClose(): void;
 }
-
-const SwitchStyled = styled(Switch)`
-  &.ant-switch-small {
-    min-width: 24px;
-    height: 12px;
-    line-height: 12px;
-  }
-
-  &.ant-switch-small .ant-switch-handle {
-    width: 10px;
-    height: 10px;
-    top: 1px;
-    left: 1px;
-  }
-
-  &.ant-switch-small.ant-switch-checked .ant-switch-handle {
-    left: 13px;
-  }
-`;
 
 export const CustomizedButton: React.FC<Props> = ({
   selected,
@@ -48,7 +29,8 @@ export const CustomizedButton: React.FC<Props> = ({
           : t('page.dashboard.tokenDetail.notSelectedCustom')}
       </div>
       <label className={clsx('flex items-center gap-x-6 cursor-pointer')}>
-        <SwitchStyled
+        <Switch
+          className={styles.switch}
           size="small"
           checked={selected}
           onChange={(val) => {

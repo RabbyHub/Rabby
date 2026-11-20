@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import TokenSelect from '@/ui/component/TokenSelect';
 import { TokenRender } from './TokenRender';
 import { DrawerProps, Input, InputRef } from 'antd';
-import styled from 'styled-components';
 import { formatLargeTokenAmount, formatUsdValue } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconWalletCC } from '@/ui/assets/swap/wallet-cc.svg';
@@ -14,48 +13,7 @@ import clsx from 'clsx';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { QuoteProvider } from '../hooks';
 import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
-
-const StyledInput = styled(Input)`
-  &,
-  & > .ant-input {
-    height: 40px;
-    font-weight: 500;
-    box-shadow: none;
-    border-radius: 4px;
-    border: 1px solid transparent;
-    background: transparent !important;
-    font-size: 24px;
-    text-align: right;
-    padding-left: 0;
-    padding-right: 0;
-  }
-  &.ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-    border-width: 1px !important;
-  }
-
-  &:active {
-    border: 1px solid transparent;
-  }
-  &:focus,
-  &:focus-within {
-    border-width: 1px !important;
-    border-color: transparent;
-  }
-  &:hover {
-    border-width: 1px !important;
-    border-color: transparent;
-    box-shadow: none;
-  }
-
-  &:placeholder-shown {
-    color: var(--r-neutral-foot, #6a7587);
-  }
-  &::-webkit-inner-spin-button,
-  &::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-  }
-`;
+import styles from './Token.module.css';
 
 interface SwapTokenItemProps {
   type: 'from' | 'to';
@@ -258,7 +216,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
             className="min-w-0 flex-1"
           >
             {(fontSize) => (
-              <StyledInput
+              <Input
                 spellCheck={false}
                 placeholder="0"
                 value={value}
@@ -267,6 +225,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
                 readOnly={!isFrom}
                 style={{ fontSize }}
                 className={clsx(
+                  styles.input,
                   !isFrom && 'cursor-pointer',
                   isFrom && inSufficient && 'text-r-red-default',
                   valueLoading && 'opacity-50',

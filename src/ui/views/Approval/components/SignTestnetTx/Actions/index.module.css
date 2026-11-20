@@ -1,0 +1,26 @@
+.signTitle {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.signTitle :global(.left) {
+  display: flex;
+  font-size: 18px;
+  line-height: 21px;
+  color: var(--r-neutral-title-1, #f7fafc);
+  flex: 1;
+}
+
+.signTitle :global(.left .icon-speedup) {
+  width: 10px;
+  margin-right: 6px;
+  cursor: pointer;
+}
+
+.signTitle :global(.right) {
+  font-size: 14px;
+  line-height: 16px;
+  color: #999999;
+  cursor: pointer;
+}

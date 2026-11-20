@@ -17,18 +17,22 @@ import { formatNumber, formatUsdValue } from 'ui/utils/number';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { useSignStore } from '@/ui/state/sign';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 import IconNFTDefault from '@/ui/assets/nft-default.svg';
 
-export const HeadlineStyled = styled.div`
-  font-size: 14px;
-  line-height: 16px;
-  font-weight: 500;
-  margin-bottom: 8px;
-  display: flex;
-  align-items: center;
-  color: var(--r-neutral-title-1, #f7fafc);
-`;
+export const HeadlineStyled = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'text-[14px] leading-[16px] font-medium mb-8 flex items-center text-r-neutral-title-1',
+      className
+    )}
+    {...rest}
+  />
+));
 
 const NFTBalanceChange = ({
   data,

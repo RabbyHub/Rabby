@@ -1,0 +1,15 @@
+.container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  justify-content: start;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.container div {
+  text-overflow: ellipsis;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}

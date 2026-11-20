@@ -2,7 +2,6 @@ import React, { memo, useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { AbstractProject } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
@@ -18,6 +17,7 @@ import { useRequest } from 'ahooks';
 import { checkPerpsReference } from '@/ui/views/Perps/utils';
 import { useSticky } from '@/ui/hooks/useSticky';
 import { useLocation } from 'react-router-dom';
+import styles from './ProtocolList.module.css';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -39,41 +39,6 @@ const TemplateDict = {
   nft_p2p_borrower: PortfolioTemplate.NftP2PBorrower,
   prediction: PortfolioTemplate.Prediction,
 };
-
-const PoolListContainer = styled.div`
-  background-color: var(--rb-neutral-bg-3, #f9f9f9);
-  border-radius: 16px;
-  padding-top: 8;
-  margin: 0 20px;
-  overflow: hidden;
-`;
-
-const ProtocolItemWrapper = styled.div`
-  margin-bottom: 28px;
-  border-radius: 8px;
-
-  .title {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    cursor: pointer;
-
-    .name {
-      /* flex: 1; */
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 15px;
-      color: var(--r-neutral-title-1, #192945);
-    }
-    .net-worth {
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 15px;
-      text-align: right;
-      color: var(--r-neutral-title-1, #192945);
-    }
-  }
-`;
 
 export const Main = memo(({ data }: { data: AbstractProject }) => {
   if (!data || !data?._portfolios?.length) return null;
@@ -179,7 +144,10 @@ const ProtocolItem = ({
   );
 
   return (
-    <ProtocolItemWrapper className="protocol-item-wrapper" id={protocol.id}>
+    <div
+      className={clsx(styles.protocolItemWrapper, 'protocol-item-wrapper')}
+      id={protocol.id}
+    >
       <div>
         <div
           className={clsx(
@@ -264,11 +232,12 @@ const ProtocolItem = ({
             </span>
           </div>
         </div>
-        <PoolListContainer>
+        {/* the old `padding-top: 8;` had no unit, so browsers dropped it */}
+        <div className="bg-rb-neutral-bg-3 rounded-[16px] mx-20 overflow-hidden">
           <Main data={protocol} />
-        </PoolListContainer>
+        </div>
       </div>
-    </ProtocolItemWrapper>
+    </div>
   );
 };
 
@@ -280,10 +249,6 @@ interface Props {
   toggleExpand?: () => void;
   hasExpandSwitch?: boolean;
 }
-
-const ProtocolListWrapper = styled.div`
-  margin-top: 20px;
-`;
 
 const ProjectOverview = ({
   list,
@@ -312,7 +277,7 @@ const ProjectOverview = ({
   if (!list) return null;
 
   return (
-    <ProtocolListWrapper>
+    <div className="mt-20">
       {list?.map((item) => (
         <ProtocolItem
           protocol={item}
@@ -396,7 +361,7 @@ const ProjectOverview = ({
           )}
         </div>
       )}
-    </ProtocolListWrapper>
+    </div>
   );
 };
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
@@ -17,6 +16,7 @@ import { ReactComponent as RcClose } from '@/ui/assets/new-user-import/close-cc.
 import { useCreateAddressActions } from './useCreateAddress';
 import { privateKeyToAddress } from 'viem/accounts';
 import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
+import styles from './BulkImportPrivateKey.module.css';
 
 type BulkImportTab = 'privateKey' | 'keyStore';
 
@@ -34,117 +34,6 @@ type ValidatedPrivateKeyResult = {
   validRows: PrivateKeyRow[];
   invalidRowIds: string[];
 };
-
-const Page = styled.div`
-  min-height: 100vh;
-  background: var(--r-neutral-bg-2, #f2f4f7);
-  overflow-y: auto;
-`;
-
-const Card = styled.div`
-  width: 600px;
-  min-height: 586px;
-  margin: 0 auto;
-  border-radius: 8px;
-  background: var(--r-neutral-card-1, #fff);
-  padding: 32px 50px;
-`;
-
-const PasswordInput = styled(Input)`
-  &.ant-input {
-    height: 52px;
-    border-radius: 8px;
-    border: 1px solid var(--r-neutral-line, #e0e5ec);
-    background: var(--r-neutral-card-1, #fff);
-    padding: 0 15px;
-    font-size: 15px;
-    line-height: 18px;
-    color: var(--r-neutral-title-1, #192945);
-    box-shadow: none;
-  }
-
-  &.ant-input::placeholder {
-    color: var(--r-neutral-foot, #6a7587);
-  }
-
-  &.ant-input:focus,
-  &.ant-input-focused {
-    border-color: var(--r-blue-default, #4c65ff);
-    box-shadow: none;
-  }
-  &.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input,
-  &.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover,
-  &.ant-input:hover,
-  &.ant-input:focus,
-  &.ant-input-focused {
-    background: var(--r-neutral-card-1, #fff);
-  }
-`;
-
-const EmptyTextarea = styled.textarea`
-  width: 100%;
-  height: 100%;
-  resize: none;
-  border: 0;
-  outline: none;
-  background: transparent;
-  padding: 0;
-  color: var(--r-neutral-title-1, #192945);
-  font-size: 13px;
-  line-height: 16px;
-  font-weight: 400;
-  white-space: pre-wrap;
-  word-break: break-all;
-  overflow-wrap: anywhere;
-
-  &::placeholder {
-    color: var(--r-neutral-foot, #6a7587);
-  }
-`;
-
-const HiddenRowInput = styled.input`
-  width: 100%;
-  background: transparent;
-  border: 0;
-  outline: none;
-  color: var(--r-neutral-title-1, #192945);
-  font-size: 13px;
-  line-height: 16px;
-  height: 16px;
-  padding: 0;
-  font-weight: 510;
-  font-family: 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont,
-    sans-serif;
-  letter-spacing: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: clip;
-
-  &::-ms-reveal,
-  &::-ms-clear {
-    display: none;
-  }
-`;
-
-const VisibleRowTextarea = styled.textarea`
-  width: 100%;
-  resize: none;
-  overflow: hidden;
-  background: transparent;
-  border: 0;
-  outline: none;
-  padding: 0;
-  color: var(--r-neutral-title-1, #192945);
-  font-size: 13px;
-  line-height: 16px;
-  min-height: 16px;
-  font-weight: 500;
-  /* font-family: 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont,
-    sans-serif; */
-  white-space: pre-wrap;
-  word-break: break-all;
-  overflow-wrap: anywhere;
-`;
 
 const MAX_PRIVATE_KEYS = 1000;
 const PRIVATE_KEY_SEPARATOR_RE = /[\s,，;；|]+/;
@@ -1006,11 +895,11 @@ const BulkImportPrivateKey: React.FC = () => {
 
   return (
     <>
-      <Page>
+      <div className="min-h-[100vh] bg-r-neutral-bg-2 overflow-y-auto">
         <div className="mx-auto w-[600px] pt-[84px]">
           <RcRabbyLogo viewBox="0 0 152 44" className="h-[42px] w-[152px]" />
         </div>
-        <Card>
+        <div className="w-[600px] min-h-[586px] mx-auto rounded-[8px] bg-r-neutral-card-1 py-32 px-[50px]">
           <div className="text-center">
             <h1 className="mb-[8px] text-[20px] font-medium leading-[24px] text-r-neutral-title-1">
               {t('page.newAddress.bulkImportPrivateKey')}
@@ -1099,7 +988,8 @@ const BulkImportPrivateKey: React.FC = () => {
                                   )}
                                 >
                                   {row.visible ? (
-                                    <VisibleRowTextarea
+                                    <textarea
+                                      className={styles.visibleRowTextarea}
                                       ref={(node) => {
                                         rowInputRefs.current[row.id] = node;
                                       }}
@@ -1131,7 +1021,8 @@ const BulkImportPrivateKey: React.FC = () => {
                                       }}
                                     />
                                   ) : (
-                                    <HiddenRowInput
+                                    <input
+                                      className={styles.hiddenRowInput}
                                       ref={(node) => {
                                         rowInputRefs.current[row.id] = node;
                                       }}
@@ -1208,7 +1099,8 @@ const BulkImportPrivateKey: React.FC = () => {
                       </div>
                     ) : (
                       <div className="h-full px-[15px] py-[15px]">
-                        <EmptyTextarea
+                        <textarea
+                          className="w-full h-full resize-none border-0 outline-none bg-transparent p-0 text-r-neutral-title-1 text-13 leading-[16px] font-normal whitespace-pre-wrap break-all wrap-anywhere placeholder:text-r-neutral-foot"
                           value={privateKeyInputValue}
                           spellCheck={false}
                           placeholder={t(
@@ -1293,7 +1185,8 @@ const BulkImportPrivateKey: React.FC = () => {
                       name="password"
                       className="mb-0 mt-[16px] override-ant-form-item-input-has-error"
                     >
-                      <PasswordInput
+                      <Input
+                        className={styles.passwordInput}
                         type="password"
                         spellCheck={false}
                         placeholder={t(
@@ -1317,8 +1210,8 @@ const BulkImportPrivateKey: React.FC = () => {
               </Button>
             </div>
           </div>
-        </Card>
-      </Page>
+        </div>
+      </div>
     </>
   );
 };

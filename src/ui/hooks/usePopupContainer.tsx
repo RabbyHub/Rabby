@@ -1,14 +1,9 @@
 import { useMemoizedFn } from 'ahooks';
 import React, { createContext, useContext, useRef } from 'react';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
+import styles from './usePopupContainer.module.css';
 
 const PopupContext = createContext<(() => HTMLElement) | undefined>(undefined);
-
-const Container = styled.div`
-  width: 100% !important;
-  overflow: hidden;
-  transform: translateX(0);
-`;
 
 export const PopupContainer: React.FC<{
   style?: StyleSheet;
@@ -21,9 +16,13 @@ export const PopupContainer: React.FC<{
   });
   return (
     <PopupContext.Provider value={getContainer}>
-      <Container ref={ref} style={style} className={className}>
+      <div
+        ref={ref}
+        style={style as React.CSSProperties}
+        className={cn(styles.container, className)}
+      >
         {children}
-      </Container>
+      </div>
     </PopupContext.Provider>
   );
 };

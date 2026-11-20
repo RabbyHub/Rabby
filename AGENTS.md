@@ -14,3 +14,15 @@ These invariants hold for every change. Reviewers must check them even when a PR
 - `broadcastToUI` events reach every window (popup, notification, tab). A listener must not treat a global event (e.g. `UNLOCK_WALLET`) as local user consent for a pending request in its own window.
 - Membership in a relaxation whitelist (e.g. `QUEUE_APPROVAL_COMPONENTS_WHITELIST`) means the component can coexist with other queued approvals; every member must be coexistence-safe.
 
+
+## Styling Conventions
+
+New UI code follows these rules; `yarn check:style` (run in CI) fails if a legacy approach grows.
+
+- Style components with Tailwind. Colors come only from the theme classes (`text-r-*`, `bg-r-*`, `border-r-*`, `*-rb-*`), which switch with dark mode.
+- Rabby's Tailwind scale is not the default one: `p-16` is 16px, spacing only has the keys in `tailwind.config.js` (use `p-[22px]` otherwise), and `sm` means `max-width: 600px`. Classes copied from docs or other projects will be the wrong size.
+- Do not add `styled-components`, `createGlobalStyle` or new `.less` files.
+- Overrides of antd internals: component-scoped ones go in a co-located `.module.css` (`.root :global(.ant-select-selector) { ... }`); app-wide ones go in `src/ui/style/antd-overwrite.less`. In `.module.css`, use `var(--r-*)` and plain CSS, never `@apply`.
+- Values only known at runtime: pass a CSS variable through `style` and read it from a class (`w-(--w)`). Never set the same property both inline and with a Tailwind class: Tailwind utilities are `!important` here and win.
+- Merge class names with `cn()` from `@/ui/utils/cn` whenever a caller may override a component's classes; `clsx` alone does not resolve conflicts. New custom font sizes or weights in `tailwind.config.js` must also be registered in `cn.ts`.
+- Do not build Tailwind class names from strings (`` `bg-${color}` ``); the build cannot see them.

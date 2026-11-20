@@ -1,31 +1,6 @@
 import clsx from 'clsx';
 import React, { memo } from 'react';
-import styled, { css, keyframes } from 'styled-components';
-
-const spin = keyframes`
-  0% {
-    transform: rotate(0deg);
-  }
-  12% {
-    transform: rotate(-10deg);
-  }
-  82% {
-    transform: rotate(390deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-`;
-
-const RefreshSvg = styled.svg<{ $animating: boolean }>`
-  transform-origin: 50% 50%;
-
-  ${({ $animating }) =>
-    $animating &&
-    css`
-      animation: ${spin} 0.82s linear infinite;
-    `}
-`;
+import styles from './IconRefresh.module.css';
 
 interface IconRefreshProps extends React.ComponentPropsWithoutRef<'svg'> {
   spinning?: boolean;
@@ -35,14 +10,15 @@ export const IconRefresh = memo((props: IconRefreshProps) => {
   const { className, spinning = false, ...other } = props;
 
   return (
-    <RefreshSvg
+    <svg
       xmlns="http://www.w3.org/2000/svg"
       width="14"
       height="14"
       viewBox="0 0 14 14"
       fill="transparent"
-      $animating={spinning}
       className={clsx(
+        styles.refreshSvg,
+        spinning && styles.animating,
         'arrow-loading cursor-pointer',
         className || 'text-r-blue-default'
       )}
@@ -55,6 +31,6 @@ export const IconRefresh = memo((props: IconRefreshProps) => {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </RefreshSvg>
+    </svg>
   );
 });

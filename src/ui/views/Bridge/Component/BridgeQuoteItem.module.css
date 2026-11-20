@@ -1,0 +1,37 @@
+.itemWrapper {
+  --quote-border-width: 1px;
+  position: relative;
+
+  &:global(.bridge-quote-compact) {
+    border: none;
+    border-radius: 8px;
+    background: var(--r-neutral-card-1, #fff);
+    box-shadow: none;
+
+    &::after {
+      border-radius: 8px;
+    }
+
+    &:hover:not(:global(.active))::after,
+    &:global(.active)::after {
+      position: absolute;
+      z-index: 2;
+      content: '';
+      border: var(--quote-border-width) solid var(--r-blue-default, #7084ff);
+      pointer-events: none;
+    }
+
+    &:hover:not(:global(.active))::after {
+      inset: calc(0px - var(--quote-border-width)) 0;
+    }
+
+    &:global(.active) {
+      border: var(--quote-border-width) solid transparent;
+      background: var(--r-blue-light-1, #eef1ff);
+
+      &::after {
+        inset: calc(0px - var(--quote-border-width));
+      }
+    }
+  }
+}

@@ -1,0 +1,93 @@
+.wrapper {
+  display: flex;
+  font-size: 12px;
+  line-height: 14px;
+  align-items: center;
+  font-weight: normal;
+}
+
+.wrapper :global(.icon-level) {
+  width: 16px;
+  height: 16px;
+  margin-right: 2px;
+}
+
+.wrapper span {
+  display: none;
+}
+
+.wrapper:global(.showText) {
+  padding: 0;
+}
+
+.wrapper:global(.showText) span {
+  display: block;
+}
+
+.securityLevelTagWrapper {
+  padding: 4px;
+  display: flex;
+  position: absolute;
+  top: 50%;
+  margin-top: -10px;
+  right: -6px;
+  padding: 2px;
+  padding-left: 6px;
+  border-radius: 3px;
+  transition: all 0.3s;
+  max-width: 40px;
+  overflow: hidden;
+  align-items: center;
+}
+
+.securityLevelTagWrapper:global(.translucent) {
+  opacity: 0.7;
+}
+
+.securityLevelTagWrapper:global(.showText) {
+  width: max-content;
+  max-width: 170px;
+  white-space: nowrap;
+}
+
+.securityLevelTagWrapper:global(.safe) {
+  color: #27c193;
+  background: #dff6ef;
+  border: 0.5px solid rgba(39, 193, 147, 0.5);
+}
+
+.securityLevelTagWrapper:global(.forbidden) {
+  color: #af160e;
+  background: #f3dcdb;
+  border: 0.5px solid rgba(175, 22, 14, 0.5);
+}
+
+.securityLevelTagWrapper:global(.danger) {
+  color: var(--r-red-default, #e34935);
+  background: var(--r-red-light, #fff2f0);
+  border: 0.5px solid var(--r-red-default, #e34935);
+}
+
+.securityLevelTagWrapper:global(.warning) {
+  color: #ffb020;
+  background: #fff3de;
+  border: 0.5px solid rgba(255, 176, 32, 0.5);
+}
+
+.securityLevelTagWrapper:global(.proceed) {
+  color: #707280;
+  background: #eaeaec;
+  border: 0.5px solid rgba(112, 114, 128, 0.5);
+}
+
+.securityLevelTagWrapper:global(.closed),
+.securityLevelTagWrapper:global(.error) {
+  color: #b4bdcc;
+  background: #eaeaec;
+  border: 0.5px solid rgba(112, 114, 128, 0.5);
+}
+
+.securityLevelTagWrapper:hover {
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}

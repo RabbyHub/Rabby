@@ -1,0 +1,7 @@
+.moreActionsMenu:global(.ant-dropdown-menu) {
+  background: linear-gradient(
+    68.5094deg,
+    rgba(var(--r-neutral-bg-1-rgb), 1) 3.7701%,
+    rgba(var(--r-neutral-bg-1-rgb), 0.9) 67.021%
+  );
+}

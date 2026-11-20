@@ -1,0 +1,6 @@
+.globalActive :global(.small-swap-stop-task-modal) {
+  & :global(.ant-modal-content) {
+    border-radius: 16px;
+    border: none;
+  }
+}

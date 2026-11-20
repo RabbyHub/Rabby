@@ -21,38 +21,13 @@ import { formatPercent } from '@/ui/views/Perps/utils';
 import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { FixedSizeList } from 'react-window';
 import { formatPerpsCoin } from '../../../utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 import { SortIcon } from '../../UserInfoHistory/CommonTable';
+import styles from './CoinDropdown.module.css';
 
 const CATEGORY_ALL_ID = 'all';
-
-const SearchInput = styled(Input)`
-  background-color: var(--r-neutral-card1, #fff) !important;
-  &.ant-input-affix-wrapper-focused {
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-  .ant-input {
-    background-color: transparent !important;
-    color: var(--rb-neutral-title-1, #192945) !important;
-    font-size: 12px;
-  }
-  .ant-input-prefix {
-    margin-right: 6px;
-  }
-  height: 38px !important;
-  padding: 0 12px !important;
-  border-radius: 6px !important;
-  input::placeholder {
-    color: var(--r-neutral-foot, #6a7587) !important;
-  }
-  &:hover {
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-  border-color: var(--r-neutral-line, #d3d8e0) !important;
-`;
 
 interface CoinDropdownProps {
   coin: string;
@@ -481,7 +456,8 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   const dropdownMenu = useMemo(
     () => (
       <div className="bg-rb-neutral-bg-1 rounded-[12px] shadow-lg border border-solid border-rb-neutral-line w-[854px] overflow-hidden flex flex-col p-[12px]">
-        <SearchInput
+        <Input
+          className={styles.searchInput}
           prefix={
             <RcIconSearch
               viewBox="0 0 20 20"

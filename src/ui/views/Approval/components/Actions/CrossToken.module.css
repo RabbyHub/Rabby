@@ -1,0 +1,19 @@
+.wrapper :global(.header) {
+  margin-top: 15px;
+}
+
+.wrapper :global(.icon-edit-alias) {
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+
+.wrapper :global(.icon-scam-token) {
+  margin-left: 4px;
+  width: 13px;
+}
+
+.wrapper :global(.icon-fake-token) {
+  margin-left: 4px;
+  width: 13px;
+}

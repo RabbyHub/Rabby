@@ -10,7 +10,6 @@ import { ConfigProvider, Empty, Table } from 'antd';
 import type { TableProps } from 'antd';
 import type { ColumnGroupType, ColumnType } from 'antd/lib/table';
 
-import classNames from 'classnames';
 import clsx from 'clsx';
 import ResizeObserver from 'rc-resize-observer';
 import type { RenderedCell } from 'rc-table/lib/interface';
@@ -53,7 +52,7 @@ function TableHeadCell({
   return (
     <th
       {...props}
-      className={classNames('am-virtual-table-head-cell', props.className)}
+      className={clsx('am-virtual-table-head-cell', props.className)}
     >
       {children}
     </th>
@@ -147,7 +146,7 @@ const TableCellProto = <RecordType extends object = any>({
     <div
       // pointless, see itemKey property of VGrid
       key={`r-${rowIndex}-c-${columnIndex}-${columnConfig.key}`}
-      className={classNames(
+      className={clsx(
         'am-virtual-table-cell',
         columnConfig.className,
         cellClassName,
@@ -184,9 +183,7 @@ const TableCellProto = <RecordType extends object = any>({
             }
       }
     >
-      <div className={classNames('am-virtual-table-cell-inner')}>
-        {cellNode}
-      </div>
+      <div className={clsx('am-virtual-table-cell-inner')}>{cellNode}</div>
     </div>
   );
 };

@@ -27,7 +27,6 @@ import {
 import imgBestQuoteSharpBg from '@/ui/assets/swap/best-quote-sharp-bg.svg';
 import { RabbyFeeTag } from '../../Swap/Component/RabbyFeeTag';
 import type { RabbyFeeTier } from '../../Swap/hooks/fee';
-import styled from 'styled-components';
 import { findChainByServerID } from '@/utils/chain';
 import BigNumber from 'bignumber.js';
 import { CHAINS_ENUM } from '@debank/common';
@@ -72,25 +71,7 @@ import {
   TxWithTempoExtras,
 } from '@/utils/tempo';
 import { useShallow } from 'zustand/react/shallow';
-
-const PreferMEVGuardSwitch = styled(Switch)`
-  min-width: 20px;
-  height: 12px;
-
-  &.ant-switch-checked {
-    background-color: var(--r-blue-default, #7084ff);
-    .ant-switch-handle {
-      left: calc(100% - 10px - 1px);
-      top: 1px;
-    }
-  }
-  .ant-switch-handle {
-    height: 10px;
-    width: 10px;
-    top: 1px;
-    left: 1px;
-  }
-`;
+import styles from './BridgeShowMore.module.css';
 
 export const BridgeShowMore = ({
   openQuotesList,
@@ -359,7 +340,12 @@ export const BridgeShowMore = ({
   );
 
   return (
-    <InfoCardWrapper className="no-scrollbar overflow-y-auto rounded-t-[8px] bg-r-neutral-card-1 px-16 py-12">
+    <div
+      className={clsx(
+        styles.infoCardWrapper,
+        'no-scrollbar overflow-y-auto rounded-t-[8px] bg-r-neutral-card-1 px-16 py-12'
+      )}
+    >
       <div className="space-y-12">
         {lostValueContentRender()}
 
@@ -435,7 +421,8 @@ export const BridgeShowMore = ({
               overlayClassName="rectangle"
               title={t('page.swap.preferMEVTip')}
             >
-              <PreferMEVGuardSwitch
+              <Switch
+                className={styles.preferMEVGuardSwitch}
                 checked={originPreferMEVGuarded}
                 onChange={switchPreferMEV}
               />
@@ -443,62 +430,9 @@ export const BridgeShowMore = ({
           </ListItem>
         ) : null}
       </div>
-    </InfoCardWrapper>
+    </div>
   );
 };
-
-const InfoCardWrapper = styled.div`
-  max-height: 124px;
-
-  &:has(.security-level-tip):not(:has(.price-impact-warning)) {
-    max-height: 150px;
-  }
-`;
-
-const GasTipsWrapper = styled.div`
-  position: relative;
-
-  .security-level-tip {
-    margin-top: 10px;
-    border-radius: 4px;
-    padding: 6px 10px 6px 8px;
-    font-weight: 500;
-    font-size: 13px;
-    line-height: 15px;
-    display: flex;
-    position: relative;
-    .icon-level {
-      width: 14px;
-      height: 14px;
-      margin-right: 6px;
-    }
-  }
-
-  &.info-card-style {
-    .security-level-tip {
-      min-height: 32px !important;
-      margin-top: 6px !important;
-      padding: 4px 8px;
-      gap: 10px;
-      border-width: 0.5px;
-      border-radius: 4px;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: normal;
-
-      .ant-btn {
-        min-width: 72px;
-        height: 24px;
-        padding: 5px 12px;
-        border-radius: 4px;
-        box-shadow: none;
-        font-size: 12px;
-        font-weight: 500;
-        line-height: normal;
-      }
-    }
-  }
-`;
 
 const StableSignMainnetGasSelectorHeader = ({
   headerProps,
@@ -1108,7 +1042,12 @@ export const DirectSignGasInfo = ({
     return null;
   }
   const gasTipsComponent = () => (
-    <GasTipsWrapper className={clsx(useInfoCardStyle && 'info-card-style')}>
+    <div
+      className={clsx(
+        styles.gasTipsWrapper,
+        useInfoCardStyle && 'info-card-style'
+      )}
+    >
       {showGasLessToSign ? (
         <GasLessActivityToSign
           directSubmit
@@ -1185,7 +1124,7 @@ export const DirectSignGasInfo = ({
           preserveApprovalContext
         />
       ) : null}
-    </GasTipsWrapper>
+    </div>
   );
 
   const gasSelectorHeaderProps: React.ComponentProps<

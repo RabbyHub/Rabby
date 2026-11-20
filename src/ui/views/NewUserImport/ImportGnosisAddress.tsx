@@ -8,55 +8,9 @@ import { isValidAddress } from '@ethereumjs/util';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { GnosisChainList } from './GnosisChainList';
-
-const Container = styled.div`
-  .ant-input {
-    border-radius: 8px;
-    border: 1px solid var(--r-neutral-line, #e0e5ec);
-    color: var(--r-neutral-title1, #192945);
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 18px;
-
-    &::placeholder {
-      color: var(--r-neutral-foot, #6a7587);
-      font-weight: 400;
-    }
-  }
-
-  .ant-input:focus,
-  .ant-input-focused {
-    border-color: var(--r-blue-default, #7084ff);
-  }
-
-  .ant-form-item-has-error .ant-input {
-    border: 1px solid var(--r-red-default, #e34935);
-  }
-
-  .ant-form-item-explain {
-    display: none !important;
-  }
-  .error {
-    margin-top: 12px;
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 15px;
-    color: var(--r-red-default, #e34935);
-  }
-  .loading {
-    margin-top: 20px;
-    font-weight: 400;
-    font-size: 13px;
-    line-height: 15px;
-    color: var(--r-neutral-body, #3e495e);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-`;
+import styles from './ImportGnosisAddress.module.css';
 
 export const NewUserImportGnosisAddress = () => {
   const { t } = useTranslation();
@@ -115,7 +69,7 @@ export const NewUserImportGnosisAddress = () => {
   });
 
   return (
-    <Container>
+    <div className={styles.container}>
       <Card
         onBack={() => {
           if (history.length) {
@@ -215,6 +169,6 @@ export const NewUserImportGnosisAddress = () => {
           {t('global.next')}
         </Button>
       </Card>
-    </Container>
+    </div>
   );
 };

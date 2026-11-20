@@ -1,11 +1,5 @@
 import clsx from 'clsx';
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
-
-const AddressText = styled.span`
-  font-weight: 500;
-  color: var(--r-neutral-title1);
-`;
 
 export default function MarkedHeadTailAddress({
   headCount = 8,
@@ -35,13 +29,17 @@ export default function MarkedHeadTailAddress({
 
   return (
     <span className={clsx('inline-block text-center', className)}>
-      <AddressText>{addressSplit[0]}</AddressText>
+      <span className="font-medium text-r-neutral-title1">
+        {addressSplit[0]}
+      </span>
       {dotsMiddle ? (
         <span className="text-r-neutral-foot">...</span>
       ) : (
         <span className="text-r-neutral-foot">{addressSplit[1]}</span>
       )}
-      <AddressText>{addressSplit[2]}</AddressText>
+      <span className="font-medium text-r-neutral-title1">
+        {addressSplit[2]}
+      </span>
     </span>
   );
 }

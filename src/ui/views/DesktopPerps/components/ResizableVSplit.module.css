@@ -1,0 +1,29 @@
+.vResizeHandle {
+  position: relative;
+  flex-shrink: 0;
+  /* Must match HANDLE_HEIGHT in ResizableVSplit.tsx. */
+  height: 6px;
+  border-radius: 6px;
+  cursor: row-resize;
+  /* Stops touch drags from scrolling the page instead of resizing. */
+  touch-action: none;
+  background-color: var(--rb-neutral-bg-page, #f6f7f7);
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 2px;
+    transform: translateY(-50%);
+    border-radius: 6px;
+    background-color: transparent;
+    transition: background-color 0.2s ease;
+  }
+
+  &:hover::after,
+  &:global(.dragging)::after {
+    background-color: var(--rb-neutral-info, #c5c5cf);
+  }
+}
