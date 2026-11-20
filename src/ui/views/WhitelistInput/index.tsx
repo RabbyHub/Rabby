@@ -303,7 +303,8 @@ const WhitelistInput = () => {
       >
         <PageHeader
           onBack={handleClickBack}
-          contentClassName="thin-header"
+          // Same header as Send Token: this page also sits in .send-token.
+          contentClassName="thin-header mb-0 font-black text-rb-neutral-title-1"
           forceShowBack
           canBack
         >

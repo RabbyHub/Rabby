@@ -140,7 +140,8 @@ const RecentConnections = ({
         onBack={handleCancel}
         className={clsx(
           'bg-r-neutral-bg1 sticky top-0 z-10 mb-0',
-          canBack ? 'mb-[16px]' : 'pb-[16px]'
+          // Settings opens it with a back button, flush with the top.
+          canBack ? 'pt-0 mb-[16px]' : 'pb-[16px]'
         )}
       >
         {t('page.dashboard.recentConnection.title')}
