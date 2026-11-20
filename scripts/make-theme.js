@@ -176,12 +176,11 @@ makeTailwindTheme: {
   const r = rabbyCssPrefix.replace(/-$/, '');
   const rb = rabbyAppCssPrefix.replace(/-$/, '');
 
-  // Tailwind's default palette is replaced, not extended. Apart from
-  // transparent/current/white these are older fixed colors that do not
-  // switch with dark mode; new code uses the r-*/rb-* theme colors.
+  // `--color-*: initial` below drops Tailwind's default palette, white
+  // included, so white is defined again here (`transparent` and `current`
+  // are built in). The others are older fixed colors that do not switch with
+  // dark mode; new code uses the r-*/rb-* theme colors.
   const base = {
-    transparent: 'transparent',
-    current: 'currentColor',
     'blue-light': rabby.light['blue-default'],
     blue: '#796BFD',
     black: '#707280',
