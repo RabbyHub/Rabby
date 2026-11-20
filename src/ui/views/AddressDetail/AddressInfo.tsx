@@ -117,8 +117,8 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
                 onClick={() => destroy()}
                 className={clsx(
                   'w-[200px]',
-                  'text-blue-light',
-                  'border-blue-light',
+                  'text-r-blue-default',
+                  'border-r-blue-default',
                   'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
                   'before:content-none'
                 )}

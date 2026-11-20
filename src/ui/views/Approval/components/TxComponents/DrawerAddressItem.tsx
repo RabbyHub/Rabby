@@ -92,7 +92,7 @@ export const AddressItem = ({
 
       <div className="ml-auto">
         {signed ? (
-          <span className="text-green text-14">
+          <span className="text-r-green-default text-14">
             {t('page.signTx.safeAdminSigned')}
           </span>
         ) : checked ? (

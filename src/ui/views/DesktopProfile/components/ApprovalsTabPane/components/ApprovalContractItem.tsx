@@ -61,7 +61,7 @@ export const ApprovalContractItem = ({
       className={clsx(
         'bg-r-neutral-card1 mb-[12px] rounded-[6px] border border-transparent contract-approval-item',
         onSelect &&
-          'hover:border-blue-light hover:bg-blue-light/10 cursor-pointer'
+          'hover:border-r-blue-default hover:bg-r-blue-light-1 cursor-pointer'
       )}
       key={item.id + item.chain}
       onClick={handleClick}
@@ -137,7 +137,9 @@ export const ApprovalContractItem = ({
           <Alert
             className={clsx(
               'mx-[16px] rounded-[4px] px-[8px] py-[3px] leading-[1.2]',
-              item.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange'
+              item.risk_level === 'danger'
+                ? 'bg-[#ec5151]'
+                : 'bg-r-orange-default'
             )}
             icon={
               <InfoCircleOutlined className="text-white pt-[4px] self-start" />

@@ -308,8 +308,8 @@ export const ImportOrCreatedSuccess = () => {
               className={clsx(
                 'mt-12',
                 'h-[52px] shadow-none rounded-[8px]',
-                'text-blue-light',
-                'border-blue-light',
+                'text-r-blue-default',
+                'border-r-blue-default',
                 'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
                 'before:content-none'
               )}

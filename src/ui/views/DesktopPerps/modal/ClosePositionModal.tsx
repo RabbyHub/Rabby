@@ -669,8 +669,8 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
             onClick={onCancel}
             className={clsx(
               'h-[44px]',
-              'text-blue-light',
-              'border-blue-light',
+              'text-r-blue-default',
+              'border-r-blue-default',
               'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
               'before:content-none'
             )}

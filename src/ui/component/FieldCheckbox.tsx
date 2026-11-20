@@ -54,8 +54,8 @@ const FieldCheckbox = ({
       className={cx(
         'bg-r-neutral-card-2 flex justify-between items-center py-12 px-16 border transition-colors',
         'lg:max-w-[460px]',
-        _checked ? 'border-blue-light' : 'border-r-neutral-line',
-        disable ? 'opacity-40' : 'hover:border-blue-light',
+        _checked ? 'border-r-blue-default' : 'border-r-neutral-line',
+        disable ? 'opacity-40' : 'hover:border-r-blue-default',
         className
       )}
       leftIcon={leftIcon}
