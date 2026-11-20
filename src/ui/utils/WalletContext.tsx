@@ -91,10 +91,14 @@ const useCommonPopupViewState = () => {
   };
 };
 
-const WalletContext = createContext<{
-  wallet: WalletController;
-  commonPopupView: ReturnType<typeof useCommonPopupViewState>;
-} | null>(null);
+// `wallet` never changes, so it gets its own context: components that only call
+// useWallet() (including the route roots) must not re-render whenever the
+// common popup's visible/title/height state changes.
+const WalletContext = createContext<WalletController | null>(null);
+
+const CommonPopupViewContext = createContext<ReturnType<
+  typeof useCommonPopupViewState
+> | null>(null);
 
 const WalletProvider = ({
   children,
@@ -106,26 +110,20 @@ const WalletProvider = ({
   const commonPopupView = useCommonPopupViewState();
 
   return (
-    <WalletContext.Provider value={{ wallet, commonPopupView }}>
-      {children}
+    <WalletContext.Provider value={wallet}>
+      <CommonPopupViewContext.Provider value={commonPopupView}>
+        {children}
+      </CommonPopupViewContext.Provider>
     </WalletContext.Provider>
   );
 };
 
-const useWallet = () => {
-  const { wallet } = (useContext(WalletContext) as unknown) as {
-    wallet: WalletControllerType;
-  };
+const useWallet = () =>
+  (useContext(WalletContext) as unknown) as WalletControllerType;
 
-  return wallet;
-};
-
-const useCommonPopupView = () => {
-  const { commonPopupView } = (useContext(WalletContext) as unknown) as {
-    commonPopupView: ReturnType<typeof useCommonPopupViewState>;
-  };
-
-  return commonPopupView;
-};
+const useCommonPopupView = () =>
+  (useContext(CommonPopupViewContext) as unknown) as ReturnType<
+    typeof useCommonPopupViewState
+  >;
 
 export { WalletProvider, useWallet, useCommonPopupView };
