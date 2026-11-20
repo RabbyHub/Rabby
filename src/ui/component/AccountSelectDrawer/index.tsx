@@ -247,7 +247,7 @@ const AccountSelectDrawer = ({
           type="ghost"
           className={clsx(
             'text-r-blue-default',
-            'border-blue-light',
+            'border-r-blue-default',
             'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
             'disabled:bg-transparent disabled:opacity-40 disabled:hover:bg-transparent',
             'before:content-none'

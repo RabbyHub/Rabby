@@ -20,10 +20,10 @@ export const CustomizedSwitch: React.FC<Props> = ({
     // <div
     //   className={clsx(
     //     'flex rounded',
-    //     'py-[9px] px-12 bg-orange/20 justify-between mb-[10px]'
+    //     'py-[9px] px-12 bg-r-orange-light justify-between mb-[10px]'
     //   )}
     // >
-    //   <div className={clsx('text-orange text-13')}>
+    //   <div className={clsx('text-r-orange-default text-13')}>
     //     {selected
     //       ? t('page.dashboard.tokenDetail.selectedCustom')
     //       : t('page.dashboard.tokenDetail.notSelectedCustom')}

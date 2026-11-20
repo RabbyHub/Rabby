@@ -74,7 +74,7 @@ const MultiSelectAddressList = ({
             className="lg:w-full"
             disable={
               imported && (
-                <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">
+                <span className="rounded-full bg-r-neutral-card-2 text-r-neutral-foot text-12 px-[5px] py-[3px]">
                   {t('component.MultiSelectAddressList.imported')}
                 </span>
               )

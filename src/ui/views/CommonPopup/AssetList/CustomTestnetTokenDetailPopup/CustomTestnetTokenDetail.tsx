@@ -236,7 +236,7 @@ export const CustomTestnetTokenDetail = ({
         <div className="token-txs-history flex flex-col">
           <div className="token-txs-history__empty bg-r-neutral-card-1 rounded-[8px] pt-[30px] pb-[30px]">
             <img className="no-data" src="./images/nodata-tx.png" />
-            <p className="text-14 text-gray-content mt-12">
+            <p className="text-14 text-r-neutral-foot mt-12">
               {t('page.dashboard.tokenDetail.noTransactions')}
             </p>
           </div>

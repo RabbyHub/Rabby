@@ -48,7 +48,7 @@ export const TokenSearchInput = React.forwardRef<InputRef, Props>(
         allowClear
         className={clsx(
           styles.input,
-          'text-12 text-black py-0 px-[9px] h-[32px]',
+          'text-12 text-r-neutral-foot py-0 px-[9px] h-[32px]',
           'rounded-[6px]',
           'transform-none',
           className

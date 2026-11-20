@@ -61,7 +61,7 @@ export const useConfirmRevokeModal = (props: {
             <Button
               type="ghost"
               className={clsx(
-                'w-[260px] h-[44px] border-blue-light text-blue-light',
+                'w-[260px] h-[44px] border-r-blue-default text-r-blue-default',
                 'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
                 'rounded-[8px]',
                 'before:content-none'

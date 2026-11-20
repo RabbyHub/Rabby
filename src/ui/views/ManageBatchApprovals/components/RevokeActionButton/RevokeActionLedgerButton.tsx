@@ -25,7 +25,7 @@ const buttonBaseClass = clsx(
 
 const buttonGhostClass = clsx(
   buttonBaseClass,
-  'border-blue-light text-blue-light',
+  'border-r-blue-default text-r-blue-default',
   'hover:bg-[#8697FF1A] active:bg-[#0000001A]'
 );
 

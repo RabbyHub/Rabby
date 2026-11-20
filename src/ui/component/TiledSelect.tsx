@@ -158,7 +158,7 @@ const TiledSelect = ({
       {errMsg && (
         <div className="rounded-lg text-center font-medium mb-20 pr-0 h-[20px] relative">
           <div className="flex text-12 justify-between absolute left-0 bottom-12 px-12 w-full">
-            <span className="text-red-light">{errMsg}</span>
+            <span className="text-r-red-default">{errMsg}</span>
             <span
               className="text-r-neutral-body flex cursor-pointer"
               onClick={() => {
@@ -180,7 +180,7 @@ const TiledSelect = ({
               (i + 1) % 4 === 0 ? 'mr-0' : 'mr-8',
               'h-[32px] w-[84px] rounded-lg text-center mb-8 font-medium transition-colors border',
               isOptionSelected(i)
-                ? 'bg-gray-bg text-gray-comment border-gray-divider'
+                ? 'bg-r-neutral-card-2 text-r-neutral-foot border-r-neutral-line'
                 : 'bg-white text-r-neutral-title1 border-white cursor-pointer'
             )}
             key={i}

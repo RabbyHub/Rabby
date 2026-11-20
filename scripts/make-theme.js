@@ -178,22 +178,10 @@ makeTailwindTheme: {
 
   // `--color-*: initial` below drops Tailwind's default palette, white
   // included, so white is defined again here (`transparent` and `current`
-  // are built in). The others are older fixed colors that do not switch with
-  // dark mode; new code uses the r-*/rb-* theme colors.
+  // are built in). Every other color is an r-*/rb-* theme color, which
+  // switches with dark mode.
   const base = {
-    'blue-light': rabby.light['blue-default'],
-    blue: '#796BFD',
-    black: '#707280',
-    green: '#27C193',
     white: '#fff',
-    orange: '#FFB020',
-    'red-light': '#F24822',
-    red: '#AF160E',
-    'red-forbidden': '#EC5151',
-    'gray-bg': '#F5F6FA',
-    'gray-divider': '#E5E9EF',
-    'gray-comment': '#B4BDCC',
-    'gray-content': '#707280',
   };
 
   // `r-*`, `rabby-*` and `-r-*` are aliases of the same CSS variables.
