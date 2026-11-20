@@ -392,7 +392,7 @@ export function GasLessActivityToSign({
             directSubmit && 'text-r-red-default'
           )}
           style={{
-            color: themeColor,
+            color: directSubmit ? undefined : themeColor,
           }}
         >
           {gasLessConfig?.before_click_text ||

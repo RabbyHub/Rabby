@@ -237,7 +237,6 @@ const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
             <div
               className="sticky z-10 pt-[0px] overflow-scroll flex-initial px-1 w-auto"
               style={{
-                width: 0,
                 scrollbarWidth: 'none',
                 top: DESKTOP_NAV_HEIGHT + 57,
               }}

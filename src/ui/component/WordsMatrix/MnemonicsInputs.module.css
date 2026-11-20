@@ -169,7 +169,7 @@
 
 .matrix :global(.matrix-word-item:hover .mnemonics-input),
 .matrix :global(.matrix-word-item:hover) .numberFlag {
-  opacity: 1 !important;
+  opacity: 1;
 }
 
 .matrix .numberFlag {

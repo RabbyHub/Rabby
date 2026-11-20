@@ -12,23 +12,31 @@
     <link href="/css/Noto+Sans+JP.css" rel="stylesheet" />
     <title>Rabby Wallet Notification</title>
     <style>
-      ::-webkit-scrollbar {
-        width: 6px;
-        background-color: #fafafa;
-        padding-left: 1px;
-        padding-right: 1px;
-      }
-      ::-webkit-scrollbar-thumb {
-        background-color: #c1c1c1;
-        border-radius: 4px;
-      }
-      @media screen and (min-width: 401px) {
-        .ant-drawer-bottom {
-          max-width: 400px;
-          left: calc(50% - 200px) !important;
+      /* Same layers as the bundled CSS (build/postcss-cascade-layer.js). */
+      @layer properties, theme, base, legacy, components, utilities;
+      @layer legacy {
+        ::-webkit-scrollbar {
+          width: 6px;
+          background-color: #fafafa;
+          padding-left: 1px;
+          padding-right: 1px;
+        }
+        ::-webkit-scrollbar-thumb {
+          background-color: #c1c1c1;
+          border-radius: 4px;
+        }
+        @media screen and (min-width: 401px) {
+          .ant-drawer-bottom {
+            max-width: 400px;
+            left: calc(50% - 200px) !important;
+          }
         }
       }
     </style>
+    <!-- @ant-design/icons injects a copy of antd's .anticon base styles at
+         runtime. Unlayered, it would beat every @layer; antd.less already has
+         the same rules, so its node is pre-created and kept disabled. -->
+    <style rc-util-key="@ant-design-icons" media="not all"></style>
   </head>
 
   <body class="h-full w-full">

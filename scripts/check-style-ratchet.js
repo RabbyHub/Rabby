@@ -15,6 +15,9 @@ const METRICS = {
   styledComponentsFiles: 'files importing styled-components',
   lessFiles: '.less files',
   topLevelAntOverrides: 'top-level .ant-* rules in .less files',
+  // Legacy styles live in @layer legacy, where !important beats every
+  // Tailwind class, including !-prefixed ones.
+  legacyImportant: '!important in .less/.css files',
 };
 
 function walk(dir, out = []) {
@@ -32,6 +35,7 @@ function measure() {
 
   const scripts = files.filter((f) => /\.(t|j)sx?$/.test(f));
   const less = files.filter((f) => f.endsWith('.less'));
+  const css = files.filter((f) => f.endsWith('.css'));
 
   return {
     styledComponentsFiles: scripts.filter((f) =>
@@ -40,6 +44,10 @@ function measure() {
     lessFiles: less.length,
     topLevelAntOverrides: less.reduce(
       (sum, f) => sum + (read(f).match(/^\.ant-/gm) || []).length,
+      0
+    ),
+    legacyImportant: [...less, ...css].reduce(
+      (sum, f) => sum + (read(f).match(/!important/g) || []).length,
       0
     ),
   };

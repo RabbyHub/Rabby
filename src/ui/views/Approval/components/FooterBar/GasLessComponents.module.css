@@ -49,12 +49,12 @@
 
 .gasLessReady > :global(.gas-ready) {
   z-index: -1;
-  margin-top: -2px !important;
+  margin-top: -2px;
 }
 
 .gasLessReady > :global(.gas-to-sign) {
   z-index: 1;
-  margin-top: 4px !important;
+  margin-top: 4px;
 }
 
 .gasLessReady:global(.gasLess) > :global(.gas-ready) {
@@ -75,7 +75,7 @@
 
 .gasLessReady:global(.direct-submit) > :global(.gas-ready),
 .gasLessReady:global(.direct-submit) > :global(.gas-to-sign) {
-  margin-top: 8px !important;
+  margin-top: 8px;
   position: static !important;
   top: 0px;
   align-items: center;

@@ -166,5 +166,4 @@ module.exports = {
   // use class insteadof media-query prefers-color-scheme
   // see https://v2.tailwindcss.com/docs/dark-mode
   darkMode: 'class',
-  important: true,
 };

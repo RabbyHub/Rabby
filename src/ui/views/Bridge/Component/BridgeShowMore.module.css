@@ -46,8 +46,8 @@
 
   &:global(.info-card-style) {
     & :global(.security-level-tip) {
-      min-height: 32px !important;
-      margin-top: 6px !important;
+      min-height: 32px;
+      margin-top: 6px;
       padding: 4px 8px;
       gap: 10px;
       border-width: 0.5px;

@@ -1,7 +1,21 @@
+/* Layer order for the whole UI. antd and the project's Less/CSS are wrapped in
+   `legacy` by build/postcss-cascade-layer.js, so Tailwind utilities beat them
+   without !important. Must come before @import "tailwindcss". */
+@layer properties, theme, base, legacy, components, utilities;
+
 @config "../../../tailwind.config.js";
 @source "../";
 
 @import "tailwindcss";
+
+/* Chrome injects `body { font-family: system-ui…; font-size: 75% }` into
+   extension pages as an unlayered author style, which beats every layer.
+   This unlayered rule wins over it and hands both properties back to the
+   layers, so antd's and the project's body font apply as before. */
+body {
+  font-family: revert-layer;
+  font-size: revert-layer;
+}
 
 @layer base {
   button:not(:disabled),
