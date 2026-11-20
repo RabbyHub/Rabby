@@ -273,7 +273,6 @@ export const CustomTestnetTokenDetail = ({
               style={{
                 width: 114,
                 height: 40,
-                lineHeight: '16px',
               }}
             >
               {t('page.dashboard.tokenDetail.swap')}

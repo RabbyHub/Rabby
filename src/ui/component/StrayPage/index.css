@@ -1,6 +1,6 @@
 @media (min-width: 600px) {
   .stray-page.relative {
-    position: absolute !important;
+    position: absolute;
     left: 50%;
     top: calc(50% + 24px);
     transform: translate(-50%, -50%);

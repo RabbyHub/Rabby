@@ -6,7 +6,8 @@ import { openInTab, useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
 import IconCheck from 'ui/assets/check.svg';
 import clsx from 'clsx';
-import { useCss, useToggle } from 'react-use';
+import { useToggle } from 'react-use';
+import styles from './CreatePassword.module.css';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -76,24 +77,12 @@ const CreatePassword = () => {
     openInTab('https://rabby.io/docs/privacy');
   };
 
-  const spinClass = useCss({
-    '&.ant-spin-nested-loading ,& .ant-spin-container': {
-      height: '100%',
-    },
-    '& .ant-form-item-control > div:last-child.ant-form-item-control-input': {
-      margin: '0 0 26px 0',
-    },
-    '& .ant-form-item-control > div:last-child.ant-form-item-explain.ant-form-item-explain-error': {
-      margin: '8px 0 4px 0',
-    },
-  });
-
   useEffect(() => {
     init();
   }, []);
 
   return (
-    <Spin spinning={loading} wrapperClassName={spinClass} size="large">
+    <Spin spinning={loading} wrapperClassName={styles.spin} size="large">
       <div className="rabby-container h-full bg-r-neutral-card2">
         <Form
           className="h-full"

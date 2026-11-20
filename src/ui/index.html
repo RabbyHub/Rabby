@@ -13,17 +13,25 @@
     <link href="/css/Noto+Sans+JP.css" rel="stylesheet" />
     <title>Rabby Wallet</title>
     <style>
-      ::-webkit-scrollbar {
-        background-color: transparent;
-        width: 4px;
-        height: 4px;
-      }
+      /* Same layers as the bundled CSS (build/postcss-cascade-layer.js). */
+      @layer properties, theme, base, legacy, components, utilities;
+      @layer legacy {
+        ::-webkit-scrollbar {
+          background-color: transparent;
+          width: 4px;
+          height: 4px;
+        }
 
-      ::-webkit-scrollbar-thumb {
-        background-color: var(--rb-neutral-line, #e0e5ec);
-        border-radius: 1000px;
+        ::-webkit-scrollbar-thumb {
+          background-color: var(--rb-neutral-line, #e0e5ec);
+          border-radius: 1000px;
+        }
       }
     </style>
+    <!-- @ant-design/icons injects a copy of antd's .anticon base styles at
+         runtime. Unlayered, it would beat every @layer; antd.less already has
+         the same rules, so its node is pre-created and kept disabled. -->
+    <style rc-util-key="@ant-design-icons" media="not all"></style>
   </head>
 
   <body class="h-full">

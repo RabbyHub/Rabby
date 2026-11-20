@@ -101,7 +101,7 @@
 }
 
 .chainWrapper:global(.swap):hover > :global(.down) {
-  color: var(--r-blue-default, #4c65ff) !important;
+  color: var(--r-blue-default, #4c65ff);
 }
 
 .chainWrapper:global(.swap):hover > :global(.down) path {

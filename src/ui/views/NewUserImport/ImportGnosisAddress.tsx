@@ -125,7 +125,7 @@ export const NewUserImportGnosisAddress = () => {
                 }}
               >
                 <Input.TextArea
-                  className="leading-normal h-[100px]"
+                  className="leading-normal !h-[100px]"
                   autoCapitalize="off"
                   autoCorrect="off"
                   spellCheck={false}

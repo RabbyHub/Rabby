@@ -193,7 +193,10 @@ export const CoinSelector: React.FC<CoinSelectorProps> = ({
       {/* items-start: the lines size to their text so the block can measure it */}
       <div
         ref={priceBlockRef}
-        className="mr-[24px] flex flex-col items-start shrink-0 min-w-[96px]"
+        // The !important floor keeps the width this block has always had: the
+        // inline minWidth below never won against the class, and letting it
+        // win now would change the layout.
+        className="mr-[24px] flex flex-col items-start shrink-0 !min-w-[96px]"
         style={
           priceBlockMinWidth ? { minWidth: priceBlockMinWidth } : undefined
         }
