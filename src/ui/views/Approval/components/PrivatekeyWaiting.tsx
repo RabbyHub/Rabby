@@ -19,7 +19,7 @@ import {
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
 import { Account } from 'background/service/preference';
-import eventBus from '@/eventBus';
+import { useScopedEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -75,6 +75,8 @@ export const PrivatekeyWaiting = ({
     setHeight,
     setPopupProps,
   } = useCommonPopupView();
+  // Removed on unmount; see useScopedEventBusListener.
+  const addScopedListener = useScopedEventBusListener();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
     bindApproval(approvalId, 'PrivatekeyWaiting')
   );
@@ -168,10 +170,10 @@ export const PrivatekeyWaiting = ({
       }
     }
 
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    addScopedListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    addScopedListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (data.success) {
         let sig = data.data;

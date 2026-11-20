@@ -20,7 +20,7 @@ import {
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
 import { Account } from 'background/service/preference';
-import eventBus from '@/eventBus';
+import { useScopedEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
@@ -70,6 +70,8 @@ export const CommonWaiting = ({
     closePopup,
     setPopupProps,
   } = useCommonPopupView();
+  // Removed on unmount; see useScopedEventBusListener.
+  const addScopedListener = useScopedEventBusListener();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
     bindApproval(approvalId, 'CommonWaiting')
   );
@@ -151,22 +153,19 @@ export const CommonWaiting = ({
       }
     }
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
+    addScopedListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
       setErrorMessage(data);
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     });
 
-    eventBus.addEventListener(
-      EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
-      async () => {
-        openInternalPageInTab('request-permission?type=onekey&from=approval');
-      }
-    );
+    addScopedListener(EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB, async () => {
+      openInternalPageInTab('request-permission?type=onekey&from=approval');
+    });
 
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    addScopedListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    addScopedListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (!isSignFinishedFor(data, params.signingOperation)) return;
       console.log('finished', data);
       if (data.success) {
