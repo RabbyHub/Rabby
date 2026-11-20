@@ -51,12 +51,7 @@ const StatusIcon = ({ status }: { status: string }) => {
   if (status === 'pending' || status === 'fromSuccess') {
     return (
       <div className="w-16 h-16 rounded-full flex items-center justify-center">
-        <SvgIcPending
-          className="w-16 h-16 animate-spin text-r-orange-default"
-          style={{
-            animation: 'spin 1.5s linear infinite',
-          }}
-        />
+        <SvgIcPending className="w-16 h-16 animate-spin text-r-orange-default" />
       </div>
     );
   }

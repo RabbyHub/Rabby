@@ -1,0 +1,30 @@
+.depositModal :global(.ant-modal-content) {
+  background: var(--r-neutral-bg1, #fff);
+  border-radius: 16px;
+}
+
+.depositModal :global(.ant-modal-confirm-title) {
+  color: var(--r-neutral-title1, #192945);
+  text-align: center;
+  font-size: 15px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+}
+
+.depositModal :global(.ant-modal-body) {
+  padding: 24px 16px 20px 16px;
+}
+
+.depositModal :global(.ant-modal-confirm-content) {
+  padding: 4px 0 0 0;
+}
+
+.depositModal :global(.ant-modal-confirm-btns) {
+  justify-content: center;
+}
+
+.depositModal :global(.ant-modal-confirm-btns) :global(.ant-btn-primary) {
+  width: 260px;
+  height: 40px;
+}

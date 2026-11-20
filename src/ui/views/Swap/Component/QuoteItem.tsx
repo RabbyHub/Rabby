@@ -460,14 +460,11 @@ export const DexQuoteItem = (
 
         {!disabled && !onlyShow && (
           <span
-            style={{
-              lineHeight: 'normal',
-            }}
             className={clsx(
               'absolute',
               props.combined
                 ? 'quote-tag left-0 top-0 flex h-16 w-60 items-center justify-center px-8 py-1 text-12 font-medium leading-normal'
-                : 'left-[-1px] top-[-1px] px-6 py-[1px]',
+                : 'left-[-1px] top-[-1px] px-6 py-[1px] leading-[normal]',
               props.combined && !props.isBestQuote
                 ? 'rounded-tl-[8px] rounded-br-[8px]'
                 : 'rounded-tl-[4px] rounded-br-[4px]',

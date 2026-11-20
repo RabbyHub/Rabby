@@ -20,7 +20,7 @@
 }
 
 .container:global(.site-group):hover :global(.site-status-icon) {
-  color: var(--r-red-default, #e34935) !important;
+  color: var(--r-red-default, #e34935);
 }
 
 .container :global(.site) {

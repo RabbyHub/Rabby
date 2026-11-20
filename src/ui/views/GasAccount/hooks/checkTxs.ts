@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGasAccountMethods, useGasAccountSign } from './index';
-import { useAsyncFn, useCss, useDebounce } from 'react-use';
+import { useAsyncFn, useDebounce } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
@@ -14,6 +14,7 @@ import { useRequest } from 'ahooks';
 import { nanoid } from 'nanoid';
 import { getGasAccountDecision } from '@/ui/views/Approval/components/FooterBar/gasAccountDecision';
 import { KEYRING_CLASS } from '@/constant';
+import styles from './checkTxs.module.css';
 
 export const GAS_ACCOUNT_INSUFFICIENT_TIP =
   'Gas balance is not enough for transaction';
@@ -120,34 +121,6 @@ export const useLoginDepositConfirm = (params: {
     });
   }, [params?.onGotoGasAccount]);
 
-  const depositCn = useCss({
-    '& .ant-modal-content': {
-      background: 'var(--r-neutral-bg1, #FFF)',
-      borderRadius: '16px',
-    },
-    '& .ant-modal-confirm-title': {
-      color: 'var(--r-neutral-title1, #192945)',
-      textAlign: 'center',
-      fontSize: '15px',
-      fontStyle: 'normal',
-      fontWeight: 500,
-      lineHeight: 'normal',
-    },
-    '& .ant-modal-body': {
-      padding: '24px 16px 20px 16px',
-    },
-    '& .ant-modal-confirm-content': {
-      padding: '4px 0 0 0',
-    },
-    '& .ant-modal-confirm-btns': {
-      justifyContent: 'center',
-      '.ant-btn-primary': {
-        width: '260px',
-        height: '40px',
-      },
-    },
-  });
-
   const modalConfirm = React.useCallback(
     (type: 'login' | 'deposit') => {
       const isLogin = type === 'login';
@@ -158,7 +131,7 @@ export const useLoginDepositConfirm = (params: {
         width: 320,
         closable: false,
         centered: true,
-        className: depositCn,
+        className: styles.depositModal,
         title: title,
         content: null,
         focusTriggerAfterClose: false,
@@ -186,7 +159,7 @@ export const useLoginDepositConfirm = (params: {
         },
       });
     },
-    [t, depositCn, login, gotoGasAccount]
+    [t, login, gotoGasAccount]
   );
 
   return modalConfirm;

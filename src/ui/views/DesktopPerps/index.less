@@ -5,9 +5,9 @@
 body.perps-pro-page {
   font-weight: 350;
 
-  /* Override the token, not the utility: `.font-medium` is `!important` inside
-     `@layer utilities`, so an unlayered override can never win regardless of
-     specificity. Re-pointing the var cascades to every `.font-medium` here. */
+  /* Override the token, not the utility: this file is in `@layer legacy`,
+     below `@layer utilities`, so a rule here cannot beat `.font-medium`.
+     Re-pointing the var cascades to every `.font-medium` here. */
   --font-weight-medium: 450;
 
   /* All divider/border lines on this page render at 80% opacity. Re-pointing
@@ -168,29 +168,29 @@ body.dark.perps-pro-page {
 
 .desktop-perps-topbar-account {
   box-sizing: border-box !important;
-  display: inline-flex !important;
+  display: inline-flex;
   align-items: center !important;
   justify-content: center !important;
   flex-shrink: 0 !important;
   width: auto !important;
   min-width: 0 !important;
   max-width: 180px !important;
-  height: 26px !important;
+  height: 26px;
   min-height: 26px !important;
   max-height: 26px !important;
-  border-radius: 6px !important;
+  border-radius: 6px;
   border-width: 1px !important;
-  border-style: solid !important;
-  padding: 3px 12px !important;
+  border-style: solid;
+  padding: 3px 12px;
   gap: 6px !important;
   opacity: 1;
-  background: transparent !important;
+  background: transparent;
   border-color: var(--rb-neutral-line) !important;
 
   > div {
-    font-size: 12px !important;
-    line-height: 14px !important;
-    color: var(--rb-neutral-foot) !important;
+    font-size: 12px;
+    line-height: 14px;
+    color: var(--rb-neutral-foot);
     min-width: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -198,17 +198,17 @@ body.dark.perps-pro-page {
   }
 
   img {
-    width: 20px !important;
-    height: 20px !important;
+    width: 20px;
+    height: 20px;
   }
 
   > svg {
-    width: 16px !important;
-    height: 16px !important;
+    width: 16px;
+    height: 16px;
   }
 
   &:hover {
-    background: transparent !important;
+    background: transparent;
     border-color: var(--rb-neutral-title-1) !important;
   }
 
@@ -218,12 +218,12 @@ body.dark.perps-pro-page {
   &:active > svg,
   &[aria-expanded='true'] > div,
   &[aria-expanded='true'] > svg {
-    color: var(--rb-neutral-title-1) !important;
+    color: var(--rb-neutral-title-1);
   }
 
   &:active,
   &[aria-expanded='true'] {
-    background: var(--rb-neutral-bg-4) !important;
+    background: var(--rb-neutral-bg-4);
     border-color: var(--rb-neutral-title-1) !important;
   }
 }
@@ -239,23 +239,23 @@ body.dark.perps-pro-page {
 button.desktop-perps-topbar-deposit-button {
   appearance: none !important;
   box-sizing: border-box !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0 !important;
   min-width: 69px !important;
   height: 26px !important;
   min-height: 26px !important;
   max-height: 26px !important;
   margin: 0 !important;
-  padding: 3px 12px !important;
-  border: 1px solid var(--rb-neutral-line) !important;
+  padding: 3px 12px;
+  border: 1px solid var(--rb-neutral-line);
   border-radius: 6px !important;
   background: transparent !important;
   color: var(--rb-neutral-foot) !important;
   font-size: 12px !important;
   line-height: 14px !important;
-  font-weight: 500 !important;
+  font-weight: 500;
   white-space: nowrap !important;
 
   &:hover {

@@ -18,7 +18,6 @@ import {
   useSetSettingVisible,
 } from '../hooks';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss } from 'react-use';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 
@@ -61,6 +60,7 @@ import {
   requestBridgeQuoteTx,
 } from '../utils/submit';
 import { useShallow } from 'zustand/react/shallow';
+import twoStepApproveStyles from '@/ui/views/Swap/Component/twoStepApproveModal.module.css';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -704,28 +704,6 @@ export const BridgeContent = () => {
     setSlippage,
   ]);
 
-  const twoStepApproveCn = useCss({
-    '& .ant-modal-content': {
-      background: '#fff',
-    },
-    '& .ant-modal-body': {
-      padding: '12px 8px 32px 16px',
-    },
-    '& .ant-modal-confirm-content': {
-      padding: '4px 0 0 0',
-    },
-    '& .ant-modal-confirm-btns': {
-      justifyContent: 'center',
-      '.ant-btn-primary': {
-        width: '260px',
-        height: '40px',
-      },
-      'button:first-child': {
-        display: 'none',
-      },
-    },
-  });
-
   useEffect(() => {
     const clearBuildTimer = () => {
       if (buildBridgeTxsTimerRef.current) {
@@ -1185,7 +1163,7 @@ export const BridgeContent = () => {
                               width: 360,
                               closable: true,
                               centered: true,
-                              className: twoStepApproveCn,
+                              className: twoStepApproveStyles.modal,
                               title: null,
                               content: (
                                 <>
