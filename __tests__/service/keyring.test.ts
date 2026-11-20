@@ -1,6 +1,41 @@
+// The Ledger keyring imports DMK packages that ship ESM-only exports, which
+// jest's CommonJS resolver cannot load. These tests never touch Ledger.
+jest.mock('@/background/service/keyring/eth-ledger-keyring', () => {
+  class LedgerBridgeKeyring {
+    static type = 'Ledger Hardware';
+  }
+  return { __esModule: true, default: LedgerBridgeKeyring };
+});
+
+// The service index loads every background service (down to ESM-only
+// `multiformats`); contactBook, preference and uninstalled import it.
+jest.mock('@/background/service', () => ({
+  keyringService: { getAllVisibleAccountsArray: jest.fn(async () => []) },
+  openapiService: { addrDesc: jest.fn() },
+  whitelistService: { getWhitelist: jest.fn(() => []) },
+}));
+
+// src/i18n.ts fetches locale files at import time, and jsdom has no fetch.
+jest.mock('@/i18n', () => ({ t: (key: string) => key }));
+
+// Real vault encryption is PBKDF2 (900k iterations) on WebCrypto, which jsdom
+// lacks. A password-checked fake keeps the lock/unlock semantics.
+jest.mock('@/background/utils/password', () => ({
+  passwordEncrypt: jest.fn(async ({ data, password }) =>
+    JSON.stringify({ password, data })
+  ),
+  passwordDecrypt: jest.fn(async ({ encryptedData, password }) => {
+    const vault = JSON.parse(encryptedData);
+    if (vault.password !== password) {
+      throw new Error('Incorrect password');
+    }
+    return vault.data;
+  }),
+  passwordClearKey: jest.fn(async () => undefined),
+}));
+
 import { KeyringService } from 'background/service/keyring';
 import sinon from 'sinon';
-import mockEncryptor from './mock-encryptor';
 import contactBook from '@/background/service/contactBook';
 import { normalizeAddress } from '@/background/utils';
 import { Wallet } from '@ethereumjs/wallet';
@@ -17,7 +52,6 @@ describe('KeyringService setup', () => {
 
   beforeAll(() => {
     keyringService = new KeyringService();
-    keyringService.encryptor = mockEncryptor;
   });
 
   afterEach(() => {
@@ -80,7 +114,6 @@ describe('keyringService', () => {
 
   beforeEach(async () => {
     keyringService = new KeyringService();
-    keyringService.encryptor = mockEncryptor;
     keyringService.loadStore({});
     await keyringService.boot(password);
     await keyringService.clearKeyrings();
