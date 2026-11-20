@@ -11,7 +11,7 @@ export const TestnetChainLogo = ({
   return (
     <div
       className={clsx(
-        'w-[28px] h-[28px] rounded-full bg-[#6A7587]',
+        'w-[28px] h-[28px] rounded-full bg-light-r-neutral-foot',
         'text-[12px] leading-[14px] text-r-neutral-title2',
         'flex items-center justify-center',
         className

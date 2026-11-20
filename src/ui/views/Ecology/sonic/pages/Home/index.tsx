@@ -138,9 +138,9 @@ export const SonicHome = () => {
               {t('page.ecology.sonic.home.migrateTitle')}
             </h3>
             <div className="text-r-sonic-foreground flex items-center gap-x-[4px] text-[16px] leading-[24px] font-semibold">
-              <span className="text-[#1969FF]">$FTM</span>
+              <span className="text-r-sonic-ftm">$FTM</span>
               {t('page.ecology.sonic.home.migrateDesc')}
-              <span className="text-[#FE9A4C]">$S</span>
+              <span className="text-r-sonic-s">$S</span>
             </div>
           </div>
           <SonicButton disabled rounded className="rounded-full">

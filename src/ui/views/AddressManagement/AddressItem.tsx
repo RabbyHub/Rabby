@@ -263,7 +263,7 @@ const AddressItem = memo(
                     checkedClassName={clsx(
                       isCurrentAccount
                         ? 'text-r-neutral-title-2'
-                        : 'text-[#00C087]'
+                        : 'text-r-green-default'
                     )}
                   />
                   {!isCurrentAccount && (

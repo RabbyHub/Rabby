@@ -207,7 +207,7 @@ export const AccountItem = memo(
                     'w-[200px]',
                     'text-r-blue-default',
                     'border-r-blue-default',
-                    'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                    'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
                     'before:content-none'
                   )}
                 >

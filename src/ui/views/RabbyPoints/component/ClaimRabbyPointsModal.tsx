@@ -277,7 +277,7 @@ const ClaimPoints = ({
       </div>
 
       <div className="rounded-[8px] bg-r-neutral-card-3 px-[12px] py-[16px]">
-        <div className="text-center text-[10px] text-[#7c86c8] mb-[12px]">
+        <div className="text-center text-[10px] text-r-neutral-foot mb-[12px]">
           {t('page.rabbyPoints.claimModal.snapshotTime', {
             time: snapshotTime,
           })}
