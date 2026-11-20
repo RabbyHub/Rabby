@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import type { WalletControllerType } from '@/ui/utils/WalletContext';
+import { wallet } from '@/ui/wallet';
 import { findChain } from '@/utils/chain';
 import { createQueryKey } from '../queryKey';
 
@@ -8,10 +8,7 @@ export const gasMarketQueryKey = (chainServerId: string) =>
     chainId: chainServerId,
   });
 
-export const gasMarketQueryOptions = (
-  wallet: WalletControllerType,
-  chainServerId: string
-) =>
+export const gasMarketQueryOptions = (chainServerId: string) =>
   queryOptions({
     queryKey: gasMarketQueryKey(chainServerId),
     queryFn: async () => {

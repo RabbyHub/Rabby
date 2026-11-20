@@ -1,6 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
 import { tokenQueryOptions } from '@/ui/query/resources/token';
-import { useWallet } from '../utils';
 
 export const useTokenInfo = (
   params: {
@@ -11,9 +10,8 @@ export const useTokenInfo = (
   options?: { ready?: boolean }
 ) => {
   const { address, chainServerId, tokenId } = params;
-  const wallet = useWallet();
   const { data } = useQuery({
-    ...tokenQueryOptions(wallet, params),
+    ...tokenQueryOptions(params),
     enabled:
       options?.ready !== false && Boolean(address && chainServerId && tokenId),
   });
