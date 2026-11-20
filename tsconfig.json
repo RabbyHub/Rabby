@@ -21,7 +21,7 @@
       "assets": ["./src/ui/assets"],
       "changeLogs": ["./changeLogs"]
     },
-    "types": ["chrome", "node", "react", "react-dom", "jest"],
+    "types": ["chrome", "node", "react", "react-dom", "jest", "w3c-web-usb"],
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,

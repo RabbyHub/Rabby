@@ -1,38 +1,50 @@
-import TrezorOffscreenBridge from '@/background/service/keyring/eth-trezor-keyring/trezor-offscreen-bridge';
+import TrezorWebExtensionBridge from '@/background/service/keyring/eth-trezor-keyring/trezor-webextension-bridge';
 import { withSigningDiagnostics } from '@/background/service/keyring/signing-diagnostics';
-import { TrezorAction } from '@/constant/offscreen-communication';
 import {
   applySigningContext,
   getSigningContext,
   shouldIgnoreSentryError,
 } from '@/utils/sentry';
 
-const sendMessage = jest.fn();
+const mockTrezorConnect = {
+  init: jest.fn(() => Promise.resolve()),
+  dispose: jest.fn(() => Promise.resolve()),
+  ethereumSignTransaction: jest.fn(),
+};
 
-jest.mock('webextension-polyfill', () => ({
-  runtime: {
-    id: 'rabby-test',
-    sendMessage: (...args: unknown[]) => sendMessage(...args),
-    onMessage: { addListener: jest.fn() },
+// jest.mock is hoisted above the const, so read it lazily.
+jest.mock('@trezor/connect-web', () => ({
+  __esModule: true,
+  get default() {
+    return mockTrezorConnect;
   },
 }));
 
 // What the eth-trezor-keyring does with a failed Connect response.
-const signLikeKeyring = async (bridge: TrezorOffscreenBridge) => {
+const signLikeKeyring = async (bridge: TrezorWebExtensionBridge) => {
   const response: any = await bridge.ethereumSignTransaction({} as any);
-  if (!response.success) throw new Error(response.payload.error);
+  if (!response.success) {
+    throw new Error(response.error?.message || response.payload?.error);
+  }
   return response;
 };
 
-let lastBridge: TrezorOffscreenBridge;
+let lastBridge: TrezorWebExtensionBridge;
 
-const failSigningWith = async (payload: { error: string; code?: string }) => {
-  sendMessage.mockImplementation(async ({ action }) =>
-    action === TrezorAction.ethereumSignTransaction
-      ? { success: false, payload }
-      : {}
+// Connect 10 fails with `{ success: false, error: { message, code } }`.
+const failSigningWith = async (
+  failure: { error: string; code?: string },
+  shape: 'v10' | 'v9' = 'v10'
+) => {
+  mockTrezorConnect.ethereumSignTransaction.mockResolvedValue(
+    shape === 'v10'
+      ? {
+          success: false,
+          error: { message: failure.error, code: failure.code },
+        }
+      : { success: false, payload: failure }
   );
-  const bridge = new TrezorOffscreenBridge();
+  const bridge = new TrezorWebExtensionBridge();
   lastBridge = bridge;
   await bridge.init({} as any);
   const keyring = {
@@ -50,7 +62,42 @@ const failSigningWith = async (payload: { error: string; code?: string }) => {
 };
 
 describe('Trezor signing diagnostics', () => {
-  beforeEach(() => sendMessage.mockReset());
+  beforeEach(() => {
+    mockTrezorConnect.init.mockClear();
+    mockTrezorConnect.ethereumSignTransaction.mockReset();
+  });
+
+  it('initializes Connect with the Suite flow and the Rabby manifest', async () => {
+    await failSigningWith({ error: 'x', code: 'Failure_Busy' });
+    expect(mockTrezorConnect.init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        coreMode: 'auto',
+        env: 'webextension',
+        manifest: expect.objectContaining({ appName: 'Rabby Wallet' }),
+      })
+    );
+  });
+
+  it('still reads the v9 payload failure shape', async () => {
+    const error = await failSigningWith(
+      { error: 'Action cancelled by user', code: 'Failure_ActionCancelled' },
+      'v9'
+    );
+    expect(getSigningContext(error)?.provider_code).toBe(
+      'Failure_ActionCancelled'
+    );
+  });
+
+  it('classifies a missing Suite connection as disconnected', async () => {
+    const error = await failSigningWith({
+      error: 'Unable to establish connection with Suite',
+      code: 'Desktop_ConnectionMissing',
+    });
+    expect(getSigningContext(error)).toMatchObject({
+      error_category: 'disconnected',
+      provider_code: 'Desktop_ConnectionMissing',
+    });
+  });
 
   it('classifies a device rejection as a user cancellation and drops it', async () => {
     const error = await failSigningWith({
