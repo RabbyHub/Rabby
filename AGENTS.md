@@ -20,10 +20,10 @@ These invariants hold for every change. Reviewers must check them even when a PR
 New UI code follows these rules; `yarn check:style` (run in CI) fails if a legacy approach grows.
 
 - Style components with Tailwind. Colors come only from the theme classes (`text-r-*`, `bg-r-*`, `border-r-*`, `*-rb-*`), which switch with dark mode.
-- Rabby's Tailwind scale is not the default one: `p-16` is 16px, spacing only has the keys in `tailwind.config.js` (use `p-[22px]` otherwise), and `sm` means `max-width: 600px`. Classes copied from docs or other projects will be the wrong size.
+- Rabby's Tailwind scale is not the default one: `p-16` is 16px, spacing only has the keys in the `@theme` block of `src/ui/style/tailwind.css` (use `p-[22px]` otherwise), and `sm` means `max-width: 600px`. Classes copied from docs or other projects will be the wrong size.
 - Do not add `styled-components`, `createGlobalStyle` or new `.less` files.
 - Overrides of antd internals: component-scoped ones go in a co-located `.module.css` (`.root :global(.ant-select-selector) { ... }`); app-wide ones go in `src/ui/style/antd-overwrite.less`. In `.module.css`, use `var(--r-*)` and plain CSS, never `@apply`.
 - Cascade layers decide who wins, not `!important`: antd and all Less/CSS (including `.module.css`) are wrapped in `@layer legacy` at build time, which sits below Tailwind's `utilities`. A Tailwind class beats any legacy rule regardless of specificity; an inline style beats a Tailwind class. Do not add `!important` to Less/CSS: a legacy `!important` beats every Tailwind class, even `!`-prefixed ones.
 - Values only known at runtime: pass a CSS variable through `style` and read it from a class (`w-(--w)`). Never set the same property both inline and with a Tailwind class.
-- Merge class names with `cn()` from `@/ui/utils/cn` whenever a caller may override a component's classes; `clsx` alone does not resolve conflicts. New custom font sizes or weights in `tailwind.config.js` must also be registered in `cn.ts`.
+- Merge class names with `cn()` from `@/ui/utils/cn` whenever a caller may override a component's classes; `clsx` alone does not resolve conflicts. New custom font sizes or weights in that `@theme` block must also be registered in `cn.ts`.
 - Do not build Tailwind class names from strings (`` `bg-${color}` ``); the build cannot see them.
