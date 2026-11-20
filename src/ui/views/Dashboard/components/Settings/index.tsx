@@ -1591,8 +1591,12 @@ const SettingsInner = ({
                       }
                       onClick={data.onClick}
                       className={clsx(
+                        'bg-r-neutral-card-2 px-16 py-0 min-h-[52px] hover:bg-[rgba(134,151,255,0.2)]',
+                        // One rounded group; a hovered row is rounded on its own.
+                        'rounded-none first:rounded-t-[6px] last:rounded-b-[6px] hover:rounded-[6px]',
                         data.className,
-                        data.description ? 'has-desc' : null
+                        data.description &&
+                          'has-desc pt-12 items-start [&>.field-slot]:overflow-visible'
                       )}
                     >
                       {data.content}
