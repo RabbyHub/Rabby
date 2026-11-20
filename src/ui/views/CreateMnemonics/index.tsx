@@ -1,5 +1,5 @@
 import React from 'react';
-import { connectStore, useRabbyDispatch } from 'ui/store';
+import { useRabbyDispatch } from 'ui/store';
 import RiskCheck from './RiskCheck';
 import DisplayMnemonic from './DisplayMnemonic';
 import { useTranslation } from 'react-i18next';
@@ -28,4 +28,4 @@ const CreateMnemonic = () => {
   return node;
 };
 
-export default connectStore()(CreateMnemonic);
+export default CreateMnemonic;

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { connectStore } from 'ui/store';
 import { Button } from 'antd';
 import { Card } from '@/ui/component/NewUserImport';
 import { ReactComponent as RcIconTips } from '@/ui/assets/new-user-import/tips.svg';
@@ -76,4 +75,4 @@ const RiskCheck = () => {
   );
 };
 
-export default connectStore()(RiskCheck);
+export default RiskCheck;

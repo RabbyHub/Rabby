@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import clsx from 'clsx';
-import { connectStore } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import { IconCopyCC } from 'ui/assets/component/IconCopyCC';
 import IconSuccess from 'ui/assets/success.svg';
@@ -121,4 +120,4 @@ const DisplayMnemonic = () => {
   );
 };
 
-export default connectStore()(DisplayMnemonic);
+export default DisplayMnemonic;

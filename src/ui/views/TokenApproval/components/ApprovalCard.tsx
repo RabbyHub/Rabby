@@ -9,7 +9,6 @@ import {
   splitNumberByStep,
   useWallet,
 } from 'ui/utils';
-import { connectStore } from '@/ui/store';
 
 interface ApprovalCardProps {
   data: TokenApproval;
@@ -114,4 +113,4 @@ const ApprovalCard = ({ data }: ApprovalCardProps) => {
   );
 };
 
-export default connectStore()(ApprovalCard);
+export default ApprovalCard;
