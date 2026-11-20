@@ -63,13 +63,13 @@ const Uploader = ({ onChange, accept, className }: UploaderProps) => {
         ref={inputRef}
       />
       {uploadState === UPLOADER_STATE.INITIAL && (
-        <div className="text-center text-13 text-gray-comment">
+        <div className="text-center text-13 text-r-neutral-foot">
           <ThemeIcon src={RcIconUploader} className="mb-12 block mx-auto" />
           <div>{t('component.Uploader.placeholder')}</div>
         </div>
       )}
       {uploadState === UPLOADER_STATE.SELECTED && (
-        <div className="text-13 text-gray-comment w-full">
+        <div className="text-13 text-r-neutral-foot w-full">
           <ThemeIcon src={RcIconFileJson} className="mb-12 block mx-auto" />
           <div className="text-ellipsis overflow-hidden whitespace-nowrap max-w-[80%] mx-auto">
             {filename}

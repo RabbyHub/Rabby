@@ -16,7 +16,7 @@ import { SvgIconCross } from 'ui/assets';
 import styles from './SearchPerpsPopup.module.css';
 
 const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
+  <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
 );
 
 interface SearchPerpsPopupProps {

@@ -451,7 +451,7 @@ export const RevokeApprovalModal = (props: {
                     'rounded-[4px] px-[8px] py-[3px]',
                     spender.risk_level === 'danger'
                       ? 'bg-[#ec5151]'
-                      : 'bg-orange'
+                      : 'bg-r-orange-default'
                   )}
                   icon={
                     <InfoCircleOutlined className="text-white pt-[4px] self-start" />

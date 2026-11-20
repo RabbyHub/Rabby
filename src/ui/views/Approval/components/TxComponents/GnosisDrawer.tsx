@@ -151,7 +151,7 @@ const GnosisDrawer = ({
           onClick={onCancel}
           className={clsx(
             'h-[48px]',
-            'border-blue-light text-blue-light',
+            'border-r-blue-default text-r-blue-default',
             'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
             'rounded-[8px]',
             'before:content-none'

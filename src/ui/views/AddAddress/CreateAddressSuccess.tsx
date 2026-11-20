@@ -220,8 +220,8 @@ export const CreateAddressSuccess: React.FC<{
               className={clsx(
                 'mt-12',
                 'w-full h-[44px] rounded-[8px] text-[13px] leading-[16px] font-medium',
-                'text-blue-light',
-                'border-blue-light',
+                'text-r-blue-default',
+                'border-r-blue-default',
                 'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
                 'before:content-none'
               )}

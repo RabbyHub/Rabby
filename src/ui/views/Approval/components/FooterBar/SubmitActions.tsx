@@ -49,7 +49,7 @@ export const SubmitActions: React.FC<Props> = ({
       {isSign ? (
         <div
           className={clsx(
-            'bg-blue-light w-[246px]',
+            'bg-r-blue-default w-[246px]',
             'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
@@ -113,7 +113,7 @@ export const SubmitActions: React.FC<Props> = ({
                 gasLess && 'gasLess',
                 gasLessThemeColor && 'gasLessConfig',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:text-white/40 disabled:bg-blue-light/40 border-transparent',
+                'disabled:text-white/40 disabled:bg-r-blue-disable border-transparent',
                 'before:content-none'
               )}
               style={

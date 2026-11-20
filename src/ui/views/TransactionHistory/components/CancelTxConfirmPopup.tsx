@@ -62,8 +62,8 @@ export const CancelTxConfirmPopup = ({
           onClick={onClose}
           className={clsx(
             'w-[172px]',
-            'text-blue-light',
-            'border-blue-light',
+            'text-r-blue-default',
+            'border-r-blue-default',
             'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
             'before:content-none'
           )}

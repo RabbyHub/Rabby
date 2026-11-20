@@ -19,7 +19,7 @@ import IconSearch from 'ui/assets/search.svg';
 import { SvgIconCross } from 'ui/assets';
 
 const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
+  <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
 );
 
 import Empty from '../Empty';

@@ -553,7 +553,7 @@ const Content: React.FC<Props> = (props) => {
                   disabled={!nftDetail || !collection?.is_tradable || loading}
                   className={clsx(
                     'hover:before:hidden rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]',
-                    'border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] ',
+                    'border-r-blue-default text-r-blue-default hover:bg-[#8697FF1A] active:bg-[#0000001A] ',
                     'rounded-[8px] before:content-none z-10'
                   )}
                   onClick={() => {
@@ -595,7 +595,7 @@ const Content: React.FC<Props> = (props) => {
               ghost
               className={clsx(
                 'hover:before:hidden rounded-[8px] text-[13px] leading-[16px] font-medium h-[40px]',
-                'border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] ',
+                'border-r-blue-default text-r-blue-default hover:bg-[#8697FF1A] active:bg-[#0000001A] ',
                 'rounded-[8px] before:content-none z-10'
               )}
               onClick={() => {

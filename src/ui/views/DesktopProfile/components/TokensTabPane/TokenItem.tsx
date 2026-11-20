@@ -262,8 +262,8 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       {isNil(item.price_24h_change) ? null : (
         <div
           className={clsx('font-normal text-12', {
-            'text-green': item.price_24h_change > 0,
-            'text-red-forbidden': item.price_24h_change < 0,
+            'text-r-green-default': item.price_24h_change > 0,
+            'text-r-red-default': item.price_24h_change < 0,
           })}
         >
           {item.price_24h_change > 0 ? '+' : ''}
