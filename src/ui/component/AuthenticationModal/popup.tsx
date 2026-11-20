@@ -95,13 +95,11 @@ function useQuestionsCheck(checklist: string[], defaultChecked?: boolean) {
 
   type TIndex = typeof QUESTIONS[number]['index'];
   const toggleCheckedByIndex = React.useCallback((index: TIndex) => {
-    setQuestionChecks((prev) => {
-      const idx = prev.findIndex((item) => item.index === index);
-
-      prev[idx].checked = !prev[idx].checked;
-
-      return [...prev];
-    });
+    setQuestionChecks((prev) =>
+      prev.map((item) =>
+        item.index === index ? { ...item, checked: !item.checked } : item
+      )
+    );
   }, []);
 
   const reset = useCallback(() => {

@@ -27,20 +27,27 @@ const ImportMode = () => {
 
   const loadMnemonics = async () => {
     const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
-    if (accounts.length <= 0) {
-      modes.splice(1, 0, {
-        name: 'mnemonics',
-        label: t('Import via Seed Phrase'),
-      });
-    } else {
-      modes.push({
-        name: 'mnemonics',
-        label: t('Import via Seed Phrase'),
-        disabled: true,
-        tip: t('MnemonicDisableTip'),
-      });
-    }
-    setModes([...modes]);
+    setModes((prev) => {
+      if (prev.some((mode) => mode.name === 'mnemonics')) {
+        return prev;
+      }
+      if (accounts.length <= 0) {
+        return [
+          prev[0],
+          { name: 'mnemonics', label: t('Import via Seed Phrase') },
+          ...prev.slice(1),
+        ];
+      }
+      return [
+        ...prev,
+        {
+          name: 'mnemonics',
+          label: t('Import via Seed Phrase'),
+          disabled: true,
+          tip: t('MnemonicDisableTip'),
+        },
+      ];
+    });
   };
 
   useEffect(() => {

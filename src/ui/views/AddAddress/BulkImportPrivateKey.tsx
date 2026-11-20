@@ -360,17 +360,20 @@ const BulkImportPrivateKey: React.FC = () => {
       return;
     }
 
+    // Only called once per (synchronous) event handler, so the current render's
+    // invalidRowIds is up to date here.
     const rowIdSet = new Set(rowIds);
-    setInvalidRowIds((prev) => {
-      const next = prev.filter((id) => !rowIdSet.has(id));
-      if (
-        !next.length &&
-        privateKeyError === t('page.newAddress.bulkImportPrivateKeyInvalid')
-      ) {
-        setPrivateKeyError('');
-      }
-      return next;
-    });
+    const next = invalidRowIds.filter((id) => !rowIdSet.has(id));
+    if (next.length === invalidRowIds.length) {
+      return;
+    }
+    setInvalidRowIds(next);
+    if (
+      !next.length &&
+      privateKeyError === t('page.newAddress.bulkImportPrivateKeyInvalid')
+    ) {
+      setPrivateKeyError('');
+    }
   });
 
   const applyPrivateKeyLimitError = useMemoizedFn((rawValues: string[]) => {

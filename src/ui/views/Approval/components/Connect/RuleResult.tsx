@@ -148,7 +148,7 @@ const RuleResult = ({
             {collectList.length <= 0 && t('page.connect.noWebsite')}
             {collectList.length > 0 &&
               collectList.slice(0, 10).map((item) => (
-                <div className="collect-list-item">
+                <div className="collect-list-item" key={item.name}>
                   <Tooltip
                     title={item.name}
                     placement="top"

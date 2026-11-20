@@ -174,7 +174,7 @@ export const BlancesWithNfts = ({
     <Col>
       {hasNft &&
         nfts.map((n) => (
-          <BalanceToken>
+          <BalanceToken key={n.id}>
             <span>{getCollectionDisplayName(n.collection)}</span> x{n.amount}
           </BalanceToken>
         ))}
