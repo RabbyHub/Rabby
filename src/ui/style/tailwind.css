@@ -50,8 +50,6 @@
   --text-28: 28px;
   --text-28--line-height: 33px;
 
-  --font-weight-510: 510;
-
   /* Rabby's `sm` is a max-width query (the custom variant below) and `lg` its
      min-width counterpart. `sm` is still registered as a breakpoint so its
      classes come before `lg`'s in the output, as they did with the JS config:

@@ -24,10 +24,6 @@ describe('cn', () => {
     expect(cn('text-12', 'text-14')).toBe('text-14');
   });
 
-  it('resolves the custom font weight against built-in weights', () => {
-    expect(cn('font-510', 'font-medium')).toBe('font-medium');
-  });
-
   it('lets a caller className override the component default', () => {
     expect(cn('px-8 py-2', false && 'hidden', 'px-16')).toBe('py-2 px-16');
   });
@@ -41,9 +37,7 @@ describe('cn', () => {
       );
     });
 
-    const weights = themeKeys('font-weight');
-    expect(weights).toEqual(['510']);
-    weights.forEach((weight) => {
+    themeKeys('font-weight').forEach((weight) => {
       expect(cn(`font-${weight}`, 'font-bold')).toBe('font-bold');
     });
   });

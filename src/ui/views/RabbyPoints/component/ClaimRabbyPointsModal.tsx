@@ -230,7 +230,7 @@ const ClaimPoints = ({
           <span
             style={{
               fontSize: 15,
-              fontWeight: 510,
+              fontWeight: 500,
               lineHeight: 'normal',
               background:
                 'linear-gradient(91deg, #326CFF 1.88%, #AE2BFF 99.85%)',
