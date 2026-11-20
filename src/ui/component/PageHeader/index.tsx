@@ -5,6 +5,7 @@ import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import { useRabbyDispatch } from '@/ui/store';
 import { getUiType, useAlias } from '@/ui/utils';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import React, { ReactNode, SVGProps, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -13,11 +14,13 @@ import IconBack from 'ui/assets/back.svg';
 import { ReactComponent as RcIconClose } from 'ui/assets/component/close-cc.svg';
 import { AccountSelectorModal } from '../AccountSelector/AccountSelectorModal';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
-import './style.less';
 import { KEYRING_TYPE } from '@/constant';
 import { UI_TYPE } from '@/constant/ui';
 const isTab = UI_TYPE.isTab;
 const isDesktop = UI_TYPE.isDesktop;
+
+const hasClass = (classNames: string, name: string) =>
+  classNames.split(/\s+/).includes(name);
 
 const PageHeader = ({
   children,
@@ -34,6 +37,7 @@ const PageHeader = ({
   closeable = false,
   onClose,
   closeCn,
+  backCn,
   isShowAccount,
   disableSwitchAccount,
   showCurrentAccount,
@@ -54,6 +58,7 @@ const PageHeader = ({
   className?: string;
   closeable?: boolean;
   closeCn?: string;
+  backCn?: string;
   isShowAccount?: boolean;
   disableSwitchAccount?: boolean;
   showCurrentAccount?: Account;
@@ -64,28 +69,50 @@ const PageHeader = ({
 
   const { currentAccount } = useSceneAccountInfo();
 
+  // Callers can also ask for the thin/switch-account look through their classes.
+  const headerClassName = clsx(
+    isShowAccount && 'switch-account thin-header',
+    contentClassName,
+    !fixed && className
+  );
+  const isSwitchAccount = hasClass(headerClassName, 'switch-account');
+  const isThin = hasClass(headerClassName, 'thin-header');
+
   const Content = (
     <>
       <div
-        className={clsx(
-          'page-header',
-          isShowAccount && 'switch-account thin-header',
-          contentClassName,
-          !fixed && className
+        className={cn(
+          'page-header flex items-center relative',
+          'text-r-neutral-title-1 font-medium text-[20px] leading-[24px] pt-20 mb-20',
+          isSwitchAccount && 'pt-[9px] pb-[6px]',
+          headerClassName
         )}
       >
         {(forceShowBack || (canBack && history.length > 1)) && (
           <div
-            className="icon-back-container hit-slop-8"
+            className={cn(
+              'icon-back-container hit-slop-8 absolute left-0 bottom-0 h-20 cursor-pointer',
+              isSwitchAccount && 'top-[50%] [transform:translateY(-50%)]',
+              backCn
+            )}
             onClick={onBack || (() => history.goBack())}
           >
             <ThemeIcon
               src={keepBackLightVersion ? IconBack : RcIconBackNew}
-              className={clsx('icon icon-back', invertBack && 'filter invert')}
+              className={clsx(
+                'icon icon-back w-20 h-20',
+                invertBack && 'filter invert'
+              )}
             />
           </div>
         )}
-        <div className="header-content">
+        <div
+          className={cn(
+            'header-content w-full text-center leading-none',
+            isThin &&
+              'text-r-neutral-title1 text-[20px] font-medium leading-[24px]'
+          )}
+        >
           {children}
           {isShowAccount && currentAccount ? (
             <AccountSwitchInner
@@ -100,8 +127,8 @@ const PageHeader = ({
         {closeable && (
           <ThemeIcon
             src={RcIconClose}
-            className={clsx(
-              'icon-close text-r-neutral-body',
+            className={cn(
+              'icon-close absolute bottom-0 right-0 w-20 h-20 cursor-pointer text-r-neutral-body',
               invertBack && 'filter invert',
               closeCn
             )}
@@ -120,8 +147,17 @@ const PageHeader = ({
     </>
   );
   return fixed ? (
-    <div className={clsx('page-header-container', className)}>
-      <div className={clsx('page-header-wrap', wrapperClassName)}>
+    <div className={cn('page-header-container h-[64px] shrink-0', className)}>
+      <div
+        className={cn(
+          'page-header-wrap fixed top-0 left-0 right-0 z-10',
+          'bg-r-neutral-bg-2 px-20 min-h-[64px]',
+          className &&
+            hasClass(className, 'transparent-wrap') &&
+            'bg-transparent',
+          wrapperClassName
+        )}
+      >
         {Content}
       </div>
     </div>

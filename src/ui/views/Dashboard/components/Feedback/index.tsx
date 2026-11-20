@@ -68,7 +68,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       <PageHeader
         forceShowBack
         onBack={handleCancel}
-        className="bg-neutral-bg1 popup-title text-r-neutral-title-1 text-center text-[20px] not-italic font-medium leading-[normal]"
+        className="bg-neutral-bg1 popup-title text-r-neutral-title-1 text-center text-[20px] not-italic font-medium leading-[normal] pt-0 mb-[28px]"
       >
         {t('page.dashboard.feedback.title')}
       </PageHeader>
