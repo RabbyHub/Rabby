@@ -222,7 +222,7 @@ export const CreateAddressSuccess: React.FC<{
                 'w-full h-[44px] rounded-[8px] text-[13px] leading-[16px] font-medium',
                 'text-r-blue-default',
                 'border-r-blue-default',
-                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
                 'before:content-none'
               )}
               onClick={handleBackupSeedPhrase}

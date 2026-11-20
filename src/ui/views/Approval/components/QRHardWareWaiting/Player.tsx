@@ -66,7 +66,7 @@ const Player = ({
         onClick={onSign}
         className={clsx(
           'w-[180px] h-[40px]',
-          'active:before:bg-[#00000033]',
+          'active:before:bg-r-neutral-black/20',
           layoutStyle === 'normal' ? 'mt-20' : 'mt-6'
         )}
         type="primary"

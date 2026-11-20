@@ -21,7 +21,7 @@ const PendingTxs = ({ pendingTxCount }: Props) => {
     <div
       className={clsx(
         'box-border w-[22px] h-[22px] p-[3px] rounded-[4px] bg-[rgba(255,255,255,0.2)]',
-        'font-medium text-[10px] leading-[12px] text-[#fff] cursor-pointer select-none',
+        'font-medium text-[10px] leading-[12px] text-white cursor-pointer select-none',
         'transition-all ease-in-out',
         'whitespace-nowrap overflow-hidden text-ellipsis'
       )}

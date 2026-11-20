@@ -246,7 +246,7 @@ export const RevokeApprovalModal = (props: {
             className={clsx(
               'relative px-[16px] h-[56px] bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1/10 hover:rounded-[6px] hover:z-10',
               isLastOne && 'rounded-b-[6px]',
-              'first:mt-0 first:rounded-t-[6px] dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
+              'first:mt-0 first:rounded-t-[6px] dark:hover:bg-r-blue-light1'
             )}
             onClick={(e) => {
               if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -450,7 +450,7 @@ export const RevokeApprovalModal = (props: {
                   className={clsx(
                     'rounded-[4px] px-[8px] py-[3px]',
                     spender.risk_level === 'danger'
-                      ? 'bg-[#ec5151]'
+                      ? 'bg-r-red-default'
                       : 'bg-r-orange-default'
                   )}
                   icon={
