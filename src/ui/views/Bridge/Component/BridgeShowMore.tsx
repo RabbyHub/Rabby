@@ -71,6 +71,7 @@ import {
   loadTempoFeeTokenOptionsState,
   TxWithTempoExtras,
 } from '@/utils/tempo';
+import { useShallow } from 'zustand/react/shallow';
 
 const PreferMEVGuardSwitch = styled(Switch)`
   min-width: 20px;
@@ -560,9 +561,11 @@ export const DirectSignGasInfo = ({
 }) => {
   const wallet = useWallet();
   const [swapGasQuoteVisible, setSwapGasQuoteVisible] = useState(false);
-  const { cachedTokenList } = useRabbySelector((s) => ({
-    cachedTokenList: s.account.tokens.list,
-  }));
+  const { cachedTokenList } = useRabbySelector(
+    useShallow((s) => ({
+      cachedTokenList: s.account.tokens.list,
+    }))
+  );
   const cachedTokenItems = useMemo(
     () => (cachedTokenList || []).map(abstractTokenToTokenItem),
     [cachedTokenList]

@@ -30,6 +30,7 @@ import {
   parseTokenItem,
   sortTokenItems,
 } from './tokenUtils';
+import { useShallow } from 'zustand/react/shallow';
 
 let lastResetTokenListAddr = '';
 
@@ -62,10 +63,12 @@ export const useTokens = (
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();
 
-  const { mainnetTokens, testnetTokens } = useRabbySelector((store) => ({
-    mainnetTokens: store.account.tokens,
-    testnetTokens: store.account.testnetTokens,
-  }));
+  const { mainnetTokens, testnetTokens } = useRabbySelector(
+    useShallow((store) => ({
+      mainnetTokens: store.account.tokens,
+      testnetTokens: store.account.testnetTokens,
+    }))
+  );
 
   const [hasValue, setHasValue] = useSafeState(false);
   const [isLoading, setLoading] = useSafeState(true);

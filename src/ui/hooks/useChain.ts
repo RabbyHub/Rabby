@@ -3,6 +3,7 @@ import { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { findChainByEnum, varyAndSortChainItems } from '@/utils/chain';
 import { CHAINS_ENUM, Chain } from '@debank/common';
 import { useRabbyDispatch, useRabbySelector } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 
 export type ChainSelectorPurpose =
   | 'dashboard'
@@ -23,14 +24,18 @@ export function useAsyncInitializeChainList({
   supportChains?: Chain['enum'][];
   onChainInitializedAsync?: (firstEnum: CHAINS_ENUM) => void;
 }) {
-  const { pinned, matteredChainBalances } = useRabbySelector((state) => {
-    return {
-      pinned: (state.preference.pinnedChain?.filter((item) =>
-        findChainByEnum(item)
-      ) || []) as CHAINS_ENUM[],
-      matteredChainBalances: state.account.matteredChainBalances,
-    };
-  });
+  // `filter` returns a new array on every call; `useShallow` compares it by item.
+  const pinned = useRabbySelector(
+    useShallow(
+      (state) =>
+        (state.preference.pinnedChain?.filter((item) =>
+          findChainByEnum(item)
+        ) || []) as CHAINS_ENUM[]
+    )
+  );
+  const matteredChainBalances = useRabbySelector(
+    (state) => state.account.matteredChainBalances
+  );
 
   const { matteredList, unmatteredList } = useMemo(() => {
     return varyAndSortChainItems({

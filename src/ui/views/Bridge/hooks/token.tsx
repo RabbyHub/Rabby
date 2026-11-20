@@ -4,6 +4,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import type { BridgeAggregator } from '@/background/service/openapi';
 import { getQuoteList as getBridgeQuoteList } from '@rabby-wallet/rabby-bridge';
 import {
   reportBridgeSdkError,
@@ -38,6 +39,10 @@ import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getRabbyFeeInfo } from '@/ui/views/Swap/hooks/fee';
 
 export const enableInsufficientQuote = true;
+
+// Stable fallback: aggregatorsList is a dependency of the quote request below,
+// so a fresh `[]` on every render would restart it.
+const EMPTY_AGGREGATORS: BridgeAggregator[] = [];
 
 export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldApproveToken?: boolean;
@@ -351,7 +356,7 @@ export const useBridge = () => {
   ]);
 
   const aggregatorsList = useRabbySelector(
-    (s) => s.bridge.aggregatorsList || []
+    (s) => s.bridge.aggregatorsList || EMPTY_AGGREGATORS
   );
   const { feeRate, feeTier } = useMemo(
     () =>
