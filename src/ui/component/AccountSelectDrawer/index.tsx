@@ -34,6 +34,8 @@ interface AccountItemProps {
   checked: boolean;
   onSelect(account: Account): void;
   networkId: string;
+  /** Classes for the address under the alias. */
+  addressClassName?: string;
 }
 
 export const AccountItem = ({
@@ -41,6 +43,7 @@ export const AccountItem = ({
   onSelect,
   checked,
   networkId,
+  addressClassName,
 }: AccountItemProps) => {
   const [alianName, setAlianName] = useState('');
   const [nativeTokenBalance, setNativeTokenBalance] = useState<null | string>(
@@ -144,7 +147,11 @@ export const AccountItem = ({
       <div className="flex items-center w-full item-container">
         <div>
           <p className="alian-name">{alianName}</p>
-          <AddressViewer address={account.address} showArrow={false} />
+          <AddressViewer
+            address={account.address}
+            showArrow={false}
+            className={clsx('normal', addressClassName)}
+          />
         </div>
         <div className="ml-auto flex-1 text-right min-w-0 text-12 text-r-neutral-body native-token-balance truncate">
           {nativeTokenBalance !== null &&
@@ -222,6 +229,7 @@ const AccountSelectDrawer = ({
             key={`${account.type}-${account.address}`}
             onSelect={handleSelectAccount}
             networkId={networkId}
+            addressClassName="text-12 text-r-neutral-body"
             checked={
               checkedAccount
                 ? isSameAddress(account.address, checkedAccount.address) &&

@@ -14,12 +14,6 @@
   font-weight: 500;
 }
 
-.list :global(.address-viewer-text) {
-  color: #4b4d59;
-  font-size: 12px;
-  font-weight: 400;
-}
-
 .list :global(.item-container) {
   justify-content: space-between;
   align-items: center;

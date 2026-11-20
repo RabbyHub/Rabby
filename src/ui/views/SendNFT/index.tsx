@@ -714,6 +714,7 @@ const SendNFT = () => {
                             <AddressViewer
                               address={nftItem.contract_id}
                               showArrow={false}
+                              className="normal text-12 text-r-neutral-body"
                             />
                             <ThemeIcon
                               src={RcIconExternal}
