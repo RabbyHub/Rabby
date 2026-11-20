@@ -176,33 +176,25 @@ makeTailwindTheme: {
   const r = rabbyCssPrefix.replace(/-$/, '');
   const rb = rabbyAppCssPrefix.replace(/-$/, '');
 
-  // Tailwind's default palette is replaced, not extended.
+  // Tailwind's default palette is replaced, not extended. Apart from
+  // transparent/current/white these are older fixed colors that do not
+  // switch with dark mode; new code uses the r-*/rb-* theme colors.
   const base = {
     transparent: 'transparent',
     current: 'currentColor',
-    'blue-from': '#8A78FD',
-    'blue-to': '#796BFD',
     'blue-light': rabby.light['blue-default'],
     blue: '#796BFD',
-    'blue-purple': '#5F75FF',
     black: '#707280',
     green: '#27C193',
     white: '#fff',
-    yellow: '#F29C1B',
     orange: '#FFB020',
-    pink: '#F24822',
     'red-light': '#F24822',
     red: '#AF160E',
     'red-forbidden': '#EC5151',
-    'gray-bg2': '#F5F6FA',
     'gray-bg': '#F5F6FA',
     'gray-divider': '#E5E9EF',
     'gray-comment': '#B4BDCC',
     'gray-content': '#707280',
-    'gray-subTitle': '#4B4D59',
-    'gray-title': '#13141A',
-    'gray-light': '#707880',
-    'gray-common': '#666666',
   };
 
   // `r-*`, `rabby-*` and `-r-*` are aliases of the same CSS variables.
