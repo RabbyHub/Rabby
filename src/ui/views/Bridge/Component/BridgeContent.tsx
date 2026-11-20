@@ -184,7 +184,7 @@ export const BridgeContent = () => {
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
   const history = useHistory();
 
-  const gotoBridge = useCallback(async () => {
+  const gotoBridge = useMemoizedFn(async () => {
     if (
       !inSufficient &&
       fromToken &&
@@ -240,25 +240,7 @@ export const BridgeContent = () => {
         setFetchingBridgeQuote(false);
       }
     }
-  }, [
-    inSufficient,
-    fromToken,
-    toToken,
-    selectedBridgeQuote?.tx,
-    selectedBridgeQuote?.shouldApproveToken,
-    selectedBridgeQuote?.shouldTwoStepApprove,
-    selectedBridgeQuote?.aggregator.id,
-    selectedBridgeQuote?.bridge_id,
-    selectedBridgeQuote?.to_token_amount,
-    selectedBridgeQuote?.duration,
-    wallet,
-    amount,
-    feeRate,
-    rbiSource,
-    slippageState,
-    slippage,
-    maxNativeTokenGasPrice,
-  ]);
+  });
 
   const selectedBridgeQuoteBuildKey = useMemo(() => {
     if (!selectedBridgeQuote || !fromToken || !toToken) {

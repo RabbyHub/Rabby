@@ -47,12 +47,12 @@ beforeEach(() => {
   chrome.runtime.getURL.resetHistory();
 });
 
-describe('go-regression.rabby.io top-level navigation router', () => {
+describe('go.rabby.io top-level navigation router', () => {
   it('opens the home route by default and drops external parameters', () => {
     const { listener, filter, extraInfoSpec } = loadRouter();
 
     expect(filter).toEqual({
-      urls: ['https://go.rabby.io/mobile/*'],
+      urls: ['https://go.rabby.io/*'],
       types: ['main_frame'],
     });
     expect(extraInfoSpec).toBeUndefined();
@@ -104,6 +104,22 @@ describe('go-regression.rabby.io top-level navigation router', () => {
     }
   );
 
+  it('routes every path on go.rabby.io, not only /mobile/', () => {
+    const { listener } = loadRouter();
+
+    listener({
+      tabId: 10,
+      method: 'GET',
+      url: 'https://go.rabby.io/?target=perps',
+    });
+
+    expect(
+      chrome.tabs.update.calledWith(10, {
+        url: 'chrome-extension://test/desktop.html#/desktop/perps',
+      })
+    ).toBe(true);
+  });
+
   it('silently falls back to home for an unknown target', () => {
     const { listener } = loadRouter();
 
@@ -135,11 +151,6 @@ describe('go-regression.rabby.io top-level navigation router', () => {
       tabId: 1,
       method: 'GET',
       url: 'https://go.rabby.io.evil.test/mobile/',
-    },
-    {
-      tabId: 1,
-      method: 'GET',
-      url: 'https://go.rabby.io/.well-known/assetlinks.json',
     },
   ])('ignores an ineligible request %#', (request) => {
     const { listener } = loadRouter();
