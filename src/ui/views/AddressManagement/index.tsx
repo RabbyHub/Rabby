@@ -41,7 +41,7 @@ function NoAddressUI() {
   const { t } = useTranslation();
 
   return (
-    <div className="no-address pt-[90px]">
+    <div className="no-address min-h-[100vh] bg-r-neutral-bg-2 px-20 pt-[90px] pb-[30px]">
       <ThemeIcon
         className="no-data-image w-[52px] h-[52px]"
         src={RcNoMatchedAddress}

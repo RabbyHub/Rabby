@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { BrowserQRCodeReader } from '@zxing/browser';
-import './style.less';
 import { openInternalPageInTab } from 'ui/utils';
-import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { message } from 'antd';
 
 interface QRCodeReaderProps {
@@ -90,7 +89,10 @@ const QRCodeReader = ({
         height: `${height}px`,
       }}
       ref={videoEl}
-      className={clsx('qrcode-reader-comp', className)}
+      className={cn(
+        'object-cover rounded-[8px] bg-r-neutral-line [transform:scaleX(-1)]',
+        className
+      )}
     ></video>
   );
 };

@@ -34,7 +34,9 @@
   height: 16px;
 }
 
-.connectWrapper :global(.approval-connect .chain-selector .chain-icon-comp) img {
+.connectWrapper
+  :global(.approval-connect .chain-selector .chain-icon-comp)
+  img {
   width: 16px;
   height: 16px;
 }
@@ -124,5 +126,4 @@
   border: none !important;
   background-color: transparent !important;
   height: unset !important;
-  padding: 0;
 }

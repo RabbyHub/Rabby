@@ -2,7 +2,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { openInternalPageInTab } from '@/ui/utils';
-import './style.less';
 import { TrezorBanner } from './Bannder';
 
 const TrezorConnect = () => {
@@ -25,13 +24,17 @@ const TrezorConnect = () => {
       hasBack={false}
       footerFixed={false}
     >
-      <div className="connect-ledger">
+      <div className="w-[306px]">
         <ul className="list-decimal w-[fit-content] pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px] mb-[50px]">
-          <li>{t('page.dashboard.hd.trezor.doc1')}</li>
-          <li>{t('page.dashboard.hd.trezor.doc2')}</li>
-          <li className="opacity-0"></li>
+          <li className="text-r-neutral-body">
+            {t('page.dashboard.hd.trezor.doc1')}
+          </li>
+          <li className="text-r-neutral-body">
+            {t('page.dashboard.hd.trezor.doc2')}
+          </li>
+          <li className="text-r-neutral-body opacity-0"></li>
         </ul>
-        <img src="/images/trezor-plug.png" className="ledger-plug" />
+        <img src="/images/trezor-plug.png" className="ledger-plug mb-[50px]" />
       </div>
       <TrezorBanner className="ledger-banner" />
     </StrayPageWithButton>

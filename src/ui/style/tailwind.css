@@ -6,7 +6,7 @@
 @config "../../../tailwind.config.js";
 @source "../";
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Chrome injects `body { font-family: system-ui…; font-size: 75% }` into
    extension pages as an unlayered author style, which beats every layer.
@@ -15,6 +15,41 @@
 body {
   font-family: revert-layer;
   font-size: revert-layer;
+}
+
+/* Keyframes for arbitrary animate-[name_…] classes; `spining` is also used by
+   the remaining Less. */
+@keyframes spining {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes perpsOrderTypeFlash {
+  0% {
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  65% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @layer base {

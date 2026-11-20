@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FieldCheckbox } from 'ui/component';
 import { ellipsis } from 'ui/utils/address';
-import './style.less';
 
 export interface ISelectAccountItem {
   address: string;
@@ -63,7 +62,7 @@ const MultiSelectAddressList = ({
   }, [importedAccounts]);
 
   return (
-    <ul className="multiselect-address">
+    <ul className="flex flex-col items-center lg:bg-white lg:rounded-b-[6px]">
       {accounts.map((account) => {
         const checked = !!selected.find((item) => item.index === account.index);
         const imported = importedAddresses.has(account.address.toLowerCase());
@@ -81,10 +80,8 @@ const MultiSelectAddressList = ({
               )
             }
           >
-            <div className="multiselect-address__item">
-              <span className="multiselect-address__item-index">
-                {account.index}
-              </span>
+            <div>
+              <span className="mr-[30px]">{account.index}</span>
               <span
                 className="text-15 font-medium text-r-neutral-title1"
                 title={account.address.toLowerCase()}

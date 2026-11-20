@@ -13,12 +13,6 @@
   background: var(--r-blue-light1, #eef1ff);
 }
 
-.container:global(.site-group):hover
-  :global(.global-account-selector:not(.is-disabled)) {
-  border: 1px solid var(--r-blue-default, #7084ff);
-  background: var(--r-blue-light1, #eef1ff);
-}
-
 .container:global(.site-group):hover :global(.site-status-icon) {
   color: var(--r-red-default, #e34935);
 }
