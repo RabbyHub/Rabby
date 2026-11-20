@@ -1456,9 +1456,6 @@
   }
 
   .gas-selector-panel {
-    .field-slot {
-      margin-left: 0;
-    }
     .gas-content {
       display: flex;
       align-items: center;
@@ -1513,11 +1510,6 @@
       //   border: none;
       //   border-bottom: 0.5px solid var(--r-neutral-line);
       // }
-    }
-    &.invalid {
-      .field.border-blue-light {
-        border-color: #f24822 !important;
-      }
     }
   }
   .priority-slider {
@@ -2381,17 +2373,6 @@
   .ant-drawer-header,
   .ant-drawer-body {
     padding: 0;
-  }
-
-  .field {
-    & + .field {
-      margin-top: 8px;
-    }
-    &.selected {
-      svg path {
-        stroke: var(--r-blue-default, #7084ff);
-      }
-    }
   }
 }
 

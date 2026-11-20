@@ -209,17 +209,6 @@
 
   .setting-items .field {
     margin-bottom: 0;
-    border-radius: 0;
-
-    &:first-child {
-      border-top-left-radius: @radius-value;
-      border-top-right-radius: @radius-value;
-    }
-
-    &:last-child {
-      border-bottom-left-radius: @radius-value;
-      border-bottom-right-radius: @radius-value;
-    }
 
     & + .field {
       margin-top: 0;
@@ -251,23 +240,17 @@
       margin-left: -4px;
     }
   }
+  // Background, padding, radius and hover colour are on the Field's classes.
   .field {
-    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
-    border-radius: @radius-value;
     margin-bottom: 8px;
     font-size: 14px;
     font-weight: 500;
     line-height: 16px;
     color: var(--r-neutral-title-1, #f7fafc);
-    padding: 0 16px;
     border: 1px solid transparent;
-    min-height: 52px;
     &.has-desc {
       height: 64px;
-      align-items: flex-start;
-      padding: 12px 16px 0;
       .field-slot {
-        overflow: visible;
         flex-wrap: wrap;
       }
       .desc {
@@ -284,19 +267,8 @@
     & + .field {
       margin-top: 8px;
     }
-    &.default-wallet-field {
-      padding-top: 20px;
-      height: 72px;
-      align-items: flex-start;
-      .default-wallet-title {
-        line-height: 20px;
-      }
-    }
-    &:hover,
-    &.checked {
-      background-color: rgba(134, 151, 255, 0.2);
+    &:hover {
       border: 1px solid var(--r-blue-default);
-      border-radius: @radius-value;
     }
     .not-default-tip {
       color: var(--r-red-default);
@@ -342,7 +314,6 @@
   }
   .popup-feedback-inner,
   .recent-connections-popup,
-  .resolve-conflict-modal,
   .openapi-modal,
   .reset-account-modal,
   .auto-lock-modal,
@@ -417,65 +388,6 @@
   }
   .auto-lock-modal {
     padding: 20px 20px 0 20px;
-  }
-  .resolve-conflict-modal {
-    .tips {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 14px;
-      color: #ec5151;
-    }
-    .field {
-      padding-right: 0;
-      padding-left: 12px;
-      cursor: pointer !important;
-
-      .left-icon > svg {
-        path:nth-child(2) {
-          fill: #b4bdcc;
-          stroke: #b4bdcc;
-        }
-        &.checked {
-          path:nth-child(2) {
-            fill: var(--r-blue-default, #7084ff);
-            stroke: var(--r-blue-default, #7084ff);
-          }
-        }
-      }
-      &.metamask {
-        .left-icon > svg.checked path:nth-child(2) {
-          fill: #f6851b;
-          stroke: #f6851b;
-        }
-      }
-
-      &.metamask:hover,
-      &.metamask.checked {
-        background: rgba(246, 133, 27, 0.1);
-        border: 1px solid #f6851b;
-        box-sizing: border-box;
-        border-radius: @radius-value;
-      }
-      &-main {
-        padding: 16px 0;
-      }
-      &-title {
-        font-weight: 500;
-        font-size: 16px;
-        line-height: 19px;
-        color: var(--r-neutral-title-1, #f7fafc);
-        display: flex;
-        align-items: center;
-        margin-bottom: 5px;
-        gap: 6px;
-      }
-      &-desc {
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 16px;
-        color: var(--r-neutral-body);
-      }
-    }
   }
 }
 
