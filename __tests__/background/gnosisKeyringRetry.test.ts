@@ -7,6 +7,12 @@ import GnosisKeyring, {
   submitWithSignature,
 } from '@/background/service/keyring/eth-gnosis-keyring';
 
+// Safe instances are supplied by these tests; no SDK transports are needed.
+jest.mock('@rabby-wallet/gnosis-sdk', () => ({
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 const OWNER_A = '0x57f2000000000000000000000000000000007758';
 const OWNER_B = '0xd553500000000000000000000000000000a533c0';
 const SIG_A = `0x${'ab'.repeat(64)}1b`;

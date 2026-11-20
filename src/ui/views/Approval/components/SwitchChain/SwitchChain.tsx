@@ -37,7 +37,7 @@ const SwitchChain = ({
   );
   const { t } = useTranslation();
 
-  const { data, session } = params;
+  const { data } = params;
 
   const chainId = data?.[0]?.chainId;
 
@@ -77,7 +77,10 @@ const SwitchChain = ({
     async () => {
       const values = form.getFieldsValue();
 
-      const res = await wallet.addCustomTestnet(values);
+      const res = await wallet.addCustomTestnetFromApproval(values, {
+        id: approvalId!,
+        component: 'SwitchChain',
+      });
       if ('error' in res) {
         form.setFields([
           {
@@ -86,14 +89,6 @@ const SwitchChain = ({
           },
         ]);
         throw new Error(res.error.message);
-      }
-
-      const site = await wallet.getConnectedSite(session.origin)!;
-      if (site) {
-        await wallet.updateConnectSite(site?.origin, {
-          ...site,
-          chain: res.enum,
-        });
       }
     },
     {
@@ -108,7 +103,12 @@ const SwitchChain = ({
       // The form shows the error; the approval stays pending.
       return;
     }
-    await runAddChain();
+    try {
+      await runAddChain();
+    } catch (error) {
+      if (error?.code === 4001) return;
+      throw error;
+    }
     resolveApproval();
   };
 

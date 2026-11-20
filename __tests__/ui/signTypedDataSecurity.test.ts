@@ -176,13 +176,17 @@ describe('SignTypedData security lifecycle', () => {
         Skeleton: { Input: () => usePresentation('Skeleton') },
       },
       lodash: { cloneDeep: (data: any) => JSON.parse(JSON.stringify(data)) },
-      '@/background/utils': { underline2Camelcase: (value: string) => value },
+      '@/background/utils': {
+        underline2Camelcase: (value: string) =>
+          value.replace(/_(.)/g, (_match, letter) => letter.toUpperCase()),
+      },
       '@/ui/store': {
         useRabbySelector: (selector: any) => selector({ preference: {} }),
       },
       '@/utils/extraFeeProtection': jest.requireActual(
         '@/utils/extraFeeProtection'
       ),
+      '@/utils/signEvent': jest.requireActual('@/utils/signEvent'),
       consts: {
         ALIAS_ADDRESS: {},
         CHAINS: { ETH: { serverId: 'eth' } },
@@ -262,7 +266,8 @@ describe('SignTypedData security lifecycle', () => {
         defaultRules: [],
       },
       '@/utils/chain': {
-        isTestnetChainId: () => isTestnet,
+        isTestnetChainId: (chainId: unknown) =>
+          isTestnet || Number(chainId) === 421614,
         findChain: ({
           id,
           enum: chainEnum,
@@ -324,7 +329,9 @@ describe('SignTypedData security lifecycle', () => {
       'ui/assets/walletlogo/safe.svg': '',
       '@/ui/state/exchange': { getCexInfo: async () => ({}) },
       '@/ui/utils/ledger-dmk': { requestLedgerHIDPermission: noop },
-      './signMessageHighlighter': { tokenizeSignTypedDataMessage: () => [] },
+      './signMessageHighlighter': jest.requireActual(
+        '@/ui/views/Approval/components/signMessageHighlighter'
+      ),
       './useSignMessageAddressData': { useSignMessageAddressData: () => ({}) },
     };
     const compiled = transpileModule(
@@ -346,7 +353,7 @@ describe('SignTypedData security lifecycle', () => {
     const exports: any = {};
     runInNewContext(compiled, {
       exports,
-      console: { ...console, error: noop },
+      console: { ...console, error: noop, log: noop },
       require: (name: string) => {
         if (!(name in modules))
           throw new Error(`Missing test dependency ${name}`);
@@ -379,6 +386,115 @@ describe('SignTypedData security lifecycle', () => {
     expect(wallet.getConnectedSite).not.toHaveBeenCalled();
     expect(footer.securityBlocked).toBe(false);
   });
+
+  test.each(['already switched', 'switch during parse'])(
+    'mainnet Permit keeps mainnet policy when the dapp has %s',
+    async (timing) => {
+      const parsed = defer<any>();
+      wallet.getConnectedSite
+        .mockResolvedValueOnce({
+          chain: timing === 'already switched' ? 'ARB_SEPOLIA' : 'ETH',
+        })
+        .mockResolvedValue({ chain: 'ARB_SEPOLIA' });
+      wallet.openapi.parseCommon.mockReturnValue(parsed.promise);
+      formatContext.mockImplementation(async ({ actionData, isTestnet }) =>
+        isTestnet ? {} : { id: actionData.id }
+      );
+      engine.mockImplementation(async (ctx) =>
+        ctx.id ? [risk(Level.FORBIDDEN)] : []
+      );
+      act(render);
+      await flush();
+      await act(async () => parsed.resolve(response(['permit'])));
+      await flush();
+
+      expect(requiredData).toHaveBeenCalledWith(
+        expect.objectContaining({
+          chainId: 'eth',
+          actionData: expect.objectContaining({ chainId: '1' }),
+          apiProvider: wallet.openapi,
+        })
+      );
+      expect(formatContext).toHaveBeenCalledWith(
+        expect.objectContaining({ chainId: 'eth', isTestnet: false })
+      );
+      expect(wallet.getConnectedSite).toHaveBeenCalledTimes(1);
+      expect(actions.raw.domain.chainId).toBe(1);
+      expect(footer.securityBlocked).toBe(true);
+      await act(async () => footer.onSubmit());
+      expect(approve).not.toHaveBeenCalled();
+    }
+  );
+
+  test('domainless typed data uses the captured chain without another site lookup', async () => {
+    const payload = JSON.parse(props.params.data[1]);
+    delete payload.domain.chainId;
+    props.params.data[1] = JSON.stringify(payload);
+    wallet.getConnectedSite
+      .mockResolvedValueOnce({ chain: 'ETH' })
+      .mockResolvedValue({ chain: 'ARB_SEPOLIA' });
+    act(render);
+    await flush();
+    expect(requiredData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        chainId: 'eth',
+        actionData: expect.objectContaining({ chainId: '1' }),
+      })
+    );
+    expect(wallet.getConnectedSite).toHaveBeenCalledTimes(1);
+  });
+
+  test.each([
+    'eth_signTypedData',
+    'eth_signTypedData_v1',
+    'ethSignTypedData',
+    'ethSignTypedDataV1',
+    'eth_sign_typed_data_v1',
+  ])(
+    '%s shows every original field in the main, raw and copy views',
+    async (method) => {
+      const fields = [
+        { name: 'amount', type: 'uint256', value: '1000000' },
+        { name: 'amount', type: 'uint256', value: '1' },
+        {
+          name: '__proto__',
+          type: 'address',
+          value: '0xde709f2102306220921060314715629080e2fb77',
+        },
+      ];
+      props.params.method = method;
+      props.params.data = [fields, '0xaccount'];
+      act(render);
+      await flush();
+      expect(JSON.parse(actions.message)).toEqual(fields);
+      expect(actions.raw).toBe(fields);
+      expect(actions.copyMessage).toBe(JSON.stringify(fields));
+      expect(
+        actions.messageTokens.map((token: any) => token.value).join('')
+      ).toBe(actions.message);
+      expect(wallet.openapi.parseCommon).not.toHaveBeenCalled();
+      expect(footer.securityBlocked).toBe(false);
+      await act(async () => footer.onSubmit());
+      expect(approve).toHaveBeenCalledWith({});
+    }
+  );
+
+  test.each(['eth_signTypedData_v4', 'ethSignTypedDataV1'])(
+    '%s cannot sign after payload parsing fails',
+    async (method) => {
+      props.params.method = method;
+      props.params.data =
+        method === 'ethSignTypedDataV1'
+          ? [null, '0xaccount']
+          : ['0xaccount', 'invalid JSON'];
+      act(render);
+      await flush();
+      expect(actions).toBeUndefined();
+      expect(footer.securityBlocked).toBe(true);
+      await act(async () => footer.onSubmit());
+      expect(approve).not.toHaveBeenCalled();
+    }
+  );
 
   test.each([false, true])(
     'passes the original security context through for a cross-origin URL (parsed risk: %p)',
