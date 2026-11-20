@@ -355,7 +355,7 @@ const TokenSelect = forwardRef<
                 <SvgIconArrowDownTriangle className="ml-[3px]" />
               </div>
             ) : (
-              <div className="flex items-center justify-center w-[150px] h-[32px] text-[#fff] bg-r-blue-default rounded-[4px] font-medium text-[20px] leading-[23px]">
+              <div className="flex items-center justify-center w-[150px] h-[32px] text-white bg-r-blue-default rounded-[4px] font-medium text-[20px] leading-[23px]">
                 <span>{t('page.sendToken.selectToken')}</span>
                 <SvgIconArrowDownTriangle className="brightness-[100] ml-[7px]" />
               </div>

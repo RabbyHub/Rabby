@@ -611,11 +611,11 @@ const SwitchLangModal = ({
 //           rightIcon={
 //             <ThemeIcon
 //               src={RcIconArrowCCRight}
-//               className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
+//               className="icon icon-arrow-right w-20 h-20 text-r-green-default"
 //             />
 //           }
 //           onClick={onClick}
-//           className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
+//           className="bg-[rgba(16,157,99,0.20)] text-r-green-default hover:border-r-green-default font-medium"
 //         >
 //           {t('page.dashboard.settings.claimFreeGasBadge')}
 //         </Field>
@@ -1453,7 +1453,7 @@ const SettingsInner = ({
                 {process.env.release}
                 <span
                   className={clsx(
-                    'text-[#ec5151] ml-2',
+                    'text-r-red-default ml-2',
                     !hasNewVersion && 'hidden'
                   )}
                 >

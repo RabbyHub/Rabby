@@ -251,7 +251,7 @@ function getColumnsForContract({
                   className={clsx(
                     'rounded-[4px] px-[8px] py-[3px]',
                     row.risk_level === 'danger'
-                      ? 'bg-[#ec5151]'
+                      ? 'bg-r-red-default'
                       : 'bg-r-orange-default',
                     `J_risky_${row.risk_level}`,
                     'alert-with-caret'

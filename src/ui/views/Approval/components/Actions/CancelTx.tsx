@@ -78,7 +78,7 @@ const CancelTx = ({
             )}
           </div>
           {pendingTx && !canCancel && (
-            <div className="flex items-start mt-[15px] mb-24 font-medium text-[14px] leading-[16px] text-[#333333]">
+            <div className="flex items-start mt-[15px] mb-24 font-medium text-[14px] leading-[16px] text-r-neutral-title-1">
               <img src={IconAlert} className="w-[15px] mr-10" />
               {t('page.signTx.cancelTx.gasPriceAlert', {
                 value: pendingTx.gasPrice / 1e9,

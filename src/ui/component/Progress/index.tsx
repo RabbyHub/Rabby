@@ -10,12 +10,14 @@ export default function Progress({ percent }: Props) {
     <div className="text-center">
       <div
         className={clsx(
-          'w-full overflow-hidden rounded-[3px] bg-[#dadada]',
-          "before:block before:h-[6px] before:w-(--percent) before:bg-[#7084ff] before:content-['_']"
+          'w-full overflow-hidden rounded-[3px] bg-r-neutral-line',
+          "before:block before:h-[6px] before:w-(--percent) before:bg-r-blue-default before:content-['_']"
         )}
         style={{ '--percent': `${percent}%` }}
       ></div>
-      <div className="mt-12 text-12 leading-[1] text-[#7084ff]">{percent}%</div>
+      <div className="mt-12 text-12 leading-[1] text-r-blue-default">
+        {percent}%
+      </div>
     </div>
   );
 }

@@ -138,7 +138,7 @@ export const ApprovalContractItem = ({
             className={clsx(
               'mx-[16px] rounded-[4px] px-[8px] py-[3px] leading-[1.2]',
               item.risk_level === 'danger'
-                ? 'bg-[#ec5151]'
+                ? 'bg-r-red-default'
                 : 'bg-r-orange-default'
             )}
             icon={

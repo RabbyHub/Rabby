@@ -39,7 +39,7 @@ export const ProcessActions: React.FC<Props> = ({
               gasLessThemeColor && 'gasLessConfig',
               !gasLess && 'text-r-blue-default',
               'border-r-blue-default',
-              'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+              'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
               'w-[246px] h-[48px]',
               'disabled:bg-transparent disabled:opacity-40 disabled:hover:bg-transparent',
               'rounded-[8px]',

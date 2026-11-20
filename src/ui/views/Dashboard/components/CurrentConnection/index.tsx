@@ -288,7 +288,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                     <img
                       src={chain.logo}
                       alt="chain logo"
-                      className="rounded-full w-[16px] h-[16px] border-[#fff] border-[0.5px] border-solid"
+                      className="rounded-full w-[16px] h-[16px] border-white border-[0.5px] border-solid"
                     />
                   </div>
                 ) : null}
