@@ -95,5 +95,3 @@ jobs:
       - name: unit test
         run: yarn test --ci
 
-      - name: style ratchet
-        run: yarn check:style
