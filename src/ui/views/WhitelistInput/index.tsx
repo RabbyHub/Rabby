@@ -14,7 +14,6 @@ import {
   useWallet,
 } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore } from '@/ui/store';
 import { AddressRiskAlert } from '@/ui/component/AddressRiskAlert';
 import { CexListSelectModal, IExchange } from '@/ui/component/CexSelect';
 import { AccountSelectorModal } from '@/ui/component/AccountSelector/AccountSelectorModal';
@@ -523,4 +522,4 @@ const WhitelistInput = () => {
   );
 };
 
-export default connectStore()(WhitelistInput);
+export default WhitelistInput;

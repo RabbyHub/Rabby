@@ -7,7 +7,7 @@ import IconTokenApproval from 'ui/assets/icon-token-approval.svg';
 import IconNFTApproval from 'ui/assets/nft-approval.svg';
 import { Field, Popup } from 'ui/component';
 import './style.less';
-import { connectStore, useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 
 interface SecurityProps {
   visible?: boolean;
@@ -74,4 +74,4 @@ const Security = ({ visible, onClose }: SecurityProps) => {
   );
 };
 
-export default connectStore()(Security);
+export default Security;

@@ -18,7 +18,7 @@ import { IconImportSuccess } from 'ui/assets';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
-import { connectStore, useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
 import { UI_TYPE } from '@/constant/ui';
 import { RcCreateAddressSuccessIcon } from '@/ui/assets/add-address';
@@ -322,4 +322,4 @@ const ImportSuccess = ({
   );
 };
 
-export default connectStore()(ImportSuccess);
+export default ImportSuccess;
