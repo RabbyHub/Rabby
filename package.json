@@ -5,7 +5,6 @@
   "scripts": {
     "clean": "node build/clean.js",
     "make-theme": "node ./scripts/make-theme.js",
-    "check:style": "node ./scripts/check-style-ratchet.js",
     "build:dev:default": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && cross-env NODE_OPTIONS=--max-old-space-size=8192 webpack --progress --env config=dev",
     "build:hot": "cross-env NODE_OPTIONS='--max-old-space-size=8192' TAILWIND_MODE=watch npm run clean && npm run make-theme && cross-env NODE_OPTIONS=--max-old-space-size=8192 node build/dev-server.js",
     "build:dev:turbo": "cross-env NODE_OPTIONS='--max-old-space-size=24576' TAILWIND_MODE=watch npm run clean && npm run make-theme && NODE_OPTIONS='--max-old-space-size=24576' webpack --progress --env config=dev",
