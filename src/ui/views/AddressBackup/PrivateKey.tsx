@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, PageHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import './style.less';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import QRCode from 'qrcode.react';
 import { Button } from 'antd';
@@ -10,7 +9,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import { ReactComponent as IconRcMask } from '@/ui/assets/create-mnemonics/mask-lock.svg';
-import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
+import {
+  backupAlert,
+  backupFooter,
+  backupHeader,
+  backupMask,
+  backupPage,
+} from './classes';
 import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
 
 const AddressBackupPrivateKey: React.FC<{
@@ -44,19 +50,22 @@ const AddressBackupPrivateKey: React.FC<{
   }
   return (
     <div
-      className={clsx(
+      className={cn(
         'page-address-backup',
+        backupPage,
         isInModal ? 'min-h-0 h-[600px]' : ''
       )}
     >
-      <header>{t('page.backupPrivateKey.title')}</header>
-      <div className="alert mb-[20px]">
+      <header className={backupHeader}>
+        {t('page.backupPrivateKey.title')}
+      </header>
+      <div className={cn(backupAlert, 'mb-[20px]')}>
         <InfoCircleOutlined />
         {t('page.backupPrivateKey.alert')}
       </div>
-      <div className="qrcode mb-[32px] relative">
+      <div className="qrcode relative mx-auto mb-[32px] w-[200px] h-[200px] p-10 rounded-[8px] border-none bg-white">
         <div
-          className={clsx('mask', !masked && 'hidden')}
+          className={cn(backupMask, !masked && 'hidden')}
           onClick={() => {
             setMasked(false);
           }}
@@ -72,10 +81,10 @@ const AddressBackupPrivateKey: React.FC<{
           style={masked ? { filter: 'blur(3px)' } : {}}
         ></QRCode>
       </div>
-      <div className="private-key mb-[24px]">
+      <div className="private-key relative mb-[24px] h-[80px] p-12 overflow-auto break-words rounded-[6px] bg-r-neutral-card1 text-r-neutral-body font-normal text-14 leading-[20px]">
         {!isShowPrivateKey ? (
           <div
-            className="private-key-mask"
+            className="private-key-mask h-full mx-[48px] flex items-center justify-center gap-8 cursor-pointer font-normal text-14 text-center [&_svg]:w-20 [&_svg]:h-20 [&_svg_path]:fill-[var(--r-neutral-body,#D3D8E0)]"
             onClick={() => {
               setIsShowPrivateKey(true);
             }}
@@ -84,12 +93,16 @@ const AddressBackupPrivateKey: React.FC<{
             {t('page.backupPrivateKey.clickToShow')}
           </div>
         ) : (
-          <p className="private-key-text">{data}</p>
+          <p className="private-key-text pr-18">{data}</p>
         )}
-        <Copy icon={IconCopy} data={data} className="icon-copy"></Copy>
+        <Copy
+          icon={IconCopy}
+          data={data}
+          className="icon-copy absolute right-12 bottom-12 w-16 h-16"
+        ></Copy>
       </div>
 
-      <div className="footer pb-[20px]">
+      <div className={cn(backupFooter, 'pb-[20px]')}>
         <Button
           type="primary"
           size="large"

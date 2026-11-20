@@ -14,7 +14,6 @@ import {
 } from '@/ui/component/MiniSignV2/state';
 import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
 import { cn } from '@/ui/utils/cn';
-import styles from './index.module.css';
 
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
@@ -190,18 +189,13 @@ export const RiskTipsWrapper = ({
   }, [riskReset]);
 
   return (
-    <div
-      className={cn(
-        styles.riskTipsContainer,
-        'w-full flex flex-col gap-[8px]',
-        containerClassName
-      )}
-    >
+    <div className={cn('w-full flex flex-col gap-[8px]', containerClassName)}>
       {children({ riskDisabled, resetRiskChecked })}
       {showRiskTips ? (
         <div className="flex h-[14px] items-center justify-center">
           <Checkbox
             className="risk-tips-checkbox h-[14px]"
+            labelClassName="ml-4"
             checked={riskChecked}
             type="square"
             onChange={setRiskChecked}

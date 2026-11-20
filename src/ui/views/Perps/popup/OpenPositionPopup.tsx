@@ -32,7 +32,6 @@ import { format } from 'path';
 import { formatPerpsCoin } from '../../DesktopPerps/utils';
 import { PerpsDisplayCoinName } from '../components/PerpsDisplayCoinName';
 import { MarginModePopup } from './MarginModePopup';
-import './OpenPositionPopup.less';
 
 interface OpenPositionPopupProps extends Omit<PopupProps, 'onCancel'> {
   direction: 'Long' | 'Short';
@@ -499,8 +498,10 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
           <div className="relative flex w-full py-8 justify-between items-center">
             <div
               className={clsx(
-                'perps-ordertype-flash-overlay',
-                orderTypeFlashing && 'is-flashing'
+                'pointer-events-none absolute inset-0 opacity-0',
+                'bg-[linear-gradient(90deg,rgba(76,101,255,0)_0%,rgba(76,101,255,0.12)_100%)]',
+                orderTypeFlashing &&
+                  'animate-[perpsOrderTypeFlash_1.4s_ease-in-out]'
               )}
               onAnimationEnd={() => setOrderTypeFlashing(false)}
             />

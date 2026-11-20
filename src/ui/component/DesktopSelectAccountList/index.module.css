@@ -1,0 +1,18 @@
+/* The list's scrollbar and the footer Virtuoso renders after its item list. */
+.root ::-webkit-scrollbar {
+  background-color: transparent;
+  width: 4px;
+}
+.root ::-webkit-scrollbar-track {
+  margin: 10px 0;
+}
+.root ::-webkit-scrollbar-thumb {
+  background-color: var(--rb-neutral-line, #e0e5ec);
+  border-radius: 1000px;
+}
+
+.root div[data-test-id='virtuoso-item-list'] + div {
+  background-color: var(--rb-neutral-bg-1, #fff);
+  position: sticky;
+  bottom: 0;
+}

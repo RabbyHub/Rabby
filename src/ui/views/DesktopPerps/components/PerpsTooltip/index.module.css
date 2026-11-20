@@ -1,0 +1,38 @@
+/* The arrow shows an 8px tip (style/antd-overwrite.less). The global rule
+   already trims the arrow zone to 8px for `top`; do the same on the other sides
+   so the tip touches the popup box and the 3px placement offset is the whole
+   gap to the trigger. */
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-bottom),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-bottomLeft),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-bottomRight) {
+  padding-top: 8px;
+}
+
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-left),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-leftTop),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-leftBottom) {
+  padding-right: 8px;
+}
+
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-right),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-rightTop),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-rightBottom) {
+  padding-left: 8px;
+}
+
+/* PerpsTooltip sets the arrow's `left` to the trigger's center. antd centers
+   the arrow box on that point only for plain top / bottom; the edge placements
+   need the same translateX. */
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-topLeft)
+  :global(.ant-tooltip-arrow),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-topRight)
+  :global(.ant-tooltip-arrow) {
+  transform: translateY(100%) translateX(-50%);
+}
+
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-bottomLeft)
+  :global(.ant-tooltip-arrow),
+.tooltip:global(.ant-tooltip.ant-tooltip-placement-bottomRight)
+  :global(.ant-tooltip-arrow) {
+  transform: translateY(-100%) translateX(-50%);
+}

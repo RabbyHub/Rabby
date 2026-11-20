@@ -2,7 +2,6 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import './style.less';
 import { UI_TYPE } from '@/constant/ui';
 import { WALLET_BRAND_CONTENT, IWalletBrandContent } from 'consts';
 import { useAddAddressWalletOptions } from '@/ui/views/AddAddress/shared';
@@ -34,7 +33,12 @@ const RowIcon = ({
   children: React.ReactNode;
 }) => {
   return (
-    <div className={clsx('add-address-options__row-icon', backgroundClassName)}>
+    <div
+      className={clsx(
+        'w-28 h-28 rounded-[6px] flex items-center justify-center shrink-0',
+        backgroundClassName
+      )}
+    >
       {children}
     </div>
   );
@@ -51,13 +55,15 @@ const AddAddressRow = ({
     <Item
       py={15}
       px={16}
-      className={clsx('add-address-options__row', className)}
-      rightIconClassName="add-address-options__row-arrow"
+      className={clsx('h-[60px]', className)}
+      rightIconClassName="shrink-0"
       onClick={option.onClick}
     >
-      <div className="add-address-options__row-content">
+      <div className="flex items-center min-w-0">
         {option.icon}
-        <div className="add-address-options__row-label">{option.label}</div>
+        <div className="ml-12 text-r-neutral-title-1 text-15 font-medium text-left">
+          {option.label}
+        </div>
       </div>
     </Item>
   );
@@ -211,9 +217,12 @@ const AddAddressOptions: React.FC<{
 
   return (
     <div
-      className={clsx('add-address-options', UI_TYPE.isDesktop ? 'w-full' : '')}
+      className={clsx(
+        'min-h-[500px] flex flex-col',
+        UI_TYPE.isDesktop ? 'w-full' : ''
+      )}
     >
-      <div className="add-address-options__list">
+      <div className="flex flex-col gap-12">
         {options.map((option) => (
           <AddAddressRow key={option.key} option={option} />
         ))}
@@ -221,7 +230,7 @@ const AddAddressOptions: React.FC<{
 
       <button
         type="button"
-        className="add-address-options__institutional-entry"
+        className="mt-auto pt-24 inline-flex items-center justify-center gap-2 self-center text-r-neutral-foot text-12 font-normal"
         onClick={() => {
           if (UI_TYPE.isDesktop) {
             onNavigate?.('institutional-wallets', { approvalId });
@@ -234,10 +243,7 @@ const AddAddressOptions: React.FC<{
         }}
       >
         <span>{t('page.newAddress.connectInstitutionalWallets')}</span>
-        <RcRightArrow
-          viewBox="0 0 20 20"
-          className="add-address-options__institutional-arrow"
-        />
+        <RcRightArrow viewBox="0 0 20 20" className="w-14 h-14" />
       </button>
     </div>
   );
