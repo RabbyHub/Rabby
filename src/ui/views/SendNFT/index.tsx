@@ -612,6 +612,7 @@ const SendNFT = () => {
           canBack={!(isTab || isDesktop)}
           // isShowAccount
           disableSwitchAccount
+          className="mb-0 font-black text-rb-neutral-title-1"
           rightSlot={
             isTab || isDesktop ? null : (
               <div

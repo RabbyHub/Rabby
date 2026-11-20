@@ -112,8 +112,8 @@ export const PwdForNonWhitelistedTxModal = ({
           }
         )}
       >
-        <div className="page-header leading-[19px] mb-[20px]">
-          <span className="header-content text-[20px]">
+        <div className="flex items-center relative text-r-neutral-title-1 font-medium text-[20px] leading-[19px] mb-[20px]">
+          <span className="w-full text-center leading-none text-[20px]">
             {isEnabledPwdForNonWhitelistedTx
               ? t('page.dashboard.settings.PwdForNonWhitelistedTx.titleDisable')
               : t('page.dashboard.settings.PwdForNonWhitelistedTx.titleEnable')}
@@ -269,8 +269,8 @@ export const VerifyPwdForNonWhitelisted = ({
           }
         )}
       >
-        <div className="page-header leading-[19px] mb-[20px]">
-          <span className="header-content text-[20px]">
+        <div className="flex items-center relative text-r-neutral-title-1 font-medium text-[20px] leading-[19px] mb-[20px]">
+          <span className="w-full text-center leading-none text-[20px]">
             {t('page.whitelist.verifyPwd.title')}
           </span>
         </div>

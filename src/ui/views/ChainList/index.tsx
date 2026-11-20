@@ -38,7 +38,13 @@ const ChainList = () => {
 
   return (
     <div className="page-chain-list">
-      <PageHeader className="transparent-wrap" canBack={false} closeable fixed>
+      <PageHeader
+        className="transparent-wrap"
+        contentClassName="mb-0"
+        canBack={false}
+        closeable
+        fixed
+      >
         {t('page.chainList.title', { count: list.length })}
       </PageHeader>
 
