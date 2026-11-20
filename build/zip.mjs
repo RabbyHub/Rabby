@@ -8,13 +8,14 @@ const MODIFIED_TIME = new Date('2024-07-16T00:00:00Z');
 const FILE_MODE = 0o644;
 
 /**
- * Zip every file in `distDir` (at the zip root), sorted by path, so the same
- * build always gives the same zip.
+ * Zip files in `distDir` (at the zip root), excluding `.DS_Store` and
+ * sorted by path, so the same build always gives the same zip.
  */
 export async function createZipTask(distDir, zipFileName) {
   const files = fs
     .readdirSync(distDir, { recursive: true })
     .map((p) => p.split(path.sep).join('/'))
+    .filter((p) => path.posix.basename(p) !== '.DS_Store')
     .filter((p) => fs.statSync(path.join(distDir, p)).isFile())
     .sort();
 

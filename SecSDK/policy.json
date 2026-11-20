@@ -31389,9 +31389,16 @@
       "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs"
     ]
   },
+  "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/config.js": {
+    "enable": true,
+    "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/consts.js"
+    ]
+  },
   "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/curve.js": {
     "enable": true,
     "require": [
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/config.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/utils.js"
     ]
   },
@@ -31399,6 +31406,7 @@
     "enable": true,
     "require": [
       "node_modules/@ethersproject/abi/lib.esm/abi-coder.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/config.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/calldata/oneinch/curve.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/calldata/uni/universalRouter/v2.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/chain.js",
@@ -31513,6 +31521,7 @@
       "node_modules/@rabby-wallet/rabby-swap/dist/abi.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/chain.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/consts.js",
+      "node_modules/@rabby-wallet/rabby-swap/dist/dexs/0xapi_v2.config.js",
       "node_modules/@rabby-wallet/rabby-swap/dist/utils.js",
       "node_modules/@rabby-wallet/rabby-swap/node_modules/bignumber.js/bignumber.mjs",
       "node_modules/@rabby-wallet/rabby-swap/node_modules/web3-utils/lib/index.js"
@@ -78984,6 +78993,7 @@
       "node_modules/ethereum-cryptography/esm/random.js",
       "node_modules/ethereum-cryptography/node_modules/@noble/curves/esm/secp256k1.js",
       "node_modules/ethereumjs-util/dist.browser/index.js",
+      "node_modules/ethers/lib/utils.js",
       "node_modules/ethers/node_modules/@ethersproject/contracts/lib.esm/index.js",
       "node_modules/events/events.js",
       "node_modules/hdkey/lib/hdkey.js",
@@ -82681,6 +82691,12 @@
       "node_modules/bignumber.js/bignumber.js"
     ]
   },
+  "src/ui/utils/addressBalanceLoader.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/p-queue/dist/index.js"
+    ]
+  },
   "src/ui/utils/addressInput.ts": {
     "enable": true,
     "require": [
@@ -83060,6 +83076,7 @@
   "src/ui/views/AddAddress/AddMoreAddressesFromSeedPhrase.tsx": {
     "enable": true,
     "require": [
+      "node_modules/ahooks/es/useInViewport/index.js",
       "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/antd/es/button/index.js",
       "node_modules/antd/es/message/index.js",
@@ -83076,11 +83093,12 @@
       "src/ui/state/importMnemonics.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
+      "src/ui/utils/addressBalanceLoader.ts",
       "src/ui/utils/index.ts",
+      "src/ui/utils/number.ts",
       "src/ui/views/AddAddress/useCreateAddress.ts",
       "src/ui/views/HDManager/AdvancedSettings.tsx",
-      "src/ui/views/HDManager/HDPathTypeButton.tsx",
-      "src/ui/views/HDManager/utils.tsx"
+      "src/ui/views/HDManager/HDPathTypeButton.tsx"
     ]
   },
   "src/ui/views/AddAddress/AddNewAddress.tsx": {
@@ -84026,6 +84044,7 @@
       "src/utils/chain.ts",
       "src/utils/hexQuantity.ts",
       "src/utils/hyperEvm.ts",
+      "src/utils/signEvent.ts",
       "src/utils/tempo.ts",
       "src/utils/transaction.ts"
     ]
@@ -84452,7 +84471,8 @@
       "src/utils/chain.ts",
       "src/utils/extraFeeProtection.ts",
       "src/utils/history.ts",
-      "src/utils/index.ts"
+      "src/utils/index.ts",
+      "src/utils/signEvent.ts"
     ]
   },
   "src/ui/views/Approval/style.less": {
@@ -86006,6 +86026,13 @@
       "src/ui/views/HDManager/index.less"
     ]
   },
+  "src/ui/views/HDManager/accountInfo.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/p-queue/dist/index.js",
+      "src/ui/utils/addressBalanceLoader.ts"
+    ]
+  },
   "src/ui/views/HDManager/index.less": {
     "enable": true,
     "require": [
@@ -86020,14 +86047,14 @@
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/antd/es/message/index.js",
-      "node_modules/lodash/lodash.js",
       "node_modules/p-queue/dist/index.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
       "src/constant/index.ts",
       "src/ui/state/importMnemonics.ts",
-      "src/ui/utils/index.ts"
+      "src/ui/utils/index.ts",
+      "src/ui/views/HDManager/accountInfo.ts"
     ]
   },
   "src/ui/views/History/style.less": {
@@ -86287,7 +86314,6 @@
       "node_modules/@scure/bip39/esm/wordlists/english.js",
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/@tanstack/react-query/build/modern/useQuery.js",
-      "node_modules/ahooks/es/useCreation/index.js",
       "node_modules/ahooks/es/useDebounce/index.js",
       "node_modules/ahooks/es/useDebounceFn/index.js",
       "node_modules/ahooks/es/useDocumentVisibility/index.js",
@@ -86326,7 +86352,6 @@
       "node_modules/dayjs/plugin/utc.js",
       "node_modules/ethers/lib/utils.js",
       "node_modules/fflate/esm/browser.js",
-      "node_modules/i18next/dist/esm/i18next.js",
       "node_modules/lightweight-charts/dist/lightweight-charts.production.mjs",
       "node_modules/lodash/lodash.js",
       "node_modules/nanoid/index.browser.js",
@@ -86568,6 +86593,7 @@
       "src/ui/views/GasAccount/hooks/context.ts",
       "src/ui/views/GasAccount/hooks/index.ts",
       "src/ui/views/GnosisQueue/index.tsx",
+      "src/ui/views/HDManager/accountInfo.ts",
       "src/ui/views/HDManager/AdvancedSettings.tsx",
       "src/ui/views/HDManager/HDPathTypeButton.tsx",
       "src/ui/views/HDManager/index.less",
@@ -87670,6 +87696,14 @@
       "src/utils/env.ts"
     ]
   },
+  "src/utils/signEvent.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/ethers/lib/utils.js",
+      "src/constant/index.ts",
+      "src/eventBus.ts"
+    ]
+  },
   "src/utils/tempo.ts": {
     "enable": true,
     "require": [
@@ -87696,6 +87730,7 @@
       "node_modules/lodash/lodash.js",
       "src/background/utils/7702.ts",
       "src/constant/index.ts",
+      "src/constant/tempo.ts",
       "src/constant/txGasLimit.ts",
       "src/i18n.ts",
       "src/utils/chain.ts",

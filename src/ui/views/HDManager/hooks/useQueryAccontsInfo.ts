@@ -1,115 +1,51 @@
-import { useCreation, useMemoizedFn } from 'ahooks';
-import PQueue from 'p-queue';
-import { useState } from 'react';
-import { Account } from '../AccountList';
+import { useMemoizedFn } from 'ahooks';
+import { useEffect, useMemo, useState } from 'react';
+import type { Account } from '../AccountList';
 import { useWallet } from '@/ui/utils';
-import { isFunction } from 'lodash';
-import { sleep } from '../utils';
-
-// cached chains, balance, firstTxTime
-const cachedAccountInfo = new Map<string, Account>();
+import { getAccountInfoLoader } from '../accountInfo';
 
 export const useQueryAccountsInfo = () => {
   const [result, setResult] = useState<Record<string, Account>>({});
   const [pendingMap, setPendingMap] = useState<Record<string, boolean>>({});
-  const queue = useCreation(() => new PQueue({ concurrency: 2 }), []);
   const wallet = useWallet();
+  const session = useMemo(
+    () => ({
+      loader: getAccountInfoLoader(wallet),
+      pending: new Set<string>(),
+      active: true,
+    }),
+    [wallet]
+  );
 
-  const fetchAccountInfo = useMemoizedFn(async (account: Account) => {
-    let firstTxTime;
-    let balance;
-    const address = account.address?.toLowerCase();
-    if (!address) return account;
-
-    let needCache = true;
-
-    if (cachedAccountInfo.has(address)) {
-      const cached = cachedAccountInfo.get(address);
-      if (cached) {
-        return {
-          ...account,
-          chains: cached.chains,
-          balance: cached.balance,
-          firstTxTime: cached.firstTxTime,
-        };
-      }
-    }
-
-    let chains: Account['chains'] = [];
-    try {
-      chains = await wallet.openapi.usedChainList(account.address);
-    } catch (e) {
-      console.error('ignore usedChainList error', e);
-      needCache = false;
-    }
-    try {
-      // if has chains, get balance from api
-      if (chains?.length) {
-        const res = await wallet.openapi.getTotalBalance(account.address);
-        balance = res.total_usd_value;
-      }
-    } catch (e) {
-      console.error('ignore getTotalBalance error', e);
-      needCache = false;
-    }
-
-    // find firstTxTime
-    if (isFunction(chains?.forEach)) {
-      chains?.forEach((chain: any) => {
-        if (chain.born_at) {
-          firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
-        }
-      });
-    }
-
-    const accountInfo: Account = {
-      ...account,
-      chains,
-      balance,
-      firstTxTime,
+  useEffect(() => {
+    session.active = true;
+    return () => {
+      session.active = false;
     };
-
-    if (needCache) {
-      cachedAccountInfo.set(address, accountInfo);
-    }
-
-    return accountInfo;
-  });
+  }, [session]);
 
   const createQueryAccountJob = useMemoizedFn(async (account: Account) => {
-    if (
-      pendingMap[account.address] ||
-      result[account.address] ||
-      cachedAccountInfo.get(account.address)
-    ) {
-      return;
-    }
-    setPendingMap((pre) => {
-      return {
-        ...pre,
-        [account.address]: true,
-      };
-    });
+    const address = account.address?.toLowerCase();
+    if (!address || !session.active || session.pending.has(address)) return;
+
+    session.pending.add(address);
+    setPendingMap((pre) => ({ ...pre, [address]: true }));
     try {
-      const r = await queue.add(async () => {
-        await sleep(300);
-        return fetchAccountInfo(account);
-      });
-      setResult((pre) => {
-        return {
+      // Cache hits still populate this table's state after a tab change.
+      const info = await session.loader.load(address);
+      if (session.active) {
+        setResult((pre) => ({
           ...pre,
-          [account.address]: r,
-        };
-      });
+          [address]: { ...account, ...info },
+        }));
+      }
     } catch (e) {
       console.error(e);
     } finally {
-      setPendingMap((pre) => {
-        return {
-          ...pre,
-          [account.address]: false,
-        };
-      });
+      session.pending.delete(address);
+      if (session.active) {
+        setPendingMap((pre) => ({ ...pre, [address]: false }));
+      }
     }
   });
 

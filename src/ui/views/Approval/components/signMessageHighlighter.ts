@@ -11,6 +11,8 @@ type TypedDataField = {
   type: string;
 };
 
+type AddressMarker = { marker: string; value: string; address: string };
+
 type TypedDataPayload = {
   primaryType?: string;
   types?: Record<string, TypedDataField[]>;
@@ -47,7 +49,7 @@ const markTypedDataAddresses = (
   value: unknown,
   type: string,
   types: Record<string, TypedDataField[]>,
-  markers: Array<{ marker: string; value: string; address: string }>
+  markers: AddressMarker[]
 ): unknown => {
   const arrayType = type.match(ARRAY_TYPE_RE)?.[1];
   if (arrayType && Array.isArray(value)) {
@@ -182,13 +184,21 @@ export const tokenizeSignTypedDataMessage = (
     displayedMessage[field.name] = message[field.name];
   });
 
-  const markers: Array<{ marker: string; value: string; address: string }> = [];
+  const markers: AddressMarker[] = [];
   const markedMessage = markTypedDataAddresses(
     displayedMessage,
     primaryType,
     types,
     markers
   );
+  return tokenizeMarkedMessage(markedMessage, formattedMessage, markers);
+};
+
+const tokenizeMarkedMessage = (
+  markedMessage: unknown,
+  formattedMessage: string,
+  markers: AddressMarker[]
+): SignMessageHighlightToken[] => {
   const markedText = JSON.stringify(markedMessage, null, 4);
   const occurrences = markers
     .map((marker) => ({
@@ -215,4 +225,27 @@ export const tokenizeSignTypedDataMessage = (
   return tokens.map((token) => token.value).join('') === formattedMessage
     ? tokens
     : [{ type: 'text', value: formattedMessage }];
+};
+
+export const tokenizeSignTypedDataV1Message = (
+  fields: Array<TypedDataField & { value: unknown }>,
+  formattedMessage: string
+): SignMessageHighlightToken[] => {
+  const markers: AddressMarker[] = [];
+  const markedFields = fields.map((field) => {
+    if (!field || typeof field !== 'object') return field;
+    return {
+      ...field,
+      value:
+        typeof field.type === 'string'
+          ? markTypedDataAddresses(
+              field.value,
+              field.type,
+              Object.create(null),
+              markers
+            )
+          : field.value,
+    };
+  });
+  return tokenizeMarkedMessage(markedFields, formattedMessage, markers);
 };

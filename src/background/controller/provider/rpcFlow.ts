@@ -19,9 +19,13 @@ import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
 import { ProviderRequest } from './type';
 import * as Sentry from '@sentry/browser';
-import { addHexPrefix, intToHex, stripHexPrefix } from '@ethereumjs/util';
+import { intToHex } from '@ethereumjs/util';
+import { normalizeSignText } from '@/utils/signText';
 import { findChain } from '@/utils/chain';
-import { waitSignComponentAmounted } from '@/utils/signEvent';
+import {
+  createSigningOperation,
+  waitSignComponentAmounted,
+} from '@/utils/signEvent';
 import { gnosisController } from './gnosisController';
 import { bgRetryTxMethods } from '@/background/utils/errorTxRetry';
 import { hexToNumber } from 'viem';
@@ -237,12 +241,7 @@ const flowContext = flow
         from = second;
         message = first;
       }
-      const hexReg = /^[0-9A-Fa-f]+$/gu;
-      const stripped = stripHexPrefix(message);
-      if (stripped.match(hexReg)) {
-        message = addHexPrefix(stripped);
-      }
-      ctx.request.data.params[0] = message;
+      ctx.request.data.params[0] = normalizeSignText(message);
       ctx.request.data.params[1] = from;
     }
     if (approvalType && (!condition || !condition(ctx.request))) {
@@ -409,10 +408,22 @@ const flowContext = flow
     // process request
     const [approvalType] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
-    const { uiRequestComponent, ...rest } = approvalRes || {};
     const {
       session: { origin },
     } = request;
+    const signingOperation = isSignApproval(approvalType)
+      ? approvalRes?.signingOperation ||
+        createSigningOperation({
+          id: uuidv4(),
+          origin,
+          account: request.account!,
+          method: request.data.method,
+          params: request.data.params,
+        })
+      : undefined;
+    // Completed Safe message approvals are signature strings. Keep signing
+    // metadata separate so the controller receives the original result.
+    const { uiRequestComponent, ...rest } = approvalRes || {};
 
     const createRequestDeferFn = (
       originApprovalRes: typeof approvalRes
@@ -502,6 +513,7 @@ const flowContext = flow
                   params: {
                     success: true,
                     data: result,
+                    signingOperation,
                   },
                 });
               }
@@ -515,6 +527,7 @@ const flowContext = flow
                 params: {
                   success: false,
                   errorMsg: e?.message || JSON.stringify(e),
+                  signingOperation,
                 },
               };
               if (e.method) {
@@ -543,7 +556,12 @@ const flowContext = flow
 
     const requestDeferFn = createRequestDeferFn(approvalRes);
 
-    if (!approvalRes?.isGnosis) {
+    // resendSign() re-runs this from a waiting component, so only a request
+    // that hands off to one may become the retry target. Every request ends
+    // up here, including a dapp polling eth_chainId or eth_accounts while the
+    // user is still signing: letting those replace it makes "Retry" re-run
+    // the poll instead of the signature. Safe owner signing registers its own.
+    if (uiRequestComponent && !approvalRes?.isGnosis) {
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
     const requestDefer = requestDeferFn();
@@ -570,7 +588,21 @@ const flowContext = flow
 
     if (uiRequestComponent) {
       ctx.request.requestedApproval = true;
-      const result = await requestApprovalLoop({ uiRequestComponent, ...rest });
+      let result;
+      try {
+        result = await requestApprovalLoop({
+          uiRequestComponent,
+          ...rest,
+          signingOperation,
+        });
+      } finally {
+        // The retry target re-runs an approved request, so it must not
+        // outlive the waiting component it was registered for: a later
+        // "Retry" that found it would replay this request. No other request
+        // can have registered one meanwhile - that takes a sign page handing
+        // off, which cannot happen while this waiting approval is pending.
+        notificationService.clearCurrentRequestDeferFn();
+      }
       if (rest?.safeMessage) {
         const safeMessage: {
           safeAddress: string;

@@ -6,7 +6,6 @@ import { hasConnectedLedgerDevice } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import './style.less';
 import { query2obj } from '@/ui/utils/url';
-import { LedgerBanner } from './LedgerBanner';
 import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 import { isLedgerWebHIDSupported } from '@/ui/utils/ledger-dmk';
 
@@ -85,7 +84,6 @@ const LedgerConnect = () => {
         </ul>
         <img src="/images/ledger-plug.png" className="ledger-plug" />
       </div>
-      <LedgerBanner className="ledger-banner" />
     </StrayPageWithButton>
   );
 };

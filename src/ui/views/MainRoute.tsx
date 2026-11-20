@@ -118,7 +118,10 @@ const LogPageView = () => {
   return null;
 };
 
-const Main = () => {
+// useWallet() subscribes to WalletContext, whose value changes with the
+// CommonPopup view state. Keep it out of Main so opening or closing a common
+// popup does not re-render every route below.
+const LogUserActive = () => {
   const wallet = useWallet();
 
   useEffect(() => {
@@ -138,6 +141,10 @@ const Main = () => {
     })();
   }, []);
 
+  return null;
+};
+
+const Main = () => {
   return (
     <>
       <Route path="/" component={LogPageView} />
@@ -479,6 +486,7 @@ const Main = () => {
       <PortalHost />
       <GlobalSignerPortal />
       <GlobalTypedDataSignerPortal />
+      <LogUserActive />
     </>
   );
 };
