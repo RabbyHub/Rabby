@@ -34,6 +34,7 @@ interface AccountItemProps {
   checked: boolean;
   onSelect(account: Account): void;
   networkId: string;
+  className?: string;
   /** Classes for the address under the alias. */
   addressClassName?: string;
 }
@@ -43,6 +44,7 @@ export const AccountItem = ({
   onSelect,
   checked,
   networkId,
+  className,
   addressClassName,
 }: AccountItemProps) => {
   const [alianName, setAlianName] = useState('');
@@ -130,7 +132,7 @@ export const AccountItem = ({
 
   return (
     <FieldCheckbox
-      className="item"
+      className={clsx('item', className)}
       showCheckbox={!!account.type}
       onChange={(checked) => checked && onSelect(account)}
       checked={checked}
