@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import './style.less';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
@@ -9,6 +8,14 @@ import IconSuccess from 'ui/assets/success.svg';
 import { message } from 'antd';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
+import {
+  backupAlert,
+  backupFooter,
+  backupHeader,
+  backupMask,
+  backupPage,
+} from './classes';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { useHistory, useLocation } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
@@ -158,12 +165,13 @@ const AddressBackupMnemonics: React.FC<{
 
   return (
     <div
-      className={clsx(
+      className={cn(
         'page-address-backup',
+        backupPage,
         isInModal ? 'min-h-0 h-[600px]' : ''
       )}
     >
-      <header className="relative">
+      <header className={cn(backupHeader, 'relative')}>
         {!!state?.goBack && (
           <img
             src={IconBack}
@@ -176,7 +184,7 @@ const AddressBackupMnemonics: React.FC<{
         )}
         {t('page.backupSeedPhrase.title')}
       </header>
-      <div className="alert mb-20">
+      <div className={cn(backupAlert, 'mb-20')}>
         <InfoCircleOutlined className="rotate-180" />
         {t('page.backupSeedPhrase.alert')}
       </div>
@@ -184,7 +192,7 @@ const AddressBackupMnemonics: React.FC<{
         <div className="relative">
           <div
             onClick={() => setMasked(false)}
-            className={clsx('mask', !masked && 'hidden')}
+            className={cn(backupMask, !masked && 'hidden')}
           >
             <img src={IconMaskIcon} className="w-[44px] h-[44px]" />
             <p className="mt-[16px] mb-0 text-white">
@@ -195,7 +203,7 @@ const AddressBackupMnemonics: React.FC<{
             <div
               onClick={handleShowQrCode}
               className={clsx(
-                'copy text-r-neutral-foot',
+                'copy flex items-center justify-center gap-[6px] cursor-pointer font-normal text-13 leading-[15px] text-r-neutral-foot',
                 masked ? 'invisible' : 'visible'
               )}
             >
@@ -208,7 +216,7 @@ const AddressBackupMnemonics: React.FC<{
             <div
               onClick={onCopyMnemonics}
               className={clsx(
-                'copy text-r-neutral-foot',
+                'copy flex items-center justify-center gap-[6px] cursor-pointer font-normal text-13 leading-[15px] text-r-neutral-foot',
                 masked ? 'invisible' : 'visible'
               )}
             >
@@ -237,8 +245,9 @@ const AddressBackupMnemonics: React.FC<{
         </div>
       </div>
       <div
-        className={clsx(
-          'footer py-[18px] z-20  bg-rabby-neutral-bg-2',
+        className={cn(
+          backupFooter,
+          'py-[18px] z-20  bg-rabby-neutral-bg-2',
           'border-t-[0.5px] border-rabby-neutral-line'
         )}
       >

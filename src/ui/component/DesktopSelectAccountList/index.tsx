@@ -24,7 +24,7 @@ import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.s
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import { CopyChecked } from '../CopyChecked';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
-import './styles.less';
+import styles from './index.module.css';
 
 interface DesktopSelectAccountListProps {
   isShowApprovalAlert?: boolean;
@@ -92,7 +92,8 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
   return (
     <div
       className={clsx(
-        'desktop-select-account-list',
+        styles.root,
+        'w-[286px] transition-[width] duration-300 ease-[ease]',
         'h-full flex flex-col gap-[12px] rounded-[20px] pb-[20px]'
       )}
     >
@@ -139,12 +140,12 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
         }}
         className={clsx(
           'cursor-pointer rounded-[20px] h-[62px] p-[16px] flex items-center gap-[8px] text-rb-neutral-body',
-          'desktop-account-item',
+          'w-[278px] overflow-hidden',
           'bg-rb-neutral-bg-3 hover:bg-rb-neutral-bg-2'
         )}
       >
         <RcIconAddWalletCC className="shrink-0" />
-        <div className="text-[16px] leading-[19px] font-normal desktop-account-item-content truncate">
+        <div className="text-[16px] leading-[19px] font-normal truncate">
           {t('component.DesktopSelectAccountList.addAddresses')}
         </div>
       </div>
@@ -172,7 +173,7 @@ const AccountItem: React.FC<{
         className={clsx(
           'rounded-[20px] px-[15px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
           'border-solid border-[0.5px]',
-          'desktop-account-item',
+          'w-[278px] overflow-hidden',
           isSelected
             ? 'border-transparent bg-r-blue-light-2'
             : 'border-rb-neutral-line hover:bg-rb-neutral-bg-2'
@@ -184,7 +185,7 @@ const AccountItem: React.FC<{
           className={clsx('w-[24px] h-[24px]')}
           alt=""
         />
-        <div className="flex flex-1 flex-col gap-[2px] min-w-0 desktop-account-item-content">
+        <div className="flex flex-1 flex-col gap-[2px] min-w-0">
           <div className="flex items-center gap-[4px]">
             <div
               className={clsx(

@@ -43,7 +43,8 @@ function measure() {
     ).length,
     lessFiles: less.length,
     topLevelAntOverrides: less.reduce(
-      (sum, f) => sum + (read(f).match(/^\.ant-/gm) || []).length,
+      // Mixin definitions such as `.ant-input-darkmode() {` emit no rule.
+      (sum, f) => sum + (read(f).match(/^\.ant-(?![\w-]*\s*\()/gm) || []).length,
       0
     ),
     legacyImportant: [...less, ...css].reduce(

@@ -654,7 +654,7 @@ export const ConnectContent = (
                 {t('page.connect.connectAddress')}
               </div>
               <AccountSelector
-                className="account-selector"
+                className="account-selector p-0"
                 value={selectedAccount}
                 onChange={(account) => {
                   setSelectedAccount(account);

@@ -12,7 +12,6 @@ import IconSuccess from 'ui/assets/success.svg';
 import { PageHeader } from 'ui/component';
 import { CustomTestnetItem } from './components/CustomTestnetItem';
 import { EditCustomTestnetModal } from './components/EditTestnetModal';
-import './style.less';
 import { Emtpy } from './components/Empty';
 import { useHistory } from 'react-router-dom';
 import { sortBy } from 'lodash';
@@ -129,7 +128,7 @@ export const CustomTestnet = ({
   return (
     <div
       className={clsx(
-        'custom-testnet h-full overflow-auto',
+        'relative flex flex-col bg-r-neutral-bg-2 h-full overflow-auto',
         inModal ? 'h-[600px]' : ''
       )}
     >

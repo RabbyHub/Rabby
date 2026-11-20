@@ -180,7 +180,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                     url={site.icon}
                     origin={site.origin}
                     width="28px"
-                    className="site-icon"
+                    className="site-icon rounded-[28px]"
                   ></FallbackSiteLogo>
                   {site.isMetamaskMode ? (
                     <TooltipWithMagnetArrow
@@ -247,7 +247,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
       <div
         className={clsx(
           styles.container,
-          'h-[52px]',
+          'group/site h-[52px]',
           site?.isConnected ? 'site-group' : ''
         )}
       >
@@ -265,7 +265,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                   url={site.icon}
                   origin={site.origin}
                   width="28px"
-                  className="site-icon"
+                  className="site-icon rounded-[28px]"
                 ></FallbackSiteLogo>
                 {site.isMetamaskMode ? (
                   <TooltipWithMagnetArrow
@@ -325,7 +325,11 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
         )}
         {site ? (
           <AccountSelector
-            className="ml-auto"
+            className={clsx(
+              'ml-auto',
+              site?.isConnected &&
+                'group-hover/site:border-r-blue-default group-hover/site:bg-r-blue-light1'
+            )}
             disabled={!site?.isConnected}
             value={currentSiteAccount}
             onChange={handleSiteAccountChange}

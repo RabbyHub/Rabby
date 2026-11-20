@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { Field, PageHeader } from 'ui/component';
-import './style.less';
+import { cn } from '@/ui/utils/cn';
 import { ReactComponent as RcIconDirectMessage } from 'ui/assets/feedback-popup/entry-hi.svg';
 import { ReactComponent as RcIconProposal } from 'ui/assets/feedback-popup/entry-proposal.svg';
 import { ReactComponent as RcIconItemLink } from 'ui/assets/feedback-popup/item-link.svg';
@@ -60,7 +60,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
 
   return (
     <div
-      className={clsx('popup-feedback-inner', {
+      className={cn('popup-feedback-inner flex flex-col overflow-auto', {
         show: isVisible,
         hidden: !visible,
       })}
@@ -68,7 +68,7 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
       <PageHeader
         forceShowBack
         onBack={handleCancel}
-        className="bg-neutral-bg1  popup-title"
+        className="bg-neutral-bg1 popup-title text-r-neutral-title-1 text-center text-[20px] not-italic font-medium leading-[normal]"
       >
         {t('page.dashboard.feedback.title')}
       </PageHeader>
@@ -76,17 +76,26 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
         {renderData.map((data, index) => (
           <Field
             key={index}
-            leftIcon={<ThemeIcon src={data.leftIcon} className="icon" />}
+            leftIcon={
+              <ThemeIcon src={data.leftIcon} className="icon w-24 h-24" />
+            }
             rightIcon={
               data.rightIcon || (
                 <img src={IconArrowRight} className="icon icon-arrow-right" />
               )
             }
             onClick={data.onClick}
-            className={clsx(data.description ? 'has-desc' : null)}
+            className={clsx(
+              '[&>.left-icon]:self-center [&>.right-icon]:self-center',
+              data.description && 'has-desc py-14'
+            )}
           >
-            <span className="title">{data.content}</span>
-            {data.description && <p className="desc">{data.description}</p>}
+            <span className="title text-r-neutral-title-1 text-[15px] not-italic font-medium">
+              {data.content}
+            </span>
+            {data.description && (
+              <p className="desc text-r-neutral-body">{data.description}</p>
+            )}
           </Field>
         ))}
       </div>
