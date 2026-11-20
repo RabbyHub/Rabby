@@ -29,17 +29,13 @@ export const GasRow: React.FC<Props> = ({ record }) => {
   );
   if (!chainItem?.enum) return <div>-</div>;
 
-  const gasCostUsdStr = React.useMemo(() => {
-    const bn = gasCost.gasCostUsd!;
-
-    return `$${formatGasCostUsd(bn)}`;
-  }, [gasCost.gasCostUsd]);
-
-  const gasCostAmountStr = React.useMemo(() => {
-    return `${formatTokenAmount(gasCost.gasCostAmount.toString(10), 6)} ${
-      chainItem.nativeTokenSymbol
-    }`;
-  }, [gasCost.gasCostAmount]);
+  // Plain values, not hooks: the early returns above depend on the row status,
+  // which changes while the batch runs, so hooks here would change in number.
+  const gasCostUsdStr = `$${formatGasCostUsd(gasCost.gasCostUsd!)}`;
+  const gasCostAmountStr = `${formatTokenAmount(
+    gasCost.gasCostAmount.toString(10),
+    6
+  )} ${chainItem.nativeTokenSymbol}`;
 
   return (
     <div className="flex overflow-hidden">

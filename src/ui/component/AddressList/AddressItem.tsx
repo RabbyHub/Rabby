@@ -58,7 +58,8 @@ export interface AddressItemProps {
   showEditIcon?: boolean;
 }
 
-const AddressItem = memo(
+// Rendered only when `account` is set; see AddressItem below.
+const AddressItemContent = memo(
   forwardRef(
     (
       {
@@ -82,9 +83,6 @@ const AddressItem = memo(
       }: AddressItemProps,
       ref
     ) => {
-      if (!account) {
-        return null;
-      }
       const { t } = useTranslation();
       const wallet = useWallet();
       const [alianName, setAlianName] = useState<string>(
@@ -284,6 +282,14 @@ const AddressItem = memo(
         </li>
       );
     }
+  )
+);
+
+// The missing-account check lives here, not inside AddressItemContent, so it
+// does not sit in front of that component's hooks (rules of hooks).
+const AddressItem = memo(
+  forwardRef<any, AddressItemProps>((props, ref) =>
+    props.account ? <AddressItemContent {...props} ref={ref} /> : null
   )
 );
 
