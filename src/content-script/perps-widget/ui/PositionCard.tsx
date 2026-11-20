@@ -40,12 +40,14 @@ const PositionCardImpl: React.FC<PositionCardProps> = ({ position }) => {
     >
       <div className="rabby-perps-card__top">
         <div className="rabby-perps-card__top-left">
-          <img
-            className="rabby-perps-card__logo"
-            src={position.logoUrl}
-            alt=""
-            onError={handleImgError}
-          />
+          {position.logoUrl.startsWith('data:image/') && (
+            <img
+              className="rabby-perps-card__logo"
+              src={position.logoUrl}
+              alt=""
+              onError={handleImgError}
+            />
+          )}
           <span className="rabby-perps-card__name">
             {formatCoinName(position.displayName)}
             <span className="rabby-perps-card__quoteAsset">

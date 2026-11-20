@@ -44,7 +44,7 @@ import {
 } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import { last, sum } from 'lodash';
+import { last, sum, uniqBy } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
@@ -441,7 +441,9 @@ export const Content: React.FC<Props> = (props) => {
       isEdit &&
       currentOrder &&
       (currentOrder.amount !== formValues.amount ||
-        currentOrder.listingPrice < (formValues.listingPrice || 0) ||
+        new BigNumber(currentOrder.listingPrice).lt(
+          formValues.listingPrice || 0
+        ) ||
         currentOrder.creatorFeeEnable !== formValues.creatorFeeEnable)
     );
   });
@@ -460,26 +462,42 @@ export const Content: React.FC<Props> = (props) => {
       return;
     }
 
+    if (isEdit && !currentOrder) {
+      throw new Error('Existing NFT listing is unavailable');
+    }
     const needCancelFirst = checkNeedCancelFirst();
-
-    const listingOrders = needCancelFirst
-      ? (await refetchListingOrders().catch(() => null))?.orders
-      : [];
-
-    const tx = (await runCheckIsApproved())
-      ? needCancelFirst && listingOrders?.length
-        ? await wallet.buildCancelNFTListTx({
-            address: currentAccount?.address,
-            chainId: chain?.id,
-            orders: listingOrders.map((item) => item.protocol_data?.parameters),
-          })
-        : null
-      : await wallet.buildSetApprovedForAllTx({
-          from: currentAccount?.address,
+    const txs: Partial<Tx>[] = [];
+    if (needCancelFirst) {
+      const latest = await refetchListingOrders();
+      if (!Array.isArray(latest?.orders)) {
+        throw new Error('Failed to refresh NFT listings');
+      }
+      // An order removed from the orderbook can still be valid on-chain.
+      const orders = uniqBy(
+        [...(listingOrders || []), ...latest.orders],
+        'order_hash'
+      );
+      if (!orders.length) {
+        throw new Error('Existing NFT listing is unavailable');
+      }
+      txs.push(
+        await wallet.buildCancelNFTListTx({
+          address: currentAccount.address,
+          chainId: chain.id,
+          orders: orders.map((item) => item.protocol_data.parameters),
+        })
+      );
+    }
+    if (!(await runCheckIsApproved())) {
+      txs.push(
+        await wallet.buildSetApprovedForAllTx({
+          from: currentAccount.address,
           chainId: chain.id,
           operator: OPENSEA_CONDUIT_ADDRESS,
           contractAddress: nftDetail.contract_id,
-        });
+        })
+      );
+    }
 
     const endTime = ((Date.now() + formValues.duration) / 1000).toFixed();
 
@@ -563,10 +581,10 @@ export const Content: React.FC<Props> = (props) => {
     // console.log(JSON.parse(typedData), typedData1);
 
     const result: Parameters<typeof run>[0] = [];
-    if (tx) {
+    if (txs.length) {
       result.push({
         kind: 'tx',
-        txs: [tx as Tx],
+        txs: txs as Tx[],
       });
     }
     result.push({
@@ -594,13 +612,6 @@ export const Content: React.FC<Props> = (props) => {
       const signature = last(params.hashes);
       if (!nftDetail || !signature || !nftDetail?.chain) {
         throw new Error('Error');
-      }
-      if (params.hashes.length > 1) {
-        await waitForTxCompleted({
-          hash: params.hashes[params.hashes.length - 2],
-          chainServerId: nftDetail.chain,
-          wallet,
-        });
       }
       await wallet.openapi.createListingNFT({
         order: params.txsInfo.order,
@@ -643,6 +654,11 @@ export const Content: React.FC<Props> = (props) => {
                 params: [tx],
               });
               result.push(hash);
+              await waitForTxCompleted({
+                hash,
+                chainServerId: nftDetail.chain,
+                wallet,
+              });
             }
           }
           if (step.kind === 'typed') {
@@ -710,8 +726,12 @@ export const Content: React.FC<Props> = (props) => {
       manual: true,
       onError(e) {
         console.error(e);
+        message.error(
+          e instanceof NFTOrderVerifyError
+            ? e.message
+            : t('page.desktopProfile.nft.message.listingFailedDesc')
+        );
         if (e instanceof NFTOrderVerifyError) {
-          message.error(e.message);
           reportNFTOrderVerifyError(e, { flow: 'listing', chainId: chain?.id });
         }
         // onFailed?.();

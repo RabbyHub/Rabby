@@ -274,7 +274,10 @@ const config = {
           new ForkTsCheckerWebpackPlugin({
             async: isEnvDevelopment,
             typescript: {
-              memoryLimit: 2048,
+              // a full check of the project peaks around 3GB; at 2048 the
+              // checker ran out of memory before reporting anything, then
+              // started over after every rebuild
+              memoryLimit: 4096,
             },
           }),
         ]

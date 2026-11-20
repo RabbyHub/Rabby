@@ -2,7 +2,7 @@ import type { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import type { WalletControllerType } from '@/ui/utils/WalletContext';
 import { isEqual } from 'lodash';
 
-const TOP_HISTORY_LIMIT = 10;
+export const TOP_HISTORY_LIMIT = 10;
 type HistoryResponse = Awaited<
   ReturnType<WalletControllerType['openapi']['getBridgeHistoryList']>
 >;

@@ -71,3 +71,47 @@ export const waitForApprovalSigning = async ({
   await waitForUI();
   assertApprovalSigningBinding(getApproval(), request);
 };
+
+const isApprovalSigningCurrent = (
+  approval: Approval | null | undefined,
+  request: SigningRequest
+) => {
+  try {
+    assertApprovalSigningBinding(approval, request);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
+ * Deferred signing started from the UI is not wrapped by rpcFlow, so nothing
+ * else tells the waiting component that the attempt failed (rejected on the
+ * device, disconnected, ...): without `onFailed` it stays on "sending".
+ *
+ * Only the attempt the waiting approval was opened for is reported. The
+ * report is broadcast to every window, so a stale attempt must not flip the
+ * state of whichever approval is on screen now.
+ */
+export const signForWaitingApproval = async <T>({
+  getApproval,
+  waitForUI,
+  sign,
+  onFailed,
+  ...request
+}: SigningRequest & {
+  getApproval: () => Approval | null | undefined;
+  waitForUI: () => Promise<void>;
+  sign: () => Promise<T>;
+  onFailed: (error: unknown) => void;
+}): Promise<T> => {
+  await waitForApprovalSigning({ ...request, getApproval, waitForUI });
+  try {
+    return await sign();
+  } catch (e) {
+    if (isApprovalSigningCurrent(getApproval(), request)) {
+      onFailed(e);
+    }
+    throw e;
+  }
+};

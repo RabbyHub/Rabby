@@ -64,9 +64,11 @@ export const useQuoteMethods = () => {
         limit: `${limit}`,
       });
       return {
-        list: data?.history_list,
+        list: data?.history_list ?? [],
         last: data,
         totalCount: data?.total_cnt,
+        // 按请求行数翻页，不用已展示条数。
+        nextStart: start + limit,
       };
     },
     [walletOpenapi]

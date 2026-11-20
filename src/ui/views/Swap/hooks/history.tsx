@@ -7,6 +7,11 @@ import { uniqBy } from 'lodash';
 import { SwapItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useWallet } from '@/ui/utils';
 
+const SWAP_HISTORY_PAGE_SIZE = 5;
+
+const swapHistoryKey = (item: SwapItem) =>
+  `${item.chain}:${item.tx_id?.toLowerCase()}`;
+
 export const usePollSwapPendingNumber = (timer = 10000) => {
   const [refetchCount, setRefetchCount] = useState(0);
 
@@ -72,19 +77,28 @@ export const useSwapHistory = () => {
     noMore,
     mutate,
   } = useInfiniteScroll(
-    (d) =>
-      getSwapList(
+    async (d) => {
+      const page = await getSwapList(
         addr,
-        d?.list?.length && d?.list?.length > 1 ? d?.list?.length : 0,
-        5
-      ),
+        d?.nextStart ?? 0,
+        SWAP_HISTORY_PAGE_SIZE
+      );
+      if (!d?.list?.length || !page.list?.length) {
+        return page;
+      }
+      const seen = new Set(d.list.map(swapHistoryKey));
+      return {
+        ...page,
+        list: page.list.filter((item) => !seen.has(swapHistoryKey(item))),
+      };
+    },
     {
       reloadDeps: [isInSwap],
       isNoMore(data) {
-        if (data) {
-          return data?.list.length >= data?.totalCount;
+        if (!data || typeof data.totalCount !== 'number') {
+          return !data;
         }
-        return true;
+        return (data.nextStart ?? 0) >= data.totalCount;
       },
       manual: !isInSwap || !addr,
     }
@@ -92,7 +106,7 @@ export const useSwapHistory = () => {
 
   const { value } = useAsync(async () => {
     if (addr) {
-      return getSwapList(addr, 0, 5);
+      return getSwapList(addr, 0, SWAP_HISTORY_PAGE_SIZE);
     }
   }, [addr, refreshSwapTxListCount]);
 
@@ -100,14 +114,15 @@ export const useSwapHistory = () => {
     if (value?.list) {
       mutate((d) => {
         if (!d) {
-          return;
+          return value;
         }
         return {
           last: d?.last,
-          totalCount: d?.totalCount,
+          totalCount: value.totalCount ?? d?.totalCount,
+          nextStart: d.nextStart,
           list: uniqBy(
             [...(value.list || []), ...(d?.list || [])],
-            (e) => `${e.chain}-${e.tx_id}`
+            swapHistoryKey
           ) as SwapItem[],
         };
       });
