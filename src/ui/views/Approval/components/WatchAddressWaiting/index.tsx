@@ -9,6 +9,7 @@ import {
   useWallet,
 } from 'ui/utils';
 import eventBus from '@/eventBus';
+import { useScopedEventBusListener } from '@/ui/hooks/useEventBusListener';
 import Process from './Process';
 import Scan from './Scan';
 import { message } from 'antd';
@@ -63,6 +64,8 @@ const WatchAddressWaiting = ({
   }>(null);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
+  // Removed on unmount; see useScopedEventBusListener.
+  const addScopedListener = useScopedEventBusListener();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
     bindApproval(approvalId, 'WatchAddressWaiting')
   );
@@ -90,7 +93,7 @@ const WatchAddressWaiting = ({
         status === null ? WALLETCONNECT_STATUS_MAP.PENDING : status
       );
     }
-    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
+    addScopedListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
       setQrcodeContent(uri);
     });
     if (
@@ -127,7 +130,7 @@ const WatchAddressWaiting = ({
 
     setCurrentAccount(account);
 
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    addScopedListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (data.success) {
         let sig = data.data;
@@ -174,7 +177,7 @@ const WatchAddressWaiting = ({
       }
     });
 
-    eventBus.addEventListener(
+    addScopedListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
       async ({ status, payload }) => {
         setVisible(true);
