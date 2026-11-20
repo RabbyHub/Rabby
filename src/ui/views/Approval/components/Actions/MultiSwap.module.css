@@ -17,20 +17,3 @@
   margin-left: 4px;
   width: 13px;
 }
-
-.wrapper li :global(.name-and-address) {
-  justify-content: flex-start;
-}
-
-.wrapper li :global(.name-and-address) :global(.address) {
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 14px;
-  color: #999999;
-}
-
-.wrapper li :global(.name-and-address) img {
-  width: 12px !important;
-  height: 12px !important;
-  margin-left: 4px !important;
-}

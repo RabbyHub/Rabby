@@ -90,7 +90,7 @@ export const ApprovalContractItem = ({
             })}
           >
             <ApprovalsNameAndAddr
-              addressClass="font-medium"
+              addressClass="font-medium text-r-neutral-title1"
               address={item.id}
               chainEnum={chainItem?.enum}
               addressSuffix={

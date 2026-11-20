@@ -18,12 +18,16 @@ export const SpenderRow: React.FC<{
   hasCopyIcon?: boolean;
   hasExternalIcon?: boolean;
   iconSize?: number;
+  nameClass?: string;
+  addressClass?: string;
 }> = ({
   spender,
   hasPermit2Badge = true,
   hasCopyIcon = true,
   hasExternalIcon = true,
   iconSize = 18,
+  nameClass,
+  addressClass,
 }) => {
   const asset = spender.$assetParent;
   if (!asset) return null;
@@ -48,7 +52,8 @@ export const SpenderRow: React.FC<{
       />
       <ApprovalsNameAndAddr
         className="ml-[6px]"
-        addressClass=""
+        nameClass={nameClass}
+        addressClass={addressClass}
         address={spender.id || ''}
         chainEnum={chainItem?.enum}
         copyIconClass="text-r-neutral-body"

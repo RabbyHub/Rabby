@@ -43,8 +43,14 @@ export const CurrentAccount = ({
     >
       <img className={clsx('icon')} src={addressTypeIcon} />
       <NameAndAddress
-        nameClass="name"
-        addressClass="addr"
+        nameClass={clsx(
+          'font-semibold max-w-[112px]',
+          noInvert ? 'text-r-neutral-title1' : 'text-white'
+        )}
+        addressClass={clsx(
+          'text-13 leading-[16px]',
+          noInvert ? 'text-r-neutral-body' : 'text-white'
+        )}
         copyIcon={noInvert ? true : ImgCopy}
         address={currentAccount?.address}
       />
