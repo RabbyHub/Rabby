@@ -19,7 +19,12 @@ import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 import { isManifestV3 } from '@/utils/env';
 import browser from 'webextension-polyfill';
 import { HardwareErrorCode } from '@onekeyfe/hd-shared';
-import type { DeviceState, KnownDevice, Response } from '@onekeyfe/hd-core';
+import type {
+  DeviceState,
+  KnownDevice,
+  Response,
+  SearchDevice,
+} from '@onekeyfe/hd-core';
 import {
   checkOperation,
   deviceCancelled,
@@ -278,7 +283,7 @@ class OneKeyKeyring extends EventEmitter {
     return repaired;
   }
 
-  private async connectedDevice(signal: AbortSignal) {
+  private async discoverDevice(signal: AbortSignal) {
     const devices = await readDevice(signal, () => this.bridge.searchDevices());
     const device =
       devices.find((d) => d.connectId === this.connectId) || devices[0];
@@ -291,6 +296,14 @@ class OneKeyKeyring extends EventEmitter {
         'No OneKey device found'
       );
     }
+    return { ...device, connectId };
+  }
+
+  private async readConnectedDevice(
+    signal: AbortSignal,
+    device: SearchDevice & { connectId: string }
+  ) {
+    const { connectId } = device;
     if (this.connectId && this.connectId !== connectId) {
       await this.clearSession();
       checkOperation(signal);
@@ -334,12 +347,22 @@ class OneKeyKeyring extends EventEmitter {
 
   private async unlockDevice(signal: AbortSignal) {
     await whileActive(signal, () => this.init());
+    const device = await this.discoverDevice(signal);
+    checkOperation(signal);
+    if (
+      device.connectId === this.connectId &&
+      device.deviceId &&
+      device.deviceId === this.deviceId &&
+      this.isUnlocked()
+    ) {
+      return 'already unlocked';
+    }
     const {
       connectId,
       deviceId,
       state,
       sameDevice,
-    } = await this.connectedDevice(signal);
+    } = await this.readConnectedDevice(signal, device);
     if (
       sameDevice &&
       this.isUnlocked() &&
@@ -524,7 +547,8 @@ class OneKeyKeyring extends EventEmitter {
       let passphraseState: string | undefined;
       if (detail.version === 2) {
         await whileActive(signal, () => this.init());
-        const device = await this.connectedDevice(signal);
+        const discovered = await this.discoverDevice(signal);
+        const device = await this.readConnectedDevice(signal, discovered);
         connectId = device.connectId;
         deviceId = device.deviceId;
         this.connectId = connectId;
