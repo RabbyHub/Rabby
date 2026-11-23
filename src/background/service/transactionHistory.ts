@@ -1375,7 +1375,7 @@ class TxHistory {
       const t = copyHistory[k];
       if (t.chainId === chainId && t.nonce < nonce && t.isPending) {
         delete copyHistory[k];
-        this.removeFeatPendingByLocal(copyHistory[k].txs[0], address, chainId);
+        this.removeFeatPendingByLocal(t.txs[0], address, chainId);
       }
     }
     // for (const k in copyExplain) {
