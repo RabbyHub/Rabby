@@ -53,6 +53,15 @@
       "js": [
         "vendor/trezor/trezor-content-script.js"
       ]
+    },
+    {
+      "matches": [
+        "*://connect.trezor.io/9/popup.html*"
+      ],
+      "css": [
+        "vendor/trezor/hide-v9-deprecation-banner.css"
+      ],
+      "run_at": "document_start"
     }
   ],
   "content_security_policy": {
