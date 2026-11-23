@@ -1417,6 +1417,7 @@
         "biometricUnlockEnabled": "Увімкнено біометричне розблокування.",
         "biometricUnlockSetupDesc": "Підтвердьте свій пароль, щоб активувати біометричне розблокування.",
         "clearPendingCheckbox": "Також скинути локальні дані nonce та історію підписів",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Увімкнути біометричне розблокування",
         "biometricUnlockUnsupported": "Цей пристрій не підтримує біометричну розблокування.",
         "removedToken": {
@@ -2043,7 +2044,9 @@
       "btnForgotPassword": "Забули пароль?",
       "title": "Rabby Wallet",
       "description": "Ваш основний гаманець для Ethereum та EVM",
-      "biometricFailed": "Не вдалося розблокувати за допомогою біометрії"
+      "biometricFailed": "Не вдалося розблокувати за допомогою біометрії",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "noTokenFound": "Токен не знайдено",

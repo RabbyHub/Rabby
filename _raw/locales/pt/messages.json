@@ -1536,6 +1536,7 @@
         },
         "biometricUnlockPasswordPlaceholder": "Introduza a Palavra-passe",
         "biometricUnlockEnabled": "Desbloqueio biométrico ativado.",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Ativar Desbloqueio Biométrico",
         "biometricUnlockDisableFailed": "Falha ao desativar o desbloqueio biométrico",
         "biometricUnlockSetupDesc": "Confirme a sua palavra-passe para ativar o desbloqueio biométrico.",
@@ -2155,7 +2156,9 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "Esqueceu a palavra-passe?",
       "description": "A sua carteira de referência para Ethereum e EVM",
-      "biometricFailed": "Desbloqueio biométrico falhou"
+      "biometricFailed": "Desbloqueio biométrico falhou",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "title": "Adicione um token personalizado ao Rabby",

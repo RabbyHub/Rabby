@@ -1534,6 +1534,7 @@
           "descDisable": "Một khi bị tắt, xác minh mật khẩu sẽ không còn được yêu cầu đối với các địa chỉ không được đưa vào danh sách trắng.",
           "descEnable": "Khi đã được bật, việc chuyển tài sản đến một địa chỉ không có trong danh sách trắng trong tiện ích mở rộng này sẽ yêu cầu mật khẩu của bạn."
         },
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Bật mở khóa sinh trắc học",
         "biometricUnlockEnabled": "Khóa sinh trắc học đã được bật.",
         "biometricUnlockDisableFailed": "Không thể tắt mở khóa sinh trắc học",
@@ -2155,7 +2156,9 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "Quên mật khẩu?",
       "description": "Ví đáng tin cậy của bạn cho Ethereum và EVM",
-      "biometricFailed": "Mở khóa sinh trắc học thất bại"
+      "biometricFailed": "Mở khóa sinh trắc học thất bại",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "noTokenFound": "Không tìm thấy token",

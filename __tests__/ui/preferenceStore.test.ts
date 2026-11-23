@@ -28,7 +28,8 @@ jest.mock('@/ui/wallet', () => ({
     saveChain: jest.fn(),
     setAddressSortStoreValue: jest.fn(),
     setAutoLockTime: jest.fn(),
-    setBiometricUnlock: jest.fn(),
+    enableBiometricUnlock: jest.fn(),
+    disableBiometricUnlock: jest.fn(),
     setDesktopTokensAllMode: jest.fn(),
     setHiddenBalance: jest.fn(),
     setIsDefaultWallet: jest.fn(),
@@ -52,9 +53,7 @@ describe('preference store', () => {
     usePreferenceStore.setState(getDefaultPreferenceState());
     (wallet.getPreference as jest.Mock).mockImplementation((key?: string) =>
       Promise.resolve(
-        key
-          ? getDefaultPreferenceState()[key]
-          : getDefaultPreferenceState()
+        key ? getDefaultPreferenceState()[key] : getDefaultPreferenceState()
       )
     );
   });
@@ -149,9 +148,7 @@ describe('preference store', () => {
     );
     (wallet.setTokenApprovalChain as jest.Mock).mockResolvedValue(undefined);
 
-    await usePreferenceStore
-      .getState()
-      .getTokenApprovalChain('0xAbC');
+    await usePreferenceStore.getState().getTokenApprovalChain('0xAbC');
 
     expect(wallet.getTokenApprovalChain).toHaveBeenCalledWith('0xabc');
     expect(usePreferenceStore.getState().tokenApprovalChain['0xabc']).toBe(
@@ -179,37 +176,39 @@ describe('preference store', () => {
     expect(wallet.setLocale).toHaveBeenCalledWith('zh_CN');
 
     (wallet.getPreference as jest.Mock).mockResolvedValue(DARK_MODE_TYPE.dark);
-    await usePreferenceStore
-      .getState()
-      .switchThemeMode(DARK_MODE_TYPE.dark);
+    await usePreferenceStore.getState().switchThemeMode(DARK_MODE_TYPE.dark);
     expect(usePreferenceStore.getState().themeMode).toBe(DARK_MODE_TYPE.dark);
     expect(wallet.setThemeMode).toHaveBeenCalledWith(DARK_MODE_TYPE.dark);
   });
 
   test('updates biometric and rate-guide state after background writes', async () => {
-    (wallet.setBiometricUnlock as jest.Mock).mockResolvedValue(undefined);
+    (wallet.enableBiometricUnlock as jest.Mock).mockResolvedValue(undefined);
+    (wallet.disableBiometricUnlock as jest.Mock).mockResolvedValue(undefined);
     (wallet.setRateGuideLastExposure as jest.Mock).mockResolvedValue(undefined);
 
-    await usePreferenceStore.getState().setBiometricUnlock({
-      enabled: true,
+    const enrollment = {
+      password: 'password',
       credentialId: 'credential',
-      encryptedPassword: 'encrypted',
-      iv: 'iv',
-    });
-    expect(usePreferenceStore.getState()).toMatchObject({
-      biometricUnlockEnabled: true,
-      biometricUnlockCredentialId: 'credential',
-      biometricUnlockEncryptedPassword: 'encrypted',
-      biometricUnlockIv: 'iv',
-    });
+      prfSalt: 'salt',
+      prfOutput: 'output',
+      transports: ['internal'],
+    };
+    await usePreferenceStore.getState().enableBiometricUnlock(enrollment);
+    expect(wallet.enableBiometricUnlock).toHaveBeenCalledWith(enrollment);
+    expect(usePreferenceStore.getState().biometricUnlockEnabled).toBe(true);
+    // Nothing secret is mirrored into the UI store.
+    expect(usePreferenceStore.getState()).not.toHaveProperty(
+      'biometricUnlockEncryptedPassword'
+    );
+
+    await usePreferenceStore.getState().disableBiometricUnlock();
+    expect(usePreferenceStore.getState().biometricUnlockEnabled).toBe(false);
 
     const lastExposure = getDefaultRateGuideLastExposure({
       time: Date.now() - 1,
       userViewedRate: false,
     });
-    await usePreferenceStore
-      .getState()
-      .setRateGuideLastExposure(lastExposure);
+    await usePreferenceStore.getState().setRateGuideLastExposure(lastExposure);
 
     expect(
       usePreferenceStore.getState().rateGuideLastExposure?.[

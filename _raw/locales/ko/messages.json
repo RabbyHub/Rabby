@@ -1535,6 +1535,7 @@
           "descDisable": "비활성화되면 화이트리스트에 없는 주소에 대해서는 비밀번호 확인이 더 이상 필요하지 않습니다."
         },
         "biometricUnlockPasswordPlaceholder": "비밀번호 입력",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "생체 인식 잠금 해제 활성화",
         "biometricUnlockEnabled": "생체 인식 잠금 해제가 활성화되었습니다.",
         "biometricUnlockUnsupported": "이 장치는 생체 인식 잠금 해제를 지원하지 않습니다.",
@@ -2155,7 +2156,9 @@
       "title": "Rabby 지갑",
       "btnForgotPassword": "비밀번호를 잊으셨나요?",
       "description": "이더리움 및 EVM을 위한 귀하의 필수 지갑입니다.",
-      "biometricFailed": "생체 인식 잠금 해제 실패"
+      "biometricFailed": "생체 인식 잠금 해제 실패",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "balance": "잔액",

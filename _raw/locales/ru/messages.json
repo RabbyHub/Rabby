@@ -1416,6 +1416,7 @@
         "biometricUnlockUnsupported": "Это устройство не поддерживает биометрическую разблокировку.",
         "biometricUnlockSetupDesc": "Подтвердите свой пароль для активации биометрического разблокирования.",
         "clearPendingCheckbox": "Также сбросить локальные данные nonce и историю подписей",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Включить биометрическую разблокировку",
         "removedToken": {
           "title": "Удалённые токены",
@@ -2032,7 +2033,9 @@
       "title": "Кошелек Rabby",
       "btnForgotPassword": "Забыли пароль?",
       "description": "Ваш кошелек для Ethereum и EVM",
-      "biometricFailed": "Неудалось разблокировать по биометрии"
+      "biometricFailed": "Неудалось разблокировать по биометрии",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "noTokenFound": "Токен не найден",

@@ -1536,6 +1536,7 @@
         },
         "biometricUnlockEnabled": "Pembukaan biometrik diaktifkan.",
         "biometricUnlockEnableFailed": "Gagal mengaktifkan pembukaan kunci biometrik",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Aktifkan Pembukaan Kunci Biometrik",
         "biometricUnlockPasswordPlaceholder": "Masukkan Kata Sandi",
         "biometricUnlockDisableFailed": "Gagal menonaktifkan kunci biometrik",
@@ -2155,7 +2156,9 @@
       "btnForgotPassword": "Lupa Kata Sandi?",
       "title": "Rabby Wallet",
       "description": "Dompet andalan Anda untuk Ethereum dan EVM",
-      "biometricFailed": "Pembukaan biometrik gagal"
+      "biometricFailed": "Pembukaan biometrik gagal",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "balance": "Saldo",

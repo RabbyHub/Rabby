@@ -11,7 +11,10 @@ import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.s
 import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch } from '@/ui/store';
 import {
-  createBiometricUnlockPayload,
+  cleanupBiometricCredential,
+  syncBiometricCredentials,
+  createBiometricEnrollment,
+  isBiometricUnsupportedError,
   isBiometricUserCanceledError,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
@@ -154,15 +157,19 @@ export const BiometricUnlockSetup = () => {
       return;
     }
 
+    let createdCredentialId = '';
     try {
-      const payload = await createBiometricUnlockPayload(password);
-      await dispatch.preference.setBiometricUnlock({
-        enabled: true,
-        credentialId: payload.credentialId,
-        encryptedPassword: payload.encryptedPassword,
-        iv: payload.iv,
+      const { userId } = await wallet.getBiometricEnrollmentOptions();
+      const enrollment = await createBiometricEnrollment({ userId });
+      createdCredentialId = enrollment.credentialId;
+      await dispatch.preference.enableBiometricUnlock({
+        password,
+        ...enrollment,
       });
+      createdCredentialId = '';
       await dispatch.preference.setUnlockPreferredMethod('biometric');
+      // Prune the credentials this one replaced, and any left from v1.
+      await syncBiometricCredentials(wallet);
       message.success(t('page.dashboard.settings.biometricUnlockEnabled'));
       const currentWindow = await browser.windows.getCurrent();
       if (isFromSettings) {
@@ -173,11 +180,16 @@ export const BiometricUnlockSetup = () => {
         });
       }
     } catch (error: any) {
-      if (!isBiometricUserCanceledError(error)) {
+      if (createdCredentialId) {
+        // Created but never stored: don't leave an orphan passkey behind.
+        void cleanupBiometricCredential(createdCredentialId);
+      }
+      if (isBiometricUnsupportedError(error)) {
         message.error(
-          error?.message ||
-            t('page.dashboard.settings.biometricUnlockEnableFailed')
+          t('page.dashboard.settings.biometricUnlockPrfUnsupported')
         );
+      } else if (!isBiometricUserCanceledError(error)) {
+        message.error(t('page.dashboard.settings.biometricUnlockEnableFailed'));
       }
     } finally {
       setLoading(false);

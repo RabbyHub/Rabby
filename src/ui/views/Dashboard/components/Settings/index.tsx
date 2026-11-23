@@ -86,7 +86,7 @@ import { isExtraFeeProtectionOn } from '@/utils/extraFeeProtection';
 import { useCurrency } from '@/ui/hooks/useCurrency';
 import { useExtensionUpdateSettingsCard } from '@/ui/hooks/useExtensionUpdateSettingsCard';
 import {
-  cleanupBiometricCredential,
+  syncBiometricCredentials,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
 import { PERPS_TEST_INCLUDE_WATCH_KEY } from '@/ui/views/Perps/components/SelectAddressList';
@@ -713,9 +713,6 @@ const SettingsInner = ({
   const biometricUnlockEnabled = useRabbySelector(
     (state) => state.preference.biometricUnlockEnabled
   );
-  const biometricUnlockCredentialId = useRabbySelector(
-    (state) => state.preference.biometricUnlockCredentialId
-  );
   const locale = useRabbySelector((state) => state.preference.locale);
 
   const AUTO_LOCK_OPTIONS = useAutoLockOptions();
@@ -798,8 +795,9 @@ const SettingsInner = ({
 
       setBiometricBusy(true);
       try {
-        await cleanupBiometricCredential(biometricUnlockCredentialId || '');
-        await dispatch.preference.setBiometricUnlock({ enabled: false });
+        await dispatch.preference.disableBiometricUnlock();
+        // Ask the passkey provider to drop the now unused credential.
+        await syncBiometricCredentials(wallet);
         message.success(t('page.dashboard.settings.biometricUnlockDisabled'));
       } catch (error) {
         message.error(

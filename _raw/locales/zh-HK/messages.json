@@ -355,6 +355,7 @@
         "biometricUnlockDisabled": "已停用生物識別解鎖",
         "biometricUnlockEnableFailed": "無法啟用生物識別解鎖",
         "biometricUnlockUnsupported": "此裝置不支援生物識別解鎖。",
+        "biometricUnlockPrfUnsupported": "目前裝置的通行密鑰不支援安全的生物辨識解鎖，請使用密碼解鎖。",
         "biometricUnlockSetupTitle": "啟用生物識別解鎖",
         "removedToken": {
           "title": "已移除代幣",
@@ -2169,7 +2170,9 @@
       "btnForgotPassword": "忘記密碼？",
       "title": "Rabby Wallet",
       "description": "你首選的以太坊和 EVM 錢包",
-      "biometricFailed": "生物識別解鎖失敗"
+      "biometricFailed": "生物識別解鎖失敗",
+      "biometricFailedHint": "生物辨識解鎖失敗。可以改用密碼解鎖；如果一直失敗，請到設定中關閉後重新開啟生物辨識解鎖。",
+      "biometricReenrollNotice": "生物辨識解鎖已完成安全升級，請先用密碼解鎖，再到設定中重新開啟。"
     },
     "addressDetail": {
       "add-to-whitelist": "新增到白名單",

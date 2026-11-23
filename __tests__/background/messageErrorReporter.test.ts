@@ -109,7 +109,8 @@ describe('errors from methods that handle secrets', () => {
     'importJson',
     'slip39GetThreshold',
     'setWhitelist',
-    'setBiometricUnlock',
+    'enableBiometricUnlock',
+    'unlockWithBiometric',
   ])('treats %s as handling secrets', (method) => {
     reportMessageError(quotingError(PRIVATE_KEY), { method, params: [] });
 

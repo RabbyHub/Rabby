@@ -355,6 +355,7 @@
         "biometricUnlockUnsupported": "此设备不支持生物识别解锁。",
         "biometricUnlockSetupDesc": "确认你的密码以激活生物识别解锁。",
         "clearPendingCheckbox": "同时重置我的本地 nonce 数据和签名记录",
+        "biometricUnlockPrfUnsupported": "当前设备的通行密钥不支持安全的生物识别解锁，请使用密码解锁。",
         "biometricUnlockSetupTitle": "启用生物识别解锁",
         "removedToken": {
           "title": "已移除代币",
@@ -2169,7 +2170,9 @@
       "btnForgotPassword": "忘记密码？",
       "title": "Rabby Wallet",
       "description": "你首选的以太坊和 EVM 钱包",
-      "biometricFailed": "生物识别解锁失败"
+      "biometricFailed": "生物识别解锁失败",
+      "biometricFailedHint": "生物识别解锁失败。可以改用密码解锁；如果一直失败，请到设置中关闭后重新开启生物识别解锁。",
+      "biometricReenrollNotice": "生物识别解锁已完成安全升级，请先用密码解锁，再到设置中重新开启。"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名单",

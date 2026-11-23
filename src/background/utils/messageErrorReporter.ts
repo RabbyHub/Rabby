@@ -20,7 +20,8 @@ const SECRET_METHODS = new Set([
   'setWhitelist',
   'addWhitelist',
   'toggleWhitelist',
-  'setBiometricUnlock',
+  'enableBiometricUnlock',
+  'unlockWithBiometric',
 ]);
 // requestKeyring calls straight into a keyring; the software ones hold the
 // mnemonic or key.

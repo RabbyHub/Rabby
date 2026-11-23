@@ -1408,6 +1408,7 @@
           "descDisable": "Devre dışı bırakıldıktan sonra, beyaz listede yer almayan adresler için şifre doğrulaması artık gerekli olmayacaktır."
         },
         "biometricUnlockPasswordPlaceholder": "Şifreyi Girin",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Biyometrik Kilidi Etkinleştir",
         "biometricUnlockEnableFailed": "Biyometrik kilidi etkinleştirme başarısız oldu",
         "biometricUnlockDisabled": "Biyometrik kilidi devre dışı bırakıldı",
@@ -2034,7 +2035,9 @@
       "btnForgotPassword": "Şifrenizi mi unuttunuz?",
       "title": "Rabby Wallet",
       "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan",
-      "biometricFailed": "Biyometrik kilit açma başarısız oldu"
+      "biometricFailed": "Biyometrik kilit açma başarısız oldu",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "noTokenFound": "Token bulunamadı",

@@ -1414,6 +1414,7 @@
         "biometricUnlockUnsupported": "このデバイスは生体認証解除をサポートしていません。",
         "biometricUnlockSetupDesc": "バイオメトリックロック解除を有効にするには、パスワードを確認してください。",
         "clearPendingCheckbox": "ローカルの nonce データと署名履歴もリセットする",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "バイオメトリックロック解除を有効にする",
         "biometricUnlockEnableFailed": "生体認証のアンロックを有効にできませんでした。",
         "removedToken": {
@@ -2031,7 +2032,9 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "パスワードをお忘れですか?",
       "description": "EthereumとEVMのための定番ウォレット",
-      "biometricFailed": "生体認証の解除に失敗しました"
+      "biometricFailed": "生体認証の解除に失敗しました",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "noTokenFound": "トークンが見つかりません",

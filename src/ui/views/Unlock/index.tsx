@@ -22,8 +22,10 @@ import qs from 'qs';
 import { isString } from 'lodash';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
-  decryptBiometricUnlockPassword,
+  syncBiometricCredentials,
+  getBiometricPrfOutput,
   isBiometricUnlockSupported,
+  isBiometricUserCanceledError,
 } from '@/ui/utils/biometric';
 import { useMemoizedFn, useUnmount } from 'ahooks';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -117,15 +119,9 @@ const Unlock = () => {
   const biometricUnlockEnabled = useRabbySelector(
     (state) => state.preference.biometricUnlockEnabled
   );
-  const biometricUnlockCredentialId = useRabbySelector(
-    (state) => state.preference.biometricUnlockCredentialId
-  );
-  const biometricUnlockEncryptedPassword = useRabbySelector(
-    (state) => state.preference.biometricUnlockEncryptedPassword
-  );
-  const biometricUnlockIv = useRabbySelector(
-    (state) => state.preference.biometricUnlockIv
-  );
+  const [biometricNeedsReenroll, setBiometricNeedsReenroll] = useState(false);
+  // Separate from inputError: that one only renders inside the password form.
+  const [biometricError, setBiometricError] = useState('');
   const unlockPreferredMethod = useRabbySelector(
     (state) => state.preference.unlockPreferredMethod
   );
@@ -174,6 +170,21 @@ const Unlock = () => {
   }, []);
 
   useEffect(() => {
+    let mounted = true;
+    wallet
+      .getBiometricUnlockStatus()
+      .then((status) => {
+        if (mounted) {
+          setBiometricNeedsReenroll(!!status?.needsReenroll);
+        }
+      })
+      .catch(() => undefined);
+    return () => {
+      mounted = false;
+    };
+  }, [biometricUnlockEnabled]);
+
+  useEffect(() => {
     if (!pendingUnlockApproval) return;
     void resolveApproval(undefined, false, false);
     // Binding changes are the only settlement trigger. resolveApproval is recreated
@@ -192,6 +203,11 @@ const Unlock = () => {
     useWalletStatusStore.setState({
       hasUnlockedOnce: true,
     });
+    // Best effort, off the critical path.
+    void syncBiometricCredentials(wallet);
+    if (biometricNeedsReenroll) {
+      void wallet.dismissBiometricReenrollNotice().catch(() => undefined);
+    }
     if (UiType.isNotification) {
       if (query.from === '/connect-approval') {
         history.replace('/approval?ignoreOtherWallet=1');
@@ -259,12 +275,7 @@ const Unlock = () => {
     handleUnlockSuccess();
   });
 
-  const biometricConfigured =
-    biometricUnlockEnabled &&
-    !!biometricUnlockCredentialId &&
-    !!biometricUnlockEncryptedPassword &&
-    !!biometricUnlockIv;
-  const biometricAvailable = biometricSupported && biometricConfigured;
+  const biometricAvailable = biometricSupported && !!biometricUnlockEnabled;
   const showBiometricSwitch =
     biometricSupported && (UiType.isTab || UiType.isPop || UiType.isDesktop);
 
@@ -288,19 +299,24 @@ const Unlock = () => {
     isUnlockingRef.current = true;
     setBiometricUnlocking(true);
     setInputError('');
+    setBiometricError('');
     try {
-      const password = await decryptBiometricUnlockPassword({
-        credentialId: biometricUnlockCredentialId!,
-        encryptedPassword: biometricUnlockEncryptedPassword!,
-        iv: biometricUnlockIv!,
-      });
+      const request = await wallet.getBiometricUnlockRequest();
+      if (!request) {
+        throw new Error(t('page.unlock.biometricFailed'));
+      }
+      const prfOutput = await getBiometricPrfOutput(request);
       pendingUnlockTypeRef.current = 'Biometrics';
-      await run(password);
+      // The background unwraps the password and unlocks; it never comes back
+      // to this page. Success arrives as UNLOCK_WALLET.
+      await wallet.unlockWithBiometric({
+        credentialId: request.credentialId,
+        prfOutput,
+      });
     } catch (error: any) {
       pendingUnlockTypeRef.current = null;
-      const errorMessage = error?.message || t('page.unlock.biometricFailed');
-      if (!String(errorMessage).toLowerCase().includes('canceled')) {
-        setInputError(errorMessage);
+      if (!isBiometricUserCanceledError(error)) {
+        setBiometricError(t('page.unlock.biometricFailedHint'));
       }
     } finally {
       isUnlockingRef.current = false;
@@ -330,11 +346,15 @@ const Unlock = () => {
   const switchToBiometricMode = useMemoizedFn(() => {
     form.resetFields(['password']);
     setInputError('');
+    setBiometricError('');
     setShowPasswordUnlock(false);
   });
 
   useEffect(() => {
     if (!biometricAvailable) return;
+    // Never pop the OS prompt in the dapp notification window: it shows the
+    // password form, and a prompt there reads as consent to the request.
+    if (!showBiometricSwitch) return;
     if (showPasswordUnlock) return;
     if (unlockPreferredMethod === 'password') return;
     if (hasUnlockedOnce) return;
@@ -344,6 +364,7 @@ const Unlock = () => {
     handleBiometricUnlock();
   }, [
     biometricAvailable,
+    showBiometricSwitch,
     showPasswordUnlock,
     unlockPreferredMethod,
     hasUnlockedOnce,
@@ -414,6 +435,20 @@ const Unlock = () => {
           >
             {t('page.unlock.description')}
           </p>
+          {biometricNeedsReenroll &&
+            biometricSupported &&
+            !biometricAvailable && (
+              <p
+                className={clsx(
+                  'text-[13px] font-normal leading-[18px]',
+                  'text-r-orange-default',
+                  'mt-8 mx-[40px]',
+                  'text-center'
+                )}
+              >
+                {t('page.unlock.biometricReenrollNotice')}
+              </p>
+            )}
         </div>
         {showBiometricSwitch && !showPasswordUnlock ? (
           <>
@@ -423,6 +458,17 @@ const Unlock = () => {
 
             <footer className="absolute bottom-[68px] left-0 right-0 text-center">
               <div className="mx-20">
+                {biometricError ? (
+                  <div
+                    role="alert"
+                    className={clsx(
+                      'mb-16 text-13 leading-[16px]',
+                      'text-r-red-default'
+                    )}
+                  >
+                    {biometricError}
+                  </div>
+                ) : null}
                 <Button
                   block
                   className={clsx(

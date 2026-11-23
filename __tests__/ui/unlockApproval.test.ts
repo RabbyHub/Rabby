@@ -19,6 +19,12 @@ const mockWallet = {
   unlock: jest.fn(async () => undefined),
   savedUnencryptedKeyringData: jest.fn(() => new Promise(() => undefined)),
   isUnlocked: jest.fn(async () => true),
+  getBiometricUnlockStatus: jest.fn(async () => ({
+    enabled: false,
+    needsReenroll: false,
+  })),
+  takeBiometricCredentialSync: jest.fn(async () => null),
+  dismissBiometricReenrollNotice: jest.fn(async () => undefined),
 };
 const history = { replace: jest.fn() };
 let currentApprovalRead: any = null;
@@ -50,6 +56,9 @@ jest.mock('@/ui/hooks/usePreference', () => ({
 }));
 jest.mock('@/ui/utils/biometric', () => ({
   isBiometricUnlockSupported: jest.fn(() => new Promise(() => undefined)),
+  syncBiometricCredentials: jest.fn(async () => undefined),
+  getBiometricPrfOutput: jest.fn(),
+  isBiometricUserCanceledError: jest.fn(() => false),
 }));
 jest.mock('@/ui/state/walletStatus', () => {
   const store: any = () => false;
@@ -129,6 +138,9 @@ describe('Unlock approval binding', () => {
       },
       '@/ui/utils/biometric': {
         isBiometricUnlockSupported: () => new Promise(() => undefined),
+        syncBiometricCredentials: async () => undefined,
+        getBiometricPrfOutput: async () => '',
+        isBiometricUserCanceledError: () => false,
       },
       '@/ui/hooks/useEventBusListener': { useEventBusListener },
       '@/constant': { EVENTS: { UNLOCK_WALLET: 'UNLOCK_WALLET' } },

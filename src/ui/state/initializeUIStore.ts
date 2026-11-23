@@ -45,26 +45,6 @@ export const initializeUIStore = () => {
         });
         break;
       }
-      case 'biometricUnlockCredentialId': {
-        preferenceActions.setField({
-          biometricUnlockCredentialId:
-            payload.partials.biometricUnlockCredentialId,
-        });
-        break;
-      }
-      case 'biometricUnlockEncryptedPassword': {
-        preferenceActions.setField({
-          biometricUnlockEncryptedPassword:
-            payload.partials.biometricUnlockEncryptedPassword,
-        });
-        break;
-      }
-      case 'biometricUnlockIv': {
-        preferenceActions.setField({
-          biometricUnlockIv: payload.partials.biometricUnlockIv,
-        });
-        break;
-      }
       case 'unlockPreferredMethod': {
         preferenceActions.setField({
           unlockPreferredMethod: payload.partials.unlockPreferredMethod,

@@ -48,6 +48,7 @@ import {
   OfflineChainsService,
   perpsService,
   feedbackService,
+  biometricUnlockService,
 } from 'background/service';
 import type { GasAccountServiceStore } from 'background/service/gasAccount';
 import extensionUpdateService from 'background/service/extensionUpdate';
@@ -2634,24 +2635,65 @@ export class WalletController extends BaseController {
     );
   };
 
-  setBiometricUnlock = (payload: {
-    enabled: boolean;
-    credentialId?: string;
-    encryptedPassword?: string;
-    iv?: string;
-  }) => {
-    if (!payload.enabled) {
-      preferenceService.clearBiometricUnlockStorage();
-      return;
-    }
+  getBiometricUnlockStatus = () => biometricUnlockService.getStatus();
 
-    preferenceService.setPreferencePartials({
-      biometricUnlockEnabled: true,
-      biometricUnlockCredentialId: payload.credentialId || '',
-      biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
-      biometricUnlockIv: payload.iv || '',
-    });
+  /** Credential id and PRF salt for the assertion. Not secret. */
+  getBiometricUnlockRequest = () => biometricUnlockService.getRequest();
+
+  /**
+   * Store the wallet password wrapped with a key from the WebAuthn PRF output
+   * of a credential the setup page just created. The vault itself stays
+   * encrypted with the password; this only lets biometrics recover it.
+   */
+  enableBiometricUnlock = async (params: {
+    password: string;
+    credentialId: string;
+    prfSalt: string;
+    prfOutput: string;
+    transports?: string[];
+  }) => {
+    await keyringService.verifyPassword(params.password);
+    await biometricUnlockService.enroll(params);
   };
+
+  /**
+   * Unlock with the PRF output of a biometric assertion. The password is
+   * recovered and used here, in the background, and never goes back to the
+   * page.
+   */
+  unlockWithBiometric = async (params: {
+    credentialId: string;
+    prfOutput: string;
+  }) => {
+    const password = await biometricUnlockService.decryptPassword(params);
+    try {
+      await keyringService.verifyPassword(password);
+    } catch {
+      // The vault was re-encrypted with another password (e.g. after a reset
+      // by an older build). The record is useless; drop it.
+      biometricUnlockService.clear({ needsReenroll: true });
+      throw new Error('Biometric unlock is out of date');
+    }
+    await this.unlock(password);
+  };
+
+  disableBiometricUnlock = () => {
+    biometricUnlockService.clear();
+  };
+
+  /** The fixed WebAuthn user.id the setup page must create the passkey with. */
+  getBiometricEnrollmentOptions = () =>
+    biometricUnlockService.getEnrollmentOptions();
+
+  /**
+   * What the UI should report to the passkey provider (accepted and stale
+   * credentials), or null when nothing changed.
+   */
+  takeBiometricCredentialSync = () =>
+    biometricUnlockService.takeCredentialSync();
+
+  dismissBiometricReenrollNotice = () =>
+    biometricUnlockService.dismissReenrollNotice();
 
   setUnlockPreferredMethod = (method: UnlockPreferredMethod) => {
     if (!['password', 'biometric'].includes(method)) {

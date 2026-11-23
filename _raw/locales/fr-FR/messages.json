@@ -1130,6 +1130,7 @@
         "biometricUnlockSetupDesc": "Confirmez votre mot de passe pour activer le déverrouillage biométrique.",
         "clearPendingCheckbox": "Réinitialiser également mes données de nonce locales et mon historique de signatures",
         "biometricUnlockEnabled": "Déverrouillage par biométrie activé.",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Activer le déverrouillage biométrique",
         "biometricUnlockEnableFailed": "Échec de l'activation du déverrouillage biométrique",
         "removedToken": {
@@ -2627,7 +2628,9 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "Mot de passe oublié ?",
       "description": "Votre portefeuille incontournable pour Ethereum et EVM",
-      "biometricFailed": "Le déverrouillage biométrique a échoué"
+      "biometricFailed": "Le déverrouillage biométrique a échoué",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "welcome": {
       "step1": {

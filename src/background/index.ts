@@ -42,6 +42,7 @@ import {
   bridgeService,
   contactBookService,
   currencyService,
+  biometricUnlockService,
   gasAccountService,
   HDKeyRingLastAddAddrTimeService,
   keyringService,
@@ -132,6 +133,7 @@ async function restoreAppState() {
   await customTestnetService.init();
   await permissionService.init();
   await preferenceService.init();
+  await biometricUnlockService.init();
   await removedTokensService.init();
   await currencyService.init();
   await extensionUpdateService.init();
@@ -308,7 +310,8 @@ restoreAppState().catch((e) => {
 }
 
 keyringService.on('resetPassword', async () => {
-  preferenceService.clearBiometricUnlockStorage();
+  // The record wraps the old password; it can never unlock the new vault.
+  biometricUnlockService.clear({ needsReenroll: true });
   const gasAccount = gasAccountService.getGasAccountData() as GasAccountServiceStore;
 
   if (

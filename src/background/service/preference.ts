@@ -162,9 +162,13 @@ export interface PreferenceStore {
   isEnabledDappAccount?: boolean;
   /** Ledger DMK clear signing, off by default */
   isLedgerClearSigningEnabled?: boolean;
+  /** Mirror of `biometricUnlockService` having a record; set only by it. */
   biometricUnlockEnabled?: boolean;
+  /** @deprecated v1 (userHandle-derived key); wiped on upgrade */
   biometricUnlockCredentialId?: string;
+  /** @deprecated v1 (userHandle-derived key); wiped on upgrade */
   biometricUnlockEncryptedPassword?: string;
+  /** @deprecated v1 (userHandle-derived key); wiped on upgrade */
   biometricUnlockIv?: string;
   unlockPreferredMethod?: UnlockPreferredMethod;
 
@@ -395,6 +399,7 @@ class PreferenceService {
       this.clearBiometricUnlockStorage();
       (this.store as any).biometricUnlockPrfSalt = '';
     }
+    // v1 biometric data is migrated by biometricUnlockService.init
     if (
       !this.store.currentVersion ||
       compareVersions(version, this.store.currentVersion) > 0
@@ -496,9 +501,9 @@ class PreferenceService {
     });
   };
 
+  /** Wipe the deprecated v1 fields. The v2 record lives in biometricUnlockService. */
   clearBiometricUnlockStorage = () => {
     this.setPreferencePartials({
-      biometricUnlockEnabled: false,
       biometricUnlockCredentialId: '',
       biometricUnlockEncryptedPassword: '',
       biometricUnlockIv: '',

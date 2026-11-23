@@ -44,9 +44,6 @@ export interface PreferenceState {
   isEnabledDappAccount?: boolean;
   isLedgerClearSigningEnabled?: boolean;
   biometricUnlockEnabled?: boolean;
-  biometricUnlockCredentialId?: string;
-  biometricUnlockEncryptedPassword?: string;
-  biometricUnlockIv?: string;
   unlockPreferredMethod?: UnlockPreferredMethod;
   rateGuideLastExposure?: RateGuideLastExposure;
   dashboardPanelOrder?: string[];
@@ -106,12 +103,14 @@ export type PreferenceActions = {
   enableExtraFeeProtection: () => Promise<void>;
   disableExtraFeeProtection: () => Promise<void>;
   enableDappAccount: (value: boolean) => Promise<void>;
-  setBiometricUnlock: (payload: {
-    enabled: boolean;
-    credentialId?: string;
-    encryptedPassword?: string;
-    iv?: string;
+  enableBiometricUnlock: (payload: {
+    password: string;
+    credentialId: string;
+    prfSalt: string;
+    prfOutput: string;
+    transports?: string[];
   }) => Promise<void>;
+  disableBiometricUnlock: () => Promise<void>;
   setUnlockPreferredMethod: (method: UnlockPreferredMethod) => Promise<void>;
   setRateGuideLastExposure: (
     lastExposure: Partial<RateGuideLastExposure>
@@ -147,9 +146,6 @@ export const getDefaultPreferenceState = (): PreferenceState => ({
   isEnabledDappAccount: false,
   isLedgerClearSigningEnabled: false,
   biometricUnlockEnabled: false,
-  biometricUnlockCredentialId: '',
-  biometricUnlockEncryptedPassword: '',
-  biometricUnlockIv: '',
   unlockPreferredMethod: 'biometric',
   rateGuideLastExposure: getDefaultRateGuideLastExposure(),
   desktopTokensAllMode: false,
@@ -327,14 +323,13 @@ export const usePreferenceStore = create<PreferenceStore>()((set, get) => ({
     await wallet.enableDappAccount(value);
     void get().getPreference('isEnabledDappAccount');
   },
-  async setBiometricUnlock(payload) {
-    await wallet.setBiometricUnlock(payload);
-    set({
-      biometricUnlockEnabled: payload.enabled,
-      biometricUnlockCredentialId: payload.credentialId || '',
-      biometricUnlockEncryptedPassword: payload.encryptedPassword || '',
-      biometricUnlockIv: payload.iv || '',
-    });
+  async enableBiometricUnlock(payload) {
+    await wallet.enableBiometricUnlock(payload);
+    set({ biometricUnlockEnabled: true });
+  },
+  async disableBiometricUnlock() {
+    await wallet.disableBiometricUnlock();
+    set({ biometricUnlockEnabled: false });
   },
   async setUnlockPreferredMethod(unlockPreferredMethod) {
     await wallet.setUnlockPreferredMethod(unlockPreferredMethod);

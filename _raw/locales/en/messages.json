@@ -2899,6 +2899,7 @@
         "biometricUnlockDisabled": "Biometric unlock disabled",
         "biometricUnlockDisableFailed": "Failed to disable biometric unlock",
         "biometricUnlockUnsupported": "This device does not support biometric unlock",
+        "biometricUnlockPrfUnsupported": "This device's passkey provider can't protect biometric unlock securely. Please use your password.",
         "biometricUnlockSetupTitle": "Enable Biometric Unlock",
         "biometricUnlockPasswordPlaceholder": "Enter Password",
         "biometricUnlockSetupDesc": "Confirm your password to activate biometric unlock.",
@@ -3510,7 +3511,9 @@
       "title": "Rabby Wallet",
       "description": "Your go-to wallet for Ethereum and EVM",
       "btnForgotPassword": "Forgot Password?",
-      "biometricFailed": "Biometric unlock failed"
+      "biometricFailed": "Biometric unlock failed",
+      "biometricFailedHint": "Biometric unlock failed. Unlock with your password; if it keeps failing, turn biometric unlock off and on again in Settings.",
+      "biometricReenrollNotice": "Biometric unlock was upgraded for better security. Unlock with your password, then turn it on again in Settings."
     },
     "addToken": {
       "noTokenFound": "No token found",

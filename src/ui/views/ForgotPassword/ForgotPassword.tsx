@@ -8,7 +8,7 @@ import { ResetTip } from './ResetTip';
 import { useHistory } from 'react-router-dom';
 import { ResetSuccess } from './ResetSuccess';
 import { message } from 'antd';
-import { cleanupBiometricCredential } from '@/ui/utils/biometric';
+import { syncBiometricCredentials } from '@/ui/utils/biometric';
 
 export const ForgotPassword = () => {
   const history = useHistory();
@@ -63,20 +63,10 @@ export const ForgotPassword = () => {
   const onPasswordSubmit = React.useCallback(
     async (password: string) => {
       try {
-        const preference = await wallet.getPreference();
-        const biometricUnlockCredentialId =
-          preference?.biometricUnlockEnabled &&
-          preference?.biometricUnlockCredentialId
-            ? preference.biometricUnlockCredentialId
-            : '';
-
+        // resetPassword drops the biometric record (it wraps the old
+        // password) and queues its credential for cleanup.
         await wallet.resetPassword(password);
-
-        if (biometricUnlockCredentialId) {
-          await cleanupBiometricCredential(biometricUnlockCredentialId).catch(
-            () => undefined
-          );
-        }
+        await syncBiometricCredentials(wallet);
 
         handleSetStep('reset-success');
       } catch (e) {

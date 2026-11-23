@@ -1,6 +1,10 @@
 import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
-import { keyringService, preferenceService } from '@/background/service';
+import {
+  biometricUnlockService,
+  keyringService,
+  preferenceService,
+} from '@/background/service';
 import { userGuideService } from '@/background/service/userGuide';
 import { bootWallet } from '@/background/controller/walletUtils/boot';
 import { setPopupIcon } from '@/background/utils';
@@ -26,6 +30,9 @@ jest.mock('@/eventBus', () => ({
 }));
 
 jest.mock('@/background/service', () => ({
+  biometricUnlockService: {
+    clear: jest.fn(),
+  },
   keyringService: {
     boot: jest.fn(),
   },
@@ -53,6 +60,8 @@ describe('bootWallet', () => {
     await bootWallet('password');
 
     expect(keyringService.boot).toHaveBeenCalledWith('password');
+    // A new vault means a new password; the old biometric record is dropped.
+    expect(biometricUnlockService.clear).toHaveBeenCalledTimes(1);
     expect(userGuideService.destroy).toHaveBeenCalledTimes(1);
     expect(setPopupIcon).toHaveBeenCalledWith('default');
     expect(eventBus.emit).toHaveBeenCalledWith(EVENTS.broadcastToUI, {
