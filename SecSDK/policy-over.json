@@ -1,50 +1,5 @@
 {
-  "node_modules/@ledgerhq/device-signer-kit-ethereum/node_modules/ethers/lib.esm/crypto/crypto-browser.js": {
-    "global": {
-      "allow": {
-        "crypto": "r",
-        "msCrypto": "r"
-      }
-    }
-  },
-  "node_modules/@rabby-wallet/wc-socket-transport/dist/esm/index.js": {
-    "global": {
-      "allow": {
-        "WebSocket": "r"
-      }
-    }
-  },
-  "node_modules/ethers/lib.esm/index.js": {
-    "global": {
-      "allow": {
-        "_ethers": "rw"
-      }
-    }
-  },
-  "node_modules/pbkdf2/lib/async.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      }
-    }
-  },
-  "node_modules/rc-align/es/Align.js": {
-    "global": {
-      "allow": {
-        "addEventListener": "r",
-        "removeEventListener": "r"
-      }
-    }
-  },
-  "node_modules/rc-motion/es/util/motion.js": {
-    "global": {
-      "allow": {
-        "AnimationEvent": "r",
-        "TransitionEvent": "r"
-      }
-    }
-  },
-  "node_modules/@dnd-kit/core/dist/core.esm.js": {
+  "@dnd-kit/core": {
     "global": {
       "allow": {
         "scrollX": "r",
@@ -52,7 +7,7 @@
       }
     }
   },
-  "node_modules/@dnd-kit/core/node_modules/@dnd-kit/utilities/dist/utilities.esm.js": {
+  "@dnd-kit/core > @dnd-kit/utilities": {
     "global": {
       "allow": {
         "Document": "r",
@@ -61,7 +16,7 @@
       }
     }
   },
-  "node_modules/@dnd-kit/sortable/node_modules/@dnd-kit/utilities/dist/utilities.esm.js": {
+  "@dnd-kit/sortable > @dnd-kit/utilities": {
     "global": {
       "allow": {
         "Document": "r",
@@ -70,235 +25,21 @@
       }
     }
   },
-  "node_modules/@dnd-kit/utilities/dist/utilities.esm.js": {
+  "@dnd-kit/utilities": {
+    "global": {
+      "disallow": ["Document", "HTMLElement", "SVGElement"]
+    }
+  },
+  "@ethersproject/random": {
     "global": {
       "allow": {
-        "Document": "r",
-        "HTMLElement": "r",
-        "SVGElement": "r"
+        "crypto": "r"
       }
     }
   },
-  "node_modules/react-dom/cjs/react-dom.development.js": {
+  "@imkey/web3-provider": {
     "global": {
-      "allow": {
-        "HTMLIFrameElement": "r",
-        "nodeName": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@rabby-wallet/rabby-swap/dist/tokenPools.js": {
-    "global": {
-      "allow": {
-        "navigator": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/react-router/esm/react-router.js": {
-    "global": {
-      "allow": {
-        "__react_router_build__": "rw"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/safe-buffer/index.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/util-deprecate/browser.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/js-sha3/src/sha3.js": {
-    "global": {
-      "allow": {
-        "JS_SHA3_NO_WINDOW": "r",
-        "JS_SHA3_NO_NODE_JS": "r",
-        "JS_SHA3_NO_COMMON_JS": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@sentry/utils/esm/misc.js": {
-    "enable": false
-  },
-  "node_modules/koa-compose/index.js": {
-    "global": {
-      "allow": {
-        "__rb_is": "rw"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/lodash/lodash.js": {
-    "global": {
-      "allow": {
-        "process": "r",
-        "__core-js_shared__": "r",
-        "_": "rw",
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "setTimeout": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/lodash/_freeGlobal.js": {
-    "global": {
-      "allow": {
-        "__core-js_shared__": "r",
-        "Buffer": "r",
-        "process": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/resize-observer-polyfill/dist/ResizeObserver.es.js": {
-    "global": {
-      "allow": {
-        "ResizeObserver": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@metamask/post-message-stream/node_modules/readable-stream/lib/_stream_writable.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/node-fetch/browser.js": {
-    "global": {
-      "allow": {
-        "fetch": "r",
-        "Headers": "r",
-        "Request": "r",
-        "Response": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/pbkdf2/lib/to-buffer.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/randomfill/browser.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@rabby-wallet/wc-socket-transport/dist/esm/network.js": {
-    "global": {
-      "allow": {
-        "WebSocket": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/pino/browser.js": {
-    "global": {
-      "allow": {
-        "console": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/gridplus-sdk/node_modules/js-sha3/src/sha3.js": {
-    "global": {
-      "allow": {
-        "JS_SHA3_NO_COMMON_JS": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER": "r",
-        "JS_SHA3_NO_NODE_JS": "r",
-        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
-        "JS_SHA3_NO_WINDOW": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@opensea/seaport-js/node_modules/ethers/lib.commonjs/crypto/crypto-browser.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/gridplus-sdk/node_modules/ethers/lib.commonjs/crypto/crypto-browser.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/gridplus-sdk/node_modules/ethers/lib.commonjs/providers/ws-browser.js": {
-    "global": {
-      "allow": {
-        "WebSocket": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@opensea/seaport-js/node_modules/ethers/lib.commonjs/providers/ws-browser.js": {
-    "global": {
-      "allow": {
-        "WebSocket": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@keystonehq/metamask-airgapped-keyring/node_modules/readable-stream/lib/_stream_writable.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/js-md5/src/md5.js": {
-    "global": {
-      "allow": {
-        "JS_MD5_NO_COMMON_JS": "r",
-        "JS_MD5_NO_ARRAY_BUFFER": "r",
-        "JS_MD5_NO_NODE_JS": "r",
-        "JS_MD5_NO_ARRAY_BUFFER_IS_VIEW": "r",
-        "JS_MD5_NO_WINDOW": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/randombytes/browser.js": {
-    "global": {
-      "allow": {
-        "crypto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@imkey/web3-provider/dist/imkey-web3-provider.umd.js": {
-    "global": {
+      "disallow": ["document", "localStorage"],
       "allow": {
         "performance": "r",
         "JS_SHA3_NO_WINDOW": "r",
@@ -306,10 +47,8 @@
         "JS_SHA3_NO_COMMON_JS": "r",
         "JS_SHA3_NO_ARRAY_BUFFER": "r",
         "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
-        "document": "r",
         "TYPED_ARRAY_SUPPORT": "r",
         "__importDefault": "r",
-        "localStorage": "r",
         "__awaiter": "r",
         "__generator": "r",
         "__createBinding": "r",
@@ -323,300 +62,214 @@
         "VBArray": "r",
         "__extends": "r",
         "__assign": "r"
-      },
-      "disallow": []
+      }
     }
   },
-  "node_modules/protobufjs/src/util/minimal.js": {
+  "@ledgerhq/device-signer-kit-ethereum > ethers": {
     "global": {
-      "allow": {
-        "dcodeIO": "r",
-        "Long": "r",
-        "process": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@trezor/protobuf/node_modules/protobufjs/src/util/minimal.js": {
-    "global": {
-      "allow": {
-        "process": "r",
-        "dcodeIO": "r",
-        "Long": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/ua-parser-js/src/main/ua-parser.js": {
-    "global": {
-      "allow": {
-        "navigator": "r",
-        "jQuery": "r",
-        "Zepto": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@trezor/connect-web/lib/popup/index.js": {
-    "global": {
-      "allow": {
-        "addEventListener": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/protobufjs/src/util/longbits.js": {
-    "global": {
-      "allow": {
-        "process": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/jszip/dist/jszip.min.js": {
-    "global": {
-      "allow": {
-        "document": "r",
-        "postMessage": "r",
-        "importScripts": "r",
-        "onmessage": "rw",
-        "addEventListener": "r",
-        "setImmediate": "rw",
-        "clearImmediate": "rw"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@onekeyfe/hd-web-sdk/build/onekey-js-sdk.js": {
-    "global": {
-      "allow": {
-        "__core-js_shared__": "r",
-        "_": "rw",
-        "dcodeIO": "r",
-        "Long": "r",
-        "$$onekeyAppStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/react-dom/cjs/react-dom.production.min.js": {
-    "global": {
-      "allow": {
-        "HTMLIFrameElement": "r",
-        "nodeName": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@rabby-wallet/rabby-swap/dist/dexs/rabby.js": {
-    "global": {
-      "allow": {
-        "navigator": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@metamask/post-message-stream/dist/window/WindowPostMessageStream.js": {
-    "enable": false
-  },
-  "node_modules/elliptic/lib/elliptic/curve/base.js": {
-    "enable": false
-  },
-  "node_modules/elliptic/lib/elliptic/curve/short.js": {
-    "enable": false
-  },
-  "node_modules/elliptic/lib/elliptic/ec/index.js": {
-    "enable": false
-  },
-  "node_modules/buffer/index.js": {
-    "enable": false
-  },
-  "node_modules/bn.js/lib/bn.js": {
-    "enable": false
-  },
-  "node_modules/ahooks/es/useEventListener/index.js": {
-    "global": {
-      "allow": {
-        "addEventListener": "r",
-        "removeEventListener": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/react-virtuoso/dist/index.mjs": {
-    "global": {
-      "allow": {
-        "VIRTUOSO_LOG_LEVEL": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@rabby-wallet/page-provider/dist/index.js": {
-    "global": {
-      "allow": {
-        "rabbyWalletRouter": "rw"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@walletconnect/window-getters/dist/cjs/index.js": {
-    "global": {
-      "allow": {
-        "document": "r",
-        "navigator": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@rabby-wallet/rabby-swap/dist/quote.js": {
-    "global": {
-      "allow": {
-        "navigator": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/recharts/node_modules/lodash/_freeGlobal.js": {
-    "global": {
-      "allow": {
-        "Buffer": "r",
-        "process": "r",
-        "__core-js_shared__": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/dexie/dist/dexie.js": {
-    "global": {
-      "allow": {
-        "Blob": "r",
-        "File": "r",
-        "FileList": "r",
-        "FileSystemFileHandle": "r",
-        "FileSystemDirectoryHandle": "r",
-        "ImageBitmap": "r",
-        "ImageData": "r",
-        "CryptoKey": "r",
-        "Float8Array": "r",
-        "Int64Array": "r",
-        "Uint64Array": "r",
-        "IDBKeyRange": "r",
-        "Promise": "rw"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/dexie/dist/dexie.min.js": {
-    "global": {
-      "allow": {
-        "Blob": "r",
-        "File": "r",
-        "FileList": "r",
-        "FileSystemFileHandle": "r",
-        "FileSystemDirectoryHandle": "r",
-        "ImageBitmap": "r",
-        "ImageData": "r",
-        "CryptoKey": "r",
-        "Float8Array": "r",
-        "Int64Array": "r",
-        "Uint64Array": "r",
-        "IDBKeyRange": "r",
-        "Promise": "rw"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/readable-stream/lib/_stream_writable.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/stream-browserify/node_modules/readable-stream/lib/_stream_writable.js": {
-    "global": {
-      "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@rabby-wallet/rabby-api/node_modules/lodash/lodash.js": {
-    "global": {
-      "allow": {
-        "process": "r",
-        "__core-js_shared__": "r",
-        "_": "rw",
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "setTimeout": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@sentry/core/build/esm/utils/worldwide.js": {
-    "enable": false
-  },
-  "node_modules/antd/node_modules/lodash/_freeGlobal.js": {
-    "global": {
-      "allow": {
-        "__core-js_shared__": "r",
-        "Buffer": "r",
-        "process": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@metamask/utils/node_modules/lodash/lodash.js": {
-    "global": {
-      "allow": {
-        "process": "r",
-        "__core-js_shared__": "r",
-        "_": "rw",
-        "Buffer": "r",
-        "clearTimeout": "r",
-        "setTimeout": "r"
-      },
-      "disallow": []
-    }
-  },
-  "node_modules/@ethersproject/random/lib.esm/random.js": {
-    "global": {
+      "disallow": ["msCrypto"],
       "allow": {
         "crypto": "r"
-      },
-      "disallow": []
+      }
     }
   },
-  "node_modules/@rabby-wallet/hyperliquid-sdk/dist/client/websocket-client.js": {
+  "@metamask/post-message-stream": {
+    "enable": false
+  },
+  "@onekeyfe/hd-web-sdk": {
+    "global": {
+      "allow": {
+        "$$onekeyAppStorage": "r",
+        "__core-js_shared__": "r",
+        "_": "rw",
+        "dcodeIO": "r",
+        "Long": "r"
+      }
+    }
+  },
+  "@opensea/seaport-js > ethers": {
+    "global": {
+      "disallow": ["WebSocket"],
+      "allow": {
+        "crypto": "r"
+      }
+    }
+  },
+  "@rabby-wallet/hyperliquid-sdk": {
     "global": {
       "allow": {
         "atob": "r",
         "Buffer": "r",
         "addEventListener": "r",
         "removeEventListener": "r"
-      },
-      "disallow": []
+      }
     }
   },
-  "node_modules/@ethersproject/hash/lib.esm/id.js": {
+  "@rabby-wallet/page-provider": {
     "global": {
       "allow": {
-        "navigator": "r"
-      },
-      "disallow": []
+        "rabbyWalletRouter": "rw"
+      }
     }
   },
-  "node_modules/keccak/node_modules/readable-stream/lib/_stream_writable.js": {
+  "@rabby-wallet/rabby-swap": {
+    "global": {
+      "disallow": ["navigator"]
+    }
+  },
+  "@rabby-wallet/wc-socket-transport": {
     "global": {
       "allow": {
-        "localStorage": "r"
-      },
-      "disallow": []
+        "WebSocket": "r"
+      }
     }
   },
-  "node_modules/@rabby-wallet/eth-simple-keyring/node_modules/lodash/lodash.js": {
+  "@sentry/core": {
+    "enable": false,
+    "global": {
+      "allow": {
+        "__SENTRY__": "rw",
+        "SENTRY_RELEASE": "r",
+        "SENTRY_SDK_SOURCE": "r",
+        "_sentryDebugIds": "r",
+        "_debugIds": "r",
+        "_sentryModuleMetadata": "r",
+        "_sentryWrappedDepth": "rw",
+        "__SENTRY_TRACING__": "r",
+        "__SENTRY_DEBUG__": "r",
+        "__SENTRY_BROWSER_BUNDLE__": "r",
+        "document": "r",
+        "navigator": "r",
+        "location": "r",
+        "performance": "r",
+        "history": "r",
+        "fetch": "rw",
+        "XMLHttpRequest": "r",
+        "onerror": "rw",
+        "onunhandledrejection": "rw",
+        "addEventListener": "r",
+        "removeEventListener": "r",
+        "crypto": "r",
+        "msCrypto": "r"
+      }
+    }
+  },
+  "@sentry/utils": {
+    "enable": false,
+    "global": {
+      "allow": {
+        "performance": "r",
+        "__SENTRY__": "rw"
+      }
+    }
+  },
+  "@trezor/connect-web": {
+    "global": {
+      "allow": {
+        "addEventListener": "r"
+      }
+    }
+  },
+  "@trezor/protobuf > protobufjs": {
+    "global": {
+      "allow": {
+        "process": "r",
+        "dcodeIO": "r",
+        "Long": "r"
+      }
+    }
+  },
+  "ahooks": {
+    "global": {
+      "allow": {
+        "addEventListener": "r",
+        "removeEventListener": "r"
+      }
+    }
+  },
+  "dexie": {
+    "global": {
+      "allow": {
+        "Blob": "r",
+        "File": "r",
+        "FileList": "r",
+        "FileSystemFileHandle": "r",
+        "FileSystemDirectoryHandle": "r",
+        "ImageBitmap": "r",
+        "ImageData": "r",
+        "CryptoKey": "r",
+        "Float8Array": "r",
+        "Int64Array": "r",
+        "Uint64Array": "r",
+        "IDBKeyRange": "r",
+        "Promise": "rw"
+      }
+    }
+  },
+  "ethers": {
+    "global": {
+      "allow": {
+        "_ethers": "rw"
+      }
+    }
+  },
+  "gridplus-sdk > ethers": {
+    "global": {
+      "disallow": ["WebSocket"],
+      "allow": {
+        "crypto": "r"
+      }
+    }
+  },
+  "gridplus-sdk > js-sha3": {
+    "global": {
+      "allow": {
+        "JS_SHA3_NO_COMMON_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER": "r",
+        "JS_SHA3_NO_NODE_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_SHA3_NO_WINDOW": "r"
+      }
+    }
+  },
+  "js-md5": {
+    "global": {
+      "allow": {
+        "JS_MD5_NO_COMMON_JS": "r",
+        "JS_MD5_NO_ARRAY_BUFFER": "r",
+        "JS_MD5_NO_NODE_JS": "r",
+        "JS_MD5_NO_ARRAY_BUFFER_IS_VIEW": "r",
+        "JS_MD5_NO_WINDOW": "r"
+      }
+    }
+  },
+  "js-sha3": {
+    "global": {
+      "allow": {
+        "JS_SHA3_NO_WINDOW": "r",
+        "JS_SHA3_NO_NODE_JS": "r",
+        "JS_SHA3_NO_COMMON_JS": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER": "r",
+        "JS_SHA3_NO_ARRAY_BUFFER_IS_VIEW": "r"
+      }
+    }
+  },
+  "jszip": {
+    "global": {
+      "disallow": [
+        "addEventListener",
+        "document",
+        "importScripts",
+        "onmessage",
+        "postMessage"
+      ],
+      "allow": {
+        "setImmediate": "rw",
+        "clearImmediate": "rw"
+      }
+    }
+  },
+  "lodash": {
     "global": {
       "allow": {
         "process": "r",
@@ -625,108 +278,114 @@
         "Buffer": "r",
         "clearTimeout": "r",
         "setTimeout": "r"
-      },
-      "disallow": []
+      }
     }
   },
-  "node_modules/split-on-first/index.js": {
+  "node-fetch": {
     "global": {
       "allow": {
-        "WebSocket": "r"
-      },
-      "disallow": []
+        "fetch": "r",
+        "Headers": "r",
+        "Request": "r",
+        "Response": "r"
+      }
     }
   },
-  "node_modules/gridplus-sdk/node_modules/lodash/_freeGlobal.js": {
+  "pbkdf2": {
     "global": {
       "allow": {
-        "__core-js_shared__": "r",
-        "Buffer": "r",
+        "crypto": "r"
+      }
+    }
+  },
+  "protobufjs": {
+    "global": {
+      "allow": {
+        "dcodeIO": "r",
+        "Long": "r",
         "process": "r"
-      },
-      "disallow": []
+      }
     }
   },
-  "node_modules/@sentry/core/build/esm/asyncContext/index.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/attributes.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/currentScopes.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/debug-build.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/exports.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/tracing/dynamicSamplingContext.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/tracing/utils.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/baggage.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/debug-ids.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/dsn.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/hasSpansEnabled.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/is.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/misc.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/normalizationHints.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/normalize.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/object.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/spanUtils.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/core/build/esm/utils/time.js": {
-    "enable": false
-  },
-  "node_modules/@sentry/utils/esm/global.js": {
+  "randombytes": {
     "global": {
       "allow": {
-        "performance": "r",
-        "__SENTRY__": "rw"
-      },
-      "disallow": []
+        "crypto": "r"
+      }
     }
   },
-  "node_modules/@bitboxswiss/bitbox-api/dist/internal/transport-bridge.js": {
-    "enable": false
-  },
-  "node_modules/zod/v4/core/core.js": {
+  "randomfill": {
     "global": {
       "allow": {
-        "__zod_globalConfig": "rw"
-      },
-      "disallow": []
+        "crypto": "r"
+      }
     }
   },
-  "node_modules/zod/v4/core/registries.js":  {
+  "rc-align": {
     "global": {
       "allow": {
+        "addEventListener": "r",
+        "removeEventListener": "r"
+      }
+    }
+  },
+  "rc-motion": {
+    "global": {
+      "allow": {
+        "AnimationEvent": "r",
+        "TransitionEvent": "r"
+      }
+    }
+  },
+  "react-dom": {
+    "global": {
+      "allow": {
+        "HTMLIFrameElement": "r",
+        "nodeName": "r"
+      }
+    }
+  },
+  "react-router": {
+    "global": {
+      "allow": {
+        "__react_router_build__": "rw"
+      }
+    }
+  },
+  "react-virtuoso": {
+    "global": {
+      "allow": {
+        "VIRTUOSO_LOG_LEVEL": "r"
+      }
+    }
+  },
+  "resize-observer-polyfill": {
+    "global": {
+      "allow": {
+        "ResizeObserver": "r"
+      }
+    }
+  },
+  "ua-parser-js": {
+    "global": {
+      "allow": {
+        "navigator": "r",
+        "jQuery": "r",
+        "Zepto": "r"
+      }
+    }
+  },
+  "util-deprecate": {
+    "global": {
+      "disallow": ["localStorage"]
+    }
+  },
+  "zod": {
+    "global": {
+      "allow": {
+        "__zod_globalConfig": "rw",
         "__zod_globalRegistry": "rw"
-      },
-      "disallow": []
+      }
     }
   }
 }
