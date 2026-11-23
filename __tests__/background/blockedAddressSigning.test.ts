@@ -17,9 +17,12 @@ const other = '0x1111111111111111111111111111111111111111';
 const data = `0xa9059cbb${'dead'.padStart(64, '0')}${'2710'.padStart(64, '0')}`;
 const keyring = new SimpleKeyring(['1'.padStart(64, '0')]);
 const stopAfterSigning = new Error('stop before broadcast');
+let mockSigningTx: { rawTx: object } | undefined;
 
 jest.mock('background/service', () => ({
   keyringService: {
+    keyrings: [],
+    isUnlocked: jest.fn(() => true),
     getKeyringForAccount: jest.fn(async () => keyring),
     signTransaction: jest.fn(async () => {
       throw stopAfterSigning;
@@ -27,7 +30,7 @@ jest.mock('background/service', () => ({
   },
   i18n: { t: (key: string) => key },
   transactionHistoryService: {
-    getSigningTx: () => ({ rawTx: {} }),
+    getSigningTx: () => mockSigningTx,
   },
   RPCService: { probeBestRPC: jest.fn() },
 }));
@@ -59,7 +62,9 @@ jest.mock('@/background/utils/rpcCache', () => ({}));
 jest.mock('@/background/utils/buildinProvider', () => ({}));
 jest.mock('@/background/utils/tx', () => ({}));
 jest.mock('@/background/utils/gasAccountLogin', () => ({}));
-jest.mock('@/background/controller/walletUtils/fix', () => ({}));
+jest.mock('@/background/controller/walletUtils/fix', () => ({
+  fixKeyringAccountOnSigned: jest.fn(),
+}));
 
 const isBlockedAddress = openapiService.isBlockedAddress as jest.Mock;
 
@@ -86,6 +91,7 @@ const submit = (overrides: Record<string, any> = {}) => {
       { feePayer: false }
     ),
     isGasAccount: false,
+    signingTxId: 'signing-tx',
   };
   return providerController.ethSendTransaction({
     data: { params: [txParams] },
@@ -101,6 +107,9 @@ describe('ethSendTransaction blocked address check', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     clearBlockedAddressCache();
+    mockSigningTx = { rawTx: {} };
+    keyringService.keyrings = [keyring];
+    jest.mocked(keyringService.isUnlocked).mockReturnValue(true);
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
   });
 
@@ -149,5 +158,67 @@ describe('ethSendTransaction blocked address check', () => {
       message: stopAfterSigning.message,
     });
     expect(keyringService.signTransaction).toHaveBeenCalled();
+  });
+
+  test.each([
+    'cancel',
+    'replace',
+    'lock',
+    'reunlock',
+    'failed lookup after cancel',
+  ])(
+    'does not sign after %s while the recipient lookup is pending',
+    async (action) => {
+      let finish!: (value: { is_blocked: boolean }) => void;
+      let fail!: (reason: Error) => void;
+      const pendingCheck = new Promise<{ is_blocked: boolean }>(
+        (resolve, reject) => {
+          finish = resolve;
+          fail = reject;
+        }
+      );
+      isBlockedAddress.mockImplementation((address: string) =>
+        address.endsWith('dead')
+          ? pendingCheck
+          : Promise.resolve({ is_blocked: false })
+      );
+      const pending = submit();
+      for (let i = 0; i < 20; i++) await Promise.resolve();
+      expect(isBlockedAddress).toHaveBeenCalledWith(
+        `0x${'dead'.padStart(40, '0')}`
+      );
+      expect(keyringService.signTransaction).not.toHaveBeenCalled();
+
+      if (action === 'replace') mockSigningTx = { rawTx: {} };
+      else if (action === 'lock')
+        jest.mocked(keyringService.isUnlocked).mockReturnValue(false);
+      else if (action === 'reunlock') keyringService.keyrings = [{}];
+      else mockSigningTx = undefined;
+      if (action === 'failed lookup after cancel') fail(new Error('offline'));
+      else finish({ is_blocked: false });
+
+      await expect(pending).rejects.toMatchObject({
+        message: 'The transaction signing request is no longer active.',
+      });
+      expect(keyringService.signTransaction).not.toHaveBeenCalled();
+    }
+  );
+
+  test('does not continue to broadcast when cancelled during signing', async () => {
+    isBlockedAddress.mockResolvedValue({ is_blocked: false });
+    jest
+      .mocked(keyringService.signTransaction)
+      .mockImplementationOnce(async () => {
+        mockSigningTx = undefined;
+        return {
+          r: '01',
+          s: '01',
+          v: '1b',
+          serializedTransaction: '0x76ff',
+        } as any;
+      });
+    await expect(submit()).rejects.toMatchObject({
+      message: 'The transaction signing request is no longer active.',
+    });
   });
 });

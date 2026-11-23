@@ -736,10 +736,7 @@
       "onekey": {
         "onekeyPermission1": "連接至 USB 裝置",
         "allowRabbyPermissionsTitle": "允許 Rabby 存取以下權限：",
-        "onekeyPermissionTip": "請點擊下方「允許」，並在彈出視窗中授權存取你的 OneKey。如果彈窗中沒有出現 OneKey，請檢查裝置是否已正確連接電腦。",
-        "whyOneKey": "為什麼選擇 OneKey？",
-        "buyOneKey": "購買 OneKey",
-        "haveOneKey": "還沒有 OneKey？"
+        "onekeyPermissionTip": "請點擊下方「允許」，並在彈出視窗中授權存取你的 OneKey。如果彈窗中沒有出現 OneKey，請檢查裝置是否已正確連接電腦。"
       },
       "walletConnect": {
         "clockSkewError": "電腦時間與伺服器不一致，WalletConnect 無法連線。請開啟系統自動設定日期和時間，然後重試。",

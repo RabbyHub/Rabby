@@ -12,6 +12,7 @@ import {
   explainGas,
   getGasTokenBalance,
   getPendingTxs,
+  resolveTempoProtocolFallbackGasToken,
 } from '@/utils/transaction';
 
 import {
@@ -584,14 +585,19 @@ export class SignatureSteps {
       }),
     ]);
 
-    const nativeTokenBalance = gasTokenBalanceInfo.rawBalance;
-    const gasToken = gasTokenBalanceInfo.token;
+    // Reassigned after gas estimation when the Tempo protocol fallback (OUSD)
+    // is the token the chain will actually charge.
+    let nativeTokenBalance = gasTokenBalanceInfo.rawBalance;
+    let gasToken = gasTokenBalanceInfo.token;
     const gasTokenDecimals = gasToken.decimals || 18;
     const checkTxValueInBalance = !isTempoChain(chain.serverId);
-    const tempoPreferredFeeTokenId = isTempoChain(chain.serverId)
+    const txFeeToken = isTempoChain(chain.serverId)
       ? (((txs[0] as unknown) as TxWithTempoExtras<Tx>)?.feeToken as
           | string
-          | undefined) || gasToken.tokenId
+          | undefined)
+      : undefined;
+    let tempoPreferredFeeTokenId = isTempoChain(chain.serverId)
+      ? txFeeToken || gasToken.tokenId
       : undefined;
 
     const noCustomRPC = !hasCustomChainRPC;
@@ -737,6 +743,28 @@ export class SignatureSteps {
 
     if (config?.onPreExecChange && txsCalc.length) {
       config?.onPreExecChange(txsCalc[txsCalc.length - 1].preExecResult);
+    }
+
+    if (isTempoChain(chain.serverId) && txsCalc.length) {
+      // One token has to cover the whole batch for the check below, so pick
+      // the fallback token against the summed max gas cost.
+      const chargedGasToken = await resolveTempoProtocolFallbackGasToken({
+        wallet,
+        address: account.address,
+        chainId: chain.id,
+        gasTokenBalance: gasTokenBalanceInfo,
+        txFeeToken,
+        maxGasCostRawAmount: txsCalc.reduce(
+          (sum, item) =>
+            sum.plus(new BigNumber(item.gasCost.maxGasCostRawAmount || 0)),
+          new BigNumber(0)
+        ),
+      });
+      if (chargedGasToken !== gasTokenBalanceInfo) {
+        nativeTokenBalance = chargedGasToken.rawBalance;
+        gasToken = chargedGasToken.token;
+        tempoPreferredFeeTokenId = txFeeToken || gasToken.tokenId;
+      }
     }
 
     const gaslessTask = computeGasless({

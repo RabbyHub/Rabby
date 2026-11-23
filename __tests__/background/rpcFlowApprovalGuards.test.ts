@@ -21,14 +21,16 @@ const mockKeyringService = {
 const mockNotificationService = {
   getApproval: jest.fn(() => state.currentApproval),
   requestApproval: jest.fn(async (..._args: any[]) => ({} as any)),
-  unLock: jest.fn(),
   setCurrentRequestDeferFn: jest.fn(),
+  clearCurrentRequestDeferFn: jest.fn(),
+  unLock: jest.fn(),
 };
 const mockPermissionService = {
   hasPermission: jest.fn(() => state.hasPermission),
   getConnectedSite: jest.fn(() => undefined),
   addConnectedSiteV2: jest.fn(),
   updateConnectSite: jest.fn(),
+  touchConnectedSite: jest.fn(),
 };
 const mockPreferenceService = {
   getPreference: jest.fn(),
@@ -43,12 +45,19 @@ jest.mock('background/service', () => ({
   preferenceService: mockPreferenceService,
 }));
 
-// A minimal stand-in for the real ~2000-line providerController: just one
-// APPROVAL-decorated method shaped like the real ethSignTypedDataV4 (see
-// controller.ts), enough to drive rpcFlow's real middleware chain without
-// importing the full controller and its heavy transaction/keyring surface.
-const ethSignTypedDataV4 = jest.fn(async () => 'signature-result');
-const fakeController = { ethSignTypedDataV4 };
+// Stand-ins for the two signing methods exercise the real rpcFlow middleware
+// without importing the full provider controller and keyring dependencies.
+const ethSignTypedDataV4 = jest.fn(
+  async (_request?: any) => 'signature-result'
+);
+const personalSign = jest.fn(async (_req: any) => 'personal-signature');
+const fakeController = { ethSignTypedDataV4, personalSign };
+Reflect.defineMetadata(
+  'APPROVAL',
+  ['SignText', () => false],
+  fakeController,
+  'personalSign'
+);
 Reflect.defineMetadata(
   'APPROVAL',
   ['SignTypedData', () => false],
@@ -76,12 +85,11 @@ jest.mock('@/background/service/signTxPreparation', () => ({
   cancelAllSignTxPreparations: jest.fn(),
 }));
 jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
-import eventBus from '@/eventBus';
 jest.mock('consts', () => ({
   EVENTS: {
-    SIGN_WAITING_AMOUNTED: 'mount',
-    broadcastToUI: 'ui',
-    SIGN_FINISHED: 'complete',
+    broadcastToUI: 'broadcastToUI',
+    SIGN_FINISHED: 'SIGN_FINISHED',
+    SIGN_WAITING_AMOUNTED: 'SIGN_WAITING_AMOUNTED',
   },
   INTERNAL_REQUEST_ORIGIN: 'https://rabby.io',
   KEYRING_CLASS: {
@@ -96,6 +104,8 @@ jest.mock('consts', () => ({
 }));
 
 import rpcFlow from '@/background/controller/provider/rpcFlow';
+import eventBus from '@/eventBus';
+import { hex2Text } from '@/utils/signText';
 
 const baseRequest = () => ({
   data: { method: 'eth_signTypedData_v4', params: [] },
@@ -105,6 +115,54 @@ const baseRequest = () => ({
     icon: '',
   },
   account: { address: '0xaccount', type: 'SimpleKeyring' },
+});
+
+describe('rpcFlow personal-sign review bytes', () => {
+  const from = `0x${'11'.repeat(20)}`;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    state.isUnlocked = true;
+    state.currentApproval = null;
+    state.hasPermission = true;
+    mockNotificationService.requestApproval.mockResolvedValue({});
+  });
+
+  test.each([false, true])(
+    'normalizes odd hex before review and signing (reversed parameters: %s)',
+    async (reversed) => {
+      const params = reversed ? [from, '0x415'] : ['0x415', from];
+      await expect(
+        rpcFlow({
+          ...baseRequest(),
+          data: { method: 'personal_sign', params },
+        } as any)
+      ).resolves.toBe('personal-signature');
+
+      const reviewed =
+        mockNotificationService.requestApproval.mock.calls[0][0].params.data;
+      const signed = personalSign.mock.calls[0][0].data.params;
+      expect(reviewed).toEqual(['0x0415', from]);
+      expect(signed).toEqual(reviewed);
+      expect(hex2Text(reviewed[0])).toBe('\x04\x15');
+    }
+  );
+
+  test.each(['Sign in\nNonce: 123', '0x4142', '0x'])(
+    'preserves normal request %s',
+    async (message) => {
+      await expect(
+        rpcFlow({
+          ...baseRequest(),
+          data: { method: 'personal_sign', params: [message, from] },
+        } as any)
+      ).resolves.toBe('personal-signature');
+      expect(personalSign.mock.calls[0][0].data.params).toEqual([
+        message,
+        from,
+      ]);
+    }
+  );
 });
 
 describe('rpcFlow: inline (onApproval) requests fail closed instead of queuing or crossing a session boundary', () => {
@@ -200,6 +258,79 @@ describe('rpcFlow method dispatch', () => {
   });
 });
 
+describe('rpcFlow signing operation context', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(eventBus, 'emit');
+    state.isUnlocked = true;
+    state.currentApproval = null;
+    state.hasPermission = true;
+  });
+
+  afterEach(() => jest.restoreAllMocks());
+
+  const getEmittedOperation = () => {
+    const call = (eventBus.emit as jest.Mock).mock.calls.find(
+      ([, payload]) => payload?.params?.signingOperation
+    );
+    return call?.[1]?.params?.signingOperation;
+  };
+
+  test('binds the completion event to the request origin, account and payload', async () => {
+    mockNotificationService.requestApproval.mockResolvedValueOnce({});
+
+    await rpcFlow(baseRequest() as any);
+
+    expect(getEmittedOperation()).toMatchObject({
+      origin: 'https://app.hyperliquid.xyz',
+      accountAddress: '0xaccount',
+      accountType: 'SimpleKeyring',
+      id: expect.any(String),
+      payloadHash: expect.stringMatching(/^0x[0-9a-f]{64}$/),
+    });
+  });
+
+  test('preserves the inner Safe signing operation instead of replacing it with the outer dApp request', async () => {
+    const safeOperation = {
+      id: 'safe-operation',
+      origin: 'https://safe.example',
+      accountAddress: '0xowner',
+      accountType: 'HD Key Tree',
+      payloadHash: `0x${'ab'.repeat(32)}`,
+    };
+    mockNotificationService.requestApproval.mockResolvedValueOnce({
+      signingOperation: safeOperation,
+    });
+
+    await rpcFlow(baseRequest() as any);
+
+    expect(getEmittedOperation()).toBe(safeOperation);
+  });
+
+  test('passes the same operation to the waiting UI and completion event without changing the controller approval result', async () => {
+    const approvalRes = {
+      uiRequestComponent: 'PrivatekeyWaiting',
+      $account: baseRequest().account,
+    };
+    mockNotificationService.requestApproval
+      .mockResolvedValueOnce(approvalRes)
+      .mockImplementationOnce(async () => {
+        eventBus.emit('SIGN_WAITING_AMOUNTED');
+        return 'waiting-result';
+      });
+
+    await expect(rpcFlow(baseRequest() as any)).resolves.toBe('waiting-result');
+
+    const waitingApproval =
+      mockNotificationService.requestApproval.mock.calls[1][0];
+    expect(waitingApproval.params.signingOperation).toEqual(
+      getEmittedOperation()
+    );
+    expect(waitingApproval.params.signingOperation).toBeDefined();
+    expect(ethSignTypedDataV4.mock.calls[0][0].approvalRes).toBe(approvalRes);
+  });
+});
+
 describe('OneKey waiting approval', () => {
   const oneKey = { type: 'Onekey Hardware', address: '0xaccount' };
   const cancel = jest.fn(async () => undefined);
@@ -276,10 +407,13 @@ describe('OneKey waiting approval', () => {
     await request.mounted;
     request.dismiss();
     await expect(request.result).rejects.toThrow('User cancelled');
-    expect(eventBus.events.mount).toHaveLength(0);
-    eventBus.emit('mount');
+    expect(eventBus.events.SIGN_WAITING_AMOUNTED).toHaveLength(0);
+    eventBus.emit('SIGN_WAITING_AMOUNTED');
     expect(ethSignTypedDataV4).not.toHaveBeenCalled();
     expect(cancel).not.toHaveBeenCalled();
+    expect(
+      mockNotificationService.clearCurrentRequestDeferFn
+    ).toHaveBeenCalledTimes(1);
   });
 
   it('cancels an active device call and ignores a late success', async () => {
@@ -291,14 +425,14 @@ describe('OneKey waiting approval', () => {
         })
     );
     const finished = jest.fn();
-    eventBus.addEventListener('ui', finished);
+    eventBus.addEventListener('broadcastToUI', finished);
     try {
       const request = begin();
       await request.mounted;
-      eventBus.emit('mount', 'another-approval');
+      eventBus.emit('SIGN_WAITING_AMOUNTED', 'another-approval');
       await Promise.resolve();
       expect(ethSignTypedDataV4).not.toHaveBeenCalled();
-      eventBus.emit('mount', 'onekey-waiting');
+      eventBus.emit('SIGN_WAITING_AMOUNTED', 'onekey-waiting');
       await Promise.resolve();
       expect(ethSignTypedDataV4).toHaveBeenCalledTimes(1);
       request.dismiss();
@@ -308,7 +442,7 @@ describe('OneKey waiting approval', () => {
       await new Promise((resolve) => setTimeout(resolve, 0));
       expect(finished).not.toHaveBeenCalled();
     } finally {
-      eventBus.removeEventListener('ui', finished);
+      eventBus.removeEventListener('broadcastToUI', finished);
     }
   });
 
@@ -317,14 +451,19 @@ describe('OneKey waiting approval', () => {
       method: 'hardware-rejected',
     });
     ethSignTypedDataV4.mockRejectedValueOnce(failure);
-    const received = new Promise((resolve) => eventBus.once('ui', resolve));
+    const received = new Promise((resolve) =>
+      eventBus.once('broadcastToUI', resolve)
+    );
     const request = begin();
     await request.mounted;
-    eventBus.emit('mount', 'onekey-waiting');
+    eventBus.emit('SIGN_WAITING_AMOUNTED', 'onekey-waiting');
     await expect(received).resolves.toEqual({
-      method: 'complete',
+      method: 'SIGN_FINISHED',
       params: {
         approvalId: 'onekey-waiting',
+        signingOperation:
+          mockNotificationService.requestApproval.mock.calls[1][0].params
+            .signingOperation,
         success: false,
         errorMsg: 'Device disconnected',
       },

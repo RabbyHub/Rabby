@@ -8,16 +8,21 @@ const from = '0x7e5f4552091a69125d5dfcb7b8c2659029395bdf';
 const to = '0x20c0000000000000000000000000000000000000';
 const keyring = new SimpleKeyring(['1'.padStart(64, '0')]);
 const stopAfterSigning = new Error('stop before broadcast');
+const mockSigningTx = { rawTx: {} };
 
 jest.mock('background/service', () => ({
   keyringService: {
+    get keyrings() {
+      return [keyring];
+    },
+    isUnlocked: () => true,
     getKeyringForAccount: jest.fn(async () => keyring),
     signTransaction: jest.fn(async () => {
       throw stopAfterSigning;
     }),
   },
   transactionHistoryService: {
-    getSigningTx: () => ({ rawTx: {} }),
+    getSigningTx: () => mockSigningTx,
   },
   permissionService: { getConnectedSite: () => undefined },
   RPCService: { probeBestRPC: jest.fn() },

@@ -1985,10 +1985,7 @@
       "onekey": {
         "onekeyPermission1": "Bir USB cihazına bağlan",
         "allowRabbyPermissionsTitle": "Rabby izinlerini ver:",
-        "onekeyPermissionTip": "Aşağıdaki açılır pencerede OneKey erişimine izin vermek için \"İzin Ver\" düğmesine tıklayın. OneKey açılır pencerede görünmüyorsa cihazın bilgisayara düzgün bağlandığını kontrol edin.",
-        "whyOneKey": "Neden OneKey?",
-        "buyOneKey": "OneKey Satın Al",
-        "haveOneKey": "Henüz OneKey yok mu?"
+        "onekeyPermissionTip": "Aşağıdaki açılır pencerede OneKey erişimine izin vermek için \"İzin Ver\" düğmesine tıklayın. OneKey açılır pencerede görünmüyorsa cihazın bilgisayara düzgün bağlandığını kontrol edin."
       },
       "firefoxLedgerDisableTips": "Ledger, Firefox ile uyumlu değil",
       "addFromCurrentSeedPhrase": "Mevcut kurtarma ifadesinden ekle",

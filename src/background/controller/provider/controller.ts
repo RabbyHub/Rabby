@@ -687,7 +687,24 @@ class ProviderController extends BaseController {
         'approved transaction does not match request'
       );
     }
+    const signingTxId = approvalRes.signingTxId;
+    const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
+    if (!approvingTx?.rawTx) {
+      throw new Error(`approvingTx not found: ${signingTxId}`);
+    }
     const keyring = await this._checkAddress(txParams.from, options);
+    const assertSigningActive = () => {
+      if (
+        transactionHistoryService.getSigningTx(signingTxId!) !== approvingTx ||
+        !keyringService.isUnlocked() ||
+        !keyringService.keyrings.includes(keyring)
+      ) {
+        throw ethErrors.provider.userRejectedRequest(
+          'The transaction signing request is no longer active.'
+        );
+      }
+    };
+    assertSigningActive();
     // Started now, awaited right before signing, so it overlaps the tx build.
     const isBlockedPromise = hasBlockedAddress([
       txParams.from,
@@ -702,7 +719,6 @@ class ProviderController extends BaseController {
     const isSpeedUp = !!txParams.isSpeedUp;
     const isCancel = !!txParams.isCancel;
     const extra = approvalRes.extra;
-    const signingTxId = approvalRes.signingTxId;
     const isCoboSafe = !!txParams.isCoboSafe;
     const pushType = approvalRes.pushType || 'default';
     const lowGasDeadline = approvalRes.lowGasDeadline;
@@ -806,6 +822,7 @@ class ProviderController extends BaseController {
         const authorizationList = [] as AuthorizationListItem[];
 
         for (const authorization of eip7702RevokeAuthorization) {
+          assertSigningActive();
           const signature: string = await keyringService.signEip7702Authorization(
             keyring,
             {
@@ -874,15 +891,6 @@ class ProviderController extends BaseController {
     const chain = (findChain({ id: approvalRes.chainId })?.enum ??
       permissionService.getConnectedSite(origin)?.chain) as CHAINS_ENUM;
 
-    const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
-
-    // if (!approvingTx?.rawTx || !approvingTx?.explain) {
-    //   throw new Error(`approvingTx not found: ${signingTxId}`);
-    // }
-    if (!approvingTx?.rawTx) {
-      throw new Error(`approvingTx not found: ${signingTxId}`);
-    }
-
     const { explain: cacheExplain, rawTx, action } = approvingTx;
 
     const chainItem = findChainByEnum(chain);
@@ -907,6 +915,7 @@ class ProviderController extends BaseController {
           i18n.t('page.sendToken.blockedTransactionContent')
         );
       }
+      assertSigningActive();
       if (isTempoTx) {
         const typedApprovalRes = approvalRes as any;
         const shouldBackendSponsorTempo = isGasAccount || isGasLess;
@@ -971,10 +980,12 @@ class ProviderController extends BaseController {
           opts
         );
       }
+      assertSigningActive();
       await fixKeyringAccountOnSigned({
         keyring,
         address: txParams.from,
       });
+      assertSigningActive();
     } catch (e) {
       console.error(e);
       const signingCarrier = takeSigningCarrier(e);
@@ -1282,6 +1293,7 @@ class ProviderController extends BaseController {
               }
 
               if (fePushedError) {
+                assertSigningActive();
                 adoptBE7702Params();
                 try {
                   const res = await openapiService.submitTxV2(params);

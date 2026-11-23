@@ -15,7 +15,11 @@ import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 import { adjustV } from '@/ui/utils/gnosis';
 import { findChain } from '@/utils/chain';
-import { emitSignComponentAmounted } from '@/utils/signEvent';
+import {
+  emitSignComponentAmounted,
+  isSignFinishedFor,
+} from '@/utils/signEvent';
+import type { SigningOperation } from '@/utils/signEvent';
 
 interface ApprovalParams {
   address: string;
@@ -35,6 +39,8 @@ interface ApprovalParams {
     chainId: number;
   };
   stay?: boolean;
+  safeTxHash?: string;
+  signingOperation?: SigningOperation;
 }
 
 const WatchAddressWaiting = ({
@@ -122,6 +128,7 @@ const WatchAddressWaiting = ({
     setCurrentAccount(account);
 
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+      if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -135,12 +142,22 @@ const WatchAddressWaiting = ({
                 signerAddress: params.account!.address!,
               });
             } else {
-              const sigs = await wallet.getGnosisTransactionSignatures();
+              const sigs = await wallet.getGnosisTransactionSignatures(
+                params.safeTxHash
+              );
               if (sigs.length > 0) {
-                await wallet.gnosisAddConfirmation(account.address, sig);
+                await wallet.gnosisAddConfirmation(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
               } else {
-                await wallet.gnosisAddSignature(account.address, sig);
-                await wallet.postGnosisTransaction();
+                await wallet.gnosisAddSignature(
+                  account.address,
+                  sig,
+                  params.safeTxHash
+                );
+                await wallet.postGnosisTransaction(params.safeTxHash);
               }
             }
           }

@@ -1904,10 +1904,7 @@
       "onekey": {
         "onekeyPermission1": "Ligar a um dispositivo USB",
         "allowRabbyPermissionsTitle": "Permitir permissões do Rabby para:",
-        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela emergente seguinte. Se o OneKey não aparecer, verifique se o dispositivo está corretamente ligado ao computador.",
-        "whyOneKey": "Por que OneKey?",
-        "buyOneKey": "Comprar OneKey",
-        "haveOneKey": "Ainda não tem um OneKey?"
+        "onekeyPermissionTip": "Clique em \"Permitir\" abaixo para autorizar o acesso ao seu OneKey na janela emergente seguinte. Se o OneKey não aparecer, verifique se o dispositivo está corretamente ligado ao computador."
       },
       "walletConnect": {
         "clockSkewError": "O WalletConnect não consegue ligar-se porque a hora do seu computador não está sincronizada. Ative a definição automática da data e hora e tente novamente.",
