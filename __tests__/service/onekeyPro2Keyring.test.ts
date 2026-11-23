@@ -407,6 +407,62 @@ it('discards cached device identity if another connection fails its live identit
   expect(storage.remove).toHaveBeenCalledWith('onekeySessionState');
 });
 
+it('reuses the locally verified wallet when discovery matches both cached IDs', async () => {
+  const { bridge, ring } = setup();
+  bridge.searchDevices.mockResolvedValue(
+    ok([{ connectId: 'usb', deviceId: 'device' }])
+  );
+  await ring.unlock();
+  bridge.getDeviceState.mockClear();
+  bridge.openWalletSession.mockClear();
+  bridge.evmGetPublicKey.mockClear();
+
+  await expect(ring.unlock()).resolves.toBe('already unlocked');
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(2);
+  expect(bridge.getDeviceState).not.toHaveBeenCalled();
+  expect(bridge.openWalletSession).not.toHaveBeenCalled();
+  expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
+
+  ring.beginImport();
+  await expect(ring.unlock()).resolves.toBe('just unlocked');
+  expect(bridge.getDeviceState).toHaveBeenCalledWith('usb');
+  expect(bridge.openWalletSession).toHaveBeenCalledTimes(1);
+  expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
+});
+
+it.each([
+  ['missing device ID', { connectId: 'usb' }, 'usb'],
+  ['changed device ID', { connectId: 'usb', deviceId: 'other' }, 'usb'],
+  [
+    'changed connection',
+    { connectId: 'other-usb', deviceId: 'device' },
+    'other-usb',
+  ],
+])(
+  'requires a live state read when discovery reports a %s',
+  async (_label, device, expectedConnection) => {
+    const { bridge, ring } = setup();
+    await ring.unlock();
+    bridge.searchDevices.mockResolvedValue(ok([device]));
+    bridge.getDeviceState
+      .mockClear()
+      .mockRejectedValue(new Error('device unavailable'));
+    await expect(ring.unlock()).rejects.toThrow('device unavailable');
+    expect(bridge.getDeviceState).toHaveBeenCalledWith(expectedConnection);
+  }
+);
+
+it('does not use a cached device when discovery omits the connection ID', async () => {
+  const { bridge, ring } = setup();
+  await ring.unlock();
+  bridge.searchDevices.mockResolvedValue(ok([{ deviceId: 'device' }]));
+  bridge.getDeviceState.mockClear();
+  await expect(ring.unlock()).rejects.toMatchObject({
+    code: HardwareErrorCode.DeviceNotFound,
+  });
+  expect(bridge.getDeviceState).toHaveBeenCalledWith();
+});
+
 it('revalidates the wallet after an MV3 restart and reuses it for subsequent pages', async () => {
   const { bridge, ring } = setup();
   storage.get.mockResolvedValue({
