@@ -5081,7 +5081,12 @@
         "notAllowInBootloaderMode": "Використовуйте в звичайному режимі",
         "deviceCheckPassphraseStateError": "Обліковий запис не відповідає поточній адресі розблокування пристрою. Підтвердіть, що пристрій і адреса облікового запису узгоджуються, і спробуйте знову",
         "actionCancel": "Операція скасована",
-        "deviceNeedsWebHIDPermission": "Пристрій не знайдено або потрібен дозвіл WebHID"
+        "deviceNeedsWebHIDPermission": "Пристрій не знайдено або потрібен дозвіл WebUSB",
+        "deviceNotOpenedPassphrase": "Захист парольною фразою вимкнено. Увімкніть його, щоб відкрити прихований гаманець.",
+        "pinInvalid": "Неправильний PIN-код. Спробуйте ще раз на OneKey.",
+        "deviceBusy": "OneKey зайнятий. Завершіть поточну операцію та спробуйте ще раз.",
+        "deviceInterrupted": "З’єднання з OneKey перервано. Підключіть пристрій знову.",
+        "webUSBUnavailable": "Цей браузер не підтримує WebUSB."
       }
     },
     "feedback": {

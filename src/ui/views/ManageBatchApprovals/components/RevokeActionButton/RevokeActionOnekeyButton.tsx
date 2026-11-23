@@ -1,3 +1,4 @@
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
@@ -49,7 +50,7 @@ export const RevokeActionOnekeyButton: React.FC<{
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (msg === 'DISCONNECTED' || msg.startsWith('901:')) {
+      if (isOneKeyDisconnectError(msg)) {
         handledDisconnectRef.current = true;
         setDisconnectTipsModal(true);
         task?.pause();

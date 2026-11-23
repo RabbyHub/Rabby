@@ -458,6 +458,8 @@ const maskScreenshotFeedbackPageInfoAddresses = (
 };
 
 const stashKeyrings: Record<string | number, any> = {};
+let nextStashId = 1;
+let oneKeyLockGeneration = 0;
 
 const keystoneMemStoreForwarded = new WeakSet<object>();
 
@@ -2158,7 +2160,16 @@ export class WalletController extends BaseController {
   });
 
   lockWallet = async () => {
-    await keyringService.setLocked();
+    oneKeyLockGeneration++;
+    if (notificationService.approvals.length) {
+      notificationService.rejectAllApprovals();
+    }
+    // A first-time import can be waiting for a PIN before it reaches the vault.
+    const imports = Object.entries(stashKeyrings).filter(
+      ([, keyring]) => keyring.type === KEYRING_CLASS.HARDWARE.ONEKEY
+    );
+    for (const [id] of imports) delete stashKeyrings[id];
+    await keyringService.setLocked(imports.map(([, keyring]) => keyring));
     // The keyring is locked from here on, so tell the UI before the remaining
     // best-effort cleanup. A throw below must not leave open pages rendering
     // protected content against a stale "unlocked" snapshot.
@@ -4670,7 +4681,7 @@ export class WalletController extends BaseController {
   };
 
   addKeyringToStash = (keyring) => {
-    const stashId = Object.values(stashKeyrings).length + 1;
+    const stashId = nextStashId++;
     stashKeyrings[stashId] = keyring;
 
     return stashId;
@@ -4837,6 +4848,14 @@ export class WalletController extends BaseController {
     await keyringService.persistAllKeyrings();
   };
 
+  cancelOneKeySigning = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.HARDWARE.ONEKEY
+    );
+    await keyring.cancel();
+  };
+
   checkLedgerHasHIDPermission = () => {
     const keyring = keyringService.getKeyringByType(
       KEYRING_CLASS.HARDWARE.LEDGER
@@ -4858,6 +4877,7 @@ export class WalletController extends BaseController {
   }) => {
     let keyring;
     let stashKeyringId: number | null = null;
+    const lockGeneration = oneKeyLockGeneration;
     let isNew = false;
     try {
       keyring = this.#getKeyringByType(type);
@@ -4873,6 +4893,17 @@ export class WalletController extends BaseController {
       isNew = true;
     }
 
+    if (
+      type === KEYRING_CLASS.HARDWARE.ONEKEY &&
+      lockGeneration !== oneKeyLockGeneration
+    ) {
+      throw Object.assign(
+        new Error('Wallet import session expired. Please try again.'),
+        {
+          code: KEYRING_IMPORT_EXPIRED,
+        }
+      );
+    }
     Object.keys(stashKeyrings).forEach((key) => {
       const kr = stashKeyrings[key];
       if (kr.type === keyring.type) {
@@ -4880,12 +4911,18 @@ export class WalletController extends BaseController {
       }
     });
     if (!stashKeyringId) {
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
+      stashKeyringId = nextStashId++;
       stashKeyrings[stashKeyringId] = keyring;
     } else {
       if (isNew) {
         stashKeyrings[stashKeyringId] = keyring;
       }
+    }
+
+    if (type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+      // The next getAddresses call uses this exact import handle.
+      keyring = stashKeyrings[stashKeyringId];
+      keyring.beginImport();
     }
 
     if (hdPath && keyring.setHdPath) {
@@ -4947,7 +4984,7 @@ export class WalletController extends BaseController {
         keyring = new keystoneKeyring({
           bridge: await getKeyringBridge(keyringType),
         });
-        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyringId = nextStashId++;
         stashKeyrings[stashKeyringId] = keyring;
       }
     }
@@ -4976,7 +5013,7 @@ export class WalletController extends BaseController {
         keyring = new keystoneKeyring({
           bridge: await getKeyringBridge(keyringType),
         });
-        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyringId = nextStashId++;
         stashKeyrings[stashKeyringId] = keyring;
       }
     }
@@ -5045,13 +5082,19 @@ export class WalletController extends BaseController {
     data: Record<string, any>,
     options?: any
   ) => {
+    const boundOneKey =
+      type === KEYRING_CLASS.HARDWARE.ONEKEY && !!options?.sourceApprovalId;
+    const waitingId = boundOneKey
+      ? notificationService.getApproval()?.id
+      : undefined;
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    assertApprovalSigningBinding(notificationService.getApproval(), {
-      type,
-      from,
-      data,
-      options,
-    });
+    const approval = notificationService.getApproval();
+    assertApprovalSigningBinding(approval, { type, from, data, options });
+    if (boundOneKey && (!waitingId || waitingId !== approval?.id)) {
+      throw ethErrors.provider.userRejectedRequest(
+        'The signing approval is no longer current.'
+      );
+    }
     const signingOptions = options
       ? omit(options, [
           'sourceApprovalId',
@@ -5070,6 +5113,7 @@ export class WalletController extends BaseController {
         success: true,
         data: res,
         signingOperation: options?.signingOperation,
+        ...(waitingId && { approvalId: waitingId }),
       },
     });
     return res;
@@ -5084,28 +5128,64 @@ export class WalletController extends BaseController {
     data: string,
     options?: any
   ) => {
-    const fn = () =>
-      signForWaitingApproval({
+    const boundOneKey =
+      type === KEYRING_CLASS.HARDWARE.ONEKEY && !!options?.sourceApprovalId;
+    const fn = () => {
+      let waitingId: string | undefined;
+      const waitForUI = boundOneKey
+        ? () =>
+            waitSignComponentAmounted(undefined, (mountedId) => {
+              const current = notificationService.getApproval();
+              if (current?.id === options.sourceApprovalId) return false;
+              if (
+                current?.data.approvalComponent !== options.approvalComponent ||
+                current?.data.params?.sourceApprovalId !==
+                  options.sourceApprovalId
+              ) {
+                // Wake the obsolete attempt so the binding check rejects it.
+                return true;
+              }
+              if (!mountedId || current?.id !== mountedId) return false;
+              waitingId = mountedId;
+              return true;
+            })
+        : waitSignComponentAmounted;
+      return signForWaitingApproval({
         type,
         from,
         data,
         options,
         getApproval: notificationService.getApproval,
-        waitForUI: waitSignComponentAmounted,
-        sign: () => this.signTypedData(type, from, data as any, options),
+        waitForUI,
+        sign: () => {
+          if (
+            boundOneKey &&
+            (!waitingId || notificationService.getApproval()?.id !== waitingId)
+          ) {
+            throw ethErrors.provider.userRejectedRequest(
+              'The signing approval is no longer current.'
+            );
+          }
+          return this.signTypedData(type, from, data as any, options);
+        },
         onFailed: (e: any) => {
+          if (
+            boundOneKey &&
+            (!waitingId || notificationService.getApproval()?.id !== waitingId)
+          )
+            return;
           eventBus.emit(EVENTS.broadcastToUI, {
             method: EVENTS.SIGN_FINISHED,
             params: {
               success: false,
               errorMsg: e?.message || JSON.stringify(e),
-              // Waiting components drop a SIGN_FINISHED that is not for
-              // their own signing operation.
               signingOperation: options?.signingOperation,
+              ...(waitingId && { approvalId: waitingId }),
             },
           });
         },
       });
+    };
 
     notificationService.setCurrentRequestDeferFn(fn);
     return fn();

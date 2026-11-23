@@ -10153,12 +10153,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/@emotion/is-prop-valid/dist/emotion-is-prop-valid.esm.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@emotion/memoize/dist/emotion-memoize.esm.js"
-    ]
-  },
   "node_modules/@eth-optimism/contracts/dist/contract-artifacts.js": {
     "enable": true,
     "require": [
@@ -21980,14 +21974,6 @@
       "node_modules/@noble/curves/utils.js"
     ]
   },
-  "node_modules/@noble/curves/abstract/edwards.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/curve.js",
-      "node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@noble/curves/utils.js"
-    ]
-  },
   "node_modules/@noble/curves/abstract/hash-to-curve.js": {
     "enable": true,
     "require": [
@@ -22001,19 +21987,6 @@
       "node_modules/@noble/curves/utils.js"
     ]
   },
-  "node_modules/@noble/curves/abstract/montgomery.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@noble/curves/utils.js"
-    ]
-  },
-  "node_modules/@noble/curves/abstract/utils.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/utils.js"
-    ]
-  },
   "node_modules/@noble/curves/abstract/weierstrass.js": {
     "enable": true,
     "require": [
@@ -22021,19 +21994,6 @@
       "node_modules/@noble/curves/abstract/modular.js",
       "node_modules/@noble/curves/utils.js",
       "node_modules/@noble/hashes/hmac.js",
-      "node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@noble/curves/ed25519.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/curve.js",
-      "node_modules/@noble/curves/abstract/edwards.js",
-      "node_modules/@noble/curves/abstract/hash-to-curve.js",
-      "node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@noble/curves/abstract/montgomery.js",
-      "node_modules/@noble/curves/utils.js",
-      "node_modules/@noble/hashes/sha2.js",
       "node_modules/@noble/hashes/utils.js"
     ]
   },
@@ -22317,12 +22277,6 @@
       "node_modules/@noble/hashes/utils.js"
     ]
   },
-  "node_modules/@noble/hashes/sha512.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/sha2.js"
-    ]
-  },
   "node_modules/@noble/hashes/utils.js": {
     "enable": true,
     "global": {
@@ -22346,9 +22300,11 @@
     "enable": true,
     "global": {
       "AbortController": "r",
+      "Blob": "r",
       "Buffer": "r",
       "ONEKEY_CONNECT_SRC": "r",
       "TextEncoder": "r",
+      "URL": "r",
       "chrome": "r",
       "clearInterval": "r",
       "clearTimeout": "r",
@@ -22356,6 +22312,7 @@
       "global": "r",
       "location": "r",
       "navigator": "r",
+      "process": "r",
       "setInterval": "r",
       "setTimeout": "r"
     },
@@ -22365,17 +22322,48 @@
       "node_modules/@noble/hashes/sha256.js",
       "node_modules/@noble/hashes/sha3.js",
       "node_modules/@noble/hashes/utils.js",
+      "node_modules/@onekeyfe/hd-core/node_modules/axios/dist/browser/axios.cjs",
       "node_modules/@onekeyfe/hd-core/node_modules/bignumber.js/bignumber.js",
       "node_modules/@onekeyfe/hd-core/node_modules/semver/index.js",
       "node_modules/@onekeyfe/hd-shared/dist/index.js",
       "node_modules/@onekeyfe/hd-transport/dist/index.js",
-      "node_modules/axios/index.js",
       "node_modules/buffer/index.js",
       "node_modules/bytebuffer/dist/bytebuffer.js",
+      "node_modules/jpeg-js/index.js",
       "node_modules/jszip/dist/jszip.min.js",
       "node_modules/lodash/lodash.js",
-      "node_modules/ripple-keypairs/dist/index.js",
       "package.json"
+    ]
+  },
+  "node_modules/@onekeyfe/hd-core/node_modules/axios/dist/browser/axios.cjs": {
+    "enable": true,
+    "global": {
+      "AbortController": "r",
+      "Blob": "r",
+      "Buffer": "r",
+      "FormData": "r",
+      "ReadableStream": "r",
+      "URL": "r",
+      "URLSearchParams": "r",
+      "WorkerGlobalScope": "r",
+      "XMLHttpRequest": "r",
+      "btoa": "r",
+      "clearTimeout": "r",
+      "console": "r",
+      "document": "r",
+      "fetch": "r",
+      "global": "r",
+      "importScripts": "r",
+      "location": "r",
+      "navigator": "r",
+      "process": "r",
+      "queueMicrotask": "r",
+      "setImmediate": "r",
+      "setTimeout": "r"
+    },
+    "require": [
+      "node_modules/buffer/index.js",
+      "node_modules/process/browser.js"
     ]
   },
   "node_modules/@onekeyfe/hd-core/node_modules/bignumber.js/bignumber.js": {
@@ -22721,6 +22709,12 @@
   },
   "node_modules/@onekeyfe/hd-transport/dist/index.js": {
     "enable": true,
+    "global": {
+      "AbortController": "r",
+      "Buffer": "r",
+      "clearTimeout": "r",
+      "setTimeout": "r"
+    },
     "require": [
       "node_modules/buffer/index.js",
       "node_modules/bytebuffer/dist/bytebuffer.js",
@@ -22746,11 +22740,16 @@
       "MozBlobBuilder": "r",
       "MutationObserver": "r",
       "ONEKEY_CONNECT_SRC": "r",
+      "ReadableStream": "r",
       "TextEncoder": "r",
+      "URL": "r",
+      "URLSearchParams": "r",
+      "WALLET_INFO_LOACAL_KEY_V5": "r",
       "Web3RpcError": "r",
       "WebAssembly": "r",
       "WebKitBlobBuilder": "r",
       "WebKitMutationObserver": "r",
+      "WorkerGlobalScope": "r",
       "XMLHttpRequest": "r",
       "_": "rw",
       "__core-js_shared__": "r",
@@ -22759,6 +22758,7 @@
       "chrome": "r",
       "clearInterval": "r",
       "clearTimeout": "r",
+      "commonLogger": "r",
       "console": "r",
       "consoleErrorInDev": "r",
       "crypto": "r",
@@ -22767,13 +22767,15 @@
       "document": "r",
       "errorValues": "r",
       "eval": "r",
-      "global": "rw",
+      "fetch": "r",
+      "global": "r",
+      "importScripts": "r",
       "localStorage": "r",
       "location": "r",
-      "msCrypto": "r",
       "navigator": "r",
       "performance": "r",
       "process": "r",
+      "queueMicrotask": "r",
       "removeEventListener": "r",
       "setImmediate": "r",
       "setInterval": "r",
@@ -40201,50 +40203,6 @@
       "node_modules/@walletconnect/window-getters/dist/cjs/index.js"
     ]
   },
-  "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@xrplf/isomorphic/dist/internal/normalizeInput.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/ripemd160/browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/ripemd160.js",
-      "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/sha256/browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/sha256.js",
-      "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/sha512/browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/sha512.js",
-      "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/utils/browser.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "TextEncoder": "r"
-    },
-    "require": [
-      "node_modules/@noble/hashes/utils.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/shared.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/utils/shared.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/utils.js"
-    ]
-  },
   "node_modules/@zumer/snapdom/dist/snapdom.mjs": {
     "enable": true,
     "global": {
@@ -51300,6 +51258,35 @@
       "global": "r"
     }
   },
+  "node_modules/jpeg-js/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/jpeg-js/lib/decoder.js",
+      "node_modules/jpeg-js/lib/encoder.js"
+    ]
+  },
+  "node_modules/jpeg-js/lib/decoder.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r",
+      "XMLHttpRequest": "r",
+      "jpeg-js": "rw"
+    },
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/jpeg-js/lib/encoder.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r",
+      "document": "r",
+      "jpeg-js": "rw"
+    },
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
   "node_modules/js-cookie/src/js.cookie.js": {
     "enable": true,
     "global": {
@@ -53542,30 +53529,6 @@
     "require": [
       "node_modules/multiformats/dist/src/vendor/varint.js"
     ]
-  },
-  "node_modules/nano-css/addon/cssom.js": {
-    "enable": true,
-    "global": {
-      "document": "r",
-      "process": "r"
-    }
-  },
-  "node_modules/nano-css/addon/vcssom.js": {
-    "enable": true,
-    "global": {
-      "process": "r"
-    },
-    "require": [
-      "node_modules/nano-css/addon/vcssom/removeRule.js"
-    ]
-  },
-  "node_modules/nano-css/index.js": {
-    "enable": true,
-    "global": {
-      "console": "r",
-      "document": "r",
-      "process": "r"
-    }
   },
   "node_modules/nanoid/index.browser.js": {
     "enable": true,
@@ -58144,17 +58107,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "node_modules/react-use/esm/useCss.js": {
-    "enable": true,
-    "require": [
-      "node_modules/nano-css/addon/cssom.js",
-      "node_modules/nano-css/addon/vcssom.js",
-      "node_modules/nano-css/addon/vcssom/cssToTree.js",
-      "node_modules/nano-css/index.js",
-      "node_modules/react-use/esm/useIsomorphicLayoutEffect.js",
-      "node_modules/react/index.js"
-    ]
-  },
   "node_modules/react-use/esm/useDebounce.js": {
     "enable": true,
     "require": [
@@ -59149,70 +59101,6 @@
       "node_modules/inherits/inherits_browser.js"
     ]
   },
-  "node_modules/ripple-address-codec/dist/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-address-codec/dist/xrp-codec.js"
-    ]
-  },
-  "node_modules/ripple-address-codec/dist/xrp-codec.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@scure/base/lib/index.js",
-      "node_modules/@xrplf/isomorphic/dist/sha256/browser.js",
-      "node_modules/ripple-address-codec/dist/utils.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@xrplf/isomorphic/dist/ripemd160/browser.js",
-      "node_modules/@xrplf/isomorphic/dist/sha256/browser.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-address-codec/dist/index.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/ed25519/index.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/index.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/utils.js",
-      "node_modules/ripple-keypairs/dist/utils/assert.js",
-      "node_modules/ripple-keypairs/dist/utils/getAlgorithmFromKey.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/signing-schemes/ed25519/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/ed25519.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-keypairs/dist/utils/assert.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/utils.js",
-      "node_modules/@noble/curves/secp256k1.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/utils.js",
-      "node_modules/ripple-keypairs/dist/utils/assert.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/utils.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/secp256k1.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/utils/Sha512.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/utils.js",
-      "node_modules/@xrplf/isomorphic/dist/sha512/browser.js"
-    ]
-  },
   "node_modules/rlp/dist.browser/index.js": {
     "enable": true,
     "global": {
@@ -60157,29 +60045,6 @@
     "enable": true,
     "require": [
       "node_modules/inline-style-parser/index.js"
-    ]
-  },
-  "node_modules/styled-components/dist/styled-components.browser.esm.js": {
-    "enable": true,
-    "global": {
-      "HTMLElement": "r",
-      "SC_DISABLE_SPEEDY": "r",
-      "__styled-components-init__": "rw",
-      "__webpack_nonce__": "r",
-      "console": "r",
-      "document": "r",
-      "navigator": "r",
-      "process": "r"
-    },
-    "require": [
-      "node_modules/@emotion/is-prop-valid/dist/emotion-is-prop-valid.esm.js",
-      "node_modules/@emotion/stylis/dist/stylis.browser.esm.js",
-      "node_modules/@emotion/unitless/dist/unitless.browser.esm.js",
-      "node_modules/hoist-non-react-statics/dist/hoist-non-react-statics.cjs.js",
-      "node_modules/process/browser.js",
-      "node_modules/react-is/index.js",
-      "node_modules/react/index.js",
-      "node_modules/shallowequal/index.js"
     ]
   },
   "node_modules/through2/node_modules/readable-stream/lib/_stream_duplex.js": {
@@ -79529,12 +79394,6 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/assets/address/add.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
   "src/ui/assets/approval/arrow-down-blue.svg": {
     "enable": true,
     "require": [
@@ -79922,8 +79781,7 @@
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "src/ui/assets/checked.svg",
-      "src/ui/assets/uploader.svg"
+      "src/ui/assets/checked.svg"
     ]
   },
   "src/ui/assets/info-cc.svg": {
@@ -79939,12 +79797,6 @@
     ]
   },
   "src/ui/assets/info-warn.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/infoicon.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -79975,12 +79827,6 @@
     ]
   },
   "src/ui/assets/metamask-mode-circle.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/new-user-import/dot-cc.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -80238,6 +80084,12 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/assets/sign/tx/rabby.svg": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
+    ]
+  },
   "src/ui/assets/sign/tx/speedup.svg": {
     "enable": true,
     "require": [
@@ -80365,12 +80217,6 @@
     ]
   },
   "src/ui/assets/unlock/rabby.svg": {
-    "enable": true,
-    "require": [
-      "node_modules/react/index.js"
-    ]
-  },
-  "src/ui/assets/uploader.svg": {
     "enable": true,
     "require": [
       "node_modules/react/index.js"
@@ -80689,6 +80535,12 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/component/AccountSelector/AccountItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/component/AccountSelector/AccountItem.tsx": {
     "enable": true,
     "require": [
@@ -80700,15 +80552,23 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/component/whitelist-guard-bordered.svg",
       "src/ui/assets/edit-pen-cc.svg",
+      "src/ui/component/AccountSelector/AccountItem.module.css",
       "src/ui/component/ConnectStatus/CommonSignal.tsx",
       "src/ui/component/CopyChecked.tsx",
       "src/ui/component/index.tsx",
       "src/ui/hooks/useBrandIcon.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/component/AccountSelector/AccountSelectorModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/AccountSelector/AccountSelectorModal.tsx": {
@@ -80721,13 +80581,14 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/icon-pinned-fill.svg",
       "src/ui/assets/icon-pinned.svg",
       "src/ui/assets/search.svg",
       "src/ui/component/AccountSelector/AccountItem.tsx",
+      "src/ui/component/AccountSelector/AccountSelectorModal.module.css",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/hooks/useAccounts.ts",
       "src/ui/hooks/useDebounceValue.ts",
@@ -80742,24 +80603,11 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/dashboard/arrow-down-cc.svg",
       "src/ui/component/AccountSelector/AccountSelectorModal.tsx",
-      "src/ui/component/AccountSelector/style.less",
       "src/ui/hooks/useBrandIcon.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts"
-    ]
-  },
-  "src/ui/component/AccountSelector/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/component/AddAddressOptions/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/AddressList/AddressItem.tsx": {
@@ -80783,6 +80631,12 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/component/AddressRiskAlert/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/component/AddressRiskAlert/index.tsx": {
     "enable": true,
     "require": [
@@ -80797,15 +80651,18 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/component/whitelist-guard-bordered.svg",
       "src/ui/assets/edit-pen-cc.svg",
+      "src/ui/component/AddressRiskAlert/index.module.css",
       "src/ui/component/index.tsx",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/hooks/useAddressRisk.ts",
       "src/ui/hooks/useBrandIcon.ts",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/usePreference.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
@@ -80818,25 +80675,16 @@
     "enable": true,
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/react/index.js"
     ]
   },
   "src/ui/component/AddressViewer/index.tsx": {
     "enable": true,
     "require": [
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/index.ts",
-      "src/ui/component/AddressViewer/style.less",
-      "src/ui/utils/address.ts"
-    ]
-  },
-  "src/ui/component/AddressViewer/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "src/ui/utils/address.ts",
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/component/AuthenticationModal/index.tsx": {
@@ -80850,9 +80698,23 @@
       "node_modules/react-dom/client.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/swap/modal-close.svg",
+      "src/ui/component/AuthenticationModal/modal.module.css",
+      "src/ui/component/AuthenticationModal/popup.module.css",
       "src/ui/component/index.tsx"
+    ]
+  },
+  "src/ui/component/AuthenticationModal/modal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/component/AuthenticationModal/popup.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/AutoSizeAmountInput/index.tsx": {
@@ -80861,7 +80723,7 @@
       "node_modules/react/index.js"
     ]
   },
-  "src/ui/component/ChainCard/style.less": {
+  "src/ui/component/ChainIcon.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -80873,10 +80735,18 @@
       "node_modules/antd/es/tooltip/index.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/ChainIcon.module.css",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/component/ChainSelector/InForm.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/ChainSelector/InForm.tsx": {
@@ -80887,13 +80757,22 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/swap/arrow-down-cc.svg",
       "src/ui/component/ChainIcon.tsx",
+      "src/ui/component/ChainSelector/InForm.module.css",
       "src/ui/component/ChainSelector/Modal.tsx",
       "src/ui/component/RiskWarningTitle.tsx",
+      "src/ui/hooks/useDocumentClass.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/component/ChainSelector/LargeModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/ChainSelector/LargeModal.tsx": {
@@ -80904,10 +80783,12 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/ui/assets/index.ts",
       "src/ui/assets/search.svg",
       "src/ui/component/ChainSelector/components/SelectChainList.tsx",
+      "src/ui/component/ChainSelector/LargeModal.module.css",
       "src/ui/component/ChainSelector/LoadingBalances.tsx",
       "src/ui/component/Empty/index.tsx",
       "src/ui/component/PillsSwitch/NetSwitchTabs.tsx",
@@ -80934,6 +80815,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/search.svg",
       "src/ui/component/ChainSelector/components/SelectChainList.tsx",
@@ -80975,26 +80857,16 @@
   "src/ui/component/ChainSelector/style.less": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "src/ui/component/ChainSelector/style.less"
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/Checkbox/index.tsx": {
     "enable": true,
     "require": [
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/check.svg",
-      "src/ui/component/Checkbox/style.less",
-      "src/ui/component/ThemeMode/ThemeIcon.tsx"
-    ]
-  },
-  "src/ui/component/Checkbox/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/component/ConnectStatus/CommonSignal.tsx": {
@@ -81075,13 +80947,25 @@
       "src/ui/utils/clipboard.tsx"
     ]
   },
+  "src/ui/component/CurrentAccout/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/component/DesktopAccountSelector/styles.less": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/component/DesktopSelectAccountList/styles.less": {
+  "src/ui/component/DesktopPageWrap/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/component/DesktopSelectAccountList/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -81098,16 +80982,8 @@
   "src/ui/component/Empty/index.tsx": {
     "enable": true,
     "require": [
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "src/ui/component/Empty/style.less"
-    ]
-  },
-  "src/ui/component/Empty/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/component/ExternalSwapBridgeDappPopup/hooks.tsx": {
@@ -81137,22 +81013,14 @@
   "src/ui/component/FallbackSiteLogo/index.tsx": {
     "enable": true,
     "require": [
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
-      "src/ui/component/FallbackSiteLogo/style.less",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/utils/index.ts"
     ]
   },
-  "src/ui/component/FallbackSiteLogo/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/component/Field/style.less": {
+  "src/ui/component/Field/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -81166,29 +81034,31 @@
       "src/ui/component/index.tsx"
     ]
   },
+  "src/ui/component/FullscreenContainer/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/component/FullscreenContainer/index.tsx": {
     "enable": true,
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/FullscreenContainer/index.module.css",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/component/Item/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/component/LangSelector/styles.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/component/Loading/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/component/LoadingOverlay/style.less": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -81211,6 +81081,7 @@
       "src/ui/assets/walletlogo/onekey.svg",
       "src/ui/component/index.tsx",
       "src/ui/component/MiniSignV2/state/index.ts",
+      "src/ui/hooks/useCancelOneKeyOnClose.ts",
       "src/ui/hooks/useDebounceValue.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePopupContainer.tsx",
@@ -81264,6 +81135,7 @@
       "src/ui/state/exchange.ts",
       "src/ui/utils/ledger.ts",
       "src/ui/utils/number.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/utils/sendTransaction.ts",
       "src/ui/utils/time.ts",
       "src/ui/views/Approval/components/SignTx.tsx",
@@ -81326,19 +81198,13 @@
       "src/ui/component/Modal/index.less"
     ]
   },
-  "src/ui/component/MultiSelectAddressList/style.less": {
+  "src/ui/component/ModalPreviewNFTItem/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/NFTNumberInput/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/component/NameAndAddress/index.less": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -81351,17 +81217,16 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
-      "src/ui/component/NameAndAddress/index.less",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/utils/chain.ts",
       "src/utils/index.ts"
     ]
   },
-  "src/ui/component/Navbar/style.less": {
+  "src/ui/component/NewUserImport/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -81372,15 +81237,10 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
-      "src/ui/assets/new-user-import/dot-cc.svg",
-      "src/ui/hooks/usePreference.ts"
-    ]
-  },
-  "src/ui/component/PageHeader/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/NewUserImport/index.module.css",
+      "src/ui/hooks/usePreference.ts",
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/component/PillsSwitch/NetSwitchTabs.tsx": {
@@ -81393,19 +81253,12 @@
       "src/ui/store.ts"
     ]
   },
-  "src/ui/component/PillsSwitch/index.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
   "src/ui/component/PillsSwitch/index.tsx": {
     "enable": true,
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "src/ui/component/PillsSwitch/index.less"
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/component/Popup/index.less": {
@@ -81434,19 +81287,11 @@
       "src/ui/component/PortalHost/PortalController.tsx"
     ]
   },
-  "src/ui/component/Progress/index.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
   "src/ui/component/Progress/index.tsx": {
     "enable": true,
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "src/ui/component/Progress/index.less"
+      "node_modules/react/index.js"
     ]
   },
   "src/ui/component/QRCodeReader/index.tsx": {
@@ -81454,17 +81299,9 @@
     "require": [
       "node_modules/@zxing/browser/esm/index.js",
       "node_modules/antd/es/message/index.js",
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "src/ui/component/QRCodeReader/style.less",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts"
-    ]
-  },
-  "src/ui/component/QRCodeReader/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/RiskWarningTitle.tsx": {
@@ -81482,13 +81319,13 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/constant/ui.ts",
       "src/ui/assets/dashboard/warning-cc.svg",
       "src/ui/component/AuthenticationModal/index.tsx",
       "src/ui/hooks/backgroundState/useAccount.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/useCheckSeedPhraseBackup.ts"
     ]
@@ -81538,6 +81375,12 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/component/StepInput.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/component/StrayPage/index.css": {
     "enable": true,
     "require": [
@@ -81566,15 +81409,27 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useClickAway.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/loading-cc.svg",
       "src/ui/component/Checkbox/index.tsx",
       "src/ui/component/MiniSignV2/state/index.ts",
-      "src/ui/hooks/useMiniApprovalDirectSign.tsx"
+      "src/ui/hooks/useMiniApprovalDirectSign.tsx",
+      "src/ui/utils/cn.ts"
+    ]
+  },
+  "src/ui/component/TokenAmountInput/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/TokenAmountInput/style.less": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/component/TokenChart/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -81596,9 +81451,18 @@
       "node_modules/recharts/es6/cartesian/YAxis.js",
       "node_modules/recharts/es6/chart/AreaChart.js",
       "node_modules/recharts/es6/component/Tooltip.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/TokenChart/index.module.css",
       "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useDocumentClass.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/component/TokenSelect/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/TokenSelect/index.tsx": {
@@ -81610,14 +81474,15 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/viem/_esm/utils/address/isAddress.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
+      "src/ui/component/TokenSelect/index.module.css",
       "src/ui/component/TokenSelector/index.tsx",
       "src/ui/component/TokenWithChain/index.tsx",
       "src/ui/hooks/useSearchToken.ts",
       "src/ui/hooks/useSortTokens.ts",
       "src/ui/store.ts",
-      "src/ui/style/var-defs.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/portfolio/token.ts",
       "src/ui/utils/portfolio/tokenUtils.ts",
@@ -81648,6 +81513,7 @@
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/dashboard/asset-empty.svg",
       "src/ui/assets/match-cc.svg",
@@ -81687,19 +81553,12 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/token-default.svg",
-      "src/ui/component/TokenWithChain/style.less",
       "src/ui/component/Tooltip/TooltipV6.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/token.ts",
       "src/utils/chain.ts"
-    ]
-  },
-  "src/ui/component/TokenWithChain/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/component/Tooltip/TooltipV6.tsx": {
@@ -81710,19 +81569,20 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/component/Tooltip/TooltipWithMagnetArrow.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx": {
     "enable": true,
     "require": [
       "node_modules/antd/es/tooltip/index.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
-    ]
-  },
-  "src/ui/component/TxHistory/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.module.css"
     ]
   },
   "src/ui/component/WalletConnect/ClockSkewWarning.tsx": {
@@ -81814,7 +81674,13 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/component/WordsMatrix/MnemonicsInputs.less": {
+  "src/ui/component/WordsMatrix/MnemonicsInputs.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/component/WordsMatrix/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -81833,20 +81699,19 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/ui.ts",
       "src/ui/assets/success.svg",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
-      "src/ui/component/WordsMatrix/MnemonicsInputs.less",
+      "src/ui/component/WordsMatrix/index.module.css",
+      "src/ui/component/WordsMatrix/MnemonicsInputs.module.css",
       "src/ui/hooks/useDebounceValue.ts",
-      "src/ui/utils/clipboard.tsx"
+      "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/component/index.tsx": {
     "enable": true,
     "require": [
-      "node_modules/@dnd-kit/sortable/dist/sortable.esm.js",
-      "node_modules/@dnd-kit/utilities/dist/utilities.esm.js",
       "node_modules/antd/es/button/index.js",
       "node_modules/antd/es/form/index.js",
       "node_modules/antd/es/input/index.js",
@@ -81863,7 +81728,6 @@
       "node_modules/react-window/dist/index.esm.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/tailwind-merge/dist/bundle-mjs.mjs",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
@@ -81879,12 +81743,10 @@
       "src/ui/assets/success.svg",
       "src/ui/assets/token-default.svg",
       "src/ui/component/AccountSelector/AccountSelectorModal.tsx",
-      "src/ui/component/AddAddressOptions/style.less",
       "src/ui/component/AddressList/AddressItem.tsx",
       "src/ui/component/AddressList/style.less",
       "src/ui/component/AddressViewer/index.tsx",
       "src/ui/component/AuthenticationModal/index.tsx",
-      "src/ui/component/ChainCard/style.less",
       "src/ui/component/ChainIcon.tsx",
       "src/ui/component/ChainSelector/Modal.tsx",
       "src/ui/component/ChainSelector/style.less",
@@ -81892,20 +81754,15 @@
       "src/ui/component/DropdownWithMask/index.tsx",
       "src/ui/component/Empty/index.tsx",
       "src/ui/component/FallbackSiteLogo/index.tsx",
-      "src/ui/component/Field/style.less",
+      "src/ui/component/Field/index.module.css",
       "src/ui/component/FieldCheckbox.tsx",
-      "src/ui/component/Loading/style.less",
-      "src/ui/component/LoadingOverlay/style.less",
+      "src/ui/component/Item/index.module.css",
       "src/ui/component/Modal/index.tsx",
-      "src/ui/component/MultiSelectAddressList/style.less",
       "src/ui/component/NameAndAddress/index.tsx",
-      "src/ui/component/Navbar/style.less",
-      "src/ui/component/PageHeader/style.less",
       "src/ui/component/Popup/index.tsx",
       "src/ui/component/StrayPage/index.css",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/component/TokenWithChain/index.tsx",
-      "src/ui/component/TxHistory/style.less",
       "src/ui/component/WalletConnect/ClockSkewWarning.tsx",
       "src/ui/component/WalletConnect/useBrandNameHasWallet.ts",
       "src/ui/component/WalletConnect/useDisplayBrandName.ts",
@@ -81919,6 +81776,7 @@
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/token.ts",
       "src/ui/utils/webapi.tsx",
@@ -81958,6 +81816,7 @@
       "node_modules/lodash/lodash.js",
       "node_modules/nanoid/index.browser.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/store.ts",
       "src/ui/utils/account.ts",
@@ -82012,6 +81871,7 @@
     "enable": true,
     "require": [
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/component/WalletConnect/useWalletConnectIcon.ts",
       "src/ui/hooks/usePreference.ts",
@@ -82019,11 +81879,20 @@
       "src/utils/account.ts"
     ]
   },
+  "src/ui/hooks/useCancelOneKeyOnClose.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/utils/index.ts"
+    ]
+  },
   "src/ui/hooks/useChain.ts": {
     "enable": true,
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/ui/store.ts",
       "src/utils/chain.ts"
     ]
@@ -82059,6 +81928,12 @@
       "src/ui/component/index.tsx",
       "src/ui/store.ts",
       "src/ui/utils/index.ts"
+    ]
+  },
+  "src/ui/hooks/useDocumentClass.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js"
     ]
   },
   "src/ui/hooks/useEnsInputResolver.ts": {
@@ -82121,12 +81996,20 @@
       "src/utils/account.ts"
     ]
   },
+  "src/ui/hooks/usePopupContainer.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/hooks/usePopupContainer.tsx": {
     "enable": true,
     "require": [
       "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/hooks/usePopupContainer.module.css",
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/hooks/usePreference.ts": {
@@ -82252,6 +82135,7 @@
       "node_modules/@tanstack/react-query/build/modern/queryOptions.js",
       "node_modules/@tanstack/react-query/build/modern/useQuery.js",
       "node_modules/@zumer/snapdom/dist/snapdom.mjs",
+      "node_modules/ahooks/es/useDocumentVisibility/index.js",
       "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/ahooks/es/useMount/index.js",
       "node_modules/ahooks/es/useRequest/index.js",
@@ -82305,11 +82189,11 @@
       "node_modules/recharts/es6/chart/AreaChart.js",
       "node_modules/recharts/es6/component/Tooltip.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/uuid/dist/esm-browser/v4.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "node_modules/zod/v4/classic/schemas.js",
       "node_modules/zustand/esm/react.mjs",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/dex-swap.ts",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
@@ -82347,6 +82231,7 @@
       "src/ui/component/ChainSelector/Modal.tsx",
       "src/ui/component/Checkbox/index.tsx",
       "src/ui/component/ConnectStatus/CommonSignal.tsx",
+      "src/ui/component/CurrentAccout/index.module.css",
       "src/ui/component/FullscreenContainer/index.tsx",
       "src/ui/component/index.tsx",
       "src/ui/component/NameAndAddress/index.tsx",
@@ -82362,6 +82247,7 @@
       "src/ui/hooks/backgroundState/useAccount.ts",
       "src/ui/hooks/useAppChain.ts",
       "src/ui/hooks/useCurrentBalance.ts",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useGnosisNetworks.ts",
@@ -82389,11 +82275,11 @@
       "src/ui/style/cssvars.css",
       "src/ui/style/index.less",
       "src/ui/style/tailwind.css",
-      "src/ui/style/var-defs.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/biometric.ts",
       "src/ui/utils/broadcastToUI.ts",
       "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/portfolio/index.ts",
       "src/ui/utils/sendPersonalMessage.ts",
@@ -82402,11 +82288,18 @@
       "src/ui/utils/withAccountChange.tsx",
       "src/ui/views/Bridge/utils/historyCache.ts",
       "src/ui/views/CommonPopup/AssetList/ChainItem.tsx",
+      "src/ui/views/Dashboard/components/BalanceView/CurveView.module.css",
       "src/ui/views/Dashboard/components/BalanceView/useCurve.ts",
       "src/ui/views/Dashboard/components/BalanceView/useHomeBalanceView.ts",
-      "src/ui/views/Dashboard/components/Feedback/style.less",
+      "src/ui/views/Dashboard/components/ClaimRabbyBadgeModal/freeGasBadgeModal.module.css",
+      "src/ui/views/Dashboard/components/Contacts/index.module.css",
+      "src/ui/views/Dashboard/components/CurrentConnection/index.module.css",
+      "src/ui/views/Dashboard/components/DashboardHeader/index.module.css",
+      "src/ui/views/Dashboard/components/DashboardPanel/index.module.css",
       "src/ui/views/Dashboard/components/OfflineChainNotify/index.tsx",
+      "src/ui/views/Dashboard/components/PendingTxs.module.css",
       "src/ui/views/Dashboard/components/RecentConnections/style.less",
+      "src/ui/views/Dashboard/components/Settings/components/CurrencyModal.module.css",
       "src/ui/views/Dashboard/components/Settings/style.less",
       "src/ui/views/Dashboard/components/TokenDetailPopup/index.tsx",
       "src/ui/views/Dashboard/style.less",
@@ -82419,6 +82312,7 @@
       "src/ui/views/Perps/hooks/usePerpsAccount.ts",
       "src/ui/views/Perps/hooks/usePerpsClearingHouseState.ts",
       "src/ui/views/Perps/hooks/usePerpsDefaultAccount.ts",
+      "src/ui/views/Unlock/index.module.css",
       "src/ui/wallet/index.ts",
       "src/utils/account.ts",
       "src/utils/bridge-sdk-report.ts",
@@ -82438,7 +82332,8 @@
     "enable": true,
     "require": [
       "node_modules/@tanstack/react-query/build/modern/queryOptions.js",
-      "src/ui/query/queryKey.ts"
+      "src/ui/query/queryKey.ts",
+      "src/ui/wallet/index.ts"
     ]
   },
   "src/ui/state/account.ts": {
@@ -82510,12 +82405,6 @@
       "src/ui/state/createStore/createExtensionStoreOptions.ts",
       "src/ui/state/createStore/createRabbyStore.ts",
       "src/ui/wallet/index.ts"
-    ]
-  },
-  "src/ui/state/desktopProfile.ts": {
-    "enable": true,
-    "require": [
-      "node_modules/zustand/esm/react.mjs"
     ]
   },
   "src/ui/state/exchange.ts": {
@@ -82679,6 +82568,12 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/utils/SyncToMobile/SelectAddressModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/utils/WalletContext.tsx": {
     "enable": true,
     "require": [
@@ -82718,6 +82613,13 @@
       "node_modules/i18next/dist/esm/i18next.js",
       "node_modules/react/index.js",
       "src/ui/assets/success.svg"
+    ]
+  },
+  "src/ui/utils/cn.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/clsx/dist/clsx.m.js",
+      "node_modules/tailwind-merge/dist/bundle-mjs.mjs"
     ]
   },
   "src/ui/utils/confirmPopup.less": {
@@ -82821,6 +82723,13 @@
       "src/constant/regexp.ts"
     ]
   },
+  "src/ui/utils/onekey.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@onekeyfe/hd-shared/dist/index.js",
+      "node_modules/i18next/dist/esm/i18next.js"
+    ]
+  },
   "src/ui/utils/portfolio/expandList.ts": {
     "enable": true,
     "require": [
@@ -82855,6 +82764,7 @@
     "require": [
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/db/services/syncDbService.ts",
       "src/db/services/tokenDbService.ts",
       "src/ui/store.ts",
@@ -83002,6 +82912,7 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/ui.ts",
       "src/ui/component/AccountSelector/AccountItem.tsx",
       "src/ui/store.ts",
@@ -83047,7 +82958,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/ui/assets/component/close-cc.svg",
@@ -83059,8 +82969,8 @@
       "src/ui/utils/index.ts",
       "src/ui/utils/webapi.tsx",
       "src/ui/views/Activities/style.less",
-      "src/ui/views/SignedTextHistory/style.less",
       "src/ui/views/TransactionHistory/components/CancelTxConfirmPopup.tsx",
+      "src/ui/views/TransactionHistory/components/SkipNonceAlert.module.css",
       "src/ui/views/TransactionHistory/components/TransactionItem.tsx",
       "src/ui/views/TransactionHistory/hooks/index.ts",
       "src/ui/views/TransactionHistory/style.less",
@@ -83122,6 +83032,12 @@
       "src/ui/views/AddFromCurrentSeedPhrase/sort.ts"
     ]
   },
+  "src/ui/views/AddAddress/BulkImportPrivateKey.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/AddAddress/CreateAddressSuccess.tsx": {
     "enable": true,
     "require": [
@@ -83171,6 +83087,12 @@
       "src/ui/views/AddAddress/useCreateAddress.ts"
     ]
   },
+  "src/ui/views/AddAddress/ImportKeyOrSeed.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/AddAddress/ImportKeyOrSeed.tsx": {
     "enable": true,
     "require": [
@@ -83185,7 +83107,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/viem/_esm/accounts/utils/privateKeyToAddress.js",
       "src/constant/index.ts",
       "src/ui/assets/add-address/index.ts",
@@ -83195,12 +83117,12 @@
       "src/ui/component/WordsMatrix/index.tsx",
       "src/ui/hooks/useScreenshotContextMenuVisible.ts",
       "src/ui/state/importMnemonics.ts",
-      "src/ui/store.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/clipboard.tsx",
       "src/ui/utils/index.ts",
       "src/ui/utils/useRepeatImportConfirm.tsx",
       "src/ui/utils/webapi.tsx",
+      "src/ui/views/AddAddress/ImportKeyOrSeed.module.css",
       "src/ui/views/AddAddress/useCreateAddress.ts",
       "src/utils/index.ts"
     ]
@@ -83232,12 +83154,10 @@
   "src/ui/views/AddAddress/index.tsx": {
     "enable": true,
     "require": [
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/component/index.tsx",
-      "src/ui/views/AddAddress/style.less"
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/views/AddAddress/shared.tsx": {
@@ -83253,12 +83173,6 @@
       "src/ui/component/index.tsx",
       "src/ui/utils/index.ts",
       "src/ui/utils/webapi.tsx"
-    ]
-  },
-  "src/ui/views/AddAddress/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/AddAddress/useCreateAddress.ts": {
@@ -83283,24 +83197,6 @@
       "src/ui/utils/index.ts",
       "src/ui/views/AddFromCurrentSeedPhrase/sort.ts",
       "src/ui/views/ManageAddress/hooks.tsx"
-    ]
-  },
-  "src/ui/views/AddFromCurrentSeedPhrase/index.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/es/button/index.js",
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react/index.js",
-      "src/constant/index.ts",
-      "src/ui/assets/address/add.svg",
-      "src/ui/component/index.tsx",
-      "src/ui/component/ThemeMode/ThemeIcon.tsx",
-      "src/ui/component/WalletConnect/useWalletConnectIcon.ts",
-      "src/ui/hooks/usePreference.ts",
-      "src/ui/utils/index.ts",
-      "src/ui/views/AddFromCurrentSeedPhrase/hooks.ts",
-      "src/utils/account.ts"
     ]
   },
   "src/ui/views/AddressBackup/Mnemonics.tsx": {
@@ -83331,9 +83227,10 @@
       "src/ui/hooks/usePopupContainer.tsx",
       "src/ui/hooks/useScreenshotContextMenuVisible.ts",
       "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/useCheckSeedPhraseBackup.ts",
-      "src/ui/views/AddressBackup/style.less"
+      "src/ui/views/AddressBackup/classes.ts"
     ]
   },
   "src/ui/views/AddressBackup/PrivateKey.tsx": {
@@ -83341,7 +83238,6 @@
     "require": [
       "node_modules/@ant-design/icons/es/icons/InfoCircleOutlined.js",
       "node_modules/antd/es/button/index.js",
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/qrcode.react/lib/esm/index.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
@@ -83350,16 +83246,15 @@
       "src/ui/assets/create-mnemonics/mask-lock.svg",
       "src/ui/component/index.tsx",
       "src/ui/hooks/useScreenshotContextMenuVisible.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
-      "src/ui/views/AddressBackup/style.less"
+      "src/ui/views/AddressBackup/classes.ts"
     ]
   },
-  "src/ui/views/AddressBackup/style.less": {
+  "src/ui/views/AddressDetail/CoboArugsInfo.module.css": {
     "enable": true,
     "require": [
-      "node_modules/css-loader/dist/runtime/api.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "src/ui/views/AddressBackup/style.less"
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/AddressDetail/index.tsx": {
@@ -83381,7 +83276,7 @@
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/constant/ui.ts",
       "src/ui/assets/arrow-right-gray.svg",
@@ -83409,6 +83304,7 @@
       "src/ui/utils/ledger.ts",
       "src/ui/utils/url.ts",
       "src/ui/utils/useCheckSeedPhraseBackup.ts",
+      "src/ui/views/AddressDetail/CoboArugsInfo.module.css",
       "src/ui/views/AddressDetail/style.less",
       "src/utils/account.ts",
       "src/utils/chain.ts"
@@ -83426,7 +83322,7 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/AdvanceSettings/style.less": {
+  "src/ui/views/Approval/components/ActionWrapper.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -83437,16 +83333,170 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/Approval/components/ActionWrapper.module.css"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/AddLiquidity.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/ApproveNFT.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/ApproveNFTCollection.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/AssetOrder.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/BatchRevokePermit2.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/CancelTx.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/ContractCall.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/CrossSwapToken.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/CrossToken.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/MultiSwap.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/RevokeNFT.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/RevokeNFTCollection.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/RevokePermit2.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/RevokeTokenApprove.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/Send.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/SendNFT.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/Swap.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/SwapLimitPay.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/TokenApprove.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/TransferOwner.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/UnWrapToken.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/WrapToken.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/AddressMemo.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/LogoWithText.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx": {
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/token-default.svg",
-      "src/ui/store.ts"
+      "src/ui/store.ts",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/Approval/components/Actions/components/LogoWithText.module.css"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/NFTWithName.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/NFTWithName.tsx": {
@@ -83456,21 +83506,31 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/ModalPreviewNFTItem/index.module.css",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/token.ts",
+      "src/ui/views/Approval/components/Actions/components/NFTWithName.module.css",
       "src/ui/views/Approval/components/Actions/components/Values.tsx",
       "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
       "src/utils/index.ts"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/ProtocolListItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/ProtocolListItem.tsx": {
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
-      "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx",
+      "src/ui/views/Approval/components/Actions/components/ProtocolListItem.module.css"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/SecurityListItem.tsx": {
@@ -83479,11 +83539,16 @@
       "node_modules/@rabby-wallet/rabby-security-engine/dist/rules/index.js",
       "node_modules/lodash/lodash.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/zustand/esm/react/shallow.mjs",
       "src/ui/state/securityEngine.ts",
       "src/ui/views/Approval/components/Actions/components/SubTable.tsx",
       "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/SubTable.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/SubTable.tsx": {
@@ -83491,9 +83556,17 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/sign/tx/question-mark.svg",
-      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx"
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/Approval/components/Actions/components/SubTable.module.css"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/Table.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/Table.tsx": {
@@ -83501,9 +83574,10 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/sign/tx/question-mark.svg",
-      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx"
+      "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/views/Approval/components/Actions/components/Table.module.css"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/TokenAmountItem.tsx": {
@@ -83531,7 +83605,7 @@
       "node_modules/lodash/lodash.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/assets/rabby-chain-logo.png",
@@ -83545,6 +83619,12 @@
       "src/ui/utils/number.ts",
       "src/ui/utils/token.ts",
       "src/ui/utils/transaction.ts",
+      "src/ui/views/Approval/components/Actions/AddLiquidity.module.css",
+      "src/ui/views/Approval/components/Actions/ApproveNFT.module.css",
+      "src/ui/views/Approval/components/Actions/ApproveNFTCollection.module.css",
+      "src/ui/views/Approval/components/Actions/AssetOrder.module.css",
+      "src/ui/views/Approval/components/Actions/BatchRevokePermit2.module.css",
+      "src/ui/views/Approval/components/Actions/CancelTx.module.css",
       "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx",
       "src/ui/views/Approval/components/Actions/components/NFTWithName.tsx",
       "src/ui/views/Approval/components/Actions/components/ProtocolListItem.tsx",
@@ -83554,11 +83634,33 @@
       "src/ui/views/Approval/components/Actions/components/TokenAmountItem.tsx",
       "src/ui/views/Approval/components/Actions/components/Values.tsx",
       "src/ui/views/Approval/components/Actions/components/ViewMore.tsx",
+      "src/ui/views/Approval/components/Actions/ContractCall.module.css",
+      "src/ui/views/Approval/components/Actions/CrossSwapToken.module.css",
+      "src/ui/views/Approval/components/Actions/CrossToken.module.css",
+      "src/ui/views/Approval/components/Actions/MultiSwap.module.css",
+      "src/ui/views/Approval/components/Actions/RevokeNFT.module.css",
+      "src/ui/views/Approval/components/Actions/RevokeNFTCollection.module.css",
+      "src/ui/views/Approval/components/Actions/RevokePermit2.module.css",
+      "src/ui/views/Approval/components/Actions/RevokeTokenApprove.module.css",
+      "src/ui/views/Approval/components/Actions/Send.module.css",
+      "src/ui/views/Approval/components/Actions/SendNFT.module.css",
+      "src/ui/views/Approval/components/Actions/Swap.module.css",
+      "src/ui/views/Approval/components/Actions/SwapLimitPay.module.css",
+      "src/ui/views/Approval/components/Actions/TokenApprove.module.css",
+      "src/ui/views/Approval/components/Actions/TransferOwner.module.css",
+      "src/ui/views/Approval/components/Actions/UnWrapToken.module.css",
       "src/ui/views/Approval/components/Actions/utils.tsx",
+      "src/ui/views/Approval/components/Actions/WrapToken.module.css",
       "src/ui/views/Approval/components/CommonAction.tsx",
       "src/ui/views/Approval/components/Divide.tsx",
       "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx",
       "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/Values.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/Values.tsx": {
@@ -83572,7 +83674,7 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/i18n.ts",
       "src/ui/assets/editpen.svg",
@@ -83590,11 +83692,19 @@
       "src/ui/utils/number.ts",
       "src/ui/utils/time.ts",
       "src/ui/utils/token.ts",
+      "src/ui/views/Approval/components/Actions/components/AddressMemo.module.css",
       "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx",
+      "src/ui/views/Approval/components/Actions/components/Values.module.css",
       "src/ui/views/Approval/components/Divide.tsx",
       "src/ui/views/Approval/hooks/useApprovalUtils.tsx",
       "src/utils/chain.ts",
       "src/utils/index.ts"
+    ]
+  },
+  "src/ui/views/Approval/components/Actions/components/ViewMore.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/Actions/components/ViewMore.tsx": {
@@ -83602,7 +83712,7 @@
     "require": [
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/rabby-chain-logo.png",
       "src/ui/component/index.tsx",
@@ -83613,7 +83723,8 @@
       "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx",
       "src/ui/views/Approval/components/Actions/components/NFTWithName.tsx",
       "src/ui/views/Approval/components/Actions/components/Table.tsx",
-      "src/ui/views/Approval/components/Actions/components/Values.tsx"
+      "src/ui/views/Approval/components/Actions/components/Values.tsx",
+      "src/ui/views/Approval/components/Actions/components/ViewMore.module.css"
     ]
   },
   "src/ui/views/Approval/components/Actions/utils.tsx": {
@@ -83622,13 +83733,33 @@
       "src/i18n.ts"
     ]
   },
+  "src/ui/views/Approval/components/AddAsset.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/BroadcastMode/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Card.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Approval/components/Card.tsx": {
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/approval/edit-arrow-right.svg",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/Approval/components/Card.module.css",
       "src/ui/views/Approval/components/Divide.tsx"
     ]
   },
@@ -83649,6 +83780,30 @@
       "src/ui/views/Approval/components/Actions/components/ViewMore.tsx"
     ]
   },
+  "src/ui/views/Approval/components/Connect/ConnectContent.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Connect/PerpsInviteContent.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Connect/RuleResult.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/Connect/UserListDrawer.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Approval/components/Connect/index.tsx": {
     "enable": true,
     "require": [
@@ -83665,7 +83820,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/uuid/dist/esm-browser/v4.js",
       "src/constant/index.ts",
       "src/eventBus.ts",
@@ -83683,11 +83838,17 @@
       "src/ui/component/index.tsx",
       "src/ui/component/MiniSignV2/index.ts",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/store.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/securityEngine.ts",
+      "src/ui/views/Approval/components/Connect/ConnectContent.module.css",
+      "src/ui/views/Approval/components/Connect/PerpsInviteContent.module.css",
+      "src/ui/views/Approval/components/Connect/RuleResult.module.css",
+      "src/ui/views/Approval/components/Connect/UserListDrawer.module.css",
       "src/ui/views/Approval/components/map.ts",
       "src/ui/views/Approval/components/SecurityEngine/RuleDrawer.tsx",
       "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx",
@@ -83701,7 +83862,7 @@
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "src/ui/utils/cn.ts"
     ]
   },
   "src/ui/views/Approval/components/FooterBar/ActionGroup.tsx": {
@@ -83712,12 +83873,14 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/component/Tooltip/TooltipV6.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/views/Approval/components/FooterBar/ActionsContainer.tsx",
       "src/ui/views/Approval/components/FooterBar/GasLessComponents.tsx",
-      "src/ui/views/Approval/components/FooterBar/ProcessActions.tsx"
+      "src/ui/views/Approval/components/FooterBar/ProcessActions.tsx",
+      "src/ui/views/Approval/components/FooterBar/SubmitActions.module.css"
     ]
   },
   "src/ui/views/Approval/components/FooterBar/ActionsContainer.tsx": {
@@ -83739,6 +83902,12 @@
       "src/ui/component/Signal.tsx"
     ]
   },
+  "src/ui/views/Approval/components/FooterBar/FooterBar.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Approval/components/FooterBar/FooterBar.tsx": {
     "enable": true,
     "require": [
@@ -83747,7 +83916,7 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/component/index.tsx",
@@ -83756,11 +83925,21 @@
       "src/ui/hooks/usePreference.ts",
       "src/ui/state/securityEngine.ts",
       "src/ui/store.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/Approval/components/FooterBar/ActionGroup.tsx",
+      "src/ui/views/Approval/components/FooterBar/FooterBar.module.css",
       "src/ui/views/Approval/components/FooterBar/gasAccountDecision.ts",
       "src/ui/views/Approval/components/FooterBar/GasLessComponents.tsx",
       "src/utils/chain.ts"
+    ]
+  },
+  "src/ui/views/Approval/components/FooterBar/GasLessComponents.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/css-loader/dist/runtime/getUrl.js",
+      "src/ui/assets/sign/tx/rabby.svg"
     ]
   },
   "src/ui/views/Approval/components/FooterBar/GasLessComponents.tsx": {
@@ -83771,12 +83950,14 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/ui.ts",
       "src/ui/assets/sign/tx/gas-account-blur-cc.svg",
       "src/ui/hooks/usePreference.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/number.ts",
+      "src/ui/views/Approval/components/FooterBar/GasLessComponents.module.css",
       "src/ui/views/GasAccount/hooks/checkTxs.ts",
       "src/ui/views/GasAccount/hooks/index.ts"
     ]
@@ -83791,6 +83972,12 @@
       "src/ui/component/Tooltip/TooltipV6.tsx",
       "src/ui/views/Approval/components/FooterBar/ActionsContainer.tsx",
       "src/ui/views/Approval/components/FooterBar/GasLessComponents.tsx"
+    ]
+  },
+  "src/ui/views/Approval/components/FooterBar/SubmitActions.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/FooterBar/gasAccountDecision.ts": {
@@ -83816,14 +84003,22 @@
       "src/ui/component/index.tsx",
       "src/ui/component/PortalHost/PortalController.tsx",
       "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useCancelOneKeyOnClose.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePreference.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/ledger.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/utils/sendPersonalMessage.ts",
       "src/ui/views/Approval/components/MiniSignTx/MiniFooterBar.tsx",
       "src/ui/views/Approval/components/Popup/MiniApprovalPopupContainer.tsx"
+    ]
+  },
+  "src/ui/views/Approval/components/MiniSignTx/MiniFooterBar.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/MiniSignTx/MiniFooterBar.tsx": {
@@ -83835,7 +84030,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/eventBus.ts",
@@ -83847,12 +84042,15 @@
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePreference.ts",
       "src/ui/state/securityEngine.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/ledger.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/views/Approval/components/FooterBar/ActionGroup.tsx",
       "src/ui/views/Approval/components/FooterBar/gasAccountDecision.ts",
       "src/ui/views/Approval/components/FooterBar/GasLessComponents.tsx",
       "src/ui/views/Approval/components/FooterBar/ProcessActions.tsx",
+      "src/ui/views/Approval/components/MiniSignTx/MiniFooterBar.module.css",
       "src/ui/views/Approval/components/Popup/Dots.tsx",
       "src/ui/views/CommonPopup/Ledger.tsx",
       "src/ui/views/CommonPopup/OneKey.tsx",
@@ -83868,7 +84066,6 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/sign/tx/alert-currentcolor.svg",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/utils/index.ts"
@@ -83879,7 +84076,6 @@
     "require": [
       "node_modules/@debank/common/dist/index-rabby.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/component/index.tsx",
@@ -83890,11 +84086,18 @@
       "src/utils/chain.ts"
     ]
   },
+  "src/ui/views/Approval/components/Popup/Dots.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Approval/components/Popup/Dots.tsx": {
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Approval/components/Popup/Dots.module.css"
     ]
   },
   "src/ui/views/Approval/components/Popup/FooterResendCancelGroup.tsx": {
@@ -83925,31 +84128,45 @@
       "src/ui/views/Approval/components/Popup/FooterResendCancelGroup.tsx"
     ]
   },
+  "src/ui/views/Approval/components/SecurityEngine/RuleDrawer.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Approval/components/SecurityEngine/RuleDrawer.tsx": {
     "enable": true,
     "require": [
       "node_modules/@rabby-wallet/rabby-security-engine/dist/rules/index.js",
       "node_modules/antd/es/button/index.js",
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/sign/tx/question-mark.svg",
       "src/ui/component/index.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
-      "src/ui/utils/index.ts"
+      "src/ui/utils/cn.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Approval/components/SecurityEngine/RuleDrawer.module.css"
+    ]
+  },
+  "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx": {
     "enable": true,
     "require": [
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/sign/arrow-right-lite.svg",
-      "src/ui/utils/index.ts"
+      "src/ui/utils/cn.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.module.css"
     ]
   },
   "src/ui/views/Approval/components/SecurityEngine/actionSecurity.ts": {
@@ -83957,6 +84174,24 @@
     "require": [
       "node_modules/@rabby-wallet/rabby-security-engine/dist/rules/index.js",
       "src/ui/state/securityEngineScope.ts"
+    ]
+  },
+  "src/ui/views/Approval/components/SignAdvancedSettings.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/SignMessageAddressTag.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/SignTestnetTx/Actions/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/SignTx.tsx": {
@@ -83987,7 +84222,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useScroll.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "src/background/utils/7702.ts",
       "src/constant/index.ts",
@@ -84003,12 +84238,14 @@
       "src/ui/component/index.tsx",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/state/exchange.ts",
       "src/ui/state/securityEngine.ts",
       "src/ui/state/sign.ts",
       "src/ui/store.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/gnosis.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/number.ts",
@@ -84019,6 +84256,7 @@
       "src/ui/views/Approval/components/Actions/components/TransactionActionList.tsx",
       "src/ui/views/Approval/components/Actions/utils.tsx",
       "src/ui/views/Approval/components/ActionWrapper.tsx",
+      "src/ui/views/Approval/components/BroadcastMode/index.module.css",
       "src/ui/views/Approval/components/Card.tsx",
       "src/ui/views/Approval/components/Divide.tsx",
       "src/ui/views/Approval/components/FooterBar/FooterBar.tsx",
@@ -84027,14 +84265,18 @@
       "src/ui/views/Approval/components/OriginInfo.tsx",
       "src/ui/views/Approval/components/SecurityEngine/actionSecurity.ts",
       "src/ui/views/Approval/components/SecurityEngine/RuleDrawer.tsx",
+      "src/ui/views/Approval/components/SignAdvancedSettings.module.css",
+      "src/ui/views/Approval/components/SignTestnetTx/Actions/index.module.css",
       "src/ui/views/Approval/components/TextActions/index.tsx",
       "src/ui/views/Approval/components/TxComponents/BalanceChange.tsx",
       "src/ui/views/Approval/components/TxComponents/BalanceChangeWrapper.tsx",
+      "src/ui/views/Approval/components/TxComponents/CoboDelegatedDrawer.module.css",
       "src/ui/views/Approval/components/TxComponents/DrawerAddressItem.tsx",
       "src/ui/views/Approval/components/TxComponents/GasSelector/SignMainnetGasSelectorHeader.tsx",
       "src/ui/views/Approval/components/TxComponents/GasSelector/useEffectiveApprovalGasMethod.ts",
       "src/ui/views/Approval/components/TxComponents/GasSelectorHeader.tsx",
       "src/ui/views/Approval/components/TxComponents/GnosisDrawer.tsx",
+      "src/ui/views/Approval/components/TxComponents/SafeNonceSelector.module.css",
       "src/ui/views/Approval/components/TxComponents/ViewRawModal.tsx",
       "src/ui/views/Dashboard/components/TokenDetailPopup/index.tsx",
       "src/ui/views/GasAccount/components/GasAccountDepositPopup.tsx",
@@ -84054,7 +84296,6 @@
     "require": [
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/views/Approval/components/Actions/components/Table.tsx",
       "src/ui/views/Approval/components/Actions/components/Values.tsx"
     ]
@@ -84064,9 +84305,14 @@
     "require": [
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/views/Approval/components/Actions/components/Table.tsx",
       "src/ui/views/Approval/components/Actions/components/Values.tsx"
+    ]
+  },
+  "src/ui/views/Approval/components/TextActions/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/TextActions/index.tsx": {
@@ -84076,7 +84322,7 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/approval/edit-arrow-right.svg",
       "src/ui/assets/sign/arrow-right-lite.svg",
@@ -84087,6 +84333,7 @@
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/hooks/useBrandIcon.ts",
       "src/ui/state/sign.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/token.ts",
       "src/ui/views/Approval/components/Actions/components/ViewMore.tsx",
       "src/ui/views/Approval/components/ActionWrapper.tsx",
@@ -84096,8 +84343,10 @@
       "src/ui/views/Approval/components/NoActionAlert/NoActionAlert.tsx",
       "src/ui/views/Approval/components/OriginInfo.tsx",
       "src/ui/views/Approval/components/signMessageAddressData.ts",
+      "src/ui/views/Approval/components/SignMessageAddressTag.module.css",
       "src/ui/views/Approval/components/signMessageHighlighter.ts",
       "src/ui/views/Approval/components/TextActions/CreateKey.tsx",
+      "src/ui/views/Approval/components/TextActions/index.module.css",
       "src/ui/views/Approval/components/TextActions/utils.ts",
       "src/ui/views/Approval/components/TextActions/VerifyAddress.tsx",
       "src/utils/chain.ts"
@@ -84115,11 +84364,11 @@
       "node_modules/bignumber.js/bignumber.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/nft-default.svg",
       "src/ui/assets/sign/tx/alert-currentcolor.svg",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/state/sign.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/number.ts",
       "src/ui/utils/token.ts",
       "src/ui/views/Approval/components/Actions/components/LogoWithText.tsx",
@@ -84133,6 +84382,12 @@
       "node_modules/react/index.js",
       "src/ui/views/Approval/components/Divide.tsx",
       "src/ui/views/Approval/components/TxComponents/BalanceChange.tsx"
+    ]
+  },
+  "src/ui/views/Approval/components/TxComponents/CoboDelegatedDrawer.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/TxComponents/DrawerAddressItem.tsx": {
@@ -84151,6 +84406,12 @@
       "src/utils/account.ts"
     ]
   },
+  "src/ui/views/Approval/components/TxComponents/GasMenuButton.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Approval/components/TxComponents/GasMenuButton.tsx": {
     "enable": true,
     "require": [
@@ -84161,14 +84422,16 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/approval/edit-arrow-right.svg",
       "src/ui/assets/arrow-cc.svg",
       "src/ui/assets/sign/check.svg",
       "src/ui/assets/swap/arrow-down-cc.svg",
       "src/ui/assets/token-default.svg",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/trans.ts",
-      "src/ui/views/Approval/components/Divide.tsx"
+      "src/ui/views/Approval/components/Divide.tsx",
+      "src/ui/views/Approval/components/TxComponents/GasMenuButton.module.css"
     ]
   },
   "src/ui/views/Approval/components/TxComponents/GasSelector/SignMainnetGasSelectorHeader.tsx": {
@@ -84210,7 +84473,7 @@
       "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx",
       "src/ui/views/Approval/components/TxComponents/GasMenuButton.tsx",
       "src/ui/views/Approval/components/TxComponents/GasSelector/approvalGasDisplay.ts",
-      "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.ts",
+      "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.tsx",
       "src/ui/views/Approval/components/TxComponents/GasSelectorHeader.tsx",
       "src/ui/views/GasAccount/hooks/index.ts",
       "src/utils/chain.ts",
@@ -84218,11 +84481,19 @@
       "src/utils/transaction.ts"
     ]
   },
-  "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.ts": {
+  "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.tsx": {
     "enable": true,
     "require": [
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.module.css"
     ]
   },
   "src/ui/views/Approval/components/TxComponents/GasSelector/useEffectiveApprovalGasMethod.ts": {
@@ -84244,7 +84515,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/constant/regexp.ts",
@@ -84265,7 +84535,7 @@
       "src/ui/views/Approval/components/Divide.tsx",
       "src/ui/views/Approval/components/SecurityEngine/SecurityLevelTagNoText.tsx",
       "src/ui/views/Approval/components/TxComponents/GasMenuButton.tsx",
-      "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.ts",
+      "src/ui/views/Approval/components/TxComponents/GasSelector/gasCardStyles.tsx",
       "src/utils/chain.ts",
       "src/utils/time.ts",
       "src/utils/transaction.ts"
@@ -84283,12 +84553,66 @@
       "src/ui/views/Approval/components/TxComponents/DrawerAddressItem.tsx"
     ]
   },
+  "src/ui/views/Approval/components/TxComponents/SafeNonceSelector.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Approval/components/TxComponents/ViewRawModal.tsx": {
     "enable": true,
     "require": [
       "node_modules/antd/es/tabs/index.js",
       "node_modules/react/index.js",
       "src/ui/component/index.tsx"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/BatchPermit2.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/BatchSellNFT.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/BuyNFT.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/ContractCall.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/Permit.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/Permit2.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/SellNFT.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Approval/components/TypedDataActions/SwapTokenOrder.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Approval/components/TypedDataActions/utils.ts": {
@@ -84342,6 +84666,7 @@
       "node_modules/@sentry/core/build/esm/exports.js",
       "node_modules/@tanstack/react-query/build/modern/useQuery.js",
       "node_modules/ahooks/es/useDebounceFn/index.js",
+      "node_modules/ahooks/es/useMemoizedFn/index.js",
       "node_modules/ahooks/es/useRequest/index.js",
       "node_modules/ahooks/es/useSize/index.js",
       "node_modules/antd/es/button/index.js",
@@ -84365,7 +84690,7 @@
       "node_modules/react-use/esm/useInterval.js",
       "node_modules/react-use/esm/useScroll.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/uuid/dist/esm-browser/stringify.js",
       "node_modules/zustand/esm/react/shallow.mjs",
       "src/background/service/customTestnet.ts",
@@ -84384,7 +84709,6 @@
       "src/ui/assets/icon-unknown-1.svg",
       "src/ui/assets/info-error.svg",
       "src/ui/assets/info-warn.svg",
-      "src/ui/assets/infoicon.svg",
       "src/ui/assets/sign/question-mark.svg",
       "src/ui/assets/sign/tx/question-mark.svg",
       "src/ui/assets/tokenDetail/IconNoFind.svg",
@@ -84436,6 +84760,7 @@
       "src/ui/views/Approval/components/Actions/components/Values.tsx",
       "src/ui/views/Approval/components/Actions/components/ViewMore.tsx",
       "src/ui/views/Approval/components/ActionWrapper.tsx",
+      "src/ui/views/Approval/components/AddAsset.module.css",
       "src/ui/views/Approval/components/Card.tsx",
       "src/ui/views/Approval/components/CommonAction.tsx",
       "src/ui/views/Approval/components/Connect/index.tsx",
@@ -84459,6 +84784,14 @@
       "src/ui/views/Approval/components/TxComponents/BalanceChangeWrapper.tsx",
       "src/ui/views/Approval/components/TxComponents/GnosisDrawer.tsx",
       "src/ui/views/Approval/components/TxComponents/ViewRawModal.tsx",
+      "src/ui/views/Approval/components/TypedDataActions/BatchPermit2.module.css",
+      "src/ui/views/Approval/components/TypedDataActions/BatchSellNFT.module.css",
+      "src/ui/views/Approval/components/TypedDataActions/BuyNFT.module.css",
+      "src/ui/views/Approval/components/TypedDataActions/ContractCall.module.css",
+      "src/ui/views/Approval/components/TypedDataActions/Permit.module.css",
+      "src/ui/views/Approval/components/TypedDataActions/Permit2.module.css",
+      "src/ui/views/Approval/components/TypedDataActions/SellNFT.module.css",
+      "src/ui/views/Approval/components/TypedDataActions/SwapTokenOrder.module.css",
       "src/ui/views/Approval/components/TypedDataActions/utils.ts",
       "src/ui/views/Approval/components/WatchAddressWaiting/Scan.tsx",
       "src/ui/views/Approval/hooks/useApprovalUtils.tsx",
@@ -84481,6 +84814,12 @@
       "node_modules/css-loader/dist/runtime/api.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/views/Approval/style.less"
+    ]
+  },
+  "src/ui/views/BiometricUnlockSetup/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Bridge/Component/BridgeHistory.tsx": {
@@ -84516,6 +84855,18 @@
       "src/utils/chain.ts"
     ]
   },
+  "src/ui/views/Bridge/Component/BridgeQuoteItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Bridge/Component/BridgeShowMore.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Bridge/Component/BridgeShowMore.tsx": {
     "enable": true,
     "require": [
@@ -84533,12 +84884,14 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/i18n.ts",
       "src/ui/assets/info-cc.svg",
       "src/ui/component/index.tsx",
       "src/ui/component/MiniSignV2/state/index.ts",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/store.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/token.ts",
@@ -84546,16 +84899,31 @@
       "src/ui/views/Approval/components/FooterBar/GasLessComponents.tsx",
       "src/ui/views/Approval/components/SignTx.tsx",
       "src/ui/views/Approval/components/TxComponents/GasSelector/SignMainnetGasSelectorHeader.tsx",
+      "src/ui/views/Bridge/Component/BridgeShowMore.module.css",
+      "src/ui/views/Bridge/Component/BridgeSlippage.module.css",
       "src/ui/views/Bridge/hooks/index.tsx",
       "src/ui/views/Bridge/utils/duration.ts",
       "src/ui/views/GasAccount/components/GasAccountDepositPopup.tsx",
       "src/ui/views/GasAccount/components/topUpContinuation.ts",
       "src/ui/views/GasAccount/hooks/index.ts",
       "src/ui/views/GasAccount/hooks/runtime.ts",
+      "src/ui/views/Swap/Component/RabbyFeeTag.module.css",
       "src/ui/views/Swap/hooks/fee.ts",
       "src/utils/chain.ts",
       "src/utils/tempo.ts",
       "src/utils/transaction.ts"
+    ]
+  },
+  "src/ui/views/Bridge/Component/BridgeSlippage.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Bridge/Component/BridgeSwitchButton.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Bridge/Component/BridgeSwitchButton.tsx": {
@@ -84563,7 +84931,14 @@
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Bridge/Component/BridgeSwitchButton.module.css"
+    ]
+  },
+  "src/ui/views/Bridge/Component/BridgeToken.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Bridge/hooks/context.tsx": {
@@ -84640,9 +85015,9 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useAsync.js",
-      "node_modules/react-use/esm/useCss.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/ui/assets/bridge/empty-cc.svg",
@@ -84684,8 +85059,10 @@
       "src/ui/utils/url.ts",
       "src/ui/utils/withAccountChange.tsx",
       "src/ui/views/Bridge/Component/BridgeHistory.tsx",
+      "src/ui/views/Bridge/Component/BridgeQuoteItem.module.css",
       "src/ui/views/Bridge/Component/BridgeShowMore.tsx",
       "src/ui/views/Bridge/Component/BridgeSwitchButton.tsx",
+      "src/ui/views/Bridge/Component/BridgeToken.module.css",
       "src/ui/views/Bridge/constants.ts",
       "src/ui/views/Bridge/hooks/index.tsx",
       "src/ui/views/Bridge/hooks/token.tsx",
@@ -84701,6 +85078,7 @@
       "src/ui/views/SendToken/components/MaxButton.tsx",
       "src/ui/views/Swap/Component/RabbyFeePopup.tsx",
       "src/ui/views/Swap/Component/TokenRender.tsx",
+      "src/ui/views/Swap/Component/twoStepApproveModal.module.css",
       "src/utils/bridge-sdk-report.ts",
       "src/utils/chain.ts",
       "src/utils/tempo.ts",
@@ -84745,6 +85123,12 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/views/CommonPopup/AssetList/ChainItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/CommonPopup/AssetList/ChainItem.tsx": {
     "enable": true,
     "require": [
@@ -84752,10 +85136,24 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/info-cc.svg",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
-      "src/ui/utils/index.ts"
+      "src/ui/hooks/useDocumentClass.ts",
+      "src/ui/utils/index.ts",
+      "src/ui/views/CommonPopup/AssetList/ChainItem.module.css"
+    ]
+  },
+  "src/ui/views/CommonPopup/AssetList/CustomAssetList/AddCustomTokenPopup.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/AddCustomTestnetTokenPopup.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/AddCustomTestnetTokenPopup.tsx": {
@@ -84773,7 +85171,7 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/dashboard/portfolio/cc-down.svg",
       "src/ui/assets/token-default.svg",
       "src/ui/component/ChainSelector/Modal.tsx",
@@ -84782,6 +85180,7 @@
       "src/ui/hooks/usePopupContainer.tsx",
       "src/ui/hooks/usePreference.ts",
       "src/ui/utils/index.ts",
+      "src/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/AddCustomTestnetTokenPopup.module.css",
       "src/utils/chain.ts"
     ]
   },
@@ -84833,11 +85232,23 @@
       "src/ui/views/Perps/utils.ts"
     ]
   },
+  "src/ui/views/CommonPopup/AssetList/TokenItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/CommonPopup/AssetList/TokenListViewSkeleton.tsx": {
     "enable": true,
     "require": [
       "node_modules/antd/es/skeleton/index.js",
       "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/views/CommonPopup/AssetList/TokenSearchInput.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/CommonPopup/AssetList/components/DappActions/DappActionsForPopup.tsx": {
@@ -84846,7 +85257,6 @@
       "node_modules/antd/es/message/index.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/component/MiniSignV2/state/SignatureManager.ts",
       "src/ui/component/TokenWithChain/index.tsx",
       "src/ui/hooks/backgroundState/useAccount.ts",
@@ -84934,7 +85344,7 @@
       "node_modules/react-window/dist/index.esm.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/ui/assets/dashboard/asset-empty.svg",
@@ -84966,6 +85376,7 @@
       "src/ui/hooks/useSearchToken.ts",
       "src/ui/hooks/useSortTokens.ts",
       "src/ui/store.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/imKey.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/keystone.ts",
@@ -84982,14 +85393,18 @@
       "src/ui/views/CommonPopup/AssetList/components/DappActions/DappActionsForPopup.tsx",
       "src/ui/views/CommonPopup/AssetList/components/DappActions/hook.ts",
       "src/ui/views/CommonPopup/AssetList/components/Table.tsx",
+      "src/ui/views/CommonPopup/AssetList/CustomAssetList/AddCustomTokenPopup.module.css",
       "src/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/AddCustomTestnetTokenPopup.tsx",
       "src/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/CustomTestnetTokenItem.tsx",
       "src/ui/views/CommonPopup/AssetList/CustomTestnetTokenDetailPopup/style.less",
       "src/ui/views/CommonPopup/AssetList/HomePerpsPositionList.tsx",
+      "src/ui/views/CommonPopup/AssetList/TokenItem.module.css",
       "src/ui/views/CommonPopup/AssetList/TokenListViewSkeleton.tsx",
+      "src/ui/views/CommonPopup/AssetList/TokenSearchInput.module.css",
       "src/ui/views/CommonPopup/Ledger.tsx",
       "src/ui/views/CustomTestnet/components/EditTestnetModal.tsx",
       "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
+      "src/ui/views/Dashboard/components/TokenDetailPopup/BlockedTopTips.module.css",
       "src/ui/views/Dashboard/components/TokenDetailPopup/index.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag.tsx",
@@ -85000,13 +85415,31 @@
       "src/utils/string.ts"
     ]
   },
-  "src/ui/views/ConnectedSites/style.less": {
+  "src/ui/views/CreatePassword.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/CustomRPC/style.less": {
+  "src/ui/views/CustomRPC/components/EditRPCModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/CustomRPC/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/CustomTestnet/components/AddFromChainList.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/CustomTestnet/components/CustomTestnetForm.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -85020,8 +85453,9 @@
       "node_modules/antd/es/input/index.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
-      "src/constant/ui.ts"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/constant/ui.ts",
+      "src/ui/views/CustomTestnet/components/CustomTestnetForm.module.css"
     ]
   },
   "src/ui/views/CustomTestnet/components/CustomTestnetItem.tsx": {
@@ -85054,7 +85488,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/background/service/customTestnet.ts",
       "src/ui/assets/search.svg",
       "src/ui/component/index.tsx",
@@ -85062,6 +85496,7 @@
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/hooks/usePopupContainer.tsx",
       "src/ui/utils/index.ts",
+      "src/ui/views/CustomTestnet/components/AddFromChainList.module.css",
       "src/ui/views/CustomTestnet/components/CustomTestnetForm.tsx",
       "src/ui/views/CustomTestnet/components/CustomTestnetItem.tsx",
       "src/ui/views/CustomTestnet/components/Empty.tsx",
@@ -85072,8 +85507,7 @@
     "enable": true,
     "require": [
       "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/react/index.js"
     ]
   },
   "src/ui/views/CustomTestnet/index.tsx": {
@@ -85090,19 +85524,28 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/success.svg",
       "src/ui/component/index.tsx",
       "src/ui/utils/index.ts",
       "src/ui/views/CustomTestnet/components/CustomTestnetItem.tsx",
       "src/ui/views/CustomTestnet/components/EditTestnetModal.tsx",
       "src/ui/views/CustomTestnet/components/Empty.tsx",
-      "src/ui/views/CustomTestnet/style.less",
       "src/utils/chain.ts"
     ]
   },
-  "src/ui/views/CustomTestnet/style.less": {
+  "src/ui/views/DappSearch/components/DappCard.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DappSearch/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Dashboard/components/BalanceView/CurveView.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -85129,7 +85572,31 @@
       "src/utils/account.ts"
     ]
   },
-  "src/ui/views/Dashboard/components/Feedback/style.less": {
+  "src/ui/views/Dashboard/components/ClaimRabbyBadgeModal/freeGasBadgeModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Dashboard/components/Contacts/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Dashboard/components/CurrentConnection/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Dashboard/components/DashboardHeader/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Dashboard/components/DashboardPanel/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -85190,7 +85657,19 @@
       "src/utils/chain.ts"
     ]
   },
+  "src/ui/views/Dashboard/components/PendingTxs.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Dashboard/components/RecentConnections/style.less": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Dashboard/components/Settings/components/CurrencyModal.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -85202,19 +85681,30 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/views/Dashboard/components/TokenDetailPopup/BlockedTopTips.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Dashboard/components/TokenDetailPopup/HistoryItem.tsx": {
     "enable": true,
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/component/index.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
       "src/ui/utils/address.ts",
       "src/ui/utils/index.ts",
       "src/utils/chain.ts",
       "src/utils/index.ts"
+    ]
+  },
+  "src/ui/views/Dashboard/components/TokenDetailPopup/RemovedTokenActions.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Dashboard/components/TokenDetailPopup/TokenDetail.tsx": {
@@ -85232,7 +85722,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/arrow-right-cc.svg",
       "src/ui/assets/dashboard/panel/receive-cc.svg",
@@ -85255,6 +85745,7 @@
       "src/ui/utils/portfolio/lpToken.ts",
       "src/ui/utils/token.ts",
       "src/ui/views/Dashboard/components/TokenDetailPopup/HistoryItem.tsx",
+      "src/ui/views/Dashboard/components/TokenDetailPopup/RemovedTokenActions.module.css",
       "src/ui/views/Dashboard/components/TokenDetailPopup/style.less",
       "src/ui/views/Dashboard/components/TokenDetailPopup/TokenInfo.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag.tsx",
@@ -85272,7 +85763,6 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/token-default.svg",
       "src/ui/assets/tokenDetail/IconCopy.svg",
       "src/ui/assets/tokenDetail/IconHelp.svg",
@@ -85339,6 +85829,12 @@
       "src/utils/perps/quoteAsset.ts"
     ]
   },
+  "src/ui/views/DesktopPerps/components/ChartArea/components/CoinDropdown.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/DesktopPerps/components/ChartArea/components/HorizontalScrollContainer.tsx": {
     "enable": true,
     "require": [
@@ -85354,6 +85850,36 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
       "src/ui/views/DesktopPerps/components/PerpsTooltip/index.tsx"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/DesktopPerpsInput.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/DesktopPerpsInputV2.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/DesktopPerpsSlider.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/DesktopPerpsSliderV2.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/PerpsSettingsDrawer/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/DesktopPerps/components/PerpsToast/index.tsx": {
@@ -85372,13 +85898,39 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/views/DesktopPerps/components/PerpsTooltip/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/DesktopPerps/components/PerpsTooltip/index.tsx": {
     "enable": true,
     "require": [
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/rc-tooltip/lib/placements.js",
       "node_modules/react/index.js",
-      "src/ui/component/Tooltip/TooltipV6.tsx"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/component/Tooltip/TooltipV6.tsx",
+      "src/ui/views/DesktopPerps/components/PerpsTooltip/index.module.css"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/ResizableVSplit.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/TradingPanel/components/PerpsDropdown.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopPerps/components/UserInfoHistory/CommonTable/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/DesktopPerps/components/UserInfoHistory/FloatingWidgetToggle.less": {
@@ -85434,6 +85986,18 @@
       "src/utils/chain.ts"
     ]
   },
+  "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ModalDebugRowItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/RevokeApprovalModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/DesktopProfile/components/ApprovalsTabPane/style.less": {
     "enable": true,
     "require": [
@@ -85452,6 +86016,24 @@
       "src/utils/index.ts"
     ]
   },
+  "src/ui/views/DesktopProfile/components/NFTTabPane/components/CreateListingModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/ProfileHeader/CurveThumbnail.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/ProfileHeader/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/DesktopProfile/components/TokenDetailModal/index.tsx": {
     "enable": true,
     "require": [
@@ -85464,7 +86046,61 @@
       "src/ui/views/Dashboard/components/TokenDetailPopup/TokenDetail.tsx"
     ]
   },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/ProjectOverview.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/ProtocolList.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/LabelWithIcons.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/Tips.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/index.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/table.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/TestTokenlist.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/TokenItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/TokenTab.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -85474,10 +86110,11 @@
     "enable": true,
     "require": [
       "node_modules/antd/es/switch/index.js",
-      "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.module.css"
     ]
   },
   "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag.tsx": {
@@ -85487,6 +86124,12 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js"
+    ]
+  },
+  "src/ui/views/DesktopProfile/components/TokensTabPane/components/TopShortCut.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx": {
@@ -85543,7 +86186,6 @@
       "node_modules/antd/es/tabs/index.js",
       "node_modules/antd/es/tooltip/index.js",
       "node_modules/bignumber.js/bignumber.js",
-      "node_modules/classnames/index.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/dayjs/dayjs.min.js",
       "node_modules/dexie-react-hooks/dist/dexie-react-hooks.mjs",
@@ -85574,11 +86216,12 @@
       "node_modules/recharts/es6/chart/AreaChart.js",
       "node_modules/recharts/es6/component/Tooltip.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/viem/_esm/constants/address.js",
       "node_modules/viem/_esm/constants/bytes.js",
       "node_modules/web3-eth-abi/lib/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
+      "node_modules/zustand/esm/react.mjs",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/eip7702.ts",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
@@ -85628,7 +86271,8 @@
       "src/ui/component/ConnectStatus/useLedgerStatus.ts",
       "src/ui/component/CopyChecked.tsx",
       "src/ui/component/DesktopAccountSelector/styles.less",
-      "src/ui/component/DesktopSelectAccountList/styles.less",
+      "src/ui/component/DesktopPageWrap/index.module.css",
+      "src/ui/component/DesktopSelectAccountList/index.module.css",
       "src/ui/component/index.tsx",
       "src/ui/component/MiniSignV2/components/index.ts",
       "src/ui/component/MiniSignV2/index.ts",
@@ -85639,6 +86283,7 @@
       "src/ui/component/PillsSwitch/NetSwitchTabs.tsx",
       "src/ui/component/PortalHost/index.tsx",
       "src/ui/component/SeedPhraseBackupAlert.tsx",
+      "src/ui/component/StepInput.module.css",
       "src/ui/component/ThemeMode/ThemeIcon.tsx",
       "src/ui/component/TokenWithChain/index.tsx",
       "src/ui/component/Tooltip/TooltipWithMagnetArrow.tsx",
@@ -85648,6 +86293,7 @@
       "src/ui/hooks/useBrandIcon.ts",
       "src/ui/hooks/useCurrentBalance.ts",
       "src/ui/hooks/useDebounceValue.ts",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/useEventBusListener.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/useNFTCollections.ts",
@@ -85659,13 +86305,13 @@
       "src/ui/hooks/useSortTokens.ts",
       "src/ui/query/resources/token.ts",
       "src/ui/state/contactBook.ts",
-      "src/ui/state/desktopProfile.ts",
       "src/ui/state/perps.ts",
       "src/ui/state/swap.ts",
       "src/ui/state/transactions.ts",
       "src/ui/store.ts",
       "src/ui/utils/address.ts",
       "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/ga-event.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/ledger.ts",
@@ -85692,7 +86338,6 @@
       "src/ui/views/AddAddress/ImportKeyOrSeed.tsx",
       "src/ui/views/AddAddress/index.tsx",
       "src/ui/views/AddAddress/InstitutionalWallets.tsx",
-      "src/ui/views/AddFromCurrentSeedPhrase/index.tsx",
       "src/ui/views/AddressBackup/Mnemonics.tsx",
       "src/ui/views/AddressBackup/PrivateKey.tsx",
       "src/ui/views/AddressDetail/index.tsx",
@@ -85713,10 +86358,19 @@
       "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
       "src/ui/views/Dashboard/components/TokenDetailPopup/utils.ts",
       "src/ui/views/DesktopPerps/components/AccountInfo/utils.ts",
+      "src/ui/views/DesktopPerps/components/ChartArea/components/CoinDropdown.module.css",
       "src/ui/views/DesktopPerps/components/ChartArea/components/HorizontalScrollContainer.tsx",
       "src/ui/views/DesktopPerps/components/DashedUnderlineText/index.tsx",
+      "src/ui/views/DesktopPerps/components/DesktopPerpsInput.module.css",
+      "src/ui/views/DesktopPerps/components/DesktopPerpsInputV2.module.css",
+      "src/ui/views/DesktopPerps/components/DesktopPerpsSlider.module.css",
+      "src/ui/views/DesktopPerps/components/DesktopPerpsSliderV2.module.css",
+      "src/ui/views/DesktopPerps/components/PerpsSettingsDrawer/index.module.css",
       "src/ui/views/DesktopPerps/components/PerpsToast/index.tsx",
       "src/ui/views/DesktopPerps/components/PerpsTooltip/index.tsx",
+      "src/ui/views/DesktopPerps/components/ResizableVSplit.module.css",
+      "src/ui/views/DesktopPerps/components/TradingPanel/components/PerpsDropdown.module.css",
+      "src/ui/views/DesktopPerps/components/UserInfoHistory/CommonTable/index.module.css",
       "src/ui/views/DesktopPerps/components/UserInfoHistory/FloatingWidgetToggle.less",
       "src/ui/views/DesktopPerps/components/UserInfoHistory/PositionsInfo/DistanceRiskTag.tsx",
       "src/ui/views/DesktopPerps/index.less",
@@ -85724,22 +86378,36 @@
       "src/ui/views/DesktopPerps/utils.ts",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/BatchRevoke/style.less",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton.tsx",
+      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/ModalDebugRowItem.module.css",
+      "src/ui/views/DesktopProfile/components/ApprovalsTabPane/components/RevokeApprovalModal.module.css",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/style.less",
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts",
+      "src/ui/views/DesktopProfile/components/NFTTabPane/components/CreateListingModal.module.css",
+      "src/ui/views/DesktopProfile/components/ProfileHeader/CurveThumbnail.module.css",
+      "src/ui/views/DesktopProfile/components/ProfileHeader/index.module.css",
       "src/ui/views/DesktopProfile/components/TokenDetailModal/index.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenSwitch.tsx",
       "src/ui/views/DesktopProfile/components/TokensTabPane/components/LpTokenTag.tsx",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/components/TopShortCut.module.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/ProjectOverview.module.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/ProtocolList.module.css",
       "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/index.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/LabelWithIcons.module.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/table.module.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components/Tips.module.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/TestTokenlist.module.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/TokenItem.module.css",
+      "src/ui/views/DesktopProfile/components/TokensTabPane/TokenTab.module.css",
       "src/ui/views/DesktopProfile/components/TransactionsTabPane/DesktopTokenLabel.tsx",
       "src/ui/views/DesktopSmallSwap/components/Checkbox.tsx",
+      "src/ui/views/DesktopSmallSwap/components/LowValueTokenSelector.module.css",
+      "src/ui/views/DesktopSmallSwap/components/StopTaskModal.module.css",
+      "src/ui/views/DesktopSmallSwap/components/SwapAnimation.module.css",
       "src/ui/views/GasAccount/hooks/index.ts",
       "src/ui/views/GnosisQueue/index.tsx",
       "src/ui/views/ImportCoboArgus/ImportCoboArgus.tsx",
       "src/ui/views/ImportCoinbase/ImportCoinbase.tsx",
       "src/ui/views/ImportGnosisAddress/index.tsx",
-      "src/ui/views/ImportJson.tsx",
-      "src/ui/views/ImportMyMetaMaskAccount/index.tsx",
-      "src/ui/views/ImportPrivateKey.tsx",
       "src/ui/views/ImportSuccess/index.tsx",
       "src/ui/views/ImportWatchAddress.tsx",
       "src/ui/views/Perps/components/BlueBorderedButton.tsx",
@@ -85782,6 +86450,24 @@
       "node_modules/react/index.js"
     ]
   },
+  "src/ui/views/DesktopSmallSwap/components/LowValueTokenSelector.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopSmallSwap/components/StopTaskModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/DesktopSmallSwap/components/SwapAnimation.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Ecology/constants.tsx": {
     "enable": true,
     "require": [
@@ -85801,7 +86487,7 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "node_modules/viem/_esm/actions/getContract.js",
       "node_modules/viem/_esm/actions/wallet/writeContract.js",
       "node_modules/viem/_esm/chains/definitions/mainnet.js",
@@ -85829,8 +86515,15 @@
       "src/ui/utils/token.ts",
       "src/ui/utils/url.ts",
       "src/ui/views/Ecology/dbk-chain/components/DbkButton.tsx",
+      "src/ui/views/Ecology/dbk-chain/pages/Bridge/index.module.css",
       "src/utils/chain.ts",
       "src/utils/index.ts"
+    ]
+  },
+  "src/ui/views/Ecology/dbk-chain/components/DbkButton.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Ecology/dbk-chain/components/DbkButton.tsx": {
@@ -85839,7 +86532,20 @@
       "node_modules/@ant-design/icons/es/icons/Loading3QuartersOutlined.js",
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Ecology/dbk-chain/components/DbkButton.module.css"
+    ]
+  },
+  "src/ui/views/Ecology/dbk-chain/pages/Bridge/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/GasAccount/components/Button.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/GasAccount/components/GasAccountDepositPopup.tsx": {
@@ -85896,16 +86602,24 @@
       "src/utils/chain.ts"
     ]
   },
+  "src/ui/views/GasAccount/hooks/checkTxs.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/GasAccount/hooks/checkTxs.ts": {
     "enable": true,
     "require": [
       "node_modules/ahooks/es/useRequest/index.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/hooks/backgroundState/useAccount.ts",
       "src/ui/utils/index.ts",
       "src/ui/views/Approval/components/FooterBar/gasAccountDecision.ts",
+      "src/ui/views/GasAccount/hooks/checkTxs.module.css",
       "src/ui/views/GasAccount/hooks/index.ts"
     ]
   },
@@ -85925,6 +86639,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/ui/component/MiniSignV2/index.ts",
       "src/ui/hooks/useAccounts.ts",
@@ -85944,6 +86659,12 @@
     "require": [
       "node_modules/react/index.js",
       "node_modules/use-sync-external-store/shim/index.js"
+    ]
+  },
+  "src/ui/views/GnosisQueue/components/GnosisTransactionQueue/ReplacePopup.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/GnosisQueue/index.tsx": {
@@ -85967,7 +86688,6 @@
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/viem/_esm/utils/encoding/toHex.js",
       "src/constant/index.ts",
       "src/constant/ui.ts",
@@ -85980,6 +86700,7 @@
       "src/ui/component/AccountSelectDrawer/index.tsx",
       "src/ui/component/index.tsx",
       "src/ui/component/PillsSwitch/index.tsx",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/useGnosisNetworks.ts",
       "src/ui/hooks/usePopupContainer.tsx",
       "src/ui/store-hooks.ts",
@@ -85991,6 +86712,7 @@
       "src/ui/views/Approval/components/Actions/utils.tsx",
       "src/ui/views/Approval/components/TextActions/utils.ts",
       "src/ui/views/Approval/components/TypedDataActions/utils.ts",
+      "src/ui/views/GnosisQueue/components/GnosisTransactionQueue/ReplacePopup.module.css",
       "src/ui/views/GnosisQueue/style.less",
       "src/utils/chain.ts"
     ]
@@ -86144,37 +86866,7 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/ImportHardware/ImKeyConnect/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/views/ImportHardware/KeystoneConnect/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/views/ImportHardware/LedgerConnect/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
   "src/ui/views/ImportHardware/OneKeyConnect/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/views/ImportHardware/QRCodeConnect/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/views/ImportHardware/TrezorConnect/style.less": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -86186,61 +86878,10 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/ImportJson.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/es/form/index.js",
-      "node_modules/antd/es/input/index.js",
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react-router/esm/react-router.js",
-      "node_modules/react-use/esm/useMedia.js",
-      "node_modules/react/index.js",
-      "src/ui/component/index.tsx",
-      "src/ui/utils/index.ts"
-    ]
-  },
-  "src/ui/views/ImportMyMetaMaskAccount/index.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react-router/esm/react-router.js",
-      "node_modules/react/index.js",
-      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "src/constant/ui.ts",
-      "src/ui/component/index.tsx",
-      "src/ui/utils/index.ts",
-      "src/ui/views/ImportMyMetaMaskAccount/style.less"
-    ]
-  },
-  "src/ui/views/ImportMyMetaMaskAccount/style.less": {
+  "src/ui/views/ImportMnemonics/InputMnemonics.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/views/ImportPrivateKey.tsx": {
-    "enable": true,
-    "require": [
-      "node_modules/antd/es/form/index.js",
-      "node_modules/antd/es/input/index.js",
-      "node_modules/antd/es/message/index.js",
-      "node_modules/clsx/dist/clsx.m.js",
-      "node_modules/react-i18next/dist/es/index.js",
-      "node_modules/react-router/esm/react-router.js",
-      "node_modules/react-use/esm/useMedia.js",
-      "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
-      "src/constant/index.ts",
-      "src/constant/ui.ts",
-      "src/ui/assets/success.svg",
-      "src/ui/component/index.tsx",
-      "src/ui/state/desktopProfile.ts",
-      "src/ui/utils/clipboard.tsx",
-      "src/ui/utils/index.ts",
-      "src/ui/utils/useRepeatImportConfirm.tsx",
-      "src/utils/index.ts"
     ]
   },
   "src/ui/views/ImportSuccess/index.less": {
@@ -86307,7 +86948,6 @@
       "node_modules/@keystonehq/bc-ur-registry/dist/index.js",
       "node_modules/@keystonehq/hw-transport-webusb/lib/index.js",
       "node_modules/@ngraveio/bc-ur/dist/index.js",
-      "node_modules/@onekeyfe/hd-shared/dist/index.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
       "node_modules/@rabby-wallet/staking-sdk/dist/index.js",
       "node_modules/@scure/bip39/esm/index.js",
@@ -86368,7 +87008,6 @@
       "node_modules/react-use/esm/useAsyncFn.js",
       "node_modules/react-use/esm/useAsyncRetry.js",
       "node_modules/react-use/esm/useClickAway.js",
-      "node_modules/react-use/esm/useCss.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react-use/esm/useInterval.js",
       "node_modules/react-use/esm/useToggle.js",
@@ -86382,7 +87021,6 @@
       "node_modules/recharts/es6/component/ResponsiveContainer.js",
       "node_modules/recharts/es6/component/Tooltip.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/viem/_esm/accounts/utils/privateKeyToAddress.js",
       "node_modules/viem/_esm/constants/address.js",
       "node_modules/viem/_esm/utils/abi/decodeFunctionResult.js",
@@ -86391,6 +87029,7 @@
       "node_modules/web3-eth-abi/lib/index.js",
       "node_modules/webextension-polyfill/dist/browser-polyfill.js",
       "node_modules/zustand/esm/react.mjs",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/eip7702.ts",
       "src/constant/gas-account.ts",
       "src/constant/index.ts",
@@ -86424,13 +87063,10 @@
       "src/ui/assets/icon-pinned-fill.svg",
       "src/ui/assets/icon-pinned.svg",
       "src/ui/assets/icon-rabby-circle.svg",
-      "src/ui/assets/icon-unknown-1.svg",
       "src/ui/assets/index.ts",
       "src/ui/assets/info-cc.svg",
-      "src/ui/assets/infoicon.svg",
       "src/ui/assets/ledger/press.svg",
       "src/ui/assets/logo-rabby-large.svg",
-      "src/ui/assets/new-user-import/dot-cc.svg",
       "src/ui/assets/new-user-import/external-cc.svg",
       "src/ui/assets/new-user-import/eye-cc.svg",
       "src/ui/assets/new-user-import/eye-close-cc.svg",
@@ -86458,7 +87094,6 @@
       "src/ui/assets/unlock/background.svg",
       "src/ui/assets/unlock/biometrics.svg",
       "src/ui/assets/unlock/rabby.svg",
-      "src/ui/assets/uploader.svg",
       "src/ui/assets/walletlogo/airgap.svg",
       "src/ui/assets/walletlogo/coolwallet.svg",
       "src/ui/assets/walletlogo/gridplus.svg",
@@ -86474,7 +87109,6 @@
       "src/ui/component/AutoSizeAmountInput/index.tsx",
       "src/ui/component/ChainIcon.tsx",
       "src/ui/component/ChainSelector/Modal.tsx",
-      "src/ui/component/ChainSelector/style.less",
       "src/ui/component/ConnectStatus/CommonSignal.tsx",
       "src/ui/component/ConnectStatus/CommonStatusBar.tsx",
       "src/ui/component/ConnectStatus/GridPlusSignal.tsx",
@@ -86484,7 +87118,6 @@
       "src/ui/component/ConnectStatus/useLedgerStatus.ts",
       "src/ui/component/CopyChecked.tsx",
       "src/ui/component/FallbackSiteLogo/index.tsx",
-      "src/ui/component/FieldCheckbox.tsx",
       "src/ui/component/index.tsx",
       "src/ui/component/LangSelector/styles.less",
       "src/ui/component/MiniSignV2/components/index.ts",
@@ -86509,6 +87142,7 @@
       "src/ui/hooks/useBrandIcon.ts",
       "src/ui/hooks/useDebounceValue.ts",
       "src/ui/hooks/useDeleteHdOrPrivateKeyringAddress.tsx",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePreference.ts",
@@ -86524,6 +87158,7 @@
       "src/ui/utils/address.ts",
       "src/ui/utils/biometric.ts",
       "src/ui/utils/clipboard.tsx",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/ga-event.ts",
       "src/ui/utils/imKey.ts",
       "src/ui/utils/index.ts",
@@ -86531,12 +87166,14 @@
       "src/ui/utils/ledger-dmk.ts",
       "src/ui/utils/ledger.ts",
       "src/ui/utils/number.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/utils/os.ts",
       "src/ui/utils/portfolio/collections.ts",
       "src/ui/utils/portfolio/tokenUtils.ts",
       "src/ui/utils/sendPersonalMessage.ts",
       "src/ui/utils/sendTransaction.ts",
       "src/ui/utils/switch.ts",
+      "src/ui/utils/SyncToMobile/SelectAddressModal.module.css",
       "src/ui/utils/token.ts",
       "src/ui/utils/transaction.ts",
       "src/ui/utils/url.ts",
@@ -86546,6 +87183,7 @@
       "src/ui/views/Activities/index.tsx",
       "src/ui/views/AddAddress/AddMoreAddressesFromSeedPhrase.tsx",
       "src/ui/views/AddAddress/AddNewAddress.tsx",
+      "src/ui/views/AddAddress/BulkImportPrivateKey.module.css",
       "src/ui/views/AddAddress/CreateAddressSuccess.tsx",
       "src/ui/views/AddAddress/HardwareWallets.tsx",
       "src/ui/views/AddAddress/ImportAddressSuccess.tsx",
@@ -86553,12 +87191,10 @@
       "src/ui/views/AddAddress/index.tsx",
       "src/ui/views/AddAddress/InstitutionalWallets.tsx",
       "src/ui/views/AddAddress/useCreateAddress.ts",
-      "src/ui/views/AddFromCurrentSeedPhrase/index.tsx",
       "src/ui/views/AddressBackup/Mnemonics.tsx",
       "src/ui/views/AddressBackup/PrivateKey.tsx",
       "src/ui/views/AddressDetail/index.tsx",
       "src/ui/views/AddressManagement/style.less",
-      "src/ui/views/AdvanceSettings/style.less",
       "src/ui/views/Approval/components/Connect/index.tsx",
       "src/ui/views/Approval/components/FooterBar/CommonAccount.tsx",
       "src/ui/views/Approval/components/MiniPersonalMessgae/MiniSignPersonalMessage.tsx",
@@ -86566,6 +87202,7 @@
       "src/ui/views/Approval/hooks/useApprovalUtils.tsx",
       "src/ui/views/Approval/index.tsx",
       "src/ui/views/Approval/style.less",
+      "src/ui/views/BiometricUnlockSetup/index.module.css",
       "src/ui/views/Bridge/Component/BridgeHistory.tsx",
       "src/ui/views/Bridge/constants.ts",
       "src/ui/views/Bridge/index.tsx",
@@ -86575,9 +87212,12 @@
       "src/ui/views/CommonPopup/index.tsx",
       "src/ui/views/CommonPopup/Ledger.tsx",
       "src/ui/views/CommonPopup/OneKey.tsx",
-      "src/ui/views/ConnectedSites/style.less",
-      "src/ui/views/CustomRPC/style.less",
+      "src/ui/views/CreatePassword.module.css",
+      "src/ui/views/CustomRPC/components/EditRPCModal.module.css",
+      "src/ui/views/CustomRPC/index.module.css",
       "src/ui/views/CustomTestnet/index.tsx",
+      "src/ui/views/DappSearch/components/DappCard.module.css",
+      "src/ui/views/DappSearch/index.module.css",
       "src/ui/views/Dashboard/components/NFT/NFTAvatar.tsx",
       "src/ui/views/Dashboard/components/NFT/NFTModal.tsx",
       "src/ui/views/Dashboard/components/TokenDetailPopup/utils.ts",
@@ -86589,6 +87229,7 @@
       "src/ui/views/DesktopProfile/components/ApprovalsTabPane/utils.ts",
       "src/ui/views/DesktopSmallSwap/components/Checkbox.tsx",
       "src/ui/views/Ecology/constants.tsx",
+      "src/ui/views/GasAccount/components/Button.module.css",
       "src/ui/views/GasAccount/components/GasAccountDepositPopup.tsx",
       "src/ui/views/GasAccount/hooks/context.ts",
       "src/ui/views/GasAccount/hooks/index.ts",
@@ -86602,25 +87243,25 @@
       "src/ui/views/ImportCoboArgus/ImportCoboArgus.tsx",
       "src/ui/views/ImportCoinbase/ImportCoinbase.tsx",
       "src/ui/views/ImportGnosisAddress/index.tsx",
-      "src/ui/views/ImportHardware/ImKeyConnect/style.less",
       "src/ui/views/ImportHardware/index.css",
-      "src/ui/views/ImportHardware/KeystoneConnect/style.less",
-      "src/ui/views/ImportHardware/LedgerConnect/style.less",
       "src/ui/views/ImportHardware/OneKeyConnect/style.less",
-      "src/ui/views/ImportHardware/QRCodeConnect/style.less",
-      "src/ui/views/ImportHardware/TrezorConnect/style.less",
-      "src/ui/views/ImportJson.tsx",
-      "src/ui/views/ImportMyMetaMaskAccount/index.tsx",
-      "src/ui/views/ImportPrivateKey.tsx",
+      "src/ui/views/ImportMnemonics/InputMnemonics.module.css",
       "src/ui/views/ImportSuccess/index.tsx",
       "src/ui/views/ImportWatchAddress.tsx",
       "src/ui/views/ManageAddress/hooks.tsx",
+      "src/ui/views/ManageAddress/index.module.css",
+      "src/ui/views/ManageApprovals/components/ApprovalCard.module.css",
+      "src/ui/views/ManageApprovals/components/ApprovalContractPopup/ApprovalCardContract.module.css",
+      "src/ui/views/ManageApprovals/index.module.css",
+      "src/ui/views/ManageBatchApprovals/index.module.css",
       "src/ui/views/MetamaskModeDapps/style.less",
       "src/ui/views/NewUserImport/AccountItem.tsx",
+      "src/ui/views/NewUserImport/ImportGnosisAddress.module.css",
+      "src/ui/views/NewUserImport/ImportSeedOrKey/ImportPrivateKey.module.css",
+      "src/ui/views/NewUserImport/ImportSeedOrKey/ImportSeedPhrase.module.css",
       "src/ui/views/NewUserImport/PasswordCard.tsx",
-      "src/ui/views/NFTApproval/style.less",
-      "src/ui/views/NFTView/style.less",
-      "src/ui/views/NoAddress/style.less",
+      "src/ui/views/NewUserImport/Success.module.css",
+      "src/ui/views/NFTView/index.module.css",
       "src/ui/views/Perps/components/BlueBorderedButton.tsx",
       "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx",
       "src/ui/views/Perps/components/quoteAssetIcons.ts",
@@ -86631,12 +87272,17 @@
       "src/ui/views/Perps/hooks/usePerpsAccount.ts",
       "src/ui/views/Perps/hooks/usePerpsActions.ts",
       "src/ui/views/Perps/hooks/useStableCoinSwap.ts",
-      "src/ui/views/Perps/popup/OpenPositionPopup.less",
+      "src/ui/views/Perps/popup/SearchPerpsPopup.module.css",
       "src/ui/views/Perps/sdkManager.ts",
       "src/ui/views/Perps/sentry.ts",
       "src/ui/views/Perps/utils.ts",
       "src/ui/views/Perps/utils/accountPricing.ts",
       "src/ui/views/Perps/utils/perpsPortfolio.ts",
+      "src/ui/views/RabbyPoints/component/ClaimItem.module.css",
+      "src/ui/views/RabbyPoints/component/ClaimRabbyPointsModal.module.css",
+      "src/ui/views/RabbyPoints/component/ReferrralCode.module.css",
+      "src/ui/views/RabbyPoints/component/VerifyAddressModal.module.css",
+      "src/ui/views/RabbyPoints/index.module.css",
       "src/ui/views/Receive/index.tsx",
       "src/ui/views/RequestPermission/style.less",
       "src/ui/views/SelectAddress/style.less",
@@ -86648,13 +87294,10 @@
       "src/ui/views/Swap/Component/Slider.tsx",
       "src/ui/views/Swap/hooks/twoStepSwap.tsx",
       "src/ui/views/Swap/index.tsx",
-      "src/ui/views/SwitchLang/style.less",
-      "src/ui/views/TokenApproval/style.less",
       "src/ui/views/TransactionHistory/components/TransactionItem.tsx",
       "src/ui/views/TransactionHistory/style.less",
       "src/ui/views/WalletConnect/index.tsx",
       "src/ui/views/WhitelistInput/index.tsx",
-      "src/ui/wallet/index.ts",
       "src/utils/account.ts",
       "src/utils/approval.ts",
       "src/utils/approve.ts",
@@ -86674,6 +87317,7 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react-use/esm/useAsync.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/i18n.ts",
       "src/ui/component/AuthenticationModal/index.tsx",
@@ -86683,19 +87327,49 @@
       "src/ui/utils/index.ts"
     ]
   },
+  "src/ui/views/ManageAddress/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/ManageApprovals/components/ApprovalCard.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/ManageApprovals/components/ApprovalContractPopup/ApprovalCardContract.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/ManageApprovals/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/ManageBatchApprovals/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/MetamaskModeDapps/style.less": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/NFTApproval/style.less": {
+  "src/ui/views/NFTView/index.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/NFTView/style.less": {
+  "src/ui/views/NewUserImport/AccountItem.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -86705,7 +87379,34 @@
     "enable": true,
     "require": [
       "node_modules/antd/es/input/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/react/index.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/NewUserImport/AccountItem.module.css"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportGnosisAddress.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportSeedOrKey/ImportPrivateKey.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/NewUserImport/ImportSeedOrKey/ImportSeedPhrase.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/NewUserImport/PasswordCard.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/NewUserImport/PasswordCard.tsx": {
@@ -86720,15 +87421,22 @@
       "node_modules/lodash/lodash.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/new-user-import/eye-cc.svg",
       "src/ui/assets/new-user-import/eye-close-cc.svg",
       "src/ui/component/NewUserImport/index.tsx",
       "src/ui/hooks/useScreenshotContextMenuVisible.ts",
-      "src/ui/utils/index.ts"
+      "src/ui/utils/index.ts",
+      "src/ui/views/NewUserImport/PasswordCard.module.css"
     ]
   },
-  "src/ui/views/NoAddress/style.less": {
+  "src/ui/views/NewUserImport/Success.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Perps/components/BlueBorderedButton.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -86738,7 +87446,10 @@
     "enable": true,
     "require": [
       "node_modules/antd/es/button/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/react/index.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/Perps/components/BlueBorderedButton.module.css"
     ]
   },
   "src/ui/views/Perps/components/PerpsDisplayCoinName.tsx": {
@@ -86869,7 +87580,7 @@
       "src/ui/views/Perps/sdkManager.ts"
     ]
   },
-  "src/ui/views/Perps/popup/OpenPositionPopup.less": {
+  "src/ui/views/Perps/popup/SearchPerpsPopup.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -86908,6 +87619,36 @@
       "node_modules/bignumber.js/bignumber.js",
       "src/ui/views/DesktopPerps/components/AccountInfo/utils.ts",
       "src/ui/views/Perps/constants.ts"
+    ]
+  },
+  "src/ui/views/RabbyPoints/component/ClaimItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/RabbyPoints/component/ClaimRabbyPointsModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/RabbyPoints/component/ReferrralCode.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/RabbyPoints/component/VerifyAddressModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/RabbyPoints/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Receive/index.tsx": {
@@ -86957,6 +87698,30 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/views/SelectToAddress/components/EnterAddress.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/SelectToAddress/components/TabImported.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/SelectToAddress/components/TabWhitelist.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/SelectToAddress/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/SelectToAddress/index.tsx": {
     "enable": true,
     "require": [
@@ -86980,9 +87745,7 @@
       "node_modules/react-virtuoso/dist/index.mjs",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/constant/index.ts",
-      "src/ui/assets/address/add.svg",
       "src/ui/assets/component/IconClear.tsx",
       "src/ui/assets/success.svg",
       "src/ui/assets/warning-cc.svg",
@@ -87000,6 +87763,10 @@
       "src/ui/utils/addressInput.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/WalletContext.tsx",
+      "src/ui/views/SelectToAddress/components/EnterAddress.module.css",
+      "src/ui/views/SelectToAddress/components/TabImported.module.css",
+      "src/ui/views/SelectToAddress/components/TabWhitelist.module.css",
+      "src/ui/views/SelectToAddress/index.module.css",
       "src/ui/views/SelectToAddress/style.less",
       "src/ui/views/SelectToAddress/util.ts",
       "src/utils/account.ts"
@@ -87081,10 +87848,25 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
+  "src/ui/views/SendToken/components/ChainSelectorInSend.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/SendToken/components/MaxButton.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/SendToken/components/MaxButton.tsx": {
     "enable": true,
     "require": [
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/react/index.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/SendToken/components/MaxButton.module.css"
     ]
   },
   "src/ui/views/SendToken/components/SendShowMore.tsx": {
@@ -87124,8 +87906,8 @@
       "node_modules/react-use/esm/usePrevious.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "node_modules/web3-eth-abi/lib/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/constant/regexp.ts",
       "src/ui/assets/dashboard/index.tsx",
@@ -87144,6 +87926,7 @@
       "src/ui/component/SendLike/AddressInfoTo.tsx",
       "src/ui/component/SendLike/hooks/useRecentSend.ts",
       "src/ui/component/ToConfirmButton/index.tsx",
+      "src/ui/component/TokenAmountInput/index.module.css",
       "src/ui/component/TokenAmountInput/style.less",
       "src/ui/component/TokenSelector/index.tsx",
       "src/ui/component/TokenWithChain/index.tsx",
@@ -87151,12 +87934,14 @@
       "src/ui/hooks/useAddressInfo.ts",
       "src/ui/hooks/useAddressRisk.ts",
       "src/ui/hooks/useDebounceValue.ts",
+      "src/ui/hooks/useDocumentClass.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/useSearchToken.ts",
       "src/ui/hooks/useSigner.tsx",
       "src/ui/hooks/useSortTokens.ts",
       "src/ui/state/exchange.ts",
       "src/ui/store.ts",
+      "src/ui/utils/cn.ts",
       "src/ui/utils/form.ts",
       "src/ui/utils/ga-event.ts",
       "src/ui/utils/gnosisReplace.ts",
@@ -87168,6 +87953,7 @@
       "src/ui/utils/url.ts",
       "src/ui/utils/withAccountChange.tsx",
       "src/ui/views/GasAccount/hooks/runtime.ts",
+      "src/ui/views/SendToken/components/ChainSelectorInSend.module.css",
       "src/ui/views/SendToken/components/MaxButton.tsx",
       "src/ui/views/SendToken/components/SendShowMore.tsx",
       "src/ui/views/SendToken/style.less",
@@ -87183,12 +87969,6 @@
       "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
-  "src/ui/views/SignedTextHistory/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
   "src/ui/views/Staking/components/actionModal.less": {
     "enable": true,
     "require": [
@@ -87196,6 +87976,12 @@
     ]
   },
   "src/ui/views/Staking/style.less": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Swap/Component/IconRefresh.module.css": {
     "enable": true,
     "require": [
       "node_modules/css-loader/dist/runtime/api.js"
@@ -87228,6 +88014,7 @@
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/eventBus.ts",
       "src/ui/assets/index.ts",
@@ -87245,6 +88032,12 @@
       "src/utils/chain.ts"
     ]
   },
+  "src/ui/views/Swap/Component/QuoteItem.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Swap/Component/RabbyFeePopup.tsx": {
     "enable": true,
     "require": [
@@ -87257,12 +88050,38 @@
       "src/ui/component/index.tsx"
     ]
   },
+  "src/ui/views/Swap/Component/RabbyFeeTag.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Swap/Component/Slider.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/Swap/Component/Slider.tsx": {
     "enable": true,
     "require": [
       "node_modules/antd/es/slider/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js"
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/utils/cn.ts",
+      "src/ui/views/Swap/Component/Slider.module.css"
+    ]
+  },
+  "src/ui/views/Swap/Component/Token.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Swap/Component/TokenRender.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/Swap/Component/TokenRender.tsx": {
@@ -87270,10 +88089,25 @@
     "require": [
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/assets/swap/arrow-down-cc.svg",
       "src/ui/component/index.tsx",
-      "src/ui/utils/token.ts"
+      "src/ui/utils/token.ts",
+      "src/ui/views/Swap/Component/TokenRender.module.css"
+    ]
+  },
+  "src/ui/views/Swap/Component/loading.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/Swap/Component/twoStepApproveModal.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "src/ui/views/Swap/Component/twoStepApproveModal.module.css"
     ]
   },
   "src/ui/views/Swap/hooks/context.tsx": {
@@ -87386,10 +88220,10 @@
       "node_modules/clsx/dist/clsx.m.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react-router/esm/react-router.js",
-      "node_modules/react-use/esm/useCss.js",
       "node_modules/react-use/esm/useDebounce.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
+      "node_modules/zustand/esm/react/shallow.mjs",
       "src/constant/index.ts",
       "src/i18n.ts",
       "src/ui/assets/dashboard/arrow-right-cc.svg",
@@ -87431,29 +88265,22 @@
       "src/ui/views/Bridge/Component/BridgeShowMore.tsx",
       "src/ui/views/Bridge/Component/BridgeSwitchButton.tsx",
       "src/ui/views/GasAccount/hooks/runtime.ts",
+      "src/ui/views/Swap/Component/IconRefresh.module.css",
+      "src/ui/views/Swap/Component/loading.module.css",
       "src/ui/views/Swap/Component/LowCreditModal.tsx",
       "src/ui/views/Swap/Component/PendingTxItem.tsx",
+      "src/ui/views/Swap/Component/QuoteItem.module.css",
       "src/ui/views/Swap/Component/RabbyFeePopup.tsx",
       "src/ui/views/Swap/Component/Slider.tsx",
+      "src/ui/views/Swap/Component/Token.module.css",
       "src/ui/views/Swap/Component/TokenRender.tsx",
+      "src/ui/views/Swap/Component/twoStepApproveModal.module.css",
       "src/ui/views/Swap/hooks/index.tsx",
       "src/ui/views/Swap/hooks/quote.tsx",
       "src/ui/views/Swap/hooks/token.tsx",
       "src/ui/views/Swap/hooks/twoStepSwap.tsx",
       "src/utils/chain.ts",
       "src/utils/index.ts"
-    ]
-  },
-  "src/ui/views/SwitchLang/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
-    ]
-  },
-  "src/ui/views/TokenApproval/style.less": {
-    "enable": true,
-    "require": [
-      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/TransactionHistory/components/CancelTxConfirmPopup.tsx": {
@@ -87466,6 +88293,24 @@
       "src/ui/assets/warning-cc.svg",
       "src/ui/component/index.tsx",
       "src/ui/hooks/usePopupContainer.tsx"
+    ]
+  },
+  "src/ui/views/TransactionHistory/components/CancelTxPopup.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/TransactionHistory/components/MempoolList.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
+  "src/ui/views/TransactionHistory/components/SkipNonceAlert.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/TransactionHistory/components/TransactionItem.tsx": {
@@ -87483,7 +88328,7 @@
       "node_modules/lodash/minBy.js",
       "node_modules/react-i18next/dist/es/index.js",
       "node_modules/react/index.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
+      "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/constant/index.ts",
       "src/ui/assets/address-management.svg",
       "src/ui/assets/icon-unknown.svg",
@@ -87502,6 +88347,8 @@
       "src/ui/utils/webapi.tsx",
       "src/ui/views/Approval/components/Actions/utils.tsx",
       "src/ui/views/TransactionHistory/components/CancelTxConfirmPopup.tsx",
+      "src/ui/views/TransactionHistory/components/CancelTxPopup.module.css",
+      "src/ui/views/TransactionHistory/components/MempoolList.module.css",
       "src/ui/views/TransactionHistory/hooks/index.ts",
       "src/utils/chain.ts",
       "src/utils/hexQuantity.ts",
@@ -87528,6 +88375,12 @@
       "node_modules/css-loader/dist/runtime/api.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
       "src/ui/views/TransactionHistory/style.less"
+    ]
+  },
+  "src/ui/views/Unlock/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
     ]
   },
   "src/ui/views/WalletConnect/index.tsx": {
@@ -87562,6 +88415,12 @@
       "src/ui/views/WalletConnect/style.less"
     ]
   },
+  "src/ui/views/WhitelistInput/index.module.css": {
+    "enable": true,
+    "require": [
+      "node_modules/css-loader/dist/runtime/api.js"
+    ]
+  },
   "src/ui/views/WhitelistInput/index.tsx": {
     "enable": true,
     "require": [
@@ -87576,7 +88435,6 @@
       "node_modules/react-router/esm/react-router.js",
       "node_modules/react/index.js",
       "node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js",
-      "node_modules/styled-components/dist/styled-components.browser.esm.js",
       "src/ui/assets/component/close-cc.svg",
       "src/ui/assets/component/IconClear.tsx",
       "src/ui/assets/dashboard/arrow-down-cc.svg",
@@ -87587,10 +88445,10 @@
       "src/ui/component/FullscreenContainer/index.tsx",
       "src/ui/component/index.tsx",
       "src/ui/state/exchange.ts",
-      "src/ui/store.ts",
       "src/ui/utils/addressInput.ts",
       "src/ui/utils/cex.ts",
       "src/ui/utils/index.ts",
+      "src/ui/views/WhitelistInput/index.module.css",
       "src/ui/views/WhitelistInput/styles.less"
     ]
   },
