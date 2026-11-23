@@ -1,4 +1,10 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
+import {
+  BRIDGE_AGGREGATORS,
+  getBridgeAltContracts,
+  getBridgeRouter,
+  isSupportedBridgeChain,
+} from '@rabby-wallet/rabby-bridge';
 import { BRIDGE_HISTORY_POLL_MAX_AGE_MS } from '@/ui/views/Bridge/constants';
 import { isSameAddress } from '@/ui/utils';
 
@@ -10,16 +16,39 @@ export const historyTxKey = (chain?: string, id?: string) =>
 
 type OutgoingHistoryTx = {
   id: string;
+  chain: string;
   cate_id?: string | null;
   is_scam?: boolean;
-  tx?: { from_addr?: string } | null;
+  tx?: { from_addr?: string; to_addr?: string } | null;
 };
 
-const isBridgeCandidate = (item: OutgoingHistoryTx, address: string) =>
-  !!item.tx?.from_addr &&
-  isSameAddress(item.tx.from_addr, address) &&
-  !item.is_scam &&
-  !['send', 'receive', 'approve', 'cancel'].includes(item.cate_id || '');
+const isBridgeContract = (chain: string, to: string) =>
+  BRIDGE_AGGREGATORS.some((aggregator) => {
+    if (!isSupportedBridgeChain(aggregator, chain)) {
+      return false;
+    }
+    const router = getBridgeRouter(aggregator, chain);
+    return (
+      (!!router && isSameAddress(router, to)) ||
+      getBridgeAltContracts(aggregator).some((addr) => isSameAddress(addr, to))
+    );
+  });
+
+export const isBridgeCandidate = (item: OutgoingHistoryTx, address: string) => {
+  const to = item.tx?.to_addr;
+  if (
+    !item.id ||
+    !item.chain ||
+    !to ||
+    !item.tx?.from_addr ||
+    !isSameAddress(item.tx.from_addr, address) ||
+    item.is_scam ||
+    item.cate_id === 'approve'
+  ) {
+    return false;
+  }
+  return isBridgeContract(item.chain, to);
+};
 
 const txIdKey = (id: string) => id.toLowerCase();
 
