@@ -434,6 +434,7 @@ describe('perps store', () => {
       expect(usePerpsStore.getState().userAbstraction).toBe(
         UserAbstractionResp.unifiedAccount
       );
+      expect(usePerpsStore.getState().userAbstractionStatus).toBe('ready');
     });
 
     test('drops a response for the account switched away from', async () => {
@@ -450,6 +451,7 @@ describe('perps store', () => {
       const fetchPromise = usePerpsStore
         .getState()
         .fetchUserAbstraction(accountA.address);
+      expect(usePerpsStore.getState().userAbstractionStatus).toBe('loading');
 
       // Account switches away while the request for A is still in flight.
       usePerpsStore.getState().setCurrentPerpsAccount(accountB);
@@ -460,6 +462,7 @@ describe('perps store', () => {
       expect(usePerpsStore.getState().userAbstraction).toBe(
         UserAbstractionResp.default
       );
+      expect(usePerpsStore.getState().userAbstractionStatus).toBe('idle');
     });
   });
 
@@ -794,6 +797,36 @@ describe('perps store', () => {
 
       expect(subscribeToUserFills).toHaveBeenCalledTimes(1);
       expect(unsubscribe).not.toHaveBeenCalled();
+    });
+
+    test('a previous subscription cannot mark the new account balance ready or block its first frame', () => {
+      const { ws } = getPerpsSDK();
+      const oldPerpsFrame = jest.mocked(ws.subscribeToAllDexsClearinghouseState)
+        .mock.calls[0][1];
+      const oldSpotFrame = jest.mocked(ws.subscribeToSpotState).mock
+        .calls[0][0];
+      usePerpsStore.getState().setCurrentPerpsAccount(accountA);
+      usePerpsStore
+        .getState()
+        .patchClearinghouseState({ time: 10, withdrawable: '90' } as any);
+      usePerpsStore.getState().setCurrentPerpsAccount(accountB);
+
+      oldPerpsFrame({
+        user: accountA.address,
+        clearinghouseStates: [['', { time: 11 }]],
+      } as any);
+      oldSpotFrame({ user: accountA.address, spotState: {} } as any);
+      expect(formatAllDexsClearinghouseState).not.toHaveBeenCalled();
+      expect(usePerpsStore.getState().isSpotStateReady).toBe(false);
+      expect(usePerpsStore.getState().isUserDataReady).toBe(false);
+
+      usePerpsStore
+        .getState()
+        .patchClearinghouseState({ time: 5, withdrawable: '7' } as any);
+      expect(usePerpsStore.getState().isUserDataReady).toBe(true);
+      expect(usePerpsStore.getState().clearinghouseState?.withdrawable).toBe(
+        '7'
+      );
     });
 
     test('re-subscribes for another address, after unsubscribing, and for Pro', async () => {

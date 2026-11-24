@@ -5,6 +5,7 @@ import { HistoryTable, historySchema } from './history';
 import { nftSchema, NFTTable } from './nft';
 import { syncSchema, SyncTable } from './sync';
 import { tokenSchema, TokenTable } from './token';
+import type { PerpsHomeBalanceTable } from './perpsHomeBalance';
 
 export const schemaV1 = {
   history: historySchema,
@@ -31,9 +32,14 @@ export const schemaV5 = {
   balance: balanceSchema,
 };
 
-export const schema = {
+export const schemaV7 = {
   ...schemaV5,
   nft: nftSchema,
+};
+
+export const schema = {
+  ...schemaV7,
+  perpsHomeBalance: '&address',
 };
 
 export type DexieEntityTable = HistoryTable &
@@ -42,4 +48,5 @@ export type DexieEntityTable = HistoryTable &
   DefiTable &
   AppChainTable &
   BalanceTable &
-  NFTTable;
+  NFTTable &
+  PerpsHomeBalanceTable;

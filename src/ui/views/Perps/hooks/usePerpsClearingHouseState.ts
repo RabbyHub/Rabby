@@ -2,8 +2,13 @@ import { useRequest } from 'ahooks';
 import { getPerpsSDK } from '../sdkManager';
 import { getCustomClearinghouseState } from '../../DesktopPerps/utils';
 
-export const usePerpsClearHouseState = (params?: { address?: string }) => {
-  const { address } = params || {};
+export const usePerpsClearHouseState = (params?: {
+  address?: string;
+  type?: string;
+  manual?: boolean;
+}) => {
+  const address = params?.address?.toLowerCase();
+  const { type, manual } = params || {};
 
   return useRequest(
     async () => {
@@ -14,9 +19,12 @@ export const usePerpsClearHouseState = (params?: { address?: string }) => {
       return res;
     },
     {
-      refreshDeps: [address],
+      manual,
+      refreshDeps: [address, type],
       ready: !!address,
-      cacheKey: `perpsClearingHouseState-${address}`,
+      cacheKey: `perpsClearingHouseState-${address}-${type}`,
+      // The home card reads its display cache from Dexie and always refreshes.
+      getCache: manual ? () => undefined : undefined,
     }
   );
 };
