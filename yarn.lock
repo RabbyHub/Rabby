@@ -14414,12 +14414,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next@npm:23.4.1":
-  version: 23.4.1
-  resolution: "i18next@npm:23.4.1"
-  dependencies:
-    "@babel/runtime": "npm:^7.22.5"
-  checksum: 10c0/2984a413502b54a79af68f16830e745cb89fa6d11f461c9d61b730242b18a2001b3170450ab98c1973f169162e5b277a47c675ea83997330c14cfd27b7250a5d
+"i18next@npm:26.3.4":
+  version: 26.3.4
+  resolution: "i18next@npm:26.3.4"
+  peerDependencies:
+    typescript: ^5 || ^6
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10c0/09b2e578660b1cdcb284ed00e1f1c8559871fa66cbf85e58f9b78bf782e3b575341f0668ca7230fc80d30104bec42f8ac3ac221096d0f6e6bfbf18255dcccc94
   languageName: node
   linkType: hard
 
@@ -18895,7 +18898,7 @@ __metadata:
     hdkey: "npm:0.8.0"
     html-webpack-plugin: "npm:5.3.1"
     https-browserify: "npm:1.0.0"
-    i18next: "npm:23.4.1"
+    i18next: "npm:26.3.4"
     immer: "npm:9.0.21"
     jest: "npm:29.7.0"
     jest-environment-jsdom: "npm:29.7.0"
