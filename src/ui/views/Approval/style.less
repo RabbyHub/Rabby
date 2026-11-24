@@ -2344,9 +2344,13 @@
   }
 }
 
-.gnosis-footer-bar {
+.gnosis-footer-bar.ant-drawer {
   .ant-drawer-content {
     background: transparent !important;
+    // antd-overwrite.less gives every drawer content a top border. This one is
+    // transparent around the rounded footer card, so the border would show as
+    // a line across the mask.
+    border-top: none;
   }
 }
 .max-115 {
