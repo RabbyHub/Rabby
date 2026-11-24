@@ -25,6 +25,7 @@ jest.mock('@onekeyfe/hd-web-sdk', () => ({
       on: jest.fn(),
       uiResponse: jest.fn(),
       getDeviceState: jest.fn(),
+      setDeviceConnectProtocol: jest.fn(),
       openWalletSession: jest.fn(),
       getPassphraseState: jest.fn(),
       evmGetPublicKey: jest.fn(),
@@ -126,6 +127,13 @@ describe('OneKey SDK transport', () => {
       expect(sdk.getDeviceState).toHaveBeenCalledWith('usb', {
         scope: 'runtime',
       });
+      await client.setDeviceConnectProtocol('usb', 'V1');
+      expect(sdk.setDeviceConnectProtocol).toHaveBeenCalledWith('usb', 'V1');
+      await client.setDeviceConnectProtocol('usb', undefined);
+      expect(sdk.setDeviceConnectProtocol).toHaveBeenLastCalledWith(
+        'usb',
+        undefined
+      );
       sdk.openWalletSession.mockResolvedValue({
         success: true,
         payload: { walletType: 'standard' },

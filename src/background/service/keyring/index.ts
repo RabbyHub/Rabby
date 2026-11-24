@@ -910,12 +910,19 @@ export class KeyringService extends EventEmitter {
           ) {
             await this.persistAllKeyrings();
           }
-          if (
-            keyring?.type === KEYRING_CLASS.HARDWARE.ONEKEY &&
-            this.isUnlocked() &&
-            keyring.consumePassphraseStateCleared()
-          ) {
-            await this.persistUpdate();
+          if (keyring?.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+            const passphraseCleared = Boolean(
+              keyring.consumePassphraseStateCleared?.()
+            );
+            const deviceProtocolsChanged = Boolean(
+              keyring.consumeDeviceProtocolsChanged?.()
+            );
+            if (
+              this.isUnlocked() &&
+              (passphraseCleared || deviceProtocolsChanged)
+            ) {
+              await this.persistUpdate();
+            }
           }
         }
       },

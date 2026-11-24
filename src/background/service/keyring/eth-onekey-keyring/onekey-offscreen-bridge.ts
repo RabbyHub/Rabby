@@ -21,6 +21,7 @@ export default class OneKeyOffscreenBridge implements OneKeyBridgeInterface {
   init = relay(OneKeyAction.init);
   searchDevices = relay(OneKeyAction.searchDevices);
   getDeviceState = relay(OneKeyAction.getDeviceState);
+  setDeviceConnectProtocol = relay(OneKeyAction.setDeviceConnectProtocol);
   openWalletSession = relay(OneKeyAction.openWalletSession);
   getPassphraseState = relay(OneKeyAction.getPassphraseState);
   evmGetPublicKey = relay(OneKeyAction.evmGetPublicKey);

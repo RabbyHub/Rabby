@@ -76,6 +76,8 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
 
   getDeviceState = HardwareWebSdk.getDeviceState;
 
+  setDeviceConnectProtocol = HardwareWebSdk.setDeviceConnectProtocol;
+
   openWalletSession = HardwareWebSdk.openWalletSession;
 
   cancel: OneKeyBridgeInterface['cancel'] = async (connectId) => {

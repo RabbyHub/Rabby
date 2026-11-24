@@ -83,4 +83,29 @@ describe('OneKey signing lifecycle', () => {
       expect(persist).toHaveBeenCalledTimes(1);
     }
   );
+
+  it('persists remembered device protocols updated during signing', async () => {
+    const persist = jest
+      .spyOn(service, 'persistUpdate')
+      .mockResolvedValue(service.memStore.getState());
+    jest.spyOn(service, 'isUnlocked').mockReturnValue(true);
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.ONEKEY,
+      consumePassphraseStateCleared: jest.fn().mockReturnValue(false),
+      consumeDeviceProtocolsChanged: jest
+        .fn()
+        .mockReturnValueOnce(true)
+        .mockReturnValue(false),
+      signPersonalMessage: jest.fn().mockResolvedValue('signature'),
+    };
+    const message = { from: address, data: '0x01' };
+
+    await expect(service.signPersonalMessage(keyring, message)).resolves.toBe(
+      'signature'
+    );
+    await service.signPersonalMessage(keyring, message);
+
+    expect(keyring.consumeDeviceProtocolsChanged).toHaveBeenCalledTimes(2);
+    expect(persist).toHaveBeenCalledTimes(1);
+  });
 });

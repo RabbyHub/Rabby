@@ -45,8 +45,40 @@ const pathBase = 'm';
 const MAX_INDEX = 1000;
 const DELAY_BETWEEN_POPUPS = 1000;
 const ONEKEY_SESSION_STATE_KEY = 'onekeySessionState';
+const TRANSPORT_PROTOCOL_PROBE_FAILED = 604;
 // All saved and temporary OneKey keyrings share this MV3 session entry.
 let sessionWrites = Promise.resolve();
+
+type ConnectProtocol = 'V1' | 'V2';
+
+function normalizeConnectId(connectId?: string | null): string | undefined {
+  const normalized = connectId?.trim().toLowerCase();
+  return normalized || undefined;
+}
+
+function readProtocol(state: unknown): ConnectProtocol | undefined {
+  const protocol = (state as { protocol?: unknown } | undefined)?.protocol;
+  return protocol === 'V1' || protocol === 'V2' ? protocol : undefined;
+}
+
+function isProtocolMismatchError(error: unknown): boolean {
+  const payload = error as {
+    code?: unknown;
+    detail?: unknown;
+    error?: unknown;
+    message?: unknown;
+  } | null;
+  const code = Number(payload?.code);
+  if (
+    code === HardwareErrorCode.TransportInvalidProtobuf ||
+    code === TRANSPORT_PROTOCOL_PROBE_FAILED
+  ) {
+    return true;
+  }
+  return /protocol mismatch|protocol probe/i.test(
+    String(payload?.detail ?? payload?.error ?? payload?.message ?? '')
+  );
+}
 
 interface OneKeySessionState {
   passphraseState?: string;
@@ -112,6 +144,7 @@ class OneKeyKeyring extends EventEmitter {
   connectId: string | null = null;
   passphraseState: string | undefined = undefined;
   accountDetails: Record<string, AccountDetail>;
+  deviceProtocols: Record<string, ConnectProtocol> = {};
   private hardwareSigningMetadata: HardwareSigningMetadata = {};
 
   bridge!: OneKeyBridgeInterface;
@@ -137,6 +170,7 @@ class OneKeyKeyring extends EventEmitter {
   private restored?: Promise<void>;
   private sessionGeneration = 0;
   private repairedAccount = false;
+  private deviceProtocolsChanged = false;
   private verifiedWallet?: Pick<
     DeviceState['status'],
     'passphraseProtection' | 'unlockedAttachPin'
@@ -144,6 +178,7 @@ class OneKeyKeyring extends EventEmitter {
 
   async init() {
     await this.bridge.init();
+    await this.bindRememberedDeviceProtocols();
     if (!isManifestV3) return;
     if (!this.restored) {
       const generation = this.sessionGeneration;
@@ -223,6 +258,7 @@ class OneKeyKeyring extends EventEmitter {
       perPage: this.perPage,
       unlockedAccount: this.unlockedAccount,
       accountDetails: this.accountDetails,
+      deviceProtocols: this.deviceProtocols,
     });
   }
 
@@ -233,7 +269,56 @@ class OneKeyKeyring extends EventEmitter {
     this.perPage = 5;
     this.paths = opts.paths || {};
     this.accountDetails = opts.accountDetails || {};
+    this.deviceProtocols = {};
+    if (opts.deviceProtocols && typeof opts.deviceProtocols === 'object') {
+      for (const [connectId, protocol] of Object.entries(
+        opts.deviceProtocols as Record<string, unknown>
+      )) {
+        const normalized = normalizeConnectId(connectId);
+        if (normalized && (protocol === 'V1' || protocol === 'V2')) {
+          this.deviceProtocols[normalized] = protocol;
+        }
+      }
+    }
+    this.deviceProtocolsChanged = false;
     return Promise.resolve();
+  }
+
+  private async bindRememberedDeviceProtocols() {
+    if (!this.bridge.setDeviceConnectProtocol) return;
+    for (const [connectId, protocol] of Object.entries(this.deviceProtocols)) {
+      await this.bridge.setDeviceConnectProtocol(connectId, protocol);
+    }
+  }
+
+  private getRememberedDeviceProtocol(
+    connectId?: string | null
+  ): ConnectProtocol | undefined {
+    const normalized = normalizeConnectId(connectId);
+    return normalized ? this.deviceProtocols[normalized] : undefined;
+  }
+
+  private async rememberDeviceProtocol(
+    connectId: string | null | undefined,
+    protocol: ConnectProtocol | undefined
+  ) {
+    const normalized = normalizeConnectId(connectId);
+    if (!normalized || (protocol !== 'V1' && protocol !== 'V2')) return;
+    await this.bridge.setDeviceConnectProtocol?.(connectId!, protocol);
+    if (this.deviceProtocols[normalized] !== protocol) {
+      this.deviceProtocols[normalized] = protocol;
+      this.deviceProtocolsChanged = true;
+    }
+  }
+
+  private async forgetDeviceProtocol(connectId: string | null | undefined) {
+    const normalized = normalizeConnectId(connectId);
+    if (!normalized) return;
+    await this.bridge.setDeviceConnectProtocol?.(connectId!, undefined);
+    if (normalized in this.deviceProtocols) {
+      delete this.deviceProtocols[normalized];
+      this.deviceProtocolsChanged = true;
+    }
   }
 
   // A new import may select another hidden wallet on the very same USB device.
@@ -283,6 +368,12 @@ class OneKeyKeyring extends EventEmitter {
     return repaired;
   }
 
+  consumeDeviceProtocolsChanged() {
+    const changed = this.deviceProtocolsChanged;
+    this.deviceProtocolsChanged = false;
+    return changed;
+  }
+
   private async discoverDevice(signal: AbortSignal) {
     const devices = await readDevice(signal, () => this.bridge.searchDevices());
     const device =
@@ -309,8 +400,35 @@ class OneKeyKeyring extends EventEmitter {
       checkOperation(signal);
     }
     this.pendingDevice = connectId;
-    const state = await readDevice(signal, () =>
-      this.bridge.getDeviceState(connectId)
+    const rememberedProtocol = this.getRememberedDeviceProtocol(connectId);
+    if (rememberedProtocol && this.bridge.setDeviceConnectProtocol) {
+      await whileActive(signal, () =>
+        Promise.resolve(
+          this.bridge.setDeviceConnectProtocol?.(connectId, rememberedProtocol)
+        )
+      );
+    }
+    let state: DeviceState;
+    try {
+      state = await readDevice(signal, () =>
+        this.bridge.getDeviceState(connectId)
+      );
+    } catch (error) {
+      checkOperation(signal);
+      if (
+        !rememberedProtocol ||
+        deviceCancelled(error) ||
+        !isProtocolMismatchError(error)
+      ) {
+        throw error;
+      }
+      await whileActive(signal, () => this.forgetDeviceProtocol(connectId));
+      state = await readDevice(signal, () =>
+        this.bridge.getDeviceState(connectId, { forceProtocolDetection: true })
+      );
+    }
+    await whileActive(signal, () =>
+      this.rememberDeviceProtocol(connectId, readProtocol(state))
     );
     const deviceId = state.identity?.deviceId;
     if (!deviceId)

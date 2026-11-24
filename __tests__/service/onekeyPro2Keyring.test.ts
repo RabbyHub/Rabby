@@ -577,3 +577,97 @@ it('preserves device-side cancellation during the 113 address check', async () =
   expect(bridge.evmSignMessage).toHaveBeenCalledTimes(1);
   expect(ring.accountDetails[addr].passphraseState).toBe('old-state');
 });
+
+it('persists confirmed device protocols and replays them on init after restore', async () => {
+  const { bridge, ring } = setup({ passphraseProtection: false }, 'V1');
+  const setDeviceConnectProtocol = jest.fn();
+  (bridge as any).setDeviceConnectProtocol = setDeviceConnectProtocol;
+  bridge.searchDevices.mockResolvedValue(
+    ok([{ connectId: 'USB-Classic-1', deviceId: 'discovery-id' }])
+  );
+
+  await ring.unlock();
+
+  expect(setDeviceConnectProtocol).toHaveBeenCalledWith('USB-Classic-1', 'V1');
+  expect(ring.consumeDeviceProtocolsChanged()).toBe(true);
+  expect(ring.consumeDeviceProtocolsChanged()).toBe(false);
+
+  const serialized = await ring.serialize();
+  expect(serialized.deviceProtocols).toEqual({ 'usb-classic-1': 'V1' });
+
+  const restoredBridge = {
+    ...bridge,
+    setDeviceConnectProtocol: jest.fn(),
+  };
+  const restored = new OneKeyKeyring({
+    ...serialized,
+    bridge: restoredBridge,
+  });
+  expect(restored.consumeDeviceProtocolsChanged()).toBe(false);
+  expect(restoredBridge.setDeviceConnectProtocol).not.toHaveBeenCalled();
+
+  await restored.init();
+  expect(restoredBridge.setDeviceConnectProtocol).toHaveBeenCalledWith(
+    'usb-classic-1',
+    'V1'
+  );
+});
+
+it('clears a stale remembered protocol and reprobes once on protocol mismatch', async () => {
+  const { bridge } = setup({ passphraseProtection: false }, 'V1');
+  const setDeviceConnectProtocol = jest.fn();
+  (bridge as any).setDeviceConnectProtocol = setDeviceConnectProtocol;
+  bridge.searchDevices.mockResolvedValue(
+    ok([{ connectId: 'USB-Device-1', deviceId: 'discovery-id' }])
+  );
+  bridge.getDeviceState
+    .mockResolvedValueOnce(
+      failure(
+        HardwareErrorCode.RuntimeError,
+        'Device protocol mismatch: expected V2, but device did not respond to expected protocol'
+      )
+    )
+    .mockResolvedValueOnce(state({ passphraseProtection: false }, 'V1'));
+
+  const ring = new OneKeyKeyring({
+    bridge,
+    deviceProtocols: { 'usb-device-1': 'V2' },
+  });
+
+  await ring.unlock();
+
+  expect(setDeviceConnectProtocol).toHaveBeenCalledWith(
+    'USB-Device-1',
+    undefined
+  );
+  expect(bridge.getDeviceState).toHaveBeenNthCalledWith(1, 'USB-Device-1');
+  expect(bridge.getDeviceState).toHaveBeenNthCalledWith(2, 'USB-Device-1', {
+    forceProtocolDetection: true,
+  });
+  expect(setDeviceConnectProtocol).toHaveBeenLastCalledWith(
+    'USB-Device-1',
+    'V1'
+  );
+  expect(ring.consumeDeviceProtocolsChanged()).toBe(true);
+  expect((await ring.serialize()).deviceProtocols).toEqual({
+    'usb-device-1': 'V1',
+  });
+});
+
+it('does not persist unconfirmed protocols when getDeviceState omits protocol', async () => {
+  const { bridge, ring } = setup();
+  const setDeviceConnectProtocol = jest.fn();
+  (bridge as any).setDeviceConnectProtocol = setDeviceConnectProtocol;
+  bridge.getDeviceState.mockResolvedValue(
+    ok({
+      identity: { deviceId: 'device', deviceType: 'classic' },
+      status: { passphraseProtection: false },
+    })
+  );
+
+  await ring.unlock();
+
+  expect(setDeviceConnectProtocol).not.toHaveBeenCalled();
+  expect(ring.consumeDeviceProtocolsChanged()).toBe(false);
+  expect((await ring.serialize()).deviceProtocols).toEqual({});
+});

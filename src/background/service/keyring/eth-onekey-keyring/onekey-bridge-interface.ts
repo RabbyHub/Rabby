@@ -10,5 +10,9 @@ export interface OneKeyBridgeInterface {
   evmGetPublicKey: CoreApi['evmGetPublicKey'];
   cancel: (connectId?: string) => Promise<void>;
   getDeviceState: CoreApi['getDeviceState'];
+  setDeviceConnectProtocol?: (
+    connectId: string,
+    connectProtocol: 'V1' | 'V2' | undefined
+  ) => void | Promise<void>;
   openWalletSession: CoreApi['openWalletSession'];
 }
