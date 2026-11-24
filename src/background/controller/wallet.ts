@@ -253,6 +253,12 @@ import { tokenDbService } from '@/db/services/tokenDbService';
 import { defiDbService } from '@/db/services/defiDbService';
 import { appChainDbService } from '@/db/services/appChainDbService';
 import { balanceDbService } from '@/db/services/balanceDbService';
+import { perpsHomeBalanceDbService } from '@/db/services/perpsHomeBalanceDbService';
+import {
+  canCachePerpsHomeBalance,
+  PerpsHomeAccount,
+  PerpsHomeAmount,
+} from '@/db/schema/perpsHomeBalance';
 import { nftDbService } from '@/db/services/nftDbService';
 import { BALANCE_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
 import { assertGasAccountSignText } from '@/utils/gasAccount';
@@ -7019,6 +7025,22 @@ export class WalletController extends BaseController {
     });
   };
   getPerpsCurrentAccount = perpsService.getCurrentAccount;
+
+  getPerpsHomeBalance = perpsHomeBalanceDbService.get;
+
+  setPerpsHomeBalance = async (
+    account: PerpsHomeAccount,
+    amount: PerpsHomeAmount
+  ) => {
+    if (!canCachePerpsHomeBalance(account)) return;
+    // A popup can finish refreshing after another window removed this account.
+    try {
+      await keyringService.getKeyringForAccount(account.address, account.type);
+    } catch {
+      return;
+    }
+    await perpsHomeBalanceDbService.put(account, amount);
+  };
   getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
   getAgentWalletPreference = async (masterWallet: string) => {
     return perpsService.getAgentWalletPreference(masterWallet);

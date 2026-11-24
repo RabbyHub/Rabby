@@ -3,6 +3,7 @@ import RateModal from '@/ui/component/RateModal/RateModal';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { usePerpsHomePnl } from '@/ui/views/Perps/hooks/usePerpsHomePnl';
+import { PerpsHomeBalance } from './PerpsHomeBalance';
 import { appIsDev } from '@/utils/env';
 import {
   closestCenter,
@@ -16,7 +17,7 @@ import {
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Badge, Skeleton, Tooltip } from 'antd';
+import { Badge, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, {
   createContext,
@@ -56,18 +57,11 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { usePerpsDefaultAccount } from '@/ui/views/Perps/hooks/usePerpsDefaultAccount';
 import { useMemoizedFn, useMount, useScroll } from 'ahooks';
 import { isEqual } from 'lodash';
-import {
-  formatUsdValue,
-  openInTab,
-  openInternalPageInTab,
-  splitNumberByStep,
-  useWallet,
-} from 'ui/utils';
+import { openInTab, openInternalPageInTab, useWallet } from 'ui/utils';
 import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadgeModal';
 import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
-import BigNumber from 'bignumber.js';
 
 export const DragOverlayContext = createContext(false);
 
@@ -416,67 +410,10 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const hiddenBalance = useRabbySelector((s) => s.preference.hiddenBalance);
 
-  const {
-    availableBalance,
-    perpsPositionInfo,
-    isFetching: perpsFetching,
-    positionPnl,
-  } = usePerpsHomePnl();
-
-  const perpsSubContentNode = useMemo<React.ReactNode>(() => {
-    if (hiddenBalance) {
-      return (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-          )}
-        >
-          *****
-        </div>
-      );
-    }
-    if (perpsFetching) {
-      return (
-        <div className="absolute bottom-[6px] text-[11px] font-medium">
-          <Skeleton.Button
-            active={true}
-            className="h-[10px] block rounded-[2px]"
-            style={{ width: 42 }}
-          />
-        </div>
-      );
-    }
-    if (perpsPositionInfo?.assetPositions?.length) {
-      return (
-        <div
-          className={clsx(
-            'absolute bottom-[6px] text-[11px] leading-[13px] font-medium',
-            positionPnl && positionPnl > 0
-              ? 'text-r-green-default'
-              : 'text-r-red-default'
-          )}
-        >
-          {positionPnl && positionPnl >= 0 ? '+' : '-'}$
-          {splitNumberByStep(Math.abs(positionPnl || 0).toFixed(2))}
-        </div>
-      );
-    }
-    return (
-      <div
-        className={clsx(
-          'absolute bottom-[6px] text-[11px] leading-[13px] font-medium text-r-neutral-foot'
-        )}
-      >
-        {formatUsdValue(availableBalance || 0, BigNumber.ROUND_DOWN)}
-      </div>
-    );
-  }, [
-    hiddenBalance,
-    perpsFetching,
-    availableBalance,
-    perpsPositionInfo,
-    positionPnl,
-  ]);
+  const perpsHome = usePerpsHomePnl();
+  const perpsSubContentNode = (
+    <PerpsHomeBalance {...perpsHome} hidden={hiddenBalance} />
+  );
 
   const panelItems = {
     swap: {
