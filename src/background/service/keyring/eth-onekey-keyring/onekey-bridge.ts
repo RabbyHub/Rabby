@@ -13,7 +13,7 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
         debug: false,
         connectSrc: `https://jssdk.onekey.so/${sdkPackage.version}/`,
         env: 'webusb',
-        fetchConfig: true,
+        fetchConfig: false,
       })
         .then((initialized) => {
           if (initialized === false) {

@@ -62,7 +62,7 @@ describe('OneKey SDK transport', () => {
       expect.objectContaining({
         connectSrc: `https://jssdk.onekey.so/${sdkPackage.version}/`,
         env: 'webusb',
-        fetchConfig: true,
+        fetchConfig: false,
       })
     );
     expect(sdk.on).toHaveBeenCalledTimes(1);
