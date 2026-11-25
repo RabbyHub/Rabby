@@ -122,6 +122,19 @@ export function deviceCancelled(error: unknown) {
   );
 }
 
+export function protocolMismatch(error: unknown) {
+  if (!(error instanceof Error) || deviceCancelled(error)) return false;
+  const detail = error instanceof OneKeyError ? error.detail : error.message;
+  if (/cancel(?:led|ed)|abort(?:ed)?|user rejected/i.test(detail)) return false;
+  const code = error instanceof OneKeyError ? Number(error.code) : undefined;
+  // TransportProtocolProbeFailed (604) is absent from hd-shared 1.2.7.
+  return (
+    code === HardwareErrorCode.TransportInvalidProtobuf ||
+    code === 604 ||
+    /protocol mismatch|protocol probe/i.test(detail)
+  );
+}
+
 export async function selectWallet(
   bridge: OneKeyBridgeInterface,
   connectId: string,

@@ -69,8 +69,10 @@ describe('OneKey signing lifecycle', () => {
           .fn()
           .mockReturnValueOnce(true)
           .mockReturnValue(false),
+        consumeDeviceProtocolsChanged: jest.fn().mockReturnValueOnce(true),
         signPersonalMessage: jest.fn().mockResolvedValue('signature'),
       };
+      service.keyrings = [keyring];
       if (result === 'failure')
         keyring.signPersonalMessage.mockRejectedValueOnce(
           new Error('cancelled')
@@ -81,6 +83,52 @@ describe('OneKey signing lifecycle', () => {
       else await expect(first).rejects.toThrow('cancelled');
       await service.signPersonalMessage(keyring, message);
       expect(persist).toHaveBeenCalledTimes(1);
+      expect(keyring.consumeDeviceProtocolsChanged).toHaveBeenCalledTimes(2);
     }
   );
+
+  it('retries a failed protocol write on the next operation without repeating the signature', async () => {
+    jest.spyOn(service, 'isUnlocked').mockReturnValue(true);
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.ONEKEY,
+      consumePassphraseStateCleared: jest.fn().mockReturnValue(false),
+      consumeDeviceProtocolsChanged: jest.fn().mockReturnValueOnce(true),
+      signPersonalMessage: jest.fn().mockResolvedValue('signature'),
+    };
+    service.keyrings = [keyring];
+    const persist = jest
+      .spyOn(service, 'persistAllKeyrings')
+      .mockRejectedValueOnce(new Error('write failed'))
+      .mockResolvedValue(true);
+    const message = { from: address, data: '0x01' };
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await expect(service.signPersonalMessage(keyring, message)).resolves.toBe(
+        'signature'
+      );
+      await service.withOneKeyPersistence(keyring, () => 'already unlocked');
+      await service.withOneKeyPersistence(keyring, () => 'already unlocked');
+      expect(keyring.signPersonalMessage).toHaveBeenCalledTimes(1);
+      expect(persist).toHaveBeenCalledTimes(2);
+    } finally {
+      warn.mockRestore();
+    }
+  });
+
+  it('keeps a temporary import or a result arriving after lock out of the vault', async () => {
+    const unlocked = jest.spyOn(service, 'isUnlocked').mockReturnValue(true);
+    const persist = jest.spyOn(service, 'persistAllKeyrings');
+    const keyring = {
+      type: KEYRING_CLASS.HARDWARE.ONEKEY,
+      consumePassphraseStateCleared: jest.fn(),
+      consumeDeviceProtocolsChanged: jest.fn().mockReturnValue(true),
+    };
+    await service.withOneKeyPersistence(keyring, () => 'just unlocked');
+    service.keyrings = [keyring];
+    await service.withOneKeyPersistence(keyring, () => {
+      unlocked.mockReturnValue(false);
+    });
+    expect(keyring.consumeDeviceProtocolsChanged).not.toHaveBeenCalled();
+    expect(persist).not.toHaveBeenCalled();
+  });
 });

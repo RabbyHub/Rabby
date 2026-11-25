@@ -31,6 +31,7 @@ export enum OneKeyAction {
   getPassphraseState = 'onekey-get-passphrase-state',
   evmGetPublicKey = 'onekey-evm-get-public-key',
   getDeviceState = 'onekey-get-device-state',
+  setDeviceConnectProtocol = 'onekey-set-device-connect-protocol',
   openWalletSession = 'onekey-open-wallet-session',
   cancel = 'onekey-cancel',
 }

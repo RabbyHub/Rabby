@@ -13,7 +13,7 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
         debug: false,
         connectSrc: `https://jssdk.onekey.so/${sdkPackage.version}/`,
         env: 'webusb',
-        fetchConfig: true,
+        fetchConfig: false,
       })
         .then((initialized) => {
           if (initialized === false) {
@@ -75,6 +75,8 @@ export default class OneKeyBridge implements OneKeyBridgeInterface {
   evmGetPublicKey = HardwareWebSdk.evmGetPublicKey;
 
   getDeviceState = HardwareWebSdk.getDeviceState;
+
+  setDeviceConnectProtocol = HardwareWebSdk.setDeviceConnectProtocol;
 
   openWalletSession = HardwareWebSdk.openWalletSession;
 

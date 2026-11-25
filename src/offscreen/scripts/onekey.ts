@@ -17,6 +17,12 @@ export function initOneKey() {
     [OneKeyAction.init, bridge.init],
     [OneKeyAction.searchDevices, bridge.searchDevices],
     [OneKeyAction.getDeviceState, bridge.getDeviceState],
+    [
+      OneKeyAction.setDeviceConnectProtocol,
+      // Chrome serializes undefined array entries as null in runtime messages.
+      (connectId, protocol) =>
+        bridge.setDeviceConnectProtocol(connectId, protocol ?? undefined),
+    ],
     [OneKeyAction.openWalletSession, bridge.openWalletSession],
     [OneKeyAction.getPassphraseState, bridge.getPassphraseState],
     [OneKeyAction.evmGetPublicKey, bridge.evmGetPublicKey],
