@@ -36,6 +36,10 @@ const createWallet = (stashKeyrings: Record<number, any>) =>
     ).outputText,
     {
       stashKeyrings,
+      keyringService: {
+        withOneKeyPersistence: (_keyring: unknown, operation: () => unknown) =>
+          operation(),
+      },
       KEYRING_IMPORT_EXPIRED,
       REQUEST_KEYRING_METHOD_ALLOWLIST: new Set(['getAccounts']),
     }

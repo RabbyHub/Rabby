@@ -25,6 +25,7 @@ jest.mock('@onekeyfe/hd-web-sdk', () => ({
       on: jest.fn(),
       uiResponse: jest.fn(),
       getDeviceState: jest.fn(),
+      setDeviceConnectProtocol: jest.fn(),
       openWalletSession: jest.fn(),
       getPassphraseState: jest.fn(),
       evmGetPublicKey: jest.fn(),
@@ -111,7 +112,9 @@ describe('OneKey SDK transport', () => {
       runtime.sendMessage.mockImplementation(
         (message) =>
           new Promise((resolve) => {
-            expect(listener(message, sender, resolve)).toBe(true);
+            // Model Chrome's JSON wire format, including undefined -> null in arrays.
+            const wireMessage = JSON.parse(JSON.stringify(message));
+            expect(listener(wireMessage, sender, resolve)).toBe(true);
           })
       );
       const client = new OneKeyOffscreenBridge();
@@ -121,11 +124,25 @@ describe('OneKey SDK transport', () => {
       };
       sdk.getDeviceState.mockResolvedValue(state);
       await expect(
-        client.getDeviceState('usb', { scope: 'runtime' })
+        client.getDeviceState('usb', {
+          scope: 'runtime',
+          forceProtocolDetection: true,
+        })
       ).resolves.toEqual(state);
       expect(sdk.getDeviceState).toHaveBeenCalledWith('usb', {
         scope: 'runtime',
+        forceProtocolDetection: true,
       });
+      await client.setDeviceConnectProtocol('usb', 'V2');
+      expect(sdk.setDeviceConnectProtocol).toHaveBeenLastCalledWith(
+        'usb',
+        'V2'
+      );
+      await client.setDeviceConnectProtocol('usb', undefined);
+      expect(sdk.setDeviceConnectProtocol).toHaveBeenLastCalledWith(
+        'usb',
+        undefined
+      );
       sdk.openWalletSession.mockResolvedValue({
         success: true,
         payload: { walletType: 'standard' },

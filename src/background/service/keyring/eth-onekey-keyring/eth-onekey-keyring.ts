@@ -19,6 +19,7 @@ import { OneKeyBridgeInterface } from './onekey-bridge-interface';
 import { isManifestV3 } from '@/utils/env';
 import browser from 'webextension-polyfill';
 import { HardwareErrorCode } from '@onekeyfe/hd-shared';
+import type { HardwareConnectProtocol } from '@onekeyfe/hd-shared';
 import type {
   DeviceState,
   KnownDevice,
@@ -32,6 +33,7 @@ import {
   readDevice,
   selectWallet,
   passphraseDisabled,
+  protocolMismatch,
   OneKeyError,
 } from './device-session';
 import type {
@@ -47,6 +49,9 @@ const DELAY_BETWEEN_POPUPS = 1000;
 const ONEKEY_SESSION_STATE_KEY = 'onekeySessionState';
 // All saved and temporary OneKey keyrings share this MV3 session entry.
 let sessionWrites = Promise.resolve();
+
+// Match the SDK's protocol lookup. Device operations still use the raw USB id.
+const protocolKey = (connectId: string) => connectId.trim().toLowerCase();
 
 interface OneKeySessionState {
   passphraseState?: string;
@@ -137,6 +142,8 @@ class OneKeyKeyring extends EventEmitter {
   private restored?: Promise<void>;
   private sessionGeneration = 0;
   private repairedAccount = false;
+  private deviceProtocols = new Map<string, HardwareConnectProtocol>();
+  private deviceProtocolsChanged = false;
   private verifiedWallet?: Pick<
     DeviceState['status'],
     'passphraseProtection' | 'unlockedAttachPin'
@@ -223,6 +230,7 @@ class OneKeyKeyring extends EventEmitter {
       perPage: this.perPage,
       unlockedAccount: this.unlockedAccount,
       accountDetails: this.accountDetails,
+      deviceProtocols: Object.fromEntries(this.deviceProtocols),
     });
   }
 
@@ -233,6 +241,17 @@ class OneKeyKeyring extends EventEmitter {
     this.perPage = 5;
     this.paths = opts.paths || {};
     this.accountDetails = opts.accountDetails || {};
+    this.deviceProtocols.clear();
+    const saved = opts.deviceProtocols;
+    if (saved && typeof saved === 'object' && !Array.isArray(saved)) {
+      for (const [id, protocol] of Object.entries(saved)) {
+        const key = protocolKey(id);
+        if (key && (protocol === 'V1' || protocol === 'V2')) {
+          this.deviceProtocols.set(key, protocol);
+        }
+      }
+    }
+    this.deviceProtocolsChanged = false;
     return Promise.resolve();
   }
 
@@ -283,12 +302,71 @@ class OneKeyKeyring extends EventEmitter {
     return repaired;
   }
 
+  consumeDeviceProtocolsChanged() {
+    const changed = this.deviceProtocolsChanged;
+    this.deviceProtocolsChanged = false;
+    return changed;
+  }
+
+  private async bindDeviceProtocol(
+    signal: AbortSignal,
+    connectId: string,
+    protocol?: HardwareConnectProtocol
+  ) {
+    const bind = this.bridge.setDeviceConnectProtocol;
+    if (bind) {
+      await whileActive(signal, () =>
+        Promise.resolve(bind.call(this.bridge, connectId, protocol))
+      );
+    }
+  }
+
+  private async readProtocolState(signal: AbortSignal, connectId: string) {
+    const key = protocolKey(connectId);
+    let bound = this.deviceProtocols.get(key);
+    // The SDK endpoint is shared by saved and temporary keyrings. Set (or
+    // clear) this endpoint's hint before the call, including after MV3 restart.
+    await this.bindDeviceProtocol(signal, connectId, bound);
+    let state: DeviceState;
+    try {
+      state = await readDevice(signal, () =>
+        this.bridge.getDeviceState(connectId)
+      );
+    } catch (error) {
+      checkOperation(signal);
+      if (!bound || !protocolMismatch(error)) throw error;
+      // Another operation may already have confirmed a replacement.
+      if (this.deviceProtocols.get(key) === bound) {
+        this.deviceProtocols.delete(key);
+        this.deviceProtocolsChanged = true;
+      }
+      bound = undefined;
+      await this.bindDeviceProtocol(signal, connectId);
+      state = await readDevice(signal, () =>
+        this.bridge.getDeviceState(connectId, { forceProtocolDetection: true })
+      );
+    }
+    checkOperation(signal);
+    const { protocol } = state;
+    if (state.identity?.deviceId && (protocol === 'V1' || protocol === 'V2')) {
+      if (bound !== protocol || this.deviceProtocols.get(key) !== protocol) {
+        await this.bindDeviceProtocol(signal, connectId, protocol);
+        checkOperation(signal);
+      }
+      if (this.deviceProtocols.get(key) !== protocol) {
+        this.deviceProtocols.set(key, protocol);
+        this.deviceProtocolsChanged = true;
+      }
+    }
+    return state;
+  }
+
   private async discoverDevice(signal: AbortSignal) {
     const devices = await readDevice(signal, () => this.bridge.searchDevices());
     const device =
       devices.find((d) => d.connectId === this.connectId) || devices[0];
     const connectId = device?.connectId;
-    if (!connectId) {
+    if (!connectId?.trim()) {
       // The state call reports permission and transport errors when discovery is empty.
       await readDevice(signal, () => this.bridge.getDeviceState());
       throw new OneKeyError(
@@ -309,9 +387,7 @@ class OneKeyKeyring extends EventEmitter {
       checkOperation(signal);
     }
     this.pendingDevice = connectId;
-    const state = await readDevice(signal, () =>
-      this.bridge.getDeviceState(connectId)
-    );
+    const state = await this.readProtocolState(signal, connectId);
     const deviceId = state.identity?.deviceId;
     if (!deviceId)
       throw new OneKeyError(
@@ -570,6 +646,14 @@ class OneKeyKeyring extends EventEmitter {
                 setTimeout(resolve, DELAY_BETWEEN_POPUPS)
               )
           );
+        } else {
+          // The verified-wallet shortcut can skip the state call. Restore
+          // this endpoint's hint before a legacy account uses the shared SDK.
+          await this.bindDeviceProtocol(
+            signal,
+            connectId,
+            this.deviceProtocols.get(protocolKey(connectId))
+          );
         }
       }
       const target = {
@@ -769,6 +853,10 @@ class OneKeyKeyring extends EventEmitter {
     this.accounts = [];
     this.accountDetails = {};
     this.repairedAccount = false;
+    if (this.deviceProtocols.size) {
+      this.deviceProtocols.clear();
+      this.deviceProtocolsChanged = true;
+    }
     this.page = 0;
     this.unlockedAccount = 0;
     this.paths = {};
