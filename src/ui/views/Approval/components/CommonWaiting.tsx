@@ -110,7 +110,7 @@ export const CommonWaiting = ({
     await wallet.resendSign(autoRetryUpdate);
 
     message.success(t('page.signFooterBar.ledger.resent'));
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(approvalId);
   };
 
   const handleCancel = () => {
@@ -132,9 +132,10 @@ export const CommonWaiting = ({
     }
   }, [brandName]);
 
-  const init = async () => {
+  const init = async (signal: AbortSignal) => {
     const account = params.isGnosis ? params.account! : $account;
     const approval = await getApproval();
+    if (!approval || signal.aborted) return;
 
     const isSignText = params.isGnosis
       ? true
@@ -143,6 +144,7 @@ export const CommonWaiting = ({
       const signingTxId = approval.data.params.signingTxId;
       if (signingTxId) {
         const signingTx = await wallet.getSigningTx(signingTxId);
+        if (signal.aborted) return;
 
         if (!signingTx?.explain && chain && !chain?.isTestnet) {
           setErrorMessage(t('page.signFooterBar.qrcode.failedToGetExplain'));
@@ -151,24 +153,34 @@ export const CommonWaiting = ({
       }
     }
 
-    eventBus.addEventListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
+    const listen = (event: string, handler: (value?: any) => void) => {
+      eventBus.addEventListener(event, handler);
+      signal.addEventListener(
+        'abort',
+        () => eventBus.removeEventListener(event, handler),
+        { once: true }
+      );
+    };
+    listen(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
+      if (type === HARDWARE_KEYRING_TYPES.Onekey.type) return;
       setErrorMessage(data);
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     });
 
-    eventBus.addEventListener(
-      EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB,
-      async () => {
-        openInternalPageInTab('request-permission?type=onekey&from=approval');
-      }
-    );
+    listen(EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB, async () => {
+      openInternalPageInTab('request-permission?type=onekey&from=approval');
+    });
 
-    eventBus.addEventListener(EVENTS.TX_SUBMITTING, async () => {
+    listen(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    listen(EVENTS.SIGN_FINISHED, async (data) => {
       if (!isSignFinishedFor(data, params.signingOperation)) return;
-      console.log('finished', data);
+      if (
+        (type === HARDWARE_KEYRING_TYPES.Onekey.type || data.approvalId) &&
+        data.approvalId !== approval.id
+      )
+        return;
       if (data.success) {
         let sig = data.data;
         setResult(sig);
@@ -218,26 +230,26 @@ export const CommonWaiting = ({
       }
     });
 
-    emitSignComponentAmounted();
+    emitSignComponentAmounted(approval.id);
   };
 
   React.useEffect(() => {
-    (async () => {
-      const account = params.isGnosis ? params.account! : $account;
-      setTitle(
-        <div className="flex justify-center items-center">
-          <img src={brandContent?.icon} className="w-20 mr-8" />
-          <span>
-            {t('page.signFooterBar.qrcode.signWith', {
-              brand: account.brandName,
-            })}
-          </span>
-        </div>
-      );
-      setHeight('fit-content');
-      init();
-    })();
-  }, []);
+    const lifetime = new AbortController();
+    const account = params.isGnosis ? params.account! : $account;
+    setTitle(
+      <div className="flex justify-center items-center">
+        <img src={brandContent?.icon} className="w-20 mr-8" />
+        <span>
+          {t('page.signFooterBar.qrcode.signWith', {
+            brand: account.brandName,
+          })}
+        </span>
+      </div>
+    );
+    setHeight('fit-content');
+    void init(lifetime.signal).catch(console.error);
+    return () => lifetime.abort();
+  }, [approvalId]);
 
   React.useEffect(() => {
     setPopupProps(params?.extra?.popupProps);

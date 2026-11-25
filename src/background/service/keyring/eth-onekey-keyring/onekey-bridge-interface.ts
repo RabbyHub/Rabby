@@ -8,5 +8,11 @@ export interface OneKeyBridgeInterface {
   searchDevices: CoreApi['searchDevices'];
   getPassphraseState: CoreApi['getPassphraseState'];
   evmGetPublicKey: CoreApi['evmGetPublicKey'];
-  getFeatures: CoreApi['getFeatures'];
+  cancel: (connectId?: string) => Promise<void>;
+  getDeviceState: CoreApi['getDeviceState'];
+  setDeviceConnectProtocol?: (
+    connectId: string,
+    connectProtocol: 'V1' | 'V2' | undefined
+  ) => void | Promise<void>;
+  openWalletSession: CoreApi['openWalletSession'];
 }
