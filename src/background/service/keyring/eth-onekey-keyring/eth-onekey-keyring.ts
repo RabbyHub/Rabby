@@ -53,6 +53,21 @@ let sessionWrites = Promise.resolve();
 // Match the SDK's protocol lookup. Device operations still use the raw USB id.
 const protocolKey = (connectId: string) => connectId.trim().toLowerCase();
 
+function discoveredDeviceState(device: SearchDevice): DeviceState | undefined {
+  // WebUSB returns a KnownDevice snapshot; other transports can omit it.
+  const { state, status } = device as Partial<KnownDevice>;
+  if (
+    state?.identity?.deviceId &&
+    (!device.deviceId || device.deviceId === state.identity.deviceId) &&
+    state.status &&
+    (state.protocol === 'V1' || state.protocol === 'V2') &&
+    status !== 'occupied' &&
+    status !== 'used'
+  ) {
+    return state;
+  }
+}
+
 interface OneKeySessionState {
   passphraseState?: string;
   deviceId: string;
@@ -91,12 +106,30 @@ interface AccountDetail {
   hdPath: string;
   hdPathType: HDPathType;
   passphraseState?: string;
+  connectId?: string;
+  deviceId?: string;
   index: number;
 }
 
-interface SigningTarget {
+interface DevicePair {
   connectId: string;
   deviceId: string;
+}
+
+function devicePair(
+  connectId: unknown,
+  deviceId: unknown
+): DevicePair | undefined {
+  if (
+    typeof connectId === 'string' &&
+    connectId.trim() &&
+    typeof deviceId === 'string' &&
+    deviceId.trim()
+  )
+    return { connectId, deviceId };
+}
+
+interface SigningTarget extends DevicePair {
   path: string;
   passphraseState?: string;
   useEmptyPassphrase: boolean;
@@ -136,21 +169,24 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   private operations = new AbortController();
-  private pendingUnlock?: Promise<string>;
+  private pendingUnlock?: {
+    controller: AbortController;
+    result: Promise<string>;
+  };
   private activeSignatures = 0;
   private pendingDevice?: string;
   private restored?: Promise<void>;
   private sessionGeneration = 0;
   private repairedAccount = false;
   private deviceProtocols = new Map<string, HardwareConnectProtocol>();
+  // The service persists protocols and per-account device IDs together.
   private deviceProtocolsChanged = false;
   private verifiedWallet?: Pick<
     DeviceState['status'],
     'passphraseProtection' | 'unlockedAttachPin'
-  >;
+  > & { importConfirmed?: boolean };
 
-  async init() {
-    const signal = this.operations.signal;
+  async init(signal = this.operations.signal) {
     await whileActive(signal, () => this.bridge.init());
     // A restarted offscreen document has a fresh SDK, even when the first
     // operation only enumerates devices and never reads an individual state.
@@ -266,6 +302,7 @@ class OneKeyKeyring extends EventEmitter {
   // Keep the previous snapshot for signing, but verify the device's current
   // wallet before deriving the first address in this import or after SW restart.
   beginImport() {
+    this.abortUnlock();
     this.verifiedWallet = undefined;
   }
 
@@ -273,10 +310,17 @@ class OneKeyKeyring extends EventEmitter {
     return Boolean(this.verifiedWallet && this.hdk.publicKey);
   }
 
+  private abortUnlock() {
+    if (!this.pendingUnlock) return;
+    this.pendingUnlock.controller.abort();
+    this.pendingUnlock = undefined;
+    if (!this.activeSignatures) this.pendingDevice = undefined;
+  }
+
   private invalidateOperations() {
     this.operations.abort();
     this.operations = new AbortController();
-    this.pendingUnlock = undefined;
+    this.abortUnlock();
     this.pendingDevice = undefined;
   }
 
@@ -334,44 +378,36 @@ class OneKeyKeyring extends EventEmitter {
     if (remembered) {
       await this.bindDeviceProtocol(signal, connectId, remembered);
     }
-    let state: DeviceState;
     try {
-      state = await readDevice(signal, () =>
+      return await readDevice(signal, () =>
         this.bridge.getDeviceState(connectId)
       );
     } catch (error) {
       checkOperation(signal);
       if (!remembered || !protocolMismatch(error)) throw error;
-      await this.bindDeviceProtocol(signal, connectId);
-      checkOperation(signal);
-      // Another operation may already have confirmed a replacement.
-      if (this.deviceProtocols.get(key) === remembered) {
-        this.deviceProtocols.delete(key);
-        this.deviceProtocolsChanged = true;
-      }
-      state = await readDevice(signal, () =>
+      await this.forgetDeviceProtocol(signal, connectId, remembered);
+      return readDevice(signal, () =>
         this.bridge.getDeviceState(connectId, { forceProtocolDetection: true })
       );
     }
-    checkOperation(signal);
-    const { protocol } = state;
-    if (protocol === 'V1' || protocol === 'V2') {
-      // A transport protocol can be confirmed before the SDK knows the
-      // device identity. readConnectedDevice still checks it before wallet use.
-      await this.bindDeviceProtocol(signal, connectId, protocol);
-      checkOperation(signal);
-      if (this.deviceProtocols.get(key) !== protocol) {
-        this.deviceProtocols.set(key, protocol);
-        this.deviceProtocolsChanged = true;
-      }
-    }
-    return state;
   }
 
-  private async discoverDevice(signal: AbortSignal) {
+  private async discoverDevice(
+    signal: AbortSignal,
+    preferred?: { connectId?: string; deviceId?: string }
+  ) {
     const devices = await readDevice(signal, () => this.bridge.searchDevices());
     const device =
-      devices.find((d) => d.connectId === this.connectId) || devices[0];
+      (preferred?.deviceId &&
+        devices.find(
+          (d) =>
+            (d.deviceId || discoveredDeviceState(d)?.identity.deviceId) ===
+            preferred.deviceId
+        )) ||
+      (preferred?.connectId &&
+        devices.find((d) => d.connectId === preferred.connectId)) ||
+      devices.find((d) => d.connectId === this.connectId) ||
+      devices[0];
     const connectId = device?.connectId;
     if (!connectId?.trim()) {
       // The state call reports permission and transport errors when discovery is empty.
@@ -388,13 +424,27 @@ class OneKeyKeyring extends EventEmitter {
     signal: AbortSignal,
     device: SearchDevice & { connectId: string }
   ) {
+    checkOperation(signal);
     const { connectId } = device;
     if (this.connectId && this.connectId !== connectId) {
       await this.clearSession();
       checkOperation(signal);
     }
     this.pendingDevice = connectId;
-    const state = await this.readProtocolState(signal, connectId);
+    const state =
+      discoveredDeviceState(device) ||
+      (await this.readProtocolState(signal, connectId));
+    checkOperation(signal);
+    const { protocol } = state;
+    if (protocol === 'V1' || protocol === 'V2') {
+      await this.bindDeviceProtocol(signal, connectId, protocol);
+      checkOperation(signal);
+      const key = protocolKey(connectId);
+      if (this.deviceProtocols.get(key) !== protocol) {
+        this.deviceProtocols.set(key, protocol);
+        this.deviceProtocolsChanged = true;
+      }
+    }
     const deviceId = state.identity?.deviceId;
     if (!deviceId)
       throw new OneKeyError(
@@ -416,20 +466,23 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   unlock(): Promise<string> {
-    if (!this.pendingUnlock) {
-      const pending = this.unlockDevice(this.operations.signal).finally(() => {
-        if (this.pendingUnlock === pending) {
-          this.pendingUnlock = undefined;
-          if (!this.activeSignatures) this.pendingDevice = undefined;
-        }
-      });
-      this.pendingUnlock = pending;
+    if (this.pendingUnlock) return this.pendingUnlock.result;
+    if (this.connectId && this.deviceId && this.isUnlocked()) {
+      return Promise.resolve('already unlocked');
     }
-    return this.pendingUnlock;
+    const controller = new AbortController();
+    const result = this.unlockDevice(controller.signal).finally(() => {
+      if (this.pendingUnlock?.controller === controller) {
+        this.pendingUnlock = undefined;
+        if (!this.activeSignatures) this.pendingDevice = undefined;
+      }
+    });
+    this.pendingUnlock = { controller, result };
+    return result;
   }
 
   private async unlockDevice(signal: AbortSignal) {
-    await whileActive(signal, () => this.init());
+    await whileActive(signal, () => this.init(signal));
     const device = await this.discoverDevice(signal);
     checkOperation(signal);
     if (
@@ -463,14 +516,11 @@ class OneKeyKeyring extends EventEmitter {
       state,
       signal
     );
-    const key = await readDevice(signal, () =>
-      this.bridge.evmGetPublicKey(connectId, deviceId, {
-        path: this.hdPath,
-        chainId: 1,
-        showOnOneKey: false,
-        passphraseState,
-        useEmptyPassphrase: !passphraseState,
-      })
+    const key = await this.readImportKey(
+      signal,
+      connectId,
+      deviceId,
+      passphraseState
     );
     const session: OneKeySessionState = {
       publicKey: key.pub,
@@ -508,9 +558,55 @@ class OneKeyKeyring extends EventEmitter {
     this.unlockedAccount = parseInt(index, 10);
   }
 
+  private readImportKey(
+    signal: AbortSignal,
+    connectId: string,
+    deviceId: string,
+    passphraseState?: string
+  ) {
+    return readDevice(signal, () =>
+      this.bridge.evmGetPublicKey(connectId, deviceId, {
+        path: this.hdPath,
+        chainId: 1,
+        showOnOneKey: false,
+        passphraseState,
+        useEmptyPassphrase: !passphraseState,
+      })
+    );
+  }
+
   async addAccounts(n = 1) {
     const first = this.unlockedAccount;
-    await this.unlock();
+    const signal = this.operations.signal;
+    const preview = this.verifiedWallet;
+    const unlocked = await this.unlock();
+    checkOperation(signal);
+    const wallet = this.verifiedWallet;
+    const { connectId, deviceId } = this;
+    if (!wallet || !connectId || !deviceId || (preview && wallet !== preview)) {
+      throw new Error('OneKey import session changed');
+    }
+    // The USB device or hidden wallet can change while the user chooses
+    // addresses. Confirm the displayed xpub once before saving that selection.
+    if (unlocked === 'already unlocked' && !wallet.importConfirmed) {
+      const key = await this.readImportKey(
+        signal,
+        connectId,
+        deviceId,
+        this.passphraseState
+      );
+      checkOperation(signal);
+      if (this.verifiedWallet !== wallet)
+        throw new Error('OneKey import session changed');
+      if (
+        !this.hdk.publicKey.equals(Buffer.from(key.pub, 'hex')) ||
+        !this.hdk.chainCode.equals(Buffer.from(key.node.chain_code, 'hex'))
+      ) {
+        await this.clearSession();
+        throw new Error('OneKey import wallet changed');
+      }
+    }
+    wallet.importConfirmed = true;
     for (let i = first; i < first + n; i++) {
       const address = this._addressFromIndex(pathBase, i);
       if (!this.accounts.some((existing) => isSameAddress(existing, address))) {
@@ -523,6 +619,8 @@ class OneKeyKeyring extends EventEmitter {
         hdPathType: LedgerHDPathType.BIP44,
         hdPathBasePublicKey: this.getPathBasePublicKey(),
         passphraseState: this.passphraseState,
+        connectId,
+        deviceId,
         index: i,
       };
     }
@@ -617,33 +715,141 @@ class OneKeyKeyring extends EventEmitter {
     delete this.paths[checksummedAddress];
   }
 
-  private async sign<T>(
+  private cachedSigningDevice(detail: AccountDetail) {
+    const imported = devicePair(detail.connectId, detail.deviceId);
+    if (imported) return imported;
+
+    // Older accounts may only have an xpub. Reuse the active session only
+    // when its xpub belongs to this account and neither saved id contradicts it.
+    const session = devicePair(this.connectId, this.deviceId);
+    if (
+      session &&
+      detail.hdPathBasePublicKey &&
+      detail.hdPathBasePublicKey === this.hdk.publicKey?.toString('hex') &&
+      (!detail.connectId || detail.connectId === session.connectId) &&
+      (!detail.deviceId || detail.deviceId === session.deviceId)
+    ) {
+      return session;
+    }
+  }
+
+  private async forgetDeviceProtocol(
+    signal: AbortSignal,
+    connectId: string,
+    remembered = this.deviceProtocols.get(protocolKey(connectId))
+  ) {
+    const key = protocolKey(connectId);
+    await this.bindDeviceProtocol(signal, connectId);
+    checkOperation(signal);
+    if (remembered && this.deviceProtocols.get(key) === remembered) {
+      this.deviceProtocols.delete(key);
+      this.deviceProtocolsChanged = true;
+    }
+  }
+
+  private async deviceOwnsAddress(
+    signal: AbortSignal,
     address: string,
-    request: (target: SigningTarget) => Response<T>
-  ): Promise<T> {
+    { connectId, deviceId, ...wallet }: SigningTarget
+  ) {
+    const key = await readDevice(signal, () =>
+      this.bridge.evmGetPublicKey(connectId, deviceId, {
+        ...wallet,
+        chainId: 1,
+        showOnOneKey: false,
+      })
+    );
+    return isSameAddress(
+      bytesToHex(publicToAddress(Buffer.from(key.pub, 'hex'), true)),
+      address
+    );
+  }
+
+  private async repairSigningWallet(
+    signal: AbortSignal,
+    address: string,
+    detail: AccountDetail,
+    target: SigningTarget,
+    originalError: Error
+  ) {
+    // A saved hidden-wallet id can represent the standard wallet. Only its
+    // exact child public key can authorize repairing this account's metadata.
+    const standard = {
+      ...target,
+      passphraseState: undefined,
+      useEmptyPassphrase: true,
+    };
+    let matches = false;
+    try {
+      matches = await this.deviceOwnsAddress(signal, address, standard);
+    } catch (error) {
+      checkOperation(signal);
+      if (deviceCancelled(error)) throw error;
+    }
+    checkOperation(signal);
+    if (!matches) throw originalError;
+    if (detail.passphraseState === target.passphraseState) {
+      detail.passphraseState = undefined;
+      this.repairedAccount = true;
+    }
+    if (
+      this.deviceId === target.deviceId &&
+      this.passphraseState === target.passphraseState
+    ) {
+      await this.clearSession();
+    } else {
+      await this.updateSessionStorage(async () => {
+        const stored = (
+          await browser.storage.session.get(ONEKEY_SESSION_STATE_KEY)
+        )[ONEKEY_SESSION_STATE_KEY] as OneKeySessionState | undefined;
+        checkOperation(signal);
+        if (
+          stored?.deviceId === target.deviceId &&
+          stored.passphraseState === target.passphraseState
+        ) {
+          await browser.storage.session.remove(ONEKEY_SESSION_STATE_KEY);
+        }
+      });
+    }
+    return standard;
+  }
+
+  private async sign<T, Signed>(
+    address: string,
+    request: (target: SigningTarget) => Response<T>,
+    verify: (payload: T) => Promise<Signed>
+  ): Promise<Signed> {
     const signal = this.operations.signal;
     this.activeSignatures++;
     try {
       const detail = this._accountDetailsFromAddress(address);
-      let connectId: string;
-      let deviceId: string;
+      let pair: DevicePair | undefined;
       let passphraseState: string | undefined;
+      let canRediscover = false;
       if (detail.version === 2) {
         await whileActive(signal, () => this.init());
-        const discovered = await this.discoverDevice(signal);
-        const device = await this.readConnectedDevice(signal, discovered);
-        connectId = device.connectId;
-        deviceId = device.deviceId;
-        this.connectId = connectId;
-        this.deviceId = deviceId;
+        pair = this.cachedSigningDevice(detail);
+        canRediscover = Boolean(pair);
         passphraseState = detail.passphraseState;
+        if (pair) {
+          if (
+            pair.deviceId !== this.deviceId ||
+            pair.connectId !== this.connectId
+          ) {
+            // No fresh discovery metadata is available for this cached target.
+            this.hardwareSigningMetadata = {};
+          }
+          const protocol = this.deviceProtocols.get(
+            protocolKey(pair.connectId)
+          );
+          if (protocol)
+            await this.bindDeviceProtocol(signal, pair.connectId, protocol);
+        }
       } else {
         const unlocked = await this.unlock();
         checkOperation(signal);
-        if (!this.connectId || !this.deviceId)
-          throw new Error('Missing OneKey device identity');
-        connectId = this.connectId;
-        deviceId = this.deviceId;
+        pair = devicePair(this.connectId, this.deviceId);
+        if (!pair) throw new Error('Missing OneKey device identity');
         passphraseState = this.passphraseState;
         if (unlocked === 'just unlocked') {
           await whileActive(
@@ -655,67 +861,97 @@ class OneKeyKeyring extends EventEmitter {
           );
         }
       }
-      const target = {
-        connectId,
-        deviceId,
+
+      const wallet = {
         path: this._pathFromAddress(address),
         passphraseState,
         useEmptyPassphrase: !passphraseState,
       };
-      try {
-        return await readDevice(signal, () => request(target));
-      } catch (error) {
-        if (!passphraseState || !passphraseDisabled(error)) throw error;
-        // Existing vaults may have saved the standard wallet as hidden. Verify the
-        // actual child address before replacing its identifier or requesting a retry.
-        let matches = false;
-        try {
-          const key = await readDevice(signal, () =>
-            this.bridge.evmGetPublicKey(connectId, deviceId, {
-              path: target.path,
-              chainId: 1,
-              showOnOneKey: false,
-              useEmptyPassphrase: true,
-            })
-          );
-          matches = isSameAddress(
-            bytesToHex(publicToAddress(Buffer.from(key.pub, 'hex'), true)),
-            address
-          );
-        } catch (probeError) {
-          checkOperation(signal);
-          if (deviceCancelled(probeError)) throw probeError;
-        }
-        if (!matches) throw error;
-        checkOperation(signal);
-        if (detail.passphraseState === passphraseState) {
-          detail.passphraseState = undefined;
-          this.repairedAccount = true;
-        }
-        if (this.passphraseState === passphraseState) {
-          await this.clearSession();
-        } else {
-          await this.updateSessionStorage(async () => {
-            const stored = (
-              await browser.storage.session.get(ONEKEY_SESSION_STATE_KEY)
-            )[ONEKEY_SESSION_STATE_KEY] as OneKeySessionState | undefined;
-            if (
-              stored?.deviceId === deviceId &&
-              stored.passphraseState === passphraseState
-            ) {
-              await browser.storage.session.remove(ONEKEY_SESSION_STATE_KEY);
-            }
-          });
-        }
-        this.pendingDevice = connectId;
-        return await readDevice(signal, () =>
-          request({
-            ...target,
-            passphraseState: undefined,
-            useEmptyPassphrase: true,
-          })
+      const discover = async (previous: Partial<DevicePair>) => {
+        const device = await this.discoverDevice(signal, previous);
+        const { connectId, deviceId } = await this.readConnectedDevice(
+          signal,
+          device
         );
+        const next = { connectId, deviceId, ...wallet };
+        if (
+          previous.deviceId &&
+          previous.deviceId !== deviceId &&
+          !(await this.deviceOwnsAddress(signal, address, next))
+        ) {
+          throw new OneKeyError(
+            HardwareErrorCode.DeviceCheckDeviceIdError,
+            'OneKey device does not own this account'
+          );
+        }
+        return next;
+      };
+      let target = pair ? { ...pair, ...wallet } : await discover(detail);
+      let payload: T;
+      for (;;) {
+        checkOperation(signal);
+        this.pendingDevice = target.connectId;
+        try {
+          payload = await readDevice(signal, () => request(target));
+          break;
+        } catch (error) {
+          checkOperation(signal);
+          const code =
+            error instanceof OneKeyError ? Number(error.code) : undefined;
+          // A disconnect during signing (817) is ambiguous. A permission error
+          // (901) already initiated the WebUSB permission flow.
+          if (
+            deviceCancelled(error) ||
+            code === HardwareErrorCode.WebDeviceNotFoundOrNeedsPermission ||
+            code === HardwareErrorCode.BridgeDeviceDisconnected
+          )
+            throw error;
+          if (target.passphraseState && passphraseDisabled(error)) {
+            canRediscover = false;
+            target = await this.repairSigningWallet(
+              signal,
+              address,
+              detail,
+              target,
+              error
+            );
+            continue;
+          }
+          const staleId =
+            code === HardwareErrorCode.DeviceNotFound ||
+            code === HardwareErrorCode.DeviceCheckDeviceIdError ||
+            code === HardwareErrorCode.TransportNotFound;
+          const staleProtocol = protocolMismatch(error);
+          if (!canRediscover || (!staleId && !staleProtocol)) throw error;
+          canRediscover = false;
+          if (staleProtocol)
+            await this.forgetDeviceProtocol(signal, target.connectId);
+          target = await discover(target);
+        }
       }
+
+      checkOperation(signal);
+      const signed = await verify(payload);
+      checkOperation(signal);
+      if (this._accountDetailsFromAddress(address) !== detail) {
+        throw new Error('OneKey account changed during signing');
+      }
+      if (
+        detail.version === 2 &&
+        (detail.connectId !== target.connectId ||
+          detail.deviceId !== target.deviceId)
+      ) {
+        detail.connectId = target.connectId;
+        detail.deviceId = target.deviceId;
+        this.deviceProtocolsChanged = true;
+      }
+      // A successful signature identifies its signer, but cannot replace the
+      // device associated with an open import wallet's xpub.
+      if (!this.hdk.publicKey) {
+        this.connectId = target.connectId;
+        this.deviceId = target.deviceId;
+      }
+      return signed;
     } finally {
       this.activeSignatures--;
       if (!this.activeSignatures && !this.pendingUnlock)
@@ -734,7 +970,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   async signTransaction(address: string, tx: TypedTransaction) {
-    const payload = await this.sign(
+    return this.sign(
       address,
       ({ connectId, deviceId, ...wallet }) =>
         this.bridge.evmSignTransaction(connectId, deviceId, {
@@ -744,22 +980,24 @@ class OneKeyKeyring extends EventEmitter {
             chainId: Number(tx.common.chainId()),
             to: tx.to?.toString(),
           } as any,
-        })
+        }),
+      async (payload) => {
+        const signed = TransactionFactory.fromTxData(
+          {
+            ...tx.toJSON(),
+            type: `0x${tx.type.toString(16)}`,
+            v: addHexPrefix(payload.v),
+            r: addHexPrefix(payload.r),
+            s: addHexPrefix(payload.s),
+          },
+          { common: tx.common, freeze: Object.isFrozen(tx) }
+        );
+        await this.verifySigner(address, () =>
+          signed.getSenderAddress().toString()
+        );
+        return signed;
+      }
     );
-    const signed = TransactionFactory.fromTxData(
-      {
-        ...tx.toJSON(),
-        type: `0x${tx.type.toString(16)}`,
-        v: addHexPrefix(payload.v),
-        r: addHexPrefix(payload.r),
-        s: addHexPrefix(payload.s),
-      },
-      { common: tx.common, freeze: Object.isFrozen(tx) }
-    );
-    await this.verifySigner(address, () =>
-      signed.getSenderAddress().toString()
-    );
-    return signed;
   }
 
   signMessage(address: string, data: string) {
@@ -768,19 +1006,24 @@ class OneKeyKeyring extends EventEmitter {
 
   async signPersonalMessage(address: string, message: string) {
     const messageHex = stripHexPrefix(message);
-    const payload = await this.sign(
+    return this.sign(
       address,
       ({ connectId, deviceId, ...wallet }) =>
         this.bridge.evmSignMessage(connectId, deviceId, {
           ...wallet,
           messageHex,
-        })
+        }),
+      async (payload) => {
+        const signature = addHexPrefix(payload.signature);
+        await this.verifySigner(address, () =>
+          recoverPersonalSignature({
+            data: addHexPrefix(messageHex),
+            signature,
+          })
+        );
+        return signature;
+      }
     );
-    const signature = addHexPrefix(payload.signature);
-    await this.verifySigner(address, () =>
-      recoverPersonalSignature({ data: addHexPrefix(messageHex), signature })
-    );
-    return signature;
   }
 
   async signTypedData(address, data, opts) {
@@ -804,9 +1047,8 @@ class OneKeyKeyring extends EventEmitter {
       types,
       version
     ).toString('hex');
-    let signature: string;
     try {
-      const payload = await this.sign(
+      return await this.sign(
         address,
         ({ connectId, deviceId, ...wallet }) =>
           this.bridge.evmSignTypedData(connectId, deviceId, {
@@ -816,9 +1058,15 @@ class OneKeyKeyring extends EventEmitter {
             messageHash,
             metamaskV4Compat: version === SignTypedDataVersion.V4,
             chainId: domain.chainId ? Number(domain.chainId) : undefined,
-          })
+          }),
+        async (payload) => {
+          const signature = addHexPrefix(payload.signature);
+          await this.verifySigner(address, () =>
+            recoverTypedSignature({ data, signature, version })
+          );
+          return signature;
+        }
       );
-      signature = addHexPrefix(payload.signature);
     } catch (error) {
       if (!(error instanceof OneKeyError)) throw error;
       let code: string;
@@ -837,10 +1085,6 @@ class OneKeyKeyring extends EventEmitter {
         code: error.code,
       });
     }
-    await this.verifySigner(address, () =>
-      recoverTypedSignature({ data, signature, version })
-    );
-    return signature;
   }
 
   exportAccount(): Promise<any> {

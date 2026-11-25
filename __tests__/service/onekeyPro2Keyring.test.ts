@@ -66,6 +66,11 @@ const state = (status = {}, protocol = 'V2', id = 'device') =>
     identity: { deviceId: id, deviceType: 'pro' },
     status,
   });
+const discovered = (connectId: string, deviceId: string, protocol = 'V1') => ({
+  connectId,
+  deviceId,
+  state: state({ passphraseProtection: false }, protocol, deviceId).payload,
+});
 
 function setup(status = { passphraseProtection: false }, protocol = 'V2') {
   const bridge = {
@@ -126,16 +131,65 @@ it('awaits initialization, resolves the live identity and coalesces concurrent i
     expect.objectContaining({ path, useEmptyPassphrase: true })
   );
   expect(ring.indexFromAddress(addr)).toBe(0);
+  bridge.evmGetPublicKey.mockClear();
+  bridge.getDeviceState.mockClear();
   await ring.addAccounts();
+  expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
+  expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+    'usb',
+    'device',
+    expect.objectContaining({ path, useEmptyPassphrase: true })
+  );
   ring.accountDetails[addr].passphraseState = 'outdated';
   await ring.addAccounts();
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
+  expect(bridge.getDeviceState).not.toHaveBeenCalled();
+  expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
   expect(ring.accounts).toEqual([addr]);
   expect(ring.accountDetails[addr]).toMatchObject({
     index: 0,
     hdPath: path + '/0',
     passphraseState: undefined,
+    connectId: 'usb',
+    deviceId: 'device',
   });
 });
+
+it.each(['public key', 'chain code'])(
+  'rejects the import before adding any accounts if the displayed %s has changed',
+  async (changed) => {
+    const { ring, bridge } = setup();
+    const page = await ring.getAddresses(0, 2);
+    expect(page[0].address).toBe(addr);
+    const otherWallet = base.derive('m/8');
+    bridge.evmGetPublicKey.mockClear().mockResolvedValue(
+      ok({
+        pub: (changed === 'public key' ? otherWallet : base).publicKey.toString(
+          'hex'
+        ),
+        node: {
+          chain_code: (changed === 'chain code'
+            ? otherWallet
+            : base
+          ).chainCode.toString('hex'),
+        },
+      })
+    );
+    bridge.searchDevices.mockClear();
+    bridge.getDeviceState.mockClear();
+    await expect(ring.addAccounts(2)).rejects.toThrow();
+    expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
+    expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+      'usb',
+      'device',
+      expect.objectContaining({ path, useEmptyPassphrase: true })
+    );
+    expect(bridge.searchDevices).not.toHaveBeenCalled();
+    expect(bridge.getDeviceState).not.toHaveBeenCalled();
+    expect(ring.accounts).toEqual([]);
+    expect(ring.accountDetails).toEqual({});
+  }
+);
 
 it('preserves the V1 wallet identifier without probing or opening a V2 session', async () => {
   const { bridge, ring } = setup({ passphraseProtection: true }, 'V1');
@@ -275,6 +329,8 @@ it('does not retry a hidden wallet with the standard wallet or accept a signatur
   await expect(ring.signPersonalMessage(addr, data)).rejects.toThrow(
     'signature doesnt match'
   );
+  expect(bridge.evmSignMessage).toHaveBeenCalledTimes(2);
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
 });
 
 it.each([SignTypedDataVersion.V3, SignTypedDataVersion.V4] as const)(
@@ -383,6 +439,47 @@ it('prevents a late key read or pending MV3 restore from reviving a discarded se
   expect(next.isUnlocked()).toBe(false);
 });
 
+it('starts a fresh import while the old device key read is pending and ignores its late reply', async () => {
+  const { ring, bridge } = setup();
+  const firstRead = gate<void>();
+  const oldReply = gate<ReturnType<typeof pub>>();
+  const newWallet = base.derive('m/6');
+  bridge.searchDevices
+    .mockResolvedValueOnce(ok([discovered('old-usb', 'old-device')]))
+    .mockResolvedValue(ok([discovered('new-usb', 'new-device')]));
+  bridge.evmGetPublicKey
+    .mockImplementationOnce(() => {
+      firstRead.resolve();
+      return oldReply.promise;
+    })
+    .mockResolvedValue(pub(newWallet));
+  const original = ring.unlock();
+  await firstRead.promise;
+  const cancelled = expect(original).rejects.toThrow('cancelled');
+  ring.beginImport();
+  const replacement = ring.unlock();
+  await cancelled;
+  await expect(replacement).resolves.toBe('just unlocked');
+  oldReply.resolve(pub(base));
+  await Promise.resolve();
+
+  expect(ring.connectId).toBe('new-usb');
+  expect(ring.deviceId).toBe('new-device');
+  const page = await ring.getAddresses(0, 1);
+  const expected = toChecksumAddress(
+    bytesToHex(publicToAddress(newWallet.derive('m/0').publicKey, true))
+  );
+  expect(page[0].address).toBe(expected);
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(2);
+  expect(storage.set).toHaveBeenCalledTimes(1);
+  expect(storage.set).toHaveBeenCalledWith({
+    onekeySessionState: expect.objectContaining({
+      connectId: 'new-usb',
+      deviceId: 'new-device',
+    }),
+  });
+});
+
 it('reopens the standard wallet when the device reports that passphrase protection is now disabled', async () => {
   const { bridge, ring } = setup({ passphraseProtection: true });
   bridge.openWalletSession.mockResolvedValueOnce(passphraseOff);
@@ -397,18 +494,25 @@ it('reopens the standard wallet when the device reports that passphrase protecti
 it('discards cached device identity if another connection fails its live identity read', async () => {
   const { bridge, ring } = setup();
   await ring.addAccounts();
+  bridge.evmSignMessage.mockResolvedValueOnce(
+    failure(HardwareErrorCode.DeviceNotFound, 'device not found')
+  );
   bridge.searchDevices.mockResolvedValue(ok([{ connectId: 'new-usb' }]));
   bridge.getDeviceState.mockResolvedValue(ok({ identity: {}, status: {} }));
   await expect(ring.signPersonalMessage(addr, data)).rejects.toMatchObject({
     code: HardwareErrorCode.DeviceNotFound,
   });
-  expect(bridge.evmSignMessage).not.toHaveBeenCalled();
+  expect(bridge.evmSignMessage).toHaveBeenCalledTimes(1);
+  expect(ring.accountDetails[addr]).toMatchObject({
+    connectId: 'usb',
+    deviceId: 'device',
+  });
   expect(ring.deviceId).toBeNull();
   expect(ring.isUnlocked()).toBe(false);
   expect(storage.remove).toHaveBeenCalledWith('onekeySessionState');
 });
 
-it('reuses the locally verified wallet when discovery matches both cached IDs', async () => {
+it('uses the verified session for each import page and rediscovers after beginImport or cleanup', async () => {
   const { bridge, ring } = setup();
   bridge.searchDevices.mockResolvedValue(
     ok([{ connectId: 'usb', deviceId: 'device' }])
@@ -419,18 +523,25 @@ it('reuses the locally verified wallet when discovery matches both cached IDs', 
   bridge.openWalletSession.mockClear();
   bridge.evmGetPublicKey.mockClear();
 
+  await ring.getAddresses(1, 2);
   await expect(ring.unlock()).resolves.toBe('already unlocked');
-  expect(bridge.searchDevices).toHaveBeenCalledTimes(2);
-  expect(bridge.setDeviceConnectProtocol.mock.calls).toEqual([['usb', 'V2']]);
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
+  expect(bridge.init).toHaveBeenCalledTimes(1);
+  expect(bridge.setDeviceConnectProtocol).not.toHaveBeenCalled();
   expect(bridge.getDeviceState).not.toHaveBeenCalled();
   expect(bridge.openWalletSession).not.toHaveBeenCalled();
   expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
 
   ring.beginImport();
   await expect(ring.unlock()).resolves.toBe('just unlocked');
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(2);
   expect(bridge.getDeviceState).toHaveBeenCalledWith('usb');
   expect(bridge.openWalletSession).toHaveBeenCalledTimes(1);
   expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
+  await ring.cleanUp();
+  await ring.getAddresses(0, 1);
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(3);
+  expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(2);
 });
 
 it.each([
@@ -446,6 +557,7 @@ it.each([
   async (_label, device, expectedConnection) => {
     const { bridge, ring } = setup();
     await ring.unlock();
+    ring.beginImport();
     bridge.searchDevices.mockResolvedValue(ok([device]));
     bridge.getDeviceState
       .mockClear()
@@ -458,6 +570,7 @@ it.each([
 it('does not use a cached device when discovery omits the connection ID', async () => {
   const { bridge, ring } = setup();
   await ring.unlock();
+  ring.beginImport();
   bridge.searchDevices.mockResolvedValue(ok([{ deviceId: 'device' }]));
   bridge.getDeviceState.mockClear();
   await expect(ring.unlock()).rejects.toMatchObject({
@@ -479,8 +592,9 @@ it('revalidates the wallet after an MV3 restart and reuses it for subsequent pag
   await expect(ring.unlock()).resolves.toBe('just unlocked');
   await expect(ring.unlock()).resolves.toBe('already unlocked');
   expect(storage.get).toHaveBeenCalledTimes(1);
-  expect(bridge.init).toHaveBeenCalledTimes(2);
-  expect(bridge.getDeviceState).toHaveBeenCalledTimes(3);
+  expect(bridge.init).toHaveBeenCalledTimes(1);
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
+  expect(bridge.getDeviceState).toHaveBeenCalledTimes(2);
   expect(bridge.evmGetPublicKey).toHaveBeenCalledTimes(1);
 });
 
@@ -505,30 +619,20 @@ it('releases a cancelled 113 recovery before the device acknowledges it and neve
   expect(ring.consumePassphraseStateCleared()).toBe(false);
 });
 
-it('uses the protocol restored during init to sign an old account with an empty passphrase', async () => {
+it('signs an old account with the verified session and an explicit empty passphrase', async () => {
   const { bridge, ring } = setup();
   bridge.searchDevices.mockResolvedValue(
     ok([{ connectId: 'usb', deviceId: 'device' }])
   );
   await ring.addAccounts();
   delete ring.accountDetails[addr].version;
-  const started = gate<void>();
-  const bound = gate<void>();
+  delete ring.accountDetails[addr].connectId;
+  delete ring.accountDetails[addr].deviceId;
   bridge.searchDevices.mockClear();
   bridge.getDeviceState.mockClear();
-  bridge.setDeviceConnectProtocol.mockClear().mockImplementationOnce(() => {
-    started.resolve();
-    return bound.promise;
-  });
-  const signing = ring.signPersonalMessage(addr, data);
-  await started.promise;
+  await expect(ring.signPersonalMessage(addr, data)).resolves.toBe(signature());
   expect(bridge.searchDevices).not.toHaveBeenCalled();
-  expect(bridge.evmSignMessage).not.toHaveBeenCalled();
-  bound.resolve();
-  await expect(signing).resolves.toBe(signature());
-  expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
   expect(bridge.getDeviceState).not.toHaveBeenCalled();
-  expect(bridge.setDeviceConnectProtocol.mock.calls).toEqual([['usb', 'V2']]);
   expect(bridge.evmSignMessage).toHaveBeenCalledWith(
     'usb',
     'device',
@@ -539,6 +643,7 @@ it('uses the protocol restored during init to sign an old account with an empty 
 it('rechecks wallet settings between imports on the same USB device without prompting on each page', async () => {
   const { bridge, ring } = setup();
   await ring.getAddresses(0, 1);
+  ring.beginImport();
   bridge.getDeviceState.mockResolvedValue(
     state({
       passphraseProtection: true,
@@ -609,6 +714,7 @@ describe('OneKey transport protocol cache', () => {
     expect(ring.consumeDeviceProtocolsChanged()).toBe(true);
     expect(ring.consumeDeviceProtocolsChanged()).toBe(false);
 
+    ring.beginImport();
     bridge.searchDevices.mockResolvedValue(ok([{ connectId: 'Second-USB' }]));
     bridge.getDeviceState.mockResolvedValue(state({}, 'V1', 'second-device'));
     await ring.unlock();
@@ -807,24 +913,328 @@ describe('OneKey transport protocol cache', () => {
     expect(ring.consumeDeviceProtocolsChanged()).toBe(false);
   });
 
-  it('reprobes only the state read during signing and never repeats a signature request', async () => {
+  it('clears the cached protocol after a signing transport mismatch and tries the rediscovered target once', async () => {
     const { ring, bridge } = setup();
     await ring.addAccounts();
-    bridge.getDeviceState
-      .mockClear()
-      .mockResolvedValueOnce(failure(604, 'probe failed'))
-      .mockResolvedValueOnce(state({}, 'V1'));
+    bridge.searchDevices.mockClear();
+    bridge.getDeviceState.mockClear().mockResolvedValue(state({}, 'V1'));
+    bridge.setDeviceConnectProtocol.mockClear();
     bridge.evmSignMessage.mockResolvedValueOnce(
       failure(HardwareErrorCode.TransportInvalidProtobuf, 'invalid protobuf')
     );
-    await expect(ring.signPersonalMessage(addr, data)).rejects.toMatchObject({
-      code: HardwareErrorCode.TransportInvalidProtobuf,
-    });
-    expect(bridge.getDeviceState.mock.calls).toEqual([
-      ['usb'],
-      ['usb', { forceProtocolDetection: true }],
-    ]);
-    expect(bridge.evmSignMessage).toHaveBeenCalledTimes(1);
+    await expect(ring.signPersonalMessage(addr, data)).resolves.toBe(
+      signature()
+    );
+    expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
+    expect(bridge.getDeviceState.mock.calls).toEqual([['usb']]);
+    expect(bridge.setDeviceConnectProtocol).toHaveBeenCalledWith(
+      'usb',
+      undefined
+    );
+    expect(bridge.evmSignMessage).toHaveBeenCalledTimes(2);
     expect((await ring.serialize()).deviceProtocols).toEqual({ usb: 'V1' });
   });
+});
+
+describe('OneKey device discovery and signing targets', () => {
+  it('reuses complete discovery state, including its protocol and device identity', async () => {
+    const { ring, bridge } = setup();
+    bridge.searchDevices.mockResolvedValue(
+      ok([discovered('usb-a', 'classic')])
+    );
+    await ring.addAccounts();
+    expect(bridge.getDeviceState).not.toHaveBeenCalled();
+    expect(bridge.openWalletSession).not.toHaveBeenCalled();
+    expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+      'usb-a',
+      'classic',
+      expect.objectContaining({ path })
+    );
+    expect((await ring.serialize()).deviceProtocols).toEqual({ 'usb-a': 'V1' });
+  });
+
+  it.each([
+    ['missing identity', { state: { protocol: 'V1', status: {} } }],
+    [
+      'missing status',
+      { state: { protocol: 'V1', identity: { deviceId: 'descriptor-id' } } },
+    ],
+    ['unknown protocol', { state: state({}, 'V3', 'descriptor-id').payload }],
+    ['conflicting device IDs', { state: state({}, 'V1', 'other').payload }],
+    ['occupied device', { status: 'occupied' }],
+    ['device in use', { status: 'used' }],
+  ])('reads live state when discovery reports %s', async (_case, fields) => {
+    const { ring, bridge } = setup({ passphraseProtection: false }, 'V1');
+    bridge.searchDevices.mockResolvedValue(
+      ok([{ ...discovered('usb', 'descriptor-id'), ...fields }])
+    );
+    await ring.addAccounts();
+    expect(bridge.getDeviceState.mock.calls).toEqual([['usb']]);
+    expect(ring.accountDetails[addr]).toMatchObject({
+      connectId: 'usb',
+      deviceId: 'device',
+    });
+  });
+
+  it('still verifies the device after opening a Pro 2 wallet with a complete discovery snapshot', async () => {
+    const { ring, bridge } = setup();
+    bridge.searchDevices.mockResolvedValue(
+      ok([discovered('usb', 'device', 'V2')])
+    );
+    bridge.getDeviceState.mockResolvedValue(state({}, 'V2', 'switched'));
+    await expect(ring.addAccounts()).rejects.toMatchObject({
+      code: HardwareErrorCode.DeviceNotFound,
+    });
+    expect(bridge.openWalletSession).toHaveBeenCalledTimes(1);
+    expect(bridge.getDeviceState.mock.calls).toEqual([['usb']]);
+    expect(ring.accounts).toEqual([]);
+    expect(ring.isUnlocked()).toBe(false);
+    expect(storage.set).not.toHaveBeenCalled();
+  });
+
+  it('stores the two IDs for each account and targets the correct device across imports, cleanup and vault restore', async () => {
+    const { ring, bridge } = setup();
+    await ring.addAccounts();
+    const otherBase = base.derive('m/2');
+    ring.beginImport();
+    bridge.searchDevices.mockResolvedValue(
+      ok([discovered('usb-b', 'device-b')])
+    );
+    bridge.evmGetPublicKey.mockResolvedValue(pub(otherBase));
+    await ring.addAccounts();
+    const other = ring.accounts[1];
+    expect(other).toBeDefined();
+    bridge.searchDevices.mockClear();
+    bridge.getDeviceState.mockClear();
+    bridge.setDeviceConnectProtocol.mockClear();
+    await expect(ring.signPersonalMessage(addr, data)).resolves.toBe(
+      signature()
+    );
+    expect(bridge.evmSignMessage).toHaveBeenCalledWith(
+      'usb',
+      'device',
+      expect.objectContaining({ path: path + '/0' })
+    );
+    expect(bridge.setDeviceConnectProtocol).toHaveBeenCalledWith('usb', 'V2');
+    expect(bridge.searchDevices).not.toHaveBeenCalled();
+    expect(bridge.getDeviceState).not.toHaveBeenCalled();
+
+    const snapshot = await ring.serialize();
+    expect(snapshot.accountDetails[addr]).toMatchObject({
+      connectId: 'usb',
+      deviceId: 'device',
+    });
+    expect(snapshot.accountDetails[other]).toMatchObject({
+      connectId: 'usb-b',
+      deviceId: 'device-b',
+    });
+    await ring.cleanUp();
+    const freshBridge = setup().bridge;
+    const restored = new OneKeyKeyring({ ...snapshot, bridge: freshBridge });
+    const signed = signature(otherBase.derive('m/0'));
+    freshBridge.evmSignMessage.mockResolvedValue(
+      ok({ address: other, signature: signed.slice(2) })
+    );
+    await expect(restored.signPersonalMessage(other, data)).resolves.toBe(
+      signed
+    );
+    expect(freshBridge.evmSignMessage).toHaveBeenCalledWith(
+      'usb-b',
+      'device-b',
+      expect.objectContaining({ path: path + '/0' })
+    );
+    expect(freshBridge.searchDevices).not.toHaveBeenCalled();
+    expect(freshBridge.getDeviceState).not.toHaveBeenCalled();
+  });
+
+  it('rediscovers the requested device after reconnect, verifies its signature, and saves the replacement connection', async () => {
+    const { ring, bridge } = setup();
+    await ring.addAccounts();
+    bridge.searchDevices
+      .mockClear()
+      .mockResolvedValue(
+        ok([discovered('usb-other', 'other'), discovered('usb-new', 'device')])
+      );
+    bridge.getDeviceState.mockClear();
+    bridge.evmSignMessage.mockResolvedValueOnce(
+      failure(HardwareErrorCode.DeviceNotFound, 'device not found')
+    );
+    await expect(ring.signPersonalMessage(addr, data)).resolves.toBe(
+      signature()
+    );
+    expect(
+      bridge.evmSignMessage.mock.calls.map(([connectId, deviceId]) => [
+        connectId,
+        deviceId,
+      ])
+    ).toEqual([
+      ['usb', 'device'],
+      ['usb-new', 'device'],
+    ]);
+    expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
+    expect(bridge.getDeviceState).not.toHaveBeenCalled();
+    expect((await ring.serialize()).accountDetails[addr]).toMatchObject({
+      connectId: 'usb-new',
+      deviceId: 'device',
+    });
+  });
+
+  it.each([
+    [
+      'stale target',
+      failure(HardwareErrorCode.DeviceNotFound, 'device not found'),
+    ],
+    ['cancellation', failure(HardwareErrorCode.PinCancelled, 'cancelled')],
+    [
+      'wrong signer',
+      ok({ address: addr, signature: signature(base.derive('m/1')).slice(2) }),
+    ],
+  ])(
+    'keeps the previous account target if the single recovery attempt ends with %s',
+    async (_case, result) => {
+      const { ring, bridge } = setup();
+      await ring.addAccounts();
+      bridge.searchDevices
+        .mockClear()
+        .mockResolvedValue(ok([discovered('replacement', 'device')]));
+      bridge.evmSignMessage
+        .mockResolvedValueOnce(
+          failure(HardwareErrorCode.TransportNotFound, 'transport not found')
+        )
+        .mockResolvedValueOnce(result);
+      const signing = ring.signPersonalMessage(addr, data);
+      if (result.success)
+        await expect(signing).rejects.toThrow('signature doesnt match');
+      else
+        await expect(signing).rejects.toMatchObject({
+          code: result.payload.code,
+        });
+      expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
+      expect(bridge.evmSignMessage).toHaveBeenCalledTimes(2);
+      expect((await ring.serialize()).accountDetails[addr]).toMatchObject({
+        connectId: 'usb',
+        deviceId: 'device',
+      });
+    }
+  );
+
+  it.each([
+    HardwareErrorCode.ActionCancelled,
+    HardwareErrorCode.BridgeDeviceDisconnected,
+    HardwareErrorCode.WebDeviceNotFoundOrNeedsPermission,
+  ])(
+    'propagates SDK error %s without scanning or changing the cached signing target',
+    async (code) => {
+      const { ring, bridge } = setup();
+      await ring.addAccounts();
+      bridge.searchDevices.mockClear();
+      bridge.evmSignMessage.mockResolvedValueOnce(
+        failure(code, 'signing interrupted')
+      );
+      await expect(ring.signPersonalMessage(addr, data)).rejects.toMatchObject({
+        code,
+      });
+      expect(bridge.evmSignMessage).toHaveBeenCalledTimes(1);
+      expect(bridge.searchDevices).not.toHaveBeenCalled();
+      expect((await ring.serialize()).accountDetails[addr]).toMatchObject({
+        connectId: 'usb',
+        deviceId: 'device',
+      });
+    }
+  );
+
+  it.each([true, false])(
+    'checks the requested hidden-wallet path before signing on replacement hardware (address matches %s)',
+    async (matches) => {
+      const { ring, bridge } = setup();
+      await ring.addAccounts();
+      ring.accountDetails[addr].passphraseState = 'hidden-wallet';
+      bridge.searchDevices.mockResolvedValue(
+        ok([discovered('replacement', 'new-device')])
+      );
+      bridge.evmSignMessage.mockResolvedValueOnce(
+        failure(HardwareErrorCode.DeviceCheckDeviceIdError, 'device changed')
+      );
+      bridge.evmGetPublicKey
+        .mockClear()
+        .mockResolvedValue(pub(matches ? first : base.derive('m/5')));
+      const signing = ring.signPersonalMessage(addr, data);
+      if (matches) await expect(signing).resolves.toBe(signature());
+      else await expect(signing).rejects.toThrow();
+      expect(bridge.evmGetPublicKey).toHaveBeenCalledWith(
+        'replacement',
+        'new-device',
+        expect.objectContaining({
+          path: path + '/0',
+          passphraseState: 'hidden-wallet',
+          useEmptyPassphrase: false,
+        })
+      );
+      expect(bridge.evmSignMessage).toHaveBeenCalledTimes(matches ? 2 : 1);
+      expect(ring.accountDetails[addr]).toMatchObject(
+        matches
+          ? { connectId: 'replacement', deviceId: 'new-device' }
+          : { connectId: 'usb', deviceId: 'device' }
+      );
+    }
+  );
+
+  it.each([
+    {
+      example: 'unrelated session key',
+      partial: false,
+      compatibleKey: false,
+      reuse: false,
+    },
+    {
+      example: 'conflicting partial account IDs',
+      partial: true,
+      compatibleKey: true,
+      reuse: false,
+    },
+    {
+      example: 'matching session key and no conflicting IDs',
+      partial: false,
+      compatibleKey: true,
+      reuse: true,
+    },
+  ])(
+    'resolves old V2 account records with $example',
+    async ({ partial, compatibleKey, reuse }) => {
+      const { ring } = setup();
+      await ring.addAccounts();
+      if (!partial) delete ring.accountDetails[addr].connectId;
+      delete ring.accountDetails[addr].deviceId;
+      await ring.cleanUp();
+      const snapshot = await ring.serialize();
+      const sessionKey = compatibleKey ? base : base.derive('m/4');
+      storage.get.mockResolvedValue({
+        onekeySessionState: {
+          connectId: reuse ? 'usb' : 'usb-other',
+          deviceId: reuse ? 'device' : 'other',
+          publicKey: sessionKey.publicKey.toString('hex'),
+          chainCode: sessionKey.chainCode.toString('hex'),
+        },
+      });
+      const freshBridge = setup().bridge;
+      freshBridge.searchDevices.mockResolvedValue(
+        ok([discovered('usb', 'device')])
+      );
+      const restored = new OneKeyKeyring({ ...snapshot, bridge: freshBridge });
+      await expect(restored.signPersonalMessage(addr, data)).resolves.toBe(
+        signature()
+      );
+      expect(freshBridge.searchDevices).toHaveBeenCalledTimes(reuse ? 0 : 1);
+      expect(freshBridge.evmSignMessage).toHaveBeenCalledTimes(1);
+      expect(freshBridge.evmSignMessage).toHaveBeenCalledWith(
+        'usb',
+        'device',
+        expect.objectContaining({ path: path + '/0' })
+      );
+      expect((await restored.serialize()).accountDetails[addr]).toMatchObject({
+        connectId: 'usb',
+        deviceId: 'device',
+      });
+    }
+  );
 });
