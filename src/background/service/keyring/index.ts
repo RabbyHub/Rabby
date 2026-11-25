@@ -203,8 +203,6 @@ export class KeyringService extends EventEmitter {
   memStore: ObservableStore<MemStoreState>;
   keyrings: any[];
   private password: string | null = null;
-  private oneKeyWrites = Promise.resolve();
-  private oneKeyProtocolWriteRetries = new WeakSet<OnekeyKeyring>();
 
   constructor() {
     super();
@@ -880,39 +878,6 @@ export class KeyringService extends EventEmitter {
       });
   }
 
-  async withOneKeyPersistence<T>(
-    keyring: any,
-    operation: () => T | Promise<T>
-  ) {
-    if (keyring?.type !== KEYRING_CLASS.HARDWARE.ONEKEY) return operation();
-    try {
-      return await operation();
-    } finally {
-      const write = this.oneKeyWrites.then(async () => {
-        // Temporary imports are serialized by addKeyring. A late device result
-        // must not write to the vault after the originating session was locked.
-        if (!this.isUnlocked() || !this.keyrings.includes(keyring)) return;
-        const repaired = keyring.consumePassphraseStateCleared();
-        const protocolsChanged =
-          keyring.consumeDeviceProtocolsChanged() ||
-          this.oneKeyProtocolWriteRetries.has(keyring);
-        if (!repaired && !protocolsChanged) return;
-        try {
-          if (repaired) await this.persistUpdate();
-          else await this.persistAllKeyrings();
-          this.oneKeyProtocolWriteRetries.delete(keyring);
-        } catch (error) {
-          if (protocolsChanged) this.oneKeyProtocolWriteRetries.add(keyring);
-          if (repaired) throw error;
-          // A cache write can be retried without repeating a device signature.
-          console.warn('[OneKey] Failed to save device protocols', error);
-        }
-      });
-      this.oneKeyWrites = write.catch(() => undefined);
-      await write;
-    }
-  }
-
   //
   // SIGNING METHODS
   //
@@ -934,7 +899,9 @@ export class KeyringService extends EventEmitter {
           return await withWalletConnectStatusRejection(
             keyring,
             signingAddress,
-            () => this.withOneKeyPersistence(keyring, () => sign(attempt))
+            () => {
+              return sign(attempt);
+            }
           );
         } finally {
           if (
@@ -942,6 +909,13 @@ export class KeyringService extends EventEmitter {
             keyring?.consumePairingCredsRefreshed?.()
           ) {
             await this.persistAllKeyrings();
+          }
+          if (keyring?.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+            const repaired = keyring.consumePassphraseStateCleared?.();
+            const protocolsChanged = keyring.consumeDeviceProtocolsChanged?.();
+            if ((repaired || protocolsChanged) && this.isUnlocked()) {
+              await this.persistUpdate();
+            }
           }
         }
       },
