@@ -150,7 +150,14 @@ class OneKeyKeyring extends EventEmitter {
   >;
 
   async init() {
-    await this.bridge.init();
+    const signal = this.operations.signal;
+    await whileActive(signal, () => this.bridge.init());
+    // A restarted offscreen document has a fresh SDK, even when the first
+    // operation only enumerates devices and never reads an individual state.
+    for (const [connectId, protocol] of this.deviceProtocols) {
+      await this.bindDeviceProtocol(signal, connectId, protocol);
+    }
+    checkOperation(signal);
     if (!isManifestV3) return;
     if (!this.restored) {
       const generation = this.sessionGeneration;
@@ -323,10 +330,10 @@ class OneKeyKeyring extends EventEmitter {
 
   private async readProtocolState(signal: AbortSignal, connectId: string) {
     const key = protocolKey(connectId);
-    let bound = this.deviceProtocols.get(key);
-    // The SDK endpoint is shared by saved and temporary keyrings. Set (or
-    // clear) this endpoint's hint before the call, including after MV3 restart.
-    await this.bindDeviceProtocol(signal, connectId, bound);
+    const remembered = this.deviceProtocols.get(key);
+    if (remembered) {
+      await this.bindDeviceProtocol(signal, connectId, remembered);
+    }
     let state: DeviceState;
     try {
       state = await readDevice(signal, () =>
@@ -334,25 +341,25 @@ class OneKeyKeyring extends EventEmitter {
       );
     } catch (error) {
       checkOperation(signal);
-      if (!bound || !protocolMismatch(error)) throw error;
+      if (!remembered || !protocolMismatch(error)) throw error;
+      await this.bindDeviceProtocol(signal, connectId);
+      checkOperation(signal);
       // Another operation may already have confirmed a replacement.
-      if (this.deviceProtocols.get(key) === bound) {
+      if (this.deviceProtocols.get(key) === remembered) {
         this.deviceProtocols.delete(key);
         this.deviceProtocolsChanged = true;
       }
-      bound = undefined;
-      await this.bindDeviceProtocol(signal, connectId);
       state = await readDevice(signal, () =>
         this.bridge.getDeviceState(connectId, { forceProtocolDetection: true })
       );
     }
     checkOperation(signal);
     const { protocol } = state;
-    if (state.identity?.deviceId && (protocol === 'V1' || protocol === 'V2')) {
-      if (bound !== protocol || this.deviceProtocols.get(key) !== protocol) {
-        await this.bindDeviceProtocol(signal, connectId, protocol);
-        checkOperation(signal);
-      }
+    if (protocol === 'V1' || protocol === 'V2') {
+      // A transport protocol can be confirmed before the SDK knows the
+      // device identity. readConnectedDevice still checks it before wallet use.
+      await this.bindDeviceProtocol(signal, connectId, protocol);
+      checkOperation(signal);
       if (this.deviceProtocols.get(key) !== protocol) {
         this.deviceProtocols.set(key, protocol);
         this.deviceProtocolsChanged = true;
@@ -646,14 +653,6 @@ class OneKeyKeyring extends EventEmitter {
                 setTimeout(resolve, DELAY_BETWEEN_POPUPS)
               )
           );
-        } else {
-          // The verified-wallet shortcut can skip the state call. Restore
-          // this endpoint's hint before a legacy account uses the shared SDK.
-          await this.bindDeviceProtocol(
-            signal,
-            connectId,
-            this.deviceProtocols.get(protocolKey(connectId))
-          );
         }
       }
       const target = {
@@ -853,10 +852,6 @@ class OneKeyKeyring extends EventEmitter {
     this.accounts = [];
     this.accountDetails = {};
     this.repairedAccount = false;
-    if (this.deviceProtocols.size) {
-      this.deviceProtocols.clear();
-      this.deviceProtocolsChanged = true;
-    }
     this.page = 0;
     this.unlockedAccount = 0;
     this.paths = {};

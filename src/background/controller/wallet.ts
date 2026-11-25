@@ -4936,9 +4936,7 @@ export class WalletController extends BaseController {
     }
 
     if (needUnlock) {
-      await keyringService.withOneKeyPersistence(keyring, () =>
-        keyring?.unlock?.()
-      );
+      await keyring?.unlock?.();
       if (
         !isNew &&
         type === KEYRING_CLASS.HARDWARE.GRIDPLUS &&
@@ -5280,9 +5278,7 @@ export class WalletController extends BaseController {
       }
     }
     if (keyring[methodName]) {
-      return keyringService.withOneKeyPersistence(keyring, () =>
-        keyring[methodName].call(keyring, ...params)
-      );
+      return keyring[methodName].call(keyring, ...params);
     }
   };
 

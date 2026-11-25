@@ -421,7 +421,7 @@ it('reuses the locally verified wallet when discovery matches both cached IDs', 
 
   await expect(ring.unlock()).resolves.toBe('already unlocked');
   expect(bridge.searchDevices).toHaveBeenCalledTimes(2);
-  expect(bridge.setDeviceConnectProtocol).not.toHaveBeenCalled();
+  expect(bridge.setDeviceConnectProtocol.mock.calls).toEqual([['usb', 'V2']]);
   expect(bridge.getDeviceState).not.toHaveBeenCalled();
   expect(bridge.openWalletSession).not.toHaveBeenCalled();
   expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
@@ -505,7 +505,7 @@ it('releases a cancelled 113 recovery before the device acknowledges it and neve
   expect(ring.consumePassphraseStateCleared()).toBe(false);
 });
 
-it('rebinds the cached protocol before signing an old account with an empty passphrase', async () => {
+it('uses the protocol restored during init to sign an old account with an empty passphrase', async () => {
   const { bridge, ring } = setup();
   bridge.searchDevices.mockResolvedValue(
     ok([{ connectId: 'usb', deviceId: 'device' }])
@@ -514,6 +514,7 @@ it('rebinds the cached protocol before signing an old account with an empty pass
   delete ring.accountDetails[addr].version;
   const started = gate<void>();
   const bound = gate<void>();
+  bridge.searchDevices.mockClear();
   bridge.getDeviceState.mockClear();
   bridge.setDeviceConnectProtocol.mockClear().mockImplementationOnce(() => {
     started.resolve();
@@ -521,9 +522,11 @@ it('rebinds the cached protocol before signing an old account with an empty pass
   });
   const signing = ring.signPersonalMessage(addr, data);
   await started.promise;
+  expect(bridge.searchDevices).not.toHaveBeenCalled();
   expect(bridge.evmSignMessage).not.toHaveBeenCalled();
   bound.resolve();
   await expect(signing).resolves.toBe(signature());
+  expect(bridge.searchDevices).toHaveBeenCalledTimes(1);
   expect(bridge.getDeviceState).not.toHaveBeenCalled();
   expect(bridge.setDeviceConnectProtocol.mock.calls).toEqual([['usb', 'V2']]);
   expect(bridge.evmSignMessage).toHaveBeenCalledWith(
@@ -598,7 +601,7 @@ it('preserves device-side cancellation during the 113 address check', async () =
 });
 
 describe('OneKey transport protocol cache', () => {
-  it('persists confirmed protocols per connection and awaits a restored binding before reading state', async () => {
+  it('restores all saved protocols during SDK initialization and confirms the active connection after discovery', async () => {
     const { ring, bridge } = setup();
     expect(ring.consumeDeviceProtocolsChanged()).toBe(false);
     await ring.unlock();
@@ -624,22 +627,30 @@ describe('OneKey transport protocol cache', () => {
     const freshBridge = setup().bridge;
     freshBridge.searchDevices.mockResolvedValue(ok([{ connectId: 'USB' }]));
     const restored = new OneKeyKeyring({ ...snapshot, bridge: freshBridge });
-    const bindingStarted = gate<void>();
-    const bound = gate<void>();
-    freshBridge.setDeviceConnectProtocol.mockImplementationOnce(() => {
-      bindingStarted.resolve();
-      return bound.promise;
-    });
+    expect(freshBridge.init).not.toHaveBeenCalled();
+    expect(freshBridge.setDeviceConnectProtocol).not.toHaveBeenCalled();
     expect(restored.consumeDeviceProtocolsChanged()).toBe(false);
-    const unlock = restored.unlock();
-    await bindingStarted.promise;
-    expect(freshBridge.setDeviceConnectProtocol).toHaveBeenCalledWith(
-      'USB',
-      'V2'
-    );
+    const initialized = gate<void>();
+    freshBridge.init.mockReturnValueOnce(initialized.promise);
+    const init = restored.init();
+    expect(freshBridge.setDeviceConnectProtocol).not.toHaveBeenCalled();
+    initialized.resolve();
+    await init;
+    expect(freshBridge.setDeviceConnectProtocol.mock.calls).toEqual([
+      ['usb', 'V2'],
+      ['second-usb', 'V1'],
+    ]);
+    expect(freshBridge.searchDevices).not.toHaveBeenCalled();
     expect(freshBridge.getDeviceState).not.toHaveBeenCalled();
-    bound.resolve();
-    await unlock;
+    freshBridge.setDeviceConnectProtocol.mockClear();
+    await restored.unlock();
+    const bindings = freshBridge.setDeviceConnectProtocol.mock.calls.filter(
+      ([connectId]) => connectId === 'USB'
+    );
+    expect(bindings).toEqual([
+      ['USB', 'V2'],
+      ['USB', 'V2'],
+    ]);
     expect(freshBridge.getDeviceState).toHaveBeenCalledWith('USB');
     expect(restored.consumeDeviceProtocolsChanged()).toBe(false);
     expect((await restored.serialize()).deviceProtocols).toEqual(
@@ -653,32 +664,46 @@ describe('OneKey transport protocol cache', () => {
       const { bridge } = setup();
       const ring = new OneKeyKeyring({
         bridge,
-        deviceProtocols: { usb: protocol, other: 'V2' },
+        deviceProtocols: { usb: protocol, ' ': 'V2' },
       });
       bridge.getDeviceState.mockResolvedValue(
         ok({ identity: { deviceId: 'device' }, status: {}, protocol })
       );
       await ring.unlock();
-      expect(bridge.setDeviceConnectProtocol.mock.calls).toEqual([
-        ['usb', undefined],
-      ]);
-      expect((await ring.serialize()).deviceProtocols).toEqual({ other: 'V2' });
+      expect(bridge.setDeviceConnectProtocol).not.toHaveBeenCalled();
+      expect((await ring.serialize()).deviceProtocols).toEqual({});
       expect(ring.consumeDeviceProtocolsChanged()).toBe(false);
     }
   );
 
-  it('requires a live device identity before remembering its reported protocol', async () => {
+  it('remembers the reported protocol but rejects wallet operations when the live device identity is missing', async () => {
     const { ring, bridge } = setup();
     bridge.getDeviceState.mockResolvedValue(ok({ protocol: 'V2', status: {} }));
     await expect(ring.unlock()).rejects.toMatchObject({
       code: HardwareErrorCode.DeviceNotFound,
     });
-    expect(bridge.setDeviceConnectProtocol).not.toHaveBeenCalledWith(
-      'usb',
-      'V2'
-    );
-    expect((await ring.serialize()).deviceProtocols).toEqual({});
+    expect(bridge.setDeviceConnectProtocol.mock.calls).toEqual([['usb', 'V2']]);
+    expect((await ring.serialize()).deviceProtocols).toEqual({ usb: 'V2' });
+    expect(ring.consumeDeviceProtocolsChanged()).toBe(true);
+    expect(ring.isUnlocked()).toBe(false);
+    expect(bridge.openWalletSession).not.toHaveBeenCalled();
+    expect(bridge.evmGetPublicKey).not.toHaveBeenCalled();
+  });
+
+  it('keeps transport protocols when forgetting accounts and the active wallet session', async () => {
+    const { bridge, ring } = setup();
+    await ring.addAccounts();
+    expect(ring.accounts).toEqual([addr]);
+    expect(ring.consumeDeviceProtocolsChanged()).toBe(true);
+    bridge.setDeviceConnectProtocol.mockClear();
+    await ring.forgetDevice();
+    const saved = await ring.serialize();
+    expect(saved.accounts).toEqual([]);
+    expect(saved.accountDetails).toEqual({});
+    expect(ring.isUnlocked()).toBe(false);
+    expect(saved.deviceProtocols).toEqual({ usb: 'V2' });
     expect(ring.consumeDeviceProtocolsChanged()).toBe(false);
+    expect(bridge.setDeviceConnectProtocol).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -690,18 +715,21 @@ describe('OneKey transport protocol cache', () => {
       bridge,
       deviceProtocols: { usb: 'V2', other: 'V2' },
     });
+    bridge.searchDevices.mockResolvedValue(ok([{ connectId: 'USB' }]));
     bridge.getDeviceState
       .mockResolvedValueOnce(failure(code, message))
       .mockResolvedValueOnce(state({}, 'V1'));
     await ring.unlock();
     expect(bridge.setDeviceConnectProtocol.mock.calls).toEqual([
       ['usb', 'V2'],
-      ['usb', undefined],
-      ['usb', 'V1'],
+      ['other', 'V2'],
+      ['USB', 'V2'],
+      ['USB', undefined],
+      ['USB', 'V1'],
     ]);
     expect(bridge.getDeviceState.mock.calls).toEqual([
-      ['usb'],
-      ['usb', { forceProtocolDetection: true }],
+      ['USB'],
+      ['USB', { forceProtocolDetection: true }],
     ]);
     expect((await ring.serialize()).deviceProtocols).toEqual({
       usb: 'V1',
