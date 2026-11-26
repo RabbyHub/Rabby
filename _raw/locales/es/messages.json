@@ -455,6 +455,7 @@
         "updateFirmwareAlert": "Por favor, actualiza el firmware y la aplicación Ethereum en tu Ledger",
         "txRejectedByLedger": "La transacción ha sido rechazada en tu Ledger",
         "blindSigTutorial": "Tutorial de Firma Ciega de Ledger",
+        "blindSigningDisabled": "La firma ciega (Blind signing) está desactivada en tu Ledger. Abre la app Ethereum, activa Blind signing en Ajustes (Settings) y vuelve a intentarlo.",
         "resubmited": "Enviado nuevamente",
         "submitting": "Firmado. Creando transacción"
       },

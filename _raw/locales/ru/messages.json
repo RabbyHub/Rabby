@@ -478,6 +478,7 @@
         "unlockAlert": "Пожалуйста, подключите и разблокируйте ваш Ledger, откройте приложение Ethereum на нем",
         "updateFirmwareAlert": "Пожалуйста, обновите прошивку и приложение Ethereum на вашем Ledger",
         "txRejectedByLedger": "Транзакция отклонена на вашем Ledger",
+        "blindSigningDisabled": "На вашем Ledger отключена слепая подпись (Blind signing). Откройте приложение Ethereum, включите Blind signing в настройках (Settings) и повторите попытку.",
         "blindSigTutorial": "Инструкция по слепой подписи от Ledger",
         "submitting": "Подписано. Создание транзакции",
         "resubmited": "Повторно отправлено"

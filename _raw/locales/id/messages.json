@@ -475,6 +475,7 @@
         "resent": "Dikirim ulang",
         "resubmited": "Dikirim ulang",
         "blindSigTutorial": "Tutorial Tanda Tangan Buta dari Ledger",
+        "blindSigningDisabled": "Blind signing dinonaktifkan di Ledger Anda. Buka aplikasi Ethereum, aktifkan Blind signing di Pengaturan (Settings), lalu coba lagi.",
         "submitting": "Ditandatangani. Membuat transaksi",
         "signError": "Kesalahan penandatanganan Ledger:",
         "txRejected": "Transaksi ditolak",

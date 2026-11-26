@@ -10,7 +10,10 @@ import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer'
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { useTranslation } from 'react-i18next';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerBlindSigningDisabledError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import { MiniFooterBar } from '../MiniSignTx/MiniFooterBar';
 import { noop } from 'lodash';
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
@@ -53,6 +56,8 @@ export const MiniTypedDataApprovalV2: React.FC<{
     const getLedgerError = (description: string) => {
       if (isLedgerLockError(description)) {
         return t('page.signFooterBar.ledger.unlockAlert');
+      } else if (isLedgerBlindSigningDisabledError(description)) {
+        return t('page.signFooterBar.ledger.blindSigningDisabled');
       } else if (
         description.includes('0x6e00') ||
         description.includes('0x6b00')
