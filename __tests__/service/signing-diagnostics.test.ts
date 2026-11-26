@@ -103,6 +103,41 @@ describe('signing diagnostics port', () => {
     expect(event.tags.signing_device_model).toBe('Ledger Nano X');
   });
 
+  it('keeps the Ledger Blind signing probe result through sanitization', async () => {
+    const error = new Error('Ledger blind signing off');
+    registerSigningDiagnosticsProvider('blind-signing-ledger', () => ({
+      wallet_provider: 'ledger',
+      transport: 'webhid',
+      error_category: 'unknown',
+      provider_code: '0x6a80',
+      provider_reason: 'blind_signing_disabled',
+      provider_metadata: { used_fallback: true, blind_signing_enabled: false },
+    }));
+
+    await expect(
+      withSigningDiagnostics(
+        {
+          type: 'Ledger Hardware',
+          signingDiagnosticsProvider: 'blind-signing-ledger',
+        },
+        'transaction',
+        () => Promise.reject(error)
+      )
+    ).rejects.toBe(error);
+
+    const event: any = {};
+    applySigningContext(event, error);
+    expect(event.tags).toMatchObject({
+      signing_provider_code: '0x6a80',
+      signing_provider_reason: 'blind_signing_disabled',
+    });
+    expect(event.fingerprint).toContain('0x6a80');
+    expect(event.extra.signing_provider_metadata).toEqual({
+      used_fallback: true,
+      blind_signing_enabled: false,
+    });
+  });
+
   it('uses explicit provider capabilities and bounded categories', async () => {
     let receivedAttempt;
     registerSigningDiagnosticsProvider(

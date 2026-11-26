@@ -82,6 +82,7 @@ import {
 } from '@/constant/offscreen-communication';
 import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 import { isManifestV3 } from '@/utils/env';
+import { LEDGER_BLIND_SIGNING_DISABLED_ERROR } from '@/constant/ledger';
 import preferenceService from '../preference';
 import * as Sentry from '@sentry/browser';
 
@@ -100,6 +101,16 @@ const HD_PATH_TYPE = {
 const ETH_APP_NAME = 'Ethereum';
 const LEDGER_BUSY_RECHECK_TIMEOUT = 10000;
 const LEDGER_CLEAR_SIGNING_NETWORK_TIMEOUT = 5000;
+const LEDGER_APP_CONFIGURATION_TIMEOUT = 3000;
+// Ethereum app GET_APP_CONFIGURATION (CLA 0xe0, INS 0x06, no data). Bit 0 of
+// the first response byte is the app's Blind signing setting.
+const GET_ETH_APP_CONFIGURATION_APDU = Uint8Array.from([
+  0xe0,
+  0x06,
+  0x00,
+  0x00,
+  0x00,
+]);
 const LEDGER_ERROR_KEYS = [
   '_tag',
   'name',
@@ -492,6 +503,66 @@ const toLedgerError = (err: unknown, fallback: string) =>
   Object.assign(new Error(getLedgerErrorMessage(err, fallback)), {
     cause: err,
   });
+
+// Blind signing setting read after a 0x6a80, keyed by the error it explains.
+const ledgerBlindSigningEnabledByError = new WeakMap<object, boolean>();
+
+const findLedgerBlindSigningEnabled = (
+  err: unknown,
+  depth = 0
+): boolean | undefined => {
+  if (!err || depth > 6 || typeof err !== 'object') return undefined;
+  return (
+    ledgerBlindSigningEnabledByError.get(err) ??
+    findLedgerBlindSigningEnabled((err as { cause?: unknown }).cause, depth + 1)
+  );
+};
+
+// The Ethereum app answers 0x6a80 both for a transaction it cannot parse and
+// for calldata it cannot clear-sign while Blind signing is off. Only the app's
+// own configuration tells them apart; undefined when it cannot be read.
+const readEthAppBlindSigningEnabled = async (): Promise<
+  boolean | undefined
+> => {
+  const currentSessionId = sessionId;
+  if (!dmk || !currentSessionId) return undefined;
+  beginLedgerOperation();
+  try {
+    const { statusCode, data } = await dmk.sendApdu({
+      sessionId: currentSessionId,
+      apdu: GET_ETH_APP_CONFIGURATION_APDU,
+      abortTimeout: LEDGER_APP_CONFIGURATION_TIMEOUT,
+    });
+    if (statusCode[0] !== 0x90 || statusCode[1] !== 0x00 || !data.length) {
+      return undefined;
+    }
+    return (data[0] & 0x01) === 0x01;
+  } catch {
+    return undefined;
+  } finally {
+    endLedgerOperation();
+  }
+};
+
+const toLedgerSigningError = async (err: unknown, fallback: string) => {
+  if (findLedgerStatusWord(err) !== '6a80') {
+    return toLedgerError(err, fallback);
+  }
+  const blindSigningEnabled = await readEthAppBlindSigningEnabled();
+  const error =
+    blindSigningEnabled === false
+      ? Object.assign(
+          new Error(
+            `${LEDGER_BLIND_SIGNING_DISABLED_ERROR}. Turn on Blind signing in the Ethereum app settings on your Ledger, then try again. 0x6a80`
+          ),
+          { cause: err }
+        )
+      : toLedgerError(err, fallback);
+  if (blindSigningEnabled !== undefined) {
+    ledgerBlindSigningEnabledByError.set(error, blindSigningEnabled);
+  }
+  return error;
+};
 
 const delay = (ms: number) =>
   new Promise((resolve) => {
@@ -949,7 +1020,15 @@ class LedgerBridgeKeyring {
   getLedgerSigningDiagnostics(error: unknown, attempt?: SigningAttempt) {
     const statusWord = findLedgerStatusWord(error);
     const providerErrorTag = findLedgerErrorTag(error);
-    const providerReason = getLedgerErrorReason(error, statusWord);
+    const blindSigningEnabled = findLedgerBlindSigningEnabled(error);
+    const providerReason =
+      blindSigningEnabled === false
+        ? 'blind_signing_disabled'
+        : getLedgerErrorReason(error, statusWord);
+    const blindSigningMetadata =
+      blindSigningEnabled === undefined
+        ? {}
+        : { blind_signing_enabled: blindSigningEnabled };
     const trace =
       (attempt ? ledgerAttemptBySigningAttempt.get(attempt) : undefined) ??
       (error && typeof error === 'object'
@@ -998,9 +1077,15 @@ class LedgerBridgeKeyring {
               used_fallback: trace.steps.includes(
                 'signer.eth.steps.blindSignTransactionFallback'
               ),
+              ...blindSigningMetadata,
             },
           }
-        : { provider_metadata: this.hardwareSigningMetadata }),
+        : {
+            provider_metadata: {
+              ...this.hardwareSigningMetadata,
+              ...blindSigningMetadata,
+            },
+          }),
     };
   }
 
@@ -1326,7 +1411,7 @@ class LedgerBridgeKeyring {
         throw new Error('Ledger: The transaction signature is not valid');
       }
     } catch (err: any) {
-      throw toLedgerError(
+      throw await toLedgerSigningError(
         err,
         'Ledger: Unknown error while signing transaction'
       );
@@ -1474,7 +1559,10 @@ class LedgerBridgeKeyring {
       }
       return signature;
     } catch (e: any) {
-      throw toLedgerError(e, 'Ledger: Unknown error while signing message');
+      throw await toLedgerSigningError(
+        e,
+        'Ledger: Unknown error while signing message'
+      );
     }
   }
 

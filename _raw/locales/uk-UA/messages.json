@@ -454,6 +454,7 @@
         "unlockAlert": "Будь ласка, підключіть і розблокуйте ваш Ledger, відкрийте на ньому Ethereum",
         "updateFirmwareAlert": "Будь ласка, оновіть прошивку та додаток Ethereum на вашому гаманці",
         "txRejectedByLedger": "Транзакцію відхилено на вашому Ledger",
+        "blindSigningDisabled": "На вашому Ledger вимкнено сліпий підпис (Blind signing). Відкрийте застосунок Ethereum, увімкніть Blind signing у налаштуваннях (Settings) і спробуйте ще раз.",
         "blindSigTutorial": "Навчальний посібник з накладання сліпого підпису в обліковому записі",
         "submitting": "Підписано. Створення транзакції",
         "resubmitted": "Відправлено",

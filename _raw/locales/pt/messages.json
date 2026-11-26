@@ -481,6 +481,7 @@
         "submitting": "Assinado. A criar a transação",
         "txRejected": "Transação rejeitada",
         "unlockAlert": "Ligue e desbloqueie o Ledger e abra nele a aplicação Ethereum.",
+        "blindSigningDisabled": "A assinatura cega (Blind signing) está desativada no seu Ledger. Abra a app Ethereum, ative Blind signing nas Definições (Settings) e tente novamente.",
         "blindSigTutorial": "Tutorial de Assinatura Cega da Ledger"
       },
       "common": {

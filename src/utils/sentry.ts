@@ -466,6 +466,11 @@ export const applySigningContext = (event: SentryEventLike, error: unknown) => {
     ...(context.wallet_provider === 'ledger' && context.provider_stage
       ? { signing_provider_stage: context.provider_stage }
       : {}),
+    // Ledger reasons are a fixed set, e.g. telling a 0x6a80 caused by Blind
+    // signing being off apart from other invalid-data refusals.
+    ...(context.wallet_provider === 'ledger' && context.provider_reason
+      ? { signing_provider_reason: context.provider_reason }
+      : {}),
     ...(typeof deviceModel === 'string'
       ? { signing_device_model: deviceModel }
       : {}),

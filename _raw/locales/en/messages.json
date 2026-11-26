@@ -678,6 +678,7 @@
         "updateFirmwareAlert": "Please update the firmware and Ethereum App on your Ledger",
         "txRejectedByLedger": "Transaction is rejected on your Ledger",
         "blindSigTutorial": "Blind Signature Tutorial from Ledger",
+        "blindSigningDisabled": "Blind signing is turned off on your Ledger. Open the Ethereum app, go to Settings, turn on Blind signing, then try again.",
         "submitting": "Signed. Creating transaction",
         "resubmited": "Resubmited"
       },

@@ -17,7 +17,10 @@ import { Modal, Popup } from '@/ui/component';
 import { MiniApprovalPopupContainer } from '../Popup/MiniApprovalPopupContainer';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerBlindSigningDisabledError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import { INTERNAL_REQUEST_SESSION, KEYRING_CLASS } from 'consts';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useAsync } from 'react-use';
@@ -152,6 +155,8 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
     const getLedgerError = (description: string) => {
       if (isLedgerLockError(description)) {
         return t('page.signFooterBar.ledger.unlockAlert');
+      } else if (isLedgerBlindSigningDisabledError(description)) {
+        return t('page.signFooterBar.ledger.blindSigningDisabled');
       } else if (
         description.includes('0x6e00') ||
         description.includes('0x6b00')

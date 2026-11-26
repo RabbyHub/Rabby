@@ -454,6 +454,7 @@
         "unlockAlert": "Por favor, conecte e desbloqueie o seu Ledger, abra o Ethereum nele",
         "updateFirmwareAlert": "Por favor, atualize o firmware e o aplicativo Ethereum no seu Ledger",
         "txRejectedByLedger": "A transação foi rejeitada no seu Ledger",
+        "blindSigningDisabled": "A assinatura cega (Blind signing) está desativada no seu Ledger. Abra o app Ethereum, ative Blind signing nas Configurações (Settings) e tente novamente.",
         "blindSigTutorial": "Tutorial de Assinatura Cega do Ledger",
         "resubmited": "Reenviado",
         "submitting": "Assinado. Criando transação"

@@ -1949,6 +1949,7 @@
       "ignoreAll": "Tout ignorer",
       "ledger": {
         "blindSigTutorial": "Tutoriel de signature aveugle de Ledger",
+        "blindSigningDisabled": "La signature aveugle (Blind signing) est désactivée sur votre Ledger. Ouvrez l'application Ethereum, activez Blind signing dans les Paramètres (Settings), puis réessayez.",
         "notConnected": "Votre wallet n'est pas connecté. Veuillez vous reconnecter.",
         "resent": "Renvoyer",
         "resubmited": "Envoyé à nouveau",

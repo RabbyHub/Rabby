@@ -455,6 +455,7 @@
         "updateFirmwareAlert": "LedgerのファームウェアとEthereumアプリを更新してください",
         "txRejectedByLedger": "Ledger上でトランザクションが拒否されました",
         "blindSigTutorial": "Ledgerからのブラインド署名チュートリアル",
+        "blindSigningDisabled": "Ledger でブラインド署名（Blind signing）がオフになっています。Ethereum アプリを開き、設定（Settings）で Blind signing をオンにしてから再試行してください。",
         "submitting": "署名完了。トランザクションを送信中",
         "resubmited": "再送信されました"
       },

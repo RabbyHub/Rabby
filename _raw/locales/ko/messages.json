@@ -476,6 +476,7 @@
         "notConnected": "지갑이 연결되어 있지 않습니다. 다시 연결해 주십시오.",
         "submitting": "서명됨. 거래 생성 중",
         "blindSigTutorial": "Ledger의 블라인드 서명 튜토리얼",
+        "blindSigningDisabled": "Ledger에서 블라인드 서명(Blind signing)이 꺼져 있습니다. Ethereum 앱을 열고 설정(Settings)에서 Blind signing을 켠 후 다시 시도하세요.",
         "txRejectedByLedger": "거래가 귀하의 Ledger에서 거부되었습니다.",
         "siging": "서명 요청 전송 중",
         "resubmited": "재제출됨",
