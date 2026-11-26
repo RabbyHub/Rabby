@@ -1,9 +1,9 @@
 name: Automatic Build
 
+# Weekly packaging moved to the private RabbyHub/rabby-ci repository
+# (rabby-feature-test.yml, which also picks up pushes to tmp/<date>). Keep this
+# workflow only as an on-demand fallback until the migration is fully retired.
 on:
-  push:
-    branches:
-      - tmp/202*
   workflow_dispatch:
     inputs:
       notify_lark:
