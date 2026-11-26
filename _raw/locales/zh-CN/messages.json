@@ -3614,6 +3614,8 @@
         "fetchQuoteFailed": "获取充值报价失败，请切换代币。",
         "hyperliquidFeeLabel": "Hyperliquid 手续费",
         "estReceiveTooltipNoTime": "跨链充值通过 LiFi 进行处理，可能会产生一些滑点。",
+        "estReceiveTooltipV2": "跨链充值通过 {{name}} 进行，可能产生一些滑点。预计在 {{number}} 秒内到达。",
+        "estReceiveTooltipNoTimeV2": "跨链充值通过 {{name}} 进行处理，可能会产生一些滑点。",
         "goSwapTips": "仅在 Arbitrum 上支持 USDC 的直接入金。请在入金前将当前代币兑换为 USDC。",
         "estReceiveTooltip": "跨链充值通过 LiFi 进行，可能产生一些滑点。预计在 {{number}} 秒内到达。",
         "minimumWithdrawSize": "最低提现金额为$2",

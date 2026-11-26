@@ -1,0 +1,64 @@
+{
+  "fromChainId": "arb",
+  "toChainId": "hyperliquid",
+  "fromTokenId": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+  "fromTokenRawAmount": "10000000",
+  "toTokenId": "0x00000000000000000000000000000000",
+  "toTokenRawAmount": "1000000000",
+  "tx": {
+    "from": "0x1111111111111111111111111111111111111111",
+    "to": "0x4cd00e387622c35bddb9b4c962c136462338bc31",
+    "data": "0xe80179520000000000000000000000001111111111111111111111111111111111111111000000000000000000000000af88d065e77c8cc2239327c5edb3a432268e583100000000000000000000000000000000000000000000000000000000009896806bd6c4b2204f5b5387a2a2d37c583b68b4280875810170d46bf5ccb2da79bb77",
+    "value": "0",
+    "chainId": 42161
+  },
+  "order_data": {
+    "version": "v1",
+    "solverChainId": "base",
+    "solver": "0xf70da97812cb96acdf810712aa562db8dfa3dbef",
+    "salt": "0x93a02c4f7bfab3fefad6c64b4cd39cdc14ab70012d9ce211b89b6829757ca958",
+    "inputs": [
+      {
+        "payment": {
+          "chainId": "arbitrum",
+          "currency": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+          "amount": "10000000",
+          "weight": "1"
+        },
+        "refunds": [
+          {
+            "chainId": "arbitrum",
+            "recipient": "0x1111111111111111111111111111111111111111",
+            "currency": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+            "minimumAmount": "0",
+            "deadline": 1796031252,
+            "extraData": "0x0000000000000000000000000729e2a4716d9f7dd17858d5d504426d228697f7"
+          },
+          {
+            "chainId": "hyperliquid",
+            "recipient": "0x1111111111111111111111111111111111111111",
+            "currency": "0x00000000000000000000000000000000",
+            "minimumAmount": "0",
+            "deadline": 1796031252,
+            "extraData": "0x"
+          }
+        ]
+      }
+    ],
+    "output": {
+      "chainId": "hyperliquid",
+      "payments": [
+        {
+          "recipient": "0x1111111111111111111111111111111111111111",
+          "currency": "0x00000000000000000000000000000000",
+          "minimumAmount": "980000000",
+          "expectedAmount": "1000000000"
+        }
+      ],
+      "calls": [],
+      "deadline": 1796031252,
+      "extraData": "0x"
+    },
+    "fees": []
+  }
+}

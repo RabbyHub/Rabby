@@ -21,6 +21,7 @@ import { TokenWithChain } from '@/ui/component';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { formatUsdValue } from '../../../utils/number';
 import BigNumber from 'bignumber.js';
+import { capitalize } from 'lodash';
 import { supportedDirectSign } from '@/ui/hooks/useMiniApprovalDirectSign';
 import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
@@ -507,9 +508,13 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
                 <Tooltip
                   overlayClassName={clsx('rectangle')}
                   placement="top"
-                  title={t('page.perps.depositAmountPopup.estReceiveTooltip', {
-                    number: bridgeQuote?.duration || 0,
-                  })}
+                  title={t(
+                    'page.perps.depositAmountPopup.estReceiveTooltipV2',
+                    {
+                      name: capitalize(bridgeQuote?.bridge_id),
+                      number: bridgeQuote?.duration || 0,
+                    }
+                  )}
                   align={{ targetOffset: [0, 0] }}
                 >
                   <RcIconInfo

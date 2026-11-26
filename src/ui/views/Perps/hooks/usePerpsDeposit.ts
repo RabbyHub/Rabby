@@ -24,6 +24,7 @@ import {
   HYPE_CORE_DEPOSIT_PERPS_DEX,
 } from '../constants';
 import { findChain } from '@/utils/chain';
+import { validateDepositQuote } from '@/utils/deposit-bridge';
 import BigNumber from 'bignumber.js';
 import { Tx } from 'background/service/openapi';
 import { PerpBridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
@@ -63,6 +64,7 @@ export const usePerpsDeposit = ({
     clearMiniSignTx();
     setCacheUsdValue(0);
     setBridgeQuote(null);
+    setCacheBridgeHistory(null);
   });
 
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -179,12 +181,17 @@ export const usePerpsDeposit = ({
             .times(10 ** token.decimals)
             .toFixed(0, 1)
             .toString();
-          const res = await wallet.openapi.getPerpBridgeQuote({
+          const quoteRequest = {
             user_addr: currentPerpsAccount!.address,
             from_chain_id: token.chain,
             from_token_id: token.id,
             from_token_raw_amount: fromTokenRawAmount,
-          });
+          };
+          const res = await wallet.openapi.getPerpBridgeQuote(quoteRequest);
+          if (controller.signal.aborted) {
+            return;
+          }
+          validateDepositQuote(res, quoteRequest, 'perps_deposit');
 
           let tokenApproved = false;
           let allowance = '0';
@@ -273,12 +280,16 @@ export const usePerpsDeposit = ({
             txs.push(bridgeTx);
             setMiniSignTx(txs);
             setQuoteLoading(false);
+            const historyTx: typeof res.tx & { order_data?: unknown } = {
+              ...res.tx,
+            };
+            delete historyTx.order_data;
             setCacheBridgeHistory({
               from_chain_id: token.chain,
               from_token_id: token.id,
               from_token_amount: amount,
               to_token_amount: res.to_token_amount,
-              tx: res.tx,
+              tx: historyTx,
             });
             return res.tx;
           } else {

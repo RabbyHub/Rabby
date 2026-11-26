@@ -3910,6 +3910,8 @@
         "feeTipTooltip": "Frais de retrait facturés par Hyperliquid : 1 $",
         "minimumWithdrawSize": "Le montant minimum de retrait est de 2 $.",
         "estReceiveTooltipNoTime": "Le dépôt cross-chain est traité via LiFi et peut subir un léger slippage.",
+        "estReceiveTooltipV2": "Le dépôt cross-chain est traité via {{name}}, ce qui peut entraîner un léger slippage. Arrivée estimée dans {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "Le dépôt cross-chain est traité via {{name}} et peut subir un léger slippage.",
         "estTimeLabel": "Temps estimé",
         "estReceiveLabel": "Est. à recevoir",
         "goSwapTips": "Seul l'USDC sur Arbitrum est pris en charge pour le dépôt direct. Veuillez échanger votre jeton actuel contre de l'USDC avant le dépôt.",
