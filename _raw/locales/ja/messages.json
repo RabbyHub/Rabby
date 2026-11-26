@@ -3566,6 +3566,8 @@
         "goSwapTips": "アービトラム上のUSDCのみが直接入金に対応しています。入金前に現在のトークンをUSDCへスワップしてください。",
         "estReceive": "受け取り予定: {{balance}}",
         "estReceiveTooltipNoTime": "クロスチェーン入金は LiFi を介して処理され、スリッページが生じる可能性があります。",
+        "estReceiveTooltipV2": "クロスチェーンデポジットは {{name}} を介して処理され、若干のスリッページが発生する場合があります。到着まであと {{number}} 秒です。",
+        "estReceiveTooltipNoTimeV2": "クロスチェーン入金は {{name}} を介して処理され、スリッページが生じる可能性があります。",
         "feeTip": "$1の手数料",
         "estReceiveTooltip": "クロスチェーンデポジットは LiFi を介して処理され、若干のスリッページが発生する場合があります。到着まであと {{number}} 秒です。",
         "minimumWithdrawSize": "最小出金額は $2",

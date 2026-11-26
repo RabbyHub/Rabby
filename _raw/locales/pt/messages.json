@@ -3566,6 +3566,8 @@
         "feeTipTooltip": "Taxa de levantamento cobrada pela Hyperliquid: 1 USD",
         "estReceiveTooltip": "O depósito entre blockchains é processado via LiFi, pode ocorrer algum deslizamento. Chegada estimada em {{number}}s.",
         "estReceiveTooltipNoTime": "Depósito entre redes é processado via LiFi e pode ocorrer deslizamento de preço.",
+        "estReceiveTooltipV2": "O depósito entre blockchains é processado via {{name}}, pode ocorrer algum deslizamento. Chegada estimada em {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "Depósito entre redes é processado via {{name}} e pode ocorrer deslizamento de preço.",
         "estReceive": "Receção estimada: {{balance}}",
         "goBridgeTips": "Apenas o USDC na Arbitrum é suportado para depósito direto. Por favor, faça a ponte do seu token atual para o USDC na Arbitrum antes de depositar.",
         "hyperliquidFeeLabelTooltip": "A Hyperliquid cobra aos novos utilizadores uma taxa de ativação única.",

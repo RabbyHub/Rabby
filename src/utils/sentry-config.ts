@@ -101,7 +101,8 @@ export const getSentryConfig = (): BrowserOptions => {
       if (event.tags?.bridge_sdk === 'validation') {
         if (!hint?.data?.bridge_sdk_report) return null;
         const reportEvent = createBridgeSdkSentryEvent(
-          hint.data.bridge_sdk_report
+          hint.data.bridge_sdk_report,
+          hint.data.bridge_source
         );
         if (!reportEvent) return null;
         if (hint?.attachments) hint.attachments = [];

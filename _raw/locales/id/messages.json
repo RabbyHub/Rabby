@@ -3566,6 +3566,8 @@
         "hyperliquidFeeLabel": "Biaya Hyperliquid",
         "fetchQuoteFailed": "Gagal mengambil penawaran deposit. Silakan ganti token.",
         "estReceiveTooltipNoTime": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi slippage.",
+        "estReceiveTooltipV2": "Setoran lintas rantai diproses melalui {{name}}, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
+        "estReceiveTooltipNoTimeV2": "Setoran lintas rantai diproses melalui {{name}}, mungkin terjadi slippage.",
         "estReceiveTooltip": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
         "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk deposit langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan deposit.",
         "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid.",

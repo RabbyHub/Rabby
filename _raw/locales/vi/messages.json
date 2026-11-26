@@ -3563,6 +3563,8 @@
         "minimumDepositSize": "Số tiền gửi tối thiểu là 5 USD",
         "hyperliquidFeeLabel": "Phí Hyperliquid",
         "estReceiveTooltipNoTime": "Gửi tiền xuyên chuỗi được xử lý qua LiFi, có thể phát sinh trượt giá.",
+        "estReceiveTooltipV2": "Gửi tiền liên chuỗi được xử lý qua {{name}}, có thể xảy ra một ít trượt giá. Thời gian dự kiến đến trong {{number}} giây.",
+        "estReceiveTooltipNoTimeV2": "Gửi tiền xuyên chuỗi được xử lý qua {{name}}, có thể phát sinh trượt giá.",
         "fetchQuoteFailed": "Không thể lấy báo giá ký quỹ. Vui lòng đổi sang token khác.",
         "feeTip": "Phí $1",
         "goSwapTips": "Chỉ có USDC trên Arbitrum được hỗ trợ cho nạp ký quỹ trực tiếp. Vui lòng đổi token hiện tại của bạn sang USDC trước khi nạp ký quỹ.",

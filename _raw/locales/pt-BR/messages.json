@@ -3569,6 +3569,8 @@
         "minimumWithdrawSize": "O valor mínimo de saque é US$ 2.",
         "feeTip": "Taxa de $1",
         "estReceiveTooltipNoTime": "O depósito entre cadeias é processado via LiFi; pode ocorrer slippage.",
+        "estReceiveTooltipV2": "O depósito entre cadeias é processado via {{name}}; pode haver algum deslizamento de preço. Chegada estimada em {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "O depósito entre cadeias é processado via {{name}}; pode ocorrer slippage.",
         "goBridgeTips": "Somente USDC na Arbitrum é suportado para depósito direto. Por favor, faça a ponte do seu token atual para USDC na Arbitrum antes de depositar.",
         "feeTipTooltip": "Taxa de retirada cobrada pela Hyperliquid: $1",
         "estReceiveTooltip": "O depósito entre cadeias é processado via LiFi; pode haver algum deslizamento de preço. Chegada estimada em {{number}}s.",

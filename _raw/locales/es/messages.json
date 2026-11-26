@@ -3563,6 +3563,8 @@
         "goSwapTips": "Solo USDC en Arbitrum es compatible para depósito directo. Por favor, intercambia tu token actual por USDC antes de depositar.",
         "fetchQuoteFailed": "No se pudo obtener la cotización de depósito. Por favor, cambie de token.",
         "estReceiveTooltipNoTime": "El depósito entre cadenas se procesa a través de LiFi; puede sufrir deslizamiento de precio.",
+        "estReceiveTooltipV2": "El depósito entre cadenas se procesa a través de {{name}} y podría sufrir algo de deslizamiento. Llegada estimada en {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "El depósito entre cadenas se procesa a través de {{name}}; puede sufrir deslizamiento de precio.",
         "minimumWithdrawSize": "El importe mínimo de retiro es de $2.",
         "minimumDepositSize": "El depósito mínimo es de $5.",
         "estReceiveTooltip": "El depósito entre cadenas se procesa a través de LiFi y podría sufrir algo de deslizamiento. Llegada estimada en {{number}}s.",
