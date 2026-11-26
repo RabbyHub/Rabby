@@ -2627,7 +2627,11 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "Mot de passe oublié ?",
       "description": "Votre portefeuille incontournable pour Ethereum et EVM",
-      "biometricFailed": "Le déverrouillage biométrique a échoué"
+      "biometricFailed": "Le déverrouillage biométrique a échoué",
+      "biometricSunsetTip": "Il sera supprimé le 1er janv. 2027. Veuillez plutôt déverrouiller avec votre mot de passe. Cela désactivera le déverrouillage biométrique.",
+      "biometricSunsetTitle": "Fin du déverrouillage biométrique",
+      "biometricSunsetUsePassword": "Mot de passe",
+      "biometricSunsetUseBiometric": "Biométrie"
     },
     "welcome": {
       "step1": {

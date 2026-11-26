@@ -2155,7 +2155,11 @@
       "btnForgotPassword": "Lupa Kata Sandi?",
       "title": "Rabby Wallet",
       "description": "Dompet andalan Anda untuk Ethereum dan EVM",
-      "biometricFailed": "Pembukaan biometrik gagal"
+      "biometricFailed": "Pembukaan biometrik gagal",
+      "biometricSunsetTip": "Fitur ini akan dihapus pada 1 Jan 2027. Silakan buka kunci dengan kata sandi Anda. Tindakan ini akan menonaktifkan buka kunci biometrik.",
+      "biometricSunsetTitle": "Buka kunci biometrik berakhir",
+      "biometricSunsetUsePassword": "Gunakan kata sandi",
+      "biometricSunsetUseBiometric": "Gunakan biometrik"
     },
     "addToken": {
       "balance": "Saldo",
