@@ -44,6 +44,7 @@ export const BE_SUPPORTED_METHODS: string[] = [
   'eth_getStorageAt',
   'eth_getTransactionCount',
   'eth_chainId',
+  'eth_getTransactionReceipt',
 ];
 
 async function submitTxWithFallbackRpcs<T>(
