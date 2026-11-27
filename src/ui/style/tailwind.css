@@ -3,10 +3,67 @@
    without !important. Must come before @import "tailwindcss". */
 @layer properties, theme, base, legacy, components, utilities;
 
-@config "../../../tailwind.config.js";
 @source "../";
 
 @import 'tailwindcss';
+/* Colors: generated from src/constant/theme-colors.js by scripts/make-theme.js. */
+@import './tailwind-theme.css';
+
+/* Rabby's scales replace Tailwind's defaults: `p-16` is 16px and only these
+   keys exist. `inline` puts the values into the utilities rather than
+   referencing theme variables. New font sizes or weights here must also be
+   registered in src/ui/utils/cn.ts. */
+@theme inline {
+  --spacing-*: initial;
+  --spacing-0: 0px;
+  --spacing-1: 1px;
+  --spacing-2: 2px;
+  --spacing-4: 4px;
+  --spacing-6: 6px;
+  --spacing-8: 8px;
+  --spacing-10: 10px;
+  --spacing-12: 12px;
+  --spacing-14: 14px;
+  --spacing-16: 16px;
+  --spacing-18: 18px;
+  --spacing-20: 20px;
+  --spacing-24: 24px;
+  --spacing-28: 28px;
+  --spacing-32: 32px;
+  --spacing-40: 40px;
+  --spacing-60: 60px;
+  --spacing-80: 80px;
+
+  --text-*: initial;
+  --text-12: 12px;
+  --text-12--line-height: 14px;
+  --text-13: 13px;
+  --text-14: 14px;
+  --text-14--line-height: 18px;
+  --text-15: 15px;
+  --text-15--line-height: 18px;
+  --text-18: 18px;
+  --text-18--line-height: 22px;
+  --text-20: 20px;
+  --text-24: 24px;
+  --text-24--line-height: 28px;
+  --text-28: 28px;
+  --text-28--line-height: 33px;
+
+  /* Rabby's `sm` is a max-width query (the custom variant below) and `lg` its
+     min-width counterpart. `sm` is still registered as a breakpoint so its
+     classes come before `lg`'s in the output, as they did with the JS config:
+     at exactly 600px both match and `lg` must win. A plain `600px` would tie
+     with `lg` and interleave the two; `calc()` sorts first and still computes
+     to 600px where Tailwind uses it (the `container` utility). */
+  --breakpoint-*: initial;
+  --breakpoint-sm: calc(600px - 0px);
+  --breakpoint-lg: 600px;
+}
+
+@custom-variant sm (@media (600px >= width));
+/* Dark mode follows the `dark` class on html/body. */
+@custom-variant dark (&:is(.dark *));
 
 /* Chrome injects `body { font-family: system-ui…; font-size: 75% }` into
    extension pages as an unlayered author style, which beats every layer.

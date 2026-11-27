@@ -80,7 +80,6 @@ const config = {
               paths.rootResolve('webpack.config.js'),
               paths.rootResolve('tsconfig.json'),
               paths.rootResolve('postcss.config.js'),
-              paths.rootResolve('tailwind.config.js'),
             ],
           },
         },

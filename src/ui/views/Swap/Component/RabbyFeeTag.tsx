@@ -59,7 +59,7 @@ export const RabbyFeeTag = ({
         overlayClassName="rabby-fee-discount-popover"
         content={
           <>
-            <div className="px-8 mb-8 text-13 font-510 leading-[normal] text-r-neutral-title-1">
+            <div className="px-8 mb-8 text-13 font-medium leading-[normal] text-r-neutral-title-1">
               {t('page.swap.rabbyFee.discountTitle')}
             </div>
             <div className="flex flex-col gap-2">
@@ -69,7 +69,7 @@ export const RabbyFeeTag = ({
                   className={clsx(
                     'flex w-full items-center justify-between gap-4 rounded-[4px] px-8 py-[7px] text-12 leading-[normal]',
                     tier === feeTier
-                      ? 'bg-r-blue-light-1 text-r-blue-default font-510'
+                      ? 'bg-r-blue-light-1 text-r-blue-default font-medium'
                       : 'bg-transparent text-r-neutral-foot font-normal'
                   )}
                 >

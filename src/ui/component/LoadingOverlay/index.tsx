@@ -13,8 +13,8 @@ const LoadingOverlay = ({ hidden }: { hidden: boolean }) => {
       )}
     >
       <div className="absolute left-1/2 top-1/2 [transform:translate(-50%,-50%)] flex flex-col items-center">
-        <SvgIconLoading className="icon icon-loading mb-16 animate-[spining_1.5s_infinite] [&_path]:fill-[#707280]" />
-        <p className="mb-0 font-medium text-15 text-[#707280]">
+        <SvgIconLoading className="icon icon-loading mb-16 animate-[spining_1.5s_infinite] [&_path]:fill-r-neutral-foot" />
+        <p className="mb-0 font-medium text-15 text-r-neutral-foot">
           {t('component.LoadingOverlay.loadingData')}
         </p>
       </div>

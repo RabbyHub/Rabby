@@ -141,8 +141,8 @@ export const useLoginDepositConfirm = (params: {
         cancelButtonProps: {
           ghost: true,
           className: clsx(
-            'h-[40px] border-blue-light text-blue-light',
-            'hover:bg-r-blue-light1 active:bg-[#0000001A]',
+            'h-[40px] border-r-blue-default text-r-blue-default',
+            'hover:bg-r-blue-light1 active:bg-r-neutral-black/10',
             'rounded-[6px]',
             'before:content-none',
             'flex items-center justify-center'

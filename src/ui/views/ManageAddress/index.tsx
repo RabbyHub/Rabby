@@ -324,7 +324,7 @@ const ManageAddress = () => {
                         />
                       )}
                       <RcIconDelete
-                        className="cursor-pointer text-r-neutral-body hover:text-red-forbidden"
+                        className="cursor-pointer text-r-neutral-body hover:text-r-red-default"
                         onClick={() => {
                           if (
                             TypedWalletObj?.[activeIndex]?.type ===

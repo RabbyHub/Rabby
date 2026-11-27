@@ -163,8 +163,8 @@ export const EditMarketSlippage: React.FC<EditMarketSlippageProps> = ({
             onClick={onCancel}
             className={clsx(
               'h-[44px]',
-              'text-blue-light',
-              'border-blue-light',
+              'text-r-blue-default',
+              'border-r-blue-default',
               'before:content-none'
             )}
           >

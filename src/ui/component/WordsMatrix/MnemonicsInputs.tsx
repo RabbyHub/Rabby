@@ -750,7 +750,7 @@ const SLIP39MnemonicsInput = ({
           'h-[56px] border-rabby-neutral-line bg-rabby-neutral-card-1 ',
           'text-15 text-r-neutral-title-1 font-normal leading-[18px]',
           error ? 'border-rabby-red-default' : '',
-          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-blue'
+          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-r-blue-default'
         )}
         spellCheck={false}
         placeholder={t(

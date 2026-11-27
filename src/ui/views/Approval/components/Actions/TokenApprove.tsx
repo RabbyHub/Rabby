@@ -138,9 +138,9 @@ const ApproveAmountModal = ({
           onClick={onCancel}
           className={clsx(
             'w-[200px]',
-            'text-blue-light',
-            'border-blue-light',
-            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'text-r-blue-default',
+            'border-r-blue-default',
+            'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
             'before:content-none'
           )}
         >

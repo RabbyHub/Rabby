@@ -23,7 +23,7 @@ const Queue = ({ count, className }: QueueProps) => {
         'box-border min-w-[54px] h-[22px] py-4 px-8 rounded-[4px] cursor-pointer',
         'bg-[rgba(255,255,255,0.2)] opacity-60',
         'hover:opacity-100 hover:bg-[rgba(255,255,255,0.1)]',
-        'font-normal text-[12px] leading-[14px] text-[#ffffff]',
+        'font-normal text-[12px] leading-[14px] text-white',
         className,
         'ease-in-out',
         'group',

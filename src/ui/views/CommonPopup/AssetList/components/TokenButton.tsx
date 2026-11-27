@@ -126,7 +126,7 @@ export const TokenButton: React.FC<Props> = ({
           'text-12 bg-r-neutral-card-1 text-r-neutral-body',
           'flex items-center',
           'gap-2',
-          'hover:border-blue-light hover:bg-blue-light/10'
+          'hover:border-r-blue-default hover:bg-r-blue-light-1'
         )}
       >
         <span>{len}</span>

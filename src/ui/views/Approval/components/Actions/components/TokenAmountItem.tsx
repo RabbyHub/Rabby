@@ -68,13 +68,13 @@ export const TokenAmountItem: React.FC<Props> = ({
               <div
                 className={clsx(
                   'flex flex-1 overflow-hidden',
-                  isExceed && 'text-red-light'
+                  isExceed && 'text-r-red-default'
                 )}
               >
                 <Values.TokenAmount hasTitle={hideTooltip} value={amount} />
               </div>
               {onEdit ? (
-                <span className="text-blue-light text-14 font-medium ml-4 hover:underline">
+                <span className="text-r-blue-default text-14 font-medium ml-4 hover:underline">
                   <IconEditPen className="text-r-blue-default" />
                 </span>
               ) : null}

@@ -161,8 +161,8 @@ export const GnosisMessageQueueList = (props: {
         <div className="tx-history__empty">
           {isLoading || loading || isSafeInfoLoading ? (
             <>
-              <LoadingOutlined className="text-24 text-gray-content" />
-              <p className="text-14 text-gray-content mt-12">
+              <LoadingOutlined className="text-24 text-r-neutral-foot" />
+              <p className="text-14 text-r-neutral-foot mt-12">
                 {t('page.safeMessageQueue.loading')}
               </p>
             </>
@@ -179,7 +179,7 @@ export const GnosisMessageQueueList = (props: {
           ) : (
             <>
               <img className="no-data" src="./images/nodata-tx.png" />
-              <p className="text-14 text-gray-content mt-8">
+              <p className="text-14 text-r-neutral-foot mt-8">
                 {t('page.safeMessageQueue.noData')}
               </p>
             </>

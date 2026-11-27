@@ -27,8 +27,8 @@ const buttonBaseClass = clsx(
 
 const buttonGhostClass = clsx(
   buttonBaseClass,
-  'border-blue-light text-blue-light',
-  'hover:bg-[#8697FF1A] active:bg-[#0000001A]'
+  'border-r-blue-default text-r-blue-default',
+  'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10'
 );
 
 const ledgerButtonClass = clsx(
