@@ -1,15 +1,8 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import React, {
-  useState,
-  useRef,
-  useMemo,
-  useEffect,
-  useLayoutEffect,
-} from 'react';
+import React, { useState, useRef, useMemo, useLayoutEffect } from 'react';
 import { useAsyncFn } from 'react-use';
 
-import { VariableSizeGrid } from 'react-window';
 import PQueue from 'p-queue';
 
 import { useRabbySelector } from '@/ui/store';
@@ -95,20 +88,6 @@ function sortTokenOrNFTApprovalsSpenderList(
   });
 }
 
-const resetTableRenderer = (
-  ref: React.MutableRefObject<VariableSizeGrid | null>
-) => {
-  if (ref.current) {
-    ref.current.scrollToItem({ columnIndex: 0 });
-    // ref.current.resetAfterRowIndex(0, true);
-    ref.current.resetAfterIndices({
-      columnIndex: 0,
-      rowIndex: 0,
-      shouldForceUpdate: true,
-    });
-  }
-};
-
 export function useApprovalsPage(options?: {
   isTestnet?: boolean;
   chain?: CHAINS_ENUM;
@@ -123,8 +102,6 @@ export function useApprovalsPage(options?: {
 
   const [skContracts, setSKContracts] = useState('');
   const [skAssets, setSKAssets] = useState('');
-  const vGridRefContracts = useRef<VariableSizeGrid>(null);
-  const vGridRefAsset = useRef<VariableSizeGrid>(null);
 
   const setSearchKw = useMemo(
     () => (filterType === 'contract' ? setSKContracts : setSKAssets),
@@ -136,15 +113,6 @@ export function useApprovalsPage(options?: {
   );
 
   const debouncedSearchKw = useSyncStaleValue(searchKw, 250);
-
-  useLayoutEffect(() => {
-    const vGridRef =
-      filterType === 'contract' ? vGridRefContracts : vGridRefAsset;
-    if (vGridRef.current) {
-      vGridRef.current?.scrollToItem({ columnIndex: 0 });
-      vGridRef.current?.resetAfterRowIndex(0, true);
-    }
-  }, [debouncedSearchKw, filterType]);
 
   const queueRef = useRef(new PQueue({ concurrency: 40 }));
 
@@ -460,12 +428,6 @@ export function useApprovalsPage(options?: {
     return [];
   }, [approvalsData.contractMap, options?.chain]);
 
-  useEffect(() => {
-    setTimeout(() => {
-      resetTableRenderer(vGridRefContracts);
-    }, 200);
-  }, [sortedContractList]);
-
   const sortedAssetsList = useMemo(() => {
     const assetsList = [
       ...flatten(
@@ -489,12 +451,6 @@ export function useApprovalsPage(options?: {
     return assetsList;
     // return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
   }, [approvalsData.tokenMap, approvalsData.nftMap, options?.chain]);
-
-  useEffect(() => {
-    setTimeout(() => {
-      resetTableRenderer(vGridRefAsset);
-    }, 200);
-  }, [sortedAssetsList]);
 
   const { displaySortedContractList, displaySortedAssetsList } = useMemo(() => {
     if (!debouncedSearchKw || debouncedSearchKw.trim() === '') {
@@ -532,9 +488,6 @@ export function useApprovalsPage(options?: {
 
     filterType,
     setFilterType,
-
-    vGridRefContracts,
-    vGridRefAsset,
 
     account,
     contractEmptyStatus: useMemo(() => {

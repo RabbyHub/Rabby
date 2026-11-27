@@ -20,10 +20,9 @@ import { findChainByEnum, findChainByServerID } from '@/utils/chain';
 
 import {
   HandleClickTableRow,
-  IVGridContextualPayload,
+  IVirtualTableCellPayload,
   VirtualTable,
 } from './components/Table';
-import { VariableSizeGrid as VGrid } from 'react-window';
 import PillsSwitch from '@/ui/component/PillsSwitch';
 
 import IconSearch from 'ui/assets/search.svg';
@@ -929,12 +928,12 @@ const getRowHeight = (row: ContractApprovalItem) => {
   return ROW_HEIGHT;
 };
 
-const getCellKey = (params: IVGridContextualPayload<ContractApprovalItem>) => {
-  return `${params.rowIndex}-${params.columnIndex}-${params.record.id}`;
+const getRowKey = (record: ContractApprovalItem, rowIndex: number) => {
+  return `${rowIndex}-${record.id}`;
 };
 
 const getCellClassName = (
-  ctx: IVGridContextualPayload<ContractApprovalItem>,
+  ctx: IVirtualTableCellPayload<ContractApprovalItem>,
   selectedRows: ApprovalSpenderItemToBeRevoked[]
 ) => {
   const riskResult = getFinalRiskInfo(ctx.record);
@@ -957,7 +956,7 @@ const getCellClassName = (
 };
 
 const getCellClassNameForAsset = (
-  ctx: IVGridContextualPayload<AssetApprovalSpender>,
+  ctx: IVirtualTableCellPayload<AssetApprovalSpender>,
   selectedRows: ApprovalSpenderItemToBeRevoked[]
 ) => {
   // check if current row is selected
@@ -981,7 +980,6 @@ type PageTableProps<
   containerHeight: number;
   selectedRows: ApprovalSpenderItemToBeRevoked[];
   onClickRow?: HandleClickTableRow<T>;
-  vGridRef: React.RefObject<VGrid>;
   className?: string;
   toggleAllAssetRevoke?: (list: AssetApprovalSpender[]) => void;
   toggleAllContractRevoke?: (list: ContractApprovalItem[]) => void;
@@ -995,7 +993,6 @@ function TableByContracts({
   containerHeight,
   selectedRows = [],
   onClickRow,
-  vGridRef,
   className,
   onChangeSelectedContractSpenders,
   toggleAllContractRevoke,
@@ -1018,21 +1015,6 @@ function TableByContracts({
         ...sorter,
         order: sorter.order ?? getNextSort(prev.order) ?? DEFAULT_SORT_ORDER,
       }));
-      vGridRef.current?.resetAfterRowIndex(0, true);
-    },
-    [vGridRef]
-  );
-
-  const getContractListTotalHeight = useCallback(
-    (rows: readonly ContractApprovalItem[]) => {
-      return rows.reduce((accu, row) => {
-        if (isRiskyContract(row)) {
-          accu += RISKY_ROW_HEIGHT;
-        } else {
-          accu += ROW_HEIGHT;
-        }
-        return accu;
-      }, 0);
     },
     []
   );
@@ -1068,7 +1050,6 @@ function TableByContracts({
     <VirtualTable<ContractApprovalItem>
       isDesktop={isDesktop}
       loading={isLoading}
-      vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_contracts', isDarkTheme && 'dark')}
       markHoverRow={false}
       columns={columnsForContracts}
@@ -1081,9 +1062,8 @@ function TableByContracts({
       dataSource={dataSource}
       scroll={{ y: containerHeight, x: '100%' }}
       onClickRow={onClickRowInspection}
-      getTotalHeight={getContractListTotalHeight}
       getRowHeight={getRowHeight}
-      getCellKey={getCellKey}
+      getRowKey={getRowKey}
       getCellClassName={(ctx) => getCellClassName(ctx, selectedRows)}
       onChange={handleChange}
     />
@@ -1097,7 +1077,6 @@ function TableByAssetSpenders({
   containerHeight,
   onClickRow,
   selectedRows = [],
-  vGridRef,
   className,
   toggleAllAssetRevoke,
   isSelectedAll,
@@ -1130,7 +1109,6 @@ function TableByAssetSpenders({
     <VirtualTable<AssetApprovalSpender>
       isDesktop={isDesktop}
       loading={isLoading}
-      vGridRef={vGridRef}
       className={clsx(className, 'J_table_by_assets')}
       markHoverRow={false}
       columns={getColumnsForAsset({
@@ -1165,7 +1143,6 @@ function TableByEIP7702({
   containerHeight,
   selectedRows = [],
   onClickRow,
-  vGridRef,
   className,
   toggleSelectAll,
   isSelectedAll,
@@ -1180,7 +1157,6 @@ function TableByEIP7702({
   containerHeight: number;
   selectedRows: EIP7702Delegated[];
   onClickRow?: HandleClickTableRow<EIP7702Delegated>;
-  vGridRef: React.RefObject<VGrid>;
   className?: string;
   toggleSelectAll: () => void;
   isActive?: boolean;
@@ -1228,7 +1204,6 @@ function TableByEIP7702({
       <VirtualTable<EIP7702Delegated>
         isDesktop={isDesktop}
         loading={isLoading}
-        vGridRef={vGridRef}
         className={clsx(className, 'J_table_by_eip_7702')}
         markHoverRow={false}
         columns={getColumnsForEIP7702({
@@ -1292,9 +1267,6 @@ export const ApprovalsTabPane = ({
 
     filterType,
     setFilterType,
-
-    vGridRefContracts,
-    vGridRefAsset,
   } = useApprovalsPage({ isTestnet: selectedTab === 'testnet', chain });
 
   const [tab, setTab] = React.useState<typeof filterType | 'eip-7702'>(
@@ -1308,7 +1280,6 @@ export const ApprovalsTabPane = ({
     setSearchEIP7702Kw,
     selectedRows: eip7702SelectedRows,
     setSelectedRows: setEIP7702SelectedRows,
-    vGridRefEIP7702,
     handleEIP7702Revoke,
   } = useEIP7702ApprovalsQuery({ isActive: tab === 'eip-7702', chain });
 
@@ -1605,7 +1576,6 @@ export const ApprovalsTabPane = ({
                   isDarkTheme={isDarkTheme}
                   isLoading={isLoading}
                   className={tab === 'contract' ? '' : 'hidden'}
-                  vGridRef={vGridRefContracts}
                   containerHeight={yValue}
                   emptyStatus={contractEmptyStatus}
                   dataSource={displaySortedContractList}
@@ -1623,7 +1593,6 @@ export const ApprovalsTabPane = ({
                 <TableByAssetSpenders
                   className={tab === 'assets' ? '' : 'hidden'}
                   isLoading={isLoading}
-                  vGridRef={vGridRefAsset}
                   containerHeight={yValue}
                   emptyStatus={assetEmptyStatus}
                   dataSource={displaySortedAssetsList}
@@ -1639,7 +1608,6 @@ export const ApprovalsTabPane = ({
                   isActive={tab === 'eip-7702'}
                   className={tab === 'eip-7702' ? '' : 'hidden'}
                   isLoading={eip7702Loading}
-                  vGridRef={vGridRefEIP7702}
                   containerHeight={yValue}
                   emptyStatus={delegationAddresses?.length ? false : '7702'}
                   dataSource={delegationAddresses || []}

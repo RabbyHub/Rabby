@@ -7,9 +7,8 @@ import { getEIP7702RevokeSupportedChains } from '@/constant/eip7702';
 import { CHAINS_ENUM } from '@debank/common';
 
 import PQueue from 'p-queue';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useAsyncRetry } from 'react-use';
-import { VariableSizeGrid } from 'react-window';
 import { Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import eventBus from '@/eventBus';
@@ -103,8 +102,6 @@ export const useEIP7702ApprovalsQuery = ({
   const wallet = useWallet();
 
   const [selectedRows, setSelectedRows] = useState<EIP7702Delegated[]>([]);
-
-  const vGridRefEIP7702 = useRef<VariableSizeGrid>(null);
 
   const { value, loading, error, retry } = useAsyncRetry(async () => {
     if (!accountAddress || !wallet.requestETHRpc) {
@@ -200,7 +197,6 @@ export const useEIP7702ApprovalsQuery = ({
     setSearchEIP7702Kw,
     selectedRows,
     setSelectedRows,
-    vGridRefEIP7702,
     handleEIP7702Revoke,
   };
 };
