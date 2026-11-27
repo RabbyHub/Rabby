@@ -628,7 +628,7 @@ export const useBatchSwapTask = (options: {
       setCurrentToken(null);
       updateStatus('idle');
     },
-    [cancelRunningTasks, updateStatus]
+    [cancelRunningTasks, updateStatus, t]
   );
 
   const pause = React.useCallback(() => {
@@ -706,7 +706,12 @@ export const useBatchSwapTask = (options: {
       usd: totalUsd,
       amount: totalAmount,
     };
-  }, [statusDict, options.receiveToken?.id]);
+  }, [
+    statusDict,
+    options.receiveToken?.id,
+    options.receiveToken?.price,
+    slippage,
+  ]);
 
   const currentTaskIndex = React.useMemo(() => {
     return list.findIndex((item) => item.id === currentToken?.id);

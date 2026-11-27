@@ -73,10 +73,11 @@ export const BridgePendingTxItem = ({
     }))
   );
 
+  const hasData = !!data;
   useEffect(() => {
-    onDisplayChange?.(!!data && !hidden);
+    onDisplayChange?.(hasData && !hidden);
     return () => onDisplayChange?.(false);
-  }, [!!data, hidden, onDisplayChange]);
+  }, [hasData, hidden, onDisplayChange]);
 
   const pending =
     !!data?.address &&

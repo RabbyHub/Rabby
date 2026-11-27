@@ -53,7 +53,7 @@ export const SessionSignal: React.FC<Props> = ({
       default:
         return 'green';
     }
-  }, [status, chainId, sessionChainId]);
+  }, [status]);
 
   return (
     <Signal

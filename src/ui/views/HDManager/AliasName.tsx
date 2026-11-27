@@ -24,24 +24,27 @@ export const AliasName: React.FC<Props> = ({
   const [value, setValue] = React.useState(aliasName);
   const [focus, setFocus] = React.useState(false);
 
-  const onChangeAliasName = React.useCallback((e) => {
-    const value = e.target.value;
-    if (!value) {
+  const onChangeAliasName = React.useCallback(
+    (e) => {
+      const value = e.target.value;
+      if (!value) {
+        setFocus(false);
+        setHover(false);
+        return;
+      }
+      if (value && value !== aliasName) {
+        if (address) {
+          cachedName[address] = value;
+        }
+
+        onChange(value);
+      }
       setFocus(false);
       setHover(false);
-      return;
-    }
-    if (value && value !== aliasName) {
-      if (address) {
-        cachedName[address] = value;
-      }
-
-      onChange(value);
-    }
-    setFocus(false);
-    setHover(false);
-    setValue(value);
-  }, []);
+      setValue(value);
+    },
+    [address, aliasName, onChange]
+  );
 
   React.useEffect(() => {
     setValue(aliasName);

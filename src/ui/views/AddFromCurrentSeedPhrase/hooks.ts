@@ -35,7 +35,7 @@ export const UseSeedPhrase = () => {
         );
       }
     },
-    [invokeEnterPassphrase, wallet?.getMnemonicKeyRingIdFromPublicKey]
+    [invokeEnterPassphrase, wallet]
   );
 
   const seedPhraseList = useMemo(() => {

@@ -368,7 +368,7 @@ export const useBalance = (address: string) => {
     return () => {
       flag = false;
     };
-  }, [address]);
+  }, [address, wallet]);
 
   return [balance ?? cacheBalance] as const;
 };
@@ -458,7 +458,7 @@ export const useAccountInfo = (
         hdPathTypeLabel: LedgerHDPathTypeLabel[res?.hdPathType],
       });
     });
-  }, []);
+  }, [address, type, wallet]);
 
   const fetchTrezorLikeAccount = useCallback(() => {
     wallet
@@ -471,7 +471,7 @@ export const useAccountInfo = (
           hdPathTypeLabel: LedgerHDPathTypeLabel.BIP44,
         });
       });
-  }, []);
+  }, [address, type, wallet]);
 
   const fetchMnemonicsAccount = useCallback(async () => {
     const info = await wallet.getMnemonicAddressInfo(address);
@@ -483,7 +483,7 @@ export const useAccountInfo = (
         hdPathTypeLabel: LedgerHDPathTypeLabel[info.hdPathType],
       });
     }
-  }, []);
+  }, [address, wallet]);
 
   useEffect(() => {
     if (isLedger || isGridPlus || isKeystone || isTrezor) {

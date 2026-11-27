@@ -40,7 +40,7 @@ export const BackupSeedPhrase = () => {
           duration: 0.5,
         });
       });
-  }, [mnemonics]);
+  }, [mnemonics, t]);
 
   const handleBackup = useMemoizedFn(async () => {
     if (!address) {

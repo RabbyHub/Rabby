@@ -35,7 +35,7 @@ function useQuestionsCheck(checklist: string[], defaultChecked?: boolean) {
       content: item,
       checked: !!defaultChecked,
     }));
-  }, []);
+  }, [checklist, defaultChecked]);
 
   const [questionChecks, setQuestionChecks] = React.useState(QUESTIONS);
 

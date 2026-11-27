@@ -71,7 +71,7 @@ export const ImportCoboArgus: React.FC<{
         setIsLoading(false);
       }
     }
-  }, [selectedChain, step, inputAddress]);
+  }, [selectedChain, step, inputAddress, t, wallet]);
 
   // bindApproval no-ops when state.approvalId is absent, rather than falling back to whatever's current.
   const [, resolveApproval, rejectApproval] = useApproval(
@@ -109,7 +109,16 @@ export const ImportCoboArgus: React.FC<{
         message.error(e.message);
       }
     }
-  }, [selectedChain, safeAddress, inputAddress, resolveApproval]);
+  }, [
+    selectedChain,
+    safeAddress,
+    inputAddress,
+    resolveApproval,
+    openSuccessPage,
+    show,
+    t,
+    wallet,
+  ]);
 
   const handleClose = React.useCallback(() => {
     rejectApproval();

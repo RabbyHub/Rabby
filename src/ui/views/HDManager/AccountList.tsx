@@ -75,20 +75,23 @@ export const AccountList: React.FC<Props> = ({
 
   const { t } = useTranslation();
 
-  const copy = React.useCallback((value: string) => {
-    const clipboard = new ClipboardJS('.copy-icon', {
-      text: function () {
-        return value;
-      },
-    });
-    clipboard.on('success', () => {
-      message.success({
-        content: t('global.copied'),
-        key: 'ledger-success',
+  const copy = React.useCallback(
+    (value: string) => {
+      const clipboard = new ClipboardJS('.copy-icon', {
+        text: function () {
+          return value;
+        },
       });
-      clipboard.destroy();
-    });
-  }, []);
+      clipboard.on('success', () => {
+        message.success({
+          content: t('global.copied'),
+          key: 'ledger-success',
+        });
+        clipboard.destroy();
+      });
+    },
+    [t]
+  );
 
   React.useEffect(() => {
     setList(data ?? []);
@@ -154,7 +157,15 @@ export const AccountList: React.FC<Props> = ({
 
       return;
     },
-    [keyring, keyringId, wallet]
+    [
+      keyring,
+      keyringId,
+      wallet,
+      brand,
+      createTask,
+      getCurrentAccounts,
+      removeCurrentAccount,
+    ]
   );
 
   const handleSelectAccount = useMemoizedFn(

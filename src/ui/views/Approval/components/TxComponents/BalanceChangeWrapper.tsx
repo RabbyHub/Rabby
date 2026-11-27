@@ -60,7 +60,7 @@ export const BalanceChangeWrapper: React.FC<Props> = ({
       }
     }
     return false;
-  }, [data]);
+  }, [data, balanceChange, preExecSuccess]);
 
   return notShowBalanceChange || !balanceChange ? null : (
     <>

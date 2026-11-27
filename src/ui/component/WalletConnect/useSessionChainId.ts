@@ -46,7 +46,7 @@ export const useSessionChainId = (
         .getWalletConnectSessionAccount(account.address, account.brandName)
         .then((result) => result && setChainId(result.chainId));
     }
-  }, [account]);
+  }, [account, wallet]);
 
   return chainId;
 };

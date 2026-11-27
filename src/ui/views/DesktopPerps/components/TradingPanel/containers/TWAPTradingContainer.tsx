@@ -121,12 +121,7 @@ export const TWAPTradingContainer: React.FC<TradingContainerProps> = () => {
     return Number.isNaN(perSuborder) ? '-' : perSuborder.toFixed(szDecimals);
   });
 
-  const sizePerSuborder = React.useMemo(() => calcSizePerSuborder(tradeSize), [
-    calcSizePerSuborder,
-    tradeSize,
-    numberOfOrders,
-    szDecimals,
-  ]);
+  const sizePerSuborder = calcSizePerSuborder(tradeSize);
 
   // Max duration calculation based on current input size (each suborder must be >= $10)
   const { maxDurationMins, maxDurationDisplay } = useMemo(() => {

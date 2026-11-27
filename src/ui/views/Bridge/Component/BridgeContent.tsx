@@ -172,11 +172,7 @@ export const BridgeContent = () => {
       return t('page.bridge.approve-and-bridge');
     }
     return t('page.bridge.title');
-  }, [
-    selectedBridgeQuote?.shouldApproveToken,
-    showExternalDappTips,
-    externalDapps,
-  ]);
+  }, [selectedBridgeQuote?.shouldApproveToken, showExternalDappTips, t]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();

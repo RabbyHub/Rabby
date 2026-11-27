@@ -77,9 +77,10 @@ export const GnosisMessageQueue = () => {
     return tabs.find((item) => item?.chain?.enum === activeKey);
   }, [tabs, activeKey]);
 
+  const firstTabKey = tabs[0]?.key;
   useEffect(() => {
-    setActiveKey(tabs[0]?.key || null);
-  }, [tabs[0]?.key]);
+    setActiveKey(firstTabKey || null);
+  }, [firstTabKey]);
 
   return (
     <div className="flex flex-col h-full">

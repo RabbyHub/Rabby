@@ -96,7 +96,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
         });
       }
     },
-    [onTokenChange, type]
+    [onTokenChange, isFrom, onValueChange, token?.id]
   );
 
   const tokenRender: ({
@@ -117,7 +117,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
         onValueChange?.(e.target.value);
       }
     },
-    [onValueChange]
+    [onValueChange, disabled]
   );
 
   const onAfterChangeSlider = useCallback(
@@ -126,7 +126,7 @@ export const SwapTokenItem = (props: SwapTokenItemProps) => {
         onChangeSlider?.(value, true);
       }
     },
-    [onChangeSlider]
+    [onChangeSlider, disabled]
   );
 
   useLayoutEffect(() => {

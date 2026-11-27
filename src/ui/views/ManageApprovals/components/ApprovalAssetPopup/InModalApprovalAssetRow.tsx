@@ -66,7 +66,7 @@ export const InModalApprovalAssetRow: React.FC<InModalApprovalAssetRowProps> = (
       },
       spenderValues: getSpenderApprovalAmount(spender),
     };
-  }, [spender, t]);
+  }, [spender]);
 
   const handleToggleSelection = useMemoizedFn(() => {
     onToggleSelection?.({ spender, approval });

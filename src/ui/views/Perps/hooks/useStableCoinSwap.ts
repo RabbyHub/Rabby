@@ -211,7 +211,7 @@ export const useStableCoinSwap = ({
     return [...ALL_PERPS_QUOTE_ASSETS].sort(
       (a, b) => getSpotBalance(b) - getSpotBalance(a)
     );
-  }, [getSpotBalance, spotBalancesMap]);
+  }, [getSpotBalance]);
 
   return {
     fromCoin,

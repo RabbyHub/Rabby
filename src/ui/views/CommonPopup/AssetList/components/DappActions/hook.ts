@@ -453,5 +453,5 @@ export const useGetDappActions = ({
       });
     });
     return Array.from(result);
-  }, [protocol]);
+  }, [protocol, t]);
 };

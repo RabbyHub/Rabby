@@ -45,7 +45,7 @@ const useAccount = () => {
       setAccount(a);
       setAddress(a!.address.toLowerCase());
     });
-  }, []);
+  }, [wallet]);
   useEffect(() => {
     if (address) {
       wallet.getAlianName(address).then(setName);
@@ -57,7 +57,7 @@ const useAccount = () => {
         .getInMemoryAddressBalance(address)
         .then((d) => setBalance(d.total_usd_value));
     }
-  }, [address]);
+  }, [address, wallet]);
 
   return {
     ...account,

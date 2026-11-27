@@ -71,7 +71,7 @@ const RuleDrawer = ({
       text,
       color,
     };
-  }, [selectRule, isHovering]);
+  }, [selectRule, isHovering, t]);
 
   const handleIgnore = () => {
     if (!selectRule) return;

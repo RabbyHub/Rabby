@@ -578,10 +578,10 @@ export const Main = () => {
     activeProvider?.shouldApproveToken,
     quoteLoading,
     isSupportedChain,
-    externalDapps,
     shouldTwoStepSwap,
     isApprove,
     approveTxPending,
+    t,
   ]);
 
   useDebounce(
@@ -1106,7 +1106,7 @@ export const Main = () => {
       return [currentDex.name, currentDex.logo];
     }
     return ['', ''];
-  }, [isWrapToken, activeProvider?.name]);
+  }, [isWrapToken, activeProvider?.name, receiveToken?.logo_url, t]);
 
   const setRabbyFeeVisible = useSetRabbyFee();
 
@@ -1148,13 +1148,7 @@ export const Main = () => {
       return inputAmount;
     }
     return '0';
-  }, [
-    activeProvider,
-    inputAmount,
-    quoteLoading,
-    receiveToken?.id,
-    payToken?.id,
-  ]);
+  }, [activeProvider, inputAmount, receiveToken?.id, payToken?.id]);
 
   return (
     <>

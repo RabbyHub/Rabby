@@ -302,6 +302,7 @@ export const PrivatekeyWaiting = ({
     description,
   });
 
+  const failedRetryType = txFailedResult?.[1];
   React.useEffect(() => {
     if (
       [
@@ -311,12 +312,12 @@ export const PrivatekeyWaiting = ({
     ) {
       setHeight('fit-content');
       setContent(
-        txFailedResult?.[1]
+        failedRetryType
           ? t('page.signFooterBar.qrcode.txFailedRetry')
           : t('page.signFooterBar.qrcode.txFailed')
       );
     }
-  }, [txFailedResult?.[1], connectStatus]);
+  }, [failedRetryType, connectStatus]);
 
   if (isSignText && connectStatus !== WALLETCONNECT_STATUS_MAP.FAILED) {
     return null;

@@ -159,7 +159,7 @@ export const useQuoteMethods = () => {
       }
       return [tokenApproved, false];
     },
-    [walletController.getERC20Allowance]
+    [walletController]
   );
 
   const getQuoteGasUsed = React.useCallback(
@@ -370,13 +370,7 @@ export const useQuoteMethods = () => {
         gasUsd,
       };
     },
-    [
-      walletOpenapi,
-      getTokenApproveStatus,
-      getGasMarketOnce,
-      getQuoteGasUsed,
-      walletController,
-    ]
+    [getTokenApproveStatus, getGasMarketOnce, getQuoteGasUsed, walletController]
   );
 
   const getDexQuote = React.useCallback(
@@ -581,12 +575,12 @@ export const useQuoteMethods = () => {
     },
     [
       walletOpenapi,
-      pRetry,
       getPreEstimateGasUsed,
       getRecommendNonceOnce,
       getGasMarketOnce,
       getTokenApproveStatus,
       getQuoteGasUsed,
+      walletController,
     ]
   );
 
@@ -671,7 +665,6 @@ export const useQuoteMethods = () => {
       walletController,
       getGasMarketOnce,
       supportedDEXList,
-      pRetry,
       walletOpenapi,
     ]
   );

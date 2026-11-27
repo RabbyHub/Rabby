@@ -76,7 +76,7 @@ export const TokenDetailPopup = ({
         isSameAddress(item.address, token.id) && item.chain === token.chain
     );
     setIsAdded(isAdded);
-  }, [token]);
+  }, [token, wallet]);
 
   React.useEffect(() => {
     checkIsAdded();

@@ -38,7 +38,7 @@ export const OrderHistory: React.FC = () => {
     sdk.info.getUserHistoricalOrders().then((res) => {
       dispatch.perps.patchState({ historicalOrders: res.slice(0, 2000) });
     });
-  }, []);
+  }, [dispatch.perps]);
 
   useEffect(() => {
     fetchHistoricalOrders();
@@ -282,7 +282,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, t]
+    [marketDataMap, t, dispatch.perps]
   );
   // The order table has many columns. Instead of squeezing them until values
   // overflow, give the whole table a minimum width: above it the columns stretch

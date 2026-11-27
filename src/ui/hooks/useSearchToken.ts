@@ -39,7 +39,7 @@ export function useIsTokenAddedLocally(token?: TokenItem | null) {
       onBlocked,
       isLocal: onCustomize || onBlocked,
     };
-  }, [customize, token?.id]);
+  }, [customize, blocked, token]);
 
   return addedInfo;
 }
@@ -87,7 +87,7 @@ export function useVaryTokensByLocal<
 
   const varied = useMemo(() => {
     return varyTokensByLocal(tokenList, { customize, blocked });
-  }, [customize, blocked]);
+  }, [customize, blocked, tokenList]);
 
   return varied;
 }
@@ -95,31 +95,39 @@ export function useVaryTokensByLocal<
 export function useOperateCustomToken() {
   const dispatch = useRabbyDispatch();
 
-  const addToken = useCallback(async (tokenWithAmount: TokenItem) => {
-    if (!tokenWithAmount) return;
+  const addToken = useCallback(
+    async (tokenWithAmount: TokenItem) => {
+      if (!tokenWithAmount) return;
 
-    if (tokenWithAmount.is_core) {
-      return dispatch.account.addBlockedToken(parseTokenItem(tokenWithAmount));
-    } else {
-      return dispatch.account.addCustomizeToken(
-        parseTokenItem(tokenWithAmount)
-      );
-    }
-  }, []);
+      if (tokenWithAmount.is_core) {
+        return dispatch.account.addBlockedToken(
+          parseTokenItem(tokenWithAmount)
+        );
+      } else {
+        return dispatch.account.addCustomizeToken(
+          parseTokenItem(tokenWithAmount)
+        );
+      }
+    },
+    [dispatch.account]
+  );
 
-  const removeToken = useCallback(async (tokenWithAmount: TokenItem) => {
-    if (!tokenWithAmount) return;
+  const removeToken = useCallback(
+    async (tokenWithAmount: TokenItem) => {
+      if (!tokenWithAmount) return;
 
-    if (tokenWithAmount?.is_core) {
-      return dispatch.account.removeBlockedToken(
-        parseTokenItem(tokenWithAmount)
-      );
-    } else {
-      return dispatch.account.removeCustomizeToken(
-        parseTokenItem(tokenWithAmount)
-      );
-    }
-  }, []);
+      if (tokenWithAmount?.is_core) {
+        return dispatch.account.removeBlockedToken(
+          parseTokenItem(tokenWithAmount)
+        );
+      } else {
+        return dispatch.account.removeCustomizeToken(
+          parseTokenItem(tokenWithAmount)
+        );
+      }
+    },
+    [dispatch.account]
+  );
 
   return {
     addToken,
@@ -238,7 +246,7 @@ export function useFindCustomToken(input?: {
 
       return lists;
     },
-    [debouncedSearchKeyword, blocked, isTestnet]
+    [debouncedSearchKeyword, blocked, isTestnet, skRef, wallet]
   );
 
   useEffect(() => {
@@ -351,7 +359,7 @@ const useSearchToken = (
         );
       }
     },
-    [customize, blocked, isTestnet]
+    [customize, blocked, isTestnet, wallet, withBalance]
   );
 
   useEffect(() => {

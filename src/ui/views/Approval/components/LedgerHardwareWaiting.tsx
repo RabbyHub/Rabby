@@ -318,7 +318,7 @@ const LedgerHardwareWaiting = ({
     }
 
     return description;
-  }, [description]);
+  }, [description, t]);
 
   const showOriginDesc = React.useCallback(() => {
     if (isLedgerLockError(description)) {
@@ -344,6 +344,7 @@ const LedgerHardwareWaiting = ({
     showOriginDesc,
   });
 
+  const failedRetryType = txFailedResult?.[1];
   React.useEffect(() => {
     if (
       [
@@ -352,12 +353,12 @@ const LedgerHardwareWaiting = ({
       ].includes(connectStatus)
     ) {
       setContent(
-        txFailedResult?.[1]
+        failedRetryType
           ? t('page.signFooterBar.qrcode.txFailedRetry')
           : t('page.signFooterBar.qrcode.txFailed')
       );
     }
-  }, [txFailedResult?.[1], connectStatus]);
+  }, [failedRetryType, connectStatus]);
 
   return (
     <ApprovalPopupContainer

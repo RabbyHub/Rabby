@@ -124,7 +124,7 @@ export const usePerpsInitial = () => {
       pnl,
       show: true,
     };
-  }, [positionAndOpenOrders]);
+  }, [positionAndOpenOrders, isLogin]);
 
   return {
     accountSummary,

@@ -40,7 +40,7 @@ export const BitBox02Manager: React.FC = () => {
       type: HDPathType.BIP44,
     });
     setLoading(false);
-  }, []);
+  }, [getCurrentAccounts, setting]);
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
   const [preventLoading, setPreventLoading] = React.useState(false);
 

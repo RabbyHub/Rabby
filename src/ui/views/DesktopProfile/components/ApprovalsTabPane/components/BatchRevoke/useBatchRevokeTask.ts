@@ -233,7 +233,7 @@ export const useBatchRevokeTask = () => {
         { priority }
       );
     },
-    [revokeList]
+    [revokeList, gasAccount?.sig, wallet]
   );
 
   const start = React.useCallback(() => {
@@ -241,7 +241,7 @@ export const useBatchRevokeTask = () => {
     for (const item of list) {
       addRevokeTask(item);
     }
-  }, [list, revokeList]);
+  }, [list, addRevokeTask]);
 
   const init = React.useCallback(
     (

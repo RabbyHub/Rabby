@@ -246,6 +246,8 @@ const DappActionsForPopup = ({
       onPreExecChange,
       setVisible,
       wallet,
+      close,
+      resetGasStore,
     ]
   );
 

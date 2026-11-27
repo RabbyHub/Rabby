@@ -106,7 +106,7 @@ const useToken = (type: 'from' | 'to', refreshTokenId: number) => {
       lastSelectedToken
         ? findChainByServerID(lastSelectedToken?.chain)?.enum
         : undefined,
-    [lastSelectedToken?.chain]
+    [lastSelectedToken]
   );
   const [chain, setChain] = useState<CHAINS_ENUM | undefined>(lastChainEnum);
 

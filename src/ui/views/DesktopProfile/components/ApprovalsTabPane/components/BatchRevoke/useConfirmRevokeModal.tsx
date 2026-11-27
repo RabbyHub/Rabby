@@ -77,7 +77,7 @@ export const useConfirmRevokeModal = (props: {
         </div>
       ),
     });
-  }, [props]);
+  }, [props, t]);
 
   return {
     show,

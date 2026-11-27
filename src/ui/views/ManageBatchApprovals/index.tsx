@@ -37,8 +37,12 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
   const { currentAccount } = useSceneAccountInfo();
   const allowNavigationRef = React.useRef(false);
   const batchRevokeState = location.state;
-  const revokeList = batchRevokeState?.revokeList ?? [];
-  const dataSource = batchRevokeState?.dataSource ?? [];
+  const revokeList = React.useMemo(() => batchRevokeState?.revokeList ?? [], [
+    batchRevokeState?.revokeList,
+  ]);
+  const dataSource = React.useMemo(() => batchRevokeState?.dataSource ?? [], [
+    batchRevokeState?.dataSource,
+  ]);
   const accountMode = React.useMemo(
     () => getBatchRevokeAccountMode(currentAccount?.type),
     [currentAccount?.type]

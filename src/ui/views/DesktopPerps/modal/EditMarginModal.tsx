@@ -79,9 +79,7 @@ export const EditMarginModal: React.FC<EditMarginPopupProps> = ({
       leverageMax
     ).toFixed(pxDecimals);
   }, [
-    marginUsed,
     markPrice,
-    leverage,
     leverageMax,
     margin,
     direction,

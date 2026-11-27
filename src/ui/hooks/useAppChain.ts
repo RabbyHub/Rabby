@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { useMemoizedFn } from 'ahooks';
 import { AppChainItem } from '@rabby-wallet/rabby-api/dist/types';
 import { APPCHAIN_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
 import { appChainDbService } from '@/db/services/appChainDbService';
@@ -183,9 +184,9 @@ export const useAppChain = (userAddr: string | undefined, visible = true) => {
     };
   }, []);
 
-  const forceRefresh = useCallback(() => {
+  const forceRefresh = useMemoizedFn(() => {
     loadProcess({ forceRefresh: true });
-  }, [loadProcess]);
+  });
 
   return {
     appChains,

@@ -159,7 +159,7 @@ export const useLoginDepositConfirm = (params: {
         },
       });
     },
-    [t, login, gotoGasAccount]
+    [t, login, gotoGasAccount, currentAccount]
   );
 
   return modalConfirm;

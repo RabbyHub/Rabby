@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import { useMemoizedFn } from 'ahooks';
 
 import { useAsync } from 'react-use';
 
@@ -349,6 +350,7 @@ export const useTokens = (
     visible,
     mainnetTokens.list,
     chainServerId,
+    disableRecommended,
   ]);
 
   const {
@@ -386,9 +388,9 @@ export const useTokens = (
     lpTokensOnly,
   ]);
 
-  const forceRefresh = useCallback(() => {
+  const forceRefresh = useMemoizedFn(() => {
     loadProcess({ forceRefresh: true });
-  }, [loadProcess]);
+  });
 
   return {
     isLoading: isLoading || loadingRecommendedTokens,

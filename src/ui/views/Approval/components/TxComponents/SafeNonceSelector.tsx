@@ -67,7 +67,7 @@ export const SafeNonceSelector = ({
       nonce: val,
     });
     form.validateFields();
-  }, [val]);
+  }, [val, form]);
 
   const handleOnChange = (_v: string | number) => {
     const v = +_v;

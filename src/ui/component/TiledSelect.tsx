@@ -61,7 +61,7 @@ function useSelectOptionsFill<T extends Exclude<any, null>>({
       setSlotValues([...slotValues]);
       couldJump && setCurrentFocusingIndex(slotIdx + 1);
     },
-    [slotValues]
+    [slotValues, options, selectedOptIdxes, setSlotValues]
   );
 
   const clearValueByIdx = React.useCallback(
@@ -74,7 +74,7 @@ function useSelectOptionsFill<T extends Exclude<any, null>>({
       setSlotValues([...slotValues]);
       setCurrentFocusingIndex(slotIdx);
     },
-    [slotValues]
+    [slotValues, options, selectedOptIdxes, setSlotValues]
   );
 
   const firstNullSlotIdx = React.useMemo(() => {

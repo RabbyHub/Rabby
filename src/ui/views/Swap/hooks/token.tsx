@@ -653,7 +653,13 @@ export const useTokenPair = (userAddress: string) => {
       ];
     }
     return [false, ''];
-  }, [payToken?.id, receiveToken?.id, chain]);
+  }, [
+    payToken?.id,
+    receiveToken?.id,
+    chain,
+    payToken?.symbol,
+    receiveToken?.symbol,
+  ]);
 
   const { feeRate, feeTier } = useMemo(
     () =>
@@ -1345,5 +1351,5 @@ export const useDetectLoss = ({
     const cut = receive.minus(pay).div(pay).times(100);
 
     return cut.lte(-5);
-  }, [payAmount, payToken?.price, receiveAmount, receiveToken?.price]);
+  }, [payAmount, receiveAmount, payToken, receiveToken]);
 };

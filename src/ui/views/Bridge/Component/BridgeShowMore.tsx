@@ -331,7 +331,7 @@ export const BridgeShowMore = ({
         )}
       </>
     );
-  }, [data, quoteLoading, toToken, fromToken]);
+  }, [data, quoteLoading, toToken, fromToken, amount, t, toAmount]);
 
   const rabbyFeeContentRender = () => (
     <ListItem name={t('page.swap.rabbyFee.title')} className="mt-12 h-18">

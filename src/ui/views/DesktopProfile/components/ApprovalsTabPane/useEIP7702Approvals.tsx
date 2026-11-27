@@ -139,7 +139,7 @@ export const useEIP7702ApprovalsQuery = ({
               list: arr,
             } as any) as EIP7702Delegated)
         ),
-    [value, currentAccount, chain, searchEIP7702Kw]
+    [value, currentAccount, chain, searchEIP7702Kw, error]
   );
 
   const clearState = () => {

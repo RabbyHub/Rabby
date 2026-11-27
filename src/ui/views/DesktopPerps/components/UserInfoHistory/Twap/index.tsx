@@ -73,14 +73,14 @@ export const Twap: React.FC = () => {
     });
 
     return orders;
-  }, [twapStates, twapHistory, twapSliceFills]);
+  }, [twapStates, twapSliceFills]);
 
   const fetchUserTwapSliceFills = useCallback(() => {
     const sdk = getPerpsSDK();
     sdk.info.getUserTwapSliceFills().then((res) => {
       dispatch.perps.patchState({ twapSliceFills: res.slice(0, 2000) });
     });
-  }, []);
+  }, [dispatch.perps]);
 
   useEffect(() => {
     fetchUserTwapSliceFills();
@@ -566,7 +566,14 @@ export const Twap: React.FC = () => {
         : [...commonColumns];
 
     return columns;
-  }, [expandedRowKeys, handleCancelTWAPOrder, activeTab, t]);
+  }, [
+    expandedRowKeys,
+    handleCancelTWAPOrder,
+    activeTab,
+    t,
+    dispatch.perps,
+    marketDataMap,
+  ]);
 
   // Expanded row render
   const expandedRowRender = (record: TwapOrder) => {

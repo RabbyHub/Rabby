@@ -68,14 +68,5 @@ export const useHDWalletUnlockAndRedirect = (
         key: 'ledger-error',
       });
     }
-  }, [
-    t,
-    setStore,
-    wallet?.connectHardware,
-    wallet?.requestKeyring,
-    wallet?.getAlianName,
-    wallet?.boot,
-    store?.password,
-    wallet?.unlockHardwareAccount,
-  ]);
+  }, [t, setStore, store?.password, history, type, wallet]);
 };

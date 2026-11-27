@@ -52,14 +52,14 @@ export const ForgotPassword = () => {
       await wallet.resetBooted();
     }
     handleSetStep('reset-tip');
-  }, [hasUnencryptedKeyringData, handleSetStep]);
+  }, [hasUnencryptedKeyringData, handleSetStep, wallet]);
   const onRestTipNext = React.useCallback(() => {
     if (hasUnencryptedKeyringData) {
       handleSetStep('reset-password');
     } else {
       wallet.tryOpenOrActiveUserGuide();
     }
-  }, [handleSetStep, hasUnencryptedKeyringData]);
+  }, [handleSetStep, hasUnencryptedKeyringData, wallet]);
   const onPasswordSubmit = React.useCallback(
     async (password: string) => {
       try {
@@ -83,7 +83,7 @@ export const ForgotPassword = () => {
         message.error(e.message);
       }
     },
-    [handleSetStep]
+    [handleSetStep, wallet]
   );
   const onResultSuccessNext = React.useCallback(() => {
     window.close();
@@ -102,13 +102,13 @@ export const ForgotPassword = () => {
     return () => {
       Browser.runtime.onMessage.removeListener(handleWindowClose);
     };
-  }, []);
+  }, [wallet]);
 
   React.useEffect(() => {
     wallet.hasEncryptedKeyringData().then(setHasEncryptedKeyringData);
     wallet.hasUnencryptedKeyringData().then(setHasUnencryptedKeyringData);
     wallet.getUnencryptedKeyringTypes().then(setKeyringTypes);
-  }, []);
+  }, [wallet]);
 
   return (
     <>

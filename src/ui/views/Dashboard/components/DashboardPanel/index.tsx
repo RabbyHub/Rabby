@@ -535,12 +535,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
     setActiveId(null);
   });
 
-  const activeItem = useMemo(() => {
-    if (!activeId) return null;
-    return panelItems[activeId as keyof typeof panelItems] as
-      | IPanelItem
-      | undefined;
-  }, [activeId, panelItems]);
+  const activeItem = activeId
+    ? (panelItems[activeId as keyof typeof panelItems] as
+        | IPanelItem
+        | undefined)
+    : null;
 
   const ref = useRef<HTMLDivElement | null>(null);
   const scrollbarTrackRef = useRef<HTMLDivElement | null>(null);

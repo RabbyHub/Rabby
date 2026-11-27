@@ -274,7 +274,7 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
   const shouldOpenImportSuccessPage = React.useMemo(
     () =>
       isHardwareImportSelectAddress(search) && !query.get('isNewUserImport'),
-    [search]
+    [search, query]
   );
   const getImportedAccounts = React.useCallback(
     (accounts: Account[]) => {

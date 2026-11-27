@@ -93,13 +93,16 @@ export const GridPlusManager: React.FC = () => {
     }
 
     setLoading(false);
-  }, []);
+  }, [createTask, keyringId, wallet]);
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(GRIDPLUS_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(GRIDPLUS_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
   const refreshCurrentAccounts = React.useCallback(
     () => createTask(() => getCurrentAccounts({ resetInitialAccounts: true })),
     []
@@ -165,7 +168,7 @@ export const GridPlusManager: React.FC = () => {
       maskClosable: true,
       className: 'hd-manager-switch-modal modal-support-darkmode',
     });
-  }, []);
+  }, [keyringId, t, wallet]);
 
   return (
     <>

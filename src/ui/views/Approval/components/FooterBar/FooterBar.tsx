@@ -175,7 +175,7 @@ export const FooterBar: React.FC<Props> = ({
         site && setConnectedSite(site);
       });
     }
-  }, [origin]);
+  }, [origin, wallet]);
 
   const { isDarkTheme } = useThemeMode();
   const showGasLessNotEnoughTip =

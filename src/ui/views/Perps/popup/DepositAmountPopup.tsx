@@ -117,7 +117,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
     );
     setTokenList(tokenRes);
     return res;
-  }, [currentPerpsAccount?.address, visible]);
+  }, [currentPerpsAccount?.address, visible, wallet]);
 
   useEffect(() => {
     fetchTokenList();
@@ -295,7 +295,14 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         );
       }
     }
-  }, [tokenInfo, nativeTokenDecimals, gasList, gasLimit, tokenIsNativeToken]);
+  }, [
+    tokenInfo,
+    nativeTokenDecimals,
+    gasList,
+    gasLimit,
+    tokenIsNativeToken,
+    isDirectDeposit,
+  ]);
 
   const handlePercentage = React.useCallback(
     (pct: number) => {

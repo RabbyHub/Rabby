@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef } from 'react';
+import { useMemoizedFn } from 'ahooks';
 
 import produce from 'immer';
 import { ComplexProtocol } from '@rabby-wallet/rabby-api/dist/types';
@@ -305,9 +306,9 @@ export const usePortfolios = (userAddr: string | undefined, visible = true) => {
     [setData]
   );
 
-  const forceRefresh = useCallback(() => {
+  const forceRefresh = useMemoizedFn(() => {
     loadProcess({ forceRefresh: true });
-  }, [loadProcess]);
+  });
 
   useEffect(() => {
     return () => {

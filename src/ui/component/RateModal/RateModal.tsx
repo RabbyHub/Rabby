@@ -47,7 +47,7 @@ function useForceDisableRateGuideOnLaunch(modalShow: boolean) {
         __UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__: true,
       });
     }
-  }, [modalShow]);
+  }, [modalShow, rDispatch.preference]);
 
   // only called once
   useMount(() => {

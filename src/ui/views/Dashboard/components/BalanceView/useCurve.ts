@@ -144,7 +144,7 @@ export const useCurve = (
   const refresh = useCallback(async () => {
     if (!address) return;
     await fetch(address, true);
-  }, [address]);
+  }, [address, fetch]);
 
   const isCurveCollectionExpired = useCallback(async () => {
     if (!address) return false;
@@ -154,7 +154,7 @@ export const useCurve = (
     } catch (error) {
       return false;
     }
-  }, [address]);
+  }, [address, wallet]);
 
   useEffect(() => {
     if (nonce < 0) return;

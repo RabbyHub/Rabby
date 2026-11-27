@@ -31,7 +31,7 @@ export const SetReferralCode = ({
     debounceInput
   );
 
-  const isValidCode = useMemo(() => false, [input]);
+  const isValidCode = useMemo(() => false, []);
   const [desc, isError] = useMemo(() => {
     if (!input) {
       if (!changedRef.current) {
@@ -60,7 +60,7 @@ export const SetReferralCode = ({
       return [' ', false];
     }
     return [t('page.rabbyPoints.referralCode.referral-code-available'), false];
-  }, [input, codeStatus, codeLoading]);
+  }, [input, codeStatus, codeLoading, t]);
 
   const disabled = useMemo(() => {
     return !input || isError || codeLoading;

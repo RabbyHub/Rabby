@@ -66,7 +66,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       shouldScrollRef.current = false;
       await dispatch.account.changeAccountAsync(account);
     },
-    [dispatch?.account?.changeAccountAsync]
+    [dispatch.account]
   );
 
   const scrollToCurrent = useMemoizedFn(() => {

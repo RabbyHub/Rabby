@@ -105,7 +105,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     limitPrice,
     position.entryPx,
     position.size,
-    position.leverage,
+    type,
   ]);
 
   const closedPnl = useMemo(() => {
@@ -125,7 +125,6 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     marketPrice,
     position.direction,
     position.entryPx,
-    position.size,
     type,
   ]);
 
@@ -250,15 +249,7 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
       isValid: error === '',
       error,
     };
-  }, [
-    type,
-    positionSize.notionalValue,
-    limitPrice,
-    position.size,
-    positionSize.amount,
-    marketData.maxUsdValueSize,
-    t,
-  ]);
+  }, [type, positionSize.notionalValue, position.size, positionSize.amount, t]);
 
   useEffect(() => {
     handleMidClick();

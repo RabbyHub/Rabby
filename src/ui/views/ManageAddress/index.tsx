@@ -100,7 +100,7 @@ const ManageAddress = () => {
         wallet,
       });
     },
-    [wallet]
+    [wallet, t]
   );
 
   const updateInfoAndSetCurrentIndex = useCallback(
@@ -112,7 +112,7 @@ const ManageAddress = () => {
           : pre
       );
     },
-    [typedWalletIdList, dispatch?.accountToDisplay?.getAllAccountsToDisplay]
+    [typedWalletIdList, TypedWalletObj, dispatch.accountToDisplay]
   );
 
   const handleOpenDeleteModal = useCallback(
@@ -150,11 +150,7 @@ const ManageAddress = () => {
 
       setOpen(true);
     },
-    [
-      AuthenticationDeleteModalPromise,
-      wallet?.removeAddresses,
-      updateInfoAndSetCurrentIndex,
-    ]
+    [AuthenticationDeleteModalPromise, updateInfoAndSetCurrentIndex, t, wallet]
   );
 
   const handleConfirmDeleteAddress = async () => {

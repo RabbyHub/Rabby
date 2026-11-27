@@ -100,7 +100,7 @@ export const TokenList = ({
         tip: _netWorth ? t('page.dashboard.assets.portfolio.nftTips') : '',
       };
     });
-  }, [nfts]);
+  }, [nfts, t]);
 
   const _fraction: TokenItem | null = useMemo(() => {
     return fraction
@@ -123,7 +123,7 @@ export const TokenList = ({
             : '',
         }
       : null;
-  }, [fraction]);
+  }, [fraction, t]);
 
   const list = useMemo(() => {
     const result = [_fraction, ..._nfts]

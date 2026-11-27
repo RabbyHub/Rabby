@@ -17,11 +17,11 @@ export const Guide = () => {
 
   const gotoCreate = React.useCallback(() => {
     history.push('/new-user/create-seed-phrase');
-  }, []);
+  }, [history]);
 
   const gotoImport = React.useCallback(() => {
     history.push('/new-user/import-wallet-type');
-  }, []);
+  }, [history]);
 
   const { isDarkTheme } = useThemeMode();
   const UiType = getUiType();

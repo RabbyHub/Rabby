@@ -336,13 +336,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     // Input is in USDC → tooltip shows base equivalent
     const coin = formatPerpsCoin(baseAsset);
     return `≈ ${splitNumberByStep(positionSize.amount)} ${coin}`;
-  }, [
-    positionSize.amount,
-    positionSize.notionalValue,
-    sizeDisplayUnit,
-    baseAsset,
-    price,
-  ]);
+  }, [positionSize.amount, sizeDisplayUnit, baseAsset, price]);
 
   const showTooltip = isFocused && !!tooltipContent;
 

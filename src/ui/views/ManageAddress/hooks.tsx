@@ -275,7 +275,7 @@ export const useWalletTypeData = () => {
     dispatch.addressManagement.getHilightedAddressesAsync()?.catch((e) => {
       console.error('getHilightedAddressesAsync error', e);
     });
-  }, []);
+  }, [dispatch.accountToDisplay, dispatch.addressManagement]);
 
   if (error) {
     console.error('manage address', error);
@@ -325,7 +325,7 @@ export const useBackUp = () => {
         wallet,
       });
     },
-    [wallet?.getPrivateKey, wallet?.getMnemonics]
+    [history, invokeEnterPassphrase, t, wallet]
   );
   return handleBackup;
 };

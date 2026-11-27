@@ -62,7 +62,7 @@ const AccountCard = ({
       }
       return '';
     },
-    [currentAccount, icons, isDarkTheme]
+    [currentAccount, icons, isDarkTheme, brandRealUrl]
   );
 
   const init = async () => {

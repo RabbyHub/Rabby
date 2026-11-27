@@ -80,7 +80,7 @@ export const TooltipWithMagnetArrow = React.forwardRef<
     }
 
     return viewportOffset;
-  }, [viewportOffset]);
+  }, [viewportOffset, inApproval]);
 
   const arrowLeft = props.disableLeft ? 0 : left;
 

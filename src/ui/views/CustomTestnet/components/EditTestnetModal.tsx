@@ -94,13 +94,13 @@ export const EditCustomTestnetModal = ({
     if (data && visible) {
       form.setFieldsValue(data);
     }
-  }, [data, visible]);
+  }, [data, visible, form]);
 
   useEffect(() => {
     if (!visible) {
       form.resetFields();
     }
-  }, [visible]);
+  }, [visible, form]);
   const history = useHistory();
 
   return (

@@ -209,7 +209,7 @@ export const MiniFooterBar: React.FC<Props> = ({
         site && setConnectedSite(site);
       });
     }
-  }, [origin]);
+  }, [origin, wallet]);
 
   React.useEffect(() => {
     init();

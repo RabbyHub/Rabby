@@ -112,7 +112,7 @@ export const GnonisSafeInfo = ({
     if (address) {
       wallet.syncGnosisNetworks(address);
     }
-  }, [address]);
+  }, [address, wallet]);
 
   if (loading) {
     return (

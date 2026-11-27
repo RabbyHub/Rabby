@@ -101,7 +101,7 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     items.sort((a, b) => b.amount * b.price - a.amount * a.price);
 
     return items;
-  }, [list, isWithdrawMode]);
+  }, [list, isWithdrawMode, withdrawItems]);
 
   const handleClickToken = useMemoizedFn(async (token: TokenItem) => {
     if (clickLoading) return;
@@ -338,7 +338,13 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
         </div>
       );
     },
-    [handleClickToken, isWithdrawMode, withdrawBalanceMap]
+    [
+      handleClickToken,
+      isWithdrawMode,
+      withdrawBalanceMap,
+      isDirectDepositToken,
+      t,
+    ]
   );
 
   return (

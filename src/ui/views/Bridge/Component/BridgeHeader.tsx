@@ -54,7 +54,7 @@ export const Header = ({
   useEffect(() => {
     dispath.bridge.fetchAggregatorsList();
     dispath.bridge.fetchSupportedChains();
-  }, []);
+  }, [dispath.bridge]);
   const history = useHistory();
 
   return (

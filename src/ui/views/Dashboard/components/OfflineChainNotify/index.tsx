@@ -40,7 +40,7 @@ const useOfflineChains = () => {
     (chains: string[]) => {
       wallet.setCloseTipsChains(chains);
     },
-    [wallet.setCloseTipsChains]
+    [wallet]
   );
 
   const accountsList = useRabbySelector((s) => s.accountToDisplay.accountsList);

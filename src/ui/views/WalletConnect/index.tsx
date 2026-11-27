@@ -63,7 +63,7 @@ const WalletConnectTemplate: React.FC<{
     const domain = getOriginFromUrl(tab.url);
     const current = await wallet.getCurrentSite(tab.id, domain);
     siteRef.current = current;
-  }, []);
+  }, [wallet]);
 
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
     onSuccess(accounts) {

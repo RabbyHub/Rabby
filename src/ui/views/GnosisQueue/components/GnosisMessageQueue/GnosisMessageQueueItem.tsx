@@ -53,7 +53,7 @@ export const GnosisMessageQueueItem = ({
     }
 
     return agoText;
-  }, [submitAt]);
+  }, [submitAt, t]);
 
   const { runAsync: handleView, loading } = useRequest(
     async () => {

@@ -53,7 +53,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
 
   const content = useMemo(() => {
     return t('page.signFooterBar.qrcode.txFailed');
-  }, []);
+  }, [t]);
 
   const description = useMemo(() => {
     let msg = error || '';
@@ -76,7 +76,7 @@ export const MiniTypedDataApprovalV2: React.FC<{
       msg = getLedgerError(msg);
     }
     return msg;
-  }, [error, currentAccount?.type]);
+  }, [error, currentAccount?.type, t]);
 
   const total = progress?.total ?? request?.txs?.length;
 

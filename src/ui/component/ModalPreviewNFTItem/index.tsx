@@ -19,7 +19,7 @@ export default function ModalPreviewNFTItem({
   const { chainName } = React.useMemo(() => {
     const chainName = getChain(nft?.chain)?.name || '-';
     return { chainName };
-  }, [collectProperty]);
+  }, [nft?.chain]);
 
   const { t } = useTranslation();
   const { isDarkTheme } = useThemeMode();

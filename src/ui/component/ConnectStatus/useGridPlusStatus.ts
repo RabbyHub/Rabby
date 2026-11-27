@@ -49,7 +49,7 @@ export const useGridPlusStatus = () => {
     return isConnect
       ? t('component.ConnectStatus.gridPlusConnected')
       : t('component.ConnectStatus.gridPlusNotConnected');
-  }, [isConnect]);
+  }, [isConnect, t]);
 
   return {
     content,

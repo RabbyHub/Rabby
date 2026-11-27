@@ -85,7 +85,7 @@ export function useExposureRateGuide() {
     return (
       !shouldForceDisableOnLaunch && txCount >= TX_COUNT_LIMIT && userViewedRate
     );
-  }, [shouldForceDisableOnLaunch, txCount, lastExposureTimestamp]);
+  }, [shouldForceDisableOnLaunch, txCount, userViewedRate]);
 
   const disableExposureRateGuide = useCallback(() => {
     rDispatch.preference.setRateGuideLastExposure({
@@ -291,7 +291,7 @@ export function useRateModal() {
 
   const openAppRateUrl = useCallback(() => {
     openTrustedExternalWebsiteInTab('chromeStoreReviewsUrl');
-  }, [rateModalState.userStar]);
+  }, []);
 
   return {
     rateModalShown: rateModalState.visible,

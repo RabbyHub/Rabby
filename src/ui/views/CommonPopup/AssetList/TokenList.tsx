@@ -26,7 +26,7 @@ export const HomeTokenList = ({ list, isSearch, isNoResults, lpTokenMode }) => {
   const { result: currentList } = useExpandList(list, totalValue);
   const lowValueList = React.useMemo(() => {
     return list?.filter((item) => currentList?.indexOf(item) === -1);
-  }, [currentList, list, isSearch]);
+  }, [currentList, list]);
   const { t } = useTranslation();
 
   if (isNoResults) {

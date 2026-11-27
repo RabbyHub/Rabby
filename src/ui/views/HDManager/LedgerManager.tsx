@@ -84,13 +84,16 @@ export const LedgerManager: React.FC = () => {
     }
 
     setLoading(false);
-  }, []);
+  }, [createTask, keyringId, wallet]);
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
   const refreshCurrentAccounts = React.useCallback(
     () => createTask(() => getCurrentAccounts({ resetInitialAccounts: true })),
     []

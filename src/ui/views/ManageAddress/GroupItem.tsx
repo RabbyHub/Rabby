@@ -42,7 +42,7 @@ export const GroupItem = ({
       KEYRING_ICONS[type] ||
       WALLET_BRAND_CONTENT?.[brandName || type]?.maybeSvg ||
       WALLET_BRAND_CONTENT?.[brandName || type]?.image,
-    [type, brandName, brandIcon, isDarkTheme]
+    [type, brandName, brandIcon, isDarkTheme, address]
   );
 
   return (

@@ -97,7 +97,7 @@ const Contacts = ({
         </p>
       </div>
     );
-  }, [contacts?.length]);
+  }, [contacts?.length, t]);
 
   useEffect(() => {
     init();

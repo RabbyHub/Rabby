@@ -435,7 +435,7 @@ export const PerpsSingleCoin = () => {
 
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
-  }, [activeAssetCtx]);
+  }, [activeAssetCtx, currentAssetCtx?.markPx]);
 
   // Position data if exists
   const positionData = useMemo(

@@ -408,11 +408,11 @@ export const AddressRiskAlert = ({
       setHasInputPassword(false);
       setInWhiteList(false);
     }
-  }, [visible]);
+  }, [visible, form]);
 
   useEffect(() => {
     dispatch.accountToDisplay.getAllAccountsToDisplay();
-  }, []);
+  }, [dispatch.accountToDisplay]);
 
   const addressDescCex = forWhitelist ? undefined : riskInfos.addressDesc?.cex;
 

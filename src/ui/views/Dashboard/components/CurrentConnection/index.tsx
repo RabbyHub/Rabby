@@ -52,7 +52,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     const current = await wallet.getCurrentSite(tab.id, domain);
     setSite(current);
     return current;
-  }, []);
+  }, [wallet]);
 
   const handleRemove = async (origin: string) => {
     await wallet.removeConnectedSite(origin);

@@ -61,7 +61,7 @@ export const RevokeModalHeader: React.FC<Props> = ({
         </div>
       ),
     });
-  }, [onClose, task.status]);
+  }, [onClose, t, task]);
 
   return (
     <header className=" text-center relative">

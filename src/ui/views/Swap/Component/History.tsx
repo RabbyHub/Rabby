@@ -124,7 +124,7 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
       if (scanLink && txId) {
         openInTab(scanLink + txId, !isTab);
       }
-    }, []);
+    }, [scanLink, txId]);
 
     const slippagePercent = useMemo(
       () => new BigNumber(data.quote.slippage).times(100).toString(10) + '%',

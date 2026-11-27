@@ -59,7 +59,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
     if (data.cex) {
       return t('page.signTx.tokenApprove.eoaAddress');
     }
-  }, [data]);
+  }, [data, t]);
 
   const contractOnCurrentChain = useMemo(() => {
     if (!data.contract || !data.contract[data.chain.serverId]) return null;
@@ -77,7 +77,7 @@ export const ReceiverPopup: React.FC<Props> = ({ data }) => {
     if (data.cex) return data.cex.bornAt;
     if (data.eoa) return data.eoa.bornAt;
     return null;
-  }, [data]);
+  }, [data, contractOnCurrentChain]);
 
   const isLabelAddress =
     data.isLabelAddress ||

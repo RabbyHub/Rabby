@@ -141,7 +141,7 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
     if (i !== index + maxCountRef.current) {
       runGetAccounts();
     }
-  }, []);
+  }, [createTask, keyring, keyringId, maxStepCount, runGetAccounts, wallet]);
 
   React.useEffect(() => {
     const { type, startNo } = setting;

@@ -169,7 +169,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
     }
 
     return bridgeQuote?.duration ? Math.ceil(bridgeQuote.duration / 60) : 2;
-  }, [bridgeQuote]);
+  }, [bridgeQuote, isDirectDeposit]);
 
   const quoteError = useMemo(() => {
     // Show only after a real failure, never during the debounce wait.

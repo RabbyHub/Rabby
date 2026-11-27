@@ -200,15 +200,16 @@ export const DexQuoteItem = (
     quote?.toTokenAmount,
     quote?.toTokenDecimals,
     inSufficient,
-    receiveToken.decimals,
-    receiveToken.price,
-    receiveToken.symbol,
     preExecResult,
     isSdkDataPass,
     bestQuoteAmount,
     bestQuoteGasUsd,
     isBestQuote,
     sortIncludeGasFee,
+    dexId,
+    payAmount,
+    receiveToken,
+    t,
   ]);
 
   const gasFeeTooHigh = useMemo(() => {

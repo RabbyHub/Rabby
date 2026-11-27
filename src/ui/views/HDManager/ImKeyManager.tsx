@@ -54,11 +54,14 @@ export const ImKeyManager: React.FC = () => {
     setLoading(false);
   }, []);
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(IM_KEY_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(IM_KEY_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
 
   const { t } = useTranslation();
 

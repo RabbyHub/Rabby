@@ -331,6 +331,7 @@ const useCheckGasAndNonce = ({
       gasTokenId,
       tempoPreferredFeeTokenId,
       checkTxValueInBalance,
+      recommendGasLimitRatio,
     ]
   );
 };
@@ -586,7 +587,7 @@ const SignTx = ({
       params.data[0],
       !params.session.isFromRabby && origin !== INTERNAL_REQUEST_ORIGIN
     );
-  }, [params.data]);
+  }, [params.data, origin, params.session.isFromRabby]);
 
   const {
     data = '0x',
@@ -816,7 +817,7 @@ const SignTx = ({
     }
 
     return isNotWatchAddress && isNotWalletConnect;
-  }, [currentAccountType]);
+  }, [currentAccountType, t]);
 
   const [noCustomRPC, setNoCustomRPC] = useState(true);
 

@@ -34,7 +34,7 @@ export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
       const link = getTxScanLink(chainItem?.scanLink, data.id);
       openInTab(link);
     }
-  }, [chainItem]);
+  }, [chainItem, data.id]);
   const { t } = useTranslation();
 
   if (!chainItem) {

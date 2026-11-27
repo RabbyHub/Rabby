@@ -61,7 +61,7 @@ export const MnemonicManager: React.FC = () => {
       type: HDPathType.BIP44,
     });
     setLoading(false);
-  }, []);
+  }, [createTask, getCurrentAccounts, setting]);
   const { t } = useTranslation();
 
   React.useEffect(() => {
@@ -69,11 +69,14 @@ export const MnemonicManager: React.FC = () => {
     fetchCurrentAccounts();
   }, []);
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(MNEMONIC_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(MNEMONIC_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
 
   return (
     <>

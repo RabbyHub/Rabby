@@ -445,6 +445,7 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
     positionSize,
     notionalValue,
     estPnl,
+    quoteAsset,
   ]);
 
   const limitOrdersTooltip = useMemo(() => {

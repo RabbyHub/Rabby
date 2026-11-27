@@ -118,7 +118,7 @@ export const UserInfoHistory: React.FC = () => {
 
   const ActiveComponent = useMemo(
     () => tabs.find((tab) => tab.key === activeTab)?.content,
-    [activeTab]
+    [activeTab, tabs]
   );
 
   useEffect(() => {

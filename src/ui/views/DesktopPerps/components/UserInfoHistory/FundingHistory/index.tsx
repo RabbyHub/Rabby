@@ -43,7 +43,7 @@ export const FundingHistory: React.FC = () => {
         })),
       });
     });
-  }, []);
+  }, [dispatch.perps]);
 
   useEffect(() => {
     fetchFundingHistory();
@@ -181,7 +181,7 @@ export const FundingHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, t]
+    [marketDataMap, t, dispatch.perps]
   );
   return (
     <CommonTable

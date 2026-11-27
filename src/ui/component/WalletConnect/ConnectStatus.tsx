@@ -86,7 +86,7 @@ export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
           </div>
         );
     }
-  }, [status, displayBrandName]);
+  }, [status, displayBrandName, hasWallet, t]);
 
   const type = React.useMemo(() => {
     switch (status) {

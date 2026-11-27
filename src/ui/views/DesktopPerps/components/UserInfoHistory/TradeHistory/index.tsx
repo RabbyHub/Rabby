@@ -36,7 +36,7 @@ export const TradeHistory: React.FC = () => {
         userFills: res.slice(0, 2000),
       });
     });
-  }, []);
+  }, [dispatch.perps]);
 
   useEffect(() => {
     fetchUserFills();
@@ -229,7 +229,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, t]
+    [marketDataMap, t, dispatch.perps]
   );
   return (
     <CommonTable

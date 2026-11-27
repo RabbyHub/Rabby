@@ -82,7 +82,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
   const [margin, setMargin] = React.useState('');
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
-  }, [activeAssetCtx]);
+  }, [activeAssetCtx, currentAssetCtx?.markPx]);
 
   const addMargin = useMemo(() => {
     return Number(margin) || 0;

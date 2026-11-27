@@ -68,7 +68,7 @@ export const OriginInfo: React.FC<Props> = ({
         site && setConnectedSite(site);
       });
     }
-  }, [origin]);
+  }, [origin, wallet]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};

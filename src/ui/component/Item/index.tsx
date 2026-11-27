@@ -124,7 +124,7 @@ export const BlueHeader = ({
     } else {
       history.goBack();
     }
-  }, [onBack]);
+  }, [onBack, history]);
 
   const { fixed, className, ...divProps } = rest;
 

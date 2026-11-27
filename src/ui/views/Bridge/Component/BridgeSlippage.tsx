@@ -110,7 +110,7 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
       value?.trim() !== '' && Number(value || 0) < minimumSlippage,
       value?.trim() !== '' && Number(value || 0) > maximumSlippage,
     ];
-  }, [value, minimumSlippage]);
+  }, [value, minimumSlippage, maximumSlippage]);
 
   const [isDraftLow, isDraftHigh] = useMemo(() => {
     const draftNumber = Number(draftValue || 0);
