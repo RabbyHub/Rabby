@@ -108,7 +108,7 @@ const WatchAddressWaiting = ({
   };
 
   const handleCancel = () => {
-    rejectApproval('user cancel');
+    rejectApproval('user cancel', { userCancelled: true });
   };
 
   const handleRetry = async (retry?: boolean) => {
