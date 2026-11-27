@@ -8,7 +8,7 @@ import {
   useCommonPopupView,
   useWallet,
 } from 'ui/utils';
-import eventBus from '@/eventBus';
+import { useScopedEventBusListener } from '@/ui/hooks/useEventBusListener';
 import Process from './Process';
 import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
@@ -62,6 +62,8 @@ const CoinbaseWaiting = ({
     message?: string;
   }>(null);
   const [result, setResult] = useState('');
+  // Removed on unmount; see useScopedEventBusListener.
+  const addScopedListener = useScopedEventBusListener();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
     bindApproval(approvalId, 'CoinbaseWaiting')
   );
@@ -115,7 +117,7 @@ const CoinbaseWaiting = ({
       : approval?.data.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
 
-    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+    addScopedListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (data.success) {
         let sig = data.data;

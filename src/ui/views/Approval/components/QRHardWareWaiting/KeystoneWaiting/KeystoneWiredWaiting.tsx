@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
+import { useMemoizedFn } from 'ahooks';
 import { useWallet, openInternalPageInTab, useCommonPopupView } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import * as uuid from 'uuid';
@@ -76,11 +77,7 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [statusProp, setStatusProp] = React.useState<
-    ApprovalPopupContainerProps['status']
-  >('SENDING');
   const { setHeight } = useCommonPopupView();
-  const decoder = useRef(new URDecoder());
 
   useEffect(() => {
     setHeight('fit-content');
@@ -96,11 +93,11 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
     );
   }, [payload, requestId]);
 
-  const handleRetry = useCallback(async () => {
+  const handleRetry = useMemoizedFn(async () => {
     setErrorMessage('');
     await onRetry();
     retry();
-  }, [setErrorMessage, onRetry, retry]);
+  });
 
   const shouldAutoRetry = useMemo(() => {
     if (error?.message) {
@@ -110,6 +107,15 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
     }
     return false;
   }, [error]);
+
+  // Derived during render with no side effects. Auto-retry and submitting the
+  // signature happen in the effects below.
+  const statusProp = useMemo<ApprovalPopupContainerProps['status']>(() => {
+    if (loading) return 'WAITING';
+    if (error || errorMessage) return shouldAutoRetry ? 'WAITING' : 'REJECTED';
+    if (isDone) return 'RESOLVED';
+    return 'SENDING';
+  }, [loading, error, errorMessage, shouldAutoRetry, isDone]);
 
   const keystoneErrorCatcher = useKeystoneUSBErrorMessage();
 
@@ -158,56 +164,55 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
   }, [statusProp]);
 
   const content = useMemo(() => {
-    if (loading) {
-      setStatusProp('WAITING');
-      return t('page.signFooterBar.keystone.siging');
-    }
-    if (error || errorMessage) {
-      if (shouldAutoRetry) {
-        handleRetry();
-        return t('page.signFooterBar.keystone.siging');
-      }
-
-      setStatusProp('REJECTED');
+    if (statusProp === 'REJECTED') {
       return t('page.signFooterBar.qrcode.txFailed');
     }
-    if (isDone) {
-      setStatusProp('RESOLVED');
+    if (statusProp === 'RESOLVED') {
       return t('page.signFooterBar.qrcode.sigCompleted');
     }
-    if (value?.payload) {
-      decoder.current.receivePart(value?.payload);
-      if (decoder.current.isComplete()) {
-        const ur = decoder.current.resultUR();
-        if (ur.type === 'eth-signature') {
-          const ethSignature = ETHSignature.fromCBOR(ur.cbor);
-
-          const buffer = ethSignature.getRequestId();
-          const signId = uuid.stringify(buffer as any);
-          if (signId === requestId) {
-            handleSuccess(ur.cbor.toString('hex'));
-          } else {
-            setStatusProp('REJECTED');
-            setErrorMessage(t('page.signFooterBar.keystone.misMatchSignId'));
-          }
-        } else {
-          setStatusProp('REJECTED');
-          setErrorMessage(t('page.signFooterBar.keystone.unsupportedType'));
-        }
-      }
-    }
-    setStatusProp('SENDING');
     return t('page.signFooterBar.keystone.siging');
-  }, [
-    value,
-    error,
-    errorMessage,
-    loading,
-    isDone,
-    requestId,
-    description,
-    shouldAutoRetry,
-  ]);
+  }, [statusProp, t]);
+
+  // Retry once per transient USB error.
+  const autoRetriedErrorRef = useRef<Error>();
+  useEffect(() => {
+    if (loading || !error || !shouldAutoRetry) return;
+    if (autoRetriedErrorRef.current === error) return;
+    autoRetriedErrorRef.current = error;
+    handleRetry();
+  }, [loading, error, shouldAutoRetry, handleRetry]);
+
+  // Each device response is decoded on its own and submitted at most once. The old
+  // render-time decoder was shared across retries: once complete it ignored new parts
+  // and kept returning its first result.
+  const submitDeviceResponse = useMemoizedFn((part: string) => {
+    const decoder = new URDecoder();
+    decoder.receivePart(part);
+    if (!decoder.isComplete()) return;
+
+    const ur = decoder.resultUR();
+    if (ur.type !== 'eth-signature') {
+      setErrorMessage(t('page.signFooterBar.keystone.unsupportedType'));
+      return;
+    }
+    const signId = uuid.stringify(
+      ETHSignature.fromCBOR(ur.cbor).getRequestId() as any
+    );
+    if (signId !== requestId) {
+      setErrorMessage(t('page.signFooterBar.keystone.misMatchSignId'));
+      return;
+    }
+    handleSuccess(ur.cbor.toString('hex'));
+  });
+
+  const handledValueRef = useRef<unknown>();
+  useEffect(() => {
+    if (!value?.payload || handledValueRef.current === value) return;
+    // Same gate as before: never submit while loading, failed, or already done.
+    if (loading || error || errorMessage || isDone) return;
+    handledValueRef.current = value;
+    submitDeviceResponse(value.payload);
+  }, [value, loading, error, errorMessage, isDone, submitDeviceResponse]);
 
   return (
     <ApprovalPopupContainer

@@ -15,6 +15,44 @@ interface Props {
   type: string;
 }
 
+const TipContent = ({
+  tipStatus,
+  displayBrandName,
+}: {
+  tipStatus: 'ACCOUNT_ERROR' | 'DISCONNECTED' | 'CONNECTED';
+  displayBrandName: string;
+}) => {
+  const { t } = useTranslation();
+
+  switch (tipStatus) {
+    case 'ACCOUNT_ERROR':
+      return (
+        <>
+          <div>{t('page.newAddress.walletConnect.tip.accountError.tip1')}</div>
+          <div>{t('page.newAddress.walletConnect.tip.accountError.tip2')}</div>
+        </>
+      );
+
+    case 'DISCONNECTED':
+      return (
+        <div>
+          {t('page.newAddress.walletConnect.tip.disconnected.tip', {
+            brandName: displayBrandName,
+          })}
+        </div>
+      );
+
+    default:
+      return (
+        <div>
+          {t('page.newAddress.walletConnect.tip.connected.tip', {
+            brandName: displayBrandName,
+          })}
+        </div>
+      );
+  }
+};
+
 export const SessionStatusBar: React.FC<Props> = ({
   address,
   brandName,
@@ -72,40 +110,6 @@ export const SessionStatusBar: React.FC<Props> = ({
     }
   };
 
-  const TipContent = () => {
-    switch (tipStatus) {
-      case 'ACCOUNT_ERROR':
-        return (
-          <>
-            <div>
-              {t('page.newAddress.walletConnect.tip.accountError.tip1')}
-            </div>
-            <div>
-              {t('page.newAddress.walletConnect.tip.accountError.tip2')}
-            </div>
-          </>
-        );
-
-      case 'DISCONNECTED':
-        return (
-          <div>
-            {t('page.newAddress.walletConnect.tip.disconnected.tip', {
-              brandName: displayBrandName,
-            })}
-          </div>
-        );
-
-      default:
-        return (
-          <div>
-            {t('page.newAddress.walletConnect.tip.connected.tip', {
-              brandName: displayBrandName,
-            })}
-          </div>
-        );
-    }
-  };
-
   useEffect(() => {
     setPopupProps({ getContainer });
   }, [getContainer]);
@@ -133,7 +137,9 @@ export const SessionStatusBar: React.FC<Props> = ({
             t('page.newAddress.walletConnect.button.howToSwitch')}
         </>
       }
-      Content={<TipContent />}
+      Content={
+        <TipContent tipStatus={tipStatus} displayBrandName={displayBrandName} />
+      }
     />
   );
 };
