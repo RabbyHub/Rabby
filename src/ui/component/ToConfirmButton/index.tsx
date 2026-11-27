@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useClickAway } from 'react-use';
+import { useClickAway } from 'ahooks';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import Checkbox from '../Checkbox';
 import { ReactComponent as RcIconCCLoading } from 'ui/assets/loading-cc.svg';
@@ -58,12 +58,16 @@ export const ToConfirmBtn = (props: {
     [props.onCancel]
   );
   const divRef = useRef<HTMLDivElement>(null);
-  useClickAway(divRef, () => {
-    if (toConfirm) {
-      setToConfirm(false);
-      props.onCancel?.();
-    }
-  });
+  useClickAway(
+    () => {
+      if (toConfirm) {
+        setToConfirm(false);
+        props.onCancel?.();
+      }
+    },
+    divRef,
+    ['mousedown', 'touchstart']
+  );
 
   useEffect(() => {
     if (props.disabled && toConfirm) {

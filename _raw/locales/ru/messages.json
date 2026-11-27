@@ -1346,7 +1346,6 @@
           "manageAddress": "Управление адресами",
           "connectedDapp": "Подключенные dApp",
           "searchDapps": "Найти Dapps",
-          "rabbyPoints": "Rabby Points",
           "gasTopUp": "Пополнение газа",
           "ecosystem": "Экосистема"
         },
@@ -2396,61 +2395,6 @@
       "searchButton": "Поиск",
       "searchPlaceholder": "Поиск Dapp имени"
     },
-    "rabbyPoints": {
-      "title": "Очки Rabby",
-      "out-of-x-current-total-points": "Из {{total}} всего распределённых очков",
-      "share-on": "Поделиться на",
-      "referral-code-copied": "Реферальный код скопирован",
-      "earn-points": "Заработать очки",
-      "top-100": "Топ 100",
-      "claimItem": {
-        "claim": "Получить",
-        "disabledTip": "Нет очков для получения сейчас",
-        "go": "Перейти",
-        "earnTip": "Лимит один раз в день. Пожалуйста, зарабатывайте очки после 00:00 UTC+0",
-        "claimed": "Получено"
-      },
-      "claimModal": {
-        "title": "Получить начальные очки",
-        "snapshotTime": "Время снимка: {{time}}",
-        "placeholder": "Введите реферальный код для дополнительных очков (необязательно)",
-        "claim": "Получить",
-        "addressBalance": "Баланс кошелька",
-        "MetaMaskSwap": "Обмен MetaMask",
-        "rabbyUser": "Активный пользователь Rabby",
-        "rabbyValuedUserBadge": "Значок ценного пользователя Rabby",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "walletBalance": "Баланс кошелька",
-        "activeStats": "Статус активности",
-        "referral-code": "Реферальный код",
-        "invalid-code": "Недействительный код",
-        "cantUseOwnCode": "Нельзя использовать собственный реферальный код.",
-        "season2": "Сезон 2"
-      },
-      "referralCode": {
-        "referral-code-cannot-be-empty": "Реферальный код не может быть пустым",
-        "referral-code-cannot-exceed-15-characters": "Реферальный код не может превышать 15 символов",
-        "referral-code-already-exists": "Реферальный код уже существует",
-        "referral-code-available": "Реферальный код доступен",
-        "my-referral-code": "Мой реферальный код",
-        "refer-a-new-user-to-get-50-points": "Приведите нового пользователя и получите 50 очков",
-        "set-my-code": "Установить мой код",
-        "set-my-referral-code": "Установить мой реферальный код",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "После установки реферальный код будет постоянным и не может быть изменён.",
-        "max-15-characters-use-numbers-and-letters-only": "Максимум 15 символов, используйте только цифры и буквы.",
-        "confirm": "Подтвердить",
-        "verifyAddressModal": {
-          "verify-address": "Подтвердить адрес",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Пожалуйста, подпишите это текстовое сообщение, чтобы подтвердить, что вы владелец этого адреса",
-          "cancel": "Отмена",
-          "sign": "Подписать"
-        }
-      },
-      "code-set-successfully": "Реферальный код успешно установлен",
-      "initialPointsClaimEnded": "Заявка на начальные очки завершена",
-      "firstRoundEnded": "🎉 Первый раунд очков Rabby завершён",
-      "secondRoundEnded": "🎉 Второй раунд Rabby Points завершился"
-    },
     "customTestnet": {
       "title": "Пользовательская сеть",
       "desc": "Rabby не может проверить безопасность пользовательских сетей. Пожалуйста, добавляйте только доверенные сети.",
@@ -2620,37 +2564,6 @@
       "duration-day-hour-min": "{{days}} д {{hours}} ч {{minutes}} мин"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdropBtn": "Заработайте очки",
-          "arcadeBtn": "Играть сейчас",
-          "earnTitle": "Зарабатывайте",
-          "airdropDesc": "~200 миллионов S пользователям на Opera и Sonic.",
-          "earnBtn": "Скоро будет доступно",
-          "airdrop": "Airdrop",
-          "earnDesc": "Держите ваш $S",
-          "socialsTitle": "Присоединяйтесь",
-          "migrateBtn": "Скоро будет доступно",
-          "migrateTitle": "Миграция",
-          "migrateDesc": "→",
-          "arcadeDesc": "Играйте в бесплатные игры, чтобы заработать очки для S airdrop."
-        },
-        "points": {
-          "sonicPoints": "Sonic Points",
-          "pointsDashboardBtn": "Начните зарабатывать баллы",
-          "errorTitle": "Невозможно загрузить баллы",
-          "sonicArcadeBtn": "Начать играть",
-          "today": "Сегодня",
-          "referralCode": "Реферальный код",
-          "pointsDashboard": "Панель управления Points",
-          "retry": "Повторить попытку",
-          "referralCodeCopied": "Реферальный код скопирован",
-          "errorDesc": "Произошла ошибка при загрузке ваших очков. Пожалуйста, попробуйте еще раз.",
-          "getReferralCode": "Получить реферальный код",
-          "sonicArcade": "Sonic Arcade",
-          "shareOn": "Поделиться на"
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTBtn": "Чеканка",
@@ -2933,14 +2846,10 @@
         "backupSeedPhrase": "Создать резервную копию сид-фразы"
       },
       "readyToUse": {
-        "pin": "Закрепить Rabby Wallet",
         "guides": {
           "step2": "Закрепить Rabby Wallet",
           "step1": "Нажмите на иконку расширения браузера"
-        },
-        "desc": "Найдите Rabby Wallet и закрепите его",
-        "title": "Ваш кошелек Rabby готов!",
-        "extensionTip": "Нажмите <1/> и затем <3/>"
+        }
       },
       "importSeedPhrase": {
         "title": "Импортировать сид-фразу",

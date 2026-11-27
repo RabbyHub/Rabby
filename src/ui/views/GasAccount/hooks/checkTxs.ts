@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useGasAccountMethods, useGasAccountSign } from './index';
-import { useAsyncFn, useDebounce } from 'react-use';
+import { useAsyncFn } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';

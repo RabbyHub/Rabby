@@ -15,7 +15,7 @@ import {
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { useWalletConnectClockSkew } from '@/ui/component/WalletConnect/useWalletConnectClockSkew';
 import { ClockSkewWarning } from '@/ui/component/WalletConnect/ClockSkewWarning';
-import { useInterval } from 'react-use';
+import { useInterval } from 'ahooks';
 import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,

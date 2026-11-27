@@ -8,7 +8,7 @@ import { useRabbyDispatch } from '@/ui/store';
 import { formChartData } from './useCurve';
 import { normalizeAndVaryChainList, normalizeChainList } from '@/utils/account';
 import { useRefState } from '@/ui/hooks/useRefState';
-import { usePrevious } from 'react-use';
+import { usePreviousRender } from '@/ui/hooks/usePreviousRender';
 import {
   selectCurrentBalanceAboutMap,
   useAccountStore,
@@ -30,7 +30,7 @@ export function useHomeBalanceViewOuterPrefetch(
     stateRef: dashboardBalanceCacheInitedRef,
     setRefState: setDashboardBalanceCacheInitedRef,
   } = useRefState(false);
-  const prevAddress = usePrevious(currentAddress);
+  const prevAddress = usePreviousRender(currentAddress);
 
   useEffect(() => {
     if (!currentAddress) return;

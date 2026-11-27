@@ -12,7 +12,8 @@ import {
 } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useAsync, useDebounce } from 'react-use';
+import { useAsync } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import {
@@ -156,7 +157,7 @@ const TokenSelector = ({
   const [tokenDetailOpen, setTokenDetailOpen] = useState(false);
   const [tokenDetail, setTokenDetail] = useState<TokenItemWithEntity>();
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       onSearch({
         chainServerId: /* type === 'send' ? '' :  */ chainServerId || '',
@@ -164,8 +165,8 @@ const TokenSelector = ({
         keyword: query,
       });
     },
-    150,
-    [chainItem, query]
+    [chainItem, query],
+    { wait: 150 }
   );
 
   const handleQueryChange = (value: string) => {

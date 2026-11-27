@@ -12,7 +12,7 @@ import {
   useDisplayBrandName,
 } from '@/ui/component/WalletConnect/useDisplayBrandName';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
-import { useInterval } from 'react-use';
+import { useInterval } from 'ahooks';
 import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,

@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useAsyncRetry } from 'react-use';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Button, Drawer, Modal, Skeleton } from 'antd';
-import { useScroll } from 'react-use';
-import { useSize, useDebounceFn } from 'ahooks';
+import { useSize, useDebounceFn, useScroll } from 'ahooks';
 import { cloneDeep } from 'lodash';
 import { useQuery } from '@tanstack/react-query';
 import { createQueryKey } from '@/ui/query/queryKey';
@@ -1016,13 +1015,13 @@ const SignTypedData = ({
   ]);
 
   useEffect(() => {
-    if (scrollRef.current && scrollInfo && scrollRefSize) {
+    if (scrollRef.current && scrollRefSize) {
       const avaliableHeight =
         scrollRef.current.scrollHeight - scrollRefSize.height;
       if (avaliableHeight <= 0) {
         setFooterShowShadow(false);
       } else {
-        setFooterShowShadow(avaliableHeight - 20 > scrollInfo.y);
+        setFooterShowShadow(avaliableHeight - 20 > (scrollInfo?.top ?? 0));
       }
     }
   }, [scrollInfo, scrollRefSize]);

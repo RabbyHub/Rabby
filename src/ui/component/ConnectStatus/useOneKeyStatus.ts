@@ -1,6 +1,5 @@
 import React from 'react';
-import { useMemoizedFn } from 'ahooks';
-import { useInterval } from 'react-use';
+import { useMemoizedFn, useInterval } from 'ahooks';
 import { getOneKeyDevices } from '@/ui/utils/onekey';
 
 type ConnectStatus = 'CONNECTED' | 'DISCONNECTED';
@@ -38,7 +37,7 @@ export const useOneKeyStatus = (options: UseOneKeyStatusOptions = {}) => {
     () => {
       checkStatus();
     },
-    enabled ? pollingInterval : null
+    enabled ? pollingInterval : undefined
   );
 
   const status: ConnectStatus = React.useMemo(() => {

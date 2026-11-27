@@ -24,7 +24,6 @@ import {
 } from '../hooks';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
 import ChainSelectorInForm, {
   ChainSelectorRef,
@@ -35,7 +34,7 @@ import i18n from '@/i18n';
 import { useTranslation } from 'react-i18next';
 // New simplified signing hook (no MiniApproval/MiniSignTx)
 import { useMiniSigner } from '@/ui/hooks/useSigner';
-import { useMemoizedFn, useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest, useDebounceEffect } from 'ahooks';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useHistory } from 'react-router-dom';
 import { LowCreditModal } from './LowCreditModal';
@@ -584,22 +583,22 @@ export const Main = () => {
     approveTxPending,
   ]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (btnText && activeProvider && !quoteLoading) {
         setLatestQuoteBtnText(btnText);
       }
     },
-    300,
-    [btnText, activeProvider, quoteLoading]
+    [btnText, activeProvider, quoteLoading],
+    { wait: 300 }
   );
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       setLatestQuoteBtnText(btnText);
     },
-    300,
-    [chain, payToken?.id, receiveToken?.id]
+    [chain, payToken?.id, receiveToken?.id],
+    { wait: 300 }
   );
 
   // const noRiskSign =

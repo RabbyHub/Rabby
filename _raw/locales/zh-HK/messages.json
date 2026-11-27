@@ -262,7 +262,6 @@
           "manageAddress": "管理地址",
           "signatureRecord": "簽名記錄",
           "searchDapps": "搜尋 Dapp",
-          "rabbyPoints": "Rabby 積分",
           "gasTopUp": "Gas 充值",
           "ecosystem": "生態系統"
         },
@@ -2439,61 +2438,6 @@
       "foundDapps": "找到 <2>{{count}}</2> 個 Dapp",
       "totalDapps": "共 <2>{{count}}</2> 個 Dapp"
     },
-    "rabbyPoints": {
-      "title": "Rabby 積分",
-      "out-of-x-current-total-points": "共分發 {{total}} 積分",
-      "share-on": "分享至",
-      "referral-code-copied": "推薦碼已複製",
-      "earn-points": "賺取積分",
-      "top-100": "前 100 名",
-      "claimItem": {
-        "claim": "領取",
-        "disabledTip": "暫無可領取的積分",
-        "go": "前往",
-        "earnTip": "每天僅限一次。請在 UTC+0 00:00 後再次賺取積分",
-        "claimed": "已領取"
-      },
-      "claimModal": {
-        "title": "領取初始積分",
-        "snapshotTime": "快照時間：{{time}}",
-        "placeholder": "輸入推薦碼以獲得額外積分（選填）",
-        "claim": "領取",
-        "addressBalance": "錢包餘額",
-        "MetaMaskSwap": "MetaMask 兌換",
-        "rabbyUser": "Rabby 活躍用戶",
-        "rabbyValuedUserBadge": "Rabby 重要用戶徽章",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "walletBalance": "錢包餘額",
-        "activeStats": "活躍狀態",
-        "referral-code": "推薦碼",
-        "invalid-code": "無效的推薦碼",
-        "cantUseOwnCode": "你不能使用自己的推薦碼。",
-        "season2": "第 2 季"
-      },
-      "referralCode": {
-        "referral-code-cannot-be-empty": "推薦碼不能為空",
-        "referral-code-cannot-exceed-15-characters": "推薦碼不能超過 15 個字元",
-        "referral-code-already-exists": "推薦碼已存在",
-        "referral-code-available": "推薦碼可用",
-        "my-referral-code": "我的推薦碼",
-        "refer-a-new-user-to-get-50-points": "推薦新用戶獲得 50 積分",
-        "set-my-code": "設定我的推薦碼",
-        "set-my-referral-code": "設定我的推薦碼",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "設定後，此推薦碼將永久不變，無法更改。",
-        "max-15-characters-use-numbers-and-letters-only": "最多 15 個字元，僅可使用數字和字母。",
-        "confirm": "確認",
-        "verifyAddressModal": {
-          "verify-address": "驗證地址",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "請簽署此文字訊息以驗證你是該地址的所有者",
-          "cancel": "取消",
-          "sign": "簽署"
-        }
-      },
-      "code-set-successfully": "推薦碼設定成功",
-      "initialPointsClaimEnded": "初始積分領取已結束",
-      "firstRoundEnded": "🎉 Rabby Points 第一輪已結束",
-      "secondRoundEnded": "🎉 Rabby Points 第二輪已結束"
-    },
     "customTestnet": {
       "title": "自訂網絡",
       "desc": "Rabby 無法驗證自訂網絡的安全性。請僅新增可信任的網絡。",
@@ -2663,37 +2607,6 @@
       "duration-day-hour-min": "{{days}} 天 {{hours}} 小時 {{minutes}} 分鐘"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "socialsTitle": "參與其中",
-          "arcadeBtn": "立即遊玩",
-          "airdrop": "空投",
-          "earnBtn": "即將推出",
-          "migrateTitle": "遷移",
-          "earnDesc": "將你的 $S 質押",
-          "airdropBtn": "賺取積分",
-          "arcadeDesc": "玩免費遊戲，賺取 S 空投積分。",
-          "migrateDesc": "→",
-          "airdropDesc": "約 2 億枚 S 空投給 Opera 和 Sonic 用戶。",
-          "migrateBtn": "即將推出",
-          "earnTitle": "賺取"
-        },
-        "points": {
-          "shareOn": "分享至",
-          "sonicPoints": "Sonic 積分",
-          "referralCode": "推薦碼",
-          "referralCodeCopied": "推薦碼已複製",
-          "today": "今天",
-          "retry": "重試",
-          "errorTitle": "無法載入積分",
-          "errorDesc": "載入你的積分時出現錯誤。請重試。",
-          "pointsDashboardBtn": "開始賺取積分",
-          "sonicArcade": "Sonic Arcade",
-          "getReferralCode": "取得推薦碼",
-          "pointsDashboard": "積分面板",
-          "sonicArcadeBtn": "開始遊玩"
-        }
-      },
       "dbk": {
         "home": {
           "bridgeBtn": "跨鏈",
@@ -2976,14 +2889,10 @@
         "backupSeedPhrase": "備份助記詞"
       },
       "readyToUse": {
-        "pin": "將 Rabby 錢包釘選",
         "guides": {
           "step2": "將 Rabby Wallet 釘選至頂部",
           "step1": "點擊瀏覽器擴展圖標"
-        },
-        "extensionTip": "點擊 <1/>，然後點擊 <3/>",
-        "desc": "尋找 Rabby Wallet 並將其固定",
-        "title": "你的 Rabby Wallet 已準備好！"
+        }
       },
       "importSeedPhrase": {
         "title": "匯入助記詞",

@@ -14,8 +14,7 @@ import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import { useIdleTimer } from 'react-idle-timer';
 import { useRabbyDispatch, useRabbySelector } from '../store';
-import { useMount } from 'react-use';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useThemeModeOnMain } from '../hooks/usePreference';
 import {
   useCurrentAccount,

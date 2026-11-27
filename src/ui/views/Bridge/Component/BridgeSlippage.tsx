@@ -15,7 +15,7 @@ import i18n from '@/i18n';
 import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as RcInfoRowArrowRight } from '@/ui/assets/swap/info-row-arrow-right.svg';
 import { Popup } from '@/ui/component';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import styles from './BridgeSlippage.module.css';
 
 const BRIDGE_SLIPPAGE = ['0.5', '1'];
@@ -230,7 +230,7 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
     }
   }, [draftAutoSlippage, draftIsCustomSlippage, draftValue, popupVisible]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (
         !popupVisible ||
@@ -251,14 +251,14 @@ export const BridgeSlippage = memo((props: BridgeSlippageProps) => {
           // Keep the previous validation warning when the latest request fails.
         });
     },
-    DRAFT_VALIDATION_DEBOUNCE_MS,
     [
       draftAutoSlippage,
       draftIsCustomSlippage,
       draftValue,
       popupVisible,
       validateSlippage,
-    ]
+    ],
+    { wait: DRAFT_VALIDATION_DEBOUNCE_MS }
   );
 
   const commitDraft = useCallback(() => {
