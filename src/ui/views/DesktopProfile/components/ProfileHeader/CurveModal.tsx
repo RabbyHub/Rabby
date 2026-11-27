@@ -1,6 +1,6 @@
 import { Modal } from 'antd';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
 import { CurveThumbnail } from './CurveThumbnail';
 import clsx from 'clsx';
@@ -61,14 +61,14 @@ export const CurveModal: React.FC<{
     setIsDebounceHover(false);
   };
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (isHover) {
         setIsDebounceHover(true);
       }
     },
-    300,
-    [isHover]
+    [isHover],
+    { wait: 300 }
   );
 
   const currentHover = isDebounceHover;

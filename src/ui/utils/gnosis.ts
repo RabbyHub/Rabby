@@ -106,12 +106,6 @@ export const validateEOASign = (
 export const getSafeOperation = (operation: unknown): 0 | 1 =>
   normalizeSafeOperation(operation ?? undefined);
 
-export const crossCompareOwners = (owners1: string[], owners2: string[]) => {
-  return owners1.filter(
-    (owner) => !!owners2.find((own) => isSameAddress(own, owner))
-  );
-};
-
 type AdjustVOverload = {
   (signingMethod: 'eth_signTypedData', signature: string): string;
   (

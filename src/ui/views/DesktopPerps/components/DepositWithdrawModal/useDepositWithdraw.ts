@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { message } from 'antd';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useDebounceEffect } from 'ahooks';
 import { useWallet, isSameAddress } from '@/ui/utils';
-import { useAsync, useDebounce } from 'react-use';
+import { useAsync } from 'react-use';
 import { toChecksumAddress } from '@ethereumjs/util';
 import BigNumber from 'bignumber.js';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
@@ -777,15 +777,21 @@ export const useDepositWithdraw = (
   });
 
   // Debounce update mini sign tx
-  useDebounce(updateMiniSignTx, 300, [
-    gasPrice,
-    usdValue,
-    visible,
-    type,
-    tokenInfo,
-    selectedToken,
-    isHypeDeposit,
-  ]);
+  useDebounceEffect(
+    () => {
+      updateMiniSignTx();
+    },
+    [
+      gasPrice,
+      usdValue,
+      visible,
+      type,
+      tokenInfo,
+      selectedToken,
+      isHypeDeposit,
+    ],
+    { wait: 300 }
+  );
 
   // Clear optimistically on input change so the debounce wait isn't shown as an
   // error; updateMiniSignTx re-sets it only on a real failure.

@@ -122,14 +122,6 @@ class BridgeService {
     this.patchStore({ selectedToToken: token });
   };
 
-  getUnlimitedAllowance = () => {
-    return this.store.unlimitedAllowance;
-  };
-
-  setUnlimitedAllowance = (bool: boolean) => {
-    this.patchStore({ unlimitedAllowance: bool });
-  };
-
   getBridgeSortIncludeGasFee = () => {
     return this.store.sortIncludeGasFee;
   };

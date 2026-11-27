@@ -1,20 +1,3 @@
-export const DEFAULT_BRIDGE_SUPPORTED_CHAIN = [
-  'arb',
-  'matic',
-  'era',
-  'base',
-  'op',
-  'linea',
-  'xdai',
-  'eth',
-  'mnt',
-  'mode',
-  'bsc',
-  'scrl',
-  'avax',
-  'zora',
-];
-
 export const DEFAULT_BRIDGE_AGGREGATOR = [
   {
     id: 'bungee',

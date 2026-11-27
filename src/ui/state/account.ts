@@ -166,19 +166,8 @@ export function isChainMattered(chainUsdValue: number, totalUsdValue: number) {
   );
 }
 
-export const selectIsShowMnemonic = (state: AccountState) =>
-  state.mnemonicAccounts.length <= 0;
-
-export const selectCurrentAccountAddr = (state: AccountState) =>
-  state.currentAccount?.address;
-
 export const selectCurrentBalanceAboutMap = (state: AccountState) =>
   state.balanceAboutCacheMap;
-
-export const selectAllMatteredChainBalances = (state: AccountState) => ({
-  ...state.testnetMatteredChainBalances,
-  ...state.matteredChainBalances,
-});
 
 export const selectIsLoadingMatteredChainBalances = (state: AccountState) =>
   !!state[symLoaderMatteredBalance];

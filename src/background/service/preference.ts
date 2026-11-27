@@ -821,13 +821,6 @@ class PreferenceService {
     );
   };
 
-  getWalletSavedList = () => {
-    return this.store.walletSavedList || [];
-  };
-  updateWalletSavedList = (list: any[]) => {
-    this.store.walletSavedList = list;
-  };
-
   getInitAlianNameStatus = () => {
     return this.store.initAlianNames;
   };

@@ -219,13 +219,6 @@ export const useRecentSend = ({
   };
 };
 
-export const fetchLocalSendPendingTx = (
-  wallet: WalletControllerType,
-  address: string
-) => {
-  return wallet.getRecentPendingTxHistory(address, 'send');
-};
-
 export function useRecentSendToHistoryFor(toAddress?: string) {
   const { recentHistory, runAsync } = useRecentSend({ useAllHistory: true });
 

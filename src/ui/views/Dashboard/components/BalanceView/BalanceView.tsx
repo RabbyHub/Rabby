@@ -26,7 +26,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import { useCommonPopupView, useWallet } from 'ui/utils';
 import { useQueryProjects } from 'ui/utils/portfolio';
 import { BalanceLabel } from './BalanceLabel';
@@ -309,14 +309,14 @@ export const BalanceView = ({
     onRefresh({ isManual: true });
   };
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (isHover) {
         setIsDebounceHover(true);
       }
     },
-    300,
-    [isHover]
+    [isHover],
+    { wait: 300 }
   );
 
   const currentHover = isDebounceHover;

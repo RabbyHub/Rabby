@@ -242,12 +242,6 @@ export const PERPS_REFERENCE_CODE = 'RABBYWALLET';
 export const DELETE_AGENT_EMPTY_ADDRESS =
   '0x0000000000000000000000000000000000000000';
 
-export enum PERPS_POSITION_RISK_LEVEL {
-  SAFE = 'safe',
-  WARNING = 'warning',
-  DANGER = 'danger',
-}
-
 export const PERPS_MARGIN_SIGNIFICANT_DIGITS = 6;
 
 export const PERPS_MINI_USD_VALUE = 10; // $10
@@ -262,13 +256,6 @@ import {
 } from '@/utils/perps/quoteAsset';
 export type { PerpsQuoteAsset };
 export { ALL_PERPS_QUOTE_ASSETS, COLLATERAL_TOKEN_TO_QUOTE };
-
-export const STABLE_COIN_INDEX_ID_MAP: Record<PerpsQuoteAsset, number> = {
-  USDC: 0,
-  USDE: 150,
-  USDT: 166,
-  USDH: 230,
-};
 
 // Non-USDC quote assets that need stablecoin swap before trading
 export const SWAP_REQUIRED_QUOTE_ASSETS: PerpsQuoteAsset[] = [

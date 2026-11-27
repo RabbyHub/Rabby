@@ -1,26 +1,7 @@
-import React from 'react';
 import browser, { Tabs, Windows } from 'webextension-polyfill';
-import { t } from 'i18next';
-import { Button } from 'antd';
-import { getUITypeName, WalletController, WalletControllerType } from './index';
-import { getOriginFromUrl } from '@/utils';
-import Modal from '../component/Modal';
-import { ReactComponent as ExternalLinkAlert } from 'ui/assets/component/external-link-alert.svg';
-import { getCurrentTab } from './currentTab';
+import { getUITypeName } from './index';
 
 export { getCurrentTab } from './currentTab';
-
-export const getCurrentConnectSite = async (
-  wallet: WalletController | WalletControllerType
-) => {
-  const tab = await getCurrentTab();
-  if (tab?.id == null || !tab.url) return null;
-
-  return (wallet as WalletControllerType).getCurrentConnectedSite(
-    tab.id,
-    getOriginFromUrl(tab.url)
-  );
-};
 
 export const openInTab = async (
   url?: string,
@@ -77,50 +58,4 @@ export const openTrustedExternalWebsiteInTab = async (
     url,
   });
   if (needClose) window.close();
-};
-
-export const openExternalWebsiteInTab = async (
-  url?: string,
-  needClose = true
-) => {
-  return new Promise((resolve, reject) => {
-    const modal = Modal.info({
-      closable: true,
-      className: 'external-link-alert-modal',
-      content: (
-        <div>
-          <div className="flex justify-center mb-16">
-            <ExternalLinkAlert className="w-[52px]" />
-          </div>
-          <h1 className="text-r-neutral-title1 text-center mb-8">
-            {t('component.OpenExternalWebsiteModal.title')}
-          </h1>
-          <p className="text-r-neutral-body text-center text-15 mb-[52px]">
-            {t('component.OpenExternalWebsiteModal.content')}
-          </p>
-          <div className="footer">
-            <Button
-              type="primary"
-              block
-              className="h-40 text-15 font-medium"
-              onClick={async () => {
-                const tab = await browser.tabs.create({
-                  active: true,
-                  url,
-                });
-                if (needClose) window.close();
-                resolve(tab);
-                modal.destroy();
-              }}
-            >
-              {t('component.OpenExternalWebsiteModal.button')}
-            </Button>
-          </div>
-        </div>
-      ),
-      onCancel() {
-        reject('user cancel');
-      },
-    });
-  });
 };

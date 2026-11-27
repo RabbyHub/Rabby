@@ -1445,7 +1445,6 @@
           "searchDapps": "Cari Dapps",
           "lockWallet": "Kunci Dompet",
           "manageAddress": "Kelola Alamat",
-          "rabbyPoints": "Rabby Points",
           "gasTopUp": "Isi Gas",
           "label": "Fitur",
           "connectedDapp": "Dapps Terkoneksi",
@@ -2518,61 +2517,6 @@
       "searchButton": "Cari",
       "searchPlaceholder": "Cari nama Dapp"
     },
-    "rabbyPoints": {
-      "claimItem": {
-        "go": "Pergi",
-        "earnTip": "Batas sekali sehari. Silakan kumpulkan poin setelah 00:00 UTC+0",
-        "disabledTip": "Tidak ada poin yang dapat diklaim sekarang",
-        "claim": "Klaim",
-        "claimed": "Diklaim"
-      },
-      "claimModal": {
-        "activeStats": "Status Aktif",
-        "walletBalance": "Saldo Dompet",
-        "rabbyUser": "Rabby Pengguna Aktif",
-        "addressBalance": "Saldo dompet",
-        "rabbyValuedUserBadge": "Lencana Pengguna Rabby Terpilih",
-        "claim": "Klaim",
-        "referral-code": "Kode Rujukan",
-        "title": "Klaim Poin Awal",
-        "season2": "Musim 2",
-        "invalid-code": "kode tidak valid",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "placeholder": "Masukkan Kode Rujukan untuk poin tambahan (opsional)",
-        "snapshotTime": "Waktu snapshot: {{time}}",
-        "MetaMaskSwap": "MetaMask Swap",
-        "cantUseOwnCode": "Anda tidak dapat menggunakan kode referral Anda sendiri."
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "sign": "Tanda tangan",
-          "cancel": "Batalkan",
-          "verify-address": "Verifikasi Alamat",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Silakan tanda tangani pesan teks ini untuk memverifikasi bahwa Anda adalah pemilik alamat ini."
-        },
-        "set-my-code": "Atur kode saya",
-        "my-referral-code": "Kode rujukan saya",
-        "set-my-referral-code": "Atur kode rujukan saya",
-        "refer-a-new-user-to-get-50-points": "Ajak pengguna baru untuk mendapatkan 50 poin",
-        "referral-code-cannot-be-empty": "Kode rujukan tidak boleh kosong",
-        "referral-code-already-exists": "Kode rujukan sudah ada",
-        "confirm": "Konfirmasi",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Sekali disetel, kode rujukan ini bersifat permanen dan tidak dapat diubah.",
-        "max-15-characters-use-numbers-and-letters-only": "Maksimal 15 karakter, hanya gunakan angka dan huruf.",
-        "referral-code-cannot-exceed-15-characters": "Kode referral tidak boleh melebihi 15 karakter",
-        "referral-code-available": "Kode rujukan tersedia"
-      },
-      "top-100": "Top 100",
-      "referral-code-copied": "Kode referral telah disalin",
-      "title": "Rabby Points",
-      "earn-points": "Dapatkan Poin",
-      "share-on": "Bagikan di",
-      "out-of-x-current-total-points": "Dari {{total}} Total Poin yang Diberikan",
-      "initialPointsClaimEnded": "Klaim Poin Awal telah berakhir",
-      "code-set-successfully": "Kode rujukan berhasil diatur",
-      "secondRoundEnded": "🎉 Putaran kedua Rabby Points telah berakhir",
-      "firstRoundEnded": "🎉 Putaran pertama Rabby Points telah berakhir"
-    },
     "customTestnet": {
       "CustomTestnetForm": {
         "rpcUrl": "RPC URL",
@@ -2615,37 +2559,6 @@
       "transactionSpeed": "Kecepatan Transaksi"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdrop": "Airdrop",
-          "socialsTitle": "Terlibat",
-          "migrateBtn": "Segera hadir",
-          "earnTitle": "Dapatkan",
-          "arcadeBtn": "Main sekarang",
-          "airdropBtn": "Dapatkan poin",
-          "airdropDesc": "~200 juta S kepada pengguna di Opera dan Sonic.",
-          "earnBtn": "Segera hadir",
-          "arcadeDesc": "Mainkan permainan gratis untuk mendapatkan poin untuk airdrop S.",
-          "migrateTitle": "Migrasi",
-          "migrateDesc": "→",
-          "earnDesc": "Taruh $S Anda"
-        },
-        "points": {
-          "pointsDashboardBtn": "Mulai mendapatkan poin",
-          "shareOn": "Bagikan di",
-          "sonicPoints": "Sonic Points",
-          "pointsDashboard": "Dasbor Poin",
-          "sonicArcadeBtn": "Mulai bermain",
-          "errorTitle": "Tidak dapat memuat poin",
-          "today": "Hari ini",
-          "getReferralCode": "Dapatkan kode referensi",
-          "retry": "Coba lagi",
-          "referralCodeCopied": "Kode rujukan disalin",
-          "sonicArcade": "Sonic Arcade",
-          "errorDesc": "Terjadi kesalahan saat memuat poin Anda. Silakan coba lagi.",
-          "referralCode": "Kode rujukan"
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTBtn": "Mint",
@@ -2928,14 +2841,10 @@
         "backupSeedPhrase": "Cadangan Frasa Pemulihan"
       },
       "readyToUse": {
-        "pin": "Sematkan Rabby Wallet",
         "guides": {
           "step1": "Klik ikon ekstensi browser",
           "step2": "Sematkan Rabby Wallet"
-        },
-        "desc": "Temukan Rabby Wallet lalu sematkan",
-        "title": "Dompet Rabby Anda Sudah Siap!",
-        "extensionTip": "Klik <1/> dan kemudian <3/>"
+        }
       },
       "importSeedPhrase": {
         "title": "Impor Frasa Pemulihan",

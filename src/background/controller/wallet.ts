@@ -30,7 +30,6 @@ import {
   openapiService,
   pageStateCacheService,
   transactionHistoryService,
-  transactionsService,
   contactBookService,
   currencyService,
   signTextHistoryService,
@@ -40,7 +39,6 @@ import {
   unTriggerTxCounter,
   securityEngineService,
   transactionBroadcastWatchService,
-  RabbyPointsService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
   gasAccountService,
@@ -65,7 +63,6 @@ import { DisplayedKeryring, KeyringService } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
-  KEYRING_WITH_INDEX,
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
@@ -88,7 +85,6 @@ import { ConnectedSite } from '../service/permission';
 import {
   TokenItem,
   Tx,
-  TxHistoryResult,
   NFTDetail,
   BridgeHistory,
   getOpenapiStore,
@@ -1548,57 +1544,6 @@ export class WalletController extends BaseController {
     return txs;
   };
 
-  getUnTriggerTxCount = () => {
-    return unTriggerTxCounter.count;
-  };
-
-  generateApproveTokenTx = ({
-    from,
-    to,
-    chainId,
-    spender,
-    amount,
-  }: {
-    from: string;
-    to: string;
-    chainId: number;
-    spender: string;
-    amount: string;
-  }) => {
-    return {
-      from,
-      to,
-      chainId: chainId,
-      value: '0x',
-      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-        {
-          constant: false,
-          inputs: [
-            {
-              name: '_spender',
-              type: 'address',
-            },
-            {
-              name: '_value',
-              type: 'uint256',
-            },
-          ],
-          name: 'approve',
-          outputs: [
-            {
-              name: '',
-              type: 'bool',
-            },
-          ],
-          payable: false,
-          stateMutability: 'nonpayable',
-          type: 'function',
-        },
-        [toChecksumAddress(spender), amount] as any
-      ),
-    };
-  };
-
   approveToken = async (
     chainServerId: string,
     id: string,
@@ -1803,125 +1748,6 @@ export class WalletController extends BaseController {
         },
       ],
     });
-  };
-
-  transferNFT = async (
-    {
-      to,
-      chainServerId,
-      contractId,
-      abi,
-      tokenId,
-      amount,
-    }: {
-      to: string;
-      chainServerId: string;
-      contractId: string;
-      abi: 'ERC721' | 'ERC1155';
-      tokenId: string;
-      amount?: number;
-    },
-    $ctx?: any
-  ) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    const chainId = findChain({
-      serverId: chainServerId,
-    })?.id;
-    if (!chainId) throw new Error(t('background.error.invalidChainId'));
-    if (abi === 'ERC721') {
-      await this.sendRequest({
-        $ctx,
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: account.address,
-            to: contractId,
-            chainId: chainId,
-            data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-              {
-                constant: false,
-                inputs: [
-                  { internalType: 'address', name: 'from', type: 'address' },
-                  { internalType: 'address', name: 'to', type: 'address' },
-                  {
-                    internalType: 'uint256',
-                    name: 'tokenId',
-                    type: 'uint256',
-                  },
-                ],
-                name: 'safeTransferFrom',
-                outputs: [],
-                payable: false,
-                stateMutability: 'nonpayable',
-                type: 'function',
-              },
-              [
-                toChecksumAddress(account.address),
-                toChecksumAddress(to),
-                tokenId,
-              ]
-            ),
-          },
-        ],
-      });
-    } else if (abi === 'ERC1155') {
-      await this.sendRequest({
-        $ctx,
-        method: 'eth_sendTransaction',
-        params: [
-          {
-            from: account.address,
-            to: contractId,
-            chainId: chainId,
-            data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-              {
-                inputs: [
-                  {
-                    internalType: 'address',
-                    name: 'from',
-                    type: 'address',
-                  },
-                  {
-                    internalType: 'address',
-                    name: 'to',
-                    type: 'address',
-                  },
-                  {
-                    internalType: 'uint256',
-                    name: 'id',
-                    type: 'uint256',
-                  },
-                  {
-                    internalType: 'uint256',
-                    name: 'amount',
-                    type: 'uint256',
-                  },
-                  {
-                    internalType: 'bytes',
-                    name: 'data',
-                    type: 'bytes',
-                  },
-                ],
-                name: 'safeTransferFrom',
-                outputs: [],
-                stateMutability: 'nonpayable',
-                type: 'function',
-              },
-              [
-                toChecksumAddress(account.address),
-                toChecksumAddress(to),
-                tokenId,
-                amount,
-                [],
-              ] as any
-            ),
-          },
-        ],
-      });
-    } else {
-      throw new Error(t('background.error.unknownAbi'));
-    }
   };
 
   revokeNFTApprove = async (
@@ -2403,34 +2229,6 @@ export class WalletController extends BaseController {
   };
   clearPageStateCache = () => pageStateCacheService.clear();
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
-  getTransactionsCache = (address: string) =>
-    transactionsService.getTransactions(address);
-  updateTransactionsCache = (address: string, data: TxHistoryResult) =>
-    transactionsService.updateTransactions(address, data);
-
-  getIndexByAddress = (address: string, type: string) => {
-    const hasIndex = KEYRING_WITH_INDEX.includes(type as any);
-    if (!hasIndex) return null;
-    const keyring = keyringService.getKeyringByType(type);
-    if (!keyring) return null;
-    switch (type) {
-      case KEYRING_CLASS.HARDWARE.LEDGER: {
-        return keyring.getIndexFromAddress(address);
-      }
-      case KEYRING_CLASS.HARDWARE.GRIDPLUS: {
-        const accountIndices = keyring.accountIndices;
-        const accounts = keyring.accounts;
-        const index = accounts.findIndex(
-          (account) => account.toLowerCase() === address.toLowerCase()
-        );
-        if (index === -1) return null;
-        if (accountIndices.length - 1 < index) return null;
-        return accountIndices[index];
-      }
-      default:
-        return null;
-    }
-  };
 
   // 写入本地余额缓存；仅完整刷新时更新时间戳，确保部分失败时下次会重试
   private persistBalanceCache = async (
@@ -2642,8 +2440,6 @@ export class WalletController extends BaseController {
 
   getLocale = () => preferenceService.getLocale();
   setLocale = (locale: string) => preferenceService.setLocale(locale);
-
-  getCurrencyStore = () => currencyService.getStore();
   syncCurrencyList = (force = false) => currencyService.syncCurrencyList(force);
   getCurrency = () => currencyService.getCurrency();
   setCurrency = (currency: string) => currencyService.setCurrency(currency);
@@ -2746,9 +2542,6 @@ export class WalletController extends BaseController {
 
   getAddressSortStoreValue = preferenceService.getAddressSortStoreValue;
   setAddressSortStoreValue = preferenceService.setAddressSortStoreValue;
-
-  getLastSelectedSwapChain = swapService.getSelectedChain;
-  setLastSelectedSwapChain = swapService.setSelectedChain;
   getSelectedFromToken = swapService.getSelectedFromToken;
   getSelectedToToken = swapService.getSelectedToToken;
   setSelectedFromToken = swapService.setSelectedFromToken;
@@ -2861,22 +2654,11 @@ export class WalletController extends BaseController {
     }
   };
 
-  setRedirect2Points = RabbyPointsService.setRedirect2Points;
-  setRabbyPointsSignature = RabbyPointsService.setSignature;
-  getRabbyPointsSignature = RabbyPointsService.getSignature;
-  clearRabbyPointsSignature = RabbyPointsService.clearSignature;
-
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
-  getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
 
   getBridgeData = bridgeService.getBridgeData;
   getBridgeAggregators = bridgeService.getBridgeAggregators;
   setBridgeAggregators = bridgeService.setBridgeAggregators;
-  getBridgeUnlimitedAllowance = bridgeService.getUnlimitedAllowance;
-  setBridgeUnlimitedAllowance = bridgeService.setUnlimitedAllowance;
-  setBridgeSelectedChain = bridgeService.setSelectedChain;
-  setBridgeSelectedFromToken = bridgeService.setSelectedFromToken;
-  setBridgeSelectedToToken = bridgeService.setSelectedToToken;
   getBridgeSortIncludeGasFee = bridgeService.getBridgeSortIncludeGasFee;
   setBridgeSortIncludeGasFee = bridgeService.setBridgeSortIncludeGasFee;
   setBridgeSettingFirstOpen = bridgeService.setBridgeSettingFirstOpen;
@@ -2998,7 +2780,6 @@ export class WalletController extends BaseController {
     RPCService.removeCustomRPC(chainEnum);
     this.syncCustomTestnetRPC(chainEnum);
   };
-  getAllCustomRPC = RPCService.getAllRPC;
   getCustomRpcByChain = RPCService.getRPCByChain;
   pingCustomRPC = RPCService.ping;
   setRPCEnable = (chainEnum: CHAINS_ENUM, enable: boolean) => {
@@ -3056,14 +2837,6 @@ export class WalletController extends BaseController {
       isSigned: false,
       isTop: false,
     };
-  };
-  getCurrentConnectedSite = (tabId: number, domain: string) => {
-    const session = sessionService.getSession(`${tabId}-${domain}`);
-    if (session) {
-      return permissionService.getWithoutUpdate(session.origin);
-    } else {
-      return null;
-    }
   };
   setSite = (
     data: ConnectedSite,
@@ -3146,27 +2919,6 @@ export class WalletController extends BaseController {
         }
       })
       .filter((v): v is ConnectedSite => !!v);
-  };
-  removePreferMetamask = (origin: string) => {
-    const site = permissionService.getSite(origin);
-    if (!site?.preferMetamask) {
-      return;
-    }
-    const prevIsDefaultWallet = preferenceService.getIsDefaultWallet(
-      site?.origin
-    );
-    site.preferMetamask = false;
-    permissionService.setSite(site);
-    const currentIsDefaultWallet = preferenceService.getIsDefaultWallet(origin);
-    const hasOtherProvider = preferenceService.getHasOtherProvider();
-    if (prevIsDefaultWallet !== currentIsDefaultWallet && hasOtherProvider) {
-      sessionService.broadcastEvent(
-        'defaultWalletChanged',
-        currentIsDefaultWallet ? 'rabby' : 'metamask',
-        site.origin,
-        undefined
-      );
-    }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
     const chainItem = findChain({ enum: data.chain });
@@ -3302,18 +3054,6 @@ export class WalletController extends BaseController {
     ).then((chains) => chains.filter((chain): chain is Chain => !!chain));
   };
 
-  syncAllGnosisNetworks = async () => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) {
-      return;
-    }
-    await Promise.all(
-      Object.keys(keyring.networkIdsMap).map((address) =>
-        this.syncGnosisNetworks(address)
-      )
-    );
-  };
-
   syncGnosisNetworks = async (address: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) {
@@ -3351,18 +3091,6 @@ export class WalletController extends BaseController {
     }
   };
 
-  /**
-   * @deprecated
-   */
-  getGnosisNetworkId = (address: string) => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    const networkId = keyring.networkIdMap[address.toLowerCase()];
-    if (networkId === undefined) {
-      throw new Error(`Address ${address} is not in keyring"`);
-    }
-    return networkId;
-  };
-
   getGnosisNetworkIds = (address: string) => {
     const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
     const networkId = keyring.networkIdsMap[address.toLowerCase()];
@@ -3370,14 +3098,6 @@ export class WalletController extends BaseController {
       throw new Error(`Address ${address} is not in keyring"`);
     }
     return networkId;
-  };
-
-  getGnosisTransactionHash = () => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (keyring.currentTransaction) {
-      return keyring.getTransactionHash();
-    }
-    return null;
   };
 
   getGnosisTransactionSignatures = (expectedHash?: string) => {
@@ -3570,55 +3290,6 @@ export class WalletController extends BaseController {
     return results;
   };
 
-  getGnosisOwners = async (
-    account: Account,
-    safeAddress: string,
-    version: string,
-    networkId: string
-  ) => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) throw new Error(t('background.error.notFoundGnosisKeyring'));
-    const currentProvider = new EthereumProvider();
-    currentProvider.currentAccount = account.address;
-    currentProvider.currentAccountType = account.type;
-    currentProvider.currentAccountBrand = account.brandName;
-    currentProvider.chainId = networkId;
-
-    const owners = await keyring.getOwners(
-      safeAddress,
-      version,
-      new ethers.providers.Web3Provider(currentProvider),
-      networkId
-    );
-    return owners;
-  };
-
-  signGnosisTransaction = (account: Account) => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (keyring.currentTransaction && keyring.safeInstance) {
-      buildinProvider.currentProvider.currentAccount = account.address;
-      buildinProvider.currentProvider.currentAccountType = account.type;
-      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-      return keyring.confirmTransaction({
-        safeAddress: keyring.safeInstance.safeAddress,
-        transaction: keyring.currentTransaction,
-        networkId: keyring.safeInstance.network,
-        provider: new ethers.providers.Web3Provider(
-          buildinProvider.currentProvider
-        ),
-      });
-    }
-  };
-
-  checkGnosisTransactionCanExec = async () => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (keyring.currentTransaction && keyring.safeInstance) {
-      const threshold = await keyring.safeInstance.getThreshold();
-      return keyring.currentTransaction.signatures.size >= threshold;
-    }
-    return false;
-  };
-
   execGnosisTransaction = async (account: Account) => {
     try {
       const keyring: GnosisKeyring = this.#getKeyringByType(
@@ -3748,14 +3419,6 @@ export class WalletController extends BaseController {
     } else {
       throw new Error(t('background.error.notFoundGnosisKeyring'));
     }
-  };
-
-  getGnosisSafeMessageInfo = () => {
-    const keyring: GnosisKeyring = this.#getKeyringByType(KEYRING_CLASS.GNOSIS);
-    if (!keyring) {
-      throw new Error(t('background.error.notFoundGnosisKeyring'));
-    }
-    return keyring.getMessageInfo();
   };
 
   addGnosisMessage = async ({
@@ -3976,18 +3639,6 @@ export class WalletController extends BaseController {
     return null;
   };
 
-  getWalletConnectSessionNetworkDelay = (
-    address: string,
-    brandName: string
-  ) => {
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const keyring: WalletConnectKeyring = this.#getKeyringByType(keyringType);
-    if (keyring) {
-      return keyring.getSessionNetworkDelay(address, brandName);
-    }
-    return null;
-  };
-
   getWalletConnectSessionAccount = (address: string, brandName: string) => {
     const keyringType =
       brandName === KEYRING_CLASS.Coinbase
@@ -4000,28 +3651,6 @@ export class WalletController extends BaseController {
       }
     } catch (e) {
       // ignore
-    }
-    return null;
-  };
-
-  walletConnectSwitchChain = async (account: Account, chainId: number) => {
-    const keyringType =
-      account.brandName === KEYRING_CLASS.Coinbase
-        ? KEYRING_CLASS.Coinbase
-        : KEYRING_CLASS.WALLETCONNECT;
-    try {
-      const keyring = this.#getKeyringByType(keyringType);
-      if (keyring) {
-        await keyring.switchEthereumChain(
-          account.brandName,
-          chainId,
-          account.address
-        );
-      }
-    } catch (e) {
-      // ignore
-      console.log('walletconnect error', e);
-      this.killWalletConnectConnector(account.address, account.brandName, true);
     }
     return null;
   };
@@ -4787,26 +4416,6 @@ export class WalletController extends BaseController {
     }
   };
 
-  checkHasMnemonic = () => {
-    try {
-      const keyring = this.#getKeyringByType(KEYRING_CLASS.MNEMONIC);
-      return !!keyring.mnemonic;
-    } catch (e) {
-      return false;
-    }
-  };
-
-  /**
-   * @deprecated
-   */
-  deriveNewAccountFromMnemonic = async () => {
-    const keyring = this.#getKeyringByType(KEYRING_CLASS.MNEMONIC);
-
-    const result = await keyringService.addNewAccount(keyring);
-    this._setCurrentAccountFromKeyring(keyring, -1);
-    return result;
-  };
-
   deriveNextAccountFromMnemonicByPublicKey = async (publicKey: string) => {
     const keyring = this.#getMnemonicKeyRingFromPublicKey(publicKey);
     if (!keyring) {
@@ -4823,11 +4432,6 @@ export class WalletController extends BaseController {
       alias: this.getAlianName(nextAddress) || '',
       publicKey,
     };
-  };
-
-  getAccountsCount = async () => {
-    const accounts = await keyringService.getAccounts();
-    return accounts.filter((x) => x).length;
   };
 
   getTypedAccounts = async (type) => {
@@ -4901,14 +4505,6 @@ export class WalletController extends BaseController {
       KEYRING_CLASS.HARDWARE.ONEKEY
     );
     await keyring.cancel();
-  };
-
-  checkLedgerHasHIDPermission = () => {
-    const keyring = keyringService.getKeyringByType(
-      KEYRING_CLASS.HARDWARE.LEDGER
-    );
-    if (!keyring) return false;
-    return keyring.hasHIDPermission;
   };
 
   connectHardware = async ({
@@ -5106,21 +4702,6 @@ export class WalletController extends BaseController {
       },
     });
     return res;
-  };
-
-  signPersonalMessageWithUI = async (
-    type: string,
-    from: string,
-    data: string,
-    options?: any
-  ) => {
-    const fn = () =>
-      waitSignComponentAmounted().then(() => {
-        this.signPersonalMessage(type, from, data as any, options);
-      });
-
-    notificationService.setCurrentRequestDeferFn(fn);
-    return fn();
   };
 
   signTypedData = async (
@@ -5502,15 +5083,6 @@ export class WalletController extends BaseController {
     transactionHistoryService.removeSigningTx(id);
 
   getSigningTx = (id: string) => transactionHistoryService.getSigningTx(id);
-
-  completedTransaction = (params: {
-    address: string;
-    chainId: number;
-    nonce: number;
-    hash: string;
-    success?: boolean;
-    gasUsed?: number;
-  }) => transactionHistoryService.completeTx(params);
   getPendingCount = (address: string) =>
     transactionHistoryService.getPendingCount(address);
   getNonceByChain = (address: string, chainId: number) =>
@@ -5658,14 +5230,6 @@ export class WalletController extends BaseController {
     return preferenceService.updateHighlightedAddresses(list);
   };
 
-  getHighlightWalletList = () => {
-    return preferenceService.getWalletSavedList();
-  };
-
-  updateHighlightWalletList = (list) => {
-    return preferenceService.updateWalletSavedList(list);
-  };
-
   getAlianName = (address: string) => {
     const contact = contactBookService.getContactByAddress(address);
     if (contact?.isAlias) return contact.name;
@@ -5811,8 +5375,6 @@ export class WalletController extends BaseController {
   }
 
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
-  updateInitAlianNameStatus = () =>
-    preferenceService.changeInitAlianNameStatus();
   getLastTimeGasSelection = (
     ...[chainId]: Parameters<typeof preferenceService.getLastTimeGasSelection>
   ) => {
@@ -6367,31 +5929,6 @@ export class WalletController extends BaseController {
     this.rejectAllApprovals();
   };
 
-  walletConnectScanAccount = async () => {
-    let keyring: WalletConnectKeyring, isNewKey;
-    const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    try {
-      keyring = this.#getKeyringByType(keyringType);
-    } catch {
-      const WalletConnect = keyringService.getKeyringClassForType(keyringType);
-      keyring = new WalletConnect(GET_WALLETCONNECT_CONFIG());
-      isNewKey = true;
-    }
-
-    if (isNewKey) {
-      this.addKeyringToStash(keyring);
-    }
-
-    keyring.on('scanAccount', (payload) => {
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.WALLETCONNECT.SCAN_ACCOUNT,
-        params: payload,
-      });
-    });
-
-    return await keyring.scanAccount();
-  };
-
   _currentCoinbaseStashId?: undefined | null | number;
 
   connectCoinbase = async () => {
@@ -6524,64 +6061,6 @@ export class WalletController extends BaseController {
     },
     { timeout: 10000, maxSize: 0 }
   ).fn;
-
-  rabbyPointVerifyAddress = async (params?: {
-    code?: string;
-    claimSnapshot?: boolean;
-    claimNumber?: number;
-    // text: string;
-  }) => {
-    const { code, claimSnapshot } = params || {};
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    let claimText = '';
-    let verifyText = '';
-
-    if (claimSnapshot) {
-      claimText = (
-        await wallet.openapi.getRabbyClaimTextV2({
-          id: account?.address,
-          invite_code: code,
-        })
-      )?.text; //`${account?.address} Claims Rabby Points`;
-    } else {
-      verifyText = (
-        await wallet.openapi.getRabbySignatureTextV2({
-          id: account?.address,
-        })
-      )?.text; //`Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
-    }
-
-    const msg = `0x${Buffer.from(
-      claimSnapshot ? claimText : verifyText,
-      'utf-8'
-    ).toString('hex')}`;
-
-    const signature = await this.sendRequest<string>({
-      method: 'personal_sign',
-      params: [msg, account.address],
-    });
-
-    this.setRabbyPointsSignature(account.address, signature);
-    if (claimSnapshot) {
-      try {
-        await wallet.openapi.claimRabbyPointsSnapshotV2({
-          id: account?.address,
-          invite_code: code,
-          signature,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      this.setPageStateCache({
-        path: '/rabby-points',
-        params: {},
-        states: {},
-      });
-    }
-    return signature;
-  };
 
   private async executeGasAccountLogin(
     account: Account,
@@ -6844,8 +6323,6 @@ export class WalletController extends BaseController {
 
   estimateCustomTestnetGas = customTestnetService.estimateGas;
 
-  getCustomTestnetGasPrice = customTestnetService.getGasPrice;
-
   getCustomBlockGasLimit = customTestnetService.getBlockGasLimit;
 
   getCustomTestnetGasMarket = customTestnetService.getGasMarket;
@@ -6856,8 +6333,6 @@ export class WalletController extends BaseController {
   getCustomTestnetTokenList = customTestnetService.getTokenList;
   hasCustomTestnetTokens = customTestnetService.hasCustomTokens;
   isAddedCustomTestnetToken = customTestnetService.hasToken;
-  getCustomTestnetTx = customTestnetService.getTx;
-  getCustomTestnetTxReceipt = customTestnetService.getTransactionReceipt;
   getCustomTestnetLogos = customTestnetService.fetchLogos;
   // getCustomTestnetTokenListWithBalance = customTestnetService.getTokenListWithBalance;
 
@@ -7186,8 +6661,6 @@ export class WalletController extends BaseController {
   setPerpsOrderConfirmation = perpsService.setOrderConfirmation;
   getPerpsShowPopularTradings = perpsService.getShowPopularTradings;
   setPerpsShowPopularTradings = perpsService.setShowPopularTradings;
-  getPerpsIsNeedSetDarkTheme = perpsService.getIsNeedSetDarkTheme;
-  updatePerpsAgentWalletPreference = perpsService.updateAgentWalletPreference;
   setSendApproveAfterDeposit = perpsService.setSendApproveAfterDeposit;
   getSendApproveAfterDeposit = async (masterAddress: string) => {
     return perpsService.getSendApproveAfterDeposit(masterAddress);
@@ -7308,8 +6781,6 @@ export class WalletController extends BaseController {
       params,
     });
   };
-
-  getPendingExtensionVersion = extensionUpdateService.getPendingVersion;
   requestExtensionUpdateCheck = extensionUpdateService.requestUpdateCheck;
   reloadExtensionForUpdate = extensionUpdateService.reloadForUpdate;
 

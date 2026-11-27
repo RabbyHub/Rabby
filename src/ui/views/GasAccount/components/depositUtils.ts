@@ -15,8 +15,6 @@ import {
 } from '@rabby-wallet/rabby-api/dist/types';
 
 const abiCoder = (abiCoderInst as unknown) as AbiCoder;
-
-export const MIN_GAS_ACCOUNT_DEPOSIT_USD = 1;
 export const MAX_GAS_ACCOUNT_DEPOSIT_USD = 500;
 
 export const getGasAccountDirectDepositAddress = (chainServerId?: string) => {
@@ -26,10 +24,6 @@ export const getGasAccountDirectDepositAddress = (chainServerId?: string) => {
   }
 
   return L2_DEPOSIT_ADDRESS_MAP[chain.enum as CHAINS_ENUM] || null;
-};
-
-export const getGasAccountDepositMode = (chainServerId?: string) => {
-  return getGasAccountDirectDepositAddress(chainServerId) ? 'direct' : 'bridge';
 };
 
 export const buildTopUpGasAccount = async ({
@@ -235,33 +229,6 @@ export const buildGasAccountBridgeTxs = async ({
   } as Tx);
 
   return txs;
-};
-
-export const fetchGasAccountTopUpUsedNonce = async ({
-  wallet,
-  txHash,
-  chainServerId,
-  account,
-}: {
-  wallet: Pick<WalletControllerType, 'requestETHRpc'>;
-  txHash: string;
-  chainServerId: string;
-  account: Account;
-}) => {
-  if (!txHash) {
-    return undefined;
-  }
-
-  const tx = await wallet.requestETHRpc<{ nonce?: string } | null>(
-    {
-      method: 'eth_getTransactionByHash',
-      params: [txHash],
-    },
-    chainServerId,
-    account
-  );
-
-  return tx?.nonce;
 };
 
 export type GasAccountDepositStatusParams = Parameters<

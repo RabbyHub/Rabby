@@ -1,145 +1,14 @@
 import { BigNumber } from 'bignumber.js';
 import { GasLevel, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
-import { Contract, providers } from 'ethers';
 import { AbstractPortfolioToken } from './portfolio/types';
 import { CustomTestnetToken } from '@/background/service/customTestnet';
 import { findChain, findChainByEnum } from '@/utils/chain';
 import { CHAINS_ENUM, MINIMUM_GAS_LIMIT } from '@/constant';
-import { hexToString } from 'viem';
 import {
   TEMPO_FEE_TOKEN_DECIMALS,
   TEMPO_PATH_USD_TOKEN,
 } from '@/constant/tempo';
 import { isTempoChain } from '@/utils/tempo';
-
-export const geTokenDecimals = async (
-  id: string,
-  provider: providers.JsonRpcProvider
-) => {
-  try {
-    const contract = new Contract(
-      id,
-      [
-        {
-          constant: true,
-          inputs: [],
-          name: 'decimals',
-          outputs: [
-            {
-              name: '',
-              type: 'uint8',
-            },
-          ],
-          payable: false,
-          stateMutability: 'view',
-          type: 'function',
-        },
-      ],
-      provider
-    );
-    const decimals = await contract.decimals();
-    return decimals;
-  } catch (e) {
-    const contract = new Contract(
-      id,
-      [
-        {
-          constant: true,
-          inputs: [],
-          name: 'DECIMALS',
-          outputs: [
-            {
-              name: '',
-              type: 'uint8',
-            },
-          ],
-          payable: false,
-          stateMutability: 'view',
-          type: 'function',
-        },
-      ],
-      provider
-    );
-    return contract.DECIMALS();
-  }
-};
-
-export const getTokenName = async (
-  id: string,
-  provider: providers.JsonRpcProvider
-) => {
-  try {
-    const contract = new Contract(
-      id,
-      [
-        {
-          constant: true,
-          inputs: [],
-          name: 'name',
-          outputs: [
-            {
-              name: '',
-              type: 'string',
-            },
-          ],
-          payable: false,
-          stateMutability: 'view',
-          type: 'function',
-        },
-      ],
-      provider
-    );
-    const name = await contract.name();
-    return name;
-  } catch (e) {
-    try {
-      const contract = new Contract(
-        id,
-        [
-          {
-            constant: true,
-            inputs: [],
-            name: 'name',
-            outputs: [
-              {
-                name: '',
-                type: 'bytes32',
-              },
-            ],
-            payable: false,
-            stateMutability: 'view',
-            type: 'function',
-          },
-        ],
-        provider
-      );
-      const name = await contract.name();
-      return hexToString(name);
-    } catch (e) {
-      const contract = new Contract(
-        id,
-        [
-          {
-            constant: true,
-            inputs: [],
-            name: 'NAME',
-            outputs: [
-              {
-                name: '',
-                type: 'string',
-              },
-            ],
-            payable: false,
-            stateMutability: 'view',
-            type: 'function',
-          },
-        ],
-        provider
-      );
-      return contract.NAME();
-    }
-  }
-};
 
 export const getTokenSymbol = (
   token?: Partial<
@@ -214,12 +83,6 @@ export const customTestnetTokenToTokenItem = (
     time_at: 0,
     price_24h_change: 0,
   };
-};
-
-export const isTestnetTokenItem = (token: TokenItem) => {
-  return findChain({
-    serverId: token.chain,
-  })?.isTestnet;
 };
 
 function checkGasIsEnough({

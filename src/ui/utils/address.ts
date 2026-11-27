@@ -23,10 +23,3 @@ export function add0x(hexadecimal: string): Hex {
 
   return `0x${hexadecimal}`;
 }
-
-export function isStrictHexString(value: unknown): value is Hex {
-  if (typeof value === 'string') {
-    return /^0x[0-9a-f]+$/iu.test(value);
-  }
-  return false;
-}

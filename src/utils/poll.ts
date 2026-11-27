@@ -9,10 +9,6 @@ type PollOptions<TData> = {
   interval: number;
 };
 
-export type PollErrorType<Name extends string = 'Error'> = Error & {
-  name: Name;
-};
-
 /**
  * @description Polls a function at a specified interval.
  */

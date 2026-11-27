@@ -1347,7 +1347,6 @@
           "signatureRecord": "Ваші підписи",
           "manageAddress": "Керувати адресою",
           "connectedDapp": "Ваші підключення до dApp",
-          "rabbyPoints": "Rabby Points",
           "searchDapps": "Пошук Dapps",
           "gasTopUp": "Поповнення газу",
           "ecosystem": "Екосистема"
@@ -2533,61 +2532,6 @@
       "searchPlaceholder": "Шукати назву Dapp",
       "searchButton": "Пошук"
     },
-    "rabbyPoints": {
-      "claimItem": {
-        "go": "Перейти",
-        "disabledTip": "Зараз немає балів для отримання",
-        "claim": "Отримати",
-        "earnTip": "Ліміт раз на день. Будь ласка, заробляйте бали після 00:00 UTC+0",
-        "claimed": "Отримано"
-      },
-      "claimModal": {
-        "walletBalance": "Баланс гаманця",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "snapshotTime": "Час знімка: {{time}}",
-        "rabbyUser": "Активний користувач Rabby",
-        "MetaMaskSwap": "MetaMask Swap",
-        "referral-code": "Реферальний код",
-        "invalid-code": "недійсний код",
-        "season2": "Сезон 2",
-        "title": "Отримати початкові бали",
-        "activeStats": "Активний статус",
-        "rabbyValuedUserBadge": "Значок поцінованого користувача Rabby",
-        "claim": "Отримати",
-        "addressBalance": "Баланс гаманця",
-        "cantUseOwnCode": "Ви не можете використовувати власний реферальний код.",
-        "placeholder": "Введіть реферальний код для отримання додаткових балів (необов'язково)"
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "cancel": "Скасувати",
-          "verify-address": "Підтвердити адресу",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Підпишіть це текстове повідомлення, щоб підтвердити, що ви є власником цієї адреси",
-          "sign": "Підписати"
-        },
-        "referral-code-available": "Доступний реферальний код",
-        "my-referral-code": "Мій реферальний код",
-        "referral-code-cannot-be-empty": "Реферальний код не може бути порожнім",
-        "confirm": "Підтвердити",
-        "refer-a-new-user-to-get-50-points": "Запросіть нового користувача, щоб отримати 50 балів",
-        "set-my-referral-code": "Встановити мій реферальний код",
-        "referral-code-already-exists": "Реферальний код вже існує",
-        "referral-code-cannot-exceed-15-characters": "Реферальний код не може перевищувати 15 символів",
-        "max-15-characters-use-numbers-and-letters-only": "Максимум 15 символів, використовуйте лише цифри та літери.",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Після встановлення цього коду запрошення його не можна змінити.",
-        "set-my-code": "Встановити мій код"
-      },
-      "top-100": "Топ 100",
-      "title": "Rabby Points",
-      "referral-code-copied": "Реферальний код скопійовано",
-      "earn-points": "Заробляйте бали",
-      "out-of-x-current-total-points": "З {{total}} усього розподілених балів",
-      "share-on": "Поділитися на",
-      "code-set-successfully": "Код запрошення встановлено успішно",
-      "initialPointsClaimEnded": "Ініціальне нарахування балів завершено",
-      "secondRoundEnded": "🎉 Завершився другий раунд Rabby Points",
-      "firstRoundEnded": "🎉 Перше коло Rabby Points завершено"
-    },
     "customTestnet": {
       "CustomTestnetForm": {
         "idRequired": "Введіть ідентифікатор мережі",
@@ -2630,37 +2574,6 @@
       "transactionSpeed": "Швидкість транзакції"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdrop": "Ейрдроп",
-          "arcadeBtn": "Грати зараз",
-          "arcadeDesc": "Грайте в безкоштовні ігри, щоб заробити бали для airdrop Sonic.",
-          "airdropBtn": "Заробляйте бали",
-          "migrateBtn": "Незабаром",
-          "migrateTitle": "Міграція",
-          "earnTitle": "Заробіток",
-          "socialsTitle": "Долучайтеся",
-          "migrateDesc": "→",
-          "airdropDesc": "Приблизно 200 мільйонів S для користувачів на Opera та Sonic.",
-          "earnBtn": "Скоро з'явиться",
-          "earnDesc": "Ставте ваші $S"
-        },
-        "points": {
-          "shareOn": "Поділитися на",
-          "sonicPoints": "Sonic Points",
-          "getReferralCode": "Отримати реферальний код",
-          "referralCode": "Реферальний код",
-          "sonicArcadeBtn": "Почати гру",
-          "retry": "Повторити",
-          "sonicArcade": "Sonic Arcade",
-          "today": "Сьогодні",
-          "pointsDashboardBtn": "Почніть заробляти очки",
-          "errorTitle": "Неможливо завантажити бали",
-          "pointsDashboard": "Панель управління Points",
-          "errorDesc": "Сталася помилка при завантаженні ваших балів. Будь ласка, спробуйте ще раз.",
-          "referralCodeCopied": "Реферальний код скопійовано"
-        }
-      },
       "dbk": {
         "home": {
           "bridgeBtn": "Переказати",
@@ -2943,14 +2856,10 @@
         "backupSeedPhrase": "Створити резервну копію сид-фрази"
       },
       "readyToUse": {
-        "pin": "Закріпіть Rabby Wallet",
         "guides": {
           "step2": "Закріпити Rabby Wallet",
           "step1": "Натисніть на піктограму розширення браузера"
-        },
-        "title": "Ваш Rabby Wallet готовий!",
-        "extensionTip": "Натисніть <1/> а потім <3/>",
-        "desc": "Знайдіть Rabby Wallet і закріпіть його"
+        }
       },
       "importSeedPhrase": {
         "title": "Імпорт сид-фрази",

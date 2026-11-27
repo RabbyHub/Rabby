@@ -1,5 +1,4 @@
 import { DbkChainEntry } from './dbk-chain/Entry';
-import { SonicEntry } from './sonic/Entry';
 
 export const EcoChainMap = {
   [20240603]: {
@@ -9,12 +8,6 @@ export const EcoChainMap = {
     navBarClassName: 'bg-r-neutral-bg1',
     entry: DbkChainEntry,
   },
-  // [64165]: {
-  //   name: 'Sonic Testnet',
-  //   logo: 'https://soniclabs.com/images/chains/sonic-testnet.svg',
-  //   // navBarClassName: 'bg-r-sonic-background',
-  //   entry: SonicEntry,
-  // },
 };
 
 export const EcoChains = Object.keys(EcoChainMap).map((key) => {

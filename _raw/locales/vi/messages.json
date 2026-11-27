@@ -1442,7 +1442,6 @@
           "title": "Cập nhật có sẵn"
         },
         "features": {
-          "rabbyPoints": "Rabby Points",
           "searchDapps": "Tìm kiếm Dapps",
           "connectedDapp": "Dapps đã kết nối",
           "lockWallet": "Khóa Ví",
@@ -2518,61 +2517,6 @@
       "searchPlaceholder": "Tìm kiếm tên Dapp",
       "searchButton": "Tìm kiếm"
     },
-    "rabbyPoints": {
-      "claimItem": {
-        "go": "Đi",
-        "claim": "Nhận",
-        "disabledTip": "Hiện không có điểm nào để nhận.",
-        "claimed": "Đã nhận",
-        "earnTip": "Giới hạn một lần trong ngày. Vui lòng kiếm điểm sau 00:00 UTC+0"
-      },
-      "claimModal": {
-        "MetaMaskSwap": "MetaMask Swap",
-        "walletBalance": "Số dư ví",
-        "title": "Nhận Điểm Khởi Đầu",
-        "snapshotTime": "Thời gian chụp ảnh: {{time}}",
-        "rabbyUser": "Rabby Người Dùng Đang Kích Hoạt",
-        "addressBalance": "Số dư ví",
-        "placeholder": "Nhập mã giới thiệu để nhận thêm điểm (tùy chọn)",
-        "referral-code": "Mã Giới Thiệu",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "rabbyValuedUserBadge": "Huy hiệu Người dùng Rabby danh giá",
-        "claim": "Nhận",
-        "activeStats": "Trạng thái hoạt động",
-        "season2": "Mùa 2",
-        "cantUseOwnCode": "Bạn không thể sử dụng mã giới thiệu của chính mình.",
-        "invalid-code": "mã không hợp lệ"
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "cancel": "Hủy bỏ",
-          "sign": "Ký",
-          "verify-address": "Xác minh địa chỉ",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Vui lòng ký thông điệp văn bản này để xác nhận rằng bạn là chủ sở hữu của địa chỉ này."
-        },
-        "my-referral-code": "Mã giới thiệu của tôi",
-        "referral-code-available": "Mã giới thiệu có sẵn",
-        "referral-code-already-exists": "Mã giới thiệu đã tồn tại",
-        "referral-code-cannot-be-empty": "Mã giới thiệu không được để trống",
-        "refer-a-new-user-to-get-50-points": "Giới thiệu một người dùng mới để nhận 50 điểm",
-        "referral-code-cannot-exceed-15-characters": "Mã giới thiệu không được vượt quá 15 ký tự.",
-        "confirm": "Xác nhận",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Khi đã thiết lập, mã giới thiệu này sẽ là vĩnh viễn và không thể thay đổi.",
-        "set-my-code": "Đặt mã của tôi",
-        "set-my-referral-code": "Đặt mã giới thiệu của tôi",
-        "max-15-characters-use-numbers-and-letters-only": "Tối đa 15 ký tự, chỉ sử dụng số và chữ cái."
-      },
-      "top-100": "Top 100",
-      "referral-code-copied": "Mã giới thiệu đã được sao chép",
-      "title": "Rabby Points",
-      "earn-points": "Kiếm Điểm",
-      "out-of-x-current-total-points": "Ngoài {{total}} Điểm Tổng Phân Phối",
-      "share-on": "Chia sẻ trên",
-      "initialPointsClaimEnded": "Đợt nhận Điểm ban đầu đã kết thúc",
-      "secondRoundEnded": "🎉 Vòng thứ hai của Rabby Points đã kết thúc",
-      "firstRoundEnded": "🎉 Vòng đầu tiên của Rabby Points đã kết thúc",
-      "code-set-successfully": "Mã giới thiệu đã được thiết lập thành công"
-    },
     "customTestnet": {
       "CustomTestnetForm": {
         "name": "Tên mạng",
@@ -2615,37 +2559,6 @@
       "transactionSpeed": "Tốc độ Giao dịch"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "migrateTitle": "Di chuyển",
-          "earnTitle": "Kiếm tiền",
-          "earnBtn": "Sắp ra mắt",
-          "airdropBtn": "Kiếm điểm",
-          "airdrop": "Airdrop",
-          "migrateDesc": "→",
-          "socialsTitle": "Tham gia",
-          "airdropDesc": "~200 triệu S cho người dùng trên Opera và Sonic.",
-          "migrateBtn": "Sắp ra mắt",
-          "earnDesc": "Stake $S của bạn",
-          "arcadeDesc": "Chơi các trò chơi miễn phí để kiếm điểm cho airdrop S.",
-          "arcadeBtn": "Chơi ngay"
-        },
-        "points": {
-          "sonicPoints": "Sonic Points",
-          "getReferralCode": "Nhận mã giới thiệu",
-          "retry": "Thử lại",
-          "sonicArcadeBtn": "Bắt đầu chơi",
-          "pointsDashboard": "Bảng Điều Khiển Điểm",
-          "today": "Hôm nay",
-          "pointsDashboardBtn": "Bắt đầu kiếm điểm",
-          "referralCodeCopied": "Mã giới thiệu đã được sao chép",
-          "shareOn": "Chia sẻ trên",
-          "errorTitle": "Không thể tải điểm",
-          "sonicArcade": "Sonic Arcade",
-          "referralCode": "Mã giới thiệu",
-          "errorDesc": "Đã có lỗi khi tải điểm của bạn. Vui lòng thử lại."
-        }
-      },
       "dbk": {
         "home": {
           "bridge": "Cầu đến DBK Chain",
@@ -2928,14 +2841,10 @@
         "backupSeedPhrase": "Sao lưu cụm từ khôi phục"
       },
       "readyToUse": {
-        "pin": "Ghim Rabby Wallet",
         "guides": {
           "step2": "Ghim ví Rabby Wallet",
           "step1": "Nhấn vào biểu tượng mở rộng trình duyệt"
-        },
-        "title": "Ví của bạn trên Rabby đã sẵn sàng!",
-        "extensionTip": "Nhấp vào <1/> rồi <3/>",
-        "desc": "Tìm Rabby Wallet và ghim nó"
+        }
       },
       "importSeedPhrase": {
         "title": "Nhập cụm từ khôi phục",

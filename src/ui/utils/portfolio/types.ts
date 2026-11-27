@@ -3,15 +3,6 @@ import {
   PortfolioItemToken,
   WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
-// curve
-export type ChartLine = {
-  value: number;
-  netWorth: string;
-  timestamp: number;
-  change?: string;
-  isUp: boolean;
-  changePecentage?: string;
-};
 
 // portfolios
 export interface AbstractProject {

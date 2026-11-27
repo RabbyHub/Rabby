@@ -233,16 +233,6 @@ export function findAccountByPriority(accounts: Account[]) {
   return accounts.sort(sortAccountByPriority)[0];
 }
 
-export function sortAccountByPriorityFallbackToBalanceDesc(
-  a: Account,
-  b: Account
-) {
-  const check = sortAccountByPriority(a, b);
-
-  if (check === 0) return (b.balance || 0) - (a.balance || 0);
-  return check;
-}
-
 export const isFullVersionAccountType = (account: Account) => {
   return ![
     KEYRING_TYPE.WatchAddressKeyring,

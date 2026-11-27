@@ -11,7 +11,8 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { useAsyncFn, usePrevious } from 'react-use';
+import { useAsyncFn } from 'react-use';
+import { usePreviousRender } from '@/ui/hooks/usePreviousRender';
 import { Form, message, Modal } from 'antd';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn } from 'ahooks';
@@ -2032,7 +2033,7 @@ const SendToken = () => {
     });
   }, [cancelClickedMax, form, handleFormValuesChange, resetAmountInputState]);
 
-  const previousAccountAddress = usePrevious(currentAccount?.address);
+  const previousAccountAddress = usePreviousRender(currentAccount?.address);
   useEffect(() => {
     if (
       previousAccountAddress &&
