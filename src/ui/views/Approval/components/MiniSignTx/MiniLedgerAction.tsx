@@ -24,9 +24,8 @@ import eventBus from '@/eventBus';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
 import { Ledger } from '../../../CommonPopup/Ledger';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useDebounceEffect } from 'ahooks';
 import { DrawerProps } from 'antd';
-import { useDebounce } from 'react-use';
 import {
   useDirectSigning,
   useSetDirectSigning,
@@ -132,7 +131,7 @@ export const MiniLedgerAction: React.FC<Props> = ({
   const setDirectSigning = useSetDirectSigning();
   const autoSigned = useRef(false);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (
         !autoSigned.current &&
@@ -145,18 +144,18 @@ export const MiniLedgerAction: React.FC<Props> = ({
         handleSubmit();
       }
     },
-    300,
-    [directSigning, disabledProcess, handleSubmit, isMiniSignTx, directSubmit]
+    [directSigning, disabledProcess, handleSubmit, isMiniSignTx, directSubmit],
+    { wait: 300 }
   );
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (task.status === 'active' && status === 'DISCONNECTED') {
         eventBus.emit(EVENTS.COMMON_HARDWARE.REJECTED, 'DISCONNECTED');
       }
     },
-    300,
-    [task.status, status]
+    [task.status, status],
+    { wait: 300 }
   );
   const { t } = useTranslation();
   const ledgerDisconnected =

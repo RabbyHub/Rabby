@@ -17,7 +17,6 @@ import {
 import { IconImportSuccess } from 'ui/assets';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
-import { useMedia } from 'react-use';
 import { useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
 import { UI_TYPE } from '@/constant/ui';
@@ -70,7 +69,7 @@ const ImportSuccess = ({
   const dispatch = useRabbyDispatch();
   const addressItems = useRef(new Array(state.accounts?.length));
   const { t } = useTranslation();
-  const isWide = useMedia('(min-width: 401px)') && isPopup;
+  const isWide = (UI_TYPE.isTab || UI_TYPE.isDesktop) && isPopup;
   const {
     accounts,
     hasDivider = true,

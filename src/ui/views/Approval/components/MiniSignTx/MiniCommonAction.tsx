@@ -16,7 +16,7 @@ import { ProcessActions } from '../FooterBar/ProcessActions';
 import { Dots } from '../Popup/Dots';
 import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface Props extends ActionGroupProps {
@@ -70,7 +70,7 @@ export const MiniCommonAction: React.FC<Props> = ({
   const directSigning = useDirectSigning();
   const autoSigned = useRef(false);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (
         !autoSigned.current &&
@@ -83,14 +83,14 @@ export const MiniCommonAction: React.FC<Props> = ({
         props.onSubmit();
       }
     },
-    300,
     [
       directSigning,
       props.disabledProcess,
       props.onSubmit,
       props.isMiniSignTx,
       props.directSubmit,
-    ]
+    ],
+    { wait: 300 }
   );
 
   return (

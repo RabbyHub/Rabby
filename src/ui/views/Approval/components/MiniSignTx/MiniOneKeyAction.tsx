@@ -17,9 +17,8 @@ import { BatchSignTxTaskType } from './useBatchSignTxTask';
 import eventBus from '@/eventBus';
 import { Popup } from '@/ui/component';
 import { useTranslation } from 'react-i18next';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useDebounceEffect } from 'ahooks';
 import { DrawerProps } from 'antd';
-import { useDebounce } from 'react-use';
 import {
   useDirectSigning,
   useSetDirectSigning,
@@ -107,7 +106,7 @@ export const MiniOneKeyAction: React.FC<Props> = ({
   const setDirectSigning = useSetDirectSigning();
   const autoSigned = useRef(false);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (
         !autoSigned.current &&
@@ -120,8 +119,8 @@ export const MiniOneKeyAction: React.FC<Props> = ({
         handleSubmit();
       }
     },
-    300,
-    [directSigning, disabledProcess, handleSubmit, isMiniSignTx, directSubmit]
+    [directSigning, disabledProcess, handleSubmit, isMiniSignTx, directSubmit],
+    { wait: 300 }
   );
 
   const { t } = useTranslation();

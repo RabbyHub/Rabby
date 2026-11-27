@@ -10,12 +10,18 @@ import {
 import useAsync from 'react-use/lib/useAsync';
 import type { RetryUpdateType } from '@/background/utils/errorTxRetry';
 import { useApproval, useWallet } from '../utils';
-import { createGlobalState } from 'react-use';
+import { create } from 'zustand';
 
-export const useDirectSigningGlobal = createGlobalState(false);
+const useDirectSigningStore = create<{ directSigning: boolean }>()(() => ({
+  directSigning: false,
+}));
 
-export const useDirectSigning = () => useDirectSigningGlobal()[0];
-export const useSetDirectSigning = () => useDirectSigningGlobal()[1];
+const setDirectSigningState = (directSigning: boolean) =>
+  useDirectSigningStore.setState({ directSigning });
+
+export const useDirectSigning = () =>
+  useDirectSigningStore((state) => state.directSigning);
+export const useSetDirectSigning = () => setDirectSigningState;
 
 export const DirectSubmitProvider = ({
   children,

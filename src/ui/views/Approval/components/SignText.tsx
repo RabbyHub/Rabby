@@ -8,7 +8,7 @@ import {
   Level,
   defaultRules,
 } from '@rabby-wallet/rabby-security-engine/dist/rules';
-import { useSize, useDebounceFn, useRequest } from 'ahooks';
+import { useSize, useDebounceFn, useRequest, useScroll } from 'ahooks';
 import { Button, Drawer, message, Modal, Skeleton } from 'antd';
 import { Account } from 'background/service/preference';
 import {
@@ -20,7 +20,7 @@ import {
 } from 'consts';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAsync, useScroll, useThrottleFn } from 'react-use';
+import { useAsync } from 'react-use';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   getTimeSpan,
@@ -418,13 +418,13 @@ const SignText = ({
   }, [loading, signText, textActionData, params, from]);
 
   useEffect(() => {
-    if (scrollRef.current && scrollInfo && scrollRefSize) {
+    if (scrollRef.current && scrollRefSize) {
       const avaliableHeight =
         scrollRef.current.scrollHeight - scrollRefSize.height;
       if (avaliableHeight <= 0) {
         setFooterShowShadow(false);
       } else {
-        setFooterShowShadow(avaliableHeight - 20 > scrollInfo.y);
+        setFooterShowShadow(avaliableHeight - 20 > (scrollInfo?.top ?? 0));
       }
     }
   }, [scrollInfo, scrollRefSize]);
