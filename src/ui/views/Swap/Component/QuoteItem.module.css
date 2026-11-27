@@ -1,0 +1,125 @@
+.itemWrapper {
+  --quote--border-width: 1px;
+  position: relative;
+  height: 60px;
+  font-size: 13px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  background: var(--r-neutral-card-1, #fff);
+
+  border-radius: 6px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  border: var(--quote--border-width) solid transparent;
+  cursor: pointer;
+
+  &:hover:not(:global(.disabled), :global(.inSufficient), :global(.active)) {
+    &::after {
+      position: absolute;
+      content: '';
+      inset: calc(0px - var(--quote--border-width));
+      border: var(--quote--border-width) solid var(--r-blue-default, #7084ff);
+      background: transparent;
+      border-radius: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+  }
+
+  &:global(.active):not(:global(.disabled), :global(.inSufficient)) {
+    background: var(--r-blue-light-1, #eef1ff);
+    &::after {
+      position: absolute;
+      content: '';
+      inset: calc(0px - var(--quote--border-width));
+      border: var(--quote--border-width) solid var(--r-blue-default, #7084ff);
+      background: transparent;
+      border-radius: 6px;
+      z-index: 2;
+      pointer-events: none;
+    }
+  }
+
+  &:global(.disabled) {
+    border-color: transparent;
+    box-shadow: none;
+    background-color: transparent;
+    cursor: not-allowed;
+  }
+
+  &:not(:global(.cex)):global(.inSufficient),
+  &:not(:global(.cex)):global(.disabled) {
+    border: var(--quote--border-width) solid var(--r-neutral-line, #d3d8e0);
+    box-shadow: none;
+  }
+
+  &:global(.dex) {
+    justify-content: space-between;
+    height: 88px;
+    align-items: flex-start;
+    padding-top: 20px;
+    padding-bottom: 16px;
+
+    &:global(.error) {
+      height: auto;
+      padding: 14px 16px;
+    }
+  }
+
+  &:global(.combined) {
+    height: 76px;
+    border-radius: 8px;
+    border: none;
+    box-shadow: none;
+
+    &::after {
+      border-radius: 8px !important;
+    }
+
+    &:hover:not(:global(.disabled), :global(.inSufficient), :global(.active))::after {
+      inset: calc(0px - var(--quote--border-width)) 0;
+    }
+
+    & :global(.percent) {
+      font-size: 12px;
+    }
+
+    & :global(.quote-tag .percent) {
+      color: inherit !important;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    & :global(.receiveNum) {
+      max-width: 110px;
+      font-size: 13px;
+    }
+  }
+
+  &:global(.combined.active) {
+    height: 78px;
+    border: var(--quote--border-width) solid transparent;
+  }
+
+  & :global(.receiveNum) {
+    font-size: 16px;
+    max-width: 130px;
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 500;
+    color: var(--r-neutral-title-1, #192945);
+  }
+
+  & :global(.percent) {
+    font-weight: 500;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--r-blue-default, #7084ff);
+    &:global(.red) {
+      color: var(--r-red-default, #e34935);
+    }
+  }
+}

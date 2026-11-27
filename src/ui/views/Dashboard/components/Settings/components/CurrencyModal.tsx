@@ -6,7 +6,8 @@ import IconCheck from 'ui/assets/check-2.svg';
 import IconSearch from 'ui/assets/search.svg';
 import { CurrencyItem } from '@/background/service/openapi';
 import { useCurrency } from '@/ui/hooks/useCurrency';
-import styled from 'styled-components';
+import clsx from 'clsx';
+import styles from './CurrencyModal.module.css';
 
 export const CurrencyModal = ({
   visible,
@@ -86,8 +87,18 @@ export const CurrencyModal = ({
   }, [visible, syncCurrencyList]);
 
   return (
-    <Wrapper $show={isVisible} $visible={visible}>
-      <PageHeader forceShowBack onBack={handleCancel}>
+    <div
+      className={clsx(
+        styles.wrapper,
+        visible && styles.visible,
+        isVisible && styles.show
+      )}
+    >
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.settings.currency')}
       </PageHeader>
       <Input
@@ -125,107 +136,6 @@ export const CurrencyModal = ({
           <div className="currency-empty">{t('page.dashboard.noData')}</div>
         )}
       </div>
-    </Wrapper>
+    </div>
   );
 };
-
-const Wrapper = styled.div<{
-  $show: boolean;
-  $visible: boolean;
-}>`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  display: ${({ $visible }) => ($visible ? 'block' : 'none')};
-  background-color: var(--r-neutral-bg-1, #575b70);
-  transform: ${({ $show }) => ($show ? 'translateX(0)' : 'translateX(100%)')};
-  transition: transform 0.3s;
-  padding: 20px 20px 0 20px;
-  border-radius: 16px 16px 0 0;
-
-  .page-header {
-    padding-top: 0;
-    margin-bottom: 28px;
-  }
-
-  .currency-search {
-    padding: 14px 12px;
-    margin-bottom: 12px;
-    border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.12));
-    border-radius: 8px;
-    background-color: var(--r-neutral-card-1) !important;
-    font-size: 13px;
-    line-height: 13px;
-    &:active,
-    &:focus {
-      border: 1px solid var(--r-blue-default, #4c65ff) !important;
-    }
-
-    .ant-input {
-      color: var(--r-neutral-title-1, #f7fafc);
-      border-radius: 0;
-    }
-  }
-
-  .auto-lock-option-list {
-    overflow: auto;
-    max-height: calc(100% - 106px);
-  }
-
-  .auto-lock-option-list-item {
-    display: flex;
-    height: 52px;
-    padding: 17px 15px;
-    border-radius: 6px;
-    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
-    align-items: center;
-    margin-bottom: 12px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 16px;
-    border: 1px solid transparent;
-    cursor: pointer;
-
-    &:hover {
-      background-color: rgba(134, 151, 255, 0.2);
-      border: 1px solid var(--r-blue-default, #7084ff);
-    }
-  }
-
-  .currency-icon-wrapper {
-    width: 24px;
-    height: 24px;
-    margin-right: 8px;
-    border-radius: 9999px;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-  }
-
-  .currency-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center;
-    display: block;
-  }
-
-  .auto-lock-option-list-item-icon {
-    margin-left: auto;
-    width: 16px;
-    height: 16px;
-  }
-
-  .currency-empty {
-    text-align: center;
-    color: var(--r-neutral-foot, #6a7587);
-    font-size: 12px;
-    line-height: 16px;
-    padding: 16px 0;
-  }
-`;

@@ -17,49 +17,13 @@ import { isSameAccount } from '@/utils/account';
 import { flatten } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
-import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { AccountItem } from './AccountItem';
 import { isSameAddress } from '@/ui/utils';
-
-const Warper = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .header.header {
-    padding-bottom: 16px;
-    background: var(--r-neutral-bg2, #f2f4f7);
-    flex-shrink: 0;
-    .ant-input-affix-wrapper {
-      border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-      background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
-      border-radius: 6px;
-      height: 44px;
-      border-width: 1px;
-
-      input::placeholder {
-        color: var(--r-neutral-foot, #6a7587);
-      }
-    }
-
-    .ant-input-affix-wrapper:focus,
-    .ant-input-affix-wrapper-focused {
-      border-color: var(--r-blue-default);
-    }
-  }
-
-  .virtuoso-list {
-    height: 100%;
-    flex: 1;
-    &::-webkit-scrollbar {
-      display: none !important;
-    }
-  }
-`;
+import styles from './AccountSelectorModal.module.css';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -222,7 +186,7 @@ export const AccountSelectorModal = ({
           paddingBottom: 0,
         }}
       >
-        <Warper>
+        <div className={styles.wrapper}>
           <header className="header">
             <Input
               prefix={<img src={IconSearch} />}
@@ -329,7 +293,7 @@ export const AccountSelectorModal = ({
             }}
             increaseViewportBy={100}
           ></Virtuoso>
-        </Warper>
+        </div>
       </Drawer>
     </>
   );

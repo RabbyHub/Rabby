@@ -24,13 +24,7 @@ import { useTranslation } from 'react-i18next';
 import { query2obj } from '@/ui/utils/url';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
-import styled from 'styled-components';
-
-const SpinWrapper = styled.div`
-  .ant-spin-container {
-    height: 100%;
-  }
-`;
+import styles from './index.module.css';
 
 const buildRemoveAddressPayload = (
   item: IDisplayedAccountWithBalance,
@@ -262,7 +256,7 @@ const ManageAddress = () => {
 
   return (
     <div className="page-address-management px-0 pb-0 bg-r-neutral-bg-2 overflow-hidden">
-      <SpinWrapper className="h-full">
+      <div className={`${styles.spinWrapper} h-full`}>
         <Spin
           spinning={batchDeleting}
           className="h-full"
@@ -330,7 +324,7 @@ const ManageAddress = () => {
                         />
                       )}
                       <RcIconDelete
-                        className="cursor-pointer text-r-neutral-body hover:text-red-forbidden"
+                        className="cursor-pointer text-r-neutral-body hover:text-r-red-default"
                         onClick={() => {
                           if (
                             TypedWalletObj?.[activeIndex]?.type ===
@@ -422,7 +416,7 @@ const ManageAddress = () => {
             />
           </div>
         </Spin>
-      </SpinWrapper>
+      </div>
     </div>
   );
 };

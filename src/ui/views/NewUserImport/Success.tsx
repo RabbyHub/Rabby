@@ -30,21 +30,9 @@ import {
 } from './AccountItem';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@/types/chain';
-import styled from 'styled-components';
 import browser from 'webextension-polyfill';
 import { PinGuideTips } from './PinGuideTips';
-
-const ScrollBarDiv = styled.div`
-  overflow-y: scroll;
-  &::-webkit-scrollbar {
-    background-color: transparent;
-    width: 4px;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 90px;
-    background: var(--r-neutral-foot, #6a7587);
-  }
-`;
+import styles from './Success.module.css';
 
 const AccountItem = ({
   account,
@@ -278,7 +266,12 @@ export const ImportOrCreatedSuccess = () => {
           {t('page.newUserImport.successful.desc')}
         </div>
 
-        <ScrollBarDiv className="flex flex-col gap-20 pt-24 overflow-y-scroll max-h-[324px] mb-20">
+        <div
+          className={clsx(
+            styles.scrollBarDiv,
+            'flex flex-col gap-20 pt-24 overflow-y-scroll max-h-[324px] mb-20'
+          )}
+        >
           {accounts?.map((account, index) => {
             if (!account?.address) {
               return null;
@@ -292,7 +285,7 @@ export const ImportOrCreatedSuccess = () => {
             );
           })}
           <GnosisChainList chainList={chainList} className="mt-[-4px]" />
-        </ScrollBarDiv>
+        </div>
 
         <Button
           onClick={getStarted}
@@ -315,9 +308,9 @@ export const ImportOrCreatedSuccess = () => {
               className={clsx(
                 'mt-12',
                 'h-[52px] shadow-none rounded-[8px]',
-                'text-blue-light',
-                'border-blue-light',
-                'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                'text-r-blue-default',
+                'border-r-blue-default',
+                'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
                 'before:content-none'
               )}
             >

@@ -24,7 +24,7 @@ import {
 } from '../hooks';
 import { DEX_ENUM, DEX_SPENDER_WHITELIST } from '@rabby-wallet/rabby-swap';
 import { useRbiSource } from '@/ui/utils/ga-event';
-import { useCss, useDebounce } from 'react-use';
+import { useDebounce } from 'react-use';
 import { DEX_WITH_WRAP } from '@/constant';
 import ChainSelectorInForm, {
   ChainSelectorRef,
@@ -72,6 +72,7 @@ import {
   isMEVProtectionSupported,
   useSwapMainRenderState,
 } from '../hooks/render';
+import twoStepApproveStyles from './twoStepApproveModal.module.css';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -1096,28 +1097,6 @@ export const Main = () => {
     }
   }, [lowCreditVisible, receiveToken?.id, receiveToken?.low_credit_score]);
 
-  const twoStepApproveCn = useCss({
-    '& .ant-modal-content': {
-      background: '#fff',
-    },
-    '& .ant-modal-body': {
-      padding: '12px 8px 32px 16px',
-    },
-    '& .ant-modal-confirm-content': {
-      padding: '4px 0 0 0',
-    },
-    '& .ant-modal-confirm-btns': {
-      justifyContent: 'center',
-      '.ant-btn-primary': {
-        width: '260px',
-        height: '40px',
-      },
-      'button:first-child': {
-        display: 'none',
-      },
-    },
-  });
-
   const [sourceName, sourceLogo] = useMemo(() => {
     if (activeProvider?.name) {
       if (isWrapToken) {
@@ -1487,7 +1466,7 @@ export const Main = () => {
                             width: 360,
                             closable: true,
                             centered: true,
-                            className: twoStepApproveCn,
+                            className: twoStepApproveStyles.modal,
                             title: null,
                             content: (
                               <>

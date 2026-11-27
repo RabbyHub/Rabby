@@ -1,0 +1,124 @@
+.dots {
+  & span {
+    display: inline-block;
+    color: var(--r-neutral-foot, #6a7587);
+  }
+
+  & :global(.dot1) {
+    animation: SwapLoadingJump 1.5s infinite -0.2s;
+  }
+
+  & :global(.dot2) {
+    animation: SwapLoadingJump 1.5s infinite;
+  }
+
+  & :global(.dot3) {
+    animation: SwapLoadingJump 1.5s infinite 0.2s;
+  }
+}
+
+@keyframes SwapLoadingJump {
+  30% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+
+  70% {
+    transform: translateY(2px);
+  }
+}
+
+.loading {
+  position: relative;
+  width: 272.429px;
+  height: 136.214px;
+  margin: 0 auto;
+
+  & :global(.item) {
+    position: absolute;
+    left: 50%;
+    top: 30px;
+    animation: 3s infinite;
+    width: 300px;
+    height: 100px;
+  }
+  & :global(.item-1) {
+    animation-name: loopingLoad1;
+  }
+  & :global(.item-2) {
+    animation-name: loopingLoad2;
+  }
+  & :global(.item-3) {
+    animation-name: loopingLoad3;
+  }
+}
+
+@keyframes loopingLoad1 {
+  0%,
+  14.28%,
+  85.71%,
+  100% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    z-index: 2;
+  }
+  28.57%,
+  42.85% {
+    transform: translateX(-50%) translateY(-32px) scale(0.741);
+    opacity: 0.5;
+    z-index: 1;
+  }
+  57.14%,
+  71.42% {
+    transform: translateX(-50%) translateY(30px) scale(0.741);
+    opacity: 0.5;
+    z-index: 1;
+  }
+}
+@keyframes loopingLoad2 {
+  0%,
+  14.28%,
+  85.71%,
+  100% {
+    transform: translateX(-50%) translateY(-32px) scale(0.741);
+    opacity: 0.5;
+    z-index: 1;
+  }
+  28.57%,
+  42.85% {
+    transform: translateX(-50%) translateY(30px) scale(0.741);
+    opacity: 0.5;
+    z-index: 1;
+  }
+  57.14%,
+  71.42% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    z-index: 2;
+  }
+}
+
+@keyframes loopingLoad3 {
+  0%,
+  14.28%,
+  85.71%,
+  100% {
+    transform: translateX(-50%) translateY(30px) scale(0.74);
+    opacity: 0.5;
+    z-index: 1;
+  }
+  28.57%,
+  42.85% {
+    transform: translateX(-50%) translateY(0) scale(1);
+    opacity: 1;
+    z-index: 2;
+  }
+  57.14%,
+  71.42% {
+    transform: translateX(-50%) translateY(-32px) scale(0.74);
+    opacity: 0.5;
+    z-index: 1;
+  }
+}

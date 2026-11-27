@@ -9,6 +9,8 @@ import { isValidAddress } from '@ethereumjs/util';
 import { useEnsInputResolver } from '@/ui/hooks/useEnsInputResolver';
 import { resolveEnsAddressByName } from '@/ui/utils/ens';
 
+const styleModuleMock = require('../styleModuleMock');
+
 jest.mock('@/ui/utils/ens', () => ({
   resolveEnsAddressByName: jest.fn(),
 }));
@@ -83,13 +85,7 @@ function loadEnterAddress(): React.ComponentType<any> {
     },
     '@ethereumjs/util': { isValidAddress },
     lodash: { flatten: (values: unknown[][]) => values.flat() },
-    'styled-components': {
-      __esModule: true,
-      default: {
-        div: () => ({ children, onClick }: any) =>
-          React.createElement('div', { onClick }, children),
-      },
-    },
+    './EnterAddress.module.css': styleModuleMock,
     clsx: { __esModule: true, default: () => '' },
     'ui/utils': {
       useWallet: () => wallet,

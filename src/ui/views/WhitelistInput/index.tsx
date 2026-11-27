@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { Button, Input, Switch, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { isValidAddress } from '@ethereumjs/util';
 
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
@@ -32,44 +31,12 @@ import { useExchangeStore } from '@/ui/state/exchange';
 import { getNormalizedAddressInputAfterPaste } from '@/ui/utils/addressInput';
 
 import './styles.less';
+import styles from './index.module.css';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
 const getContainer =
   isTab || isDesktop ? '.js-rabby-popup-container' : undefined;
-
-const SectionHeader = styled.div`
-  font-size: 17px;
-  font-weight: 500;
-  color: var(--r-neutral-title1);
-`;
-
-const StyledInputWrapper = styled.div`
-  border-radius: 12px;
-  overflow: hidden;
-  .ant-input {
-    font-size: 16px !important;
-    background: var(--r-neutral-card1, #ffffff) !important;
-    &:hover,
-    &:focus {
-      border-color: var(--r-blue-default) !important;
-    }
-  }
-  .ant-input-clear-icon {
-    top: unset !important;
-    bottom: 8px !important;
-    svg {
-      width: 20px;
-      height: 20px;
-    }
-  }
-`;
-
-const AliasInputWrapper = styled.div`
-  .ant-input {
-    font-size: 15px !important;
-  }
-`;
 
 const WhitelistInput = () => {
   const { t } = useTranslation();
@@ -336,7 +303,8 @@ const WhitelistInput = () => {
       >
         <PageHeader
           onBack={handleClickBack}
-          contentClassName="thin-header"
+          // Same header as Send Token: this page also sits in .send-token.
+          contentClassName="thin-header mb-0 font-black text-rb-neutral-title-1"
           forceShowBack
           canBack
         >
@@ -345,7 +313,9 @@ const WhitelistInput = () => {
         <main className="flex-1 flex flex-col gap-[20px] mt-[20px]">
           <div className="flex flex-col gap-[8px]">
             <div className="flex justify-between items-center">
-              <SectionHeader>{t('page.whitelist.address')}</SectionHeader>
+              <div className="text-[17px] font-medium text-r-neutral-title1">
+                {t('page.whitelist.address')}
+              </div>
               <div
                 className="text-r-neutral-body cursor-pointer"
                 onClick={() => setShowAddressSelector(true)}
@@ -353,7 +323,7 @@ const WhitelistInput = () => {
                 <RcIconContactCC width={20} height={20} />
               </div>
             </div>
-            <StyledInputWrapper className="relative">
+            <div className={clsx(styles.inputWrapper, 'relative')}>
               <Input.TextArea
                 maxLength={44}
                 placeholder={t('page.whitelist.enterAddress')}
@@ -381,7 +351,7 @@ const WhitelistInput = () => {
                   )}
                 />
               </div>
-            </StyledInputWrapper>
+            </div>
             {!isValidAddr && (
               <div className="text-r-red-default text-[13px] font-medium flex gap-[4px] items-center">
                 <div className="text-r-red-default">
@@ -392,8 +362,15 @@ const WhitelistInput = () => {
             )}
           </div>
           <div className="flex flex-col gap-[8px]">
-            <SectionHeader>{t('page.whitelist.name')}</SectionHeader>
-            <AliasInputWrapper className="relative rounded-[12px] overflow-hidden">
+            <div className="text-[17px] font-medium text-r-neutral-title1">
+              {t('page.whitelist.name')}
+            </div>
+            <div
+              className={clsx(
+                styles.aliasInputWrapper,
+                'relative rounded-[12px] overflow-hidden'
+              )}
+            >
               <Input
                 placeholder={t('page.whitelist.nameYourAddress')}
                 allowClear={false}
@@ -417,13 +394,13 @@ const WhitelistInput = () => {
                   )}
                 />
               </div>
-            </AliasInputWrapper>
+            </div>
           </div>
           <div className="flex flex-col gap-[10px]">
             <div className="flex justify-between items-center">
-              <SectionHeader>
+              <div className="text-[17px] font-medium text-r-neutral-title1">
                 {t('page.whitelist.exchangeAddress')}
-              </SectionHeader>
+              </div>
               <Switch
                 checked={isCex}
                 onChange={(v) => {

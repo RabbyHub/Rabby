@@ -1,0 +1,18 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.wrapper :global(.logo) {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+}
+
+.wrapper :global(.text) {
+  color: var(--r-neutral-title-1, #192945);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

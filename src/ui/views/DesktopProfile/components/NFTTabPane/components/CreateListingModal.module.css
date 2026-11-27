@@ -1,0 +1,89 @@
+.container table th,
+.container table td {
+  padding: 12px 6px;
+}
+
+.container table th:first-child,
+.container table td:first-child {
+  padding-left: 0;
+}
+
+.container table th:not(:first-child),
+.container table td:not(:first-child) {
+  text-align: right;
+}
+
+.container table th:last-child,
+.container table td:last-child {
+  padding-right: 0;
+}
+
+.container :global(.custom-input) {
+  border-radius: 8px;
+  border: 1px solid var(--r-blue-default, #4c65ff);
+  height: 40px;
+  width: 148px;
+  background-color: transparent;
+}
+
+.container :global(.custom-input.ant-input-affix-wrapper-disabled) {
+  border-color: var(--r-neutral-line);
+}
+
+.container :global(.custom-input .ant-input) {
+  color: var(--r-neutral-title1, #192945);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+  background-color: transparent;
+}
+
+.container :global(.custom-input) input::-webkit-outer-spin-button,
+.container :global(.custom-input) input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.container :global(.custom-input .ant-input-suffix) {
+  color: var(--r-neutral-foot, #6a7587);
+  font-size: 13px;
+  line-height: 16px;
+  font-weight: 500;
+}
+
+.container
+  :global(.custom-select.custom-select.ant-select-disabled
+    .ant-select-selector) {
+  background: transparent;
+}
+
+.container :global(.custom-select.custom-select .ant-select-selector) {
+  border-radius: 8px;
+  border: 1px solid var(--r-neutral-line, #e0e5ec);
+  width: 160px;
+  height: 44px;
+  background-color: transparent;
+}
+
+.container
+  :global(.custom-select.custom-select
+    .ant-select-selector
+    .ant-select-selection-item) {
+  line-height: 44px;
+  color: var(--r-neutral-title1, #192945);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.container :global(.custom-select.custom-select .ant-select-arrow) {
+  width: 16px;
+  height: 16px;
+  top: 50%;
+}
+
+.container
+  :global(.custom-select.custom-select.ant-select-focused
+    .ant-select-selector) {
+  border: 1px solid var(--r-blue-default, #4c65ff);
+  background: var(--r-blue-light1, #edf0ff);
+}

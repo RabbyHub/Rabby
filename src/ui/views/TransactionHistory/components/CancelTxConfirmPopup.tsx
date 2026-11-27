@@ -7,7 +7,6 @@ import { Button, DrawerProps } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconWarning } from 'ui/assets/warning-cc.svg';
 
 interface Props {
@@ -63,9 +62,9 @@ export const CancelTxConfirmPopup = ({
           onClick={onClose}
           className={clsx(
             'w-[172px]',
-            'text-blue-light',
-            'border-blue-light',
-            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'text-r-blue-default',
+            'border-r-blue-default',
+            'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
             'before:content-none'
           )}
         >

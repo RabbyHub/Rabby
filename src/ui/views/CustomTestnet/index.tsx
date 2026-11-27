@@ -8,24 +8,15 @@ import { useMemoizedFn, useMount, useRequest, useSetState } from 'ahooks';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import IconSuccess from 'ui/assets/success.svg';
 import { PageHeader } from 'ui/component';
 import { CustomTestnetItem } from './components/CustomTestnetItem';
 import { EditCustomTestnetModal } from './components/EditTestnetModal';
-import './style.less';
 import { Emtpy } from './components/Empty';
 import { useHistory } from 'react-router-dom';
 import { sortBy } from 'lodash';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import clsx from 'clsx';
-
-const Footer = styled.div`
-  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  padding: 18px 20px;
-  display: flex;
-  justify-content: center;
-`;
 
 export const CustomTestnet = ({
   inModal,
@@ -137,7 +128,7 @@ export const CustomTestnet = ({
   return (
     <div
       className={clsx(
-        'custom-testnet overflow-auto',
+        'relative flex flex-col bg-r-neutral-bg-2 overflow-auto',
         // h-full and h-[600px] together leave the winner to CSS order
         inModal ? 'h-[600px]' : 'h-full'
       )}
@@ -175,7 +166,7 @@ export const CustomTestnet = ({
           ))}
         </div>
       )}
-      <Footer>
+      <div className="border-t-[0.5px] border-t-r-neutral-line py-18 px-20 flex justify-center">
         <Button
           size="large"
           type="primary"
@@ -185,7 +176,7 @@ export const CustomTestnet = ({
         >
           {t('page.customTestnet.add')}
         </Button>
-      </Footer>
+      </div>
       <EditCustomTestnetModal
         visible={state.isShowModal}
         data={state.current}

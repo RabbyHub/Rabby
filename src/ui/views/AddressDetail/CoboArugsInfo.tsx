@@ -5,32 +5,8 @@ import React from 'react';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconInfo from 'ui/assets/address/info.svg';
 import { SvgIconLoading } from 'ui/assets';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-
-const ErrorAlert = styled.div`
-  margin-top: 6px;
-  border-radius: 2px;
-  padding: 7px 8px;
-  font-size: 12px;
-  line-height: 14px;
-  display: flex;
-  position: relative;
-  color: #fff;
-  font-weight: 400;
-  width: fit-content;
-
-  &::before {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 0;
-    border: 5px solid transparent;
-    border-bottom: 8px solid currentColor;
-    top: -10px;
-    left: 10px;
-  }
-`;
+import styles from './CoboArugsInfo.module.css';
 
 export const CoboArgusInfo = ({ address }: { address: string }) => {
   const { t } = useTranslation();
@@ -91,10 +67,12 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
               />
             </div>
             {accountDetail?.isModuleEnabled ? null : (
-              <ErrorAlert className="bg-red-forbidden before:border-b-red-forbidden">
+              <div
+                className={`${styles.errorAlert} bg-r-red-default before:border-b-r-red-default`}
+              >
                 <img src={IconInfo} className="mr-6" />
                 <span>{t('page.addressDetail.coboSafeErrorModule')}</span>
-              </ErrorAlert>
+              </div>
             )}
           </div>
         </div>

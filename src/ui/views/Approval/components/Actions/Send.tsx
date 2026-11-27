@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -19,20 +18,7 @@ import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { ALIAS_ADDRESS } from '@/constant';
 import RabbyChainLogo from '@/ui/assets/rabby-chain-logo.png';
 import { Chain } from '@/types/chain';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './Send.module.css';
 
 const Send = ({
   data,
@@ -62,7 +48,7 @@ const Send = ({
     requireData.name && Object.values(ALIAS_ADDRESS).includes(requireData.name);
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.send.sendToken')}</Row>
@@ -243,7 +229,7 @@ const Send = ({
           />
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

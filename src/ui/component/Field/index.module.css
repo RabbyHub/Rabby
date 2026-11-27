@@ -1,0 +1,5 @@
+/* Stacked fields; kept as a legacy rule so a page's own sibling margin
+   (e.g. `.popup-settings .field + .field`) still decides by specificity. */
+.field + .field {
+  margin-top: 12px;
+}

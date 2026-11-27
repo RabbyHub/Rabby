@@ -5,48 +5,14 @@ import {
 } from '@/constant';
 import { useAccount } from '@/ui/store-hooks';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import NameAndAddress from '../NameAndAddress';
 import { useWalletConnectIcon } from '../WalletConnect/useWalletConnectIcon';
 import React from 'react';
 import ImgCopy from 'ui/assets/icon-copy.svg';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-
-const CurrentAccountWrapper = styled.div`
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.13);
-  display: inline-flex;
-  justify-content: center;
-  gap: 6px;
-  height: 36px;
-  align-items: center;
-  padding: 0 15px;
-
-  .icon {
-    width: 20px;
-    height: 20px;
-  }
-  .name {
-    font-size: 15px;
-    font-weight: 600;
-    color: #fff;
-    max-width: 112px;
-  }
-  .addr {
-    font-size: 13px;
-    color: #fff;
-  }
-  &.success {
-    background: var(--r-neutral-card2, rgba(255, 255, 255, 0.06));
-    .name {
-      color: var(--r-neutral-title1, #f7fafc);
-    }
-    .addr {
-      color: var(--r-neutral-body, #d3d8e0);
-    }
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './index.module.css';
 
 export const CurrentAccount = ({
   className,
@@ -72,14 +38,22 @@ export const CurrentAccount = ({
       KEYRING_ICONS_WHITE[currentAccount.type];
 
   return (
-    <CurrentAccountWrapper className={clsx(noInvert && 'success', className)}>
+    <div
+      className={cn(styles.currentAccount, noInvert && 'success', className)}
+    >
       <img className={clsx('icon')} src={addressTypeIcon} />
       <NameAndAddress
-        nameClass="name"
-        addressClass="addr"
+        nameClass={clsx(
+          'font-semibold max-w-[112px]',
+          noInvert ? 'text-r-neutral-title1' : 'text-white'
+        )}
+        addressClass={clsx(
+          'text-13 leading-[16px]',
+          noInvert ? 'text-r-neutral-body' : 'text-white'
+        )}
         copyIcon={noInvert ? true : ImgCopy}
         address={currentAccount?.address}
       />
-    </CurrentAccountWrapper>
+    </div>
   );
 };

@@ -1,0 +1,4 @@
+.styledInput :global(.ant-input) {
+  background: transparent;
+  color: var(--rb-neutral-title-1, #192945);
+}

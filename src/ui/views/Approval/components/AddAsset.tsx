@@ -21,7 +21,6 @@ import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconExternal } from 'ui/assets/icon-share-currentcolor.svg';
 import IconWarning from 'ui/assets/icon-subtract.svg';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -42,6 +41,7 @@ import { ellipsis } from 'ui/utils/address';
 import { getTokenSymbol } from 'ui/utils/token';
 import { HistoryItem } from 'ui/views/Dashboard/components/TokenDetailPopup/HistoryItem';
 import TokenChainAndContract from '../../Dashboard/components/TokenDetailPopup/TokenInfo';
+import styles from './AddAsset.module.css';
 
 interface AddAssetProps {
   params: {
@@ -63,130 +63,6 @@ interface AddAssetProps {
   account: Account;
   approvalId?: string;
 }
-
-const AddAssetWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  background-color: var(--r-neutral-bg2, #f2f4f7);
-  height: 100vh;
-  overflow: hidden;
-  .header {
-    padding: 20px;
-    text-align: center;
-    background-color: var(--r-blue-default, #7084ff);
-    color: var(--r-neutral-title2, #fff);
-    font-size: 20px;
-    font-weight: 500;
-    margin-bottom: 32px;
-  }
-  .token {
-    padding: 0 20px 20px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    overflow-y: auto;
-    background-color: var(--r-neutral-bg2, #f2f4f7);
-    .token-info {
-      display: flex;
-      align-items: center;
-      margin-bottom: 20px;
-      .icon-token {
-        width: 24px;
-        height: 24px;
-        border-radius: 100%;
-        margin-right: 8px;
-      }
-      .token-symbol {
-        font-size: 20px;
-        font-weight: 500;
-        margin-right: 8px;
-      }
-      .token-address {
-        padding: 5px 8px;
-        background-color: var(--r-neutral-card2);
-        color: var(--r-neutral-foot);
-        font-size: 12px;
-        gap: 6px;
-        display: flex;
-        border-radius: 4px;
-        align-items: center;
-        .icon-chain,
-        .icon-open-external {
-          width: 14px;
-        }
-      }
-    }
-    .token-balance {
-      color: #707280;
-      font-size: 14px;
-      margin-bottom: 20px;
-      line-height: 1;
-      div {
-        .amount {
-          font-size: 24px;
-          font-weight: 700;
-          color: var(--r-neutral-title1);
-          margin-right: 4px;
-        }
-        &:nth-child(1) {
-          margin-bottom: 6px;
-        }
-        &:nth-child(2) {
-          display: flex;
-          align-items: flex-end;
-        }
-      }
-    }
-    .token-history {
-      flex: 1;
-      .empty {
-        width: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        .no-data {
-          width: 100px;
-          height: 100px;
-          margin: 50px auto 0;
-        }
-      }
-    }
-  }
-  .footer {
-    background-color: var(--r-neutral-card1);
-    border-top: 0.5px solid var(--r-neutral-line);
-    .ant-btn-primary[disabled] {
-      width: 100%;
-      height: 100%;
-    }
-  }
-`;
-
-const NoTokenWrapper = styled.div`
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  .content {
-    padding-top: 65px;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
-    text-align: center;
-    color: var(--r-neutral-body, #d3d8e0);
-    .icon-warning {
-      margin: 0 auto 40px;
-    }
-  }
-  .footer {
-    display: flex;
-    justify-content: center;
-    background-color: var(--r-neutral-bg-1, #fff);
-    border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  }
-`;
 
 interface TokenHistoryItem extends TxHistoryItem {
   projectDict: TxHistoryResult['project_dict'];
@@ -424,7 +300,7 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
 
   if (!token && !customTestnetToken && !isLoading && !chainSelectorVisible) {
     return (
-      <NoTokenWrapper>
+      <div className={styles.noTokenWrapper}>
         <div className="content flex-1">
           <img src={IconWarning} className="icon icon-warning" />
           <p>{t('page.addToken.tokenNotFound')}</p>
@@ -439,13 +315,13 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
             OK
           </Button>
         </div>
-      </NoTokenWrapper>
+      </div>
     );
   }
 
   return (
     <Spin spinning={isLoading}>
-      <AddAssetWrapper>
+      <div className={styles.addAssetWrapper}>
         <div className="header">{t('page.addToken.title')}</div>
         <div className="token flex flex-col gap-12">
           {token ? (
@@ -711,7 +587,7 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
           >
             <Button
               type="ghost"
-              className="w-[172px] h-[44px] border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] rounded-[8px]"
+              className="w-[172px] h-[44px] border-r-blue-default text-r-blue-default hover:bg-r-blue-light-1 active:bg-r-neutral-black/10 rounded-[8px]"
               onClick={() => rejectApproval('User rejected the request.')}
             >
               {t('global.cancelButton')}
@@ -742,7 +618,7 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
             showRPCStatus
           />
         </div>
-      </AddAssetWrapper>
+      </div>
     </Spin>
   );
 };

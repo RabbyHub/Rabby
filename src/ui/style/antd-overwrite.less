@@ -147,7 +147,7 @@
 .ant-modal-header,
 .ant-modal-content,
 .ant-modal-content {
-  background: @color-bg;
+  background: var(--r-neutral-bg-2);
 }
 
 .rabby-modal {
@@ -348,7 +348,7 @@
   overflow: hidden;
   .ant-checkbox-inner {
     border: none;
-    background-color: @color-border;
+    background-color: var(--r-neutral-line);
   }
 }
 
@@ -620,14 +620,14 @@ html.dark
 }
 
 .field.field-outlined {
-  background: @color-bg;
+  background: var(--r-neutral-bg-2);
   border-radius: 6px;
   padding: 16px 12px;
 
   font-weight: 400;
   font-size: 14px;
   line-height: 18px;
-  color: @color-title;
+  color: var(--r-neutral-title-1);
   border: 1px solid transparent;
 
   &:hover {
@@ -783,4 +783,84 @@ html[desktop] {
   // .ant-select-dropdown {
   //   background-color: var(--rb-neutral-bg-1 #fff);
   // }
+}
+
+// Drawers: dark-mode surfaces for Popup and every Drawer/Modal that opts in with
+// `is-support-darkmode`, and the shared mask colour. Moved from component/Popup
+// and kept last so they still follow the rules above.
+// temporary solution, after all custom-popup supported darkmode, integrate css below back to the above
+.ant-drawer.is-support-darkmode,
+.custom-popup.is-support-darkmode,
+.custom-popup.chain-selector__modal {
+  .ant-drawer-title {
+    color: var(--r-neutral-title-1, #192945);
+  }
+  .ant-drawer-header {
+    background: transparent;
+  }
+  .ant-drawer-content {
+    background: var(--r-neutral-bg-1, #3d4251);
+  }
+
+  &.is-new {
+    .ant-drawer-content {
+      background: var(--r-neutral-bg2, #f2f4f7);
+    }
+
+    .ant-input {
+      background: var(--r-neutral-card1, #fff) !important;
+
+      &.ant-input-affix-wrapper {
+        border-color: var(
+          --r-neutral-line,
+          rgba(255, 255, 255, 0.1)
+        ) !important;
+        background: var(--r-neutral-card1, #fff) !important;
+      }
+    }
+  }
+
+  &.isConnectView {
+    .ant-drawer-title {
+      color: var(--r-neutral-title-1, #192945);
+    }
+    .ant-drawer-content {
+      background: var(--r-neutral-bg-2, #fff);
+    }
+  }
+
+  .ant-input-darkmode();
+
+  .ant-input {
+    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+
+    &.ant-input-affix-wrapper {
+      border-color: var(--r-neutral-line, rgba(255, 255, 255, 0.1)) !important;
+      background: var(--r-neutral-card-2, #f2f4f7) !important;
+    }
+  }
+
+  .ant-form-item-has-error {
+    .ant-input-affix-wrapper {
+      border-color: var(--r-red-default, #ff4d4f) !important;
+    }
+  }
+
+  .ant-input-affix-wrapper {
+    border-width: 1px;
+    &.ant-input-affix-wrapper-focused {
+      border-width: 1px;
+      border-color: var(--r-blue-default, #7084ff);
+    }
+    .ant-input {
+      background: transparent !important;
+    }
+  }
+}
+
+.ant-drawer,
+.custom-popup {
+  .ant-drawer-mask {
+    background-color: var(--rabby-custom-ant-drawer-mask);
+  }
 }

@@ -1,33 +1,14 @@
 import React, { useCallback } from 'react';
 
 import { Collapse, Modal, ModalProps } from 'antd';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 
 import { ContractApprovalItem, AssetApprovalSpender } from '@/utils/approval';
 import { HandleClickTableRow } from './Table';
 import { appIsDev } from '@/utils/env';
 import { detectClientOS } from '@/ui/utils/os';
 import { EIP7702Delegated } from '../useEIP7702Approvals';
-
-const ModalStyled = styled(Modal)`
-  .ant-modal-header {
-    border-bottom: none;
-    padding-bottom: 8px;
-  }
-
-  pre.json-viewer {
-    padding: 8px 12px;
-    border-radius: 6px;
-  }
-
-  .data-block {
-    padding-top: 12px;
-  }
-
-  .data-block + .data-block {
-    margin-top: 12px;
-  }
-`;
+import styles from './ModalDebugRowItem.module.css';
 
 export function ModalInspectContract({
   approvalContract,
@@ -40,11 +21,14 @@ export function ModalInspectContract({
   if (!approvalContract) return null;
 
   return (
-    <ModalStyled
-      className="modal-debug-row-item"
+    <Modal
       width={600}
       title="Debug Row Item"
       {...modalProps}
+      className={cn(
+        styles.modalStyled,
+        modalProps.className ?? 'modal-debug-row-item'
+      )}
       visible={!!approvalContract}
       bodyStyle={{
         height: '640px',
@@ -64,7 +48,7 @@ export function ModalInspectContract({
           </Collapse.Panel>
         </Collapse>
       </div>
-    </ModalStyled>
+    </Modal>
   );
 }
 
@@ -79,11 +63,14 @@ export function ModalInspectSpender({
   if (!spender) return null;
 
   return (
-    <ModalStyled
-      className="modal-debug-row-item"
+    <Modal
       width={600}
       title="Debug Approval Spender"
       {...modalProps}
+      className={cn(
+        styles.modalStyled,
+        modalProps.className ?? 'modal-debug-row-item'
+      )}
       visible={!!spender}
       bodyStyle={{
         height: '640px',
@@ -139,7 +126,7 @@ export function ModalInspectSpender({
           </Collapse.Panel>
         </Collapse>
       </div>
-    </ModalStyled>
+    </Modal>
   );
 }
 

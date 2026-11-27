@@ -7,21 +7,11 @@ import clsx from 'clsx';
 import { useRabbyDispatch } from '@/ui/store';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { useRequest } from 'ahooks';
-
-const FormItemWrapper = styled.div`
-  .mnemonics-with-error,
-  .ant-form-item-has-error {
-    .ant-form-item-control-input
-      + .ant-form-item-explain.ant-form-item-explain-error {
-      display: none;
-    }
-  }
-`;
+import styles from './ImportSeedPhrase.module.css';
 
 type IFormStates = {
   mnemonics: string;
@@ -183,7 +173,7 @@ const ImportSeedPhraseContent = () => {
           setSlip39ErrorIndex(-1);
         }}
       >
-        <FormItemWrapper className="relative">
+        <div className={clsx(styles.formItemWrapper, 'relative')}>
           <Form.Item
             name="mnemonics"
             className={clsx(
@@ -209,14 +199,14 @@ const ImportSeedPhraseContent = () => {
                 type="password"
                 className={clsx(
                   isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
-                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue text-r-neutral-title-1'
+                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-r-blue-default text-r-neutral-title-1'
                 )}
                 spellCheck={false}
                 placeholder={t('page.newAddress.seedPhrase.passphrase')}
               />
             </Form.Item>
           )}
-        </FormItemWrapper>
+        </div>
 
         <footer className="mt-auto">
           {!formValues.mnemonics?.trim() ? (

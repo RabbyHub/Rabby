@@ -5,8 +5,8 @@ import { useAlias, useWallet } from 'ui/utils';
 import { Account } from '@/background/service/preference';
 import { useBrandIcon } from '@/ui/hooks/useBrandIcon';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { AccountSelectorModal } from './AccountSelectorModal';
-import './style.less';
 
 interface Props {
   value?: Account | null;
@@ -56,9 +56,13 @@ export const AccountSelector = forwardRef<HTMLDivElement, Props>(
     return (
       <>
         <div
-          className={clsx(
-            'global-account-selector',
-            disabled ? 'is-disabled' : '',
+          className={cn(
+            'global-account-selector flex items-center shrink-0 h-[32px] max-w-[156px] py-8 px-6',
+            'border border-solid border-r-neutral-line rounded-[8px] bg-transparent',
+            'text-13 leading-[16px] font-medium text-r-neutral-title1 cursor-pointer select-none',
+            disabled
+              ? 'is-disabled cursor-not-allowed opacity-60'
+              : 'hover:border-r-blue-default hover:bg-r-blue-light1',
             className
           )}
           onClick={handleClickSelector}
@@ -102,7 +106,11 @@ const CurrentAccount = ({ account }: { account: Account }) => {
   return (
     <>
       <div className="mr-6">
-        <img src={addressTypeIcon} className="brand-icon" alt="" />
+        <img
+          src={addressTypeIcon}
+          className="brand-icon w-20 h-20 rounded-[1000px]"
+          alt=""
+        />
       </div>
       <span className="flex-1 whitespace-nowrap overflow-hidden text-ellipsis">
         {alias}

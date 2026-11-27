@@ -12,26 +12,11 @@ import { HorizontalScrollContainer } from '../../DesktopPerps/components/ChartAr
 import { usePerpsGroupedMarketData } from '../hooks/usePerpsGroupedMarketData';
 import { PerpsCategoryId } from '../constants/perpsCategories';
 import { useRabbySelector } from '@/ui/store';
-import styled from 'styled-components';
 import { SvgIconCross } from 'ui/assets';
-
-const SearchInput = styled(Input)`
-  background-color: var(--r-neutral-card1, #fff) !important;
-  &.ant-input-affix-wrapper-focused {
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-  height: 46px !important;
-  border-radius: 6px !important;
-  input::placeholder {
-    color: var(--r-neutral-foot, #6a7587) !important;
-  }
-  &:hover {
-    border-color: var(--r-blue-default, #7084ff) !important;
-  }
-`;
+import styles from './SearchPerpsPopup.module.css';
 
 const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
+  <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
 );
 
 interface SearchPerpsPopupProps {
@@ -207,7 +192,7 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
             : t('page.perps.searchPerpsPopup.searchPerps')}
         </div>
         <div className="px-20 mb-12">
-          <SearchInput
+          <Input
             ref={searchInputRef}
             prefix={
               <SearchSVG className="w-[16px] h-[16px] text-r-neutral-foot" />
@@ -217,7 +202,10 @@ export const SearchPerpsPopup: React.FC<SearchPerpsPopupProps> = ({
                 ? t('page.perps.searchPerpsPopup.searchPosition')
                 : t('page.perps.searchPerpsPopup.searchPlaceholder')
             }
-            className={clsx('text-14 text-r-neutral-title-1 transform-none')}
+            className={clsx(
+              styles.searchInput,
+              'text-14 text-r-neutral-title-1 transform-none'
+            )}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             allowClear

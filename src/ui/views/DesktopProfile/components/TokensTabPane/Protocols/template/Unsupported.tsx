@@ -1,20 +1,8 @@
 import React, { memo } from 'react';
-import styled from 'styled-components';
 
 import { Panel, ProxyTag, Table, Value } from '../components';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useTranslation } from 'react-i18next';
-
-const Description = styled.span`
-  margin-right: 8px;
-`;
-
-const UnsupportedText = styled.span`
-  margin-top: 10px;
-  font-weight: 500;
-  text-align: center;
-  color: var(--r-neutral-foot);
-`;
 
 export default memo((props: { tag: string; data: PortfolioItem[] }) => {
   const { tag } = props;
@@ -35,11 +23,11 @@ export default memo((props: { tag: string; data: PortfolioItem[] }) => {
                   value={
                     <>
                       {p?.detail?.description ? (
-                        <Description>{p?.detail?.description}</Description>
+                        <span className="mr-8">{p?.detail?.description}</span>
                       ) : null}
-                      <UnsupportedText>
+                      <span className="mt-10 font-medium text-center text-r-neutral-foot">
                         {t('page.dashboard.assets.table.unsupportedPoolType')}
-                      </UnsupportedText>
+                      </span>
                     </>
                   }
                 />

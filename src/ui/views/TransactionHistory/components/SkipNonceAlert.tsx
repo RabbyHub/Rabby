@@ -11,41 +11,9 @@ import dayjs from 'dayjs';
 import { flatten, groupBy, maxBy, sortBy } from 'lodash';
 import React, { useMemo, useState } from 'react';
 import { Trans } from 'react-i18next';
-import styled from 'styled-components';
 import IconWarning from 'ui/assets/signature-record/warning.svg';
 import { CancelTxConfirmPopup } from './CancelTxConfirmPopup';
-
-const Warper = styled.div`
-  margin-bottom: 16px;
-
-  .alert-detail {
-    display: flex;
-    align-items: start;
-    padding: 8px 12px 8px 8px;
-    border-radius: 6px;
-    border: 0.5px solid var(--r-orange-default, #ffb020);
-    border: 1px solid var(--r-orange-default, #ffb020);
-    background: var(--r-orange-light, rgba(255, 176, 32, 0.15));
-    gap: 6px;
-
-    &:not(:last-child) {
-      margin-bottom: 12px;
-    }
-
-    &-content {
-      color: var(--r-neutral-title-1, #192945);
-      font-size: 13px;
-      font-weight: 400;
-      line-height: 18px; /* 138.462% */
-
-      .link {
-        color: var(--r-blue-default, #7084ff);
-        text-decoration-line: underline;
-        cursor: pointer;
-      }
-    }
-  }
-`;
+import styles from './SkipNonceAlert.module.css';
 
 const SkipAlertDetail = ({
   data,
@@ -229,7 +197,7 @@ export const SkipNonceAlert = ({
   }
 
   return (
-    <Warper>
+    <div className={styles.warper}>
       {data?.map((item) => {
         return (
           <SkipAlertDetail
@@ -272,6 +240,6 @@ export const SkipNonceAlert = ({
           });
         }}
       />
-    </Warper>
+    </div>
   );
 };

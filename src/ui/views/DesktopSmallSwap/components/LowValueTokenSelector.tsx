@@ -16,7 +16,6 @@ import { useInterval, useLocalStorageState, useMemoizedFn } from 'ahooks';
 import { Image, Tooltip } from 'antd';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconStatusError } from 'ui/assets/small-swap/status-failed.svg';
 import { ReactComponent as RcIconStatusIdle } from 'ui/assets/small-swap/status-idle.svg';
 import { ReactComponent as RcIconStatusPending } from 'ui/assets/small-swap/status-pending.svg';
@@ -26,77 +25,7 @@ import { PANEL_WIDTH, PANEL_WIDTH_DELTA } from '../constant';
 import { BatchSwapTaskType } from '../hooks/useBatchSwapTask';
 import { CheckboxV2 } from './Checkbox';
 import { UnknownTag } from '@/ui/component';
-
-const Container = styled.section`
-  .token-list {
-    border: 0.5px solid var(--r-neutral-line, #d8e0ea);
-    border-radius: 8px;
-    overflow: hidden;
-
-    display: flex;
-    flex-direction: column;
-
-    /* height: 525px; */
-  }
-
-  .token-list-header {
-    height: 40px;
-    background-color: var(--r-neutral-bg2, #f2f4f7);
-    color: var(--r-neutral-body, #3e495e);
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 17px;
-    padding-left: 16px;
-    padding-right: 16px;
-    flex-shrink: 0;
-
-    .token-list-cell {
-      height: 40px;
-    }
-  }
-
-  .token-list-body {
-    overflow-y: auto;
-    min-height: 0;
-    flex: 1;
-  }
-
-  .token-list-cell {
-    height: 48px;
-    padding: 0 16px;
-    color: var(--r-neutral-title1, #192945);
-    font-size: 14px;
-    line-height: 17px;
-  }
-
-  .token-list-cell--amount {
-    padding-left: 4px;
-  }
-
-  .token-list-row {
-    background: transparent;
-    cursor: pointer;
-    padding-left: 16px;
-    padding-right: 16px;
-  }
-
-  .token-list-row.is-disabled {
-    cursor: not-allowed;
-  }
-
-  .token-list-row:not(.is-disabled):hover {
-    background: rgba(112, 132, 255, 0.04);
-  }
-
-  .token-list-row + .token-list-row {
-    margin-top: 0;
-  }
-
-  .token-list-footer {
-    background: transparent;
-    flex-shrink: 0;
-  }
-`;
+import styles from './LowValueTokenSelector.module.css';
 
 const COLUMN_WIDTH = {
   select: 52,
@@ -219,8 +148,9 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
   });
 
   return (
-    <Container
+    <section
       className={clsx(
+        styles.container,
         'min-w-0 flex flex-col rounded-[16px] bg-r-neutral-card-1 px-[32px] py-[24px]'
       )}
       style={{
@@ -446,6 +376,6 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
           </div>
         ) : null}
       </div>
-    </Container>
+    </section>
   );
 };

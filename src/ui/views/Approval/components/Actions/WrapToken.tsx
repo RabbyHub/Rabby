@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
@@ -19,25 +18,7 @@ import { SecurityListItem } from './components/SecurityListItem';
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { ProtocolListItem } from './components/ProtocolListItem';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './WrapToken.module.css';
 
 const WrapToken = ({
   data,
@@ -101,7 +82,7 @@ const WrapToken = ({
   const hasRequiredData = requireData && Object.keys(requireData).length > 0;
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
@@ -247,7 +228,7 @@ const WrapToken = ({
           </>
         )}
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

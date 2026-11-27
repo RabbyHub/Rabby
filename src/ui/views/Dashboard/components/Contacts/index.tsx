@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { message } from 'antd';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { ContactBookItem } from 'background/service/contactBook';
@@ -10,35 +9,7 @@ import { useWallet } from 'ui/utils';
 import { ellipsis } from 'ui/utils/address';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
-
-const ContactItemWrapper = styled.div`
-  padding: 11px 16px;
-  background-color: #f5f6fa;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  .name {
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
-    margin-bottom: 0;
-  }
-  .address {
-    font-weight: 400;
-    font-size: 12px;
-    line-height: 14px;
-    margin: 0;
-    display: flex;
-  }
-  .icon-copy {
-    width: 14px;
-    height: 14px;
-    margin-left: 4px;
-    cursor: pointer;
-  }
-  &:nth-last-child(1) {
-    margin-bottom: 0;
-  }
-`;
+import styles from './index.module.css';
 
 const ContactItem = ({ item }: { item: ContactBookItem }) => {
   const { t } = useTranslation();
@@ -66,7 +37,7 @@ const ContactItem = ({ item }: { item: ContactBookItem }) => {
     });
   };
   return (
-    <ContactItemWrapper>
+    <div className={styles.contactItem}>
       <p className="name text-r-neutral-title1">{item.name}</p>
       <p className="address" title={item.address}>
         {ellipsis(item.address)}
@@ -76,14 +47,9 @@ const ContactItem = ({ item }: { item: ContactBookItem }) => {
           onClick={handleClickCopy}
         />
       </p>
-    </ContactItemWrapper>
+    </div>
   );
 };
-
-const ContractListElement = styled.div`
-  flex: 1;
-  overflow: auto;
-`;
 
 const Contacts = ({
   visible,
@@ -144,18 +110,22 @@ const Contacts = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.contacts.oldContactList')}
       </PageHeader>
       <div className="desc mb-20 text-r-neutral-body">
         {t('page.dashboard.contacts.oldContactListDescription')}
       </div>
-      <ContractListElement>
+      <div className="flex-1 overflow-auto">
         {contacts.map((contact) => (
           <ContactItem item={contact} key={contact.address} />
         ))}
         {NoData}
-      </ContractListElement>
+      </div>
     </div>
   );
 };

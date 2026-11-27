@@ -1,0 +1,9 @@
+.modalStyled :global(.ant-modal-header) {
+  border-bottom: none;
+}
+
+.modalStyled :global(.ant-modal-body) {
+  padding-top: 16px;
+  /* BOTTOM_BUTTON_AREA in RevokeApprovalModal.tsx */
+  padding-bottom: 76px;
+}

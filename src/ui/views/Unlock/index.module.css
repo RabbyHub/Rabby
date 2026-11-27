@@ -1,0 +1,49 @@
+.inputForm :global(.ant-form-item-explain) {
+  font-size: 13px;
+  line-height: 16px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+  min-height: 0px;
+  color: var(--r-red-default);
+  font-weight: 500;
+}
+
+.unlockPage {
+  background-color: #ecf3ff;
+  /* set from the tsx: url() of @/ui/assets/unlock/background.svg */
+  background-image: var(--unlock-bg-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+:global(html.dark) .unlockPage {
+  background-color: var(--r-neutral-bg-1);
+  background-image: none;
+}
+
+.unlockMethodSwitch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 7px 10.5px;
+  border: 0;
+  border-radius: 8px;
+  background: #ccd2ff;
+  color: var(--r-blue-default);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.unlockMethodSwitch:hover {
+  background: #b8c1ff;
+}
+
+:global(html.dark) .unlockMethodSwitch {
+  background: #232b4e;
+}
+
+:global(html.dark) .unlockMethodSwitch:hover {
+  background: #2a3770;
+}

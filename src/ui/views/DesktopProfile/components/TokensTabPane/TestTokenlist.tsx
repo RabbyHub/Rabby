@@ -26,12 +26,12 @@ import {
   TokenItemAddress,
   TokenItemAmount,
 } from '@/ui/views/CommonPopup/AssetList/CustomTestnetAssetList/CustomTestnetTokenItem';
-import styled from 'styled-components';
 import { TestnetTokenItemAsset } from './TokenItem';
 import { useHistory } from 'react-router-dom';
 import { AddCustomTokenModal } from '../AddCustomTokenModal';
 import { AddressDetailModal } from '../AddressDetailModal';
 import { AddCustomNetworkModal } from '../AddCustomNetworkModal';
+import styles from './TestTokenlist.module.css';
 import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
@@ -56,37 +56,18 @@ interface TableProps {
   EmptyComponent?: React.ReactNode;
 }
 
-const TokenRowWrapper = styled(TRow)`
-  border-bottom: 1px solid var(--rb-neutral-bg-4, #f2f4f7);
-  height: 60px;
-  padding-left: 12px;
-  padding-right: 16px;
-  .swap-action-btn {
-    display: none !important;
-  }
-  &:hover {
-    background-color: var(--rb-neutral-bg-2, #f2f4f7);
-    .swap-action-btn {
-      display: block !important;
-    }
-  }
-  &:last-child {
-    border-bottom-color: transparent;
-  }
-`;
-
 const CustomTestnetTokenItem: React.FC<TokenItemProps> = ({
   item,
   style,
   onClick,
 }) => {
   return (
-    <TokenRowWrapper onClick={onClick} style={style}>
+    <TRow className={styles.tokenRowWrapper} onClick={onClick} style={style}>
       <TestnetTokenItemAsset item={item} />
       <TokenChain item={item} />
       <TokenItemAddress item={item} />
       <TokenItemAmount item={item} className="flex-1 text-14 font-normal" />
-    </TokenRowWrapper>
+    </TRow>
   );
 };
 

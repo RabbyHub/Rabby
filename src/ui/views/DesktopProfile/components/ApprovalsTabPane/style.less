@@ -465,14 +465,10 @@
       }
 
       .am-virtual-table-cell-inner .name-and-address {
-        &,
-        .address,
-        .name {
-          color: var(--r-neutral-title1);
-          font-size: 14px;
-          line-height: 17px;
-          font-weight: 400;
-        }
+        color: var(--r-neutral-title1);
+        font-size: 14px;
+        line-height: 17px;
+        font-weight: 400;
 
         .contract-name {
           color: var(--r-neutral-foot);
@@ -551,7 +547,7 @@
       }
 
       &.J_risky_warning &::before {
-        border-bottom-color: @color-orange;
+        border-bottom-color: var(--r-orange-default);
       }
     }
 
@@ -628,10 +624,7 @@
   }
 }
 .contract-approval-item .token-approval-item-desc {
-  &,
-  .address {
-    color: var(--r-neutral-title1);
-  }
+  color: var(--r-neutral-title1);
 
   .contract-name {
     color: var(--r-neutral-body);
@@ -1097,10 +1090,7 @@ html.dark {
     }
 
     .am-virtual-table-cell-inner .name-and-address {
-      &,
-      .address {
-        color: var(--r-neutral-title1);
-      }
+      color: var(--r-neutral-title1);
 
       .contract-name {
         color: var(--r-neutral-body);
@@ -1177,7 +1167,7 @@ html.dark {
     }
 
     &.J_risky_warning &::before {
-      border-bottom-color: @color-orange;
+      border-bottom-color: var(--r-orange-default);
     }
   }
 
@@ -1286,10 +1276,7 @@ html.dark {
   }
 
   .contract-approval-item .token-approval-item-desc {
-    &,
-    .address {
-      color: var(--r-neutral-title1);
-    }
+    color: var(--r-neutral-title1);
 
     .contract-name {
       color: var(--r-neutral-body);

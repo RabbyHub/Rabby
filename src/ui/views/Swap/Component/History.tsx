@@ -154,7 +154,9 @@ const Transaction = forwardRef<HTMLDivElement, TransactionProps>(
                     alt="loading"
                     className="w-[14px] h-[14px] animate-spin mr-6"
                   />
-                  <span className="text-orange">{t('page.swap.Pending')}</span>
+                  <span className="text-r-orange-default">
+                    {t('page.swap.Pending')}
+                  </span>
                 </div>
               </TooltipWithMagnetArrow>
             )}

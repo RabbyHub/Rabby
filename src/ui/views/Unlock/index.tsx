@@ -16,7 +16,6 @@ import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.s
 import { ReactComponent as PasswordSwitchSVG } from '@/ui/assets/dashboard/settings/password.svg';
 import { ReactComponent as BiometricSwitchSVG } from '@/ui/assets/dashboard/settings/biometric.svg';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import qs from 'qs';
 import { isString } from 'lodash';
@@ -31,62 +30,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { useWalletStatusStore } from '@/ui/state/walletStatus';
-
-const InputFormStyled = styled(Form.Item)`
-  .ant-form-item-explain {
-    font-size: 13px;
-    line-height: 16px;
-    margin-top: 16px;
-    margin-bottom: 24px;
-    min-height: 0px;
-    color: var(--r-red-default);
-    font-weight: 500;
-  }
-`;
-const BiometricsImage = styled.div`
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-`;
-
-const UnlockPage = styled.div`
-  background-color: #ecf3ff;
-  background-image: url(${unlockBackground});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-
-  html.dark & {
-    background-color: var(--r-neutral-bg-1);
-    background-image: none;
-  }
-`;
-
-const UnlockMethodSwitch = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 7px 10.5px;
-  border: 0;
-  border-radius: 8px;
-  background: #ccd2ff;
-  color: var(--r-blue-default);
-  font-size: 13px;
-  font-weight: 500;
-
-  &:hover {
-    background: #b8c1ff;
-  }
-
-  html.dark & {
-    background: #232b4e;
-  }
-
-  html.dark &:hover {
-    background: #2a3770;
-  }
-`;
+import styles from './index.module.css';
 
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
@@ -375,26 +319,38 @@ const Unlock = () => {
 
   return (
     <FullscreenContainer isUnlock>
-      <UnlockPage className="unlock page-has-ant-input relative h-full min-h-[550px]">
+      <div
+        className={clsx(
+          styles.unlockPage,
+          'unlock page-has-ant-input relative h-full min-h-[550px]'
+        )}
+        style={
+          {
+            '--unlock-bg-image': `url(${unlockBackground})`,
+          } as React.CSSProperties
+        }
+      >
         <div className="pt-[124px]">
           {showBiometricSwitch && (
             <div className="w-full absolute top-32 left-0 right-0 flex justify-center z-10">
               {showPasswordUnlock ? (
-                <UnlockMethodSwitch
+                <button
                   type="button"
+                  className={styles.unlockMethodSwitch}
                   onClick={switchToBiometricMode}
                 >
                   <BiometricSwitchSVG className="w-[18px] h-[18px]" />
                   {t('page.unlock.btn.biometric')}
-                </UnlockMethodSwitch>
+                </button>
               ) : (
-                <UnlockMethodSwitch
+                <button
                   type="button"
+                  className={styles.unlockMethodSwitch}
                   onClick={() => setShowPasswordUnlock(true)}
                 >
                   <PasswordSwitchSVG className="w-[18px] h-[18px]" />
                   {t('page.unlock.btn.unlockWithPassword')}
-                </UnlockMethodSwitch>
+                </button>
               )}
             </div>
           )}
@@ -422,9 +378,9 @@ const Unlock = () => {
         </div>
         {showBiometricSwitch && !showPasswordUnlock ? (
           <>
-            <BiometricsImage>
+            <div className="mt-28 flex justify-center">
               <BiometricsSVG />
-            </BiometricsImage>
+            </div>
 
             <footer className="absolute bottom-[68px] left-0 right-0 text-center">
               <div className="mx-20">
@@ -490,8 +446,8 @@ const Unlock = () => {
           </>
         ) : (
           <Form autoComplete="off" form={form} onFinish={handleSubmit}>
-            <InputFormStyled
-              className="mt-[34px] mx-20"
+            <Form.Item
+              className={clsx(styles.inputForm, 'mt-[34px] mx-20')}
               name="password"
               validateStatus={inputError ? 'error' : undefined}
               help={inputErrorNode}
@@ -518,7 +474,7 @@ const Unlock = () => {
                   setInputError('');
                 }}
               />
-            </InputFormStyled>
+            </Form.Item>
 
             <footer className="absolute bottom-32 left-0 right-0 text-center">
               <Form.Item className="mx-20 mb-20">
@@ -552,7 +508,7 @@ const Unlock = () => {
             </footer>
           </Form>
         )}
-      </UnlockPage>
+      </div>
     </FullscreenContainer>
   );
 };

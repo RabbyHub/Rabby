@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
@@ -17,25 +16,7 @@ import {
   BatchApproveTokenRequireData,
   ParsedTypedDataActionData,
 } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './BatchPermit2.module.css';
 
 const Permit2 = ({
   data,
@@ -72,7 +53,7 @@ const Permit2 = ({
   }, [requireData]);
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         {actionData.token_list.map((token, index) => (
           <>
@@ -219,7 +200,7 @@ const Permit2 = ({
           />
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

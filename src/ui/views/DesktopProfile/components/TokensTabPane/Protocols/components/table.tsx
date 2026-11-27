@@ -5,89 +5,10 @@ import React, {
   useLayoutEffect,
   useRef,
 } from 'react';
-import styled from 'styled-components';
 import cx from 'clsx';
+import styles from './table.module.css';
 
 const WidthContext = React.createContext<number[]>([]);
-
-// Styled components
-const FlexRow = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-const HeaderRow = styled(FlexRow)`
-  width: 100%;
-  font-size: 12px;
-  font-weight: bold;
-  color: var(--rb-neutral-title1);
-  line-height: 15px;
-  min-width: 800px;
-
-  > div {
-    flex: 1;
-    min-width: 70px;
-    white-space: nowrap;
-  }
-
-  > div > span {
-    padding: 7px 10px;
-    display: block;
-  }
-
-  > div:first-child > span {
-    padding: 7px 0 7px 10px;
-  }
-
-  > div:last-child > span {
-    padding: 7px 10px 7px 0;
-    text-align: right;
-  }
-`;
-
-const ContentRow = styled(FlexRow)`
-  width: 100%;
-  line-height: 15px;
-  min-width: 800px;
-  align-items: center;
-
-  > div {
-    flex: 1;
-    overflow: hidden;
-    min-width: 70px;
-  }
-
-  > div > span {
-    padding: 15px 10px;
-    display: block;
-    overflow-wrap: break-word;
-    overflow: hidden;
-  }
-
-  > div:first-child > span {
-    padding: 15px 0 15px 10px;
-  }
-
-  > div:last-child > span {
-    padding: 15px 10px 15px 0;
-    text-align: right;
-  }
-`;
-
-const Content = styled.div`
-  width: 100%;
-  font-size: 14px;
-  color: var(--rb-neutral-title1);
-  line-height: 17px;
-
-  > div {
-    border-bottom: 0.5px solid var(--rb-neutral-line);
-  }
-
-  > div:last-child {
-    border-bottom: none;
-  }
-`;
 
 export const Table = ({
   widths = [],
@@ -166,16 +87,18 @@ const Row = ({
     }
   }, [widths]);
 
-  const StyledRow = header ? HeaderRow : ContentRow;
-
   return (
-    <StyledRow
+    <div
       ref={ref}
-      className={cx('px-0 py-[1px]', className || '')}
+      className={cx(
+        header ? styles.headerRow : styles.contentRow,
+        'px-0 py-[1px]',
+        className || ''
+      )}
       {...rest}
     >
       {children}
-    </StyledRow>
+    </div>
   );
 };
 
@@ -201,7 +124,7 @@ const Col = ({
 Table.Col = Col;
 
 const Body = (props: { children: ReactNode }) => {
-  return <Content>{props.children} </Content>;
+  return <div className={styles.content}>{props.children} </div>;
 };
 
 Table.Body = Body;

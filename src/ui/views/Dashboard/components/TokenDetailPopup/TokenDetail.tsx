@@ -515,7 +515,7 @@ const TokenDetail = ({
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
             {isUnknownToken(token) && (
-              <UnknownTag className="ml-8 !px-[8px] !py-[4px] !text-[13px] !leading-[13px] bg-rb-neutral-line" />
+              <UnknownTag className="ml-8 bg-rb-neutral-line" />
             )}
             {isLpToken(token) && (
               <LpTokenTag
@@ -661,7 +661,7 @@ const TokenDetail = ({
           {isEmpty && (
             <div className="token-txs-history__empty bg-r-neutral-card-1 rounded-[8px] pt-[30px] pb-[30px]">
               <img className="no-data" src="./images/nodata-tx.png" />
-              <p className="text-14 text-gray-content mt-12">
+              <p className="text-14 text-r-neutral-foot mt-12">
                 {t('page.dashboard.tokenDetail.noTransactions')}
               </p>
             </div>

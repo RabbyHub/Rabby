@@ -9,7 +9,6 @@ import clsx from 'clsx';
 import { isEmpty } from 'lodash';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/question-mark.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
@@ -27,30 +26,15 @@ import Loading from '../../TxComponents/Loading';
 import ViewRawModal from '../../TxComponents/ViewRawModal';
 import { TestnetUnknownAction } from './UnknownAction';
 import { Account } from '@/background/service/preference';
+import { cn } from '@/ui/utils/cn';
+import styles from './index.module.css';
 
-export const SignTitle = styled.div`
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-  .left {
-    display: flex;
-    font-size: 18px;
-    line-height: 21px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    flex: 1;
-    .icon-speedup {
-      width: 10px;
-      margin-right: 6px;
-      cursor: pointer;
-    }
-  }
-  .right {
-    font-size: 14px;
-    line-height: 16px;
-    color: #999999;
-    cursor: pointer;
-  }
-`;
+export const SignTitle = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div ref={ref} className={cn(styles.signTitle, className)} {...rest} />
+));
 
 export const TestnetActions = ({
   data,

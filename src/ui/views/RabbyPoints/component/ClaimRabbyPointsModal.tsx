@@ -1,4 +1,3 @@
-import styled from 'styled-components';
 import { Modal } from '@/ui/component';
 import React, { useMemo, useState } from 'react';
 import { Button, Input } from 'antd';
@@ -19,50 +18,12 @@ import { ellipsisAddress } from '@/ui/utils/address';
 import { ClaimUserAvatar } from './ClaimUserAvatar';
 import { useRabbyPointsInvitedCodeCheck } from '../hooks';
 import useSyncStaleValue from '@/ui/hooks/useDebounceValue';
+import styles from './ClaimRabbyPointsModal.module.css';
 import utc from 'dayjs/plugin/utc';
 dayjs.extend(utc);
 
 // import Lottie from 'lottie-react';
 // import * as animationData from '../../Dashboard/components/ClaimRabbyBadgeModal/success.json';
-
-const StyledModal = styled(Modal)`
-  padding-bottom: 0;
-  .ant-modal-content {
-    border-radius: 16px;
-    overflow: initial;
-  }
-  .ant-modal-body {
-    padding: 0;
-    max-height: 600px;
-  }
-`;
-
-const StyledInput = styled(Input)`
-  background: var(--r-neutral-bg1, #fff);
-  &.ant-input-affix-wrapper {
-    border-radius: 8px;
-    border: 1px solid var(--r-neutral-line, #d3d8e0);
-    & > input.ant-input {
-      height: 44px;
-      font-size: 15px;
-      font-weight: 500;
-      text-align: center;
-      background: var(--r-neutral-bg1, #fff);
-      color: var(--r-neutral-title1, #192945);
-      transition: none;
-
-      &:placeholder-shown {
-        color: var(--r-neutral-foot, #6a7587);
-        font-size: 13px;
-        font-weight: normal;
-      }
-    }
-  }
-  &:hover,
-  &.ant-input-affix-wrapper-focused {
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-`;
 
 const NoIcon = () => null;
 
@@ -74,7 +35,8 @@ export const ClaimRabbyPointsModal = (
 ) => {
   const { visible, onCancel, ...other } = props;
   return (
-    <StyledModal
+    <Modal
+      className={styles.styledModal}
       visible={visible}
       title={null}
       onCancel={onCancel}
@@ -82,7 +44,7 @@ export const ClaimRabbyPointsModal = (
       closeIcon={NoIcon}
     >
       <ClaimPoints {...other} />
-    </StyledModal>
+    </Modal>
   );
 };
 
@@ -141,26 +103,6 @@ interface ClaimPointsProps {
   snapshotLoading?: boolean;
   userInvitedCode?: string;
 }
-
-const LinearGradientAnimatedDiv = styled.div`
-  @keyframes gradientLoading {
-    0% {
-      background-position: 0% 0%;
-    }
-    25% {
-      background-position: 100% 0%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-    75% {
-      background-position: 0% 100%;
-    }
-    100% {
-      background-position: 0% 0%;
-    }
-  }
-`;
 
 const ClaimPoints = ({
   web3Id,
@@ -288,7 +230,7 @@ const ClaimPoints = ({
           <span
             style={{
               fontSize: 15,
-              fontWeight: 510,
+              fontWeight: 500,
               lineHeight: 'normal',
               background:
                 'linear-gradient(91deg, #326CFF 1.88%, #AE2BFF 99.85%)',
@@ -302,15 +244,17 @@ const ClaimPoints = ({
         </div>
       </div>
 
-      <LinearGradientAnimatedDiv
-        className={clsx('text-[32px] font-bold text-center mt-[44px] mx-auto')}
+      <div
+        className={clsx(
+          'text-[32px] font-bold text-center mt-[44px] mx-auto',
+          titleLoading && styles.gradientLoading
+        )}
         style={
           titleLoading
             ? {
                 width: 107,
                 height: 38,
                 borderRadius: 6,
-                animation: 'gradientLoading 1s ease infinite',
                 backgroundSize: '150% 100%',
                 backgroundRepeat: 'repeat-x',
                 backgroundImage:
@@ -326,14 +270,14 @@ const ClaimPoints = ({
         }
       >
         {titleLoading ? '' : points}
-      </LinearGradientAnimatedDiv>
+      </div>
       <div className="mt-[8px] mb-[16px] flex items-center justify-center gap-[6px] text-r-neutral-title1 text-[15px] font-medium">
         <ClaimUserAvatar src={avatar} className="w-[20px] h-[20px]" />
         <span>{name}</span>
       </div>
 
       <div className="rounded-[8px] bg-r-neutral-card-3 px-[12px] py-[16px]">
-        <div className="text-center text-[10px] text-[#7c86c8] mb-[12px]">
+        <div className="text-center text-[10px] text-r-neutral-foot mb-[12px]">
           {t('page.rabbyPoints.claimModal.snapshotTime', {
             time: snapshotTime,
           })}
@@ -350,11 +294,12 @@ const ClaimPoints = ({
         </div>
       </div>
 
-      <StyledInput
+      <Input
         placeholder={t('page.rabbyPoints.claimModal.placeholder')}
         value={invitedCode}
         onChange={(e) => setInvitedCode(e.target.value?.toUpperCase())}
         className={clsx(
+          styles.styledInput,
           'w-full mt-[22px]',
           invitedCode &&
             !codeLoading &&

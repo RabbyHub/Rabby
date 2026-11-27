@@ -1,0 +1,25 @@
+.searchInput {
+  background-color: var(--r-neutral-card1, #fff) !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  border-color: var(--r-neutral-line, #d3d8e0) !important;
+
+  &:global(.ant-input-affix-wrapper-focused) {
+    border-color: var(--r-blue-default, #7084ff) !important;
+  }
+  & :global(.ant-input) {
+    background-color: transparent !important;
+    color: var(--rb-neutral-title-1, #192945) !important;
+    font-size: 12px;
+  }
+  & :global(.ant-input-prefix) {
+    margin-right: 6px;
+  }
+  & input::placeholder {
+    color: var(--r-neutral-foot, #6a7587) !important;
+  }
+  &:hover {
+    border-color: var(--r-blue-default, #7084ff) !important;
+  }
+}

@@ -1,21 +1,19 @@
 import React, { useEffect, useMemo } from 'react';
-import styled, { css } from 'styled-components';
 import { Dropdown, Input, Menu, message, Popover } from 'antd';
 import type { MenuProps } from 'antd';
 import { wordlist } from '@scure/bip39/wordlists/english';
-
-import { styid } from 'ui/utils/styled';
 
 import IconCaretDown from './icon-caret-down.svg';
 import { ReactComponent as RcIconClearAllCC } from './icon-clear-all-cc.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import useTypingMnemonics from '@/ui/hooks/useTypingMnemonics';
 import DebouncedInput from '../DebouncedInput';
 import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
 
-import './MnemonicsInputs.less';
+import styles from './MnemonicsInputs.module.css';
 import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
 
@@ -25,14 +23,6 @@ import { UI_TYPE } from '@/constant/ui';
 const ITEM_H = 52;
 const ROW_COUNT = 3;
 const DEFAULT_MEMONICS_COUNT = 12;
-
-const NumberFlag = styled.div`
-  color: var(--r-neutral-body);
-  font-weight: 400;
-  font-size: 10px;
-  line-height: 12px;
-  height: 12px;
-`;
 
 const useClearClipboardToast = () => {
   const { t } = useTranslation();
@@ -49,248 +39,6 @@ const useClearClipboardToast = () => {
   return clearClipboardToast;
 };
 
-const MatrixWrapper = styled.div.withConfig<{
-  rowCount?: number;
-  totalCount?: number;
-}>({
-  shouldForwardProp: (prop, defaultValidatorFn) => {
-    return !['rowCount'].includes(prop) && defaultValidatorFn(prop);
-  },
-})`
-  background-color: var(--r-neutral-card-3, #f7fafc);
-  display: flex;
-  flex-wrap: wrap;
-
-  &.new-user-import {
-    background-color: transparent;
-    gap: 8px;
-    .matrix-word-item {
-      width: calc(calc(100% - 16px) / 3);
-      border-color: transparent;
-
-      .mnemonics-input {
-        border-radius: 8px;
-        border: 1px solid var(--r-neutral-line, #e0e5ec);
-        text-align: center;
-        font-size: 22px;
-        color: var(--r-neutral-title-1, #192945);
-        &:hover {
-          border-color: var(--r-blue-default, #7084ff);
-        }
-        &:focus,
-        &.ant-input-focused {
-          box-shadow: none;
-        }
-      }
-
-      &:not(.invalid) {
-        .mnemonics-input:hover {
-          border-color: var(--r-blue-default, #7084ff);
-        }
-      }
-
-      ${styid(NumberFlag)} {
-        top: 6px;
-        left: 8px;
-        color: var(--r-neutral-body, #3e495e);
-        font-size: 10px;
-        line-height: 12px;
-        font-style: normal;
-        font-weight: 400;
-      }
-    }
-    .matrix-word-item.invalid {
-      ${styid(NumberFlag)} {
-        color: var(--r-red-default, #e34935);
-      }
-    }
-  }
-
-  &.compact-import {
-    background-color: transparent;
-    gap: 9px;
-    border: 0;
-    border-radius: 0;
-
-    .matrix-word-item {
-      width: calc((100% - 18px) / 3);
-      border-right: 0;
-      border-bottom: 0;
-
-      .mnemonics-input {
-        padding: 0 12px 0 24px;
-        border-radius: 8px;
-        border: 0.5px solid var(--r-neutral-line, #e0e5ec);
-        background: var(--r-neutral-card-1, #fff);
-        text-align: left;
-        line-height: 51px;
-        font-size: 15px;
-        font-weight: 400;
-        color: var(--r-neutral-title-1, #192945);
-
-        &:hover {
-          border-color: var(--r-neutral-line, #e0e5ec);
-        }
-
-        &:focus,
-        &.ant-input-focused {
-          border-color: var(--r-blue-default, #4c65ff);
-          background: var(--r-neutral-card-1, #fff);
-          box-shadow: none;
-        }
-      }
-
-      ${styid(NumberFlag)} {
-        top: 7px;
-        left: 7px;
-        height: 16px;
-        color: var(--r-neutral-foot, #6a7587);
-        font-size: 13px;
-        line-height: 16px;
-        font-weight: 500;
-      }
-    }
-
-    .matrix-word-item.compact-focused {
-      ${styid(NumberFlag)} {
-        color: var(--r-blue-default, #4c65ff);
-      }
-    }
-
-    .matrix-word-item.invalid {
-      .mnemonics-input {
-        border-color: var(--r-red-default, #e34935);
-      }
-
-      ${styid(NumberFlag)} {
-        color: var(--r-red-default, #e34935);
-      }
-    }
-
-    .matrix-word-item.is-mnemonics-input ${styid(NumberFlag)} {
-      z-index: 2;
-    }
-  }
-
-  .matrix-word-item {
-    box-sizing: border-box;
-    height: ${ITEM_H}px;
-    text-align: center;
-    display: block;
-
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--r-neutral-title-1);
-    position: relative;
-
-    border-right: 1px solid var(--r-neutral-line);
-    border-bottom: 1px solid var(--r-neutral-line);
-
-    ${(props) => {
-      const rowCount = props.rowCount || ROW_COUNT;
-      const totalCount = props.totalCount || DEFAULT_MEMONICS_COUNT;
-
-      return css`
-        width: ${(1 / rowCount) * 100}%;
-
-        &:nth-child(${rowCount}n) {
-          border-right: 0;
-        }
-
-        &:nth-last-child(-n + ${rowCount}) {
-          border-bottom: 0;
-        }
-
-        // &:nth-child(1) .mnemonics-input {
-        //   border-top-left-radius: 6px;
-        // }
-        // &:nth-child(${rowCount}) .mnemonics-input {
-        //   border-top-right-radius: 6px;
-        // }
-        // &:nth-child(${totalCount - rowCount + 1}) .mnemonics-input {
-        //   border-bottom-left-radius: 6px;
-        // }
-        // &:nth-child(${totalCount}) .mnemonics-input {
-        //   border-bottom-right-radius: 6px;
-        // }
-        // &:not(.invalid):nth-child(-n + ${rowCount}) .mnemonics-input:not(:focus) {
-        //   border-top: 1px solid var(--r-neutral-line);
-        // }
-        // &:not(.invalid):nth-child(${rowCount}n+1) .mnemonics-input:not(:focus) {
-        //   border-left: 1px solid var(--r-neutral-line);
-        // }
-      `;
-    }}
-
-    &:hover {
-      .mnemonics-input,
-      ${styid(NumberFlag)} {
-        opacity: 1 !important;
-      }
-    }
-  }
-
-  ${styid(NumberFlag)} {
-    position: absolute;
-    top: 17px;
-    left: 8px;
-  }
-
-  /* for MnemonicsInputs :start */
-  .mnemonics-input {
-    background-color: transparent;
-    color: var(--r-neutral-title-1, #192945);
-    height: 100%;
-    display: inline-block;
-    line-height: ${ITEM_H}px;
-    border-color: transparent;
-    border-radius: 6px;
-
-    &:focus,
-    &.ant-input-focused {
-      border-color: var(--r-blue-default, #7084ff);
-      background-color: var(--r-neutral-bg-1, #fff);
-      box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.24);
-    }
-  }
-  .matrix-word-item.invalid {
-    .mnemonics-input {
-      opacity: 1;
-      border-color: var(--r-red-default, #e34935);
-    }
-    ${styid(NumberFlag)} {
-      color: var(--r-red-default, #e34935);
-    }
-  }
-  .visible-switch-icon-wrapper {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    top: 0;
-    right: 0;
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-end;
-    cursor: pointer;
-    visibility: hidden;
-    z-index: 9;
-
-    > img {
-      width: 12px;
-      height: 12px;
-    }
-  }
-
-  .matrix-word-item:hover .visible-switch-icon-wrapper {
-    visibility: visible;
-  }
-
-  .matrix-word-item.is-mnemonics-input ${styid(NumberFlag)} {
-    z-index: 9;
-  }
-  /* for MnemonicsInputs :end */
-`;
-
 function fillMatrix(words: string[], mnemonicsCount: number) {
   const matrix = words.slice(0, mnemonicsCount) as string[];
   while (matrix.length < mnemonicsCount) {
@@ -299,23 +47,6 @@ function fillMatrix(words: string[], mnemonicsCount: number) {
 
   return matrix;
 }
-
-const HeadToolbar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 14px;
-
-  color: var(--r-neutral-body);
-
-  &.compact-head-toolbar {
-    min-height: 14px;
-    font-size: 12px;
-    line-height: 14px;
-  }
-`;
 
 const DFLT_FOCUSING = { index: -1, visible: false };
 const DFLT_HOVERING = { index: -1, isHovering: false };
@@ -383,6 +114,7 @@ function MnemonicsInputs({
   const dropdownTriggerRef = React.useRef<HTMLDivElement | null>(null);
 
   const [invalidWords, setInvalidWords] = React.useState<number[]>([]);
+  const matrixRowCount = rowCount || ROW_COUNT;
   const { wordPlaceHolders } = React.useMemo(() => {
     return {
       wordPlaceHolders: Array(mnemonicsCount).fill(undefined) as undefined[],
@@ -560,8 +292,13 @@ function MnemonicsInputs({
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar
-        className={clsx(
+      <div
+        className={cn(
+          'flex items-center justify-between font-normal',
+          // font size before line height: cn() drops a leading-* that
+          // precedes a text-* size
+          compact ? 'text-[12px]' : 'text-[13px]',
+          'leading-[14px]',
           'mb-[12px] text-r-neutral-body min-h-[18px]',
           compact && 'compact-head-toolbar'
         )}
@@ -575,7 +312,8 @@ function MnemonicsInputs({
           overlay={
             <Menu
               className={clsx(
-                'mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1',
+                styles.inputMenu,
+                'py-8px rounded-[8px] bg-r-neutral-bg-1',
                 UI_TYPE.isPop && 'max-h-[334px] overflow-y-auto'
               )}
             >
@@ -795,9 +533,10 @@ function MnemonicsInputs({
             )} */}
           </div>
         )}
-      </HeadToolbar>
-      <MatrixWrapper
-        className={clsx(
+      </div>
+      <div
+        className={cn(
+          styles.matrix,
           compact ? 'rounded-none text-center' : 'rounded-[6px] text-center',
           !newUserImport &&
             !compact &&
@@ -807,8 +546,11 @@ function MnemonicsInputs({
           compact && 'compact-import',
           className
         )}
-        rowCount={rowCount}
-        totalCount={mnemonicsCount}
+        style={
+          {
+            '--matrix-item-width': `${(1 / matrixRowCount) * 100}%`,
+          } as React.CSSProperties
+        }
       >
         {wordPlaceHolders.map((_, idx) => {
           const word = inputTexts[idx] || '';
@@ -824,7 +566,7 @@ function MnemonicsInputs({
           return (
             <Popover
               key={`word-item-${idx}`}
-              overlayClassName="mnemonics-input-suggestions-popover"
+              overlayClassName={styles.suggestionsPopover}
               align={{
                 offset: [0, -4],
               }}
@@ -859,8 +601,11 @@ function MnemonicsInputs({
             >
               <div
                 key={`word-item-${idx}`}
-                className={clsx(
+                className={cn(
                   'matrix-word-item is-mnemonics-input',
+                  (idx + 1) % matrixRowCount === 0 && styles.rowEnd,
+                  idx >= wordPlaceHolders.length - matrixRowCount &&
+                    styles.lastRow,
                   compact && isCurrentFocusing && 'compact-focused',
                   {
                     invalid: invalidWords.includes(idx),
@@ -933,8 +678,8 @@ function MnemonicsInputs({
                     }}
                   />
                 </TooltipWithMagnetArrow>
-                <NumberFlag
-                  className={clsx({
+                <div
+                  className={cn(styles.numberFlag, {
                     'opacity-50':
                       !compact &&
                       focusing.index !== -1 &&
@@ -942,12 +687,12 @@ function MnemonicsInputs({
                   })}
                 >
                   {number}.
-                </NumberFlag>
+                </div>
               </div>
             </Popover>
           );
         })}
-      </MatrixWrapper>
+      </div>
 
       {isSlip39 && (
         <SLIP39MnemonicsInputs
@@ -1005,7 +750,7 @@ const SLIP39MnemonicsInput = ({
           'h-[56px] border-rabby-neutral-line bg-rabby-neutral-card-1 ',
           'text-15 text-r-neutral-title-1 font-normal leading-[18px]',
           error ? 'border-rabby-red-default' : '',
-          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-blue'
+          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-r-blue-default'
         )}
         spellCheck={false}
         placeholder={t(

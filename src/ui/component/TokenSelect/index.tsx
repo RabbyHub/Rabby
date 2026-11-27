@@ -11,8 +11,7 @@ import { TokenItem, TokenItemWithEntity } from 'background/service/openapi';
 import { abstractTokenToTokenItem, getTokenSymbol } from 'ui/utils/token';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
-import styled from 'styled-components';
-import LessPalette, { ellipsis } from '@/ui/style/var-defs';
+import styles from './index.module.css';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 import { useTokens } from '@/ui/utils/portfolio/token';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -31,42 +30,6 @@ import {
 } from '@/ui/utils/portfolio/tokenUtils';
 import { useShallow } from 'zustand/react/shallow';
 const isTab = getUiType().isTab;
-
-const Wrapper = styled.div`
-  background-color: transparent;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-
-  & .ant-input {
-    background-color: transparent;
-    border-color: transparent;
-    color: #161819;
-    flex: 1;
-    font-weight: 500;
-    font-size: 22px;
-    line-height: 26px;
-
-    text-align: right;
-    color: #13141a;
-    padding-right: 0;
-
-    &:placeholder {
-      color: #707280;
-    }
-  }
-`;
-
-const Text = styled.span`
-  font-weight: 500;
-  font-size: 20px;
-  line-height: 23px;
-  color: ${LessPalette['@color-title']};
-  max-width: 100px;
-  ${ellipsis()}
-`;
 
 interface CommonProps {
   isHideTitle?: boolean;
@@ -372,10 +335,10 @@ const TokenSelect = forwardRef<
 
     return (
       <>
-        <Wrapper>
+        <div className={styles.wrapper}>
           <div onClick={handleSelectToken}>
             {token ? (
-              <TokenWrapper>
+              <div className="flex items-center justify-center gap-[5px] p-4 rounded-[4px] hover:bg-[rgba(134,151,255,0.3)]">
                 <TokenWithChain
                   width="24px"
                   height="24px"
@@ -383,16 +346,19 @@ const TokenSelect = forwardRef<
                   hideConer
                   hideChainIcon={hideChainIcon}
                 />
-                <Text title={getTokenSymbol(token)}>
+                <span
+                  className="font-medium text-[20px] leading-[23px] text-r-neutral-title-1 max-w-[100px] overflow-hidden text-ellipsis whitespace-nowrap"
+                  title={getTokenSymbol(token)}
+                >
                   {getTokenSymbol(token)}
-                </Text>
+                </span>
                 <SvgIconArrowDownTriangle className="ml-[3px]" />
-              </TokenWrapper>
+              </div>
             ) : (
-              <SelectTips>
+              <div className="flex items-center justify-center w-[150px] h-[32px] text-white bg-r-blue-default rounded-[4px] font-medium text-[20px] leading-[23px]">
                 <span>{t('page.sendToken.selectToken')}</span>
                 <SvgIconArrowDownTriangle className="brightness-[100] ml-[7px]" />
-              </SelectTips>
+              </div>
             )}
           </div>
           {loading ? (
@@ -415,7 +381,7 @@ const TokenSelect = forwardRef<
               onChange={type !== 'swapTo' ? handleInput : undefined}
             />
           )}
-        </Wrapper>
+        </div>
         <TokenSelector
           visible={tokenSelectorVisible}
           isHideTitle={isHideTitle}
@@ -441,35 +407,4 @@ const TokenSelect = forwardRef<
   }
 );
 
-const TokenWrapper = styled.div`
-  /* width: 92px; */
-  /* height: 30px; */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  padding: 4px;
-  border-radius: 4px;
-  &:hover {
-    background: rgba(134, 151, 255, 0.3);
-  }
-`;
-
-const SelectTips = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 150px;
-  height: 32px;
-  color: #fff;
-  background: var(--r-blue-default, #7084ff);
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 20px;
-  line-height: 23px;
-  & svg {
-    margin-left: 4px;
-    filter: brightness(1000);
-  }
-`;
 export default TokenSelect;

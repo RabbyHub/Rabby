@@ -28,7 +28,8 @@ import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/componen
 import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
 import type { Exchange } from '@/ui/state/exchange';
 import { useForm } from 'antd/lib/form/Form';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
+import styles from './AccountItem.module.css';
 
 export interface AddressItemProps {
   balance: number;
@@ -49,29 +50,6 @@ export interface AddressItemProps {
   hideBalance?: boolean;
   getContainer?: DrawerProps['getContainer'];
 }
-
-const HoverShowEditPenWrapper = styled.div<{ hideBalance?: boolean }>`
-  position: relative;
-  .edit-pen {
-    opacity: 0;
-  }
-  .copy-icon {
-    display: ${(props) => (props.hideBalance ? 'none' : 'block')};
-  }
-  &:hover {
-    .edit-pen {
-      opacity: 1;
-    }
-    .copy-icon {
-      opacity: 1;
-      display: block;
-      color: var(--r-neutral-body) !important;
-      &:hover {
-        color: var(--r-blue-default) !important;
-      }
-    }
-  }
-`;
 
 export const AccountItem = memo(
   ({
@@ -227,9 +205,9 @@ export const AccountItem = memo(
                   onClick={() => destroy()}
                   className={clsx(
                     'w-[200px]',
-                    'text-blue-light',
-                    'border-blue-light',
-                    'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                    'text-r-blue-default',
+                    'border-r-blue-default',
+                    'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
                     'before:content-none'
                   )}
                 >
@@ -251,9 +229,10 @@ export const AccountItem = memo(
     };
 
     return (
-      <HoverShowEditPenWrapper
-        hideBalance={hideBalance}
-        className={clsx(
+      <div
+        className={cn(
+          styles.wrapper,
+          hideBalance && styles.hideBalance,
           className,
           'relative flex items-center px-[15px] py-[11px] gap-[8px]',
           'border-[1px] border-solid border-transparent rounded-[12px]',
@@ -357,7 +336,7 @@ export const AccountItem = memo(
             {rightIcon || <img src={IconCheck} className="w-[20px] h-[20px]" />}
           </div>
         ) : null}
-      </HoverShowEditPenWrapper>
+      </div>
     );
   }
 );

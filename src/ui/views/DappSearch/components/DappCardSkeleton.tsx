@@ -1,20 +1,12 @@
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
-import styled from 'styled-components';
-
-const Wraper = styled.div`
-  border: 1px solid transparent;
-  &:hover {
-    border: 1px solid var(--r-blue-default, #7084ff);
-    box-shadow: 0px 4px 4px 0px rgba(112, 132, 255, 0.12);
-  }
-`;
 
 export const DappCardSkeleton = () => {
   return (
-    <Wraper
+    <div
       className={clsx(
+        'border border-transparent hover:border-r-blue-default hover:shadow-[0px_4px_4px_0px_rgba(112,132,255,0.12)]',
         'p-[16px] bg-r-neutral-card1 cursor-pointer rounded-[8px]'
       )}
     >
@@ -45,6 +37,6 @@ export const DappCardSkeleton = () => {
         active={true}
         className="bg-r-neutral-card3, rounded-[2px] w-full h-[20px]"
       ></Skeleton.Input>
-    </Wraper>
+    </div>
   );
 };

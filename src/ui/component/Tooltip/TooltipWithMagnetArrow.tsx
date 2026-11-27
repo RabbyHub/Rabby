@@ -1,7 +1,7 @@
 import { Tooltip as AntdTooltip, TooltipProps } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
-import styled from 'styled-components';
+import styles from './TooltipWithMagnetArrow.module.css';
 
 const TooltipWrap = React.forwardRef<
   any,
@@ -17,16 +17,6 @@ const TooltipWrap = React.forwardRef<
     />
   );
 });
-
-const TooltipWrapStyled = styled(TooltipWrap)`
-  .ant-tooltip-arrow {
-    ${({ left }) => left && `left: calc(${left}px)`}
-  }
-
-  .ant-tooltip-inner {
-    white-space: normal;
-  }
-`;
 
 /**
  * @deprecated use TooltipV6 instead
@@ -92,16 +82,31 @@ export const TooltipWithMagnetArrow = React.forwardRef<
     return viewportOffset;
   }, [viewportOffset]);
 
+  const arrowLeft = props.disableLeft ? 0 : left;
+
   return (
-    <TooltipWrapStyled
+    <TooltipWrap
       align={
         {
           viewportOffset: currentViewportOffset,
         } as any
       }
       {...props}
+      className={clsx(
+        props.className,
+        styles.tooltip,
+        arrowLeft && styles.arrowLeft
+      )}
+      overlayStyle={
+        arrowLeft
+          ? ({
+              ...props.overlayStyle,
+              '--magnet-arrow-left': `${arrowLeft}px`,
+            } as React.CSSProperties)
+          : props.overlayStyle
+      }
       getPopupContainer={getPopupContainer}
-      left={props.disableLeft ? 0 : left}
+      left={arrowLeft}
       ref={(node) => {
         tooltipRef.current = node;
         if (ref) {

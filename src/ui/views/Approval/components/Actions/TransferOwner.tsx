@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -12,20 +11,7 @@ import * as Values from './components/Values';
 import ViewMore from './components/ViewMore';
 import { SecurityListItem } from './components/SecurityListItem';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './TransferOwner.module.css';
 
 const TransferOwner = ({
   data,
@@ -52,7 +38,7 @@ const TransferOwner = ({
   const receiver = requireData.receiver;
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.transferOwner.description')}</Row>
@@ -116,7 +102,7 @@ const TransferOwner = ({
           />
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

@@ -15,7 +15,7 @@ interface TokenDetailModalProps {
   hideOperationButtons?: boolean;
 }
 export const ModalCloseIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
+  <SvgIconCross className="w-14 fill-current text-r-neutral-foot" />
 );
 
 export const TokenDetailModal: React.FC<TokenDetailModalProps> = ({

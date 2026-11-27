@@ -1,34 +1,10 @@
 import React, { ReactNode } from 'react';
-import styled from 'styled-components';
-import clsx from 'clsx';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { ReactComponent as IconTableArrow } from 'ui/assets/sign/table-arrow.svg';
-
-const SubTableWrapper = styled.div`
-  border-radius: 6px;
-  background: var(--r-neutral-card3, #f7fafc);
-  padding: 12px;
-  row-gap: 12px;
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 12px;
-
-  &:empty {
-    display: none;
-
-    & + .table-arrow {
-      display: none;
-    }
-  }
-`;
-
-const TableArrow = styled(IconTableArrow)`
-  position: absolute;
-  top: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-`;
+import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
+import styles from './SubTable.module.css';
 
 export const SubTable = ({
   children,
@@ -58,12 +34,12 @@ export const SubTable = ({
 
   return (
     <div className="relative">
-      <SubTableWrapper ref={tableRef} className={className}>
+      <div ref={tableRef} className={cn(styles.subTable, className)}>
         {children}
-      </SubTableWrapper>
+      </div>
       {!!left && (
-        <TableArrow
-          className="table-arrow text-r-neutral-card3"
+        <IconTableArrow
+          className={cn(styles.tableArrow, 'table-arrow text-r-neutral-card3')}
           style={{
             left: `${left}px`,
           }}
@@ -72,22 +48,6 @@ export const SubTable = ({
     </div>
   );
 };
-
-const SubColWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
-  position: relative;
-
-  &.nested {
-    margin-top: -6px;
-
-    .row {
-      color: var(--r-neutral-foot, #6a7587) !important;
-      font-weight: 400 !important;
-    }
-  }
-`;
 
 export const SubCol = ({
   children,
@@ -99,31 +59,15 @@ export const SubCol = ({
   nested?: boolean;
 }) => {
   return (
-    <SubColWrapper
-      className={clsx('col', className, {
+    <div
+      className={clsx(styles.subCol, 'col', className, {
         nested: nested,
       })}
     >
       {children}
-    </SubColWrapper>
+    </div>
   );
 };
-
-const SubRowWrapper = styled.div`
-  font-size: 14px;
-  line-height: normal;
-  color: var(--r-neutral-body, #3e495e);
-  font-weight: 500;
-
-  &:has(.security-level-tag) {
-    padding-right: 8px;
-  }
-
-  &.title {
-    font-weight: 400;
-    white-space: nowrap;
-  }
-`;
 
 export const SubRow = ({
   children,
@@ -139,8 +83,9 @@ export const SubRow = ({
   itemsCenter?: boolean;
 }) => {
   return (
-    <SubRowWrapper
+    <div
       className={clsx(
+        styles.subRow,
         'row relative',
         {
           title: isTitle,
@@ -162,6 +107,6 @@ export const SubRow = ({
           />
         </TooltipWithMagnetArrow>
       )}
-    </SubRowWrapper>
+    </div>
   );
 };

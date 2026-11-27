@@ -1,0 +1,48 @@
+.tokenRenderWrapper {
+  width: auto;
+  height: 40px;
+  background: var(--r-neutral-card2, #f2f4f7);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  font-weight: 500;
+  font-size: 18px;
+  color: #13141a;
+  border: 1px solid transparent;
+  cursor: pointer;
+  &:hover {
+    background: var(--r-blue-light2, #eef1ff);
+  }
+  & :global(.token) {
+    display: flex;
+    flex: 1;
+    gap: 6px;
+    align-items: center;
+
+    & :global(.text) {
+      color: var(--r-neutral-title-1, #f7fafc);
+      max-width: 68px;
+      display: inline-block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+  & :global(.select) {
+    color: var(--r-neutral-title-1, #f7fafc);
+    flex: 1;
+    gap: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    white-space: nowrap;
+  }
+  & :global(.arrow) {
+    margin-left: auto;
+    font-size: 12px;
+    opacity: 0.8;
+    width: 18px;
+    height: 18px;
+  }
+}

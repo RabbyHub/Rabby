@@ -6,7 +6,6 @@ import { URDecoder } from '@ngraveio/bc-ur';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import './style.less';
 import * as Sentry from '@sentry/browser';
 import {
   HARDWARE_KEYRING_TYPES,
@@ -272,16 +271,25 @@ export const KeystoneConnect = () => {
             )}
           </div>
         ) : (
-          <div className="connect-keystone mt-[6px]">
+          <div className="mx-auto mb-0 mt-[6px] w-[432px] flex flex-col items-center">
             <p className="text-r-neutral-title1 text-14 leading-[20px] mb-[20px]">
               {t('page.dashboard.hd.keystone.title')}
             </p>
             <ul className="list-decimal w-[240px] pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px] mb-[35px]">
-              <li>{t('page.dashboard.hd.keystone.doc1')}</li>
-              <li>{t('page.dashboard.hd.keystone.doc2')}</li>
-              <li>{t('page.dashboard.hd.keystone.doc3')}</li>
+              <li className="text-r-neutral-body">
+                {t('page.dashboard.hd.keystone.doc1')}
+              </li>
+              <li className="text-r-neutral-body">
+                {t('page.dashboard.hd.keystone.doc2')}
+              </li>
+              <li className="text-r-neutral-body">
+                {t('page.dashboard.hd.keystone.doc3')}
+              </li>
             </ul>
-            <img src="/images/keystone-plug.svg" className="keystone-plug" />
+            <img
+              src="/images/keystone-plug.svg"
+              className="keystone-plug mb-[32px]"
+            />
             <Button
               type="primary"
               size="large"

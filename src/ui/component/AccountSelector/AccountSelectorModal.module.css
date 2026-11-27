@@ -1,0 +1,37 @@
+.wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.wrapper :global(.header.header) {
+  padding-bottom: 16px;
+  background: var(--r-neutral-bg2, #f2f4f7);
+  flex-shrink: 0;
+}
+
+.wrapper :global(.header.header .ant-input-affix-wrapper) {
+  border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
+  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
+  border-radius: 6px;
+  height: 44px;
+  border-width: 1px;
+}
+
+.wrapper :global(.header.header .ant-input-affix-wrapper input::placeholder) {
+  color: var(--r-neutral-foot, #6a7587);
+}
+
+.wrapper :global(.header.header .ant-input-affix-wrapper:focus),
+.wrapper :global(.header.header .ant-input-affix-wrapper-focused) {
+  border-color: var(--r-blue-default);
+}
+
+.wrapper :global(.virtuoso-list) {
+  height: 100%;
+  flex: 1;
+}
+
+.wrapper :global(.virtuoso-list::-webkit-scrollbar) {
+  display: none !important;
+}

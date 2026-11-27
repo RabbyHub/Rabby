@@ -1,0 +1,29 @@
+.input {
+  color: var(--r-neutral-title1, #192945);
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: normal;
+  background: transparent !important;
+  padding-left: 0;
+  padding-right: 0;
+  & > :global(.ant-input) {
+    color: var(--r-neutral-title1, #192945);
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    border-width: 0px !important;
+    border-color: transparent;
+  }
+
+  &::placeholder {
+    color: var(--r-neutral-foot, #6a7587);
+  }
+
+  &::-webkit-inner-spin-button,
+  &::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

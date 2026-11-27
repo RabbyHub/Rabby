@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 
 import { useWhitelistStore } from '@/ui/state/whitelist';
-import styled from 'styled-components';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { Account } from '@/background/service/preference';
 import { AddressTypeCard } from '@/ui/component/AddressRiskAlert';
@@ -10,11 +9,6 @@ import { Cex } from '@rabby-wallet/rabby-api/dist/types';
 import { getUiType, isSameAddress } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import clsx from 'clsx';
-
-const AddressText = styled.span`
-  font-weight: 500;
-  color: var(--r-neutral-title1);
-`;
 
 const isTab = getUiType().isTab;
 const getContainer = isTab ? '.js-rabby-popup-container' : undefined;
@@ -59,9 +53,13 @@ export const ToAddressCard = ({
           copyAddress(targetAccount.address);
         }}
       >
-        <AddressText>{addressSplit[0]}</AddressText>
+        <span className="font-medium text-r-neutral-title1">
+          {addressSplit[0]}
+        </span>
         {addressSplit[1]}
-        <AddressText>{addressSplit[2]}</AddressText>
+        <span className="font-medium text-r-neutral-title1">
+          {addressSplit[2]}
+        </span>
         <span className="ml-2 inline-block w-[14px] h-[13px]">
           <RcIconCopy />
         </span>

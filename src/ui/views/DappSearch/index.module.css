@@ -1,0 +1,58 @@
+.searchWrapper {
+  & :global(.ant-input) {
+    height: 24px;
+    line-height: 24px !important;
+    font-size: 17px;
+    border-radius: 0 !important;
+  }
+
+  & :global(.ant-input-affix-wrapper) {
+    border-radius: 8px 0 0 8px !important;
+    border: 1px solid var(--r-neutral-line, #d3d8e0);
+    padding: 13px 15px;
+    line-height: 24px !important;
+    background: var(--r-neutral-card1, #fff);
+
+    & input::placeholder {
+      color: var(--r-neutral-foot, #6a7587);
+    }
+
+    & :global(.ant-input-clear-icon) {
+      color: var(--r-neutral-foot, #6a7587);
+    }
+
+    & :global(.ant-input-prefix) {
+      margin-right: 12px;
+    }
+    & :global(.ant-input) {
+      background-color: transparent;
+      color: var(--r-neutral-title1, #192945);
+      &::placeholder {
+        color: var(--r-neutral-foot, #6a7587);
+      }
+    }
+  }
+
+  & :global(.ant-input-affix-wrapper-focused) {
+    border: 1px solid var(--r-blue-default, #7084ff);
+  }
+
+  & :global(.ant-input-group-addon) {
+    border-radius: 0px 8px 8px 0px !important;
+  }
+
+  & :global(.anticon-close-circle) {
+    font-size: 16px;
+  }
+
+  & :global(.ant-btn-primary) {
+    height: 52px;
+    min-width: 120px;
+    border-radius: 0px 8px 8px 0px !important;
+
+    color: var(--r-neutral-title2, #fff);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 20px;
+  }
+}

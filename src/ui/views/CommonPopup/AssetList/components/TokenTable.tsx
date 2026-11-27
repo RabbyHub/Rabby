@@ -26,13 +26,12 @@ const VirtualTokenRow = ({
   style,
 }: ListChildComponentProps<TokenRowData>) => {
   const item = data.list![index];
+  // react-window sizes the slot inline (itemSize), so the row keeps its own
+  // h-[60px] mt-8 inside the slot instead of taking the slot's style.
   return (
-    <TokenItem
-      onClick={() => data.onSelect(item)}
-      style={style}
-      key={`${item.chain}-${item.id}`}
-      item={item}
-    />
+    <div style={style} key={`${item.chain}-${item.id}`}>
+      <TokenItem onClick={() => data.onSelect(item)} item={item} />
+    </div>
   );
 };
 

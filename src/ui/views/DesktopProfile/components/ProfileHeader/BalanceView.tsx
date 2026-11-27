@@ -34,7 +34,6 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import {
   openInTab,
   splitNumberByStep,
@@ -46,11 +45,6 @@ import { CurveModal } from './CurveModal';
 import { useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { RcIconRefreshCC } from '@/ui/assets/desktop/profile';
-
-const Container = styled.div`
-  .balance-view-content {
-  }
-`;
 
 export const BalanceView: React.FC<{
   balance?: number | null;
@@ -164,7 +158,7 @@ export const BalanceView: React.FC<{
 
   return (
     <>
-      <Container onMouseLeave={onMouseLeave}>
+      <div onMouseLeave={onMouseLeave}>
         <div className="balance-view-content">
           <div>
             <div className={clsx('group w-[100%] flex gap-[8px] items-end')}>
@@ -269,7 +263,7 @@ export const BalanceView: React.FC<{
             )}
           </div>
         </div>
-      </Container>
+      </div>
     </>
   );
 };

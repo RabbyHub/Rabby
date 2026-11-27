@@ -1,0 +1,54 @@
+.root {
+  display: flex;
+  align-items: center;
+
+  & input::-webkit-outer-spin-button,
+  & input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  & :global(.step-btn) {
+    padding: 6px;
+    color: var(--r-neutral-body, #3e495e);
+    border: 1px solid var(--r-neutral-line, #e0e5ec);
+
+    &:first-child {
+      border-right: none;
+      border-radius: 8px 0 0 8px;
+    }
+    &:last-child {
+      border-left: none;
+      border-radius: 0 8px 8px 0;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      & svg {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  & :global(.step-input-field) {
+    color: var(--r-neutral-title1, #192945);
+    text-align: center;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 16px;
+    width: 64px;
+    height: 34px;
+
+    border: 1px solid var(--r-neutral-line, #e0e5ec);
+    background-color: transparent;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--r-blue-default, #4c65ff);
+    }
+  }
+}

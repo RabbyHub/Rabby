@@ -3,21 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Button, Form, Input, InputRef } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { Popup } from 'ui/component';
-import styled from 'styled-components';
 
 import IconEdit from 'ui/assets/editpen.svg';
 import { useApprovalUtils } from '../../../hooks/useApprovalUtils';
 import clsx from 'clsx';
 import { Divide } from '../../Divide';
-
-const DIV = styled.div`
-  margin-top: 16px;
-  .popup-input {
-    &:hover {
-      border-color: var(--r-blue-default, #7084ff) !important;
-    }
-  }
-`;
+import styles from './AddressMemo.module.css';
 
 const AddressMemo = ({ address }: { address: string }) => {
   const { alias } = useApprovalUtils();
@@ -49,7 +40,7 @@ const AddressMemo = ({ address }: { address: string }) => {
         padding: '0 20px',
       },
       content: (
-        <DIV>
+        <div className={styles.form}>
           <Form
             form={form}
             onFinish={async () => {
@@ -92,9 +83,9 @@ const AddressMemo = ({ address }: { address: string }) => {
                 onClick={() => destroy()}
                 className={clsx(
                   'w-[200px]',
-                  'text-blue-light',
-                  'border-blue-light',
-                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'text-r-blue-default',
+                  'border-r-blue-default',
+                  'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
                   'before:content-none'
                 )}
               >
@@ -110,7 +101,7 @@ const AddressMemo = ({ address }: { address: string }) => {
               </Button>
             </div>
           </Form>
-        </DIV>
+        </div>
       ),
     });
   };

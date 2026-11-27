@@ -44,7 +44,7 @@ button:focus {
 }
 
 .subtitle {
-  color: @color-comment-1;
+  color: var(--r-neutral-foot);
   font-size: 14px;
   line-height: 14px;
 }
@@ -109,11 +109,11 @@ button:focus {
       bottom: 0 !important;
 
       & > div {
-        width: 400px !important;
+        width: 400px;
         margin: 0 auto;
         border-top: 0;
         .ant-btn {
-          height: 42px !important;
+          height: 42px;
         }
       }
     }
@@ -126,7 +126,6 @@ button:focus {
     border-top: 0.5px solid var(--r-neutral-line, #d3d8e0);
 
     .ant-btn {
-      height: 42px !important;
       padding-left: 40px;
       padding-right: 40px;
       font-weight: 500;
@@ -145,7 +144,7 @@ button:focus {
 .stray-page-wide.stray-page-wide {
   .stray-footer-nav {
     background-color: transparent;
-    border-top: none !important;
+    border-top: none;
   }
 }
 
@@ -157,14 +156,7 @@ button:focus {
   }
 
   .stray-footer-nav {
-    width: 222px !important;
     margin: auto;
-  }
-
-  .stray-footer-nav {
-    .ant-btn {
-      height: 52px !important;
-    }
   }
 }
 
@@ -222,7 +214,7 @@ button:focus {
     color: var(--r-neutral-title-2, #fff);
     text-align: center;
     font-size: 14px;
-    font-weight: 510;
+    font-weight: 500;
     line-height: 17px;
   }
   .tags {
@@ -231,7 +223,7 @@ button:focus {
     display: flex;
     li {
       padding: 5px 10px;
-      border: 1px solid @color-border;
+      border: 1px solid var(--r-neutral-line);
       border-radius: 2px;
       font-size: 12px;
       line-height: 14px;
@@ -328,7 +320,7 @@ button:focus {
   }
   .qrcode {
     padding: 10px;
-    border: 1px solid @color-border;
+    border: 1px solid var(--r-neutral-line);
     border-radius: 12px;
     margin: 0 auto;
     width: 200px;
@@ -339,22 +331,13 @@ button:focus {
       margin: 0;
       object-fit: cover;
       border-radius: 8px;
-      background-color: @color-comment-2;
+      background-color: var(--r-neutral-line);
     }
   }
   .icon-arrow-down {
     width: 28px;
     height: 28px;
     margin: 13px auto;
-  }
-}
-
-.uploader {
-  border-color: transparent;
-  border-width: 1px;
-  transition: border 0.2s;
-  &:hover {
-    border-color: #b0bdff;
   }
 }
 

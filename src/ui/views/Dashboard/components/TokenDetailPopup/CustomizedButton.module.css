@@ -1,0 +1,17 @@
+.switch:global(.ant-switch-small) {
+  min-width: 24px;
+  height: 12px;
+  line-height: 12px;
+}
+
+.switch:global(.ant-switch-small) :global(.ant-switch-handle) {
+  width: 10px;
+  height: 10px;
+  top: 1px;
+  left: 1px;
+}
+
+.switch:global(.ant-switch-small.ant-switch-checked)
+  :global(.ant-switch-handle) {
+  left: 13px;
+}

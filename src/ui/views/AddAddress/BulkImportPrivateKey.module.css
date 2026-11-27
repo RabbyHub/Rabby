@@ -1,0 +1,72 @@
+.passwordInput {
+  &:global(.ant-input) {
+    height: 52px;
+    border-radius: 8px;
+    border: 1px solid var(--r-neutral-line, #e0e5ec);
+    background: var(--r-neutral-card-1, #fff);
+    padding: 0 15px;
+    font-size: 15px;
+    line-height: 18px;
+    color: var(--r-neutral-title-1, #192945);
+    box-shadow: none;
+  }
+
+  &:global(.ant-input)::placeholder {
+    color: var(--r-neutral-foot, #6a7587);
+  }
+
+  &:global(.ant-input:focus),
+  &:global(.ant-input-focused) {
+    border-color: var(--r-blue-default, #4c65ff);
+    box-shadow: none;
+  }
+  &:global(.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input),
+  &:global(.ant-input-status-error:not(.ant-input-disabled):not(.ant-input-borderless).ant-input:hover),
+  &:global(.ant-input:hover),
+  &:global(.ant-input:focus),
+  &:global(.ant-input-focused) {
+    background: var(--r-neutral-card-1, #fff);
+  }
+}
+
+.hiddenRowInput {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--r-neutral-title-1, #192945);
+  font-size: 13px;
+  line-height: 16px;
+  height: 16px;
+  padding: 0;
+  font-weight: 500;
+  font-family: 'SF Pro Text', 'SF Pro', -apple-system, BlinkMacSystemFont,
+    sans-serif;
+  letter-spacing: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+
+  &::-ms-reveal,
+  &::-ms-clear {
+    display: none;
+  }
+}
+
+.visibleRowTextarea {
+  width: 100%;
+  resize: none;
+  overflow: hidden;
+  background: transparent;
+  border: 0;
+  outline: none;
+  padding: 0;
+  color: var(--r-neutral-title-1, #192945);
+  font-size: 13px;
+  line-height: 16px;
+  min-height: 16px;
+  font-weight: 500;
+  white-space: pre-wrap;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}

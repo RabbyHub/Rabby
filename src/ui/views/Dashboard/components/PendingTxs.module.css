@@ -1,0 +1,11 @@
+.iconPendingTx {
+  width: 16px;
+  height: 16px;
+  animation: icnSpin 1.5s linear infinite;
+}
+
+@keyframes icnSpin {
+  100% {
+    transform: rotate(360deg);
+  }
+}

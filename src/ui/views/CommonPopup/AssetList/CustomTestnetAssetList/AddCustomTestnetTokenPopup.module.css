@@ -1,0 +1,54 @@
+.wrapper :global(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
+.wrapper :global(.ant-form-item-label) > label {
+  color: var(--r-neutral-body, #3e495e);
+  font-size: 13px;
+  line-height: 16px;
+}
+
+.wrapper :global(.ant-input) {
+  height: 52px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  background: transparent;
+  border: 1px solid var(--r-neutral-line, #d3d8e0);
+  border-radius: 6px;
+
+  color: var(--r-neutral-title1, #192945);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.wrapper :global(.ant-input):focus {
+  border-color: var(--r-blue-default, #7084ff);
+}
+
+.wrapper :global(.ant-input)::placeholder {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.wrapper :global(.ant-input)[disabled] {
+  background: var(--r-neutral-card2, #f2f4f7);
+  border-color: transparent;
+}
+
+.wrapper :global(.ant-input)[disabled]:hover {
+  border-color: transparent;
+}
+
+.wrapper :global(.ant-form-item-has-error) :global(.ant-input),
+.wrapper :global(.ant-form-item-has-error) :global(.ant-input):hover {
+  border: 1px solid var(--r-red-default, #e34935);
+}
+
+.wrapper
+  :global(.ant-form-item-explain):global(.ant-form-item-explain-error) {
+  color: var(--r-red-default, #e34935);
+  font-size: 13px;
+  line-height: 16px;
+  min-height: 16px;
+}

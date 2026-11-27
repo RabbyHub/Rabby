@@ -1,18 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-
-const Bookmark = styled.div`
-  position: relative;
-  left: 0px;
-  background: var(--rb-neutral-secondary);
-  border-radius: 0 6px 6px 0;
-
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--rb-neutral-InvertHighlight);
-  line-height: 14px;
-  padding: 4px 16px;
-`;
+import { cn } from '@/ui/utils/cn';
 
 type BookMarkProps = {
   content: string;
@@ -21,9 +8,16 @@ type BookMarkProps = {
 
 export const BookMark = ({ content, className, ...rest }: BookMarkProps) => {
   return (
-    <Bookmark {...rest} className={className}>
+    <div
+      {...rest}
+      className={cn(
+        'relative left-0 bg-rb-neutral-secondary rounded-[0_6px_6px_0]',
+        'text-12 font-medium text-rb-neutral-InvertHighlight py-4 px-16',
+        className
+      )}
+    >
       {content}
-    </Bookmark>
+    </div>
   );
 };
 

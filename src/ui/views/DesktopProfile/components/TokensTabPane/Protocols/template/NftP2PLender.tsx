@@ -1,5 +1,4 @@
 import React, { memo } from 'react';
-import styled from 'styled-components';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 
 import { BookMark, Panel, ProxyTag, Value } from '../components';

@@ -69,6 +69,7 @@ export const RemoveTokenConfirmPopup = ({
             width="40px"
             height="40px"
             chainSize={23.333}
+            chainClassName="top-auto left-[20px] right-auto bottom-[-3.333px]"
           />
           <span className="remove-token-confirm-symbol">
             {getTokenSymbol(token)}

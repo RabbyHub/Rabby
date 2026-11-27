@@ -41,7 +41,7 @@ function NoAddressUI() {
   const { t } = useTranslation();
 
   return (
-    <div className="no-address pt-[90px]">
+    <div className="no-address min-h-[100vh] bg-r-neutral-bg-2 px-20 pt-[90px] pb-[30px]">
       <ThemeIcon
         className="no-data-image w-[52px] h-[52px]"
         src={RcNoMatchedAddress}
@@ -480,7 +480,7 @@ const AddressManagement = () => {
 
   return (
     <div className="page-address-management px-0 overflow-hidden">
-      <PageHeader className="address-page-header mx-[20px]">
+      <PageHeader className="mx-[20px] h-[60px] pt-0 mb-10" backCn="bottom-20">
         {enableSwitch
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}
@@ -519,24 +519,24 @@ const AddressManagement = () => {
                 <SessionStatusBar
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={accountList[currentAccountIndex].brandName || ''}
-                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  className="m-[16px] mt-0 text-white bg-r-neutral-black/10"
                   type={accountList[currentAccountIndex].type}
                 />
               )}
               {isLedger && (
-                <LedgerStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                <LedgerStatusBar className="m-[16px] mt-0 text-white bg-r-neutral-black/10" />
               )}
               {isKeystone && (
-                <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-r-neutral-black/10" />
               )}
               {isGridPlus && (
-                <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-r-neutral-black/10" />
               )}
               {isCoinbase && (
                 <SessionStatusBar
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={KEYRING_CLASS.Coinbase}
-                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  className="m-[16px] mt-0 text-white bg-r-neutral-black/10"
                   type={KEYRING_CLASS.Coinbase}
                 />
               )}

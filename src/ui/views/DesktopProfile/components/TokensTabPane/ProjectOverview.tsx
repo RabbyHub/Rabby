@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import clsx from 'clsx';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 
 import { DisplayedProject } from 'ui/utils/portfolio/project';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
@@ -9,37 +9,7 @@ import { ScrollToDomById } from './utils';
 import { TOKEN_WALLET_ANCHOR_ID } from './constant';
 import { ReactComponent as RcWalletIconCC } from 'ui/assets/wallet-cc.svg';
 import { useTranslation } from 'react-i18next';
-
-const ProjectOverviewItemWrapper = styled.div`
-  border-radius: 12px;
-  background-color: var(--rb-neutral-bg-3);
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 11px 10px;
-  cursor: pointer;
-  .title {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    cursor: pointer;
-
-    .name {
-      /* flex: 1; */
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 15px;
-      color: var(--r-neutral-title-1, #192945);
-    }
-    .net-worth {
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 15px;
-      text-align: right;
-      color: var(--r-neutral-title-1, #192945);
-    }
-  }
-`;
+import styles from './ProjectOverview.module.css';
 
 const ProjectOverviewItem = ({
   protocol,
@@ -53,9 +23,10 @@ const ProjectOverviewItem = ({
     ScrollToDomById(protocol.id);
   };
   return (
-    <ProjectOverviewItemWrapper
+    <div
       onClick={handleGotoProject}
-      className={clsx(
+      className={cn(
+        styles.projectOverviewItemWrapper,
         'border-[1px] border-solid border-transparent',
         'hover:bg-r-blue-light1 hover:border-rabby-blue-default'
       )}
@@ -82,7 +53,7 @@ const ProjectOverviewItem = ({
           {protocol._netWorth}
         </span>
       </div>
-    </ProjectOverviewItemWrapper>
+    </div>
   );
 };
 
@@ -96,18 +67,6 @@ interface Props {
   smallLength?: number;
   filterWallet?: boolean;
 }
-
-const ProjectOverviewListWrapper = styled.div`
-  margin-top: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-`;
-
-const ListWrapper = styled.div`
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 12px;
-`;
 
 const MAX_FOLD_LENGTH = 11; // 折叠情况下最多展示两行
 
@@ -137,8 +96,8 @@ const ProjectOverview = ({
   if (!list) return null;
 
   return (
-    <ProjectOverviewListWrapper>
-      <ListWrapper>
+    <div className="mt-20 px-20">
+      <div className="grid grid-cols-[repeat(6,1fr)] gap-12">
         {(isExpanded ? list : list?.slice(0, MAX_FOLD_LENGTH))?.map((item) => (
           <ProjectOverviewItem
             protocol={item}
@@ -169,8 +128,8 @@ const ProjectOverview = ({
             </div>
           </div>
         )}
-      </ListWrapper>
-    </ProjectOverviewListWrapper>
+      </div>
+    </div>
   );
 };
 

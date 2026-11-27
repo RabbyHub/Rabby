@@ -1,15 +1,7 @@
 import cx from 'clsx';
 import React, { useMemo } from 'react';
 import iPlaceholder from 'ui/assets/token-default.svg';
-
-import styled from 'styled-components';
-
-const Icon = styled.img`
-  width: 100%;
-  height: 100%;
-  border-radius: 43px;
-  overflow: hidden;
-`;
+import { cn } from '@/ui/utils/cn';
 
 interface Props {
   className?: string;
@@ -32,8 +24,11 @@ export const TokenAvatar = (props: Props) => {
   return (
     <div className={cx('relative', className)} style={logoStyle}>
       <div style={logoStyle}>
-        <Icon
-          className={logoClassName}
+        <img
+          className={cn(
+            'w-full h-full rounded-[43px] overflow-hidden',
+            logoClassName
+          )}
           src={logo}
           loading="lazy"
           alt=""

@@ -29,7 +29,6 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { useAsync } from 'react-use';
-import { createGlobalStyle } from 'styled-components';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import { ReactComponent as RcIconEco } from 'ui/assets/dashboard/icon-eco.svg';
 import { ReactComponent as RcIconGift } from 'ui/assets/gift-14.svg';
@@ -62,6 +61,7 @@ import { ClaimRabbyFreeGasBadgeModal } from '../ClaimRabbyBadgeModal/freeGasBadg
 import { EcologyPopup } from '../EcologyPopup';
 import { RabbyPointsPopup } from '../RabbyPointsPopup';
 import { RecentConnectionsPopup } from '../RecentConnections';
+import styles from './index.module.css';
 
 export const DragOverlayContext = createContext(false);
 
@@ -70,129 +70,6 @@ const SCROLLBAR_THUMB_HEIGHT = 50;
 const SCROLLBAR_THUMB_MAX_OFFSET =
   SCROLLBAR_TRACK_HEIGHT - SCROLLBAR_THUMB_HEIGHT;
 const SCROLLBAR_HIT_AREA_WIDTH = 13;
-
-const GlobalStyle = createGlobalStyle`
-  .rabby-dashboard-panel-container {
-    .dashboard-panel-grid {
-      position: relative;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 1px;
-
-      scroll-snap-align: end;
-    }
-
-    .panel-item {
-      height: 88px;
-      width: 100%;
-
-      background: var(--r-neutral-card1, #fff);
-
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-
-      &:hover {
-        background: var(--r-blue-light1, #edf0ff);
-      }
-
-      &:has(.panel-item-jump-button:hover) {
-        background: var(--r-neutral-card1, #fff);
-      }
-
-      &-jump-button {
-        position: absolute;
-        top: 4px;
-        right: 4px;
-        z-index: 1;
-
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 5px;
-
-        color: var(--r-neutral-title1, #192945);
-        background: var(--r-neutral-card3, #f7fafc);
-        border: 0;
-        border-radius: 4px;
-        cursor: pointer;
-
-        &:hover {
-          color: var(--r-blue-default, #4c65ff);
-          background: var(--r-blue-light1, #edf0ff);
-        }
-      }
-
-      &:hover > .panel-item-jump-button {
-        display: flex;
-      }
-
-      &-icon {
-        width: 24px;
-        height: 24px;
-        justify-self: center;
-        margin-bottom: 6px;
-        color: var(--r-neutral-title1, #192945);
-
-        &.icon-spin {
-          animation: icn-spin 1.5s linear infinite;
-        }
-
-        &.icon-rabby-mobile {
-          width: 24px;
-          height: 24px;
-          margin-bottom: 4px;
-        }
-
-        &.icon-points {
-          width: 24px;
-          height: 24px;
-          margin-bottom: 4px;
-        }
-      }
-
-      &-label {
-        font-weight: 500;
-        font-size: 13px;
-        line-height: 16px;
-        color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
-        text-align: center;
-      }
-
-      @keyframes icn-spin {
-        100% {
-          transform: rotate(360deg);
-        }
-      }
-
-      .icon-alert {
-        position: absolute;
-        right: 33px;
-        top: 7px;
-      }
-    }
-
-    .ant-badge {
-      .ant-badge-count {
-        background-color: var(--r-blue-default, #7084ff);
-        padding: 2px 6px;
-        font-size: 13px;
-        line-height: 1;
-        height: 18px;
-        border-radius: 90px;
-        box-shadow: none;
-      }
-      &.alert .ant-badge-count {
-        background-color: #ec5151;
-      }
-      &.round .ant-badge-count {
-        padding: 2px 4.5px !important;
-      }
-    }
-  }
-`;
 
 type IPanelItem = {
   icon: ThemeIconType;
@@ -780,11 +657,11 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
   return (
     <div
       className={clsx(
+        styles.container,
         'relative px-[16px] pt-[14px] pb-[12px]',
         'rabby-dashboard-panel-container'
       )}
     >
-      <GlobalStyle />
       <div
         className="overflow-auto rounded-[8px] bg-r-neutral-card-2"
         style={{

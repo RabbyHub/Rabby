@@ -1,0 +1,53 @@
+.previewModal :global(.ant-modal-body) {
+  padding: 12px;
+}
+
+.previewCard {
+  & :global(.nft-avatar) {
+    width: 100%;
+    height: 306px;
+    border-color: var(--r-neutral-line);
+    border-radius: 6px;
+    background-color: var(--r-neutral-bg1);
+  }
+
+  & :global(.nft-txpreview-title) {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: var(--r-neutral-title1);
+    border-bottom: 0.5px solid var(--r-neutral-line);
+    padding-top: 16px;
+    padding-bottom: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  & :global(.nft-txpreview-properties) {
+    padding-top: 12px;
+    margin-bottom: 16px;
+  }
+  & :global(.nft-txpreview-property) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+  }
+  & :global(.nft-txpreview-property-label) {
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 14px;
+    color: var(--r-neutral-title1);
+  }
+  & :global(.nft-txpreview-property-value) {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 12px;
+    line-height: 14px;
+    color: var(--r-neutral-foot);
+  }
+}

@@ -1,0 +1,4 @@
+/* Toggled on <html> while at least one ChainItem is mounted. */
+.globalActive :global(.app-chain-tooltip) :global(.ant-tooltip-arrow) {
+  display: block !important;
+}

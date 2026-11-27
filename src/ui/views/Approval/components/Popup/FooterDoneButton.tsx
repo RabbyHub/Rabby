@@ -35,7 +35,7 @@ export const FooterDoneButton: React.FC<Props> = ({ onDone, hide }) => {
   return (
     <div className="mb-24">
       <Button
-        className="w-[180px] h-[40px] bg-green border-green shadow-none"
+        className="w-[180px] h-[40px] bg-r-green-default border-r-green-default shadow-none"
         type="primary"
         onClick={onDone}
       >

@@ -9,23 +9,10 @@ import { useWallet } from '../utils';
 import React from 'react';
 import { ReactComponent as RcIconInfoCC } from '@/ui/assets/dashboard/warning-cc.svg';
 import { ReactComponent as RcIconArrowRightCC } from '@/ui/assets/dashboard/arrow-right-1-cc.svg';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 import { UI_TYPE } from '@/constant/ui';
 import { obj2query } from '../utils/url';
 import browser from 'webextension-polyfill';
-
-const AlertContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 14px;
-  background: var(--r-orange-light, #fff5e2);
-  font-size: 13px;
-  line-height: 16px;
-  font-weight: 500;
-  color: var(--r-orange-default, #ffb020);
-  cursor: pointer;
-`;
 
 export const SeedPhraseBackupAlert: React.FC<{
   style?: React.CSSProperties;
@@ -110,12 +97,20 @@ export const SeedPhraseBackupAlert: React.FC<{
   }
 
   return (
-    <AlertContainer style={style} className={className} onClick={handleBackup}>
+    <div
+      style={style}
+      className={cn(
+        'flex items-center gap-4 py-6 px-14 bg-r-orange-light',
+        'text-[13px] leading-[16px] font-medium text-r-orange-default cursor-pointer',
+        className
+      )}
+      onClick={handleBackup}
+    >
       <RcIconInfoCC />
       <div className="truncate flex-1">
         {t('component.SeedPhraseBackupAlert.message')}
       </div>
       <RcIconArrowRightCC />
-    </AlertContainer>
+    </div>
   );
 };

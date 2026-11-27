@@ -5,9 +5,7 @@ import { ReactComponent as RcIconGasAccountCC } from '@/ui/assets/sign/tx/gas-ac
 import GasLessBg from '@/ui/assets/sign/tx/bg.svg';
 import { ReactComponent as RcIconLogo } from '@/ui/assets/dashboard/rabby.svg';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import clsx from 'clsx';
-import LogoImage from 'ui/assets/sign/tx/rabby.svg';
 import { ReactComponent as RcIconCCFreeGasBg } from '@/ui/assets/free-gas/bg.svg';
 
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -22,6 +20,8 @@ import {
 } from '@/ui/views/GasAccount/hooks';
 import { formatUsdValue } from '@/ui/utils/number';
 import { GAS_ACCOUNT_INSUFFICIENT_TIP } from '@/ui/views/GasAccount/hooks/checkTxs';
+import { cn } from '@/ui/utils/cn';
+import styles from './GasLessComponents.module.css';
 
 export type GasLessConfig = {
   button_text: string;
@@ -289,100 +289,6 @@ export function GasLessNotEnough({
   );
 }
 
-const LinearGradientAnimatedSpan = styled.span`
-  font-size: 12px;
-  border-radius: 6px;
-  background: linear-gradient(94deg, #60bcff 14.47%, #8154ff 93.83%);
-  background-size: 150% 100%;
-  background-repeat: repeat-x;
-  box-shadow: 0px 1px 4px 0px rgba(65, 89, 188, 0.33);
-  animation: gradientLoading 3s ease infinite;
-
-  @keyframes gradientLoading {
-    0% {
-      background-position: 0% 0%;
-    }
-    25% {
-      background-position: 100% 0%;
-    }
-    50% {
-      background-position: 100% 100%;
-    }
-    75% {
-      background-position: 0% 100%;
-    }
-    100% {
-      background-position: 0% 0%;
-    }
-  }
-`;
-
-const GasLessReady = styled.div`
-  position: relative;
-  height: 54px;
-
-  &.direct-submit {
-    height: auto;
-  }
-
-  & > .gas-ready,
-  & > .gas-to-sign {
-    position: absolute !important;
-    top: 8px;
-    left: 0;
-    width: 100%;
-
-    transition-property: z-index;
-    transition-duration: 0s;
-    transition-delay: 0.6s;
-  }
-
-  & > .gas-ready {
-    z-index: -1;
-    margin-top: -2px !important;
-  }
-
-  & > .gas-to-sign {
-    z-index: 1;
-    margin-top: 4px !important;
-  }
-
-  &.gasLess > {
-    .gas-ready {
-      z-index: 1;
-    }
-    .gas-to-sign {
-      z-index: -1;
-    }
-  }
-
-  &.direct-submit {
-    & > .gas-ready {
-      display: none;
-    }
-
-    & > .gas-to-sign {
-      display: flex;
-    }
-    & > .gas-ready,
-    & > .gas-to-sign {
-      margin-top: 8px !important;
-      position: static !important;
-      top: 0px;
-      align-items: center;
-    }
-  }
-
-  &.gasLess.direct-submit > {
-    .gas-ready {
-      display: flex;
-    }
-    .gas-to-sign {
-      display: none;
-    }
-  }
-`;
-
 function FreeGasReady({
   freeGasText,
   color,
@@ -436,8 +342,9 @@ export function GasLessActivityToSign({
     : undefined;
 
   return (
-    <GasLessReady
-      className={clsx(
+    <div
+      className={cn(
+        styles.gasLessReady,
         gasLessEnable && 'gasLess',
         directSubmit && 'direct-submit'
       )}
@@ -485,15 +392,16 @@ export function GasLessActivityToSign({
             directSubmit && 'text-r-red-default'
           )}
           style={{
-            color: themeColor,
+            color: directSubmit ? undefined : themeColor,
           }}
         >
           {gasLessConfig?.before_click_text ||
             t('page.signFooterBar.gasless.notEnough')}
         </span>
 
-        <LinearGradientAnimatedSpan
-          className={clsx(
+        <span
+          className={cn(
+            styles.linearGradientAnimatedSpan,
             'mr-auto px-10 py-[7px]  cursor-pointer text-r-neutral-title-2'
           )}
           style={{
@@ -503,66 +411,22 @@ export function GasLessActivityToSign({
         >
           {gasLessConfig?.button_text ||
             t('page.signFooterBar.gasless.GetFreeGasToSign')}
-        </LinearGradientAnimatedSpan>
+        </span>
       </span>
-    </GasLessReady>
+    </div>
   );
 }
 
-export const GasLessAnimatedWrapper = styled.div`
-  &.gasLess,
-  .gasLess {
-    background-color: var(--r-blue-disable);
-    background-image: url(${LogoImage}),
-      linear-gradient(
-        var(--r-blue-default, #7084ff),
-        var(--r-blue-default, #7084ff)
-      );
-    background-repeat: no-repeat;
-    background-size: 10%, 200%;
-    background-position-x: -12%, 200%;
-    background-position-y: center;
-    animation: gasLessLoading 0.9s linear 1 forwards,
-      gasLessJump 0.3s linear 3 forwards;
-
-    &.gasLessConfig {
-      background-color: var(--gas-bg-color);
-      background-image: linear-gradient(transparent, transparent),
-        linear-gradient(var(--gas-theme-color), var(--gas-theme-color));
-    }
-  }
-
-  @keyframes gasLessLoading {
-    0% {
-      background-position-x: -12%, 212%;
-    }
-
-    50% {
-      background-position-x: 55%, 150%;
-    }
-    99% {
-      background-position-x: 100%, 109%;
-    }
-
-    100% {
-      background-position-x: 120%, 100%;
-    }
-  }
-
-  @keyframes gasLessJump {
-    0% {
-      background-position-y: 100%, 200%;
-    }
-
-    90% {
-      background-position-y: 0%, 100%;
-    }
-
-    100% {
-      background-position-y: 50%, 100%;
-    }
-  }
-`;
+export const GasLessAnimatedWrapper = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div
+    ref={ref}
+    className={cn(styles.gasLessAnimatedWrapper, className)}
+    {...rest}
+  />
+));
 
 export function GasAccountTips({
   gasAccountCost,

@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
@@ -18,25 +17,7 @@ import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 import { SwapTokenOrderRequireData } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './SwapTokenOrder.module.css';
 
 const Permit = ({
   data,
@@ -105,7 +86,7 @@ const Permit = ({
   };
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
@@ -300,7 +281,7 @@ const Permit = ({
           </>
         )}
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

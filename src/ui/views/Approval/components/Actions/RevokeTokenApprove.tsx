@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
@@ -14,25 +13,7 @@ import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { Chain } from '@/types/chain';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './RevokeTokenApprove.module.css';
 
 const TokenApprove = ({
   data,
@@ -52,7 +33,7 @@ const TokenApprove = ({
   const isTestnet = chain.isTestnet;
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.revokeTokenApprove.revokeToken')}</Row>
@@ -106,7 +87,7 @@ const TokenApprove = ({
           </SubCol>
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

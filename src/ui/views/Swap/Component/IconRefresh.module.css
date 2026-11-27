@@ -1,0 +1,22 @@
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  12% {
+    transform: rotate(-10deg);
+  }
+  82% {
+    transform: rotate(390deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.refreshSvg {
+  transform-origin: 50% 50%;
+}
+
+.animating {
+  animation: spin 0.82s linear infinite;
+}

@@ -17,6 +17,32 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "styled-components",
+            "message": "styled-components was removed; it injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          },
+          {
+            "name": "react-use",
+            "importNames": ["useCss"],
+            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["@emotion/*"],
+            "message": "Emotion injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          },
+          {
+            "group": ["react-use/lib/useCss", "react-use/esm/useCss"],
+            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          }
+        ]
+      }
+    ],
     "no-restricted-syntax": [
       "error",
       {

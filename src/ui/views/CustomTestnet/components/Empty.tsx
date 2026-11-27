@@ -1,30 +1,18 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
-
-const Wraper = styled.div`
-  background-color: transparent;
-  min-height: auto;
-  flex: 1;
-  padding-top: 117px;
-  .no-data-image {
-    width: 100px;
-    margin: 0 auto;
-  }
-`;
 
 export const Emtpy = ({ description }: { description: string }) => {
   const { t } = useTranslation();
   return (
-    <Wraper>
+    <div className="bg-transparent min-h-[auto] flex-1 pt-[117px]">
       <img
-        className="no-data-image"
+        className="no-data-image w-[100px] my-0 mx-auto"
         src="/images/nodata-tx.png"
         alt="no address"
       />
       <p className="text-r-neutral-body text-14 text-center font-medium">
         {description}
       </p>
-    </Wraper>
+    </div>
   );
 };

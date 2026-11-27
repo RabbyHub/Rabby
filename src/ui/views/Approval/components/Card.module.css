@@ -1,0 +1,9 @@
+.card {
+  border-radius: 8px;
+  background: var(--r-neutral-card1, #fff);
+  border: 1px solid transparent;
+}
+
+.hasHover {
+  cursor: pointer;
+}

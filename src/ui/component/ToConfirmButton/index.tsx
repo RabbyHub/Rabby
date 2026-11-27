@@ -13,7 +13,7 @@ import {
   useSignatureStoreOf,
 } from '@/ui/component/MiniSignV2/state';
 import type { SignatureManager } from '@/ui/component/MiniSignV2/state/SignatureManager';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 
 export const ToConfirmBtn = (props: {
   title: React.ReactNode;
@@ -93,11 +93,7 @@ export const ToConfirmBtn = (props: {
           type="primary"
           disabled={props.disabled}
           block
-          className={clsx(
-            'h-[48px] rounded-[8px]',
-            props.loading && 'border-[#3646d9] bg-[#3646d9]',
-            props.buttonClassName
-          )}
+          className={clsx('h-[48px] rounded-[8px]', props.buttonClassName)}
           style={
             props.loading
               ? {
@@ -157,12 +153,6 @@ export const ToConfirmBtn = (props: {
   );
 };
 
-const RiskTipsContainer = styled.div`
-  .risk-tips-checkbox .rabby-checkbox__label {
-    margin-left: 4px;
-  }
-`;
-
 export const RiskTipsWrapper = ({
   showRiskTips,
   riskLabel,
@@ -195,14 +185,13 @@ export const RiskTipsWrapper = ({
   }, [riskReset]);
 
   return (
-    <RiskTipsContainer
-      className={clsx('w-full flex flex-col gap-[8px]', containerClassName)}
-    >
+    <div className={cn('w-full flex flex-col gap-[8px]', containerClassName)}>
       {children({ riskDisabled, resetRiskChecked })}
       {showRiskTips ? (
         <div className="flex h-[14px] items-center justify-center">
           <Checkbox
             className="risk-tips-checkbox h-[14px]"
+            labelClassName="ml-4"
             checked={riskChecked}
             type="square"
             onChange={setRiskChecked}
@@ -241,7 +230,7 @@ export const RiskTipsWrapper = ({
           </Checkbox>
         </div>
       ) : null}
-    </RiskTipsContainer>
+    </div>
   );
 };
 

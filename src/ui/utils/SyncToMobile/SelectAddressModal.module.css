@@ -1,0 +1,13 @@
+.modal :global(.ant-modal-body) {
+  padding: 0;
+  max-height: 600px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal :global(.ant-modal-content) {
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+}
