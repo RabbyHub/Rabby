@@ -17,7 +17,7 @@ import {
   WALLET_BRAND_CONTENT,
 } from '@/constant';
 import { AddressViewer } from '@/ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import useIsMountedRef from '@/ui/hooks/useMountedRef';
 import { useTranslation } from 'react-i18next';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
@@ -171,4 +171,4 @@ function AddressRow({
 /**
  * @deprecated
  */
-export default connectStore()(AddressRow);
+export default AddressRow;

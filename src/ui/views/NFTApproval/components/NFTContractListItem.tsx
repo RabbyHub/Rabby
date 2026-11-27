@@ -1,5 +1,4 @@
 import { NFTApprovalContract } from '@/background/service/openapi';
-import { connectStore } from '@/ui/store';
 import { ellipsis } from '@/ui/utils/address';
 import { Button } from 'antd';
 import React from 'react';
@@ -45,4 +44,4 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
   );
 };
 
-export default connectStore()(NFTContractListItem);
+export default NFTContractListItem;

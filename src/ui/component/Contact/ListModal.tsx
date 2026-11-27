@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button, DrawerProps, message } from 'antd';
 import styled from 'styled-components';
-import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWhitelistStore } from '@/ui/state/whitelist';
 import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { Popup } from 'ui/component';
@@ -186,4 +186,4 @@ const ListModal = ({
   );
 };
 
-export default connectStore()(ListModal);
+export default ListModal;
