@@ -105,7 +105,6 @@
     "bignumber.js": "9.0.1",
     "browserify-zlib": "0.2.0",
     "buffer": "6.0.3",
-    "clipboard": "2.0.8",
     "clsx": "1.1.1",
     "crypto-browserify": "3.12.0",
     "dayjs": "1.10.7",

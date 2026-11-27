@@ -1,40 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { message } from 'antd';
 import clsx from 'clsx';
-import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { ContactBookItem } from 'background/service/contactBook';
 import { PageHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { ellipsis } from 'ui/utils/address';
-import IconSuccess from 'ui/assets/success.svg';
+import { copyAddress } from 'ui/utils/clipboard';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import styles from './index.module.css';
 
 const ContactItem = ({ item }: { item: ContactBookItem }) => {
-  const { t } = useTranslation();
   const handleClickCopy = () => {
-    const clipboard = new ClipboardJS('.address', {
-      text: function () {
-        return item.address;
-      },
-    });
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              {t('global.copied')}
-            </div>
-            <div className="text-white">{item.address}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+    copyAddress(item.address);
   };
   return (
     <div className={styles.contactItem}>
