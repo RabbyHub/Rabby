@@ -3,6 +3,7 @@ import { CHAINS_ENUM } from '@debank/common';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import React, { useMemo, useCallback, useEffect } from 'react';
 import { QuoteLogo } from './QuoteLogo';
 import BigNumber from 'bignumber.js';
@@ -404,10 +405,10 @@ export const DexQuoteItem = (
             <div className="flex items-center justify-between">
               <div className={clsx('flex items-center')}>
                 <div
-                  className={clsx(
-                    'items-center gap-4 px-4',
+                  className={cn(
+                    'inline-flex items-center gap-4 px-4',
                     gasFeeTooHigh && 'bg-r-red-light',
-                    inSufficient ? 'hidden' : 'inline-flex'
+                    inSufficient && 'hidden'
                   )}
                 >
                   <RcIconGasCC

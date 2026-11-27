@@ -13,6 +13,7 @@ import { CopyChecked } from '@/ui/component/CopyChecked';
 import { ReactComponent as IconUnCheck } from '@/ui/assets/sync-to-mobile/uncheck.svg';
 import { ReactComponent as IconChecked } from '@/ui/assets/sync-to-mobile/checked.svg';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { isNil } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { BAN_REASONS } from './SelectAddressModal';
@@ -65,15 +66,15 @@ export const SelectAddressItem: React.FC<{
       }
     >
       <div
-        className={clsx(
+        className={cn(
           'flex items-center justify-between',
+          'cursor-pointer',
+          'bg-r-neutral-card1',
           'py-[11px] px-[16px] rounded-[8px]',
-          'border border-solid',
+          'border border-transparent border-solid',
           'hover:bg-r-blue-light1 hover:border-rabby-blue-default',
-          checked
-            ? 'bg-r-blue-light1 border-rabby-blue-default'
-            : 'bg-r-neutral-card1 border-transparent',
-          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+          checked && 'bg-r-blue-light1 border-rabby-blue-default',
+          disabled && 'cursor-not-allowed opacity-50',
           className
         )}
         onClick={handleClickItem}

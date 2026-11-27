@@ -8,6 +8,7 @@ import { ReactComponent as RcIconClose } from 'ui/assets/perps/icon-close-cc.svg
 import { ReactComponent as RcIconTpSlEdit } from 'ui/assets/perps/IconTpSlEditCC.svg';
 import { ReactComponent as RcIconTpSlCancel } from 'ui/assets/perps/IconTpSlCancelCC.svg';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import BigNumber from 'bignumber.js';
 import { useMemoizedFn } from 'ahooks';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';
@@ -285,14 +286,12 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
         // Like mobile, the whole pill is the action: edit when empty, cancel
         // once set (hover turns the border and the cancel icon blue).
         <div
-          className={clsx(
+          className={cn(
             'group inline-flex items-center justify-end gap-[5px] pl-12 pr-6 rounded-[10px]',
             'bg-rb-neutral-bg-5/50 border border-solid border-transparent',
-            'hover:border-rabby-blue-default',
+            'cursor-pointer hover:border-rabby-blue-default',
             hasPrice ? 'h-[40px]' : 'h-[20px]',
-            disableEdit && !hasPrice
-              ? 'opacity-50 cursor-not-allowed'
-              : 'cursor-pointer'
+            disableEdit && !hasPrice && 'opacity-50 cursor-not-allowed'
           )}
           onClick={handleTagClick}
         >
@@ -330,9 +329,9 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
         </div>
       ) : (
         <div
-          className={clsx(
-            'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px]',
-            disableEdit ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+          className={cn(
+            'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer',
+            disableEdit && 'opacity-50 cursor-not-allowed'
           )}
           onClick={handleTagClick}
         >
@@ -435,11 +434,9 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
             </div>
 
             <div
-              className={clsx(
-                'bg-r-neutral-card1 rounded-[12px] p-12 border border-solid',
-                inputFocused
-                  ? 'border-rabby-blue-default'
-                  : 'border-transparent'
+              className={cn(
+                'bg-r-neutral-card1 rounded-[12px] p-12 border  border-transparent border-solid',
+                inputFocused && 'border-rabby-blue-default'
               )}
             >
               <input
@@ -450,11 +447,9 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                 value={autoClosePrice ? `$${autoClosePrice}` : ''}
                 onChange={(e) => handlePriceChange(e.target.value)}
                 placeholder="$0"
-                className={clsx(
-                  'text-24 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
-                  priceValidation.error
-                    ? 'text-r-red-default'
-                    : 'text-rb-neutral-title-1'
+                className={cn(
+                  'text-24 text-rb-neutral-title-1 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
+                  priceValidation.error && 'text-r-red-default'
                 )}
                 style={{
                   boxShadow: 'none',

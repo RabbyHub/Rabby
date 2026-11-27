@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import React from 'react';
 import { CheckboxCC, CheckboxIndeterminateCC } from 'ui/assets/checkbox';
 
@@ -11,9 +12,9 @@ export const CheckboxV2: React.FC<{
 }> = ({ checked, indeterminate, disabled, onChange, className }) => {
   return (
     <div
-      className={clsx(
-        'flex items-center justify-center',
-        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
+      className={cn(
+        'flex items-center justify-center cursor-pointer',
+        disabled ? 'cursor-not-allowed opacity-50' : '',
         className
       )}
       onClick={(evt) => {
