@@ -476,7 +476,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
 
   const pickedPanelKeys = useMemo(() => {
     return getPanelKeys();
-  }, [dashboardPanelOrder]);
+  }, [dashboardPanelOrder, getPanelKeys]);
 
   const placeholderCount = useMemo(() => {
     return (3 - (pickedPanelKeys.length % 3)) % 3;

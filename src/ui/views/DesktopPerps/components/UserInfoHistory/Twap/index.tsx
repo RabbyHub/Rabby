@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import { ColumnType } from 'antd/lib/table';
 import {
@@ -13,7 +13,7 @@ import BigNumber from 'bignumber.js';
 import { Button } from 'antd';
 import { ReactComponent as RcIconArrowDown } from '@/ui/assets/perps/icon-arrow-down.svg';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
@@ -82,9 +82,9 @@ export const Twap: React.FC = () => {
     });
   }, [dispatch.perps]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchUserTwapSliceFills();
-  }, []);
+  });
 
   const historyTwapOrders = useMemo(() => {
     const orders: TwapOrder[] = [];

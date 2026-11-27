@@ -50,7 +50,7 @@ export function useSticky<T extends HTMLElement>(
       window.removeEventListener('resize', observe);
       window.removeEventListener('orientationchange', observe);
     };
-  }, [scrollElement]);
+  }, [scrollElement, observe]);
 
   return { stickyRef, isSticky: sticky, observe };
 }

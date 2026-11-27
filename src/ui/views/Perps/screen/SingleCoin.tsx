@@ -249,7 +249,7 @@ export const PerpsSingleCoin = () => {
   );
   useEffect(() => {
     setCurrentTpOrSl({ tpPrice, slPrice });
-  }, [tpPrice, slPrice]);
+  }, [tpPrice, slPrice, setCurrentTpOrSl]);
 
   const {
     handleOpenPosition,
@@ -391,7 +391,7 @@ export const PerpsSingleCoin = () => {
 
   const showOpenPosition = useMemo(() => {
     return history.location.search.includes('openPosition=true');
-  }, []);
+  }, [history.location.search]);
 
   const canOpenPosition =
     hasPermission &&

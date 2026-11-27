@@ -319,6 +319,7 @@ export const PositionSizeInputAndSliderV2: React.FC<PositionSizeInputAndSliderV2
     baseAsset,
     price,
     szDecimals,
+    calcDirectionAmount,
   ]);
 
   const unitLabel = useMemo(

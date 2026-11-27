@@ -82,9 +82,9 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
+  useMount(() => {
     getCurrentAccount();
-  }, []);
+  });
 
   useEffect(() => {
     if (currentAccount) {

@@ -4,6 +4,7 @@ import { KEYRING_CLASS } from 'consts';
 import './style.less';
 import { HDManager } from '../HDManager/HDManager';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
+import { useMount } from 'ahooks';
 
 type State = {
   keyring: string;
@@ -48,9 +49,9 @@ const SelectAddress = () => {
   // every render, so keying the effect on it wiped that cache whenever an
   // ancestor re-rendered, and the next toggle threw on the missing account.
   // `keyringId` is a ref fixed at mount, so there is nothing to re-sync.
-  React.useEffect(() => {
+  useMount(() => {
     initMnemonics();
-  }, []);
+  });
 
   const { keyring, brand } = state;
   const keyringId = useRef<number | null | undefined>(state.keyringId);

@@ -163,7 +163,7 @@ export const useCurve = (
 
     setData([]);
     fetch(address, false);
-  }, [address, nonce]);
+  }, [address, nonce, fetch]);
 
   const select = useMemo(() => {
     return formChartData(

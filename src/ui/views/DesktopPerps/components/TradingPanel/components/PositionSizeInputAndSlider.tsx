@@ -308,7 +308,7 @@ export const PositionSizeInputAndSlider: React.FC<PositionSizeInputAndSliderProp
     if (defaultMax) {
       handlePercentageChange(100);
     }
-  }, [defaultMax]);
+  }, [defaultMax, handlePercentageChange]);
 
   return (
     <>

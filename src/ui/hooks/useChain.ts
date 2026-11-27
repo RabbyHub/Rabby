@@ -81,7 +81,7 @@ export function useAsyncInitializeChainList({
         updateInitStage('inited');
       }
     },
-    []
+    [updateInitStage]
   );
 
   useEffect(() => {

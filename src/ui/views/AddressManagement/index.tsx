@@ -16,7 +16,7 @@ import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
 import { EVENTS, KEYRING_CLASS } from '@/constant';
-import { useDebounceFn, useRequest } from 'ahooks';
+import { useDebounceFn, useRequest, useMount } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
@@ -167,9 +167,9 @@ const AddressManagement = () => {
     loadingAccounts,
   ]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchAllAccounts();
-  }, []);
+  });
 
   const {
     runAsync: handleUpdateAllBalance,

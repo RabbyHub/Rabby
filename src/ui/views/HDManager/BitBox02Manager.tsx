@@ -44,15 +44,18 @@ export const BitBox02Manager: React.FC = () => {
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
   const [preventLoading, setPreventLoading] = React.useState(false);
 
-  const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
-    setVisibleAdvanced(false);
-    await fetchCurrentAccounts();
-    setSetting({
-      ...data,
-      type: HDPathType.BIP44,
-    });
-    setSelectedAccounts([]);
-  }, []);
+  const onConfirmAdvanced = React.useCallback(
+    async (data: SettingData) => {
+      setVisibleAdvanced(false);
+      await fetchCurrentAccounts();
+      setSetting({
+        ...data,
+        type: HDPathType.BIP44,
+      });
+      setSelectedAccounts([]);
+    },
+    [fetchCurrentAccounts, setSelectedAccounts]
+  );
   const { t } = useTranslation();
 
   React.useEffect(() => {

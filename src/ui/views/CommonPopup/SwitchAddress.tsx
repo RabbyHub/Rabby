@@ -2,15 +2,16 @@ import { WALLET_BRAND_TYPES } from '@/constant';
 import { useCommonPopupView } from '@/ui/utils';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'ahooks';
 
 export const SwitchAddress: React.FC = () => {
   const { setTitle, account, setHeight } = useCommonPopupView();
   const { t } = useTranslation();
 
-  React.useEffect(() => {
+  useMount(() => {
     setTitle(t('page.dashboard.hd.howToSwitch'));
     setHeight(420);
-  }, []);
+  });
 
   const url = React.useMemo(() => {
     switch (account?.brandName) {

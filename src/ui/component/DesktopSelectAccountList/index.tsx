@@ -17,7 +17,7 @@ import { isSameAddress, splitNumberByStep } from '@/ui/utils';
 import { onBackgroundStoreChanged } from '@/ui/utils/broadcastToUI';
 import { obj2query } from '@/ui/utils/url';
 import { isSameAccount } from '@/utils/account';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { flatten } from 'lodash';
 import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { ReactComponent as RcIconPinnedFill } from 'ui/assets/icon-pinned-fill.svg';
@@ -57,9 +57,9 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
     );
   }, [sortedAccountsList]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchAllAccounts();
-  }, []);
+  });
 
   const switchAccount = useCallback(
     async (account: typeof accountsList[number]) => {
@@ -83,7 +83,7 @@ export const DesktopSelectAccountList: React.FC<DesktopSelectAccountListProps> =
       scrollToCurrent();
     }
     shouldScrollRef.current = true;
-  }, [currentAccount?.address]);
+  }, [currentAccount?.address, scrollToCurrent]);
 
   const height = useMemo(() => {
     return Math.min(filteredAccounts.length + 1, 8) * 74 - 12;

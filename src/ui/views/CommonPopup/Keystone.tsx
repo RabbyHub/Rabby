@@ -2,22 +2,23 @@ import { openInternalPageInTab, useCommonPopupView } from '@/ui/utils';
 import { useKeystoneDeviceConnected } from '@/ui/utils/keystone';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import { useMount } from 'ahooks';
 
 export const Keystone: React.FC = () => {
   const { setTitle, setHeight, closePopup } = useCommonPopupView();
   const hasConnected = useKeystoneDeviceConnected();
   const { t } = useTranslation();
 
-  React.useEffect(() => {
+  useMount(() => {
     setTitle(t('page.dashboard.hd.howToConnectKeystone'));
     setHeight(360);
-  }, []);
+  });
 
   React.useEffect(() => {
     if (hasConnected) {
       closePopup();
     }
-  }, [hasConnected]);
+  }, [hasConnected, closePopup]);
 
   const handleClick = async () => {
     // Unlike Ledger.tsx/ImKeyPermission.tsx, only opened from the passive useKeystoneStatus watcher, never an in-flight approval.

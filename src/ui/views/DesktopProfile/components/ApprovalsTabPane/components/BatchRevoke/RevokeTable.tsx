@@ -39,11 +39,11 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   accountType,
 }) => {
   const task = useBatchRevokeTask();
-  const { totalApprovals, revokedApprovals } = task;
+  const { totalApprovals, revokedApprovals, init, status, pause } = task;
 
   React.useEffect(() => {
-    task.init(dataSource, revokeList);
-  }, [dataSource, revokeList]);
+    init(dataSource, revokeList);
+  }, [dataSource, revokeList, init]);
 
   const scrollHeight = React.useMemo(() => {
     const height = task.list.length * ROW_HEIGHT;
@@ -51,10 +51,10 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
   }, [task.list]);
 
   const handleWindowBlur = React.useCallback(() => {
-    if (task.status === 'active') {
-      task.pause();
+    if (status === 'active') {
+      pause();
     }
-  }, [task.status, task.pause]);
+  }, [status, pause]);
 
   React.useEffect(() => {
     window.addEventListener('blur', handleWindowBlur);

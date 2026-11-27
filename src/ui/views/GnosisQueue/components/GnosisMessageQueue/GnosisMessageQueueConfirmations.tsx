@@ -5,7 +5,7 @@ import {
 } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { SafeMessage } from '@rabby-wallet/gnosis-sdk';
@@ -14,6 +14,7 @@ import IconTagYou from 'ui/assets/tag-you.svg';
 import IconUnCheck from 'ui/assets/uncheck.svg';
 import { NameAndAddress } from 'ui/component';
 import { isSameAddress, useWallet } from 'ui/utils';
+import { useMount } from 'ahooks';
 
 interface MessageConfirmationsProps {
   confirmations: SafeMessage['confirmations'];
@@ -40,9 +41,9 @@ export const GnosisMessageQueueConfirmations = ({
     const accounts = await wallet.getAllVisibleAccountsArray();
     setVisibleAccounts(accounts);
   };
-  useEffect(() => {
+  useMount(() => {
     init();
-  }, []);
+  });
 
   return (
     <div className="tx-confirm">

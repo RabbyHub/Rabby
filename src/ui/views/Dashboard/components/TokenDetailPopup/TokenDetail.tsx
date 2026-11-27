@@ -235,7 +235,15 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token, isSend, handleInTokenSelect, desktopPathname]);
+  }, [
+    history,
+    token,
+    isSend,
+    handleInTokenSelect,
+    desktopPathname,
+    onClose,
+    setVisible,
+  ]);
 
   const goToReceive = useCallback(() => {
     setVisible(false);
@@ -253,7 +261,7 @@ const TokenDetail = ({
         }&token=${token?.symbol}`
       );
     }
-  }, [history, token, isDesktop, desktopPathname]);
+  }, [history, token, desktopPathname, onClose, setVisible]);
 
   const gotoBridge = useCallback(() => {
     setVisible(false);
@@ -297,7 +305,15 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
+  }, [
+    history,
+    token,
+    isSwap,
+    handleInTokenSelect,
+    desktopPathname,
+    onClose,
+    setVisible,
+  ]);
 
   const BottomBtn = useMemo(() => {
     if (footerScene === 'hidden') {

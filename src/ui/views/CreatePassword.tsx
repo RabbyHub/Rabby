@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Trans, useTranslation } from 'react-i18next';
 import { Input, Form, Spin, Button } from 'antd';
@@ -8,6 +8,7 @@ import IconCheck from 'ui/assets/check.svg';
 import clsx from 'clsx';
 import { useToggle } from 'react-use';
 import styles from './CreatePassword.module.css';
+import { useMount } from 'ahooks';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -77,9 +78,9 @@ const CreatePassword = () => {
     openInTab('https://rabby.io/docs/privacy');
   };
 
-  useEffect(() => {
+  useMount(() => {
     init();
-  }, []);
+  });
 
   return (
     <Spin spinning={loading} wrapperClassName={styles.spin} size="large">

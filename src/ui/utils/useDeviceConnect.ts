@@ -66,7 +66,7 @@ export const useDeviceConnect = () => {
 
       return true;
     },
-    [ledgerStatus, imKeyStatus]
+    [ledgerStatus, imKeyStatus, activePopup, setAccount, setData, wallet]
   );
 
   return connect;

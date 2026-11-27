@@ -9,6 +9,7 @@ import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { isSameAccount, SYNC_KEYRING_TYPES } from '@/utils/account';
 import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 import styles from './SelectAddressModal.module.css';
+import { useMount } from 'ahooks';
 
 interface Props {
   visible: boolean;
@@ -62,9 +63,9 @@ export const SelectAddressModal: React.FC<Props> = ({
     fetchAllAccounts,
   } = useAccounts();
 
-  React.useEffect(() => {
+  useMount(() => {
     fetchAllAccounts();
-  }, []);
+  });
 
   const handleSelectAddress = React.useCallback(
     (acc: IDisplayedAccountWithBalance) => {

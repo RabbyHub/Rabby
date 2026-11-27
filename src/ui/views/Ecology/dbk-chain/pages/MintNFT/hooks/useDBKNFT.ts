@@ -73,7 +73,7 @@ export const useMintNFT = () => {
 
   useEffect(() => {
     updateMintCounts();
-  }, [account?.address]);
+  }, [account?.address, updateMintCounts]);
 
   return {
     mintNFT,

@@ -59,7 +59,7 @@ export default function useTypingMnemonics({
 
       return nextVal;
     },
-    [mnemonics]
+    [mnemonics, onAppendLastMnemonicsPart]
   );
 
   React.useEffect(() => {

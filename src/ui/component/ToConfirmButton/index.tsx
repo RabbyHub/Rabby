@@ -49,13 +49,14 @@ export const ToConfirmBtn = (props: {
     }
   };
 
+  const { disabled, onCancel } = props;
   const cancel: React.MouseEventHandler<HTMLDivElement> = useCallback(
     (e) => {
       e.stopPropagation();
       setToConfirm(false);
-      props.onCancel?.();
+      onCancel?.();
     },
-    [props.onCancel]
+    [onCancel]
   );
   const divRef = useRef<HTMLDivElement>(null);
   useClickAway(divRef, () => {
@@ -66,11 +67,11 @@ export const ToConfirmBtn = (props: {
   });
 
   useEffect(() => {
-    if (props.disabled && toConfirm) {
+    if (disabled && toConfirm) {
       setToConfirm(false);
-      props.onCancel?.();
+      onCancel?.();
     }
-  }, [props.disabled, props.onCancel, toConfirm]);
+  }, [disabled, onCancel, toConfirm]);
 
   return (
     <div

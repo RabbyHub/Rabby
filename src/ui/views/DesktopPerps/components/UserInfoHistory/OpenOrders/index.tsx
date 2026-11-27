@@ -294,7 +294,7 @@ export const OpenOrders: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, t]
+    [marketDataMap, t, dispatch.perps, handleCancelOrder, handleCloseAll]
   );
   return (
     <>

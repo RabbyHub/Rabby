@@ -478,7 +478,13 @@ export const InlineLimitClose: React.FC<InlineLimitCloseProps> = ({
         })}
       </div>
     );
-  }, [closeLimitCount, record.closeLimitOrders, sizeDisplayUnit, coinUnit]);
+  }, [
+    closeLimitCount,
+    record.closeLimitOrders,
+    sizeDisplayUnit,
+    coinUnit,
+    handleCancelOrder,
+  ]);
 
   return (
     <div

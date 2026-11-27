@@ -306,16 +306,12 @@ export const useBridge = () => {
     return false;
   }, [fromChain, fromToken?.id, toChain, toToken?.id]);
 
+  const { autoSlippage, setSlippage } = slippageObj;
   useEffect(() => {
-    if (!isSameTokenLoading && slippageObj.autoSlippage) {
-      slippageObj.setSlippage(isSameToken ? '0.5' : '1');
+    if (!isSameTokenLoading && autoSlippage) {
+      setSlippage(isSameToken ? '0.5' : '1');
     }
-  }, [
-    slippageObj?.autoSlippage,
-    slippageObj?.setSlippage,
-    isSameToken,
-    isSameTokenLoading,
-  ]);
+  }, [autoSlippage, setSlippage, isSameToken, isSameTokenLoading]);
 
   const supportedChains = useRabbySelector((s) => s.bridge.supportedChains);
   // the most worth chain is the first
@@ -407,55 +403,58 @@ export const useBridge = () => {
   );
   const quoteFormKeyRef = useRef(quoteFormKey);
 
-  const setSelectedBridgeQuote = useCallback((quote?: SelectedBridgeQuote) => {
-    if (quoteRefreshLockedRef.current) {
-      return;
-    }
+  const setSelectedBridgeQuote = useCallback(
+    (quote?: SelectedBridgeQuote) => {
+      if (quoteRefreshLockedRef.current) {
+        return;
+      }
 
-    if (quoteFetchingRef.current) {
+      if (quoteFetchingRef.current) {
+        latestSelectedBridgeQuoteRef.current = quote;
+        setOriSelectedBridgeQuote(quote);
+        if (quote && !quote.manualClick && !depositFlowActiveRef.current) {
+          setQuoteRefreshCountdown((prev) => {
+            if (prev?.expired || prev?.frozen) {
+              return prev;
+            }
+            return { startedAt: 0, deadline: 0, frozen: true };
+          });
+        } else if (!quote) {
+          setQuoteRefreshCountdown((prev) => (prev?.expired ? prev : null));
+        }
+        return;
+      }
+
+      if (expiredTimer.current) {
+        clearTimeout(expiredTimer.current);
+        expiredTimer.current = undefined;
+      }
+      setQuoteRefreshCountdown(null);
+      if (
+        !quote?.manualClick &&
+        quote &&
+        !depositFlowActiveRef.current &&
+        !quoteRefreshLockedRef.current
+      ) {
+        const startedAt = Date.now();
+        const delay = 1000 * 30;
+        setQuoteRefreshCountdown({ startedAt, deadline: startedAt + delay });
+        expiredTimer.current = setTimeout(() => {
+          expiredTimer.current = undefined;
+          setQuoteRefreshCountdown((prev) =>
+            prev ? { ...prev, expired: true } : null
+          );
+          if (!depositFlowActiveRef.current && !quoteRefreshLockedRef.current) {
+            setPending(true);
+            setRefreshId((e) => e + 1);
+          }
+        }, delay);
+      }
       latestSelectedBridgeQuoteRef.current = quote;
       setOriSelectedBridgeQuote(quote);
-      if (quote && !quote.manualClick && !depositFlowActiveRef.current) {
-        setQuoteRefreshCountdown((prev) => {
-          if (prev?.expired || prev?.frozen) {
-            return prev;
-          }
-          return { startedAt: 0, deadline: 0, frozen: true };
-        });
-      } else if (!quote) {
-        setQuoteRefreshCountdown((prev) => (prev?.expired ? prev : null));
-      }
-      return;
-    }
-
-    if (expiredTimer.current) {
-      clearTimeout(expiredTimer.current);
-      expiredTimer.current = undefined;
-    }
-    setQuoteRefreshCountdown(null);
-    if (
-      !quote?.manualClick &&
-      quote &&
-      !depositFlowActiveRef.current &&
-      !quoteRefreshLockedRef.current
-    ) {
-      const startedAt = Date.now();
-      const delay = 1000 * 30;
-      setQuoteRefreshCountdown({ startedAt, deadline: startedAt + delay });
-      expiredTimer.current = setTimeout(() => {
-        expiredTimer.current = undefined;
-        setQuoteRefreshCountdown((prev) =>
-          prev ? { ...prev, expired: true } : null
-        );
-        if (!depositFlowActiveRef.current && !quoteRefreshLockedRef.current) {
-          setPending(true);
-          setRefreshId((e) => e + 1);
-        }
-      }, delay);
-    }
-    latestSelectedBridgeQuoteRef.current = quote;
-    setOriSelectedBridgeQuote(quote);
-  }, []);
+    },
+    [setRefreshId]
+  );
 
   useLayoutEffect(() => {
     const shouldResetQuote = quoteFormKeyRef.current !== quoteFormKey;
@@ -698,7 +697,7 @@ export const useBridge = () => {
 
   const openQuotesList = useCallback(() => {
     openQuote(true);
-  }, []);
+  }, [openQuote]);
 
   const rawQuoteLoading = quoteLoading || pending;
   quoteFetchingRef.current = rawQuoteLoading;

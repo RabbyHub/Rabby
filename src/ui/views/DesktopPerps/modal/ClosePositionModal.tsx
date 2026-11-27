@@ -1,11 +1,11 @@
 import { MarketData } from '@/ui/state/perps';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { Button, Modal } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { DesktopPerpsInput } from '../components/DesktopPerpsInput';
@@ -251,9 +251,9 @@ const ClosePositionModalContent: React.FC<Omit<Props, 'visible'>> = ({
     };
   }, [type, positionSize.notionalValue, position.size, positionSize.amount, t]);
 
-  useEffect(() => {
+  useMount(() => {
     handleMidClick();
-  }, []);
+  });
 
   const baseAsset = formatPerpsCoin(position.coin);
   const quoteAsset = marketData.quoteAsset || 'USDC';

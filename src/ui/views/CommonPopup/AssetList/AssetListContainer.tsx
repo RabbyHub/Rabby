@@ -175,7 +175,7 @@ export const AssetListContainer: React.FC<Props> = ({
         }))
       );
     }
-  }, [appPortfolios]);
+  }, [appPortfolios, setApps]);
   const appIds = useMemo(() => {
     return [...new Set(appPortfolios?.map((item) => item.id) || [])];
   }, [appPortfolios]);

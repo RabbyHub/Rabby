@@ -212,7 +212,7 @@ const DesktopSmallSwapContent: React.FC = () => {
     if (task.status === 'completed') {
       handleRefresh();
     }
-  }, [task.status]);
+  }, [task.status, handleRefresh]);
 
   const location = useLocation();
   useMount(() => {

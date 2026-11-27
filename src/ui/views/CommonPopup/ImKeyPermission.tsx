@@ -7,6 +7,7 @@ import {
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useImKeyDeviceConnected } from '@/ui/utils/imKey';
+import { useMount } from 'ahooks';
 
 export const ImKeyPermission: React.FC = () => {
   const { setTitle, setHeight, closePopup, data } = useCommonPopupView();
@@ -18,16 +19,16 @@ export const ImKeyPermission: React.FC = () => {
     bindApproval(data?.id, data?.component)
   );
 
-  React.useEffect(() => {
+  useMount(() => {
     setTitle(t('page.dashboard.hd.howToConnectImKey'));
     setHeight(360);
-  }, []);
+  });
 
   React.useEffect(() => {
     if (hasConnectedImKey) {
       closePopup();
     }
-  }, [hasConnectedImKey]);
+  }, [hasConnectedImKey, closePopup]);
 
   const handleClick = async () => {
     await rejectApproval(t('page.dashboard.hd.userRejectedTheRequest'), true);

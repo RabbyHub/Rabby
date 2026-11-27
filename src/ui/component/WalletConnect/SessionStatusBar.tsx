@@ -112,7 +112,7 @@ export const SessionStatusBar: React.FC<Props> = ({
 
   useEffect(() => {
     setPopupProps({ getContainer });
-  }, [getContainer]);
+  }, [getContainer, setPopupProps]);
 
   return (
     <CommonStatusBar

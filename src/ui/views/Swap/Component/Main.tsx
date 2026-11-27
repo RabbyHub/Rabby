@@ -479,7 +479,7 @@ export const Main = () => {
       clearTimeout(buildSwapTxsTimerRef.current);
       buildSwapTxsTimerRef.current = null;
     }
-  }, [quoteRequestId]);
+  }, [quoteRequestId, mutateTxs]);
 
   const runBuildSwapTxsForKey = useMemoizedFn((buildKey: string) => {
     const buildPromise = runBuildSwapTxs(buildKey);
@@ -1038,6 +1038,8 @@ export const Main = () => {
     quoteRequestId,
     awaitingTopUpResume,
     depositFlowActive,
+    mutateTxs,
+    runBuildSwapTxsForKey,
   ]);
 
   useEffect(() => {

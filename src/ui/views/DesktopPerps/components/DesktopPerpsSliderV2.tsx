@@ -10,6 +10,7 @@ export const DesktopPerpsSliderV2 = (
 ) => {
   const { isDarkTheme } = useThemeMode();
   const { showTooltip, ...sliderProps } = props;
+  const { onAfterChange } = sliderProps;
   const [hovered, setHovered] = React.useState(false);
   const [dragging, setDragging] = React.useState(false);
   const wrapperRef = React.useRef<HTMLDivElement>(null);
@@ -32,9 +33,9 @@ export const DesktopPerpsSliderV2 = (
           setHovered(false);
         }
       }
-      sliderProps.onAfterChange?.(value);
+      onAfterChange?.(value);
     },
-    [sliderProps.onAfterChange]
+    [onAfterChange]
   );
 
   const lastMousePos = React.useRef({ x: 0, y: 0 });

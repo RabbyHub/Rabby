@@ -70,17 +70,12 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
     }
   }, [batchRevokeState, history]);
 
+  const { status, init } = task;
   React.useEffect(() => {
-    if (batchRevokeState && task.status === 'idle') {
-      task.init(filteredDataSource, revokeList);
+    if (batchRevokeState && status === 'idle') {
+      init(filteredDataSource, revokeList);
     }
-  }, [
-    batchRevokeState,
-    filteredDataSource,
-    revokeList,
-    task.init,
-    task.status,
-  ]);
+  }, [batchRevokeState, filteredDataSource, revokeList, init, status]);
 
   const isPaused = task.status === 'paused';
   const processText = ` (${task.revokedApprovals}/${task.totalApprovals})`;

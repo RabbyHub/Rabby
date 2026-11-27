@@ -52,18 +52,21 @@ export const OneKeyManager: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getCurrentAccounts]);
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
 
-  const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
-    setVisibleAdvanced(false);
-    await fetchCurrentAccounts();
-    setSetting({
-      ...data,
-      type: HDPathType.BIP44,
-    });
-    setSelectedAccounts([]);
-  }, []);
+  const onConfirmAdvanced = React.useCallback(
+    async (data: SettingData) => {
+      setVisibleAdvanced(false);
+      await fetchCurrentAccounts();
+      setSetting({
+        ...data,
+        type: HDPathType.BIP44,
+      });
+      setSelectedAccounts([]);
+    },
+    [fetchCurrentAccounts, setSelectedAccounts]
+  );
 
   const [modal, contextHolder] = useModal();
   const { t } = useTranslation();
@@ -104,7 +107,7 @@ export const OneKeyManager: React.FC = () => {
   const openSwitchHD = React.useCallback(async () => {
     await cleanUpDeviceState();
     history.push('/import/hardware/onekey');
-  }, []);
+  }, [cleanUpDeviceState, history]);
 
   return (
     <>

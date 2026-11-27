@@ -98,7 +98,7 @@ export const SetReferralCode = ({
     } catch (error) {
       message.error(String(error?.message || error));
     }
-  }, [onSetCode, input]);
+  }, [onSetCode, input, closePopup]);
 
   const inputRef = useRef<InputRef>(null);
 

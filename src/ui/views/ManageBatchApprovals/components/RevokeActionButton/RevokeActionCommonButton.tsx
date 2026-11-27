@@ -48,7 +48,7 @@ export const RevokeActionCommonButton: React.FC<{
           className: '',
         };
     }
-  }, [history, processText, t, task]);
+  }, [processText, t, task, onDone]);
 
   return (
     <Button

@@ -424,7 +424,7 @@ export const BridgeContent = () => {
       clearTimeout(buildBridgeTxsTimerRef.current);
       buildBridgeTxsTimerRef.current = null;
     }
-  }, [quoteRequestId]);
+  }, [quoteRequestId, mutateTxs]);
 
   const runBuildBridgeTxsForKey = useMemoizedFn((buildKey: string) => {
     const buildPromise = runBuildBridgeTxs(buildKey);
@@ -810,6 +810,8 @@ export const BridgeContent = () => {
     quoteRequestId,
     awaitingTopUpResume,
     depositFlowActive,
+    mutateTxs,
+    runBuildBridgeTxsForKey,
   ]);
 
   useEffect(() => {

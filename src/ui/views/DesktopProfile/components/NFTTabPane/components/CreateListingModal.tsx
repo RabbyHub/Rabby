@@ -292,7 +292,7 @@ export const Content: React.FC<Props> = (props) => {
     if (currentOrder) {
       setFormValues(currentOrder);
     }
-  }, [currentOrder]);
+  }, [currentOrder, setFormValues]);
 
   const bestOfferPrice = useMemo(() => {
     return calcBestOfferPrice(nftDetail);

@@ -83,7 +83,7 @@ export const QRCodeManager: React.FC<Props> = ({ brand }) => {
       await fetchInitCurrentPathType(nextSetting);
       setLoading(false);
     },
-    []
+    [fetchInitCurrentPathType, getCurrentAccounts]
   );
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
 

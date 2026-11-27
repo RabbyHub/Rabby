@@ -160,7 +160,7 @@ export const BridgePendingTxItem = ({
         applyHistoryList(historyData, res.history_list);
       }
     }
-  }, [userAddress]);
+  }, [userAddress, applyHistoryList, wallet]);
 
   useEffect(() => {
     fetchHistory();
@@ -211,7 +211,7 @@ export const BridgePendingTxItem = ({
     return () => {
       eventBus.removeEventListener(EVENTS.BRIDGE_HISTORY_UPDATED, listener);
     };
-  }, []);
+  }, [handleBridgeHistoryUpdate]);
 
   // 预估不超过 5 秒时，源链完成后的前 5 秒不展示 Still Bridging，避免短文案一闪而过。
   // 轮询从 3 秒改成 2.5 秒，这样这 5 秒内除了进入页面时的首次请求，还能再查两次，尽量在文案出现前拿到结果。

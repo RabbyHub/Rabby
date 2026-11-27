@@ -246,7 +246,7 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
     } else {
       setAutoClosePrice('');
     }
-  }, [modalVisible, initTpOrSlPrice, type]);
+  }, [modalVisible, initTpOrSlPrice, type, handleQuickOptionPress]);
 
   const handleConfirm = useMemoizedFn(async () => {
     setLoading(true);

@@ -82,7 +82,7 @@ export const useTokenAndDefiData = ({
         }))
       );
     }
-  }, [appPortfolios]);
+  }, [appPortfolios, setApps]);
 
   const appIds = useMemo(() => {
     return [...new Set(appPortfolios?.map((item) => item.id) || [])];
