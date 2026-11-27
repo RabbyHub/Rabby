@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { message } from 'antd';
-import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { SignTextHistoryItem } from 'background/service/signTextHistory';
 import { Empty, FallbackSiteLogo, PageHeader } from '@/ui/component';
 import { useWallet, hex2Text, sinceTime } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
+import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import IconCopy from 'ui/assets/copy-gray.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { Account } from '@/background/service/preference';
@@ -28,19 +28,14 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
     }
   }
 
-  const handleCopyText = () => {
-    const clipboard = new ClipboardJS('.text-history__item--content', {
-      text: function () {
-        return formatedContent;
-      },
-    });
-    clipboard.on('success', () => {
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('global.copied'),
-        duration: 0.5,
-      });
-      clipboard.destroy();
+  const handleCopyText = async () => {
+    if (!(await copyTextToClipboard(formatedContent))) {
+      return;
+    }
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('global.copied'),
+      duration: 0.5,
     });
   };
 

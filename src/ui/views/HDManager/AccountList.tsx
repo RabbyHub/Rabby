@@ -1,7 +1,6 @@
 import { message, Table } from 'antd';
 import React, { useEffect, useRef } from 'react';
 import { ReactComponent as RcCopySVG } from 'ui/assets/icon-copy-cc.svg';
-import ClipboardJS from 'clipboard';
 import { AddToRabby } from './AddToRabby';
 import { MAX_ACCOUNT_COUNT } from './AdvancedSettings';
 import { AccountListSkeleton } from './AccountListSkeleton';
@@ -22,6 +21,7 @@ import { useQueryAccountsInfo } from './hooks/useQueryAccontsInfo';
 import { InViewport } from './InViewport';
 import { useMemoizedFn } from 'ahooks';
 import { generateAliasName } from '@/utils/account';
+import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import { uniqBy, values } from 'lodash';
 import { ReactComponent as IconInfoCC } from '@/ui/assets/address/info-cc.svg';
 const isWin32 = detectClientOS() === 'win32';
@@ -75,18 +75,13 @@ export const AccountList: React.FC<Props> = ({
 
   const { t } = useTranslation();
 
-  const copy = React.useCallback((value: string) => {
-    const clipboard = new ClipboardJS('.copy-icon', {
-      text: function () {
-        return value;
-      },
-    });
-    clipboard.on('success', () => {
-      message.success({
-        content: t('global.copied'),
-        key: 'ledger-success',
-      });
-      clipboard.destroy();
+  const copy = React.useCallback(async (value: string) => {
+    if (!(await copyTextToClipboard(value))) {
+      return;
+    }
+    message.success({
+      content: t('global.copied'),
+      key: 'ledger-success',
     });
   }, []);
 

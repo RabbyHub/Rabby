@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
@@ -15,6 +14,7 @@ import { useWalletConnectClockSkew } from './WalletConnect/useWalletConnectClock
 import { ClockSkewWarning } from './WalletConnect/ClockSkewWarning';
 import { KEYRING_CLASS } from '@/constant';
 import { Account } from '@/background/service/preference';
+import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import Spin from './Spin';
 import ThemeIcon from './ThemeMode/ThemeIcon';
 
@@ -47,26 +47,19 @@ const ScanCopyQRCode: React.FC<Props> = ({
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const { status } = useSessionStatus(account);
   const hasClockSkew = useWalletConnectClockSkew(isWalletConnect);
-  const rootRef = React.useRef<HTMLDivElement>(null);
 
-  const handleCopyCurrentAddress = () => {
-    const clipboard = new ClipboardJS(rootRef.current!, {
-      text: function () {
-        return qrcodeURL;
-      },
-    });
-
-    clipboard.on('success', () => {
-      setCopySuccess(true);
-      setTimeout(() => {
-        setCopySuccess(false);
-      }, 1000);
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('global.copied'),
-        duration: 0.5,
-      });
-      clipboard.destroy();
+  const handleCopyCurrentAddress = async () => {
+    if (!(await copyTextToClipboard(qrcodeURL))) {
+      return;
+    }
+    setCopySuccess(true);
+    setTimeout(() => {
+      setCopySuccess(false);
+    }, 1000);
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('global.copied'),
+      duration: 0.5,
     });
   };
 
@@ -82,7 +75,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
   }
 
   return (
-    <div ref={rootRef}>
+    <div>
       <div className="button-container mt-32 mb-24">
         <div
           className={clsx('cursor-pointer', { active: !showURL })}

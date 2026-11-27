@@ -83,9 +83,10 @@ export const DesktopHistoryItem = ({ data }: HistoryItemProps) => {
           </a>
           <RcIconCopyCC
             className="cursor-pointer text-r-neutral-foot"
-            onClick={() => {
-              copyTextToClipboard(data.id);
-              message.success(t('global.copied'));
+            onClick={async () => {
+              if (await copyTextToClipboard(data.id)) {
+                message.success(t('global.copied'));
+              }
             }}
           />
         </div>

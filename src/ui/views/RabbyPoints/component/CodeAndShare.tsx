@@ -44,8 +44,10 @@ export const CodeAndShare = ({
   usedOtherInvitedCode?: boolean;
 }) => {
   const { t } = useTranslation();
-  const copyInvitedCode = React.useCallback(() => {
-    copyTextToClipboard(invitedCode || '');
+  const copyInvitedCode = React.useCallback(async () => {
+    if (!(await copyTextToClipboard(invitedCode || ''))) {
+      return;
+    }
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.rabbyPoints.referral-code-copied'),

@@ -7,6 +7,7 @@ import { RcIconCopy1CC } from '@/ui/assets/desktop/common';
 import { getEIP7702RevokeSupportedChains } from '@/constant/eip7702';
 import ChainIcon from '@/ui/component/ChainIcon';
 import { ellipsisAddress } from '@/ui/utils/address';
+import { copyTextToClipboard } from '@/ui/utils/clipboard';
 import { findChainByEnum } from '@/utils/chain';
 import clsx from 'clsx';
 import { EIP7702Delegated } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
@@ -188,10 +189,9 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
                       type="button"
                       onClick={async (event) => {
                         event.stopPropagation();
-                        await navigator.clipboard.writeText(
-                          item.delegatedAddress
-                        );
-                        message.success(t('global.copied'));
+                        if (await copyTextToClipboard(item.delegatedAddress)) {
+                          message.success(t('global.copied'));
+                        }
                       }}
                       className="border-none bg-transparent text-r-neutral-foot"
                     >
