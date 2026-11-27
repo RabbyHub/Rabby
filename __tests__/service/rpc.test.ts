@@ -30,6 +30,7 @@ jest.mock('@/constant', () => ({
 }));
 
 import RPCService, { rpcServiceStoreSchema } from '@/background/service/rpc';
+import openapiService from '@/background/service/openapi';
 import { patchPersistStore } from '@/background/utils';
 
 describe('RPCService persistence', () => {
@@ -152,17 +153,36 @@ describe('RPCService preferred RPC', () => {
 
     request.mockClear();
 
+    // Must be a read outside BE_SUPPORTED_METHODS: those go to the backend
+    // and never touch the preferred RPC.
+    await expect(
+      RPCService.requestDefaultRPC({
+        chainServerId,
+        method: 'eth_getTransactionByHash',
+        params: ['0xhash'],
+      })
+    ).resolves.toBe(bestRPC);
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(request).toHaveBeenCalledWith(bestRPC, 'eth_getTransactionByHash', [
+      '0xhash',
+    ]);
+
+    request.mockClear();
+    (openapiService.ethRpc as jest.Mock).mockResolvedValueOnce('receipt');
+
     await expect(
       RPCService.requestDefaultRPC({
         chainServerId,
         method: 'eth_getTransactionReceipt',
         params: ['0xhash'],
       })
-    ).resolves.toBe(bestRPC);
-    expect(request).toHaveBeenCalledTimes(1);
-    expect(request).toHaveBeenCalledWith(bestRPC, 'eth_getTransactionReceipt', [
-      '0xhash',
-    ]);
+    ).resolves.toBe('receipt');
+    expect(request).not.toHaveBeenCalled();
+    expect(openapiService.ethRpc).toHaveBeenCalledWith(chainServerId, {
+      origin: encodeURIComponent('https://rabby.io'),
+      method: 'eth_getTransactionReceipt',
+      params: ['0xhash'],
+    });
   });
 
   it('reuses one in-flight probe per chain', async () => {
