@@ -2648,37 +2648,6 @@
       "duration-day-hour-min": "{{days}} 天 {{hours}} 小时 {{minutes}} 分钟"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "socialsTitle": "参与其中",
-          "arcadeBtn": "立即游玩",
-          "earnTitle": "赚取",
-          "airdropBtn": "赚取积分",
-          "airdrop": "空投",
-          "earnDesc": "质押你的 $S",
-          "migrateBtn": "即将推出",
-          "migrateTitle": "迁移",
-          "migrateDesc": "→",
-          "airdropDesc": "约 2 亿枚 S 空投给 Opera 和 Sonic 用户。",
-          "arcadeDesc": "玩免费游戏以赚取 S 空投积分。",
-          "earnBtn": "即将推出"
-        },
-        "points": {
-          "referralCodeCopied": "推荐码已复制",
-          "pointsDashboardBtn": "开始赚取积分",
-          "getReferralCode": "获取推荐码",
-          "errorTitle": "无法加载积分",
-          "sonicPoints": "Sonic 积分",
-          "today": "今天",
-          "sonicArcadeBtn": "开始游玩",
-          "shareOn": "分享至",
-          "pointsDashboard": "积分仪表板",
-          "sonicArcade": "Sonic Arcade",
-          "referralCode": "推荐码",
-          "retry": "重试",
-          "errorDesc": "加载你的积分时出错。请重试。"
-        }
-      },
       "dbk": {
         "home": {
           "bridge": "跨链至 DBK 链",
@@ -2961,14 +2930,10 @@
         "backupSeedPhrase": "备份助记词"
       },
       "readyToUse": {
-        "pin": "固定 Rabby 钱包",
         "guides": {
           "step2": "固定 Rabby Wallet",
           "step1": "点击浏览器扩展图标"
-        },
-        "desc": "找到 Rabby Wallet 并将其固定",
-        "extensionTip": "点击 <1/> 然后 <3/>",
-        "title": "你的 Rabby Wallet 已准备就绪！"
+        }
       },
       "importSeedPhrase": {
         "title": "导入助记词",

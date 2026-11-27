@@ -2574,37 +2574,6 @@
       "transactionSpeed": "Швидкість транзакції"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdrop": "Ейрдроп",
-          "arcadeBtn": "Грати зараз",
-          "arcadeDesc": "Грайте в безкоштовні ігри, щоб заробити бали для airdrop Sonic.",
-          "airdropBtn": "Заробляйте бали",
-          "migrateBtn": "Незабаром",
-          "migrateTitle": "Міграція",
-          "earnTitle": "Заробіток",
-          "socialsTitle": "Долучайтеся",
-          "migrateDesc": "→",
-          "airdropDesc": "Приблизно 200 мільйонів S для користувачів на Opera та Sonic.",
-          "earnBtn": "Скоро з'явиться",
-          "earnDesc": "Ставте ваші $S"
-        },
-        "points": {
-          "shareOn": "Поділитися на",
-          "sonicPoints": "Sonic Points",
-          "getReferralCode": "Отримати реферальний код",
-          "referralCode": "Реферальний код",
-          "sonicArcadeBtn": "Почати гру",
-          "retry": "Повторити",
-          "sonicArcade": "Sonic Arcade",
-          "today": "Сьогодні",
-          "pointsDashboardBtn": "Почніть заробляти очки",
-          "errorTitle": "Неможливо завантажити бали",
-          "pointsDashboard": "Панель управління Points",
-          "errorDesc": "Сталася помилка при завантаженні ваших балів. Будь ласка, спробуйте ще раз.",
-          "referralCodeCopied": "Реферальний код скопійовано"
-        }
-      },
       "dbk": {
         "home": {
           "bridgeBtn": "Переказати",
@@ -2887,14 +2856,10 @@
         "backupSeedPhrase": "Створити резервну копію сид-фрази"
       },
       "readyToUse": {
-        "pin": "Закріпіть Rabby Wallet",
         "guides": {
           "step2": "Закріпити Rabby Wallet",
           "step1": "Натисніть на піктограму розширення браузера"
-        },
-        "title": "Ваш Rabby Wallet готовий!",
-        "extensionTip": "Натисніть <1/> а потім <3/>",
-        "desc": "Знайдіть Rabby Wallet і закріпіть його"
+        }
       },
       "importSeedPhrase": {
         "title": "Імпорт сид-фрази",

@@ -2564,37 +2564,6 @@
       "duration-day-hour-min": "{{days}} д {{hours}} ч {{minutes}} мин"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdropBtn": "Заработайте очки",
-          "arcadeBtn": "Играть сейчас",
-          "earnTitle": "Зарабатывайте",
-          "airdropDesc": "~200 миллионов S пользователям на Opera и Sonic.",
-          "earnBtn": "Скоро будет доступно",
-          "airdrop": "Airdrop",
-          "earnDesc": "Держите ваш $S",
-          "socialsTitle": "Присоединяйтесь",
-          "migrateBtn": "Скоро будет доступно",
-          "migrateTitle": "Миграция",
-          "migrateDesc": "→",
-          "arcadeDesc": "Играйте в бесплатные игры, чтобы заработать очки для S airdrop."
-        },
-        "points": {
-          "sonicPoints": "Sonic Points",
-          "pointsDashboardBtn": "Начните зарабатывать баллы",
-          "errorTitle": "Невозможно загрузить баллы",
-          "sonicArcadeBtn": "Начать играть",
-          "today": "Сегодня",
-          "referralCode": "Реферальный код",
-          "pointsDashboard": "Панель управления Points",
-          "retry": "Повторить попытку",
-          "referralCodeCopied": "Реферальный код скопирован",
-          "errorDesc": "Произошла ошибка при загрузке ваших очков. Пожалуйста, попробуйте еще раз.",
-          "getReferralCode": "Получить реферальный код",
-          "sonicArcade": "Sonic Arcade",
-          "shareOn": "Поделиться на"
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTBtn": "Чеканка",
@@ -2877,14 +2846,10 @@
         "backupSeedPhrase": "Создать резервную копию сид-фразы"
       },
       "readyToUse": {
-        "pin": "Закрепить Rabby Wallet",
         "guides": {
           "step2": "Закрепить Rabby Wallet",
           "step1": "Нажмите на иконку расширения браузера"
-        },
-        "desc": "Найдите Rabby Wallet и закрепите его",
-        "title": "Ваш кошелек Rabby готов!",
-        "extensionTip": "Нажмите <1/> и затем <3/>"
+        }
       },
       "importSeedPhrase": {
         "title": "Импортировать сид-фразу",

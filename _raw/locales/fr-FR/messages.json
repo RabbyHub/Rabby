@@ -2910,37 +2910,6 @@
       "transactionSpeed": "Vitesse de transaction"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "arcadeBtn": "Jouer maintenant",
-          "earnTitle": "Gagner",
-          "airdropBtn": "Gagner des points",
-          "migrateTitle": "Migrer",
-          "migrateBtn": "Bientôt disponible",
-          "earnBtn": "Bientôt disponible",
-          "migrateDesc": "→",
-          "arcadeDesc": "Jouez gratuitement pour gagner des points en vue de l'airdrop de S.",
-          "socialsTitle": "Participez",
-          "earnDesc": "Staker vos $S",
-          "airdrop": "Airdrop",
-          "airdropDesc": "~200 millions S aux utilisateurs sur Opera et Sonic."
-        },
-        "points": {
-          "sonicArcadeBtn": "Commencez à jouer",
-          "sonicArcade": "Sonic Arcade",
-          "shareOn": "Partager sur",
-          "sonicPoints": "Sonic Points",
-          "referralCodeCopied": "Code de parrainage copié",
-          "today": "Aujourd'hui",
-          "referralCode": "Code de parrainage",
-          "pointsDashboard": "Tableau de bord des points",
-          "pointsDashboardBtn": "Commencez à gagner des points",
-          "errorTitle": "Impossible de charger les points",
-          "getReferralCode": "Obtenir le code de parrainage",
-          "errorDesc": "Une erreur s'est produite lors du chargement de vos points. Veuillez réessayer.",
-          "retry": "Réessayer"
-        }
-      },
       "dbk": {
         "home": {
           "bridgeBtn": "Bridger",
@@ -3223,14 +3192,10 @@
         "backupSeedPhrase": "Sauvegarder la phrase de récupération"
       },
       "readyToUse": {
-        "pin": "Épingler Rabby Wallet",
         "guides": {
           "step2": "Épingler Rabby Wallet",
           "step1": "Cliquez sur l'icône de l'extension du navigateur"
-        },
-        "desc": "Trouvez Rabby Wallet et épinglez-le",
-        "extensionTip": "Cliquez sur <1/> puis sur <3/>",
-        "title": "Votre Rabby Wallet est prêt !"
+        }
       },
       "importSeedPhrase": {
         "title": "Importer une phrase de récupération",

@@ -2562,37 +2562,6 @@
       "transactionSpeed": "Velocidad de transacción"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "migrateTitle": "Migrar",
-          "migrateBtn": "Próximamente",
-          "arcadeBtn": "Jugar ahora",
-          "airdropBtn": "Gana puntos",
-          "airdrop": "Airdrop",
-          "migrateDesc": "→",
-          "arcadeDesc": "Juega a juegos gratis para ganar puntos para el airdrop de S.",
-          "earnDesc": "Haz staking de tus $S",
-          "earnBtn": "Próximamente",
-          "earnTitle": "Ganar",
-          "airdropDesc": "~200 millones S a usuarios en Opera y Sonic.",
-          "socialsTitle": "Involúcrate"
-        },
-        "points": {
-          "pointsDashboard": "Panel de puntos",
-          "sonicArcade": "Sonic Arcade",
-          "sonicArcadeBtn": "Comienza a jugar",
-          "sonicPoints": "Puntos Sonic",
-          "retry": "Reintentar",
-          "referralCodeCopied": "Código de invitación copiado",
-          "today": "Hoy",
-          "referralCode": "Código de invitación",
-          "getReferralCode": "Obtener código de invitación",
-          "errorTitle": "No se pueden cargar los puntos",
-          "errorDesc": "Hubo un error al cargar tus puntos. Por favor, inténtalo de nuevo.",
-          "shareOn": "Compartir en",
-          "pointsDashboardBtn": "Comienza a ganar puntos"
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTDesc": "Sé testigo de DBK Chain",
@@ -2875,14 +2844,10 @@
         "backupSeedPhrase": "Hacer copia de seguridad de la frase de recuperación"
       },
       "readyToUse": {
-        "pin": "Fijar Rabby Wallet",
         "guides": {
           "step2": "Anclar Rabby Wallet",
           "step1": "Haz clic en el ícono de la extensión del navegador."
-        },
-        "desc": "Encuentra Rabby Wallet y fíjalo",
-        "extensionTip": "Haz clic en <1/> y luego en <3/>",
-        "title": "¡Tu Rabby Wallet está lista!"
+        }
       },
       "importSeedPhrase": {
         "title": "Importar frase de recuperación",

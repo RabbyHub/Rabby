@@ -2559,37 +2559,6 @@
       "transactionSpeed": "Kecepatan Transaksi"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdrop": "Airdrop",
-          "socialsTitle": "Terlibat",
-          "migrateBtn": "Segera hadir",
-          "earnTitle": "Dapatkan",
-          "arcadeBtn": "Main sekarang",
-          "airdropBtn": "Dapatkan poin",
-          "airdropDesc": "~200 juta S kepada pengguna di Opera dan Sonic.",
-          "earnBtn": "Segera hadir",
-          "arcadeDesc": "Mainkan permainan gratis untuk mendapatkan poin untuk airdrop S.",
-          "migrateTitle": "Migrasi",
-          "migrateDesc": "→",
-          "earnDesc": "Taruh $S Anda"
-        },
-        "points": {
-          "pointsDashboardBtn": "Mulai mendapatkan poin",
-          "shareOn": "Bagikan di",
-          "sonicPoints": "Sonic Points",
-          "pointsDashboard": "Dasbor Poin",
-          "sonicArcadeBtn": "Mulai bermain",
-          "errorTitle": "Tidak dapat memuat poin",
-          "today": "Hari ini",
-          "getReferralCode": "Dapatkan kode referensi",
-          "retry": "Coba lagi",
-          "referralCodeCopied": "Kode rujukan disalin",
-          "sonicArcade": "Sonic Arcade",
-          "errorDesc": "Terjadi kesalahan saat memuat poin Anda. Silakan coba lagi.",
-          "referralCode": "Kode rujukan"
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTBtn": "Mint",
@@ -2872,14 +2841,10 @@
         "backupSeedPhrase": "Cadangan Frasa Pemulihan"
       },
       "readyToUse": {
-        "pin": "Sematkan Rabby Wallet",
         "guides": {
           "step1": "Klik ikon ekstensi browser",
           "step2": "Sematkan Rabby Wallet"
-        },
-        "desc": "Temukan Rabby Wallet lalu sematkan",
-        "title": "Dompet Rabby Anda Sudah Siap!",
-        "extensionTip": "Klik <1/> dan kemudian <3/>"
+        }
       },
       "importSeedPhrase": {
         "title": "Impor Frasa Pemulihan",

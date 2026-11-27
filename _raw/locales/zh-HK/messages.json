@@ -2607,37 +2607,6 @@
       "duration-day-hour-min": "{{days}} 天 {{hours}} 小時 {{minutes}} 分鐘"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "socialsTitle": "參與其中",
-          "arcadeBtn": "立即遊玩",
-          "airdrop": "空投",
-          "earnBtn": "即將推出",
-          "migrateTitle": "遷移",
-          "earnDesc": "將你的 $S 質押",
-          "airdropBtn": "賺取積分",
-          "arcadeDesc": "玩免費遊戲，賺取 S 空投積分。",
-          "migrateDesc": "→",
-          "airdropDesc": "約 2 億枚 S 空投給 Opera 和 Sonic 用戶。",
-          "migrateBtn": "即將推出",
-          "earnTitle": "賺取"
-        },
-        "points": {
-          "shareOn": "分享至",
-          "sonicPoints": "Sonic 積分",
-          "referralCode": "推薦碼",
-          "referralCodeCopied": "推薦碼已複製",
-          "today": "今天",
-          "retry": "重試",
-          "errorTitle": "無法載入積分",
-          "errorDesc": "載入你的積分時出現錯誤。請重試。",
-          "pointsDashboardBtn": "開始賺取積分",
-          "sonicArcade": "Sonic Arcade",
-          "getReferralCode": "取得推薦碼",
-          "pointsDashboard": "積分面板",
-          "sonicArcadeBtn": "開始遊玩"
-        }
-      },
       "dbk": {
         "home": {
           "bridgeBtn": "跨鏈",
@@ -2920,14 +2889,10 @@
         "backupSeedPhrase": "備份助記詞"
       },
       "readyToUse": {
-        "pin": "將 Rabby 錢包釘選",
         "guides": {
           "step2": "將 Rabby Wallet 釘選至頂部",
           "step1": "點擊瀏覽器擴展圖標"
-        },
-        "extensionTip": "點擊 <1/>，然後點擊 <3/>",
-        "desc": "尋找 Rabby Wallet 並將其固定",
-        "title": "你的 Rabby Wallet 已準備好！"
+        }
       },
       "importSeedPhrase": {
         "title": "匯入助記詞",

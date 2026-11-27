@@ -3916,37 +3916,6 @@
       "transactionSpeed": "Transaction Speed"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdrop": "Airdrop",
-          "airdropDesc": "~200 million S to users on Opera and Sonic.",
-          "airdropBtn": "Earn points",
-          "arcadeDesc": "Play free games to earn points for the S airdrop.",
-          "arcadeBtn": "Play now",
-          "migrateTitle": "Migrate",
-          "migrateDesc": "→",
-          "migrateBtn": "Coming soon",
-          "earnTitle": "Earn",
-          "earnDesc": "Stake your $S",
-          "earnBtn": "Coming soon",
-          "socialsTitle": "Get Involved"
-        },
-        "points": {
-          "sonicPoints": "Sonic Points",
-          "referralCode": "Referral code",
-          "referralCodeCopied": "Referral code copied",
-          "today": "Today",
-          "shareOn": "Share on",
-          "sonicArcade": "Sonic Arcade",
-          "sonicArcadeBtn": "Start playing",
-          "pointsDashboard": "Points Dashboard",
-          "pointsDashboardBtn": "Start earning points",
-          "errorTitle": "Unable to load points",
-          "errorDesc": "There was an error loading your points. Please try again.",
-          "retry": "Retry",
-          "getReferralCode": "Get referral code"
-        }
-      },
       "dbk": {
         "home": {
           "bridge": "Bridge To DBK Chain",
@@ -4229,10 +4198,6 @@
         "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
-        "title": "Your Rabby Wallet is Ready !",
-        "desc": "Find Rabby Wallet and Pin it",
-        "pin": "Pin Rabby Wallet",
-        "extensionTip": "Click <1/> and then <3/>",
         "guides": {
           "step1": "Click the browser extension icon",
           "step2": "Pin Rabby Wallet"

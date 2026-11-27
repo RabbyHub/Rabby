@@ -150,15 +150,6 @@ export const ImportOrCreatedSuccess = () => {
     return [];
   }, [documentVisibility, keyringId]);
 
-  // const { value: allAccounts } = useAsync(
-  //   wallet.getAllVisibleAccountsArray,
-  //   []
-  // );
-
-  // const isNewUserImport = React.useMemo(() => {
-  //   return allAccounts?.length === 1;
-  // }, [!!allAccounts?.length]);
-
   const getStarted = React.useCallback(async () => {
     // window.close();
     try {
@@ -166,13 +157,6 @@ export const ImportOrCreatedSuccess = () => {
     } catch (e) {
       console.error('open popup failed', e);
     }
-    // if (isNewUserImport) {
-    //   history.push({
-    //     pathname: '/new-user/ready',
-    //   });
-    // } else {
-    //   window.close();
-    // }
   }, []);
 
   useEffect(() => {

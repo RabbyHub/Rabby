@@ -2562,37 +2562,6 @@
       "transactionSpeed": "Velocidade de Transação"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "earnBtn": "Em breve",
-          "migrateBtn": "Em breve",
-          "arcadeDesc": "Jogue jogos gratuitos para ganhar pontos para o airdrop S.",
-          "airdrop": "Airdrop",
-          "migrateTitle": "Migrar",
-          "arcadeBtn": "Jogar agora",
-          "migrateDesc": "→",
-          "socialsTitle": "Participe",
-          "airdropDesc": "~200 milhões S para usuários no Opera e Sonic.",
-          "airdropBtn": "Ganhe pontos",
-          "earnTitle": "Ganhar",
-          "earnDesc": "Faça stake do seu $S"
-        },
-        "points": {
-          "sonicArcadeBtn": "Comece a jogar",
-          "today": "Hoje",
-          "sonicPoints": "Sonic Points",
-          "pointsDashboard": "Painel de Pontos",
-          "shareOn": "Compartilhar no",
-          "referralCode": "Código de indicação",
-          "sonicArcade": "Sonic Arcade",
-          "referralCodeCopied": "Código de referência copiado",
-          "retry": "Tentar novamente",
-          "getReferralCode": "Obter código de indicação",
-          "errorTitle": "Não foi possível carregar pontos",
-          "pointsDashboardBtn": "Comece a ganhar pontos",
-          "errorDesc": "Houve um erro ao carregar seus pontos. Por favor, tente novamente."
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTBtn": "Mint",
@@ -2875,14 +2844,10 @@
         "backupSeedPhrase": "Fazer backup da frase de recuperação"
       },
       "readyToUse": {
-        "pin": "Fixar Rabby Wallet",
         "guides": {
           "step2": "Fixar a Carteira Rabby",
           "step1": "Clique no ícone da extensão do navegador"
-        },
-        "desc": "Encontre a Rabby Wallet e fixe-a",
-        "title": "Sua carteira Rabby está pronta!",
-        "extensionTip": "Clique <1/> e depois <3/>"
+        }
       },
       "importSeedPhrase": {
         "title": "Importar frase de recuperação",

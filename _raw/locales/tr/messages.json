@@ -2565,37 +2565,6 @@
       "transactionSpeed": "İşlem Hızı"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "earnBtn": "Çok yakında",
-          "socialsTitle": "Katılın",
-          "migrateTitle": "Taşınmak",
-          "migrateDesc": "→",
-          "arcadeBtn": "Hemen oyna",
-          "earnTitle": "Kazanın",
-          "migrateBtn": "Yakında geliyor",
-          "airdrop": "Airdrop",
-          "earnDesc": "$S'nizi stake edin",
-          "airdropBtn": "Puan kazanın",
-          "airdropDesc": "Opera ve Sonic'teki kullanıcılara ~200 milyon S.",
-          "arcadeDesc": "Ücretsiz oyunlar oynayarak S airdrop'u için puan kazanın."
-        },
-        "points": {
-          "today": "Bugün",
-          "referralCodeCopied": "Tavsiye kodu kopyalandı",
-          "sonicArcadeBtn": "Oynamaya başla",
-          "shareOn": "Paylaş",
-          "sonicArcade": "Sonic Arcade",
-          "sonicPoints": "Sonic Points",
-          "referralCode": "Referans kodu",
-          "getReferralCode": "Tavsiye kodunu alın",
-          "errorTitle": "Puanlar yüklenemiyor",
-          "retry": "Tekrar Dene",
-          "errorDesc": "Puanlarınız yüklenirken bir hata oluştu. Lütfen tekrar deneyin.",
-          "pointsDashboardBtn": "Puan kazanmaya başlayın",
-          "pointsDashboard": "Puanlar Kontrol Paneli"
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTDesc": "DBK Chain'in tanığı olun",
@@ -2878,14 +2847,10 @@
         "backupSeedPhrase": "Kurtarma ifadesini yedekle"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet'i Sabitle",
         "guides": {
           "step1": "Tarayıcı uzantısı simgesine tıklayın",
           "step2": "Rabby Wallet’i sabitle"
-        },
-        "desc": "Rabby Cüzdanını Bul ve Sabitle",
-        "extensionTip": "Tıkla <1/> ve ardından <3/>",
-        "title": "Cüzdanınız hazır!"
+        }
       },
       "importSeedPhrase": {
         "title": "Kurtarma ifadesini içe aktar",

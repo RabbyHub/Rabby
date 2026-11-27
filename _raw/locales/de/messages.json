@@ -2562,37 +2562,6 @@
       "transactionSpeed": "Transaktionsgeschwindigkeit"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "earnTitle": "Verdienen",
-          "airdropDesc": "~200 Millionen S an Benutzer auf Opera und Sonic.",
-          "migrateTitle": "Migrieren",
-          "arcadeBtn": "Jetzt spielen",
-          "airdrop": "Airdrop",
-          "arcadeDesc": "Spielen Sie kostenlose Spiele, um Punkte für den S-Airdrop zu verdienen.",
-          "migrateBtn": "Demnächst verfügbar",
-          "migrateDesc": "→",
-          "airdropBtn": "Punkte verdienen",
-          "socialsTitle": "Beteiligen Sie sich",
-          "earnBtn": "Demnächst verfügbar",
-          "earnDesc": "Staken Sie Ihre $S"
-        },
-        "points": {
-          "sonicArcadeBtn": "Spiel starten",
-          "retry": "Wiederholen",
-          "shareOn": "Teilen auf",
-          "sonicPoints": "Sonic Points",
-          "pointsDashboardBtn": "Beginnen Sie Punkte zu sammeln",
-          "pointsDashboard": "Punkte-Dashboard",
-          "referralCode": "Empfehlungscode",
-          "today": "Heute",
-          "errorTitle": "Fehler beim Laden der Punkte",
-          "referralCodeCopied": "Empfehlungscode kopiert",
-          "getReferralCode": "Empfehlungscode erhalten",
-          "sonicArcade": "Sonic Arcade",
-          "errorDesc": "Beim Laden Ihrer Punkte ist ein Fehler aufgetreten. Bitte versuchen Sie es erneut."
-        }
-      },
       "dbk": {
         "home": {
           "bridgeBtn": "Bridge",
@@ -2875,14 +2844,10 @@
         "backupSeedPhrase": "Seed-Phrase sichern"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet anheften",
         "guides": {
           "step2": "Rabby Wallet anheften",
           "step1": "Klicken Sie auf das Browsererweiterungssymbol"
-        },
-        "extensionTip": "Klicken Sie auf <1/> und dann auf <3/>",
-        "title": "Ihr Rabby Wallet ist bereit!",
-        "desc": "Suchen Sie Rabby Wallet und heften Sie die Erweiterung an."
+        }
       },
       "importSeedPhrase": {
         "title": "Seed-Phrase importieren",

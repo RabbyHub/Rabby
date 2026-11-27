@@ -2559,37 +2559,6 @@
       "transactionSpeed": "거래 속도"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdrop": "에어드랍",
-          "earnTitle": "벌다",
-          "migrateBtn": "곧 출시됩니다",
-          "arcadeBtn": "지금 플레이하세요",
-          "earnDesc": "$S를 스테이킹하세요.",
-          "airdropBtn": "포인트 적립하기",
-          "arcadeDesc": "무료 게임을 플레이하여 S 에어드랍을 위한 포인트를 얻으세요.",
-          "airdropDesc": "~200 백만 S를 Opera와 Sonic 사용자에게 제공합니다.",
-          "earnBtn": "곧 출시됩니다",
-          "migrateDesc": "→",
-          "socialsTitle": "참여하기",
-          "migrateTitle": "마이그레이트"
-        },
-        "points": {
-          "getReferralCode": "추천 코드 받기",
-          "sonicArcadeBtn": "게임 시작하기",
-          "retry": "재시도",
-          "errorTitle": "포인트를 불러올 수 없습니다.",
-          "sonicPoints": "소닉 포인트",
-          "pointsDashboardBtn": "포인트를 적립하기 시작하세요",
-          "shareOn": "공유하기",
-          "pointsDashboard": "포인트 대시보드",
-          "sonicArcade": "소닉 아케이드",
-          "referralCode": "추천 코드",
-          "referralCodeCopied": "추천 코드가 복사되었습니다",
-          "errorDesc": "포인트를 불러오는 데 오류가 발생했습니다. 다시 시도해 주세요.",
-          "today": "오늘"
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTBtn": "민트",
@@ -2872,14 +2841,10 @@
         "backupSeedPhrase": "백업 시드 구문"
       },
       "readyToUse": {
-        "pin": "Rabby Wallet 핀 고정",
         "guides": {
           "step1": "브라우저 확장 아이콘을 클릭하세요.",
           "step2": "Rabby Wallet 고정하기"
-        },
-        "title": "당신의 Rabby Wallet이 준비되었습니다!",
-        "desc": "Rabby Wallet을 찾아 고정하세요.",
-        "extensionTip": "클릭 <1/> 그리고 나서 <3/>"
+        }
       },
       "importSeedPhrase": {
         "title": "시드 구문 가져오기",
