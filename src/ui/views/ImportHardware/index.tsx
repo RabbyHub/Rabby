@@ -1,4 +1,5 @@
 import { useHistory } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { KEYRING_CLASS } from 'consts';
 import { withHardwareImportSelectAddressSource } from '../SelectAddress/route';
 
@@ -6,9 +7,7 @@ import './index.css';
 
 const ImportHardware = () => {
   const history = useHistory();
-  const query = new URLSearchParams(history.location.search);
-  const connectType = query.get('connectType');
-  const brand = query.get('brand');
+  const { connectType, brand } = useSearchParams();
   const navSelectAddress = async (hardware) => {
     if (hardware === 'LEDGER') {
       history.push('/import/hardware/ledger-connect');

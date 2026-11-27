@@ -9,7 +9,7 @@ import { Item } from '@/ui/component';
 import { Card } from '@/ui/component/NewUserImport';
 import { Tooltip } from 'antd';
 import clsx from 'clsx';
-import qs from 'qs';
+import { obj2query } from '@/ui/utils/url';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -88,9 +88,7 @@ export const ImportHardwareList = () => {
       case KEYRING_CLASS.HARDWARE.IMKEY:
         history.push({
           pathname: `/new-user/import/${type}/set-password`,
-          search: qs.stringify({
-            brand,
-          }),
+          search: brand ? obj2query({ brand }) : '',
         });
         break;
       case KEYRING_CLASS.GNOSIS:

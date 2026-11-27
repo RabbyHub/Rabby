@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Form, Modal } from 'antd';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
 import QRCodeReader from 'ui/component/QRCodeReader';
@@ -17,7 +17,7 @@ import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import clsx from 'clsx';
 import Progress from '@/ui/component/Progress';
 import PillsSwitch from '@/ui/component/PillsSwitch';
-import { query2obj } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { findEthAccountByMultiAccounts } from './utils';
 import { StrayPageWithButton } from 'ui/component';
 import { ImageCarousel } from './ImageCarousel';
@@ -41,8 +41,7 @@ const OneKeyConnect = () => {
   const [connectType, setConnectType] = useState<ConnectType>(ConnectType.USB);
   const [scan, setScan] = useState(false);
   const stashKeyringIdRef = useRef<number | null>(null);
-  const { search } = useLocation();
-  const qs = query2obj(search);
+  const qs = useSearchParams();
   const isReconnect = !!qs.reconnect;
   const brandInfo = WALLET_BRAND_CONTENT.ONEKEY;
 

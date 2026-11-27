@@ -6,6 +6,7 @@ import React, {
   useState,
 } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useTranslation } from 'react-i18next';
 import { formatUsdValue, useWallet } from '@/ui/utils';
 import { Button, Switch, message } from 'antd';
@@ -103,13 +104,10 @@ export const PerpsSingleCoin = () => {
   const [isPreparingSign, setIsPreparingSign] = useState(false);
 
   const [searchPopupVisible, setSearchPopupVisible] = useState(false);
+  const { direction } = useSearchParams();
   const [positionDirection, setPositionDirection] = React.useState<
     'Long' | 'Short'
-  >(() => {
-    const params = new URLSearchParams(history.location.search);
-    const dir = params.get('direction');
-    return dir === 'Short' ? 'Short' : 'Long';
-  });
+  >(() => (direction === 'Short' ? 'Short' : 'Long'));
   const [closePositionVisible, setClosePositionVisible] = React.useState(false);
   const [editMarginVisible, setEditMarginVisible] = useState(false);
   const [addPositionVisible, setAddPositionVisible] = useState(false);

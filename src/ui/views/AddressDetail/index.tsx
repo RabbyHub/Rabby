@@ -1,7 +1,6 @@
-import { query2obj } from '@/ui/utils/url';
-import React, { useMemo } from 'react';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router-dom';
 import { Switch } from 'antd';
 import { useWhitelistStore } from '@/ui/state/whitelist';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
@@ -16,15 +15,14 @@ import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 
 const AddressDetail: React.FC<{ isInModal?: boolean }> = ({ isInModal }) => {
   const { t } = useTranslation();
-  const { search } = useLocation();
   const whitelist = useWhitelistStore((state) => state.whitelists);
   const wallet = useWallet();
-  const qs = useMemo(() => query2obj(search), [search]) as {
+  const qs = useSearchParams<{
     address: string;
     type: string;
     brandName: string;
     byImport?: string;
-  };
+  }>();
 
   const { getContainer } = usePopupContainer();
 

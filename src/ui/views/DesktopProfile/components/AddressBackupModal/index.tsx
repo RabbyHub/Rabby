@@ -4,13 +4,12 @@ import AddressBackupMnemonics from '@/ui/views/AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from '@/ui/views/AddressBackup/PrivateKey';
 import { Modal, ModalProps } from 'antd';
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 
 export const AddressBackupModal: React.FC<
   ModalProps & { onCancel?(): void }
 > = (props) => {
-  const location = useLocation();
-  const backupType = new URLSearchParams(location.search).get('backupType');
+  const { backupType } = useSearchParams();
 
   return (
     <Modal

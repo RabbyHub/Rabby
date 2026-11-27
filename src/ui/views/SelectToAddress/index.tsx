@@ -2,7 +2,8 @@
 /* eslint-enable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { isValidAddress } from '@ethereumjs/util';
 import { useTranslation } from 'react-i18next';
 import { Button, message, Tabs } from 'antd';
@@ -75,7 +76,7 @@ const handleGotoSendToken = (
 
 const SelectToAddress = () => {
   const history = useHistory();
-  const { search } = useLocation();
+  const searchParams = useSearchParams();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -115,10 +116,7 @@ const SelectToAddress = () => {
       .map((w) => padWatchAccount(w));
   }, [importedWhitelistAccounts, whitelist]);
 
-  const nftItem = useMemo(() => {
-    const query = new URLSearchParams(search);
-    return query.get('nftItem') || null;
-  }, [search]);
+  const nftItem = searchParams.nftItem || null;
 
   const handleGotoSendNFT = useCallback(
     (address: string) => {
@@ -287,13 +285,11 @@ const SelectToAddress = () => {
   const { isDarkTheme } = useThemeMode();
 
   const pageTitle = useMemo(() => {
-    const query = new URLSearchParams(history.location.search);
-    const type = query.get('type');
-    if (type === 'send-token') {
+    if (searchParams.type === 'send-token') {
       return t('page.selectToAddress.typedTitle.send');
     }
     return t('page.selectToAddress.title');
-  }, [history.location.search, t]);
+  }, [searchParams.type, t]);
 
   const [
     isShowNonWhitelistedTxPwdModal,

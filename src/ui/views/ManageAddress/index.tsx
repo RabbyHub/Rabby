@@ -10,7 +10,7 @@ import { ReactComponent as RcIconPlusButton } from '@/ui/assets/import/plus.svg'
 
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import AuthenticationModalPromise from '@/ui/component/AuthenticationModal';
 import { AddressDeleteModal } from './AddressDeleteModal';
 import { Button, message, Spin } from 'antd';
@@ -21,7 +21,7 @@ import { SeedPhraseDeleteModal } from './SeedPhraseDelete';
 import { AccountList } from './List';
 import { LedgerHDPathTypeLabel } from '@/ui/utils/ledger';
 import { useTranslation } from 'react-i18next';
-import { query2obj } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/empty-cc.svg';
 import styles from './index.module.css';
@@ -40,21 +40,18 @@ const buildRemoveAddressPayload = (
 const ManageAddress = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { search } = useLocation();
+  const query = useSearchParams();
   const [{ back = false }] = useState<{
     back?: boolean;
-  }>(query2obj(search));
+  }>(query);
 
   const wallet = useWallet();
 
   const dispatch = useRabbyDispatch();
 
-  const location = useLocation();
-
-  const [currentIndex, setCurrentIndex] = useState(() => {
-    const searchParams = new URLSearchParams(location.search);
-    return Number(searchParams.get('index') || 0);
-  });
+  const [currentIndex, setCurrentIndex] = useState(() =>
+    Number(query.index || 0)
+  );
 
   const { accountGroup, highlightedAddresses } = useWalletTypeData();
 

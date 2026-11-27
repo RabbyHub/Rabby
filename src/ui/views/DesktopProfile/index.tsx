@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { ProfileHeader } from './components/ProfileHeader';
 import { BackTop, Tabs } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { SendTokenModal } from './components/SendTokenModal';
 import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountList';
 import { SwapTokenModal } from './components/SwapTokenModal';
@@ -109,13 +110,7 @@ const DesktopProfileContent: React.FC<DesktopProfileProps> = ({
       });
     }
   };
-  const { action, sendPageType } = useMemo(() => {
-    const searchParams = new URLSearchParams(location.search);
-    return {
-      action: searchParams.get('action'),
-      sendPageType: searchParams.get('sendPageType'),
-    };
-  }, [location.search]);
+  const { action, sendPageType } = useSearchParams();
   const chain = useDesktopProfileStore((state) => state.chain);
   const setChain = useDesktopProfileStore((state) => state.setChain);
   const chainInfo = useMemo(() => findChainByEnum(chain), [chain]);

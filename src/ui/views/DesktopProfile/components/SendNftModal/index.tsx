@@ -2,14 +2,12 @@ import { Modal, ModalProps } from 'antd';
 import React, { useMemo } from 'react';
 import SendToken from '../../../SendToken';
 import WhitelistInput from '../../../WhitelistInput';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import SendNFT from '@/ui/views/SendNFT';
 import { ReactComponent as RcIconClose } from '@/ui/assets/dapp-search/cc-close.svg';
 
 export const SendNftModal: React.FC<ModalProps> = (props) => {
-  const location = useLocation();
-  const sendPageType =
-    new URLSearchParams(location.search).get('sendPageType') || 'sendNft';
+  const sendPageType = useSearchParams().sendPageType || 'sendNft';
 
   const SendPage = useMemo(() => {
     if (sendPageType === 'sendNft') {

@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Form } from 'antd';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
 import QRCodeReader from 'ui/component/QRCodeReader';
@@ -190,8 +191,7 @@ const QRCodeConnectContent = ({ brand }: { brand: string }) => {
 // QRCodeConnectContent's hooks (rules of hooks).
 export const QRCodeConnect = () => {
   const history = useHistory();
-  const { search } = useLocation();
-  const brand = new URLSearchParams(search).get('brand');
+  const { brand } = useSearchParams();
 
   useEffect(() => {
     if (!brand) {

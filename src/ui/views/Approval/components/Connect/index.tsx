@@ -1,12 +1,12 @@
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM } from 'consts';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { sleep, bindApproval, useApproval, useWallet } from 'ui/utils';
 import { ConnectContent } from './ConnectContent';
 import { EIP6963ProviderInfo, SelectWallet } from './SelectWallet';
-import qs from 'qs';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { PerpsInviteContent } from './PerpsInviteContent';
 
 interface ConnectProps {
@@ -31,11 +31,7 @@ const Connect = (props: ConnectProps) => {
 
   const history = useHistory();
   const location = useLocation();
-  const query = useMemo(() => {
-    return qs.parse(location.search, {
-      ignoreQueryPrefix: true,
-    });
-  }, [location.search]);
+  const query = useSearchParams();
 
   const [isShowSelectWallet, setIsShowSelectWallet] = useState(
     !!$ctx?.providers?.length && !query.ignoreOtherWallet

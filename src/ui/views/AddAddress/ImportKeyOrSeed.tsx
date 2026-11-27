@@ -3,6 +3,7 @@ import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
 import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useTranslation } from 'react-i18next';
 import { KEYRING_CLASS } from 'consts';
 import * as bip39 from '@scure/bip39';
@@ -68,14 +69,12 @@ const ImportKeyOrSeed: React.FC<{
   const [form] = Form.useForm<ImportFormValues>();
   const { show, contextHolder } = useRepeatImportConfirm();
 
-  const query = React.useMemo(() => new URLSearchParams(location.search), [
-    location.search,
-  ]);
+  const query = useSearchParams();
   const currentTab = React.useMemo<ImportTab>(() => {
     const nextTab =
       outerState?.tab ||
       location.state?.tab ||
-      (query.get('tab') as ImportTab | null);
+      (query.tab as ImportTab | undefined);
     return nextTab === 'seedPhrase' ? 'seedPhrase' : 'privateKey';
   }, [location.state, outerState, query]);
 
@@ -335,7 +334,7 @@ const ImportKeyOrSeed: React.FC<{
     const originTab =
       outerState?.tab ||
       location.state?.tab ||
-      (query.get('tab') as ImportTab | null);
+      (query.tab as ImportTab | undefined);
     return originTab === 'privateKey'
       ? [
           {

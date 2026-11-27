@@ -12,7 +12,6 @@ import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus'
 import { SESSION_STATUS_MAP } from '@rabby-wallet/eth-coinbase-keyring/dist/type';
 import clsx from 'clsx';
 import { UI_TYPE } from '@/constant/ui';
-import qs from 'qs';
 
 const COINBASE = WALLET_BRAND_CONTENT.Coinbase;
 

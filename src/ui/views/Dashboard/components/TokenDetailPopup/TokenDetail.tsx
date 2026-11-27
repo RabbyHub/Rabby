@@ -7,6 +7,7 @@ import { last, sortBy } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import IconUnknown from '@/ui/assets/token-default.svg';
 import { Image } from 'antd';
 import {
@@ -188,7 +189,7 @@ const TokenDetail = ({
   const history = useHistory();
   const location = useLocation();
 
-  const action = new URLSearchParams(location.search).get('action');
+  const { action } = useSearchParams();
 
   const isSwap =
     location.pathname === '/dex-swap' || (action === 'swap' && isDesktop);

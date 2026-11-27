@@ -1,25 +1,22 @@
 import { KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useWallet } from '@/ui/utils';
-import { obj2query, query2obj } from '@/ui/utils/url';
+import { obj2query } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useMemoizedFn, useMount } from 'ahooks';
 import { message } from 'antd';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation, useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { PasswordCard } from './PasswordCard';
-import qs from 'qs';
 
 export const NewUserSetPassword = () => {
   const { t } = useTranslation();
   const { store, setStore } = useNewUserGuideStore();
   const { type } = useParams<{ type: string }>();
 
-  const { search } = useLocation();
-  const { isCreated = false, brand } = React.useMemo(() => query2obj(search), [
-    search,
-  ]);
+  const { isCreated = false, brand } = useSearchParams();
 
   const history = useHistory();
   const wallet = useWallet();
@@ -140,9 +137,7 @@ export const NewUserSetPassword = () => {
       );
       history.push({
         pathname: '/new-user/success',
-        search: qs.stringify({
-          brand: KEYRING_TYPE.GnosisKeyring,
-        }),
+        search: obj2query({ brand: KEYRING_TYPE.GnosisKeyring }),
       });
     } catch (e) {
       console.error(e);
@@ -179,9 +174,7 @@ export const NewUserSetPassword = () => {
       });
       history.push({
         pathname: `/new-user/import/hardware/${type}`,
-        search: qs.stringify({
-          brand,
-        }),
+        search: brand ? obj2query({ brand }) : '',
       });
     }
     return;

@@ -7,6 +7,7 @@ import { getUiType, isSameAddress, useWallet } from '@/ui/utils';
 import { Account, Token } from '@/background/service/preference';
 import { useRabbyDispatch } from 'ui/store';
 import { useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { DrawerProps } from 'antd';
 
 const isDesktop = getUiType().isDesktop;
@@ -46,12 +47,11 @@ export const TokenDetailPopup = ({
   const [isAdded, setIsAdded] = React.useState(false);
 
   const location = useLocation();
-  const action = new URLSearchParams(location.search).get('action');
+  const { action } = useSearchParams();
   const isInDesktopActionModal =
     isDesktop &&
     (action === 'send' || action === 'swap' || action === 'bridge');
-  const isInSendModal =
-    new URLSearchParams(location.search).get('action') === 'send';
+  const isInSendModal = action === 'send';
   const getContainer = isInDesktopActionModal
     ? isInSendModal
       ? '.js-rabby-popup-container'

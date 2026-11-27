@@ -26,7 +26,7 @@ import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
 import IconEye from 'ui/assets/icon-eye.svg';
 import { ReactComponent as RcIconWarning } from 'ui/assets/icon-warning-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
-import { query2obj } from 'ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import './style.less';
 import { sortBy } from 'lodash';
 import { EditCustomTestnetModal } from '../CustomTestnet/components/EditTestnetModal';
@@ -75,9 +75,7 @@ const Receive = () => {
   const { isDarkTheme } = useThemeMode();
 
   const account = useAccount();
-  const qs = useMemo(() => query2obj(history.location.search), [
-    history.location.search,
-  ]);
+  const qs = useSearchParams();
   const [chainEnum, setChainEnum] = useState<CHAINS_ENUM | undefined>(
     qs.chain ? (qs.chain as CHAINS_ENUM) : undefined
   );

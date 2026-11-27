@@ -8,7 +8,8 @@ import Progress from '@/ui/component/Progress';
 import { useWallet } from '@/ui/utils';
 import { useKeystoneUSBErrorCatcher } from '@/ui/utils/keystone';
 import { LedgerHDPathType as HDPathType } from '@/ui/utils/ledger';
-import { query2obj } from '@/ui/utils/url';
+import { obj2query } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { URDecoder } from '@ngraveio/bc-ur';
 import * as Sentry from '@sentry/browser';
@@ -16,12 +17,11 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { useMount, useRequest } from 'ahooks';
-import qs from 'qs';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
@@ -50,8 +50,7 @@ export const NewUserImportKeystone = () => {
   );
   const [scan, setScan] = useState(false);
   const stashKeyringIdRef = useRef<number | null>(null);
-  const { search } = useLocation();
-  const { brand } = query2obj(search);
+  const { brand } = useSearchParams();
   const isKeystone = brand === WALLET_BRAND_TYPES.KEYSTONE;
 
   const [progress, setProgress] = useState(0);
@@ -184,10 +183,10 @@ export const NewUserImportKeystone = () => {
 
       history.push({
         pathname: '/new-user/success',
-        search: qs.stringify({
+        search: obj2query({
           hd: KEYSTONE_TYPE,
-          brand,
-          keyringId: stashKeyringId,
+          ...(brand ? { brand } : {}),
+          keyringId: stashKeyringId ?? '',
         }),
       });
     } catch (error) {

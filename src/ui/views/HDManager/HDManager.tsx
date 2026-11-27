@@ -34,6 +34,7 @@ import { BitBox02Manager } from './BitBox02Manager';
 import { useTranslation } from 'react-i18next';
 import { ImKeyManager } from './ImKeyManager';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { useNewUserGuideStore } from '../NewUserImport/hooks/useNewUserGuideStore';
@@ -79,6 +80,7 @@ export const HDManager: React.FC<StateProviderProps> = ({
   onDone,
 }) => {
   const { search } = useLocation();
+  const query = useSearchParams();
 
   const [
     isNewUserImport,
@@ -86,14 +88,13 @@ export const HDManager: React.FC<StateProviderProps> = ({
     isLazyImport,
     shouldOpenImportSuccessPage,
   ] = React.useMemo(() => {
-    const query = new URLSearchParams(search);
     return [
-      query.get('isNewUserImport'),
-      query.get('noRedirect'),
-      !!query.get('isLazyImport'),
+      query.isNewUserImport,
+      query.noRedirect,
+      !!query.isLazyImport,
       isHardwareImportSelectAddress(search),
     ];
-  }, [search]);
+  }, [query, search]);
   const history = useHistory();
 
   const wallet = useWallet();
@@ -266,14 +267,13 @@ const DoneButton = ({ onClick }: { onClick?(): void }) => {
   } = React.useContext(HDManagerStateContext);
 
   const { store } = useNewUserGuideStore();
-  const query = React.useMemo(() => new URLSearchParams(search), [search]);
+  const query = useSearchParams();
 
   const wallet = useWallet();
   const history = useHistory();
 
   const shouldOpenImportSuccessPage = React.useMemo(
-    () =>
-      isHardwareImportSelectAddress(search) && !query.get('isNewUserImport'),
+    () => isHardwareImportSelectAddress(search) && !query.isNewUserImport,
     [search]
   );
   const getImportedAccounts = React.useCallback(

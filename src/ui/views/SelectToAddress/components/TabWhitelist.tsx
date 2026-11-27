@@ -39,7 +39,7 @@ import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.svg';
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import qs from 'qs';
+import { obj2query } from '@/ui/utils/url';
 import styles from './TabWhitelist.module.css';
 
 const isTab = getUiType().isTab;
@@ -500,7 +500,7 @@ export default function TabWhitelist({
               onClick={() => {
                 if (isDesktop) {
                   history.push(
-                    `${history.location.pathname}?${qs.stringify({
+                    `${history.location.pathname}?${obj2query({
                       action: 'send',
                       sendPageType: 'whitelistInput',
                     })}`

@@ -4,6 +4,7 @@ import { Button, message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import browser from 'webextension-polyfill';
 import { getUiType } from '@/ui/utils';
 import { ReactComponent as RcRabbyLogo } from '@/ui/assets/logo-rabby-large.svg';
@@ -27,10 +28,9 @@ export const ImportAddressSuccess: React.FC<{
   const history = useHistory();
   const location = useLocation<CreateAddressSuccessState>();
   const { t } = useTranslation();
-  const returnToSelectAddressSearchFromQuery = React.useMemo(() => {
-    const query = new URLSearchParams(location.search);
-    return query.get(RETURN_TO_QUERY_KEY) || '';
-  }, [location.search]);
+  const searchParams = useSearchParams();
+  const returnToSelectAddressSearchFromQuery =
+    searchParams[RETURN_TO_QUERY_KEY] || '';
 
   const state = (outerState ||
     location.state ||

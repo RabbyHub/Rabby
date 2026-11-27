@@ -15,7 +15,6 @@ import './style.less';
 import { safeJSONParse } from '@/utils';
 import clsx from 'clsx';
 import { UI_TYPE } from '@/constant/ui';
-import qs from 'qs';
 import { twMerge } from 'tailwind-merge';
 
 const ImportGnosisAddress: React.FC<{

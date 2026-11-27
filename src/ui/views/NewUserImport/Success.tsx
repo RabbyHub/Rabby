@@ -7,8 +7,8 @@ import React, {
 } from 'react';
 import { Card } from '@/ui/component/NewUserImport';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
-import { query2obj } from '@/ui/utils/url';
+import { useHistory } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { Button, Input, InputRef } from 'antd';
 import clsx from 'clsx';
 import { ReactComponent as RcIconChecked } from '@/ui/assets/new-user-import/check.svg';
@@ -108,11 +108,7 @@ export const ImportOrCreatedSuccess = () => {
   const { store } = useNewUserGuideStore();
 
   const { t } = useTranslation();
-  const { search } = useLocation();
-  const { isCreated: created, hd, keyringId, brand } = React.useMemo(
-    () => query2obj(search),
-    [search]
-  );
+  const { isCreated: created, hd, keyringId, brand } = useSearchParams();
 
   const isCreated = React.useMemo(() => created === 'true', [created]);
 
