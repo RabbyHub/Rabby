@@ -227,7 +227,7 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
       visible={visible}
       onCancel={onCancel}
     >
-      <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px] overflow-auto pb-[80px]">
+      <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
         <div className="text-center text-20 font-medium text-r-neutral-title-1 mt-16 mb-2 inline-flex items-center justify-center gap-4 w-full">
           <span>
             {direction === 'Long'
@@ -243,7 +243,8 @@ export const AddPositionPopup: React.FC<AddPositionPopupProps> = ({
           activeAssetCtx={activeAssetCtx}
         />
 
-        <div className="flex-1 mt-12 px-20 overflow-y-auto pb-24">
+        {/* Only the body scrolls; title stays aligned with the drawer close button. Bottom padding clears the fixed footer. */}
+        <div className="flex-1 min-h-0 mt-12 px-20 overflow-y-auto pb-[80px]">
           <div className="flex items-center justify-between p-12 mb-12 h-[78px] bg-r-neutral-card1 rounded-[8px]">
             <div className="flex flex-col gap-8">
               <div className="flex items-center gap-6">
