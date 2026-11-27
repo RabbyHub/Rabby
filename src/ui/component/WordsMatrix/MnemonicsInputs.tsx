@@ -28,11 +28,15 @@ const useClearClipboardToast = () => {
   const { t } = useTranslation();
 
   const clearClipboardToast = () => {
-    clearClipboard();
-    message.success({
-      icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('page.newAddress.seedPhrase.pastedAndClear'),
-      duration: 2,
+    clearClipboard().then((cleared) => {
+      if (!cleared) {
+        return;
+      }
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: t('page.newAddress.seedPhrase.pastedAndClear'),
+        duration: 2,
+      });
     });
   };
 

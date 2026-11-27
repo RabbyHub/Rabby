@@ -461,11 +461,15 @@ const BulkImportPrivateKey: React.FC = () => {
 
       event.preventDefault();
       clearPrivateKeyError();
-      clearClipboard();
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('page.newAddress.seedPhrase.pastedAndClear'),
-        duration: 2,
+      clearClipboard().then((cleared) => {
+        if (!cleared) {
+          return;
+        }
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: t('page.newAddress.seedPhrase.pastedAndClear'),
+          duration: 2,
+        });
       });
 
       openPrivateKeyListMode(values.length ? values : [trimmedText], {
@@ -611,11 +615,15 @@ const BulkImportPrivateKey: React.FC = () => {
 
       event.preventDefault();
       clearInvalidRowIds([rowId]);
-      clearClipboard();
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('page.newAddress.seedPhrase.pastedAndClear'),
-        duration: 2,
+      clearClipboard().then((cleared) => {
+        if (!cleared) {
+          return;
+        }
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: t('page.newAddress.seedPhrase.pastedAndClear'),
+          duration: 2,
+        });
       });
 
       replaceRowWithValues(rowId, values, {

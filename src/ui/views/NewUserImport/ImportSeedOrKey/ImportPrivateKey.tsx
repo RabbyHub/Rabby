@@ -100,13 +100,19 @@ export const ImportPrivateKey = () => {
                 setValue(e.target.value);
               }}
               onPaste={() => {
-                clearClipboard();
-                message.success({
-                  icon: <img src={IconSuccess} className="icon icon-success" />,
-                  content: t(
-                    'page.newUserImport.importPrivateKey.pasteCleared'
-                  ),
-                  duration: 2,
+                clearClipboard().then((cleared) => {
+                  if (!cleared) {
+                    return;
+                  }
+                  message.success({
+                    icon: (
+                      <img src={IconSuccess} className="icon icon-success" />
+                    ),
+                    content: t(
+                      'page.newUserImport.importPrivateKey.pasteCleared'
+                    ),
+                    duration: 2,
+                  });
                 });
               }}
               onKeyDown={(e) => {

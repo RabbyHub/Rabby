@@ -61,7 +61,10 @@ const AddressBackupMnemonics: React.FC<{
   useHideScreenshotContextMenu();
 
   const onCopyMnemonics = React.useCallback(() => {
-    copyTextToClipboard(data).then(() => {
+    copyTextToClipboard(data).then((copied) => {
+      if (!copied) {
+        return;
+      }
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: t('global.copied'),

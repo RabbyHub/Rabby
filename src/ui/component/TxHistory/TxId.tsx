@@ -32,9 +32,10 @@ export const TxId = React.memo(({ chain, id }: TxIdProps) => {
       </a>
       <RcIconCopyCC
         className="cursor-pointer ml-[4px] text-r-neutral-foot"
-        onClick={() => {
-          copyTextToClipboard(id);
-          message.success(t('global.copied'));
+        onClick={async () => {
+          if (await copyTextToClipboard(id)) {
+            message.success(t('global.copied'));
+          }
         }}
       />
     </div>

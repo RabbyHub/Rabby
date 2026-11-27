@@ -104,10 +104,11 @@ const TxHashActions = ({
       <button
         type="button"
         className="inline-flex h-14 w-14 shrink-0 items-center justify-center bg-transparent p-0 text-r-neutral-foot"
-        onClick={(event) => {
+        onClick={async (event) => {
           event.stopPropagation();
-          copyTextToClipboard(txId);
-          message.success(t('global.copied'));
+          if (await copyTextToClipboard(txId)) {
+            message.success(t('global.copied'));
+          }
         }}
       >
         <RcIconCopyCC className="block [&_path]:stroke-[0.875]" />

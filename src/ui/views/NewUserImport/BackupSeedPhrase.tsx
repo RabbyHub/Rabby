@@ -33,7 +33,10 @@ export const BackupSeedPhrase = () => {
 
   const onCopyMnemonics = React.useCallback(() => {
     mnemonics &&
-      copyTextToClipboard(mnemonics).then(() => {
+      copyTextToClipboard(mnemonics).then((copied) => {
+        if (!copied) {
+          return;
+        }
         message.success({
           icon: <img src={IconSuccess} className="icon icon-success" />,
           content: t('global.copied'),

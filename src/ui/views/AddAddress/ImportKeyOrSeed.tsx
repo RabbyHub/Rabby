@@ -449,18 +449,22 @@ const ImportKeyOrSeed: React.FC<{
                       className="h-[128px] resize-none rounded-[8px] border-r-blue-default bg-r-neutral-card-1 px-[15px] py-[18px] text-[15px] leading-[20px] text-r-neutral-title-1 placeholder:text-r-neutral-foot"
                       placeholder={getTabPlaceholder(selectedTab, t)}
                       onPaste={() => {
-                        clearClipboard();
-                        message.success({
-                          icon: (
-                            <img
-                              src={IconSuccess}
-                              className="icon icon-success"
-                            />
-                          ),
-                          content: t(
-                            'page.newAddress.seedPhrase.pastedAndClear'
-                          ),
-                          duration: 2,
+                        clearClipboard().then((cleared) => {
+                          if (!cleared) {
+                            return;
+                          }
+                          message.success({
+                            icon: (
+                              <img
+                                src={IconSuccess}
+                                className="icon icon-success"
+                              />
+                            ),
+                            content: t(
+                              'page.newAddress.seedPhrase.pastedAndClear'
+                            ),
+                            duration: 2,
+                          });
                         });
                       }}
                     />

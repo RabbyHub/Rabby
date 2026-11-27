@@ -49,8 +49,10 @@ export const CodeAndShare = ({
 }) => {
   const [hasCopied, setHasCopied] = useState(false);
 
-  const handleCopyReferralCode = () => {
-    copyTextToClipboard(referralCode);
+  const handleCopyReferralCode = async () => {
+    if (!(await copyTextToClipboard(referralCode))) {
+      return;
+    }
     setHasCopied(true);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
