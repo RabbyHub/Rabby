@@ -84,7 +84,7 @@ jest.mock('@/eventBus', () => ({
 jest.mock('consts', () => ({
   EVENTS: {},
   INTERNAL_REQUEST_ORIGIN: 'https://rabby.io',
-  KEYRING_CLASS: {},
+  KEYRING_CLASS: { HARDWARE: { ONEKEY: 'Onekey Hardware' } },
   KEYRING_TYPE: {
     GnosisKeyring: 'GnosisKeyring',
     CoboArgusKeyring: 'CoboArgusKeyring',

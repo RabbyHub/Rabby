@@ -1,4 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { usePerpsStore } from '@/ui/state/perps';
 import { UserAbstractionResp } from '@rabby-wallet/hyperliquid-sdk';
 import { useCallback, useEffect, useMemo } from 'react';
 import { getSpotBalanceKey, PerpsQuoteAsset } from '../constants';
@@ -18,11 +19,6 @@ type SpotBalance = {
 const EMPTY_BALANCES_MAP = {} as Record<string, SpotBalance>;
 const EMPTY_BALANCES: SpotBalance[] = [];
 
-// userAbstraction is only fetched by the login flow; if that never ran the
-// store still holds the initial 'default'. Fetch once on first hook load —
-// module-level so concurrent consumers don't each fire a request.
-let didBootstrapUserAbstraction = false;
-
 export const usePerpsAccount = () => {
   const dispatch = useRabbyDispatch();
   const currentPerpsAddress = useRabbySelector(
@@ -33,8 +29,8 @@ export const usePerpsAccount = () => {
   );
 
   useEffect(() => {
-    if (didBootstrapUserAbstraction || !currentPerpsAddress) return;
-    didBootstrapUserAbstraction = true;
+    const status = usePerpsStore.getState().userAbstractionStatus;
+    if (!currentPerpsAddress || status !== 'idle') return;
     dispatch.perps.fetchUserAbstraction(currentPerpsAddress);
   }, [currentPerpsAddress, dispatch]);
   const clearinghouseState = useRabbySelector(

@@ -1,3 +1,4 @@
+import { useCancelOneKeyOnClose } from '@/ui/hooks/useCancelOneKeyOnClose';
 import React, { useMemo } from 'react';
 import {
   useTypedDataSignatureStore,
@@ -28,7 +29,14 @@ export const MiniTypedDataApprovalV2: React.FC<{
   const currentAccount = request?.config.account;
   const config = request?.config;
 
-  const handleClose = () => typedDataSignatureStore.close();
+  const cancelSigning = useCancelOneKeyOnClose(
+    currentAccount,
+    status === 'signing'
+  );
+  const handleClose = () => {
+    cancelSigning();
+    typedDataSignatureStore.close();
+  };
   const handleAllow = () => typedDataSignatureStore.retry();
 
   const hdType =

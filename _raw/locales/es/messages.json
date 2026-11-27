@@ -2031,7 +2031,11 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "¿Olvidaste la contraseña?",
       "description": "Tu billetera de referencia para Ethereum y EVM",
-      "biometricFailed": "Desbloqueo biométrico fallido"
+      "biometricFailed": "Desbloqueo biométrico fallido",
+      "biometricSunsetTip": "El desbloqueo biométrico dejará de estar disponible a partir del 1 de enero de 2027. Por favor, cambia ahora al desbloqueo con contraseña. Esto desactivará el desbloqueo biométrico.",
+      "biometricSunsetTitle": "Cambiar a desbloqueo con contraseña",
+      "biometricSunsetUsePassword": "Usar contraseña",
+      "biometricSunsetUseBiometric": "Usar biometría"
     },
     "addToken": {
       "noTokenFound": "No se encontró ningún token",
@@ -3563,6 +3567,8 @@
         "goSwapTips": "Solo USDC en Arbitrum es compatible para depósito directo. Por favor, intercambia tu token actual por USDC antes de depositar.",
         "fetchQuoteFailed": "No se pudo obtener la cotización de depósito. Por favor, cambie de token.",
         "estReceiveTooltipNoTime": "El depósito entre cadenas se procesa a través de LiFi; puede sufrir deslizamiento de precio.",
+        "estReceiveTooltipV2": "El depósito entre cadenas se procesa a través de {{name}} y podría sufrir algo de deslizamiento. Llegada estimada en {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "El depósito entre cadenas se procesa a través de {{name}}; puede sufrir deslizamiento de precio.",
         "minimumWithdrawSize": "El importe mínimo de retiro es de $2.",
         "minimumDepositSize": "El depósito mínimo es de $5.",
         "estReceiveTooltip": "El depósito entre cadenas se procesa a través de LiFi y podría sufrir algo de deslizamiento. Llegada estimada en {{number}}s.",
@@ -5061,7 +5067,12 @@
         "notAllowInBootloaderMode": "Usa el modo normal",
         "deviceCheckPassphraseStateError": "La cuenta no coincide con la dirección de desbloqueo del dispositivo actual. Comprueba que el dispositivo y la dirección de la cuenta coincidan e inténtalo de nuevo",
         "actionCancel": "Operación cancelada",
-        "deviceNeedsWebHIDPermission": "Dispositivo no encontrado o necesita permiso WebHID"
+        "deviceNeedsWebHIDPermission": "Dispositivo no encontrado o necesita permiso WebUSB",
+        "deviceNotOpenedPassphrase": "La protección con frase de contraseña está desactivada. Actívala para abrir la billetera oculta.",
+        "pinInvalid": "PIN incorrecto. Inténtalo de nuevo en tu OneKey.",
+        "deviceBusy": "OneKey está ocupado. Termina la operación actual e inténtalo de nuevo.",
+        "deviceInterrupted": "Se interrumpió la conexión con OneKey. Vuelve a conectar el dispositivo.",
+        "webUSBUnavailable": "Este navegador no admite WebUSB."
       }
     },
     "feedback": {

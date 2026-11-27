@@ -111,6 +111,12 @@ usePreferenceStore.subscribe((preference) => {
 
 export const useRabbyDispatch = () => rabbyDispatch;
 
+/**
+ * Compares the selected value with Object.is. A selector that builds a new
+ * object or array on every call re-renders its component on every update of
+ * any store merged into useCombinedStore; wrap those in `useShallow`
+ * (zustand/react/shallow).
+ */
 export const useRabbySelector = <Selected>(
   selector: (state: RabbyRootState) => Selected
 ) => useCombinedStore(selector);

@@ -12,6 +12,7 @@ import { SvgPendingSpin } from '@/ui/assets';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { formatUsdValue } from '@/ui/utils/number';
 import BigNumber from 'bignumber.js';
+import { capitalize } from 'lodash';
 import {
   ARB_USDC_TOKEN_ID,
   ARB_USDC_TOKEN_ITEM,
@@ -520,7 +521,7 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
               {type === 'deposit' && isValidAmount && (
                 <>
                   <div className="flex items-center justify-between text-13">
-                    {isDirectDeposit ? (
+                    {isDirectDeposit || !bridgeQuote?.bridge_id ? (
                       <span className="text-r-neutral-foot">
                         {t('page.perps.depositAmountPopup.estReceiveLabel')}
                       </span>
@@ -529,7 +530,8 @@ export const DepositWithdrawModal: React.FC<DepositWithdrawModalProps> = ({
                         overlayClassName={clsx('rectangle')}
                         placement="top"
                         title={t(
-                          'page.perps.depositAmountPopup.estReceiveTooltipNoTime'
+                          'page.perps.depositAmountPopup.estReceiveTooltipNoTimeV2',
+                          { name: capitalize(bridgeQuote.bridge_id) }
                         )}
                       >
                         <DashedUnderlineText className="text-r-neutral-foot">

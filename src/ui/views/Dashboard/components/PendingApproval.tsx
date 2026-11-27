@@ -67,7 +67,7 @@ const PendingApproval = ({
   };
 
   const handleOnRejectAll = async () => {
-    await wallet.rejectAllApprovals();
+    await wallet.rejectAllApprovals({ userCancelled: true });
     onRejectAll();
   };
   const { t } = useTranslation();

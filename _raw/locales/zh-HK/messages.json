@@ -2169,7 +2169,11 @@
       "btnForgotPassword": "忘記密碼？",
       "title": "Rabby Wallet",
       "description": "你首選的以太坊和 EVM 錢包",
-      "biometricFailed": "生物識別解鎖失敗"
+      "biometricFailed": "生物識別解鎖失敗",
+      "biometricSunsetTip": "自 2027 年 1 月 1 日起，生物辨識解鎖將不再可用。請立即切換到密碼解鎖，切換後生物辨識解鎖會自動關閉。",
+      "biometricSunsetTitle": "切換到密碼解鎖",
+      "biometricSunsetUsePassword": "使用密碼",
+      "biometricSunsetUseBiometric": "繼續使用生物辨識"
     },
     "addressDetail": {
       "add-to-whitelist": "新增到白名單",
@@ -3611,6 +3615,8 @@
         "feeTipTooltip": "Hyperliquid 收取的提款費用：$1",
         "feeTip": "$1 手續費",
         "estReceiveTooltipNoTime": "跨鏈存款透過 LiFi 處理，可能會產生滑點。",
+        "estReceiveTooltipV2": "跨鏈存款經由 {{name}} 處理，可能會產生滑點。預計於 {{number}} 秒內抵達。",
+        "estReceiveTooltipNoTimeV2": "跨鏈存款透過 {{name}} 處理，可能會產生滑點。",
         "goBridgeTips": "僅在 Arbitrum 上的 USDC 支援直接充值。請在存款前，將你目前的代幣跨鏈橋接至 Arbitrum 上的 USDC。",
         "minimumWithdrawSize": "最低提款金額為 $2",
         "estReceive": "預估收到： {{balance}}",
@@ -5072,7 +5078,12 @@
         "notAllowInBootloaderMode": "請在正常模式下使用",
         "deviceCheckPassphraseStateError": "帳戶與目前裝置的解鎖地址不符，請確認裝置與帳戶地址一致後重試",
         "actionCancel": "操作已取消",
-        "deviceNeedsWebHIDPermission": "未找到裝置或需要 WebHID 權限"
+        "deviceNeedsWebHIDPermission": "未找到裝置或需要 WebUSB 權限",
+        "deviceNotOpenedPassphrase": "裝置上的 Passphrase 已關閉。請先開啟，再開啟隱藏錢包。",
+        "pinInvalid": "PIN 碼不正確，請在 OneKey 上重試。",
+        "deviceBusy": "OneKey 正忙，請在目前操作結束後重試。",
+        "deviceInterrupted": "OneKey 連線中斷，請重新連接裝置後重試。",
+        "webUSBUnavailable": "目前的瀏覽器不支援 WebUSB。"
       }
     }
   },

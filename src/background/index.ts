@@ -21,6 +21,8 @@ import {
   TOKEN_SYNC_SCENE,
 } from '@/db/constants';
 import { syncDbService } from '@/db/services/syncDbService';
+import { canCachePerpsHomeBalance } from '@/db/schema/perpsHomeBalance';
+import { perpsHomeBalanceDbService } from '@/db/services/perpsHomeBalanceDbService';
 import {
   EVENTS,
   EVENTS_IN_BG,
@@ -293,6 +295,15 @@ restoreAppState().catch((e) => {
   keyringService.on(
     'removedAccount',
     async (address: string, type: string, brand?: string) => {
+      const removed = { address, type };
+      if (canCachePerpsHomeBalance(removed)) {
+        keyringService
+          .getAllAdresses()
+          .then((remaining) =>
+            perpsHomeBalanceDbService.removeIfUnsupported(removed, remaining)
+          )
+          .catch(console.error);
+      }
       await logoutGasAccountOnAddressRemoved(address, type, brand);
       if (type !== KEYRING_TYPE.WatchAddressKeyring) {
         const perpsAccount = await perpsService.getCurrentAccount();

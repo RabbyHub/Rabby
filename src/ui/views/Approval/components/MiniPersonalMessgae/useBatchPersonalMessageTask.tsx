@@ -1,3 +1,4 @@
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { useWallet } from '@/ui/utils';
 import { useMemoizedFn } from 'ahooks';
 import React, { useMemo, useState } from 'react';
@@ -120,7 +121,7 @@ export const useBatchSignPersonalMessageTask = ({
             !(
               isLedgerLockError(msg) ||
               isLedgerConnectionRecoverableError(msg) ||
-              msg === 'No OneKey Device found'
+              isOneKeyDisconnectError(e)
             )
           ) {
             setError(msg);

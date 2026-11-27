@@ -11,6 +11,7 @@ import { getSentryConfig } from '@/utils/sentry-config';
 import { createBridgeSdkSentryEvent } from '@/utils/bridge-sdk-report';
 import { applySigningContext, attachSigningContext } from '@/utils/sentry';
 import type { SigningOperation } from '@/background/service/keyring/signing-diagnostics';
+import { markUserCancelledSigningError } from '@/background/utils/signingCancellation';
 
 const attachHardwareSigningContext = (
   error: unknown,
@@ -108,13 +109,19 @@ describe('Sentry configuration', () => {
     expect(reportEvent).not.toBeNull();
     scope.captureEvent(
       { ...reportEvent!, request: { url: `https://example.com/${secret}` } },
-      { data: { bridge_sdk_report: reportEvent!.extra.bridge_sdk_report } }
+      {
+        data: {
+          bridge_sdk_report: reportEvent!.extra.bridge_sdk_report,
+          bridge_source: 'gas_account_deposit',
+        },
+      }
     );
     await client.flush(2000);
 
     expect(events).toHaveLength(1);
     expect(events[0].tags).toMatchObject({
       bridge_sdk: 'validation',
+      bridge_source: 'gas_account_deposit',
       bridge_error_code: 'BRIDGE_RECEIVER_MISMATCH',
       bridge_operation: 'buildTx',
       bridge_blocking: 'true',
@@ -129,9 +136,13 @@ describe('Sentry configuration', () => {
 
     const hint = {
       attachments: [{ filename: 'private.txt', data: secret }],
-      data: { bridge_sdk_report: reportEvent!.extra.bridge_sdk_report },
+      data: {
+        bridge_sdk_report: reportEvent!.extra.bridge_sdk_report,
+        bridge_source: secret,
+      },
     };
-    await config.beforeSend!(reportEvent!, hint);
+    const sanitized = await config.beforeSend!(reportEvent!, hint);
+    expect(sanitized?.tags).not.toHaveProperty('bridge_source');
     expect(hint.attachments).toEqual([]);
     await client.close(2000);
   });
@@ -502,6 +513,37 @@ describe('Sentry configuration', () => {
       },
     });
   });
+
+  test.each([
+    ['drops', true],
+    ['reports', false],
+  ] as const)(
+    '%s a globally captured signing rejection (marked: %s)',
+    async (_action, marked) => {
+      const events: any[] = [];
+      const { client, scope } = createRecordingClient(events);
+      const rejection = {
+        message: 'The transaction signing request is no longer active.',
+        method: 'COMMON_HARDWARE_REJECTED',
+      };
+      if (marked) markUserCancelledSigningError(rejection);
+
+      scope.captureEvent(
+        {
+          exception: {
+            values: [{ type: 'UnhandledRejection', value: rejection.message }],
+          },
+        },
+        { originalException: rejection }
+      );
+      await client.flush(2000);
+
+      expect(
+        events.map((event) => event.exception?.values?.[0]?.value)
+      ).toEqual(marked ? [] : [rejection.message]);
+      await client.close(2000);
+    }
+  );
 
   test('keeps and deduplicates hardware HTTP failures through Sentry', async () => {
     const events: any[] = [];
