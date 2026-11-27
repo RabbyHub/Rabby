@@ -1,3 +1,4 @@
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
@@ -20,8 +21,8 @@ const buttonBaseClass = clsx(
 
 const buttonGhostClass = clsx(
   buttonBaseClass,
-  'border-blue-light text-blue-light',
-  'hover:bg-[#8697FF1A] active:bg-[#0000001A]'
+  'border-r-blue-default text-r-blue-default',
+  'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10'
 );
 
 const ledgerButtonClass = clsx(
@@ -49,7 +50,7 @@ export const RevokeActionOnekeyButton: React.FC<{
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (msg === 'DISCONNECTED' || msg.startsWith('901:')) {
+      if (isOneKeyDisconnectError(msg)) {
         handledDisconnectRef.current = true;
         setDisconnectTipsModal(true);
         task?.pause();

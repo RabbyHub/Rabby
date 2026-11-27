@@ -13,46 +13,13 @@ import { CHAINS_ENUM } from '@debank/common';
 import { useState } from 'react';
 import { SelectChainListProps } from '@/ui/component/ChainSelector/components/SelectChainList';
 import ChainSelectorModal from '@/ui/component/ChainSelector/Modal';
-import styled, { createGlobalStyle } from 'styled-components';
 import { findChain } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
 import { DrawerProps, Modal, Skeleton } from 'antd';
 import { TDisableCheckChainFn } from '@/ui/component/ChainSelector/components/SelectChainItem';
 import { RiskWarningTitle } from '@/ui/component/RiskWarningTitle';
-
-const ChainGlobalStyle = createGlobalStyle`
-  .chain-selector-disable-item-tips {
-    .ant-modal-body {
-      background: var(--r-neutral-bg1, #fff);
-      padding-top: 24px !important;
-      padding-left: 20px !important;
-      padding-right: 20px !important;
-      padding-bottom: 20px !important;
-    }
-    .ant-modal-confirm-content {
-      margin-top: 0 !important;
-      padding: 0 !important;
-      font-size: 14px;
-      font-weight: 500;
-      text-align: center;
-      color: var(--r-neutral-title1, #192945);
-    }
-    .ant-modal-confirm-btns {
-      margin-top: 35px !important;
-      .ant-btn {
-        font-size: 13px !important;
-        font-weight: 500;
-      }
-      .ant-btn-ghost {
-        border-color: var(--r-blue-default);
-        color: var(--r-blue-default);
-        &:hover {
-          background: var(--r-blue-light1, #eef1ff) !important;
-        }
-      }
-    }
-  }
-`;
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import styles from './ChainSelectorInSend.module.css';
 
 interface ChainSelectorProps {
   value?: CHAINS_ENUM;
@@ -100,6 +67,8 @@ export const ChainSelectorInSend = React.forwardRef<
     ref
   ) => {
     const [showSelectorModal, setShowSelectorModal] = useState(showModal);
+
+    useDocumentClass(styles.globalActive);
 
     const { t } = useTranslation();
 
@@ -171,7 +140,6 @@ export const ChainSelectorInSend = React.forwardRef<
           showRPCStatus
           getContainer={getContainer}
         />
-        <ChainGlobalStyle />
       </>
     );
   }

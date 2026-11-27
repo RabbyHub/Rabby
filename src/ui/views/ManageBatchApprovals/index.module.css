@@ -1,0 +1,16 @@
+.globalActive :global(.global-stop-revoke-modal) {
+  & :global(.ant-modal-content) {
+    border-radius: 12px !important;
+    border: none !important;
+    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
+  }
+
+  & :global(.ant-modal-confirm-btns) {
+    display: none !important;
+  }
+
+  & :global(.ant-modal-confirm-content) {
+    padding: 0 !important;
+    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
+  }
+}

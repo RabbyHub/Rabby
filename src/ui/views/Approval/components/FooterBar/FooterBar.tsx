@@ -12,7 +12,6 @@ import clsx from 'clsx';
 import { CHAINS, INTERNAL_REQUEST_ORIGIN, SecurityEngineLevel } from 'consts';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { AccountInfo } from './AccountInfo';
 import { ActionGroup, Props as ActionGroupProps } from './ActionGroup';
@@ -27,6 +26,8 @@ import {
 import { GasAccountCheckResult } from '@/background/service/openapi';
 import { shouldShowGasLessNotEnough } from './gasAccountDecision';
 import { isApprovalProcessDisabled } from './securityGate';
+import { cn } from '@/ui/utils/cn';
+import styles from './FooterBar.module.css';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
@@ -65,74 +66,6 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   preserveApprovalContext?: boolean;
   gasTipsApprovalUiStyle?: boolean;
 }
-
-const Wrapper = styled.section`
-  padding: 20px;
-  padding-top: 12px;
-  border-radius: 16px 16px 0px 0px;
-  background: var(--r-neutral-bg-1, #3d4251);
-  box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.1);
-  border-top: 1px solid var(--r-neutral-line);
-
-  &.is-darkmode {
-    box-shadow: 0px -4px 12px 0px rgba(0, 0, 0, 0.3);
-  }
-
-  position: relative;
-
-  .security-level-tip {
-    margin-top: 10px;
-    border-radius: 4px;
-    padding: 6px 10px 6px 8px;
-    font-weight: 500;
-    font-size: 13px;
-    line-height: 15px;
-    display: flex;
-    position: relative;
-    .icon-level {
-      width: 14px;
-      height: 14px;
-      margin-right: 6px;
-    }
-    &::before {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 0;
-      border: 5px solid transparent;
-      border-bottom: 8px solid currentColor;
-      top: -13px;
-      left: 115px;
-    }
-  }
-`;
-
-const Shadow = styled.div<{ isShow: boolean }>`
-  pointer-events: none;
-  position: absolute;
-  top: -85px;
-  height: 100px;
-  left: 0;
-  width: 100%;
-  background: linear-gradient(
-    180deg,
-    rgba(217, 217, 217, 0) 10.74%,
-    rgba(175, 175, 175, 0.168147) 41.66%,
-    rgba(130, 130, 130, 0.35) 83.44%
-  );
-  z-index: 0;
-  opacity: ${(props) => (props.isShow ? 1 : 0)};
-  transition: opacity 0.1s;
-`;
-
-const ChainLogo = styled.img`
-  position: absolute;
-  top: -4px;
-  right: -4px;
-  width: 14px;
-  height: 14px;
-  border-radius: 100%;
-`;
 
 const SecurityLevelTipColor = {
   [Level.FORBIDDEN]: {
@@ -286,9 +219,11 @@ export const FooterBar: React.FC<Props> = ({
 
   return (
     <div className="relative">
-      {!isDarkTheme && <Shadow isShow={hasShadow} />}
-      <Wrapper
-        className={clsx({
+      {!isDarkTheme && (
+        <div className={clsx(styles.shadow, hasShadow && styles.shadowShow)} />
+      )}
+      <section
+        className={cn(styles.wrapper, {
           'is-darkmode': hasShadow,
           'pt-[20px]': !Header,
         })}
@@ -399,7 +334,7 @@ export const FooterBar: React.FC<Props> = ({
             preserveApprovalContext={preserveApprovalContext}
           />
         ) : null}
-      </Wrapper>
+      </section>
     </div>
   );
 };

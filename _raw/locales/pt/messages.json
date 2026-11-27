@@ -2155,7 +2155,11 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "Esqueceu a palavra-passe?",
       "description": "A sua carteira de referência para Ethereum e EVM",
-      "biometricFailed": "Desbloqueio biométrico falhou"
+      "biometricFailed": "Desbloqueio biométrico falhou",
+      "biometricSunsetTip": "O desbloqueio biométrico deixará de estar disponível a partir de 1 de janeiro de 2027. Por favor, mude agora para o desbloqueio por palavra-passe. Isto irá desativar o desbloqueio biométrico.",
+      "biometricSunsetTitle": "Mudar para desbloqueio por palavra-passe",
+      "biometricSunsetUsePassword": "Usar palavra-passe",
+      "biometricSunsetUseBiometric": "Usar biometria"
     },
     "addToken": {
       "title": "Adicione um token personalizado ao Rabby",
@@ -3566,6 +3570,8 @@
         "feeTipTooltip": "Taxa de levantamento cobrada pela Hyperliquid: 1 USD",
         "estReceiveTooltip": "O depósito entre blockchains é processado via LiFi, pode ocorrer algum deslizamento. Chegada estimada em {{number}}s.",
         "estReceiveTooltipNoTime": "Depósito entre redes é processado via LiFi e pode ocorrer deslizamento de preço.",
+        "estReceiveTooltipV2": "O depósito entre blockchains é processado via {{name}}, pode ocorrer algum deslizamento. Chegada estimada em {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "Depósito entre redes é processado via {{name}} e pode ocorrer deslizamento de preço.",
         "estReceive": "Receção estimada: {{balance}}",
         "goBridgeTips": "Apenas o USDC na Arbitrum é suportado para depósito direto. Por favor, faça a ponte do seu token atual para o USDC na Arbitrum antes de depositar.",
         "hyperliquidFeeLabelTooltip": "A Hyperliquid cobra aos novos utilizadores uma taxa de ativação única.",
@@ -5058,7 +5064,12 @@
         "notAllowInBootloaderMode": "Use no modo normal",
         "deviceCheckPassphraseStateError": "A conta não corresponde ao endereço de desbloqueio do dispositivo atual. Confirme se o dispositivo e o endereço da conta são consistentes e tente novamente",
         "actionCancel": "Operação cancelada",
-        "deviceNeedsWebHIDPermission": "Dispositivo não encontrado ou precisa de permissão WebHID"
+        "deviceNeedsWebHIDPermission": "Dispositivo não encontrado ou precisa de permissão WebUSB",
+        "deviceNotOpenedPassphrase": "A proteção por frase-passe está desativada. Ative-a para abrir a carteira oculta.",
+        "pinInvalid": "PIN incorreto. Tente novamente no seu OneKey.",
+        "deviceBusy": "O OneKey está ocupado. Termine a operação atual e tente novamente.",
+        "deviceInterrupted": "A ligação ao OneKey foi interrompida. Volte a ligar o dispositivo.",
+        "webUSBUnavailable": "Este navegador não suporta WebUSB."
       }
     },
     "feedback": {

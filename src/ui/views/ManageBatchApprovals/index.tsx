@@ -4,7 +4,6 @@ import { useMemoizedFn } from 'ahooks';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { createGlobalStyle } from 'styled-components';
 
 import { PageHeader } from '@/ui/component';
 import { useSceneAccountInfo } from '@/ui/hooks/backgroundState/useAccount';
@@ -23,25 +22,8 @@ import {
 import { RevokeActionButton } from './components/RevokeActionButton';
 import { openInTab } from '@/ui/utils';
 import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
-
-const GlobalStyle = createGlobalStyle`
-.global-stop-revoke-modal {
-  .ant-modal-content {
-    border-radius: 12px !important;
-    border: none !important;
-    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
-  }
-
-  .ant-modal-confirm-btns {
-    display: none !important;
-  }
-
-  .ant-modal-confirm-content {
-    padding: 0 !important;
-    background-color: var(--r-neutral-bg-2, #f5f6fa) !important;
-  }
-}
-`;
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import styles from './index.module.css';
 
 export type BatchRevokePageState = {
   revokeList: ApprovalSpenderItemToBeRevoked[];
@@ -75,6 +57,8 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
     [dataSource, revokeList]
   );
   const task = useBatchRevokeTask();
+
+  useDocumentClass(styles.globalActive, !!batchRevokeState);
 
   React.useEffect(() => {
     if (!batchRevokeState) {
@@ -165,7 +149,6 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
 
   return (
     <>
-      <GlobalStyle />
       <div className="h-full bg-r-neutral-bg-2 px-[20px] flex flex-col">
         <PageHeader
           onBack={handleCloseAttempt}

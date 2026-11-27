@@ -37,9 +37,9 @@ export const ProcessActions: React.FC<Props> = ({
             className={clsx(
               gasLess && 'gasLess text-r-neutral-title2',
               gasLessThemeColor && 'gasLessConfig',
-              !gasLess && 'text-blue-light',
-              'border-blue-light',
-              'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+              !gasLess && 'text-r-blue-default',
+              'border-r-blue-default',
+              'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
               'w-[246px] h-[48px]',
               'disabled:bg-transparent disabled:opacity-40 disabled:hover:bg-transparent',
               'rounded-[8px]',

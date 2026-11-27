@@ -1,7 +1,6 @@
 import React from 'react';
 import { Button, Form, Input, message } from 'antd';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +8,6 @@ import { KEYRING_CLASS } from 'consts';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import { connectStore } from '@/ui/store';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { PageHeader } from '@/ui/component';
 import PillsSwitch from '@/ui/component/PillsSwitch';
@@ -24,6 +22,7 @@ import { RcBulkImportArrowCC } from '@/ui/assets/add-address';
 import { privateKeyToAddress } from 'viem/accounts';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
+import styles from './ImportKeyOrSeed.module.css';
 
 type ImportTab = 'privateKey' | 'seedPhrase';
 
@@ -36,16 +35,6 @@ type ImportFormValues = {
   seedPhrase: string;
   passphrase: string;
 };
-
-const FormItemWrapper = styled.div`
-  .mnemonics-with-error,
-  .ant-form-item-has-error {
-    .ant-form-item-control-input
-      + .ant-form-item-explain.ant-form-item-explain-error {
-      display: none;
-    }
-  }
-`;
 
 const getTabTitleKey = (tab: ImportTab) =>
   tab === 'privateKey'
@@ -484,7 +473,7 @@ const ImportKeyOrSeed: React.FC<{
                   ) : null}
                 </>
               ) : (
-                <FormItemWrapper className="relative">
+                <div className={clsx(styles.formItemWrapper, 'relative')}>
                   <Form.Item
                     name="seedPhrase"
                     className={clsx(
@@ -514,14 +503,14 @@ const ImportKeyOrSeed: React.FC<{
                         type="password"
                         className={clsx(
                           isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
-                          'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue text-r-neutral-title-1'
+                          'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-r-blue-default text-r-neutral-title-1'
                         )}
                         spellCheck={false}
                         placeholder={t('page.newAddress.seedPhrase.passphrase')}
                       />
                     </Form.Item>
                   ) : null}
-                </FormItemWrapper>
+                </div>
               )}
 
               {isPrivateKeyTab && !pkOnPrivateKey ? (
@@ -562,4 +551,4 @@ const ImportKeyOrSeed: React.FC<{
   );
 };
 
-export default connectStore()(ImportKeyOrSeed);
+export default ImportKeyOrSeed;

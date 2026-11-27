@@ -11,6 +11,25 @@ const IGNORE_MODULES = [
   '@ethereumjs',
   'dom-align',
 ].join('|');
+
+// ts-jest only transpiles; `yarn typecheck` (whose tsconfig includes __tests__)
+// does the type checking. Type-checking here ran a TypeScript language service
+// in every worker (~5GB each) and keyed the cache on import mtimes, so a cold
+// run took over 10 minutes. An object `tsconfig` is merged over tsconfig.json.
+// Per-file transpiling can't pair CommonJS output with "bundler" resolution.
+const tsJest = (compilerOptions = {}) => [
+  'ts-jest',
+  {
+    tsconfig: {
+      ...compilerOptions,
+      module: 'commonjs',
+      moduleResolution: 'node',
+    },
+    isolatedModules: true,
+    useESM: true,
+  },
+];
+
 /*
  * For a detailed explanation regarding each configuration property and type check, visit:
  * https://jestjs.io/docs/en/configuration.html
@@ -18,6 +37,7 @@ const IGNORE_MODULES = [
 module.exports = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
+    '\\.module\\.css$': '<rootDir>/__tests__/styleModuleMock.js',
     '^utils/(.*)$': '<rootDir>/src/utils/$1',
     '^utils': '<rootDir>/src/utils',
     '^consts/(.*)$': '<rootDir>/src/constant/$1',
@@ -49,14 +69,8 @@ module.exports = {
 
   // A map from regular expressions to paths to transformers
   transform: {
-    '^.+\\.tsx$': ['ts-jest', { tsconfig: { jsx: 'react' }, useESM: true }],
-    '^.+\\.[tj]s$': [
-      'ts-jest',
-      {
-        tsconfig: 'tsconfig.json',
-        useESM: true,
-      },
-    ],
+    '^.+\\.tsx$': tsJest({ jsx: 'react' }),
+    '^.+\\.[tj]s$': tsJest(),
     '^.+\\.(svg|png|jpg)$': '<rootDir>/svgTransform.js',
   },
 };

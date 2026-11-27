@@ -51,6 +51,7 @@ import { isNil, isNumber } from 'lodash';
 import { ExternalTokenRow } from './ExternalToken';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 import { UnknownTag } from '@/ui/component';
+import { useShallow } from 'zustand/react/shallow';
 
 const isTab = getUiType().isTab;
 
@@ -136,9 +137,11 @@ const TokenSelector = ({
   const [isInputActive, setIsInputActive] = useState(false);
   const history = useHistory();
 
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
 
   const { chainItem, isTestnet } = useMemo(() => {
     const chain = !chainServerId
@@ -865,8 +868,8 @@ function CommonTokenItem(props: {
                   {isNumber(value?.price_24h_change) && (
                     <div
                       className={clsx('font-normal text-13 leading-[14px]', {
-                        'text-green': value?.price_24h_change > 0,
-                        'text-red-forbidden': value?.price_24h_change < 0,
+                        'text-r-green-default': value?.price_24h_change > 0,
+                        'text-r-red-default': value?.price_24h_change < 0,
                       })}
                     >
                       ({value?.price_24h_change > 0 ? '+' : ''}

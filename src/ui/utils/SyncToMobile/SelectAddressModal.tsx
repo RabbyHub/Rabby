@@ -3,12 +3,12 @@ import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { useAccounts } from '@/ui/hooks/useAccounts';
 import { SelectAddressItem } from './SelectAddressItem';
 import { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { isSameAccount, SYNC_KEYRING_TYPES } from '@/utils/account';
 import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
+import styles from './SelectAddressModal.module.css';
 
 interface Props {
   visible: boolean;
@@ -83,7 +83,8 @@ export const SelectAddressModal: React.FC<Props> = ({
   );
 
   return (
-    <ModalStyled
+    <Modal
+      className={styles.modal}
       visible={visible}
       onCancel={onClose}
       onOk={() => onConfirm?.(selected)}
@@ -146,21 +147,6 @@ export const SelectAddressModal: React.FC<Props> = ({
           {t('global.confirm')} ({selected?.length})
         </Button>
       </footer>
-    </ModalStyled>
+    </Modal>
   );
 };
-
-const ModalStyled = styled(Modal)`
-  .ant-modal-body {
-    padding: 0;
-    max-height: 600px;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-  }
-  .ant-modal-content {
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-  }
-`;

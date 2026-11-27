@@ -2,7 +2,6 @@ import { PageHeader } from '@/ui/component';
 import { Chain } from '@debank/common';
 import { Form, Input, Skeleton } from 'antd';
 import React, { ComponentProps, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
 import {
@@ -27,56 +26,7 @@ import { id } from 'ethers/lib/utils';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { sortBy } from 'lodash';
 import { useRPCData } from '../hooks/useRPCData';
-
-const Wraper = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  left: 0;
-  top: 0;
-  background-color: var(--r-neutral-bg1, #fff);
-  translate: 100%;
-  transition: translate 0.3s;
-  border-radius: 16px 16px 0px 0px;
-  padding: 20px 0 0 0;
-
-  display: flex;
-  flex-direction: column;
-
-  .ant-input-affix-wrapper {
-    color: var(--r-neutral-foot, #6a7587);
-    font-size: 13px;
-    font-weight: 400;
-    margin-bottom: 20px;
-    height: 44px;
-
-    border-radius: 6px;
-    background: var(--r-neutral-card1, #fff);
-    border: 1px solid var(--r-neutral-line, #d3d8e0);
-
-    .ant-input {
-      background-color: transparent;
-      color: var(--r-neutral-title1, #192945);
-    }
-
-    .anticon {
-      color: var(--r-neutral-foot, #6a7587);
-    }
-  }
-  .ant-input-affix-wrapper:focus,
-  .ant-input-affix-wrapper-focused {
-    border-color: var(--r-blue-default, #7084ff);
-  }
-
-  .chain-list-item:not(:last-child)::after {
-    position: absolute;
-    content: ' ';
-    left: 16px;
-    right: 16px;
-    bottom: 0;
-    border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0);
-  }
-`;
+import styles from './AddFromChainList.module.css';
 
 export const AddFromChainList = ({
   visible,
@@ -207,7 +157,9 @@ export const AddFromChainList = ({
   }, [isLoading, search, list, usedList]);
 
   return (
-    <Wraper className={clsx({ 'translate-x-0': visible }, className)}>
+    <div
+      className={clsx(styles.wraper, { 'translate-x-0': visible }, className)}
+    >
       <div className="px-[20px]">
         <PageHeader className="pt-0" forceShowBack onBack={onClose}>
           {t('page.customTestnet.AddFromChainList.title')}
@@ -253,7 +205,7 @@ export const AddFromChainList = ({
           />
         </div>
       )}
-    </Wraper>
+    </div>
   );
 };
 

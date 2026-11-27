@@ -1,0 +1,14 @@
+/* Was a createGlobalStyle; applies while CurveModal is mounted. */
+.globalActive :global(.global-curve-modal) {
+  padding-bottom: 0;
+}
+
+.globalActive :global(.global-curve-modal .ant-modal-content) {
+  border-radius: 8px;
+  border: 2px solid var(--r-neutral-line, #e0e5ec);
+  background: var(--r-neutral-bg2, #f2f4f7);
+}
+
+.globalActive :global(.global-curve-modal .ant-modal-body) {
+  padding: 20px 20px 16px 20px;
+}

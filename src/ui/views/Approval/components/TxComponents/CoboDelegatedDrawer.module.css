@@ -1,0 +1,16 @@
+.list :global(.icon-keyring) {
+  margin-right: 6px;
+}
+
+.list :global(.alian-name) {
+  color: var(--r-neutral-title-1);
+  font-size: 13px;
+  margin: 0;
+  font-weight: 500;
+}
+
+.list :global(.item-container) {
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 12px;
+}

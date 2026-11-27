@@ -1,0 +1,20 @@
+.tokenRowWrapper {
+  border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
+  height: 60px;
+}
+
+.tokenRowWrapper :global(.swap-action-btn) {
+  display: none !important;
+}
+
+.tokenRowWrapper:hover {
+  background-color: var(--rb-neutral-bg-2, #f2f4f7);
+}
+
+.tokenRowWrapper:hover :global(.swap-action-btn) {
+  display: block !important;
+}
+
+.tokenRowWrapper:last-child {
+  border-bottom-color: transparent;
+}

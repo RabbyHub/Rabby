@@ -1,32 +1,21 @@
 import React, { useEffect } from 'react';
 import { Button, Form, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
-import styled from 'styled-components';
 import clsx from 'clsx';
 import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import { connectStore } from '../../store';
 import WordsMatrix from '@/ui/component/WordsMatrix';
 import { KEYRING_CLASS } from '@/constant';
 import { useTranslation } from 'react-i18next';
 import { Card } from '@/ui/component/NewUserImport';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
-
-const FormItemWrapper = styled.div`
-  .mnemonics-with-error,
-  .ant-form-item-has-error {
-    .ant-form-item-control-input
-      + .ant-form-item-explain.ant-form-item-explain-error {
-      display: none;
-    }
-  }
-`;
+import styles from './InputMnemonics.module.css';
 
 type IFormStates = {
   mnemonics: string;
   passphrase: string;
 };
-const ImportMnemonics = () => {
+const ImportMnemonicsContent = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm<IFormStates>();
@@ -114,12 +103,6 @@ const ImportMnemonics = () => {
     }
   );
 
-  // if is pop, redirect to dashboard
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
-
   useEffect(() => {
     (async () => {
       if (await wallet.hasPageStateCache()) {
@@ -188,7 +171,7 @@ const ImportMnemonics = () => {
           setSlip39ErrorIndex(-1);
         }}
       >
-        <FormItemWrapper className="relative mb-16">
+        <div className={clsx(styles.formItemWrapper, 'relative mb-16')}>
           <Form.Item
             name="mnemonics"
             className={clsx(
@@ -214,14 +197,14 @@ const ImportMnemonics = () => {
                 type="password"
                 className={clsx(
                   isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
-                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue text-r-neutral-title-1'
+                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-r-blue-default text-r-neutral-title-1'
                 )}
                 spellCheck={false}
                 placeholder={t('page.newAddress.seedPhrase.passphrase')}
               />
             </Form.Item>
           )}
-        </FormItemWrapper>
+        </div>
 
         <Button
           htmlType="submit"
@@ -240,4 +223,19 @@ const ImportMnemonics = () => {
   );
 };
 
-export default connectStore()(ImportMnemonics);
+// The popup check lives here so it does not sit in front of the content
+// component's hooks (rules of hooks). In the popup, redirect to the dashboard.
+const ImportMnemonicsGate = () => {
+  const history = useHistory();
+  const isPop = getUiType().isPop;
+
+  useEffect(() => {
+    if (isPop) {
+      history.replace('/dashboard');
+    }
+  }, [isPop, history]);
+
+  return isPop ? null : <ImportMnemonicsContent />;
+};
+
+export default ImportMnemonicsGate;

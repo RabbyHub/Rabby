@@ -9,7 +9,6 @@ import { Button, message, Modal, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { CommonTable } from '../CommonTable';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as RcIconAlarmCC } from '@/ui/assets/perps/icon-alarm-cc.svg';

@@ -110,6 +110,13 @@ import {
 } from 'background/utils';
 import { handleGasAccountLoginSuccess as syncGasAccountLoginSuccess } from '../utils/gasAccountLogin';
 import {
+  extractValidAppChainBalance,
+  extractValidEvmBalance,
+  isMissingChainError,
+  mergeBalanceWithFallback,
+  PartialBalanceError,
+} from './walletUtils/balanceFallback';
+import {
   discoverGasAccountRuntimeState,
   GAS_ACCOUNT_DISCOVERY_TOP_BALANCE_ACCOUNT_LIMIT,
 } from '../utils/gasAccountDiscovery';
@@ -253,6 +260,12 @@ import { tokenDbService } from '@/db/services/tokenDbService';
 import { defiDbService } from '@/db/services/defiDbService';
 import { appChainDbService } from '@/db/services/appChainDbService';
 import { balanceDbService } from '@/db/services/balanceDbService';
+import { perpsHomeBalanceDbService } from '@/db/services/perpsHomeBalanceDbService';
+import {
+  canCachePerpsHomeBalance,
+  PerpsHomeAccount,
+  PerpsHomeAmount,
+} from '@/db/schema/perpsHomeBalance';
 import { nftDbService } from '@/db/services/nftDbService';
 import { BALANCE_SYNC_SCENE, CACHE_VALID_DURATION } from '@/db/constants';
 import { assertGasAccountSignText } from '@/utils/gasAccount';
@@ -458,6 +471,8 @@ const maskScreenshotFeedbackPageInfoAddresses = (
 };
 
 const stashKeyrings: Record<string | number, any> = {};
+let nextStashId = 1;
+let oneKeyLockGeneration = 0;
 
 const keystoneMemStoreForwarded = new WeakSet<object>();
 
@@ -606,8 +621,10 @@ export class WalletController extends BaseController {
   resolveApprovalFor = notificationService.resolveApprovalFor;
   rejectApprovalFor = notificationService.rejectApprovalFor;
 
-  rejectAllApprovals = () => {
-    notificationService.rejectAllApprovals();
+  rejectAllApprovals = (
+    options?: Parameters<typeof notificationService.rejectAllApprovals>[0]
+  ) => {
+    notificationService.rejectAllApprovals(options);
     notificationService.clear();
   };
 
@@ -2158,7 +2175,16 @@ export class WalletController extends BaseController {
   });
 
   lockWallet = async () => {
-    await keyringService.setLocked();
+    oneKeyLockGeneration++;
+    if (notificationService.approvals.length) {
+      notificationService.rejectAllApprovals();
+    }
+    // A first-time import can be waiting for a PIN before it reaches the vault.
+    const imports = Object.entries(stashKeyrings).filter(
+      ([, keyring]) => keyring.type === KEYRING_CLASS.HARDWARE.ONEKEY
+    );
+    for (const [id] of imports) delete stashKeyrings[id];
+    await keyringService.setLocked(imports.map(([, keyring]) => keyring));
     // The keyring is locked from here on, so tell the UI before the remaining
     // best-effort cleanup. A throw below must not leave open pages rendering
     // protected content against a stale "unlocked" snapshot.
@@ -2406,6 +2432,31 @@ export class WalletController extends BaseController {
     }
   };
 
+  // 写入本地余额缓存；仅完整刷新时更新时间戳，确保部分失败时下次会重试
+  private persistBalanceCache = async (
+    address: string,
+    balance: BalanceCacheData,
+    updateSyncTimestamp: boolean
+  ) => {
+    preferenceService.updateBalanceAboutCache(address, {
+      totalBalance: balance,
+    });
+
+    try {
+      await Promise.all([
+        balanceDbService.putBalance(address, balance),
+        updateSyncTimestamp &&
+          syncDbService.setUpdatedAt({
+            address,
+            scene: BALANCE_SYNC_SCENE,
+            updatedAt: Date.now(),
+          }),
+      ]);
+    } catch (error) {
+      // Dexie 写入失败时不影响返回余额
+    }
+  };
+
   private getTotalBalanceCached = cached(
     'getTotalBalanceCached',
     async (address: string) => {
@@ -2419,42 +2470,36 @@ export class WalletController extends BaseController {
       ) {
         core = true;
       }
-      const data = await openapiService.getTotalBalance(address, core);
-      let appChainTotalNetWorth = 0;
-      const appChainIds: string[] = [];
-      try {
-        const { apps } = await openapiService.getAppChainList(address);
-        apps?.forEach((app) => {
-          app?.portfolio_item_list?.forEach((item) => {
-            appChainTotalNetWorth += item.stats.net_usd_value;
-          });
-          appChainIds.push(app.id);
-        });
-      } catch (error) {
-        // just ignore appChain data
-      }
-      const formatData: BalanceCacheData = normalizeBalanceCacheData({
-        ...data,
-        evmUsdValue: data.total_usd_value,
-        total_usd_value: data.total_usd_value + appChainTotalNetWorth,
-        appChainIds,
-        appChainUsdValue: appChainTotalNetWorth,
-      });
-      preferenceService.updateBalanceAboutCache(address, {
-        totalBalance: formatData,
+      const [evmResult, appChainResult] = await Promise.allSettled([
+        openapiService.getTotalBalance(address, core),
+        openapiService.getAppChainList(address),
+      ]);
+      const evm = extractValidEvmBalance(evmResult);
+      const appChain = extractValidAppChainBalance(appChainResult);
+
+      // 仅单边失败时需要读旧缓存兜底
+      const previous =
+        !!evm !== !!appChain
+          ? await this.getAddressCacheBalance(address)
+          : null;
+      const evmError =
+        evmResult.status === 'rejected' ? evmResult.reason : undefined;
+      const { data: formatData, isComplete } = mergeBalanceWithFallback({
+        evm,
+        appChain,
+        previous,
+        evmError,
       });
 
-      try {
-        await Promise.all([
-          balanceDbService.putBalance(address, formatData),
-          syncDbService.setUpdatedAt({
-            address,
-            scene: BALANCE_SYNC_SCENE,
-            updatedAt: Date.now(),
-          }),
-        ]);
-      } catch (error) {
-        // keep balance response available even if Dexie persistence fails
+      await this.persistBalanceCache(address, formatData, isComplete);
+
+      if (!isComplete) {
+        // EVM 缺链错误继续抛出以保留缺链提示，AppChain 已写入本地缓存
+        if (!evm && isMissingChainError(evmError)) {
+          throw evmError;
+        }
+        // 部分失败时不直接 return，避免 cached() 续期 TTL
+        throw new PartialBalanceError(formatData);
       }
 
       return formatData;
@@ -2472,7 +2517,20 @@ export class WalletController extends BaseController {
    */
   getInMemoryAddressBalance = async (address: string, force = false) => {
     const addr = address?.toLowerCase() || '';
-    return this.getTotalBalanceCached.fn([addr], addr, force);
+    try {
+      return await this.getTotalBalanceCached.fn([addr], addr, force);
+    } catch (error) {
+      if (error instanceof PartialBalanceError) {
+        // 清理未过期的旧内存缓存，避免后续普通读取跳回旧值
+        this.getTotalBalanceCached.forceExpire(addr);
+        return error.fallbackBalance;
+      }
+      if (isMissingChainError(error)) {
+        // AppChain 可能已落盘更新，清理旧内存缓存避免后续读取跳回旧值
+        this.getTotalBalanceCached.forceExpire(addr);
+      }
+      throw error;
+    }
   };
 
   forceExpireInMemoryAddressBalance = (address: string) => {
@@ -4670,7 +4728,7 @@ export class WalletController extends BaseController {
   };
 
   addKeyringToStash = (keyring) => {
-    const stashId = Object.values(stashKeyrings).length + 1;
+    const stashId = nextStashId++;
     stashKeyrings[stashId] = keyring;
 
     return stashId;
@@ -4837,6 +4895,14 @@ export class WalletController extends BaseController {
     await keyringService.persistAllKeyrings();
   };
 
+  cancelOneKeySigning = async (address: string) => {
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.HARDWARE.ONEKEY
+    );
+    await keyring.cancel();
+  };
+
   checkLedgerHasHIDPermission = () => {
     const keyring = keyringService.getKeyringByType(
       KEYRING_CLASS.HARDWARE.LEDGER
@@ -4858,6 +4924,7 @@ export class WalletController extends BaseController {
   }) => {
     let keyring;
     let stashKeyringId: number | null = null;
+    const lockGeneration = oneKeyLockGeneration;
     let isNew = false;
     try {
       keyring = this.#getKeyringByType(type);
@@ -4873,6 +4940,17 @@ export class WalletController extends BaseController {
       isNew = true;
     }
 
+    if (
+      type === KEYRING_CLASS.HARDWARE.ONEKEY &&
+      lockGeneration !== oneKeyLockGeneration
+    ) {
+      throw Object.assign(
+        new Error('Wallet import session expired. Please try again.'),
+        {
+          code: KEYRING_IMPORT_EXPIRED,
+        }
+      );
+    }
     Object.keys(stashKeyrings).forEach((key) => {
       const kr = stashKeyrings[key];
       if (kr.type === keyring.type) {
@@ -4880,12 +4958,18 @@ export class WalletController extends BaseController {
       }
     });
     if (!stashKeyringId) {
-      stashKeyringId = Object.values(stashKeyrings).length + 1;
+      stashKeyringId = nextStashId++;
       stashKeyrings[stashKeyringId] = keyring;
     } else {
       if (isNew) {
         stashKeyrings[stashKeyringId] = keyring;
       }
+    }
+
+    if (type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+      // The next getAddresses call uses this exact import handle.
+      keyring = stashKeyrings[stashKeyringId];
+      keyring.beginImport();
     }
 
     if (hdPath && keyring.setHdPath) {
@@ -4947,7 +5031,7 @@ export class WalletController extends BaseController {
         keyring = new keystoneKeyring({
           bridge: await getKeyringBridge(keyringType),
         });
-        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyringId = nextStashId++;
         stashKeyrings[stashKeyringId] = keyring;
       }
     }
@@ -4976,7 +5060,7 @@ export class WalletController extends BaseController {
         keyring = new keystoneKeyring({
           bridge: await getKeyringBridge(keyringType),
         });
-        stashKeyringId = Object.values(stashKeyrings).length + 1;
+        stashKeyringId = nextStashId++;
         stashKeyrings[stashKeyringId] = keyring;
       }
     }
@@ -5045,13 +5129,19 @@ export class WalletController extends BaseController {
     data: Record<string, any>,
     options?: any
   ) => {
+    const boundOneKey =
+      type === KEYRING_CLASS.HARDWARE.ONEKEY && !!options?.sourceApprovalId;
+    const waitingId = boundOneKey
+      ? notificationService.getApproval()?.id
+      : undefined;
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    assertApprovalSigningBinding(notificationService.getApproval(), {
-      type,
-      from,
-      data,
-      options,
-    });
+    const approval = notificationService.getApproval();
+    assertApprovalSigningBinding(approval, { type, from, data, options });
+    if (boundOneKey && (!waitingId || waitingId !== approval?.id)) {
+      throw ethErrors.provider.userRejectedRequest(
+        'The signing approval is no longer current.'
+      );
+    }
     const signingOptions = options
       ? omit(options, [
           'sourceApprovalId',
@@ -5070,6 +5160,7 @@ export class WalletController extends BaseController {
         success: true,
         data: res,
         signingOperation: options?.signingOperation,
+        ...(waitingId && { approvalId: waitingId }),
       },
     });
     return res;
@@ -5084,28 +5175,64 @@ export class WalletController extends BaseController {
     data: string,
     options?: any
   ) => {
-    const fn = () =>
-      signForWaitingApproval({
+    const boundOneKey =
+      type === KEYRING_CLASS.HARDWARE.ONEKEY && !!options?.sourceApprovalId;
+    const fn = () => {
+      let waitingId: string | undefined;
+      const waitForUI = boundOneKey
+        ? () =>
+            waitSignComponentAmounted(undefined, (mountedId) => {
+              const current = notificationService.getApproval();
+              if (current?.id === options.sourceApprovalId) return false;
+              if (
+                current?.data.approvalComponent !== options.approvalComponent ||
+                current?.data.params?.sourceApprovalId !==
+                  options.sourceApprovalId
+              ) {
+                // Wake the obsolete attempt so the binding check rejects it.
+                return true;
+              }
+              if (!mountedId || current?.id !== mountedId) return false;
+              waitingId = mountedId;
+              return true;
+            })
+        : waitSignComponentAmounted;
+      return signForWaitingApproval({
         type,
         from,
         data,
         options,
         getApproval: notificationService.getApproval,
-        waitForUI: waitSignComponentAmounted,
-        sign: () => this.signTypedData(type, from, data as any, options),
+        waitForUI,
+        sign: () => {
+          if (
+            boundOneKey &&
+            (!waitingId || notificationService.getApproval()?.id !== waitingId)
+          ) {
+            throw ethErrors.provider.userRejectedRequest(
+              'The signing approval is no longer current.'
+            );
+          }
+          return this.signTypedData(type, from, data as any, options);
+        },
         onFailed: (e: any) => {
+          if (
+            boundOneKey &&
+            (!waitingId || notificationService.getApproval()?.id !== waitingId)
+          )
+            return;
           eventBus.emit(EVENTS.broadcastToUI, {
             method: EVENTS.SIGN_FINISHED,
             params: {
               success: false,
               errorMsg: e?.message || JSON.stringify(e),
-              // Waiting components drop a SIGN_FINISHED that is not for
-              // their own signing operation.
               signingOperation: options?.signingOperation,
+              ...(waitingId && { approvalId: waitingId }),
             },
           });
         },
       });
+    };
 
     notificationService.setCurrentRequestDeferFn(fn);
     return fn();
@@ -7019,6 +7146,22 @@ export class WalletController extends BaseController {
     });
   };
   getPerpsCurrentAccount = perpsService.getCurrentAccount;
+
+  getPerpsHomeBalance = perpsHomeBalanceDbService.get;
+
+  setPerpsHomeBalance = async (
+    account: PerpsHomeAccount,
+    amount: PerpsHomeAmount
+  ) => {
+    if (!canCachePerpsHomeBalance(account)) return;
+    // A popup can finish refreshing after another window removed this account.
+    try {
+      await keyringService.getKeyringForAccount(account.address, account.type);
+    } catch {
+      return;
+    }
+    await perpsHomeBalanceDbService.put(account, amount);
+  };
   getPerpsLastUsedAccount = perpsService.getLastUsedAccount;
   getAgentWalletPreference = async (masterWallet: string) => {
     return perpsService.getAgentWalletPreference(masterWallet);

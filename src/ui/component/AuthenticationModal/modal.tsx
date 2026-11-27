@@ -1,27 +1,13 @@
 import { Button, Form, Input, InputRef, Modal } from 'antd';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconClose } from 'ui/assets/swap/modal-close.svg';
 import { WrappedComponentProps, wrapModalPromise } from '../Modal/WrapPromise';
+import styles from './modal.module.css';
 
 interface AuthenticationModalProps extends WrappedComponentProps {
   title?: string;
 }
-
-const PasswordFormItem = styled(Form.Item)`
-  .ant-form-item-control {
-    position: relative;
-    overflow: visible;
-  }
-
-  .ant-form-item-explain {
-    /* position: absolute;
-    top: calc(100% + 4px);
-    left: 0;
-    width: 100%; */
-  }
-`;
 
 const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
   onFinished,
@@ -96,7 +82,8 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
         </button>
       </div>
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
-        <PasswordFormItem
+        <Form.Item
+          className={styles.passwordFormItem}
           name="password"
           rules={[
             {
@@ -113,7 +100,7 @@ const AuthenticationModal: React.FC<AuthenticationModalProps> = ({
             className="bg-r-neutral-card1 border-rabby-blue-default placeholder-r-neutral-foot h-[56px] text-15 rounded-[8px]"
             placeholder={t('component.AuthenticationModal.passwordPlaceholder')}
           />
-        </PasswordFormItem>
+        </Form.Item>
         <Form.Item
           className="mt-[64px] mb-0"
           shouldUpdate={(prev, curr) => prev.password !== curr.password}

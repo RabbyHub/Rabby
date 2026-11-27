@@ -1,5 +1,6 @@
 import React from 'react';
 import { Drawer } from 'antd';
+import styles from './index.module.css';
 import { useMemoizedFn } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
@@ -58,7 +59,7 @@ export const PerpsSettingsDrawer: React.FC<PerpsSettingsDrawerProps> = ({
         backdropFilter: 'blur(8px)',
         backgroundColor: 'rgba(0, 0, 0, 0.3)',
       }}
-      className="desktop-perps-settings-drawer"
+      className={styles.drawer}
     >
       <div className="flex h-full flex-col bg-rb-neutral-bg-0">
         <div className="flex h-[56px] shrink-0 items-center gap-[7px] px-[20px]">

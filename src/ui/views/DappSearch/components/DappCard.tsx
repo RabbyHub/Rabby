@@ -8,32 +8,12 @@ import clsx from 'clsx';
 import { range } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled, { createGlobalStyle } from 'styled-components';
 import { ReactComponent as RcIconArrow } from 'ui/assets/dapp-search/cc-arrow.svg';
 import { ReactComponent as RcIconStarFill } from 'ui/assets/dapp-search/cc-star-fill.svg';
 import { ReactComponent as RcIconStar } from 'ui/assets/dapp-search/cc-star.svg';
 import { ReactComponent as RcIconMore } from 'ui/assets/dapp-search/icon-more.svg';
-
-const Wraper = styled.div`
-  border: 1px solid transparent;
-  position: relative;
-  &:hover {
-    border: 1px solid var(--r-blue-default, #7084ff);
-    box-shadow: 0px 4px 4px 0px rgba(112, 132, 255, 0.12);
-  }
-`;
-
-const GlobalStyle = createGlobalStyle`
-  .dapp-search-card-tooltip {
-    .ant-tooltip-inner {
-      background-color: var(--r-neutral-black, #000) !important;
-    }
-
-    .ant-tooltip-arrow-content {
-      background-color: var(--r-neutral-black, #000) !important;
-    }
-  }
-`;
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import styles from './DappCard.module.css';
 
 export const DappCard = ({
   data,
@@ -50,10 +30,12 @@ export const DappCard = ({
 }) => {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
+  useDocumentClass(styles.globalActive);
 
   return (
-    <Wraper
+    <div
       className={clsx(
+        'border border-transparent relative hover:border-r-blue-default hover:shadow-[0px_4px_4px_0px_rgba(112,132,255,0.12)]',
         'bg-r-neutral-card1 cursor-pointer rounded-[8px]',
         size === 'normal' && 'p-[15px]',
         size === 'small' && 'py-[13px] px-[16px]',
@@ -172,7 +154,6 @@ export const DappCard = ({
           </Paragraph>
         </div>
       ) : null}
-      <GlobalStyle />
-    </Wraper>
+    </div>
   );
 };

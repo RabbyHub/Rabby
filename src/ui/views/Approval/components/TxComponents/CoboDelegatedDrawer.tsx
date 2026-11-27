@@ -8,37 +8,8 @@ import { ownerPriority } from './DrawerAddressItem';
 import EmptyIcon from '@/ui/assets/dashboard/empty.svg';
 import { KEYRING_CLASS } from '@/constant';
 import { AccountItem } from '@/ui/component/AccountSelectDrawer';
-import styled from 'styled-components';
-
-const ListStyled = styled.div`
-  .item {
-    height: 52px;
-    min-height: 52px;
-  }
-
-  .icon-keyring {
-    margin-right: 6px;
-  }
-
-  .alian-name {
-    color: var(--r-neutral-title-1);
-    font-size: 13px;
-    margin: 0;
-    font-weight: 500;
-  }
-
-  .address-viewer-text {
-    color: #4b4d59;
-    font-size: 12px;
-    font-weight: 400;
-  }
-
-  .item-container {
-    justify-content: space-between;
-    align-items: center;
-    margin-right: 12px;
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './CoboDelegatedDrawer.module.css';
 
 interface CoboDelegatedDrawerProps {
   owners: string[];
@@ -116,7 +87,7 @@ export const CoboDelegatedDrawer = ({
           {t('page.signTx.importedDelegatedAddress')}
         </div>
       ) : null}
-      <ListStyled className="list space-y-8">
+      <div className={cn(styles.list, 'list space-y-8')}>
         {ownerAccounts.length ? (
           ownerAccounts.map((owner) => (
             <AccountItem
@@ -129,6 +100,8 @@ export const CoboDelegatedDrawer = ({
               }
               onSelect={handleSelectAccount}
               networkId={networkId}
+              className="h-[52px] min-h-[52px]"
+              addressClassName="text-[12px] leading-[18px] font-normal text-r-neutral-title-1"
             />
           ))
         ) : (
@@ -139,7 +112,7 @@ export const CoboDelegatedDrawer = ({
             </p>
           </div>
         )}
-      </ListStyled>
+      </div>
       <div className="footer">
         <Button type="primary" onClick={onCancel}>
           {t('global.Cancel')}

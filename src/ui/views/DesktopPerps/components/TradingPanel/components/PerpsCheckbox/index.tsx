@@ -157,7 +157,7 @@ export const PerpsCheckbox = ({
       disabled={disabled}
       // Design: a disabled option reads at 30%. Checkbox dims itself to 50%
       // with an inline style, which only an !important utility can override.
-      className={disabled ? 'opacity-30' : undefined}
+      className={disabled ? '!opacity-30' : undefined}
       unCheckBackground="transparent"
       background="transparent"
       width={`${size}px`}

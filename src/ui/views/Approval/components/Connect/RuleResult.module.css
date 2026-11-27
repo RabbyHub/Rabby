@@ -1,0 +1,43 @@
+.ruleResultWrapper {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  padding: 18px 16px;
+  padding-right: 24px;
+  border: none;
+  position: relative;
+}
+
+.ruleResultWrapper:has(:global(.security-level-tag)) :global(.rule-value) {
+  padding-right: 8px;
+}
+
+.ruleResultWrapper :global(.rule-desc) {
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 15px;
+  color: var(--r-neutral-body, #3e495e);
+  width: 49%;
+}
+
+.ruleResultWrapper :global(.rule-value) {
+  display: flex;
+  justify-content: flex-end;
+  flex: 1;
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: var(--r-neutral-title-1, #192945);
+}
+
+.ruleResultWrapper :global(.collect-list) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ruleResultWrapper :global(.collect-list-item) img {
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+}

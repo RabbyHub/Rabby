@@ -4,6 +4,7 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { formatUsdValue, isSameAddress, useWallet } from '@/ui/utils';
 import { findChain, findChainByEnum, findChainByServerID } from '@/utils/chain';
 import { BridgeQuote, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
+import type { BridgeAggregator } from '@/background/service/openapi';
 import { getQuoteList as getBridgeQuoteList } from '@rabby-wallet/rabby-bridge';
 import {
   reportBridgeSdkError,
@@ -38,6 +39,10 @@ import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getRabbyFeeInfo } from '@/ui/views/Swap/hooks/fee';
 
 export const enableInsufficientQuote = true;
+
+// Stable fallback: aggregatorsList is a dependency of the quote request below,
+// so a fresh `[]` on every render would restart it.
+const EMPTY_AGGREGATORS: BridgeAggregator[] = [];
 
 export interface SelectedBridgeQuote extends Omit<BridgeQuote, 'tx'> {
   shouldApproveToken?: boolean;
@@ -221,6 +226,9 @@ export const useBridge = () => {
   const [selectedBridgeQuote, setOriSelectedBridgeQuote] = useState<
     SelectedBridgeQuote | undefined
   >();
+  // Last quote handed to setOriSelectedBridgeQuote, readable outside render.
+  // Only set alongside setOriSelectedBridgeQuote.
+  const latestSelectedBridgeQuoteRef = useRef<SelectedBridgeQuote>();
 
   const expiredTimer = useRef<NodeJS.Timeout>();
   const quoteFetchingRef = useRef(false);
@@ -250,7 +258,7 @@ export const useBridge = () => {
     : !inSufficient;
 
   const getRecommendToChain = async (chain: CHAINS_ENUM) => {
-    const useRemoteRecommendChain = async () => {
+    const fetchRemoteRecommendChain = async () => {
       const data = await wallet.openapi.getRecommendBridgeToChain({
         from_chain_id: findChainByEnum(chain)!.serverId,
       });
@@ -270,10 +278,10 @@ export const useBridge = () => {
           switchToChain(lastBridgeChain.enum);
           setToToken(latestToToken);
         } else {
-          await useRemoteRecommendChain();
+          await fetchRemoteRecommendChain();
         }
       } else {
-        await useRemoteRecommendChain();
+        await fetchRemoteRecommendChain();
       }
     }
   };
@@ -348,7 +356,7 @@ export const useBridge = () => {
   ]);
 
   const aggregatorsList = useRabbySelector(
-    (s) => s.bridge.aggregatorsList || []
+    (s) => s.bridge.aggregatorsList || EMPTY_AGGREGATORS
   );
   const { feeRate, feeTier } = useMemo(
     () =>
@@ -405,6 +413,7 @@ export const useBridge = () => {
     }
 
     if (quoteFetchingRef.current) {
+      latestSelectedBridgeQuoteRef.current = quote;
       setOriSelectedBridgeQuote(quote);
       if (quote && !quote.manualClick && !depositFlowActiveRef.current) {
         setQuoteRefreshCountdown((prev) => {
@@ -444,6 +453,7 @@ export const useBridge = () => {
         }
       }, delay);
     }
+    latestSelectedBridgeQuoteRef.current = quote;
     setOriSelectedBridgeQuote(quote);
   }, []);
 
@@ -747,22 +757,22 @@ export const useBridge = () => {
         aggregatorId: bestQuote.aggregator.id,
       });
 
-      let useQuote = bestQuote;
+      // Keep a quote the user picked by hand if it is still in the refreshed list.
+      // This used to be read through a setState updater, which React defers when
+      // the component already has a pending update (setBestQuoteId above), so the
+      // manual pick was always replaced by the best quote.
+      const preItem = latestSelectedBridgeQuoteRef.current;
+      const refreshedManualQuote = preItem?.manualClick
+        ? selectableBridgeQuoteList.find((quote) =>
+            isSameBridgeQuote(quote, preItem)
+          )
+        : undefined;
 
-      setOriSelectedBridgeQuote((preItem) => {
-        const refreshedManualQuote = preItem?.manualClick
-          ? selectableBridgeQuoteList.find((quote) =>
-              isSameBridgeQuote(quote, preItem)
-            )
-          : undefined;
-
-        useQuote = refreshedManualQuote
+      setSelectedBridgeQuote(
+        refreshedManualQuote
           ? { ...refreshedManualQuote, manualClick: true }
-          : bestQuote;
-        return preItem;
-      });
-
-      setSelectedBridgeQuote(useQuote);
+          : bestQuote
+      );
     }
   }, [allQuotesLoaded, canRunQuoteRequest, selectableBridgeQuoteList, toToken]);
 

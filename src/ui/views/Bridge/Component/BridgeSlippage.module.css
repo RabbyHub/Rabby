@@ -1,0 +1,82 @@
+.slippageItem {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid transparent;
+  cursor: pointer;
+  border-radius: 6px;
+  width: 72px;
+  height: 32px;
+  font-weight: 500;
+  font-size: 13px;
+  background: var(--r-neutral-card-1, #fff);
+  border-radius: 6px;
+  overflow: hidden;
+  color: var(--r-neutral-title1, #192945);
+
+  &:global(.input-wrapper) {
+    border: 1px solid var(--r-neutral-line, #e0e5ec);
+    background: var(--r-neutral-card-1, #fff);
+  }
+
+  &:hover,
+  &:global(.active) {
+    color: var(--r-blue-default, #7084ff);
+    background: var(--r-blue-light1, #eef1ff);
+    border: 1px solid var(--r-blue-default, #7084ff);
+  }
+
+  &:global(.error),
+  &:global(.active.error),
+  &:global(.error):hover {
+    color: var(--r-red-default, #e34935);
+    border: 1px solid var(--r-red-default, #e34935);
+    background: var(--r-red-light, #fff2f0);
+  }
+}
+
+.wrapper {
+  & :global(.slippage) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  & :global(.input) {
+    font-weight: 500;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    background: transparent;
+
+    &:placeholder-shown {
+      color: #707280;
+    }
+    & :global(.ant-input) {
+      border-radius: 0;
+      font-weight: 500;
+      font-size: 13px;
+    }
+  }
+
+  & :global(.warning) {
+    padding: 8px;
+    border-radius: 4px;
+    border: 0.5px solid var(--r-red-default, #e34935);
+    background: var(--r-red-light, #fff2f0);
+    color: var(--r-red-default, #e34935);
+    font-size: 13px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    position: relative;
+  }
+}
+
+.slippagePopup {
+  & :global(.ant-drawer-content) {
+    border-radius: 16px !important;
+    border-top: 0 !important;
+  }
+}

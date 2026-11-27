@@ -9,7 +9,6 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import imgBg from 'ui/assets/rabby-points/rabby-points-bg.png';
 import { Tabs, message } from 'antd';
 import { SetReferralCode } from './component/ReferrralCode';
@@ -37,66 +36,7 @@ import { personalMessagePromise } from '../Approval/components/MiniPersonalMessg
 import { sendPersonalMessage } from '@/ui/utils/sendPersonalMessage';
 import { Account } from '@/background/service/preference';
 import { t } from '@/utils';
-
-const Wrapper = styled.div`
-  min-height: 100vh;
-  height: 100vh;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-  background-image: url(${imgBg});
-  background-repeat: no-repeat;
-  background-position: top;
-  background-size: 400px 243px;
-  .header {
-    color: var(--r-neutral-title2, #fff);
-  }
-  svg.icon.icon-back path {
-    fill: white !important;
-  }
-  .rabby-points-tabs {
-    &.ant-tabs {
-      overflow: initial;
-    }
-    .ant-tabs-nav {
-      margin-bottom: 0;
-    }
-    .ant-tabs-content {
-      /* max-height: 100%; */
-    }
-    .ant-tabs-nav {
-      position: sticky;
-      top: -16px;
-      background: var(--r-neutral-bg1, #fff);
-      z-index: 10;
-    }
-    .ant-tabs-tab + .ant-tabs-tab {
-      margin: 0;
-    }
-    .ant-tabs-tab-btn {
-      color: var(--r-neutral-body, #3e495e);
-      &:hover {
-        color: var(--r-blue-default, #7084ff);
-      }
-    }
-    .ant-tabs-nav-list {
-      flex: 1;
-      .ant-tabs-tab {
-        flex: 1;
-        justify-content: center;
-        padding-top: 10px;
-        padding-bottom: 7px;
-      }
-    }
-    .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-      color: var(--r-blue-default, #7084ff);
-    }
-
-    .ant-tabs-nav::before {
-      border-bottom: 0.5px solid var(--r-neutral-line, #d3d8e0) !important;
-    }
-  }
-`;
+import styles from './index.module.css';
 
 const miniSignRabbyPointVerifyAddress = async (params: {
   code?: string;
@@ -218,9 +158,11 @@ const RabbyPoints = () => {
   );
   const [visible, setVisible] = useState(false);
   const [verifyVisible, setVerifyVisible] = useState(false);
-  const [previousPoints, setPreviousPoints] = useState(0);
-
-  const [currentPoints, setCurrentPoint] = useState(0);
+  // previous/current move together so one pure updater can advance both.
+  const [
+    { previous: previousPoints, current: currentPoints },
+    setPoints,
+  ] = useState({ previous: 0, current: 0 });
   const [showDiffPoints, setShowDiffPoints] = useState(false);
   const [diffPoints, setDiffPoints] = useState(0);
 
@@ -235,8 +177,8 @@ const RabbyPoints = () => {
   }, []);
 
   useEffect(() => {
-    setPreviousPoints(userPointsDetail?.claimed_points || 0);
-    setCurrentPoint(userPointsDetail?.claimed_points || 0);
+    const claimedPoints = userPointsDetail?.claimed_points || 0;
+    setPoints({ previous: claimedPoints, current: claimedPoints });
   }, [userPointsDetail?.claimed_points]);
 
   const total = useMemo(
@@ -313,11 +255,11 @@ const RabbyPoints = () => {
             campaign_id: campaign_id,
             signature,
           });
-          setCurrentPoint((e) => {
-            setPreviousPoints(e);
-            setDiffPoints(points);
-            return e + points;
-          });
+          setPoints((prev) => ({
+            previous: prev.current,
+            current: prev.current + points,
+          }));
+          setDiffPoints(points);
           refreshUserPoints();
           setClaimedIds((e) =>
             e.includes(campaign_id) ? e : [...e, campaign_id]
@@ -390,7 +332,10 @@ const RabbyPoints = () => {
   }, [topUsers, account?.address]);
 
   return (
-    <Wrapper className="leading-normal flex flex-col">
+    <div
+      className={clsx(styles.wrapper, 'leading-normal flex flex-col')}
+      style={{ '--rabby-points-bg': `url(${imgBg})` } as React.CSSProperties}
+    >
       <PageHeader
         canBack={false}
         closeable={true}
@@ -559,7 +504,7 @@ const RabbyPoints = () => {
         }}
         onConfirm={verifyAddr}
       />
-    </Wrapper>
+    </div>
   );
 };
 

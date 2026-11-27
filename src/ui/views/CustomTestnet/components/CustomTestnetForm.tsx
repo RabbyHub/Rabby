@@ -3,58 +3,8 @@ import { Form, FormInstance, Input, InputRef } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMount } from 'ahooks';
-import styled from 'styled-components';
 import { UI_TYPE } from '@/constant/ui';
-
-const Warper = styled.div`
-  .ant-form-item {
-    margin-bottom: 16px;
-  }
-  .ant-form-item-label > label {
-    color: var(--r-neutral-body, #3e495e);
-    font-size: 13px;
-    line-height: 16px;
-  }
-
-  .ant-input {
-    height: 52px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    background: transparent !important;
-    border: 1px solid var(--r-neutral-line, #d3d8e0);
-    border-radius: 6px;
-
-    color: var(--r-neutral-title1, #192945);
-    font-size: 15px;
-    font-weight: 500;
-
-    &:focus,
-    &:hover {
-      border-color: var(--r-blue-default, #7084ff);
-    }
-  }
-  .ant-input[disabled] {
-    background: var(--r-neutral-card2, #f2f4f7);
-    border-color: transparent;
-    /* color: var(--r-neutral-foot, #6a7587); */
-    &:hover {
-      border-color: transparent;
-    }
-  }
-  .ant-form-item-has-error .ant-input,
-  .ant-form-item-has-error .ant-input:hover {
-    border: 1px solid var(--r-red-default, #e34935);
-    background-color: transparent;
-  }
-
-  .ant-form-item-explain.ant-form-item-explain-error {
-    color: var(--r-red-default, #e34935);
-    font-size: 13px;
-    line-height: 16px;
-    min-height: 16px;
-  }
-`;
+import styles from './CustomTestnetForm.module.css';
 
 export const CustomTestnetForm = ({
   form,
@@ -82,7 +32,7 @@ export const CustomTestnetForm = ({
   });
 
   return (
-    <Warper>
+    <div className={styles.warper}>
       <Form
         layout="vertical"
         form={form}
@@ -152,6 +102,6 @@ export const CustomTestnetForm = ({
           <Input autoComplete="off" disabled={disabled} />
         </Form.Item>
       </Form>
-    </Warper>
+    </div>
   );
 };

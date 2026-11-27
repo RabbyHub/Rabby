@@ -25,7 +25,7 @@ export const CancelApproval = () => {
   }, [displayBlockedRequestApproval, displayCancelAllApproval]);
 
   const handleCancelAll = () => {
-    wallet.rejectAllApprovals();
+    wallet.rejectAllApprovals({ userCancelled: true });
   };
 
   const handleBlockedRequestApproval = () => {

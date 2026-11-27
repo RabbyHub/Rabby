@@ -2,7 +2,6 @@ import React, { memo } from 'react';
 import { PortfolioItem } from '@rabby-wallet/rabby-api/dist/types';
 
 import { BookMark, Panel, ProxyTag, Table, Value } from '../components';
-import styled from 'styled-components';
 
 export default memo(
   (props: {

@@ -163,6 +163,20 @@ describe('approval gesture binding', () => {
     expect(mockHistory.replace).not.toHaveBeenCalled();
   });
 
+  test('sends the explicit cancellation flag with the bound approval', async () => {
+    mount({ approvalId: approval.id, approvalComponent: 'SignTx' });
+    expect(
+      await approvalHook[2]('user cancel', { userCancelled: true })
+    ).toBe(true);
+    expect(mockWallet.rejectApprovalFor).toHaveBeenCalledWith({
+      approval: { id: approval.id, component: 'SignTx' },
+      error: 'user cancel',
+      stay: false,
+      isInternal: false,
+      userCancelled: true,
+    });
+  });
+
   test('a null binding (no scope/ref established) fails closed for both resolve and reject, never falling back to current', async () => {
     mount(null);
     expect(await approvalHook[1]({}, true)).toBe(false);

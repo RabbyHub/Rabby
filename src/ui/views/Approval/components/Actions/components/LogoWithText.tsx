@@ -2,25 +2,9 @@ import { useRabbyDispatch } from '@/ui/store';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import clsx from 'clsx';
 import React, { ReactNode } from 'react';
-import styled from 'styled-components';
 import IconUnknown from 'ui/assets/token-default.svg';
-
-const Wrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  .logo {
-    width: 16px;
-    height: 16px;
-    margin-right: 6px;
-  }
-  .text {
-    color: var(--r-neutral-title-1, #192945);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './LogoWithText.module.css';
 
 const LogoWithText = ({
   logo,
@@ -45,7 +29,7 @@ const LogoWithText = ({
   const dispatch = useRabbyDispatch();
 
   return (
-    <Wrapper className={className} id={id}>
+    <div className={cn(styles.wrapper, className)} id={id}>
       <img
         src={logo || IconUnknown}
         className="logo"
@@ -59,7 +43,7 @@ const LogoWithText = ({
         {text}
       </div>
       {icon || null}
-    </Wrapper>
+    </div>
   );
 };
 

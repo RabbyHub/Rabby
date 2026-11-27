@@ -25,6 +25,7 @@ import {
   selectRateGuideLastExposureTimestamp,
   selectUserViewedRate,
 } from '@/ui/state/preference';
+import { useShallow } from 'zustand/react/shallow';
 
 const TX_COUNT_LIMIT = appIsDev ? 1 : 3; // Minimum number of transactions before showing the rate guide
 const STAR_COUNT = 5;
@@ -60,11 +61,13 @@ export function useMakeMockDataForRateGuideExposure() {
 }
 
 export function useExposureRateGuide() {
-  const { txCount, shouldForceDisableOnLaunch } = useRabbySelector((s) => ({
-    txCount: s.preference.rateGuideLastExposure?.txCount || 0,
-    shouldForceDisableOnLaunch: !!s.preference.rateGuideLastExposure
-      ?.__UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__,
-  }));
+  const { txCount, shouldForceDisableOnLaunch } = useRabbySelector(
+    useShallow((s) => ({
+      txCount: s.preference.rateGuideLastExposure?.txCount || 0,
+      shouldForceDisableOnLaunch: !!s.preference.rateGuideLastExposure
+        ?.__UI_FORCE_DISABLE_ON_NEXT_LAUNCH_WINDOW__,
+    }))
+  );
   const userViewedRate = useRabbySelector((state) =>
     selectUserViewedRate(state.preference)
   );

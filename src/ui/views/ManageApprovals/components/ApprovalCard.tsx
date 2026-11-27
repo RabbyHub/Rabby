@@ -4,33 +4,10 @@ import { RightOutlined } from '@ant-design/icons';
 import { RiskBanner } from './RiskBanner';
 import { AssetAvatar } from './AssetAvatar';
 import { CheckboxV2 } from '../../DesktopSmallSwap/components/Checkbox';
-import styled from 'styled-components';
 import clsx from 'clsx';
 import { RcIconArrowRightCC } from '@/ui/assets/dashboard';
 import { useTranslation } from 'react-i18next';
-
-const Container = styled.div`
-  width: 100%;
-  min-height: 56px;
-  cursor: pointer;
-  border-radius: 8px;
-  border: 1px solid transparent;
-  background: var(--r-neutral-card1, #fff);
-
-  &.is-danger {
-    border-radius: 8px;
-    border-color: var(--r-red-default, #e34935);
-    background: var(--r-red-light, #fff2f0);
-  }
-
-  &:not(.is-danger).is-selected {
-    border-color: var(--r-blue-default, #4c65ff);
-    background: var(--r-blue-light1, #edf0ff);
-  }
-  &:not(.is-danger):hover {
-    border-color: var(--r-blue-default, #4c65ff);
-  }
-`;
+import styles from './ApprovalCard.module.css';
 
 type ApprovalCardProps = {
   selected: boolean;
@@ -65,8 +42,8 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
   const { t } = useTranslation();
 
   return (
-    <Container
-      className={clsx({
+    <div
+      className={clsx(styles.container, {
         'is-danger': isRisky,
         'is-selected': selectedBackground,
       })}
@@ -110,6 +87,6 @@ export const ApprovalCard: React.FC<ApprovalCardProps> = ({
         </div>
       </div>
       <RiskBanner text={riskyText} className="mx-[11px] mb-[13px]" />
-    </Container>
+    </div>
   );
 };

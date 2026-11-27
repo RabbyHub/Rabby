@@ -9,7 +9,6 @@ import { Loading3QuartersOutlined } from '@ant-design/icons';
 import { Input, InputRef } from 'antd';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import { DbkButton } from '../../components/DbkButton';
 import { ActivityPopup } from './components/ActivityPopup';
 import { WithdrawConfirmPopup } from './components/WithdrawConfirmPopup';
@@ -24,24 +23,7 @@ import { sortBy } from 'lodash';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
-
-const Warper = styled.div`
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    /* display: none; <- Crashes Chrome on hover */
-    -webkit-appearance: none;
-    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
-  }
-  .ant-input {
-    border: none !important;
-    background: transparent !important;
-    font-size: 28px;
-    line-height: 34px;
-    color: var(--r-neutral-title1, #192945);
-    font-weight: 700;
-    padding: 0;
-  }
-`;
+import styles from './index.module.css';
 
 export const DbkChainBridge = () => {
   const inputRef = React.useRef<InputRef>(null);
@@ -135,7 +117,7 @@ export const DbkChainBridge = () => {
   });
 
   return (
-    <Warper className="bg-r-neutral-bg2">
+    <div className={clsx(styles.warper, 'bg-r-neutral-bg2')}>
       <div className="p-[20px]">
         <div className="rounded-[8px] bg-r-neutral-card1 px-[16px] pt-[20px] pb-[16px]">
           <div className="flex justify-center mb-[16px] relative">
@@ -402,6 +384,6 @@ export const DbkChainBridge = () => {
           handleWithdraw();
         }}
       />
-    </Warper>
+    </div>
   );
 };

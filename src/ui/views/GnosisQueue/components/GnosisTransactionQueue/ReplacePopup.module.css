@@ -1,0 +1,13 @@
+.globalActive :global(.safe-replace-popup) {
+  & :global(.ant-drawer-title) {
+    color: var(--r-neutral-title-1, #192945);
+    font-size: 17px;
+    line-height: 20px;
+    font-weight: 500;
+    text-align: left;
+  }
+  & :global(.ant-drawer-body) {
+    padding-top: 12px;
+    padding-bottom: 22px;
+  }
+}

@@ -1,19 +1,14 @@
 /**
  * @jest-environment node
  */
-jest.mock('@sentry/browser', () => ({ captureMessage: jest.fn() }));
 // eth-sig-util's hashing fails under jsdom, whose Uint8Array is not Node's.
-import * as Sentry from '@sentry/browser';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import {
   findInvalidTypedDataValue,
   findShadowedBuiltinType,
   isTypeGraphTooLarge,
   parseTypedDataJson,
-  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
-
-const captureMessage = Sentry.captureMessage as jest.Mock;
 
 const EIP712Domain = [
   { name: 'name', type: 'string' },
@@ -457,48 +452,6 @@ describe('findInvalidTypedDataValue', () => {
       const data = { ...base, domain: { ...base.domain, name: 1 } };
       expect(find(data)).toBe('domain.name');
     });
-  });
-});
-
-describe('reportInvalidTypedDataValue', () => {
-  const context = {
-    rawTypedData: JSON.stringify({
-      message: { contents: 'x'.repeat(1000) },
-    }),
-  };
-  const invalidValue = {
-    path: 'message.approved',
-    type: 'bool',
-    expected: 'a boolean',
-  };
-
-  beforeEach(() => captureMessage.mockClear());
-
-  it('does not report without an invalid value', () => {
-    reportInvalidTypedDataValue(undefined, context);
-    expect(captureMessage).not.toHaveBeenCalled();
-  });
-
-  it('reports only the original typed data', () => {
-    reportInvalidTypedDataValue(invalidValue, context);
-    expect(captureMessage).toHaveBeenCalledTimes(1);
-    expect(captureMessage).toHaveBeenCalledWith(
-      'eip712-sec: typed data value type mismatch',
-      {
-        extra: {
-          rawTypedData: context.rawTypedData,
-        },
-      }
-    );
-  });
-
-  it('does not throw when reporting fails', () => {
-    captureMessage.mockImplementationOnce(() => {
-      throw new Error('sentry down');
-    });
-    expect(() =>
-      reportInvalidTypedDataValue(invalidValue, context)
-    ).not.toThrow();
   });
 });
 

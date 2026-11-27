@@ -3,15 +3,12 @@ import SecurityLevelTagNoText from '../../SecurityEngine/SecurityLevelTagNoText'
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { useShallow } from 'zustand/react/shallow';
 import { Result } from '@rabby-wallet/rabby-security-engine';
-import styled from 'styled-components';
 
 export interface Props {
   id: string;
   engineResult: Result;
   inSubTable?: boolean;
 }
-
-const SecurityLevelTagNoTextStyled = styled(SecurityLevelTagNoText)``;
 
 export const SecurityListItemTag: React.FC<Props> = ({
   id,
@@ -40,7 +37,7 @@ export const SecurityListItemTag: React.FC<Props> = ({
   if (!engineResult) return null;
 
   return (
-    <SecurityLevelTagNoTextStyled
+    <SecurityLevelTagNoText
       enable={engineResult.enable}
       level={processedRules.includes(id) ? 'proceed' : engineResult.level}
       onClick={() => handleClickRule(id)}

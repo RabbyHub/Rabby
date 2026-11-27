@@ -5,7 +5,6 @@ import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenI
 import clsx from 'clsx';
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { CustomTestnetAssetList } from './TestTokenlist';
 import { TokenListEmpty } from './TokenListEmpty';
 import { TokenTable } from './TokenTable';
@@ -27,13 +26,6 @@ export interface Props {
   search?: string;
   lpTokenMode?: boolean;
 }
-
-const ListContainer = styled.div`
-  background-color: var(--rb-neutral-bg-3, #f9f9f9);
-  border-radius: 16px;
-  padding: 16px;
-  margin: 0 20px 20px;
-`;
 
 export const TokenList = ({
   list,
@@ -81,7 +73,7 @@ export const TokenList = ({
 
   return (
     <div className="protocol-item-wrapper" id={TOKEN_WALLET_ANCHOR_ID}>
-      <ListContainer>
+      <div className="bg-rb-neutral-bg-3 rounded-[16px] p-16 mx-20 mb-20">
         {selectedTab === 'mainnet' ? (
           !isSearch && (isNoResults || !portfolioTokenList.length) ? (
             <TokenListEmpty
@@ -202,7 +194,7 @@ export const TokenList = ({
         ) : (
           <CustomTestnetAssetList search={search} />
         )}
-      </ListContainer>
+      </div>
     </div>
   );
 };

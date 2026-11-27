@@ -1,8 +1,8 @@
 import clsx from 'clsx';
 import React, { useLayoutEffect, useRef } from 'react';
-import styled from 'styled-components';
 import { ReactComponent as RcIconSwitchCC } from 'ui/assets/bridge/switch-arrow-cc.svg';
 import { ReactComponent as RcIconLoading } from 'ui/assets/swap/quote-circle-loading-cc.svg';
+import styles from './BridgeSwitchButton.module.css';
 
 const PROGRESS_SIZE = 36;
 const PROGRESS_STROKE_WIDTH = 3;
@@ -74,17 +74,6 @@ const QuoteRefreshProgress = ({
   );
 };
 
-const Wrapper = styled.div`
-  @keyframes loading-spin {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-  .loading-spin {
-    animation: loading-spin 0.5s linear infinite !important;
-  }
-`;
-
 export const BridgeSwitchBtn = ({
   className,
   loading,
@@ -97,8 +86,9 @@ export const BridgeSwitchBtn = ({
   const refreshing = Boolean(loading || refreshCountdown?.expired);
 
   return (
-    <Wrapper
+    <div
       className={clsx(
+        styles.wrapper,
         'flex items-center justify-center cursor-pointer relative',
         'w-[32px] h-[32px] rounded-[900px]',
         'bg-r-neutral-bg-1 text-rabby-neutral-foot',
@@ -130,6 +120,6 @@ export const BridgeSwitchBtn = ({
           refreshing ? 'opacity-100 loading-spin' : 'opacity-0'
         )}
       />
-    </Wrapper>
+    </div>
   );
 };

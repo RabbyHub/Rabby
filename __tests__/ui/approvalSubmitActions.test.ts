@@ -5,6 +5,9 @@ import { resolve } from 'path';
 import { runInNewContext } from 'vm';
 import { JsxEmit, ModuleKind, transpileModule } from 'typescript';
 import { isApprovalProcessDisabled } from '@/ui/views/Approval/components/FooterBar/securityGate';
+import { cn } from '@/ui/utils/cn';
+
+const styleModuleMock = require('../styleModuleMock');
 
 const signLabel = 'page.signFooterBar.signAndSubmitButton';
 const confirmLabel = 'global.confirmButton';
@@ -21,10 +24,8 @@ function loadSubmitActions(): React.ComponentType<any> {
       Button: ({ children, disabled, onClick }: any) =>
         React.createElement('button', { disabled, onClick }, children),
     },
-    'styled-components': {
-      __esModule: true,
-      default: (Component: React.ComponentType) => () => Component,
-    },
+    './SubmitActions.module.css': styleModuleMock,
+    '@/ui/utils/cn': { cn },
     clsx: { __esModule: true, default: () => '' },
     '@ant-design/icons': { LoadingOutlined: () => null },
     'ui/assets/close-16-cc.svg': { ReactComponent: () => null },

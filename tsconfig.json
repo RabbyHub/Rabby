@@ -25,13 +25,6 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "plugins": [
-      {
-        "name": "typescript-styled-plugin",
-        "tags": ["styled", "css"],
-        "validate": true
-      }
-    ],
     "outDir": "./dist",
     "sourceMap": true,
     "resolveJsonModule": true

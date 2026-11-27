@@ -1,0 +1,27 @@
+.protocolItemWrapper {
+  margin-bottom: 28px;
+  border-radius: 8px;
+}
+
+.protocolItemWrapper :global(.title) {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.protocolItemWrapper :global(.title .name) {
+  /* flex: 1; */
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  color: var(--r-neutral-title-1, #192945);
+}
+
+.protocolItemWrapper :global(.title .net-worth) {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  text-align: right;
+  color: var(--r-neutral-title-1, #192945);
+}

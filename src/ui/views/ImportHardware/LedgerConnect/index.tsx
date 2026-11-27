@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { hasConnectedLedgerDevice } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
-import './style.less';
 import { query2obj } from '@/ui/utils/url';
 import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 import { isLedgerWebHIDSupported } from '@/ui/utils/ledger-dmk';
@@ -76,13 +75,19 @@ const LedgerConnect = () => {
       hasBack={false}
       footerFixed={false}
     >
-      <div className="connect-ledger">
+      <div className="w-[306px]">
         <ul className="list-decimal w-[180px] pl-[20px] m-auto text-r-neutral-title1 text-14 leading-[20px] mb-[50px]">
-          <li>{t('page.dashboard.hd.ledger.doc1')}</li>
-          <li>{t('page.dashboard.hd.ledger.doc2')}</li>
-          <li>{t('page.dashboard.hd.ledger.doc3')}</li>
+          <li className="text-r-neutral-body">
+            {t('page.dashboard.hd.ledger.doc1')}
+          </li>
+          <li className="text-r-neutral-body">
+            {t('page.dashboard.hd.ledger.doc2')}
+          </li>
+          <li className="text-r-neutral-body">
+            {t('page.dashboard.hd.ledger.doc3')}
+          </li>
         </ul>
-        <img src="/images/ledger-plug.png" className="ledger-plug" />
+        <img src="/images/ledger-plug.png" className="ledger-plug mb-[50px]" />
       </div>
     </StrayPageWithButton>
   );

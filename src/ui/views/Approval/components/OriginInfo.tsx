@@ -7,7 +7,6 @@ import React, { useEffect, useMemo } from 'react';
 import SecurityLevelTagNoText from './SecurityEngine/SecurityLevelTagNoText';
 import { ConnectedSite } from '@/background/service/permission';
 import { useWallet } from '@/ui/utils';
-import styled from 'styled-components';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { useShallow } from 'zustand/react/shallow';
@@ -18,37 +17,6 @@ interface Props {
   originLogo?: string;
   engineResults?: Result[];
 }
-
-const ChainLogo = styled.img`
-  position: absolute;
-  bottom: -4px;
-  right: -4px;
-  width: 14px;
-  height: 14px;
-  border-radius: 100%;
-`;
-
-const RequestOrigin = styled.div`
-  height: 26px;
-  font-weight: 500;
-  font-size: 13px;
-  line-height: 15px;
-  position: relative;
-  box-sizing: content-box;
-  padding: 10px 12px 8px 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  .origin {
-    color: var(--r-neutral-title-1, #f7fafc);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 16px;
-    line-height: 18px;
-  }
-`;
 
 export const OriginInfo: React.FC<Props> = ({
   origin,
@@ -135,7 +103,7 @@ export const OriginInfo: React.FC<Props> = ({
   }
 
   return (
-    <RequestOrigin>
+    <div className="h-[26px] font-medium text-13 leading-[15px] relative box-content pt-10 px-12 pb-8 flex items-center justify-center">
       {originLogo && (
         <div className="relative mr-8">
           <FallbackSiteLogo
@@ -149,11 +117,16 @@ export const OriginInfo: React.FC<Props> = ({
             className="rectangle w-[max-content]"
             title={currentChain.name}
           >
-            <ChainLogo src={currentChain.logo} />
+            <img
+              className="absolute bottom-[-4px] right-[-4px] w-14 h-14 rounded-full"
+              src={currentChain.logo}
+            />
           </TooltipWithMagnetArrow>
         </div>
       )}
-      <span className="origin">{displayOrigin}</span>
+      <span className="origin text-r-neutral-title-1 overflow-hidden text-ellipsis whitespace-nowrap text-[16px] leading-[18px]">
+        {displayOrigin}
+      </span>
       {engineResultMap['1088'] && (
         <SecurityLevelTagNoText
           enable={engineResultMap['1088'].enable}
@@ -178,6 +151,6 @@ export const OriginInfo: React.FC<Props> = ({
           right="-14px"
         />
       )}
-    </RequestOrigin>
+    </div>
   );
 };

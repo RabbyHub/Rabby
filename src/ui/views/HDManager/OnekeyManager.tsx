@@ -46,12 +46,12 @@ export const OneKeyManager: React.FC = () => {
 
   const fetchCurrentAccounts = React.useCallback(async () => {
     setLoading(true);
-    await getCurrentAccounts();
-    setSetting({
-      ...setting,
-      type: HDPathType.BIP44,
-    });
-    setLoading(false);
+    try {
+      await getCurrentAccounts();
+      setSetting((previous) => ({ ...previous, type: HDPathType.BIP44 }));
+    } finally {
+      setLoading(false);
+    }
   }, []);
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
 
@@ -87,9 +87,7 @@ export const OneKeyManager: React.FC = () => {
       Sentry.captureException(fetchCurrentAccountsRetry.error);
 
       modal.error({
-        content: t('page.newAddress.hd.trezor.message.disconnected', [
-          'OneKey',
-        ]),
+        content: errMessage,
         okText: t('global.refresh'),
         centered: true,
         onOk() {
@@ -100,7 +98,7 @@ export const OneKeyManager: React.FC = () => {
   }, [fetchCurrentAccountsRetry.loading, fetchCurrentAccountsRetry.error]);
 
   const cleanUpDeviceState = React.useCallback(async () => {
-    await wallet.requestKeyring(ONEKEY_TYPE, 'cleanUp', keyringId);
+    await wallet.requestKeyring(ONEKEY_TYPE, 'cleanUp', keyringId, true);
   }, [wallet, keyringId]);
 
   const openSwitchHD = React.useCallback(async () => {

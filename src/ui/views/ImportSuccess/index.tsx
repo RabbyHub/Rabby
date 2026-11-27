@@ -18,7 +18,7 @@ import { IconImportSuccess } from 'ui/assets';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
-import { connectStore, useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
 import { UI_TYPE } from '@/constant/ui';
 import { RcCreateAddressSuccessIcon } from '@/ui/assets/add-address';
@@ -258,7 +258,7 @@ const ImportSuccess = ({
                 src={IconImportSuccess}
                 className="mx-auto mb-18 w-[100px] h-[100px]"
               />
-              <div className="text-green text-20 mb-2">{title}</div>
+              <div className="text-r-green-default text-20 mb-2">{title}</div>
               <div className="text-title text-15 mb-12">
                 <Trans
                   i18nKey="page.importSuccess.addressCount"
@@ -322,4 +322,4 @@ const ImportSuccess = ({
   );
 };
 
-export default connectStore()(ImportSuccess);
+export default ImportSuccess;

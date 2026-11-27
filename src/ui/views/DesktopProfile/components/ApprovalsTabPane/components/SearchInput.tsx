@@ -1,7 +1,6 @@
 import React from 'react';
 import { Input, InputProps } from 'antd';
 import clsx from 'clsx';
-import styled from 'styled-components';
 
 // const SearchInput = React.forwardRef<InputProps>();
 const SearchInput = function (props: InputProps) {

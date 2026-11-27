@@ -1,0 +1,17 @@
+.warper {
+  & input::-webkit-outer-spin-button,
+  & input::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: none;
+    margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+  }
+  & :global(.ant-input) {
+    border: none !important;
+    background: transparent !important;
+    font-size: 28px;
+    line-height: 34px;
+    color: var(--r-neutral-title1, #192945);
+    font-weight: 700;
+    padding: 0;
+  }
+}

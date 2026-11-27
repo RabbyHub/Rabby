@@ -45,7 +45,7 @@ export const StatusRow: React.FC<Props> = ({
     >
       {(record.$status?.status === 'pending' || isStillRevoke) && (
         <>
-          <LoadingSVG className="text-blue-light" />
+          <LoadingSVG className="text-r-blue-default" />
           {record.$status?.status === 'pending' &&
             record.$status?.isGasAccount && (
               <span className="text-r-blue-default">

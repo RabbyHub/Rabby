@@ -7,119 +7,12 @@ import clsx from 'clsx';
 import { sum } from 'lodash';
 import React, { useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconSuccessCC } from 'ui/assets/icon-checked-success-cc.svg';
 import { ReactComponent as RcIconEyeCC } from 'ui/assets/new-user-import/eye-cc.svg';
 import { ReactComponent as RcIconEyeCloseCC } from 'ui/assets/new-user-import/eye-close-cc.svg';
+import styles from './PasswordCard.module.css';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
-
-const Container = styled.div`
-  .ant-form-item-label {
-    & > label {
-      color: var(--r-neutral-title1, #192945);
-      font-size: 15px;
-      font-weight: 500;
-      line-height: 18px;
-    }
-  }
-  .ant-form-item {
-    margin-bottom: 16px;
-  }
-
-  .ant-input {
-    border-radius: 8px;
-    color: var(--r-neutral-title1);
-    font-size: 15px;
-    line-height: 18px;
-    font-weight: 400;
-    height: 52px;
-    background: transparent !important;
-  }
-
-  .ant-input-affix-wrapper {
-    background: var(--r-neutral-bg1, #fff) !important;
-    padding: 0 16px;
-    overflow: hidden;
-  }
-
-  /* .ant-input {
-    border-radius: 8px;
-    border: 1px solid var(--r-neutral-line, #e0e5ec);
-  }
-
-  .ant-input:focus,
-  .ant-input-focused {
-    border-color: var(--r-blue-default, #7084ff);
-  }
-
-  .ant-form-item-has-error {
-    margin-bottom: 20px;
-    .ant-input {
-      border: 1px solid var(--r-red-default, #e34935);
-    }
-  } */
-
-  .ant-input-affix-wrapper {
-    &:hover,
-    &-focused,
-    &-focused:hover {
-      border: 1px solid var(--r-blue-default, #7084ff);
-    }
-    border-radius: 8px;
-    border: 1px solid var(--r-neutral-line, #e0e5ec);
-    .ant-input {
-      border: none !important;
-      border-radius: 0 !important;
-      font-size: 15px;
-      line-height: 18px;
-      font-weight: 400;
-      transition: none;
-
-      &::placeholder {
-        font-size: 15px;
-        line-height: 18px;
-        color: var(--r-neutral-foot, #6a7587);
-      }
-    }
-  }
-  .ant-form-item-has-error {
-    .ant-input-affix-wrapper {
-      border: 1px solid var(--r-red-default, #e34935);
-    }
-  }
-
-  .ant-form-item-explain {
-    transition: none;
-  }
-
-  .ant-switch-checked {
-    background-color: var(--r-blue-default, #4c65ff);
-  }
-
-  .ant-form-item-explain {
-    color: var(--r-red-default, #e34935);
-    font-size: 13px;
-    font-weight: 400;
-    line-height: 16px;
-    min-height: unset;
-    margin-top: 8px;
-  }
-
-  .ant-input-suffix {
-    .icon-check {
-      display: none;
-    }
-  }
-
-  .ant-form-item-has-success {
-    .ant-input-suffix {
-      .icon-check {
-        display: block;
-      }
-    }
-  }
-`;
 
 interface Props {
   onSubmit?(password: string): void;
@@ -172,7 +65,7 @@ export const PasswordCard: React.FC<Props> = ({
 
   useHideScreenshotContextMenu();
   return (
-    <Container>
+    <div className={styles.container}>
       <Card
         onBack={onBack}
         step={step}
@@ -381,6 +274,6 @@ export const PasswordCard: React.FC<Props> = ({
           </Form.Item>
         </Form>
       </Card>
-    </Container>
+    </div>
   );
 };

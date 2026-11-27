@@ -480,8 +480,8 @@ const StakingDetail = () => {
     >
       <PageHeader
         fixed
-        contentClassName="staking-page-header switch-account thin-header"
-        wrapperClassName="staking-page-header-wrap"
+        contentClassName="switch-account thin-header h-[60px] mb-0"
+        wrapperClassName="bg-r-neutral-bg1"
         forceShowBack
       >
         {t('page.staking.title')}

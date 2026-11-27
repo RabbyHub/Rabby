@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { AuthenticationModal } from 'ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 import { useWallet } from 'ui/utils';
 import './style.less';
 
@@ -235,7 +235,10 @@ const Dashboard = () => {
             <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
           </div>
         </div>
-        <StablecoinSwapPopup />
+        {/* The settings sheet and the pending-approval overlay cover it. */}
+        <StablecoinSwapPopup
+          paused={settingVisible || pendingApprovalCount > 0}
+        />
         <ExtensionUpdateBanner
           key={`${pendingVersion}:${updateLevel}:${dismissedUntil}`}
           visible={showUpdateBanner && !settingVisible}
@@ -276,4 +279,4 @@ const Dashboard = () => {
   );
 };
 
-export default connectStore()(Dashboard);
+export default Dashboard;

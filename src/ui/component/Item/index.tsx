@@ -6,54 +6,24 @@ import React, {
 } from 'react';
 import { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
-import styled, { css } from 'styled-components';
 import IconArrowRight, {
   ReactComponent as RcIconArrowRight,
 } from 'ui/assets/address/right-arrow.svg';
 import ArrowLeftWhiteBack from 'ui/assets/import/arrow-left-white.svg';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
 import { ThemeIconType } from '@/constant';
+import { cn } from '@/ui/utils/cn';
+import styles from './index.module.css';
 
-const ItemWrapper = styled.div<{
-  hoverBorder: boolean;
-  px: number | string;
-  py: number | string;
-  // default var(--r-neutral-card-1, #fff);
-  bgColor: string;
-  // default var(--r-blue-light-1, #eef1ff);
-  hoverBgColor: string;
-  disabled?: boolean;
-}>`
-  width: 100%;
+const toCssLength = (v: number | string) =>
+  typeof v === 'number' ? v + 'px' : v;
 
-  background-color: ${(p) => p.bgColor};
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  border: 1px solid transparent;
-  padding-top: ${({ py: y }) => (typeof y === 'number' ? y + 'px' : y)};
-  padding-bottom: ${({ py: y }) => (typeof y === 'number' ? y + 'px' : y)};
-  padding-left: ${({ px: x }) => (typeof x === 'number' ? x + 'px' : x)};
-  padding-right: ${({ px: x }) => (typeof x === 'number' ? x + 'px' : x)};
-  opacity: ${(p) => (p.disabled ? 0.6 : 1)};
-
-  ${(p) =>
-    p.hoverBorder && !p.disabled
-      ? css`
-          &:hover {
-            background-color: ${p.hoverBgColor};
-            border-color: var(--r-blue-default, #7084ff);
-          }
-        `
-      : ''}
-`;
-
-const RightIconSvg = styled(RcIconArrowRight)`
-  margin-left: auto;
-  width: 16px;
-  height: 16px;
-`;
+const RightIconSvg = ({
+  className,
+  ...props
+}: React.SVGProps<SVGSVGElement>) => (
+  <RcIconArrowRight {...props} className={clsx(styles.rightIcon, className)} />
+);
 
 interface ItemProps extends ComponentPropsWithoutRef<'div'> {
   hoverBorder?: boolean;
@@ -93,14 +63,23 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
   } = props;
 
   return (
-    <ItemWrapper
-      bgColor={bgColor}
-      hoverBgColor={hoverBgColor}
-      hoverBorder={hoverBorder}
-      px={px}
-      py={py}
-      className={className}
+    <div
+      className={cn(
+        styles.item,
+        props.disabled && styles.itemDisabled,
+        hoverBorder && !props.disabled && styles.itemHoverable,
+        className
+      )}
       {...rest}
+      style={
+        {
+          '--item-bg': bgColor,
+          '--item-hover-bg': hoverBgColor,
+          '--item-px': toCssLength(px),
+          '--item-py': toCssLength(py),
+          ...rest.style,
+        } as CSSProperties
+      }
     >
       {left ? (
         left
@@ -117,58 +96,9 @@ export const Item = (props: PropsWithChildren<ItemProps>) => {
         // <RightIconImg src={rightIcon} className={rightIconClassName} alt="" />
         <ThemeIcon src={RightIconSvg} className={rightIconClassName} />
       ) : null}
-    </ItemWrapper>
+    </div>
   );
 };
-
-const BlueHeaderWrapper = styled.div<{ fixed?: boolean }>`
-  position: relative;
-  height: 56px;
-  background: var(--r-blue-default, #7084ff);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1;
-
-  ${(p) =>
-    p.fixed
-      ? css`
-          position: fixed;
-          width: 100%;
-          top: 0;
-        `
-      : ''}
-
-  .title {
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 23px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-  }
-
-  .back {
-    position: absolute;
-    top: 16px;
-    left: 20px;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    & img {
-      width: 9px;
-      height: 16px;
-    }
-  }
-`;
-
-const PolyfillHeightBox = styled.div`
-  height: 56px;
-`;
 
 interface BlueHeaderProps extends ComponentPropsWithoutRef<'div'> {
   onBack?: () => void;
@@ -196,9 +126,18 @@ export const BlueHeader = ({
     }
   }, [onBack]);
 
+  const { fixed, className, ...divProps } = rest;
+
   return (
     <>
-      <BlueHeaderWrapper {...rest}>
+      <div
+        className={cn(
+          styles.blueHeader,
+          fixed && styles.blueHeaderFixed,
+          className
+        )}
+        {...divProps}
+      >
         {showBackIcon && (
           <div
             className={clsx('back top-1/2 -translate-y-2/4', leftIconClassName)}
@@ -209,8 +148,10 @@ export const BlueHeader = ({
         )}
 
         <div className="title">{children}</div>
-      </BlueHeaderWrapper>
-      {rest.fixed && <PolyfillHeightBox className={fillClassName} />}
+      </div>
+      {rest.fixed && (
+        <div className={cn(styles.polyfillHeightBox, fillClassName)} />
+      )}
     </>
   );
 };

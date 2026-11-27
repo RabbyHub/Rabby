@@ -1,0 +1,16 @@
+.input {
+  background-color: var(--r-neutral-card1, #fff) !important;
+}
+
+.input:global(.ant-input-affix-wrapper-focused) {
+  border-color: var(--r-blue-default, #7084ff) !important;
+}
+
+.input:hover {
+  border-color: var(--r-blue-default, #7084ff) !important;
+}
+
+.input input::placeholder {
+  font-size: 12px;
+  color: var(--r-neutral-foot, #6a7587);
+}

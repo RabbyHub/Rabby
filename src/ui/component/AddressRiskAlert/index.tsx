@@ -12,7 +12,8 @@ import {
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import styled, { createGlobalStyle } from 'styled-components';
+import { useDocumentClass } from '@/ui/hooks/useDocumentClass';
+import styles from './index.module.css';
 
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
@@ -37,6 +38,7 @@ import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/componen
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
 import { useForm } from 'antd/lib/form/Form';
+import { useShallow } from 'zustand/react/shallow';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -54,43 +56,6 @@ interface AddressRiskAlertProps {
   type?: string;
   forWhitelist?: boolean;
 }
-
-const StyledTooltipGlobalStyle = createGlobalStyle`
-  .alias-tooltip {
-    .ant-tooltip-arrow {
-      display: block !important;
-    }
-  }
-`;
-
-const AddressText = styled.span`
-  font-weight: 500;
-  color: var(--r-neutral-title1);
-`;
-
-const AuthFormItemWrapper = styled.div<{ $hasError?: boolean }>`
-  .ant-form-item {
-    margin-bottom: 20px !important;
-  }
-  .ant-form-item-has-error {
-    .ant-input {
-      border-color: #f24822 !important;
-    }
-  }
-  .ant-input.ant-input-lg.popup-input {
-    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
-    background: var(--r-neutral-card1, #ffffff) !important;
-    &::placeholder {
-      color: var(--r-neutral-foot, #6a7587) !important;
-    }
-    &:focus,
-    &:hover {
-      border-color: var(--r-blue-default, #7084ff) !important;
-    }
-    ${({ $hasError }) =>
-      $hasError && 'border-color: var(--r-red-default) !important;'}
-  }
-`;
 
 export const AddressTypeCard = ({
   type,
@@ -131,6 +96,7 @@ export const AddressTypeCard = ({
   const [form] = useForm();
   const [_alias, setAlias] = useAlias(address);
   const inputRef = useRef<InputRef>(null);
+  useDocumentClass(styles.tooltipGlobalActive);
   const showCexInfo = useMemo(() => {
     return cexInfo.id && cexInfo.isDeposit && type === KEYRING_CLASS.WATCH;
   }, [cexInfo, type]);
@@ -206,9 +172,9 @@ export const AddressTypeCard = ({
                 onClick={() => destroy()}
                 className={clsx(
                   'w-[200px]',
-                  'text-blue-light',
-                  'border-blue-light',
-                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'text-r-blue-default',
+                  'border-r-blue-default',
+                  'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
                   'before:content-none'
                 )}
               >
@@ -231,7 +197,6 @@ export const AddressTypeCard = ({
 
   return (
     <div className="flex gap-[8px] items-center justify-center">
-      <StyledTooltipGlobalStyle />
       <div
         className={clsx(
           'rounded-[8px] px-[12px] h-[32px] flex items-center gap-[6px]',
@@ -349,9 +314,11 @@ export const AddressRiskAlert = ({
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
-  const { accountsList } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-  }));
+  const { accountsList } = useRabbySelector(
+    useShallow((s) => ({
+      accountsList: s.accountToDisplay.accountsList,
+    }))
+  );
 
   const [form] = Form.useForm();
   const [hasInputPassword, setHasInputPassword] = useState(false);
@@ -483,9 +450,13 @@ export const AddressRiskAlert = ({
             <Skeleton.Input className="w-full h-[44px] rounded-[8px]" active />
           ) : (
             <div className="text-[16px] w-full text-center break-all">
-              <AddressText>{addressSplit[0]}</AddressText>
+              <span className="font-medium text-r-neutral-title1">
+                {addressSplit[0]}
+              </span>
               <span className="text-r-neutral-foot">{addressSplit[1]}</span>
-              <AddressText>{addressSplit[2]}</AddressText>
+              <span className="font-medium text-r-neutral-title1">
+                {addressSplit[2]}
+              </span>
             </div>
           )}
           {riskInfos.loadingAddrDesc ? (
@@ -575,7 +546,12 @@ export const AddressRiskAlert = ({
           <div className="btn-wrapper w-[100%] flex justify-center">
             <Form className="w-full" onFinish={handleSubmit} form={form}>
               {shouldPassword && (
-                <AuthFormItemWrapper $hasError={passwordError}>
+                <div
+                  className={clsx(
+                    styles.authFormItem,
+                    passwordError && styles.hasError
+                  )}
+                >
                   <Form.Item
                     name="password"
                     rules={[
@@ -602,7 +578,7 @@ export const AddressRiskAlert = ({
                       spellCheck={false}
                     />
                   </Form.Item>
-                </AuthFormItemWrapper>
+                </div>
               )}
 
               <Button

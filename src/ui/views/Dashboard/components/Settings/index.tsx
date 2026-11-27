@@ -203,7 +203,11 @@ const OpenApiModal = ({
     <div
       className={clsx('openapi-modal', { show: isVisible, hidden: !visible })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {title}
       </PageHeader>
       <Form onFinish={handleSubmit} form={form}>
@@ -294,7 +298,7 @@ const DappAccountModal = ({
       <PageHeader
         closeable
         onClose={handleCancel}
-        className="text-[16px] leading-[19px] mb-[20px]"
+        className="pt-0 text-[16px] leading-[19px] mb-[20px]"
         closeCn={'top-[-1px]'}
       >
         {t('page.dashboard.settings.DappAccount.title')}
@@ -371,7 +375,11 @@ const ResetAccountModal = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.clearPending')}
       </PageHeader>
       <div>
@@ -481,7 +489,11 @@ const AutoLockModal = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.autoLockTime')}
       </PageHeader>
       <div className="auto-lock-option-list">
@@ -554,7 +566,11 @@ const SwitchLangModal = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.settings.currentLanguage')}
       </PageHeader>
       <div className="auto-lock-option-list">
@@ -595,11 +611,11 @@ const SwitchLangModal = ({
 //           rightIcon={
 //             <ThemeIcon
 //               src={RcIconArrowCCRight}
-//               className="icon icon-arrow-right w-20 h-20 text-[#109D63]"
+//               className="icon icon-arrow-right w-20 h-20 text-r-green-default"
 //             />
 //           }
 //           onClick={onClick}
-//           className="bg-[rgba(16,157,99,0.20)] text-[#109D63] hover:border-[#109D63] font-medium"
+//           className="bg-[rgba(16,157,99,0.20)] text-r-green-default hover:border-r-green-default font-medium"
 //         >
 //           {t('page.dashboard.settings.claimFreeGasBadge')}
 //         </Field>
@@ -678,7 +694,6 @@ const SettingsInner = ({
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
-  const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
   const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
@@ -775,24 +790,10 @@ const SettingsInner = ({
     }
   });
 
+  // Biometric unlock is being sunset: the setting can only be turned off.
   const handleToggleBiometricUnlock = useMemoizedFn(
     async (checked: boolean) => {
       if (checked) {
-        if (!biometricSupported) {
-          message.error(
-            t('page.dashboard.settings.biometricUnlockUnsupported')
-          );
-          return;
-        }
-        setBiometricBusy(true);
-        try {
-          await wallet.openBiometricUnlockSetupWindow({ from: 'settings' });
-        } finally {
-          setBiometricBusy(false);
-        }
-        if (getUiType().isPop) {
-          window.close();
-        }
         return;
       }
 
@@ -808,6 +809,32 @@ const SettingsInner = ({
         );
       } finally {
         setBiometricBusy(false);
+      }
+    }
+  );
+
+  // Debug Kits only (stripped from production builds): biometric unlock can no
+  // longer be enabled from the regular settings, so keep a way to set it up
+  // for testing.
+  const handleDebugToggleBiometricUnlock = useMemoizedFn(
+    async (checked: boolean) => {
+      if (!checked) {
+        await handleToggleBiometricUnlock(false);
+        return;
+      }
+
+      if (!(await isBiometricUnlockSupported())) {
+        message.error(t('page.dashboard.settings.biometricUnlockUnsupported'));
+        return;
+      }
+      setBiometricBusy(true);
+      try {
+        await wallet.openBiometricUnlockSetupWindow({ from: 'settings' });
+      } finally {
+        setBiometricBusy(false);
+      }
+      if (getUiType().isPop) {
+        window.close();
       }
     }
   );
@@ -888,18 +915,6 @@ const SettingsInner = ({
       });
     }
   };
-
-  useEffect(() => {
-    let mounted = true;
-    isBiometricUnlockSupported().then((supported) => {
-      if (mounted) {
-        setBiometricSupported(supported);
-      }
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   useEffect(() => {
     wallet
@@ -998,23 +1013,26 @@ const SettingsInner = ({
     settings: {
       label: t('page.dashboard.settings.settings.label'),
       items: [
-        {
-          leftIcon: RCIconBiometric,
-          leftIconClassName: 'text-r-neutral-body',
-          className: 'js-setting-biometric',
-          content: t('page.dashboard.settings.settings.biometricUnlock'),
-          rightIcon: (
-            <Switch
-              checked={!!biometricUnlockEnabled}
-              disabled={
-                biometricBusy ||
-                (!biometricSupported && !biometricUnlockEnabled)
-              }
-              loading={biometricBusy}
-              onChange={handleToggleBiometricUnlock}
-            />
-          ),
-        },
+        // Biometric unlock is being sunset: only shown to users who already
+        // enabled it, so they can turn it off.
+        ...(biometricUnlockEnabled
+          ? [
+              {
+                leftIcon: RCIconBiometric,
+                leftIconClassName: 'text-r-neutral-body',
+                className: 'js-setting-biometric',
+                content: t('page.dashboard.settings.settings.biometricUnlock'),
+                rightIcon: (
+                  <Switch
+                    checked
+                    disabled={biometricBusy}
+                    loading={biometricBusy}
+                    onChange={handleToggleBiometricUnlock}
+                  />
+                ),
+              },
+            ]
+          : []),
         {
           leftIcon: RcIconPerps,
           leftIconClassName: 'text-r-neutral-body',
@@ -1262,6 +1280,19 @@ const SettingsInner = ({
       label: 'Debug Kits (Not present on production)',
       items: [
         {
+          leftIcon: RCIconBiometric,
+          leftIconClassName: 'text-r-neutral-body',
+          content: <span>Biometric Unlock (for testing)</span>,
+          rightIcon: (
+            <Switch
+              checked={!!biometricUnlockEnabled}
+              disabled={biometricBusy}
+              loading={biometricBusy}
+              onChange={handleDebugToggleBiometricUnlock}
+            />
+          ),
+        },
+        {
           leftIcon: RcIconServerCC,
           content: (
             <span>{t('page.dashboard.settings.backendServiceUrl')}</span>
@@ -1437,7 +1468,7 @@ const SettingsInner = ({
                 {process.env.release}
                 <span
                   className={clsx(
-                    'text-[#ec5151] ml-2',
+                    'text-r-red-default ml-2',
                     !hasNewVersion && 'hidden'
                   )}
                 >
@@ -1575,8 +1606,12 @@ const SettingsInner = ({
                       }
                       onClick={data.onClick}
                       className={clsx(
+                        'bg-r-neutral-card-2 px-16 py-0 min-h-[52px] hover:bg-[rgba(134,151,255,0.2)]',
+                        // One rounded group; a hovered row is rounded on its own.
+                        'rounded-none first:rounded-t-[6px] last:rounded-b-[6px] hover:rounded-[6px]',
                         data.className,
-                        data.description ? 'has-desc' : null
+                        data.description &&
+                          'has-desc pt-12 items-start [&>.field-slot]:overflow-visible'
                       )}
                     >
                       {data.content}

@@ -7,17 +7,20 @@ import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcArrowDownSVG } from '@/ui/assets/dashboard/arrow-down-cc.svg';
 import IconCheck from 'ui/assets/check-2.svg';
 import './styles.less';
+import { useShallow } from 'zustand/react/shallow';
 
 export const LangSelector: React.FC = () => {
   const dispatch = useRabbyDispatch();
-  const currentLang = useRabbySelector((state) => {
-    const code = state.preference.locale;
-    const name = LANGS.find((lang) => lang.code === code)?.name;
-    return {
-      code,
-      name: name || code,
-    };
-  });
+  const currentLang = useRabbySelector(
+    useShallow((state) => {
+      const code = state.preference.locale;
+      const name = LANGS.find((lang) => lang.code === code)?.name;
+      return {
+        code,
+        name: name || code,
+      };
+    })
+  );
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
 

@@ -1,14 +1,11 @@
 import { queryOptions } from '@tanstack/react-query';
-import type { WalletControllerType } from '@/ui/utils/WalletContext';
+import { wallet } from '@/ui/wallet';
 import { createQueryKey } from '../queryKey';
 
 export const tokenPriceQueryKey = (tokenId: string) =>
   createQueryKey('tokenPrice', {}, { tokenId });
 
-export const tokenPriceQueryOptions = (
-  wallet: WalletControllerType,
-  tokenId: string
-) =>
+export const tokenPriceQueryOptions = (tokenId: string) =>
   queryOptions({
     queryKey: tokenPriceQueryKey(tokenId),
     queryFn: async () => {

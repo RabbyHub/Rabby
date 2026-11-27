@@ -16,7 +16,6 @@ import React, {
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import IconChecked from 'ui/assets/safe-nonce-select/checked.svg';
 import IconDown from 'ui/assets/safe-nonce-select/down.svg';
 import IconFind from 'ui/assets/safe-nonce-select/find.svg';
@@ -26,132 +25,8 @@ import { getActionTypeTextByType } from '../Actions/utils';
 import { Card } from '../Card';
 import { Divide } from '../Divide';
 import { Account } from '@/background/service/preference';
-
-const Wrapper = styled(Card)`
-  .nonce-select {
-    padding: 0 16px 12px;
-    margin-top: -4px;
-    &-label {
-      color: var(--r-neutral-title-1, #192945);
-      font-size: 15px;
-      font-weight: 500;
-      line-height: 18px;
-      margin-bottom: 8px;
-    }
-    .ant-input-affix-wrapper:not(.ant-input-affix-wrapper-disabled):hover {
-      border-color: var(--r-blue-default, #7084ff);
-      border-right-width: 1px !important;
-      z-index: 1;
-    }
-    .nonce-input {
-      height: 40px;
-      border-radius: 6px;
-      border: 1px solid var(--r-neutral-line, #d3d8e0);
-      /* border: 0.5px solid var(--r-neutral-line, #d3d8e0); */
-
-      background: var(--r-neutral-bg-3, #f7fafc);
-
-      .ant-input {
-        background: var(--r-neutral-bg-3, #f7fafc);
-        color: var(--r-neutral-title-1);
-      }
-    }
-
-    &-option-list {
-      border-radius: 6px;
-      background: var(--r-neutral-bg-3, #f7fafc);
-      margin-top: 8px;
-    }
-
-    &-option-group {
-      &-title {
-        padding: 4px 12px 8px 12px;
-        color: var(--r-neutral-body, #3e495e);
-        font-size: 12px;
-        font-weight: 400;
-        line-height: 14px;
-      }
-    }
-
-    &-option {
-      display: flex;
-      align-items: center;
-
-      color: var(--r-neutral-title-1, #192945);
-      font-size: 13px;
-      font-weight: 500;
-
-      line-height: 16px;
-
-      padding: 12px;
-      border-radius: 6px;
-      position: relative;
-      border: 1px solid transparent;
-      cursor: pointer;
-
-      &:hover,
-      &.is-checked {
-        border: 1px solid var(--r-blue-default, #7084ff);
-        background: var(--r-blue-light-1, #eef1ff);
-      }
-
-      img {
-        margin-left: auto;
-      }
-
-      &:not(:last-child)::after {
-        content: '';
-        display: block;
-        position: absolute;
-        bottom: -1px;
-        left: 12px;
-        right: 12px;
-        height: 1px;
-        height: 0.5px;
-        background: var(--r-neutral-line, #d3d8e0);
-      }
-    }
-  }
-
-  .ant-form-item-has-error .nonce-input {
-    border-color: var(--r-red-default, #e34935) !important;
-  }
-
-  .ant-form-item-explain,
-  .ant-form-item-extra {
-    min-height: unset;
-  }
-  .ant-form-item {
-    margin-bottom: 0;
-  }
-  .ant-form-item-explain.ant-form-item-explain-error {
-    color: var(--r-red-default, #e34935);
-    font-size: 12px;
-    font-weight: 400;
-    line-height: 14px;
-  }
-
-  .alert-error {
-    display: flex;
-    padding: 40px 40px 36px 40px;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 12px;
-    border-radius: 6px;
-    background: var(--r-neutral-bg-3, #f7fafc);
-    margin-top: 8px;
-
-    &-message {
-      color: var(--r-neutral-body, #3e495e);
-      text-align: center;
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './SafeNonceSelector.module.css';
 
 interface SafeNonceSelectorProps {
   value?: string;
@@ -222,7 +97,7 @@ export const SafeNonceSelector = ({
 
   if (!isReady) {
     return (
-      <Wrapper className="pt-[14px] pb-[16px]">
+      <Card className={cn(styles.wrapper, 'pt-[14px] pb-[16px]')}>
         <div>
           <div>
             <Skeleton.Input active style={{ width: 120, height: 18 }} />
@@ -239,11 +114,15 @@ export const SafeNonceSelector = ({
               ))}
           </div>
         </div>
-      </Wrapper>
+      </Card>
     );
   }
   return (
-    <Wrapper hasDivider={false} headline={t('global.Nonce')}>
+    <Card
+      className={styles.wrapper}
+      hasDivider={false}
+      headline={t('global.Nonce')}
+    >
       <div className="nonce-select">
         <Form form={form}>
           <Form.Item
@@ -305,7 +184,7 @@ export const SafeNonceSelector = ({
           </div>
         ) : null}
       </div>
-    </Wrapper>
+    </Card>
   );
 };
 

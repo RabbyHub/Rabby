@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Input, Form, Button, InputRef } from 'antd';
+import { Input, Form, Button, InputRef, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import {
@@ -16,12 +16,12 @@ import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.s
 import { ReactComponent as PasswordSwitchSVG } from '@/ui/assets/dashboard/settings/password.svg';
 import { ReactComponent as BiometricSwitchSVG } from '@/ui/assets/dashboard/settings/biometric.svg';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import qs from 'qs';
 import { isString } from 'lodash';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
+  cleanupBiometricCredential,
   decryptBiometricUnlockPassword,
   isBiometricUnlockSupported,
 } from '@/ui/utils/biometric';
@@ -30,62 +30,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { useEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { EVENTS } from '@/constant';
 import { useWalletStatusStore } from '@/ui/state/walletStatus';
-
-const InputFormStyled = styled(Form.Item)`
-  .ant-form-item-explain {
-    font-size: 13px;
-    line-height: 16px;
-    margin-top: 16px;
-    margin-bottom: 24px;
-    min-height: 0px;
-    color: var(--r-red-default);
-    font-weight: 500;
-  }
-`;
-const BiometricsImage = styled.div`
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-`;
-
-const UnlockPage = styled.div`
-  background-color: #ecf3ff;
-  background-image: url(${unlockBackground});
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: 100% 100%;
-
-  html.dark & {
-    background-color: var(--r-neutral-bg-1);
-    background-image: none;
-  }
-`;
-
-const UnlockMethodSwitch = styled.button`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 7px 10.5px;
-  border: 0;
-  border-radius: 8px;
-  background: #ccd2ff;
-  color: var(--r-blue-default);
-  font-size: 13px;
-  font-weight: 500;
-
-  &:hover {
-    background: #b8c1ff;
-  }
-
-  html.dark & {
-    background: #232b4e;
-  }
-
-  html.dark &:hover {
-    background: #2a3770;
-  }
-`;
+import styles from './index.module.css';
 
 const Unlock = () => {
   type UnlockType = 'Biometrics' | 'Password';
@@ -99,7 +44,6 @@ const Unlock = () => {
   const [getApproval, resolveApproval] = useApproval(pendingUnlockApproval);
   const [form] = Form.useForm();
   const inputEl = useRef<InputRef>(null);
-  const autoBiometricTriggeredRef = useRef(false);
   const pendingUnlockTypeRef = useRef<UnlockType | null>(null);
   const UiType = getUiType();
   const { t } = useTranslation();
@@ -108,10 +52,12 @@ const Unlock = () => {
   const [hasForgotPassword, setHasForgotPassword] = React.useState(false);
   const [biometricSupported, setBiometricSupported] = React.useState(false);
   const [biometricUnlocking, setBiometricUnlocking] = React.useState(false);
-  const [biometricSetupOpening, setBiometricSetupOpening] = React.useState(
-    false
-  );
-  const [showPasswordUnlock, setShowPasswordUnlock] = useState(false);
+  // Biometric unlock is being sunset: password is always the default method.
+  const [showPasswordUnlock, setShowPasswordUnlock] = useState(true);
+  const [
+    biometricSunsetModalVisible,
+    setBiometricSunsetModalVisible,
+  ] = useState(false);
   const location = useLocation();
   const [inputError, setInputError] = React.useState('');
   const biometricUnlockEnabled = useRabbySelector(
@@ -125,12 +71,6 @@ const Unlock = () => {
   );
   const biometricUnlockIv = useRabbySelector(
     (state) => state.preference.biometricUnlockIv
-  );
-  const unlockPreferredMethod = useRabbySelector(
-    (state) => state.preference.unlockPreferredMethod
-  );
-  const hasUnlockedOnce = useWalletStatusStore(
-    (state) => state.hasUnlockedOnce
   );
   const query = useMemo(() => {
     return qs.parse(location.search, {
@@ -180,13 +120,40 @@ const Unlock = () => {
     // by useApproval on every render and must not retrigger this effect.
   }, [pendingUnlockApproval]);
 
+  // Biometric unlock is being sunset. A successful password unlock initiated in
+  // this window disables it and clears the stored biometric data. Only the
+  // local pendingUnlockTypeRef counts: UNLOCK_WALLET is broadcast to every
+  // window and also fires after a biometric unlock.
+  const disableBiometricAfterPasswordUnlock = useMemoizedFn(async () => {
+    try {
+      const credentialId = biometricUnlockCredentialId;
+      if (credentialId) {
+        // Best effort, never blocks disabling.
+        await cleanupBiometricCredential(credentialId).catch((e) => {
+          console.error(e);
+          return false;
+        });
+      }
+      await dispatch.preference.setBiometricUnlock({ enabled: false });
+    } catch (e) {
+      console.error('[Unlock] failed to disable biometric unlock', e);
+    }
+  });
+
   const handleUnlockSuccess = useMemoizedFn(async () => {
     const unlockType = pendingUnlockTypeRef.current;
     pendingUnlockTypeRef.current = null;
     if (unlockType) {
-      await dispatch.preference.setUnlockPreferredMethod(
-        unlockType === 'Biometrics' ? 'biometric' : 'password'
-      );
+      try {
+        await dispatch.preference.setUnlockPreferredMethod(
+          unlockType === 'Biometrics' ? 'biometric' : 'password'
+        );
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    if (unlockType === 'Password' && biometricUnlockEnabled) {
+      await disableBiometricAfterPasswordUnlock();
     }
 
     useWalletStatusStore.setState({
@@ -265,16 +232,16 @@ const Unlock = () => {
     !!biometricUnlockEncryptedPassword &&
     !!biometricUnlockIv;
   const biometricAvailable = biometricSupported && biometricConfigured;
-  const showBiometricSwitch =
-    biometricSupported && (UiType.isTab || UiType.isPop || UiType.isDesktop);
+  // Only users who already enabled biometric unlock keep the switch entry. It
+  // is shown in every window type, including the notification (signing) popup,
+  // since biometric unlock is no longer triggered automatically there.
+  const showBiometricSwitch = biometricAvailable;
 
   useEffect(() => {
     if (!biometricAvailable) {
       setShowPasswordUnlock(true);
-      return;
     }
-    setShowPasswordUnlock(unlockPreferredMethod === 'password');
-  }, [biometricAvailable, unlockPreferredMethod]);
+  }, [biometricAvailable]);
 
   useEffect(() => {
     if (!showPasswordUnlock) return;
@@ -308,23 +275,22 @@ const Unlock = () => {
     }
   });
 
-  const handleBiometricEntry = useMemoizedFn(async () => {
-    if (!biometricSupported) return;
-    if (biometricAvailable) {
-      handleBiometricUnlock();
-      return;
-    }
+  // Biometric unlock is being sunset: remind the user before each biometric
+  // unlock and offer to switch back to password.
+  const handleBiometricEntry = useMemoizedFn(() => {
+    if (!biometricAvailable) return;
+    if (isUnlockingRef.current || biometricUnlocking) return;
+    setBiometricSunsetModalVisible(true);
+  });
 
-    if (biometricSetupOpening || biometricUnlocking) return;
-    setBiometricSetupOpening(true);
-    try {
-      await wallet.openBiometricUnlockSetupWindow({ from: 'unlock' });
-      if (UiType.isPop) {
-        window.close();
-      }
-    } finally {
-      setBiometricSetupOpening(false);
-    }
+  const handleSunsetUsePassword = useMemoizedFn(() => {
+    setBiometricSunsetModalVisible(false);
+    setShowPasswordUnlock(true);
+  });
+
+  const handleSunsetUseBiometric = useMemoizedFn(() => {
+    setBiometricSunsetModalVisible(false);
+    handleBiometricUnlock();
   });
 
   const switchToBiometricMode = useMemoizedFn(() => {
@@ -332,23 +298,6 @@ const Unlock = () => {
     setInputError('');
     setShowPasswordUnlock(false);
   });
-
-  useEffect(() => {
-    if (!biometricAvailable) return;
-    if (showPasswordUnlock) return;
-    if (unlockPreferredMethod === 'password') return;
-    if (hasUnlockedOnce) return;
-    if (autoBiometricTriggeredRef.current) return;
-
-    autoBiometricTriggeredRef.current = true;
-    handleBiometricUnlock();
-  }, [
-    biometricAvailable,
-    showPasswordUnlock,
-    unlockPreferredMethod,
-    hasUnlockedOnce,
-    handleBiometricUnlock,
-  ]);
 
   useEffect(() => {
     wallet.savedUnencryptedKeyringData().then(setHasForgotPassword);
@@ -370,26 +319,38 @@ const Unlock = () => {
 
   return (
     <FullscreenContainer isUnlock>
-      <UnlockPage className="unlock page-has-ant-input relative h-full min-h-[550px]">
+      <div
+        className={clsx(
+          styles.unlockPage,
+          'unlock page-has-ant-input relative h-full min-h-[550px]'
+        )}
+        style={
+          {
+            '--unlock-bg-image': `url(${unlockBackground})`,
+          } as React.CSSProperties
+        }
+      >
         <div className="pt-[124px]">
           {showBiometricSwitch && (
             <div className="w-full absolute top-32 left-0 right-0 flex justify-center z-10">
               {showPasswordUnlock ? (
-                <UnlockMethodSwitch
+                <button
                   type="button"
+                  className={styles.unlockMethodSwitch}
                   onClick={switchToBiometricMode}
                 >
                   <BiometricSwitchSVG className="w-[18px] h-[18px]" />
                   {t('page.unlock.btn.biometric')}
-                </UnlockMethodSwitch>
+                </button>
               ) : (
-                <UnlockMethodSwitch
+                <button
                   type="button"
+                  className={styles.unlockMethodSwitch}
                   onClick={() => setShowPasswordUnlock(true)}
                 >
                   <PasswordSwitchSVG className="w-[18px] h-[18px]" />
                   {t('page.unlock.btn.unlockWithPassword')}
-                </UnlockMethodSwitch>
+                </button>
               )}
             </div>
           )}
@@ -417,9 +378,9 @@ const Unlock = () => {
         </div>
         {showBiometricSwitch && !showPasswordUnlock ? (
           <>
-            <BiometricsImage>
+            <div className="mt-28 flex justify-center">
               <BiometricsSVG />
-            </BiometricsImage>
+            </div>
 
             <footer className="absolute bottom-[68px] left-0 right-0 text-center">
               <div className="mx-20">
@@ -432,18 +393,61 @@ const Unlock = () => {
                   htmlType="button"
                   type="primary"
                   size="large"
-                  loading={biometricUnlocking || biometricSetupOpening}
+                  loading={biometricUnlocking}
                   onClick={handleBiometricEntry}
                 >
                   {t('page.unlock.btn.biometric')}
                 </Button>
               </div>
             </footer>
+
+            <Modal
+              visible={biometricSunsetModalVisible}
+              onCancel={() => setBiometricSunsetModalVisible(false)}
+              className="modal-support-darkmode"
+              bodyStyle={{
+                padding: 0,
+                background: 'var(--r-neutral-bg1, #FFF)',
+              }}
+              width={360}
+              footer={null}
+              closable={false}
+              centered
+              destroyOnClose
+            >
+              <div className="pt-[30px] px-[20px] text-center">
+                <div className="text-r-neutral-title1 text-[16px] font-medium leading-[20px]">
+                  {t('page.unlock.biometricSunsetTitle')}
+                </div>
+                <div className="mt-[12px] text-r-neutral-body text-[14px] font-normal leading-[20px]">
+                  {t('page.unlock.biometricSunsetTip')}
+                </div>
+              </div>
+              <div className="flex items-stretch gap-[12px] p-[20px]">
+                <Button
+                  type="primary"
+                  size="large"
+                  ghost
+                  className="rabby-btn-ghost flex-1 min-w-0 h-auto min-h-[44px] whitespace-normal leading-[18px]"
+                  onClick={handleSunsetUseBiometric}
+                >
+                  {t('page.unlock.biometricSunsetUseBiometric')}
+                </Button>
+                <Button
+                  type="primary"
+                  size="large"
+                  className="flex-1 min-w-0 h-auto min-h-[44px] whitespace-normal leading-[18px]"
+                  onClick={handleSunsetUsePassword}
+                >
+                  {t('page.unlock.biometricSunsetUsePassword')}
+                </Button>
+              </div>
+            </Modal>
           </>
         ) : (
           <Form autoComplete="off" form={form} onFinish={handleSubmit}>
-            <InputFormStyled
-              className="mt-[34px] mx-20"
+            <Form.Item
+              className={clsx(styles.inputForm, 'mt-[34px] mx-20')}
               name="password"
               validateStatus={inputError ? 'error' : undefined}
               help={inputErrorNode}
@@ -470,7 +474,7 @@ const Unlock = () => {
                   setInputError('');
                 }}
               />
-            </InputFormStyled>
+            </Form.Item>
 
             <footer className="absolute bottom-32 left-0 right-0 text-center">
               <Form.Item className="mx-20 mb-20">
@@ -504,7 +508,7 @@ const Unlock = () => {
             </footer>
           </Form>
         )}
-      </UnlockPage>
+      </div>
     </FullscreenContainer>
   );
 };

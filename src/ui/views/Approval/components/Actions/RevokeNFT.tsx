@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Result } from '@rabby-wallet/rabby-security-engine';
 import {
@@ -14,39 +13,7 @@ import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
 import { SubCol, SubRow, SubTable } from './components/SubTable';
 import { Chain } from '@/types/chain';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  li .name-and-address {
-    justify-content: flex-start;
-    .address {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 14px;
-      color: #999999;
-    }
-    img {
-      width: 12px !important;
-      height: 12px !important;
-      margin-left: 4px !important;
-    }
-  }
-`;
+import styles from './RevokeNFT.module.css';
 
 const RevokeNFT = ({
   data,
@@ -64,7 +31,7 @@ const RevokeNFT = ({
   const isTestnet = chain.isTestnet;
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.revokeNFTApprove.revokeNFT')}</Row>
@@ -122,7 +89,7 @@ const RevokeNFT = ({
           </SubCol>
         </SubTable>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

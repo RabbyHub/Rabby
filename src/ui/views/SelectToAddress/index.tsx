@@ -5,7 +5,6 @@ import clsx from 'clsx';
 import { useHistory, useLocation } from 'react-router-dom';
 import { isValidAddress } from '@ethereumjs/util';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Button, message, Tabs } from 'antd';
 import { groupBy } from 'lodash';
 import PQueue from 'p-queue';
@@ -14,7 +13,7 @@ import { findAccountByPriority } from '@/utils/account';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWhitelistStore } from '@/ui/state/whitelist';
 import { EnterAddress } from './components/EnterAddress';
 import { padWatchAccount } from './util';
@@ -38,37 +37,7 @@ import {
   VerifyPwdForNonWhitelisted,
 } from '@/ui/component/Whitelist/Modal';
 import { Account } from '@rabby-wallet/eth-walletconnect-keyring/type';
-
-const OuterInput = styled.div`
-  border: 1px solid var(--r-neutral-line);
-  &:hover {
-    border: 1px solid var(--r-blue-default, #7084ff);
-    cursor: text;
-  }
-`;
-
-const AnimatedInputWrapper = styled.div`
-  transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-  /* overflow: hidden; */
-  will-change: max-height, opacity, transform;
-  &.collapsed {
-    height: 69px;
-    max-height: 69px;
-    padding-bottom: 17px;
-    opacity: 1;
-    transform: scaleY(1);
-  }
-  &.expanded {
-    max-height: 1000px;
-    opacity: 1;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    transform: scaleY(1);
-  }
-`;
+import styles from './index.module.css';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -349,7 +318,8 @@ const SelectToAddress = () => {
         )}
       >
         <PageHeader
-          contentClassName="thin-header"
+          // Same header as Send Token: this page also sits in .send-token.
+          contentClassName="thin-header mb-0 font-black text-rb-neutral-title-1"
           onBack={handleClickBack}
           forceShowBack={!(isTab || isDesktop) || inputingAddress}
           canBack={!(isTab || isDesktop) || inputingAddress}
@@ -357,8 +327,9 @@ const SelectToAddress = () => {
         >
           {pageTitle}
         </PageHeader>
-        <AnimatedInputWrapper
+        <div
           className={clsx(
+            styles.animatedInputWrapper,
             inputingAddress ? 'expanded' : 'collapsed',
             'px-[20px]'
           )}
@@ -373,7 +344,7 @@ const SelectToAddress = () => {
               }
             />
           ) : (
-            <OuterInput
+            <div
               className={`
                 border border-r-neutral-line rounded-[12px] bg-r-neutral-card1
                 text-r-neutral-foot text-[15px] 
@@ -383,9 +354,9 @@ const SelectToAddress = () => {
               onClick={() => setInputingAddress(true)}
             >
               {t('page.selectToAddress.enterAddressOrENS')}
-            </OuterInput>
+            </div>
           )}
-        </AnimatedInputWrapper>
+        </div>
 
         {!inputingAddress && (
           <Tabs
@@ -494,4 +465,4 @@ const SelectToAddress = () => {
   );
 };
 
-export default connectStore()(SelectToAddress);
+export default SelectToAddress;

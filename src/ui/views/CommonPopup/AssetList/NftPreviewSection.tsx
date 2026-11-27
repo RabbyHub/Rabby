@@ -48,7 +48,7 @@ export const NftPreviewSection: React.FC<Props> = ({
       <div
         className={clsx(
           'bg-r-neutral-card1 rounded-[8px] p-[12px] overflow-hidden border border-transparent',
-          'hover:border-blue-light cursor-pointer'
+          'hover:border-r-blue-default cursor-pointer'
         )}
       >
         <div className="flex items-center justify-between">
@@ -78,6 +78,7 @@ export const NftPreviewSection: React.FC<Props> = ({
               {Array.from({ length: 6 }).map((_, index) => {
                 return (
                   <Skeleton.Input
+                    key={index}
                     className="w-[48px] h-[48px] rounded-[4px]"
                     active
                   />

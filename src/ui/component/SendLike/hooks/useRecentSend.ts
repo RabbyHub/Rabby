@@ -174,6 +174,7 @@ export const useRecentSend = ({
 
   const recentHistory: RecentHistoryItem[] = useMemo(() => {
     return markedList
+      .slice()
       .sort((a, b) => b.time - a.time)
       .filter((item) => item.time > Date.now() - 60 * 60 * 1000) // in 1 hours
       .map((item) => {

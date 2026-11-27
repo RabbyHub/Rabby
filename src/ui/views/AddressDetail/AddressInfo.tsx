@@ -20,7 +20,6 @@ import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
 } from '@/constant';
-import { connectStore } from '@/ui/store';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
@@ -118,9 +117,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
                 onClick={() => destroy()}
                 className={clsx(
                   'w-[200px]',
-                  'text-blue-light',
-                  'border-blue-light',
-                  'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+                  'text-r-blue-default',
+                  'border-r-blue-default',
+                  'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
                   'before:content-none'
                 )}
               >
@@ -288,4 +287,4 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   );
 };
 
-export const AddressInfo = connectStore()(AddressInfo1);
+export const AddressInfo = AddressInfo1;

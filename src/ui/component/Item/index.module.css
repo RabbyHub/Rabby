@@ -1,0 +1,78 @@
+/* --item-* are set inline from the Item props. */
+.item {
+  width: 100%;
+
+  background-color: var(--item-bg);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border: 1px solid transparent;
+  padding-top: var(--item-py);
+  padding-bottom: var(--item-py);
+  padding-left: var(--item-px);
+  padding-right: var(--item-px);
+  opacity: 1;
+}
+
+.itemDisabled {
+  opacity: 0.6;
+}
+
+.itemHoverable:hover {
+  background-color: var(--item-hover-bg);
+  border-color: var(--r-blue-default, #7084ff);
+}
+
+.rightIcon {
+  margin-left: auto;
+  width: 16px;
+  height: 16px;
+}
+
+.blueHeader {
+  position: relative;
+  height: 56px;
+  background: var(--r-blue-default, #7084ff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.blueHeaderFixed {
+  position: fixed;
+  width: 100%;
+  top: 0;
+}
+
+.blueHeader :global(.title) {
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 23px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.blueHeader :global(.back) {
+  position: absolute;
+  top: 16px;
+  left: 20px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.blueHeader :global(.back) img {
+  width: 9px;
+  height: 16px;
+}
+
+.polyfillHeightBox {
+  height: 56px;
+}

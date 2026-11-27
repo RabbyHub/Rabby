@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
@@ -22,39 +21,7 @@ import {
   ContractRequireData,
   ParsedTypedDataActionData,
 } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  li .name-and-address {
-    justify-content: flex-start;
-    .address {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 14px;
-      color: #999999;
-    }
-    img {
-      width: 12px !important;
-      height: 12px !important;
-      margin-left: 4px !important;
-    }
-  }
-`;
+import styles from './BuyNFT.module.css';
 
 const BuyNFT = ({
   data,
@@ -118,7 +85,7 @@ const BuyNFT = ({
   };
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTypedData.buyNFT.payToken')}</Row>
@@ -205,61 +172,66 @@ const BuyNFT = ({
             </SubTable>
           </>
         )}
-        <Col>
-          <Row isTitle itemsCenter>
-            {t('page.signTypedData.buyNFT.listOn')}
-          </Row>
-          <Row>
-            <ViewMore
-              type="contract"
-              data={{
-                ...requireData,
-                address: requireData.id,
-                chain,
-                title: t('page.signTypedData.buyNFT.listOn'),
-              }}
-            >
-              <Values.Address
-                id="buy-nft-address"
-                hasHover
-                address={requireData.id}
-                chain={chain}
+        {/* requireData is empty when the typed data domain has no verifyingContract */}
+        {requireData.id && (
+          <>
+            <Col>
+              <Row isTitle itemsCenter>
+                {t('page.signTypedData.buyNFT.listOn')}
+              </Row>
+              <Row>
+                <ViewMore
+                  type="contract"
+                  data={{
+                    ...requireData,
+                    address: requireData.id,
+                    chain,
+                    title: t('page.signTypedData.buyNFT.listOn'),
+                  }}
+                >
+                  <Values.Address
+                    id="buy-nft-address"
+                    hasHover
+                    address={requireData.id}
+                    chain={chain}
+                  />
+                </ViewMore>
+              </Row>
+            </Col>
+
+            <SubTable target="buy-nft-address">
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+                <SubRow>
+                  <ProtocolListItem protocol={requireData.protocol} />
+                </SubRow>
+              </SubCol>
+
+              {isInWhitelist && (
+                <SubCol>
+                  <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+                  <SubRow>{t('page.signTx.trusted')}</SubRow>
+                </SubCol>
+              )}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText={t('page.signTx.markAsBlock')}
+                title={t('page.signTx.myMark')}
               />
-            </ViewMore>
-          </Row>
-        </Col>
 
-        <SubTable target="buy-nft-address">
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
-            <SubRow>
-              <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-
-          {isInWhitelist && (
-            <SubCol>
-              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
-              <SubRow>{t('page.signTx.trusted')}</SubRow>
-            </SubCol>
-          )}
-
-          <SecurityListItem
-            id="1135"
-            engineResult={engineResultMap['1135']}
-            forbiddenText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
-
-          <SecurityListItem
-            id="1137"
-            engineResult={engineResultMap['1137']}
-            warningText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
-        </SubTable>
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText={t('page.signTx.markAsBlock')}
+                title={t('page.signTx.myMark')}
+              />
+            </SubTable>
+          </>
+        )}
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

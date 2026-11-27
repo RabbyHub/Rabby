@@ -1,5 +1,4 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain, RevokeTokenApproveAction } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -13,25 +12,7 @@ import * as Values from './components/Values';
 import { ProtocolListItem } from './components/ProtocolListItem';
 import ViewMore from './components/ViewMore';
 import { SubTable, SubCol, SubRow } from './components/SubTable';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './BatchRevokePermit2.module.css';
 
 export const BatchRevokePermit2 = ({
   data,
@@ -59,11 +40,11 @@ export const BatchRevokePermit2 = ({
   }, [actionData.revoke_list]);
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         {Object.keys(group).map((spender) => {
           return (
-            <>
+            <React.Fragment key={spender}>
               <Col>
                 <Row isTitle>
                   {t('page.signTx.revokeTokenApprove.revokeToken')}
@@ -72,6 +53,7 @@ export const BatchRevokePermit2 = ({
                   <div className="flex gap-y-12 flex-col">
                     {group[spender].map((token) => (
                       <LogoWithText
+                        key={token.id}
                         logo={token.logo_url}
                         text={<Values.TokenSymbol token={token} />}
                         logoRadius="100%"
@@ -113,10 +95,10 @@ export const BatchRevokePermit2 = ({
                   </SubRow>
                 </SubCol>
               </SubTable>
-            </>
+            </React.Fragment>
           );
         })}
       </Table>
-    </Wrapper>
+    </div>
   );
 };

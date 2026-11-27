@@ -938,7 +938,7 @@
     width: 72px;
     height: 24px;
     background: #ffffff;
-    border: 0.5px solid @color-border;
+    border: 0.5px solid var(--r-neutral-line);
     border-radius: 12px;
     padding: 1px;
     display: flex;
@@ -958,7 +958,7 @@
           height: 12px;
           margin-top: -6px;
           width: 0.5px;
-          background-color: @color-border;
+          background-color: var(--r-neutral-line);
         }
         &:hover {
           background-color: rgba(134, 151, 255, 0.2);
@@ -967,7 +967,7 @@
       &:nth-child(2) {
         border-radius: 0px 12px 12px 0px;
         &:hover {
-          background-color: @color-bg;
+          background-color: var(--r-neutral-bg-2);
         }
       }
       .icon {
@@ -1035,7 +1035,7 @@
   }
   .brand-name {
     font-size: 16px;
-    color: @color-title;
+    color: var(--r-neutral-title-1);
     font-weight: 500;
     margin: 2px 0 0 6px;
     .alias {
@@ -1050,7 +1050,7 @@
     .ant-input {
       width: 167px;
       height: 28px;
-      background: @color-border;
+      background: var(--r-neutral-line);
       border-radius: 4px;
       box-sizing: border-box;
       padding-left: 2px;
@@ -1076,7 +1076,7 @@
   .qrcode-container {
     width: 116px;
     height: 116px;
-    border: 1px solid @color-border;
+    border: 1px solid var(--r-neutral-line);
     box-sizing: border-box;
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
@@ -1087,7 +1087,7 @@
     width: 100%;
     min-height: 116px;
     align-items: center;
-    background: @color-bg;
+    background: var(--r-neutral-bg-2);
     border-radius: 4px;
     padding: 8px;
     .left-container {
@@ -1098,14 +1098,14 @@
       height: 116px;
       .address-display {
         font-size: 13px;
-        color: @color-comment-1;
+        color: var(--r-neutral-foot);
         width: 185px;
         margin: 8px 7px 0 6px;
       }
       .import {
         display: inline-block;
         position: absolute;
-        color: @color-comment-2;
+        color: var(--r-neutral-foot);
         font-size: 12px;
         height: 16px;
         left: 6px;
@@ -1117,12 +1117,12 @@
     margin-top: 9px;
     padding-top: 16px;
     min-height: 107px;
-    background: @color-bg;
+    background: var(--r-neutral-bg-2);
     border-radius: 4px;
     width: 100%;
     padding: 8px;
     .threshold {
-      color: @color-title;
+      color: var(--r-neutral-title-1);
     }
     .loading-wrapper {
       height: 200px;
@@ -1148,13 +1148,6 @@
         align-items: center;
         height: 40px;
         width: 295px;
-        .address-viewer-text.normal {
-          font-weight: 500;
-          font-size: 13px;
-          line-height: 15px;
-          color: #3b3e4a;
-          margin-right: 0;
-        }
         .icon-tag {
           height: 16px;
           margin-left: 8px;
@@ -1180,7 +1173,7 @@
           bottom: 0;
           height: 1px;
           width: 100%;
-          border-bottom: 1px solid @color-border;
+          border-bottom: 1px solid var(--r-neutral-line);
         }
         &:nth-last-child(1)::after {
           border-bottom: 0;
@@ -1219,7 +1212,7 @@
       .list-alian-name {
         font-weight: 500;
         font-size: 14px;
-        color: @color-title;
+        color: var(--r-neutral-title-1);
         max-width: 130px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1234,11 +1227,11 @@
       }
     }
     .address-color {
-      color: @color-comment-2;
+      color: var(--r-neutral-foot);
       font-size: 12px;
     }
     .money-color {
-      color: @color-comment-1;
+      color: var(--r-neutral-foot);
       font-size: 12px;
       position: absolute;
       right: 12px;
@@ -1270,7 +1263,7 @@
     right: 0;
     height: 1px;
     width: 100%;
-    border-bottom: 1px solid @color-border;
+    border-bottom: 1px solid var(--r-neutral-line);
   }
 
   .address-item::before {
@@ -1299,7 +1292,7 @@
       font-size: 14px;
       border-radius: 6px;
       text-align: center;
-      color: @color-comment-1;
+      color: var(--r-neutral-foot);
     }
     .address-loading {
       display: flex;
@@ -1308,9 +1301,9 @@
       flex-direction: column;
       font-size: 12px;
       opacity: 0.8;
-      color: @color-comment-1;
+      color: var(--r-neutral-foot);
       .icon-loading {
-        color: @color-comment-1;
+        color: var(--r-neutral-foot);
         transform: scale(0.78);
         animation: spining 1.5s infinite linear;
         margin-bottom: 12px;
@@ -1325,7 +1318,7 @@
       text-align: center;
       background: #ffffff;
       border-radius: 0px 0px 6px 6px;
-      border-top: 1px solid @color-border;
+      border-top: 1px solid var(--r-neutral-line);
       padding-left: 15px;
       color: var(--r-blue-default, #7084ff);
       &:hover {
@@ -1345,7 +1338,7 @@
   }
   .brand-name {
     font-size: 20px;
-    color: @color-title;
+    color: var(--r-neutral-title-1);
     margin: 2px 7px 0 6px;
   }
 
@@ -1358,7 +1351,7 @@
     width: 100px;
     height: 100px;
     margin: 14px 0 16px 0;
-    border: 1px solid @color-border;
+    border: 1px solid var(--r-neutral-line);
     box-sizing: border-box;
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
@@ -1389,7 +1382,7 @@
         margin-right: 8px;
       }
       .amount {
-        color: @color-title;
+        color: var(--r-neutral-title-1);
         font-weight: 500;
         font-size: 13px;
         width: 106px;
@@ -1402,7 +1395,7 @@
         position: relative;
         height: 8px;
         width: 157px;
-        background-color: @color-border;
+        background-color: var(--r-neutral-line);
         border-radius: 10px;
         overflow: hidden;
         .inner {
@@ -1413,7 +1406,7 @@
       }
       .percent {
         flex: 1;
-        color: @color-comment-1;
+        color: var(--r-neutral-foot);
         font-size: 13px;
         font-weight: 500;
         text-align: right;
@@ -1668,7 +1661,7 @@
   max-width: 143px;
 }
 .no-name {
-  color: @color-comment-1 !important;
+  color: var(--r-neutral-foot) !important;
 }
 
 .copyAddr {
@@ -1685,11 +1678,6 @@
 .authentication-modal {
   .ant-modal-body {
     padding-bottom: 16px;
-  }
-  .ant-form-item-has-error {
-    .ant-input {
-      border-color: #f24822 !important;
-    }
   }
   &.custom-popup.is-support-darkmode {
     .ant-input {

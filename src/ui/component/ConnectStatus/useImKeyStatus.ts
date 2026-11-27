@@ -6,7 +6,6 @@ import { useImKeyDeviceConnected } from '@/ui/utils/imKey';
 export const useImKeyStatus = () => {
   const { activePopup } = useCommonPopupView();
   const hasConnectedImKeyHID = useImKeyDeviceConnected();
-  const [content, setContent] = React.useState<string>();
 
   const status: 'CONNECTED' | 'DISCONNECTED' = React.useMemo(() => {
     return hasConnectedImKeyHID ? 'CONNECTED' : 'DISCONNECTED';
@@ -18,13 +17,10 @@ export const useImKeyStatus = () => {
     activePopup('ImKeyPermission');
   };
 
-  React.useEffect(() => {
-    if (status === 'DISCONNECTED') {
-      setContent(t('component.ConnectStatus.imKeyrNotConnected'));
-    } else {
-      setContent(t('component.ConnectStatus.imKeyConnected'));
-    }
-  }, [status]);
+  const content =
+    status === 'DISCONNECTED'
+      ? t('component.ConnectStatus.imKeyrNotConnected')
+      : t('component.ConnectStatus.imKeyConnected');
 
   return {
     content,

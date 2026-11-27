@@ -2169,7 +2169,11 @@
       "btnForgotPassword": "忘记密码？",
       "title": "Rabby Wallet",
       "description": "你首选的以太坊和 EVM 钱包",
-      "biometricFailed": "生物识别解锁失败"
+      "biometricFailed": "生物识别解锁失败",
+      "biometricSunsetTip": "自 2027 年 1 月 1 日起，生物识别解锁将不再可用。请立即切换到密码解锁，切换后生物识别解锁会自动关闭。",
+      "biometricSunsetTitle": "切换到密码解锁",
+      "biometricSunsetUsePassword": "使用密码",
+      "biometricSunsetUseBiometric": "继续使用生物识别"
     },
     "addressDetail": {
       "add-to-whitelist": "添加到白名单",
@@ -3614,6 +3618,8 @@
         "fetchQuoteFailed": "获取充值报价失败，请切换代币。",
         "hyperliquidFeeLabel": "Hyperliquid 手续费",
         "estReceiveTooltipNoTime": "跨链充值通过 LiFi 进行处理，可能会产生一些滑点。",
+        "estReceiveTooltipV2": "跨链充值通过 {{name}} 进行，可能产生一些滑点。预计在 {{number}} 秒内到达。",
+        "estReceiveTooltipNoTimeV2": "跨链充值通过 {{name}} 进行处理，可能会产生一些滑点。",
         "goSwapTips": "仅在 Arbitrum 上支持 USDC 的直接入金。请在入金前将当前代币兑换为 USDC。",
         "estReceiveTooltip": "跨链充值通过 LiFi 进行，可能产生一些滑点。预计在 {{number}} 秒内到达。",
         "minimumWithdrawSize": "最低提现金额为$2",
@@ -5072,7 +5078,12 @@
         "notAllowInBootloaderMode": "请在正常模式下使用",
         "deviceCheckPassphraseStateError": "账户与当前设备解锁地址不匹配，请确认设备与账户地址一致后重试",
         "actionCancel": "操作已取消",
-        "deviceNeedsWebHIDPermission": "未找到设备或需要 WebHID 权限"
+        "deviceNeedsWebHIDPermission": "未找到设备或需要 WebUSB 权限",
+        "deviceNotOpenedPassphrase": "设备上的 Passphrase 已关闭。请先开启，再打开隐藏钱包。",
+        "pinInvalid": "PIN 码错误，请在 OneKey 上重试。",
+        "deviceBusy": "OneKey 正忙，请在当前操作结束后重试。",
+        "deviceInterrupted": "OneKey 连接中断，请重新连接设备后重试。",
+        "webUSBUnavailable": "当前浏览器不支持 WebUSB。"
       }
     }
   },

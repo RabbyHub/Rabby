@@ -256,7 +256,7 @@ const GasAccountInner = () => {
     ) : undefined;
   const primaryButtonClassName =
     showEmptyState && emptyStatePrimaryMode === 'claimGift'
-      ? 'bg-green border-green gap-6'
+      ? 'bg-r-green-default border-r-green-default gap-6'
       : undefined;
   const primaryButtonContent = showEmptyState
     ? emptyStatePrimaryContent || t('page.gasAccount.depositNow')

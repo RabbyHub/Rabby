@@ -1,41 +1,19 @@
+import React from 'react';
 import { Button } from 'antd';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
+import styles from './BlueBorderedButton.module.css';
 
-export const PerpsBlueBorderedButton = styled(Button)`
-  height: 44px;
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 500;
-  background-color: transparent;
-  color: var(--r-blue-default, #7084ff);
-  border: 1px solid var(--r-blue-default, #7084ff);
+export const PerpsBlueBorderedButton = React.forwardRef<
+  HTMLElement,
+  React.ComponentProps<typeof Button>
+>(({ className, ...rest }, ref) => (
+  <Button
+    ref={ref}
+    className={cn(styles.perpsBlueBorderedButton, className)}
+    {...rest}
+  />
+));
 
-  &:focus {
-    background-color: transparent;
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-
-  &:hover {
-    background: var(--r-blue-light1, #eef1ff);
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-
-  &:hover:before {
-    background-color: transparent;
-  }
-
-  &::before {
-    transition: none;
-    background-color: transparent;
-  }
-  &.ant-btn[disabled],
-  &.ant-btn[disabled]:hover,
-  &.ant-btn[disabled]:focus,
-  &.ant-btn[disabled]:active {
-    background-color: transparent;
-    color: var(--r-blue-default, #7084ff);
-    border: 1px solid var(--r-blue-default, #7084ff);
-  }
-`;
+// antd's Tooltip reads this static to wrap a disabled Button in a span.
+// styled(Button) used to copy it over; keep it on the wrapper.
+Object.assign(PerpsBlueBorderedButton, { __ANT_BUTTON: true });

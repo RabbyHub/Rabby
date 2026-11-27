@@ -4,7 +4,6 @@ import React, { useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { Button, message, Switch } from 'antd';
 import {
   closestCenter,
@@ -41,57 +40,7 @@ import { ReactComponent as RcIconDeleteAddress } from 'ui/assets/address/delete.
 import { ReactComponent as IconAdd } from '@/ui/assets/address/add.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import qs from 'qs';
-
-const WhitelistItemWrapper = styled.div`
-  background-color: var(--r-neutral-card1);
-  position: relative;
-  border-radius: 12px;
-  margin-top: 12px;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  .whitelist-item {
-    gap: 12px !important;
-  }
-  .icon-delete-container {
-    display: flex;
-    opacity: 0;
-    &:hover {
-      g {
-        stroke: #ec5151;
-      }
-    }
-  }
-  &:hover {
-    .icon-delete-container {
-      opacity: 1;
-    }
-  }
-
-  &.is-whitelist-item-dragging {
-    .icon-delete-container,
-    .edit-pen,
-    .copy-icon {
-      display: none !important;
-      opacity: 0 !important;
-      pointer-events: none !important;
-    }
-  }
-
-  &.is-whitelist-item-drag-overlay {
-    box-sizing: border-box;
-    border: 1px solid var(--r-blue-default, #7084ff);
-    background-color: var(--r-blue-light1, #eef1ff);
-    box-shadow: 0 4px 16px 0 rgba(0, 0, 0, 0.13);
-
-    .whitelist-item {
-      border-color: transparent !important;
-      background-color: var(--r-blue-light1, #eef1ff) !important;
-    }
-  }
-`;
+import styles from './TabWhitelist.module.css';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -171,7 +120,8 @@ const StaticWhitelistItem = ({
   suppressClickRef: React.MutableRefObject<boolean>;
 }) => {
   return (
-    <WhitelistItemWrapper
+    <div
+      className={styles.whitelistItemWrapper}
       {...(isFirstAfterPwdHint && {
         style: { marginTop: 0 },
       })}
@@ -183,7 +133,7 @@ const StaticWhitelistItem = ({
         onSelect={onSelect}
         suppressClickRef={suppressClickRef}
       />
-    </WhitelistItemWrapper>
+    </div>
   );
 };
 
@@ -222,10 +172,13 @@ const SortableWhitelistItem = ({
   };
 
   return (
-    <WhitelistItemWrapper
+    <div
       ref={setNodeRef}
       style={style}
-      className={clsx(isDragging && 'is-whitelist-item-dragging')}
+      className={clsx(
+        styles.whitelistItemWrapper,
+        isDragging && 'is-whitelist-item-dragging'
+      )}
       onPointerDownCapture={handleDndDisabledPointerDownCapture}
       {...attributes}
       {...listeners}
@@ -236,7 +189,7 @@ const SortableWhitelistItem = ({
         onSelect={onSelect}
         suppressClickRef={suppressClickRef}
       />
-    </WhitelistItemWrapper>
+    </div>
   );
 };
 
@@ -485,8 +438,11 @@ export default function TabWhitelist({
                   }}
                 >
                   {activeWhitelistItem ? (
-                    <WhitelistItemWrapper
-                      className="is-whitelist-item-dragging is-whitelist-item-drag-overlay"
+                    <div
+                      className={clsx(
+                        styles.whitelistItemWrapper,
+                        'is-whitelist-item-dragging is-whitelist-item-drag-overlay'
+                      )}
                       style={{
                         marginTop: 0,
                         width: activeOverlayWidth ?? undefined,
@@ -499,7 +455,7 @@ export default function TabWhitelist({
                         onSelect={() => {}}
                         suppressClickRef={suppressClickRef}
                       />
-                    </WhitelistItemWrapper>
+                    </div>
                   ) : null}
                 </DragOverlay>
               </DndContext>

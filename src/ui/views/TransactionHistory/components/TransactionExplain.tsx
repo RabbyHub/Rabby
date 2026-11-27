@@ -309,7 +309,7 @@ export const TransactionExplain = ({
           </span>
           <SvgIconOpenExternal className="icon icon-external" />
         </div>
-        <span className="text-red-light text-14 font-normal text-right">
+        <span className="text-r-red-default text-14 font-normal text-right">
           {isCancel && t('page.activities.signedTx.status.canceled')}
           {isFailed && t('page.activities.signedTx.status.failed')}
           {isSubmitFailed &&

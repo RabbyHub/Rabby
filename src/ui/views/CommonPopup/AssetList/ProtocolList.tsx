@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import clsx from 'clsx';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { AbstractPortfolio } from 'ui/utils/portfolio/types';
 import { DisplayedProject } from 'ui/utils/portfolio/project';
@@ -20,6 +19,7 @@ import { useExpandList } from '@/ui/utils/portfolio/expandList';
 import { PERPS_INVITE_URL } from '../../Perps/constants';
 import { useRequest } from 'ahooks';
 import { checkPerpsReference } from '../../Perps/utils';
+import { cn } from '@/ui/utils/cn';
 
 const TemplateDict = {
   common: PortfolioTemplate.Common,
@@ -42,12 +42,6 @@ const TemplateDict = {
   prediction: PortfolioTemplate.Prediction,
 };
 
-const PoolItemWrapper = styled.div`
-  &:nth-last-child(1) {
-    margin-bottom: 0;
-  }
-`;
-
 const PoolItem = ({
   item,
   chain,
@@ -59,12 +53,13 @@ const PoolItem = ({
   protocolLogo?: string;
   protocolName?: string;
 }) => {
-  const types = item._originPortfolio.detail_types?.reverse();
+  // Copy first: reverse() in place flipped the stored array on every render.
+  const types = item._originPortfolio.detail_types?.slice().reverse();
   const type =
     types?.find((t) => (t in TemplateDict ? t : '')) || 'unsupported';
   const PortfolioDetail = TemplateDict[type as keyof typeof TemplateDict];
   return (
-    <PoolItemWrapper>
+    <div className="last:mb-0">
       <PortfolioDetail name={item._originPortfolio.name} data={item} />
       {!!item.withdrawActions?.length &&
         !item?._originPortfolio?.proxy_detail?.proxy_contract_id && (
@@ -75,36 +70,10 @@ const PoolItem = ({
             protocolName={protocolName}
           />
         )}
-    </PoolItemWrapper>
+    </div>
   );
 };
 
-const ProtocolItemWrapper = styled.div`
-  background: var(--r-neutral-card-1, #f2f4f7);
-  border-radius: 8px;
-
-  .title {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    cursor: pointer;
-
-    .name {
-      /* flex: 1; */
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 15px;
-      color: var(--r-neutral-title-1, #192945);
-    }
-    .net-worth {
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 15px;
-      text-align: right;
-      color: var(--r-neutral-title-1, #192945);
-    }
-  }
-`;
 export const ProtocolItem = ({
   protocol: _protocol,
   enableDelayVisible,
@@ -211,14 +180,15 @@ export const ProtocolItem = ({
   }
 
   return (
-    <ProtocolItemWrapper>
+    <div className="bg-r-neutral-card-1 rounded-[8px]">
       <div>
         <div
           className={clsx(
             'group flex items-center justify-start',
             'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] pr-14',
-            'hover:bg-blue-light/10',
-            'hover:border-blue-light'
+            'py-12 pl-12 cursor-pointer',
+            'hover:bg-r-blue-light-1',
+            'hover:border-r-blue-default'
           )}
           onClick={onClickTitle}
         >
@@ -253,7 +223,7 @@ export const ProtocolItem = ({
               }
             }}
           >
-            <span className="name items-center truncate min-w-0">
+            <span className="name items-center truncate min-w-0 font-medium text-[13px] leading-[15px] text-r-neutral-title-1">
               {protocol.name}
             </span>
             {!!isAppChain && (
@@ -285,7 +255,9 @@ export const ProtocolItem = ({
             </div>
           ) : null}
           <div className="flex items-center justify-end flex-1">
-            <span className="net-worth">{protocol._netWorth}</span>
+            <span className="net-worth font-medium text-[13px] leading-[15px] text-right text-r-neutral-title-1">
+              {protocol._netWorth}
+            </span>
             <RcIconDropdown
               className={clsx('ml-8', {
                 'transform rotate-180': isExpand,
@@ -312,7 +284,7 @@ export const ProtocolItem = ({
           </>
         )}
       </div>
-    </ProtocolItemWrapper>
+    </div>
   );
 };
 
@@ -323,13 +295,6 @@ interface Props {
   removeProtocol?: (id: string) => void;
   className?: string;
 }
-
-const ProtocolListWrapper = styled.div`
-  margin-top: 20px;
-  gap: 8px;
-  display: flex;
-  flex-direction: column;
-`;
 
 const ProtocolList = ({
   list,
@@ -356,7 +321,7 @@ const ProtocolList = ({
   if (!list?.length) return null;
 
   return (
-    <ProtocolListWrapper className={className}>
+    <div className={cn('flex flex-col gap-8 mt-20', className)}>
       {(isSearch ? list : currentList || []).map((item) => (
         <ProtocolItem
           protocol={item}
@@ -374,7 +339,7 @@ const ProtocolList = ({
           appIds={appIds}
         />
       ) : null}
-    </ProtocolListWrapper>
+    </div>
   );
 };
 

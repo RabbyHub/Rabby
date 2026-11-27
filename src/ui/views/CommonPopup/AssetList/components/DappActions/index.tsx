@@ -5,7 +5,6 @@ import {
   WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { message } from 'antd';
 import {
   findTypedWithdrawAction,
@@ -20,12 +19,6 @@ import { useTranslation } from 'react-i18next';
 import { Value } from '@/ui/views/DesktopProfile/components/TokensTabPane/Protocols/components';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-
-const Wrapper = styled.div`
-  & > div {
-    margin-left: 10px;
-  }
-`;
 
 interface ActionButtonProps {
   className?: string;
@@ -265,13 +258,14 @@ const DappActions = ({
   }
 
   return (
-    <Wrapper>
+    <div>
       <ActionButton
+        className="ml-10"
         disabled={pending}
         text={t(`component.DappActions.${type}`)}
         onClick={() => run(type, handleSubmit)}
       />
-    </Wrapper>
+    </div>
   );
 };
 

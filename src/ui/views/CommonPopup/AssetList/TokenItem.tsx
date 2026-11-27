@@ -9,7 +9,6 @@ import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnet
 import { findChain } from '@/utils/chain';
 import { isLpToken, isUnknownToken } from '@/ui/utils/portfolio/lpToken';
 import { LpTokenTag } from '../../DesktopProfile/components/TokensTabPane/components/LpTokenTag';
-import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useCommonPopupView } from '@/ui/utils';
@@ -21,6 +20,8 @@ import {
 } from 'ui/assets/dashboard/panel';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { UnknownTag } from '@/ui/component';
+import { cn } from '@/ui/utils/cn';
+import styles from './TokenItem.module.css';
 
 export interface Props {
   item: AbstractPortfolioToken;
@@ -32,83 +33,20 @@ export interface TokenItemAssetProps extends Props {
   showButtons: boolean;
 }
 
-const LpContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  .inner-symbol {
-    max-width: 140px;
-  }
-`;
-
-const ActionBtnWrapper = styled.div<{ isDark?: boolean }>`
-  position: relative;
-  width: min-content;
-
-  &::after {
-    content: '';
-    position: absolute;
-    z-index: 0;
-    top: -8px;
-    bottom: -8px;
-    width: 28px;
-    right: -8px;
-    height: 44px;
-    background: ${({ isDark }) =>
-      isDark
-        ? 'linear-gradient(90deg, rgba(27, 29, 44, 1) 0%, rgba(27, 29, 44, 0) 100%)'
-        : 'linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 1) 100%)'};
-    pointer-events: none;
-  }
-`;
-
-const StyledTRow = styled(TRow)`
-  background-color: var(--r-neutral-card1, #ffffff);
-
-  &:hover {
-    box-shadow: 0px 4px 16px 0px rgba(0, 0, 0, 0.04);
-  }
-  &:active:not(:has(.token-action-btn:active)) {
-    background-color: var(--r-blue-light1, #edf0ff) !important;
-    ${ActionBtnWrapper}::after {
-      display: none;
-    }
-  }
-`;
-
-const ActionBtn = styled.div`
-  height: 28px;
-  padding-left: 8px;
-  padding-right: 8px;
-
-  font-size: 12px;
-  font-weight: 500;
-  border-radius: 6px;
-
-  cursor: pointer;
-  color: var(--r-neutral-title-1, #13141a);
-  background: var(--r-neutral-bg-2, #f5f6fa);
-  z-index: 11;
-  flex-shrink: 0;
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 4px;
-
-  & > span {
-    white-space: nowrap;
-  }
-
-  & > svg,
-  & > *:not(span) {
-    flex-shrink: 0;
-  }
-
-  &:hover {
-    color: var(--r-blue-default, #7084ff);
-  }
-`;
+const ActionBtn = ({
+  className,
+  ...rest
+}: React.HTMLAttributes<HTMLDivElement>) => (
+  <div
+    className={cn(
+      'flex flex-none justify-center items-center gap-4 h-28 px-8',
+      'text-[12px] font-medium rounded-[6px] cursor-pointer z-[11]',
+      'text-r-neutral-title-1 bg-r-neutral-bg-2 hover:text-r-blue-default',
+      className
+    )}
+    {...rest}
+  />
+);
 
 const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
   item,
@@ -179,8 +117,8 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
             showButtons && 'hidden'
           )}
         >
-          <LpContainer>
-            <span className="text-r-neutral-title-1 font-medium text-15 leading-[18px] whitespace-nowrap text-ellipsis overflow-hidden inner-symbol">
+          <div className="flex items-center gap-2">
+            <span className="text-r-neutral-title-1 font-medium text-15 leading-[18px] whitespace-nowrap text-ellipsis overflow-hidden inner-symbol max-w-[140px]">
               {item.symbol}
             </span>
             {isUnknownToken(item) && <UnknownTag className="ml-2" />}
@@ -194,14 +132,15 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
                 />
               </span>
             )}
-          </LpContainer>
+          </div>
           <span className="text-r-neutral-foot text-13 leading-[16px] truncate whitespace-nowrap text-ellipsis overflow-hidden max-w-[180px]">
             {item._amountStr}
           </span>
         </div>
-        <ActionBtnWrapper
-          isDark={isDarkTheme}
+        <div
           className={clsx(
+            styles.actionBtnWrapper,
+            isDarkTheme && styles.actionBtnWrapperDark,
             'flex flex-row gap-8 items-center flex-nowrap',
             !showButtons && 'hidden'
           )}
@@ -211,24 +150,28 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
             className="token-action-btn active:bg-rb-brand-light-1"
           >
             {isDarkTheme ? (
-              <RcIconSwapWhiteCC width={12} height={12} />
+              <RcIconSwapWhiteCC width={12} height={12} className="shrink-0" />
             ) : (
-              <RcIconSwapCC width={12} height={12} />
+              <RcIconSwapCC width={12} height={12} className="shrink-0" />
             )}
-            <span>{t('page.dashboard.tokenDetail.swap')}</span>
+            <span className="whitespace-nowrap">
+              {t('page.dashboard.tokenDetail.swap')}
+            </span>
           </ActionBtn>
           <ActionBtn
             onClick={gotoSend}
             className="token-action-btn active:bg-rb-brand-light-1"
           >
             {isDarkTheme ? (
-              <RcIconSendWhiteCC width={12} height={12} />
+              <RcIconSendWhiteCC width={12} height={12} className="shrink-0" />
             ) : (
-              <RcIconSendCC width={12} height={12} />
+              <RcIconSendCC width={12} height={12} className="shrink-0" />
             )}
-            <span>{t('page.dashboard.tokenDetail.send')}</span>
+            <span className="whitespace-nowrap">
+              {t('page.dashboard.tokenDetail.send')}
+            </span>
           </ActionBtn>
-        </ActionBtnWrapper>
+        </div>
       </div>
     </TCell>
   );
@@ -248,9 +191,9 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
           className={clsx(
             'font-normal text-12',
             item.price_24h_change > 0
-              ? 'text-green'
+              ? 'text-r-green-default'
               : item.price_24h_change < 0
-              ? 'text-red-forbidden'
+              ? 'text-r-red-default'
               : 'text-r-neutral-foot'
           )}
         >
@@ -283,8 +226,8 @@ const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
         {isNumber(item.price_24h_change) && (
           <div
             className={clsx('font-normal text-13 leading-[16px]', {
-              'text-green': item.price_24h_change > 0,
-              'text-red-forbidden': item.price_24h_change < 0,
+              'text-r-green-default': item.price_24h_change > 0,
+              'text-r-red-default': item.price_24h_change < 0,
               'text-r-neutral-foot': !item.price_24h_change,
             })}
           >
@@ -308,20 +251,21 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
   }, []);
 
   return (
-    <StyledTRow
+    <TRow
       onClick={onClick}
       style={style}
       onMouseEnter={handleRowMouseEnter}
       onMouseLeave={handleRowMouseLeave}
       className={clsx(
+        styles.row,
         'group cursor-pointer',
         'h-[60px] mt-8 px-12 justify-between',
         'rounded-[8px] border border-transparent',
-        'hover:border-blue-light'
+        'hover:border-r-blue-default'
       )}
     >
       <TokenItemAsset item={item} showButtons={showButtons} />
       <TokenItemMarketInfo item={item} />
-    </StyledTRow>
+    </TRow>
   );
 };

@@ -5,14 +5,59 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:react-you-might-not-need-an-effect/legacy-recommended",
+    "plugin:@tanstack/query/recommended",
     "plugin:prettier/recommended"
   ],
   "rules": {
     "quotes": [1, "single", "avoid-escape"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "styled-components",
+            "message": "styled-components was removed; it injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          },
+          {
+            "name": "react-use",
+            "importNames": ["useCss"],
+            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["@emotion/*"],
+            "message": "Emotion injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          },
+          {
+            "group": ["react-use/lib/useCss", "react-use/esm/useCss"],
+            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/][arguments.length=1] > ArrowFunctionExpression > :matches(ObjectExpression, ArrayExpression).body",
+        "message": "This selector returns a new object or array on every call. Wrap it in `useShallow` from 'zustand/react/shallow'. Otherwise useRabbySelector re-renders on every store update, and a plain `create` store hook can loop forever (zustand v5)."
+      },
+      {
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/][arguments.length=1] > ArrowFunctionExpression > BlockStatement > ReturnStatement > :matches(ObjectExpression, ArrayExpression)",
+        "message": "This selector returns a new object or array on every call. Wrap it in `useShallow` from 'zustand/react/shallow'. Otherwise useRabbySelector re-renders on every store update, and a plain `create` store hook can loop forever (zustand v5)."
+      },
+      {
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/] > ArrowFunctionExpression > LogicalExpression > :matches(ObjectExpression, ArrayExpression).right",
+        "message": "A `|| []` / `?? {}` fallback in a selector is a new value on every call. Use a constant defined outside the component."
+      }
+    ],
     "prettier/prettier": [
       "error",
       {

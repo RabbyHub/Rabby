@@ -7,28 +7,18 @@ import clsx from 'clsx';
 import { useRabbyDispatch } from '@/ui/store';
 import { getUiType, useWallet } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { useNewUserGuideStore } from '../hooks/useNewUserGuideStore';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { useRequest } from 'ahooks';
-
-const FormItemWrapper = styled.div`
-  .mnemonics-with-error,
-  .ant-form-item-has-error {
-    .ant-form-item-control-input
-      + .ant-form-item-explain.ant-form-item-explain-error {
-      display: none;
-    }
-  }
-`;
+import styles from './ImportSeedPhrase.module.css';
 
 type IFormStates = {
   mnemonics: string;
   passphrase: string;
 };
 
-export const ImportSeedPhrase = () => {
+const ImportSeedPhraseContent = () => {
   const history = useHistory();
   const { store, setStore } = useNewUserGuideStore();
 
@@ -65,12 +55,6 @@ export const ImportSeedPhrase = () => {
     },
     [isSlip39]
   );
-
-  // if is pop, redirect to dashboard
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
 
   useEffect(() => {
     (async () => {
@@ -189,7 +173,7 @@ export const ImportSeedPhrase = () => {
           setSlip39ErrorIndex(-1);
         }}
       >
-        <FormItemWrapper className="relative">
+        <div className={clsx(styles.formItemWrapper, 'relative')}>
           <Form.Item
             name="mnemonics"
             className={clsx(
@@ -215,14 +199,14 @@ export const ImportSeedPhrase = () => {
                 type="password"
                 className={clsx(
                   isSlip39 ? 'h-[56px] text-15' : 'h-[44px]',
-                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-blue text-r-neutral-title-1'
+                  'border-rabby-neutral-line bg-rabby-neutral-card-1 focus:border-r-blue-default text-r-neutral-title-1'
                 )}
                 spellCheck={false}
                 placeholder={t('page.newAddress.seedPhrase.passphrase')}
               />
             </Form.Item>
           )}
-        </FormItemWrapper>
+        </div>
 
         <footer className="mt-auto">
           {!formValues.mnemonics?.trim() ? (
@@ -252,4 +236,19 @@ export const ImportSeedPhrase = () => {
       </Form>
     </div>
   );
+};
+
+// The popup check lives here so it does not sit in front of the content
+// component's hooks (rules of hooks). In the popup, redirect to the dashboard.
+export const ImportSeedPhrase = () => {
+  const history = useHistory();
+  const isPop = getUiType().isPop;
+
+  useEffect(() => {
+    if (isPop) {
+      history.replace('/dashboard');
+    }
+  }, [isPop, history]);
+
+  return isPop ? null : <ImportSeedPhraseContent />;
 };

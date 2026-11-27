@@ -1,8 +1,7 @@
 import React from 'react';
 import { AddAddressOptions, BlueHeader } from 'ui/component';
-import './style.less';
 import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 
 const AddAddress: React.FC<{
   isInModal?: boolean;
@@ -12,8 +11,8 @@ const AddAddress: React.FC<{
 
   return (
     <div
-      className={clsx(
-        'add-address',
+      className={cn(
+        'min-h-[100vh] bg-r-neutral-bg-2 px-20',
         isInModal ? 'min-h-0 h-[600px] overflow-auto' : ''
       )}
     >

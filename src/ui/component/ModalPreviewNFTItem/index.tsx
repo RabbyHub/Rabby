@@ -1,71 +1,15 @@
 import React from 'react';
-import styled from 'styled-components';
 
 import { TransferingNFTItem } from 'background/service/openapi';
 import { Modal, ModalProps } from 'antd';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 
 import { getChain } from '@/utils';
-import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { splitNumberByStep } from '@/ui/utils';
 import { useTranslation } from 'react-i18next';
 import { useThemeMode } from '@/ui/hooks/usePreference';
-
-const PreviewModal = styled(Modal)`
-  .ant-modal-body {
-    padding: 12px;
-  }
-`;
-
-const PreviewCard = styled.div`
-  .nft-avatar {
-    width: 100%;
-    height: 306px;
-    border-color: var(--r-neutral-line);
-    border-radius: 6px;
-    background-color: var(--r-neutral-bg1);
-  }
-
-  .nft-txpreview-title {
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 18px;
-    color: var(--r-neutral-title1);
-    border-bottom: 0.5px solid var(--r-neutral-line);
-    padding-top: 16px;
-    padding-bottom: 12px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .nft-txpreview-properties {
-    padding-top: 12px;
-    margin-bottom: 16px;
-  }
-  .nft-txpreview-property {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    &:nth-last-child(1) {
-      margin-bottom: 0;
-    }
-  }
-  .nft-txpreview-property-label {
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 14px;
-    color: var(--r-neutral-title1);
-  }
-  .nft-txpreview-property-value {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 12px;
-    line-height: 14px;
-    color: var(--r-neutral-foot);
-  }
-`;
+import styles from './index.module.css';
 
 export default function ModalPreviewNFTItem({
   nft,
@@ -81,7 +25,7 @@ export default function ModalPreviewNFTItem({
   const { isDarkTheme } = useThemeMode();
 
   return (
-    <PreviewModal
+    <Modal
       {...props}
       visible={!!nft}
       centered
@@ -90,12 +34,13 @@ export default function ModalPreviewNFTItem({
       closable={false}
       okText={null}
       footer={null}
-      className={clsx(
+      className={cn(
+        styles.previewModal,
         'nft-txpreview-modal modal-support-darkmode',
         props.className
       )}
     >
-      <PreviewCard className="nft-txpreview-card">
+      <div className={cn(styles.previewCard, 'nft-txpreview-card')}>
         <NFTAvatar
           thumbnail={false}
           content={nft?.content}
@@ -140,7 +85,7 @@ export default function ModalPreviewNFTItem({
             </div>
           </div>
         </div>
-      </PreviewCard>
-    </PreviewModal>
+      </div>
+    </Modal>
   );
 }

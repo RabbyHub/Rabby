@@ -1,5 +1,4 @@
 import { Button, DrawerProps, Form, Input, InputRef } from 'antd';
-import styled from 'styled-components';
 import clsx from 'clsx';
 import React, {
   useEffect,
@@ -11,25 +10,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { Popup, Checkbox, Field } from 'ui/component';
 import { WrappedComponentProps, wrapModalPromise } from '../Modal/WrapPromise';
-
-const AuthFormItemWrapper = styled.div`
-  .ant-form-item-has-error {
-    .ant-input {
-      border-color: #f24822 !important;
-    }
-  }
-  .ant-input.ant-input-lg.popup-input {
-    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
-    background: var(--r-neutral-card1, #fff) !important;
-    &::placeholder {
-      color: var(--r-neutral-foot, #6a7587) !important;
-    }
-    &:focus,
-    &:hover {
-      border-color: var(--r-blue-default, #7084ff) !important;
-    }
-  }
-`;
+import styles from './popup.module.css';
 
 interface AuthenticationModalProps extends WrappedComponentProps {
   validationHandler?(password: string): Promise<void>;
@@ -47,41 +28,6 @@ interface AuthenticationModalProps extends WrappedComponentProps {
   forceRender?: boolean;
 }
 
-const Description = styled.div`
-  margin-bottom: 20px;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 16px;
-  text-align: center;
-  color: var(--r-neutral-body, #d3d8e0);
-`;
-
-const FieldList = styled.div`
-  margin-bottom: 20px;
-
-  .field {
-    background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
-    border-radius: 6px;
-    padding: 16px 12px;
-
-    font-weight: 400;
-    font-size: 14px;
-    line-height: 18px;
-    color: var(--r-neutral-title-1, #f7fafc);
-    border: 1px solid transparent;
-    margin-bottom: 8px;
-
-    &:hover {
-      background-color: rgba(134, 151, 255, 0.2);
-      border: 1px solid var(--r-blue-default, #7084ff);
-    }
-
-    &:nth-last-child(1) {
-      margin-bottom: 0;
-    }
-  }
-`;
-
 function useQuestionsCheck(checklist: string[], defaultChecked?: boolean) {
   const QUESTIONS = React.useMemo(() => {
     return checklist.map((item, index) => ({
@@ -95,13 +41,11 @@ function useQuestionsCheck(checklist: string[], defaultChecked?: boolean) {
 
   type TIndex = typeof QUESTIONS[number]['index'];
   const toggleCheckedByIndex = React.useCallback((index: TIndex) => {
-    setQuestionChecks((prev) => {
-      const idx = prev.findIndex((item) => item.index === index);
-
-      prev[idx].checked = !prev[idx].checked;
-
-      return [...prev];
-    });
+    setQuestionChecks((prev) =>
+      prev.map((item) =>
+        item.index === index ? { ...item, checked: !item.checked } : item
+      )
+    );
   }, []);
 
   const reset = useCallback(() => {
@@ -221,9 +165,13 @@ const AuthenticationPopup = ({
       forceRender={force}
       afterOpenChange={handleAfterOpenChange}
     >
-      {description && <Description>{description}</Description>}
+      {description && (
+        <div className="mb-20 font-normal text-[14px] leading-[16px] text-center text-r-neutral-body">
+          {description}
+        </div>
+      )}
       {checklist.length > 0 && (
-        <FieldList>
+        <div className={styles.fieldList}>
           {questionChecks.map((q) => {
             const handleClickItem = () => {
               toggleCheckedByIndex(q.index);
@@ -249,10 +197,10 @@ const AuthenticationPopup = ({
               </Field>
             );
           })}
-        </FieldList>
+        </div>
       )}
       <Form onFinish={handleSubmit} form={form}>
-        <AuthFormItemWrapper>
+        <div className={styles.authFormItem}>
           <Form.Item
             name="password"
             rules={[
@@ -274,7 +222,7 @@ const AuthenticationPopup = ({
               spellCheck={false}
             />
           </Form.Item>
-        </AuthFormItemWrapper>
+        </div>
         <div
           className={clsx(
             'flex pt-6 popup-footer px-20',

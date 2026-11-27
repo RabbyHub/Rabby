@@ -5,17 +5,12 @@ import { ActionsContainer, Props } from './ActionsContainer';
 import clsx from 'clsx';
 import { ReactComponent as IconClose } from 'ui/assets/close-16-cc.svg';
 import { GasLessAnimatedWrapper } from './GasLessComponents';
-import styled from 'styled-components';
 import { LoadingOutlined } from '@ant-design/icons';
 import { TooltipV6 } from '@/ui/component/Tooltip/TooltipV6';
 import { useDirectSigning } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useDebounce } from 'react-use';
-
-const ButtonStyled = styled(Button)`
-  &:hover {
-    box-shadow: 0px 6px 8px 0px rgba(112, 132, 255, 0.25);
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './SubmitActions.module.css';
 
 export const SubmitActions: React.FC<Props> = ({
   disabledProcess,
@@ -54,13 +49,13 @@ export const SubmitActions: React.FC<Props> = ({
       {isSign ? (
         <div
           className={clsx(
-            'bg-blue-light w-[246px]',
+            'bg-r-blue-default w-[246px]',
             'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
             'relative',
             'before:absolute before:right-[60px]',
-            'before:bg-[#FFFFFF1A]',
+            'before:bg-white/10',
             'before:h-[32px] before:w-1',
             'hover:before:hidden',
             'overflow-hidden',
@@ -70,7 +65,7 @@ export const SubmitActions: React.FC<Props> = ({
           <button
             disabled={disabledProcess || isSubmitting}
             className={clsx(
-              'hover:bg-[#00000033]',
+              'hover:bg-r-neutral-black/20',
               'w-[184px] h-full',
               'font-medium',
               isSubmitting ? 'flex items-center justify-center gap-[8px]' : ''
@@ -86,7 +81,7 @@ export const SubmitActions: React.FC<Props> = ({
           </button>
           <button
             className={clsx(
-              'hover:bg-[#00000033]',
+              'hover:bg-r-neutral-black/20',
               'flex-1 h-full',
               'flex justify-center items-center'
             )}
@@ -110,14 +105,15 @@ export const SubmitActions: React.FC<Props> = ({
           }
         >
           <GasLessAnimatedWrapper>
-            <ButtonStyled
+            <Button
               disabled={disabledProcess}
               type="primary"
-              className={clsx(
+              className={cn(
+                styles.button,
                 gasLess && 'gasLess',
                 gasLessThemeColor && 'gasLessConfig',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:text-white/40 disabled:bg-blue-light/40 border-transparent',
+                'disabled:text-white/40 disabled:bg-r-blue-disable border-transparent',
                 'before:content-none'
               )}
               style={
@@ -133,7 +129,7 @@ export const SubmitActions: React.FC<Props> = ({
               onClick={handleClickSign}
             >
               {t('page.signFooterBar.signAndSubmitButton')}
-            </ButtonStyled>
+            </Button>
           </GasLessAnimatedWrapper>
         </TooltipV6>
       )}

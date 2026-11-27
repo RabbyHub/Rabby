@@ -148,7 +148,7 @@ class NotificationService extends Events {
         if (winId === this.notifiWindowId) {
           this.notifiWindowId = null;
           if (isManuallyClosed) {
-            this.rejectAllApprovals();
+            this.rejectAllApprovals({ userCancelled: true });
           }
         }
       }
@@ -285,11 +285,13 @@ class NotificationService extends Events {
     error,
     stay = false,
     isInternal = false,
+    userCancelled = false,
   }: {
     approval: ApprovalRef;
     error?: string;
     stay?: boolean;
     isInternal?: boolean;
+    userCancelled?: boolean;
   }): Promise<ApprovalSettleResult> => {
     if (!isValidApprovalRef(approval)) {
       return { accepted: false, reason: 'INVALID_APPROVAL_REF' };
@@ -314,6 +316,11 @@ class NotificationService extends Events {
     }
 
     if (current.signingTxId) {
+      if (userCancelled && !isInternal) {
+        transactionHistoryService.markSigningTxUserCancelled(
+          current.signingTxId
+        );
+      }
       transactionHistoryService.removeSigningTx(current.signingTxId);
     }
 
@@ -443,9 +450,14 @@ class NotificationService extends Events {
     }
   };
 
-  rejectAllApprovals = () => {
+  rejectAllApprovals = ({ userCancelled = false } = {}) => {
     this.addLastRejectDapp();
     this.approvals.forEach((approval) => {
+      if (userCancelled && approval.signingTxId) {
+        transactionHistoryService.markSigningTxUserCancelled(
+          approval.signingTxId
+        );
+      }
       approval.reject &&
         approval.reject(
           new EthereumProviderError(4001, 'User rejected the request.')

@@ -21,132 +21,7 @@ import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import GnosisWrongChainAlertBar from '../GnosisWrongChainAlertBar';
 import { useGnosisNetworks } from '@/ui/hooks/useGnosisNetworks';
-import styled from 'styled-components';
-
-const Container = styled.div`
-  margin-top: 12px;
-  display: flex;
-  align-items: center;
-  border-radius: 8px;
-  background: var(--r-neutral-card1, #fff);
-  padding: 10px 12px;
-
-  &.site-group:hover {
-    .site-icon-container.is-support {
-      cursor: pointer;
-      border: 1px solid var(--r-blue-default, #7084ff);
-      background: var(--r-blue-light1, #eef1ff);
-    }
-    .global-account-selector:not(.is-disabled) {
-      border: 1px solid var(--r-blue-default, #7084ff);
-      background: var(--r-blue-light1, #eef1ff);
-    }
-    .site-status-icon {
-      color: var(--r-red-default, #e34935) !important;
-    }
-  }
-
-  .site {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-    .prefer-metamask-badge {
-      position: absolute;
-      top: -10px;
-      left: -10px;
-      width: 24px;
-      height: 24px;
-    }
-    &.is-empty {
-      .site-icon {
-        width: 20px;
-        border-radius: none;
-      }
-      .site-content {
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 14px;
-        color: var(--r-neutral-foot, #6a7587);
-      }
-    }
-    & .site-status.active .site-status-icon {
-      display: block;
-    }
-    &-icon {
-      flex-shrink: 0;
-      width: 28px;
-      height: 28px;
-      border-radius: 28px;
-    }
-    &-icon-container {
-      padding: 3px;
-      border-radius: 1000px;
-      border: 1px solid transparent;
-
-      &.is-support:hover {
-        cursor: pointer;
-        border: 1px solid var(--r-blue-default, #7084ff);
-        background: var(--r-blue-light1, #eef1ff);
-      }
-    }
-
-    &-content {
-      flex: 1;
-      overflow: hidden;
-    }
-    &-name {
-      font-weight: 400;
-      font-size: 13px;
-      line-height: 15px;
-      color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
-      margin-bottom: 2px;
-    }
-    &-status {
-      font-weight: 400;
-      font-size: 11px;
-      line-height: 13px;
-      color: var(--r-neutral-foot, #6a7587);
-      display: flex;
-      align-items: center;
-      &.active {
-        color: #27c193;
-      }
-      &-icon {
-        display: none;
-        margin-left: 8px;
-        width: 12px;
-        cursor: pointer;
-      }
-    }
-  }
-
-  .chain-selector {
-    margin-left: auto;
-    background-color: transparent;
-    height: 36px;
-    border-radius: 8px;
-    padding-left: 8px;
-    color: var(--r-neutral-title-1, rgba(25, 41, 69, 1));
-
-    .chain-logo {
-      width: 20px;
-      height: 20px;
-      margin-right: 6px;
-    }
-    .icon-arrow-down {
-      margin-left: 6px;
-      margin-right: 8px;
-    }
-    &.disabled {
-      opacity: 0.4;
-      pointer-events: none;
-    }
-    &:hover {
-      background-color: rgba(134, 151, 255, 0.2);
-    }
-  }
-`;
+import styles from './index.module.css';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -296,7 +171,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   if (!isEnabledDappAccount) {
     return (
       <>
-        <Container className={clsx('h-[52px] px-[12px]')}>
+        <div className={clsx(styles.container, 'h-[52px] px-[12px]')}>
           {site ? (
             <>
               <div className="site mr-[18px]">
@@ -305,7 +180,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                     url={site.icon}
                     origin={site.origin}
                     width="28px"
-                    className="site-icon"
+                    className="site-icon rounded-[28px]"
                   ></FallbackSiteLogo>
                   {site.isMetamaskMode ? (
                     <TooltipWithMagnetArrow
@@ -361,7 +236,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
               </div>
             </div>
           )}
-        </Container>
+        </div>
         {isShowGnosisAlert ? <GnosisWrongChainAlertBar /> : null}
       </>
     );
@@ -369,8 +244,12 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   return (
     <>
-      <Container
-        className={clsx('h-[52px]', site?.isConnected ? 'site-group' : '')}
+      <div
+        className={clsx(
+          styles.container,
+          'group/site h-[52px]',
+          site?.isConnected ? 'site-group' : ''
+        )}
       >
         {site ? (
           <div className={clsx('site mr-[18px]')}>
@@ -386,7 +265,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                   url={site.icon}
                   origin={site.origin}
                   width="28px"
-                  className="site-icon"
+                  className="site-icon rounded-[28px]"
                 ></FallbackSiteLogo>
                 {site.isMetamaskMode ? (
                   <TooltipWithMagnetArrow
@@ -409,7 +288,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
                     <img
                       src={chain.logo}
                       alt="chain logo"
-                      className="rounded-full w-[16px] h-[16px] border-[#fff] border-[0.5px] border-solid"
+                      className="rounded-full w-[16px] h-[16px] border-white border-[0.5px] border-solid"
                     />
                   </div>
                 ) : null}
@@ -446,7 +325,11 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
         )}
         {site ? (
           <AccountSelector
-            className="ml-auto"
+            className={clsx(
+              'ml-auto',
+              site?.isConnected &&
+                'group-hover/site:border-r-blue-default group-hover/site:bg-r-blue-light1'
+            )}
             disabled={!site?.isConnected}
             value={currentSiteAccount}
             onChange={handleSiteAccountChange}
@@ -462,7 +345,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             setVisible(false);
           }}
         />
-      </Container>
+      </div>
       {isShowGnosisAlert ? <GnosisWrongChainAlertBar /> : null}
     </>
   );

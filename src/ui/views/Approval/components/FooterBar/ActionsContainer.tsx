@@ -68,8 +68,8 @@ export const ActionsContainer: React.FC<
       <Button
         type="ghost"
         className={clsx(
-          'w-[102px] h-[48px] border-blue-light text-blue-light',
-          'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+          'w-[102px] h-[48px] border-r-blue-default text-r-blue-default',
+          'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
           'rounded-[8px]',
           'before:content-none',
           'z-10',

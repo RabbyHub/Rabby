@@ -1,0 +1,101 @@
+.container {
+  & :global(.from-token) {
+    animation: fromTokenFlow 900ms ease-out infinite;
+  }
+
+  & :global(.to-token) {
+    animation: toTokenFlow 900ms ease-out infinite;
+  }
+
+  & :global(.dot) {
+    animation: dotAnimation 900ms ease-out infinite;
+    position: relative;
+  }
+
+  & :global(.dot-inner) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &::after {
+      content: ' ';
+      display: block;
+      animation: dotArrowFlow 900ms ease-out infinite;
+      transform-origin: center;
+      border-radius: 999px;
+    }
+  }
+}
+
+@keyframes fromTokenFlow {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes toTokenFlow {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.05);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dotAnimation {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.125);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes dotArrowFlow {
+  0% {
+    width: 4px;
+    height: 1px;
+    background: rgba(45, 45, 45, 0);
+    transform: translateX(-15px);
+  }
+
+  50% {
+    width: 8px;
+    height: 8px;
+    background: #4c65ff;
+    transform: translateX(0);
+  }
+
+  100% {
+    width: 4px;
+    height: 1px;
+    background: rgba(45, 45, 45, 0);
+    transform: translateX(12px);
+  }
+}

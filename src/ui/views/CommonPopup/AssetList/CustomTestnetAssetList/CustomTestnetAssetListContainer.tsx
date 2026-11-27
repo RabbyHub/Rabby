@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { EditCustomTestnetModal } from '@/ui/views/CustomTestnet/components/EditTestnetModal';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import { isSameTesnetToken } from '@/utils/chain';
+import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
   className?: string;
@@ -35,9 +36,11 @@ export const CustomTestnetAssetListContainer: React.FC<Props> = ({
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
   }, []);
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
   const [isShowAddModal, setIsShowAddModal] = React.useState<boolean>(false);
   const [
     isShowAddTestnetModal,

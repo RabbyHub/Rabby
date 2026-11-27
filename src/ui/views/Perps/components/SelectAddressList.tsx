@@ -351,7 +351,7 @@ function AccountItem(props: {
       px={16}
       py={0}
       right={RightArea}
-      bgColor=" var(--r-neutral-card1, #FFF);"
+      bgColor="var(--r-neutral-card1, #FFF)"
       className="h-[56px] rounded-[6px] mb-12"
       left={
         <img
@@ -391,7 +391,7 @@ function AccountItem(props: {
             addr={account.address}
             className={clsx('copy-icon w-[12px] h-[12px] ml-4 text-12')}
             // copyClassName={clsx()}
-            checkedClassName={clsx('text-[#00C087]')}
+            checkedClassName={clsx('text-r-green-default')}
           />
           <span className="ml-[4px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
             ${splitNumberByStep(account.balance?.toFixed(2))}

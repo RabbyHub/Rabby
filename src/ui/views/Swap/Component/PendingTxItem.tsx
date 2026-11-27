@@ -38,6 +38,7 @@ import { BridgeHistory, TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getUiType } from '@/ui/utils';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import { PendingTxStatusPopup } from './PendingTxStatusPopup';
+import { useShallow } from 'zustand/react/shallow';
 
 const isDesktop = getUiType().isDesktop;
 type PendingTxData =
@@ -50,12 +51,7 @@ const StatusIcon = ({ status }: { status: string }) => {
   if (status === 'pending' || status === 'fromSuccess') {
     return (
       <div className="w-16 h-16 rounded-full flex items-center justify-center">
-        <SvgIcPending
-          className="w-16 h-16 animate-spin text-r-orange-default"
-          style={{
-            animation: 'spin 1.5s linear infinite',
-          }}
-        />
+        <SvgIcPending className="w-16 h-16 animate-spin text-r-orange-default" />
       </div>
     );
   }
@@ -126,9 +122,11 @@ export const PendingTxItem = forwardRef<
     const history = useHistory();
     const [data, setData] = useState<PendingTxData | null>(null);
     const [visible, setVisible] = useState(false);
-    const { userAddress } = useRabbySelector((state) => ({
-      userAddress: state.account.currentAccount?.address || '',
-    }));
+    const { userAddress } = useRabbySelector(
+      useShallow((state) => ({
+        userAddress: state.account.currentAccount?.address || '',
+      }))
+    );
     const preFulfilledRef = useRef<boolean>(true);
 
     useEffect(() => {
@@ -276,7 +274,7 @@ export const PendingTxItem = forwardRef<
         <div
           className={clsx(
             'flex items-center justify-between cursor-pointer rounded-[8px] px-[16px] py-[14px]',
-            'hover:bg-blue-light/10 hover:border-rabby-blue-default border border-transparent',
+            'hover:bg-r-blue-light-1 hover:border-rabby-blue-default border border-transparent',
             'bg-r-neutral-card-1'
           )}
           onClick={handlePress}

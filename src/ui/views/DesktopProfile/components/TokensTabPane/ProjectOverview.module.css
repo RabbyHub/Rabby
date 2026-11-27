@@ -1,0 +1,32 @@
+.projectOverviewItemWrapper {
+  border-radius: 12px;
+  background-color: var(--rb-neutral-bg-3);
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 11px 10px;
+  cursor: pointer;
+}
+
+.projectOverviewItemWrapper :global(.title) {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  cursor: pointer;
+}
+
+.projectOverviewItemWrapper :global(.title .name) {
+  /* flex: 1; */
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  color: var(--r-neutral-title-1, #192945);
+}
+
+.projectOverviewItemWrapper :global(.title .net-worth) {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  text-align: right;
+  color: var(--r-neutral-title-1, #192945);
+}

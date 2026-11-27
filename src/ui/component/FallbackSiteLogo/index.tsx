@@ -1,9 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import cx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { getMainDomain } from '@/utils';
 import { getOriginName, hashCode } from 'ui/utils';
 import { EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST } from '@/constant';
-import './style.less';
 
 const bgColorList = [
   '#F69373',
@@ -75,7 +74,13 @@ const FallbackImage = ({
 
   return (
     <div
-      className={cx('fallback-site-logo', className)}
+      className={cn(
+        // fallback-site-logo: hook for page styles that target the logo.
+        'fallback-site-logo',
+        'overflow-hidden flex items-center justify-center rounded-[4px]',
+        'text-white text-[15px] font-medium',
+        className
+      )}
       onClick={onClick}
       style={{
         width,

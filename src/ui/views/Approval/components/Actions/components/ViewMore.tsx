@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import { Popup } from 'ui/component';
 import { SpenderPopup, SpenderPopupProps } from './ViewMorePopup/SpenderPopup';
 import {
@@ -20,6 +19,7 @@ import {
   NFTSpenderPopupProps,
 } from './ViewMorePopup/NFTSpenderPopup';
 import { useTranslation } from 'react-i18next';
+import styles from './ViewMore.module.css';
 
 type Props =
   | SpenderPopupProps
@@ -28,52 +28,6 @@ type Props =
   | ReceiverPopupProps
   | NFTPopupProps
   | CollectionPopupProps;
-
-const PopupContainer = styled.div`
-  .title {
-    font-size: 15px;
-    line-height: 18px;
-    display: flex;
-    margin-bottom: 17px;
-    color: var(--r-neutral-body, #3e495e);
-
-    .value-address {
-      color: var(--r-neutral-title-1, #192945);
-      font-weight: 500;
-      margin-left: 7px;
-      display: flex;
-      align-items: center;
-    }
-  }
-  .view-more-table {
-    border-radius: 8px;
-    background: var(--r-neutral-card1, #fff);
-    padding: 0px 16px;
-    display: flex;
-    flex-direction: column;
-    font-weight: 400;
-
-    .col {
-      display: flex;
-      width: 100%;
-      justify-content: space-between;
-      padding: 12px 0;
-    }
-
-    .text {
-      color: var(--r-neutral-body, #3e495e);
-    }
-
-    .row {
-      &:nth-child(1) {
-        color: var(--r-neutral-body, #3e495e);
-        font-weight: 400;
-        justify-content: flex-start;
-        align-items: center;
-      }
-    }
-  }
-`;
 
 const ViewMore = (
   props: Props & {
@@ -133,7 +87,7 @@ const ViewMore = (
           height: 'auto',
         }}
       >
-        <PopupContainer>
+        <div className={styles.popupContainer}>
           {props.type === 'contract' && <ContractPopup data={props.data} />}
           {props.type === 'spender' && (
             <SpenderPopup data={props.data} title={props.title} />
@@ -142,7 +96,7 @@ const ViewMore = (
           {props.type === 'receiver' && <ReceiverPopup data={props.data} />}
           {props.type === 'nft' && <NFTPopup data={props.data} />}
           {props.type === 'collection' && <CollectionPopup data={props.data} />}
-        </PopupContainer>
+        </div>
       </Popup>
     </>
   );

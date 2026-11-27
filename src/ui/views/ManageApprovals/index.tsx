@@ -1,7 +1,6 @@
 import { Tabs } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 
 import { openIndexPage } from '@/background/webapi/tab';
 import { RcIconJumpBoldCC } from '@/ui/assets/dashboard';
@@ -29,52 +28,8 @@ import {
   useApprovalsPageOnTop,
 } from './hooks/useManageApprovalsPage';
 import { openInTab, useWallet } from '@/ui/utils';
-
-const Container = styled.div`
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-
-  .ant-tabs {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-
-    .ant-tabs-nav {
-      margin-bottom: 0;
-      &::before {
-        border-bottom: 0.5px solid var(--r-neutral-line, #e0e5ec);
-      }
-
-      .ant-tabs-nav-list {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-around;
-      }
-    }
-
-    .ant-tabs-content-holder {
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-    }
-
-    .ant-tabs-tabpane {
-      padding-top: 16px;
-      padding-left: 20px;
-      padding-right: 20px;
-    }
-
-    .ant-tabs-tab {
-      color: var(--r-neutral-body, #3e495e);
-      font-size: 13px;
-      font-weight: 500;
-      line-height: 16px;
-      margin: 0;
-    }
-  }
-`;
+import { cn } from '@/ui/utils/cn';
+import styles from './index.module.css';
 
 const ManageApprovalsContent: React.FC = () => {
   const { t } = useTranslation();
@@ -92,7 +47,10 @@ const ManageApprovalsContent: React.FC = () => {
   }, []);
 
   return (
-    <Container ref={containerRef} className="bg-r-neutral-bg-2">
+    <div
+      ref={containerRef}
+      className={cn(styles.container, 'bg-r-neutral-bg-2')}
+    >
       <PageHeader
         className="mx-[20px] mb-[3px]"
         isShowAccount
@@ -149,7 +107,7 @@ const ManageApprovalsContent: React.FC = () => {
 
       <ApprovalContractPopup />
       <ApprovalAssetPopup />
-    </Container>
+    </div>
   );
 };
 

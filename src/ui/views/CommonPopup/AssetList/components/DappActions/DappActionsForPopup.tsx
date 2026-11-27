@@ -5,7 +5,6 @@ import {
   WithdrawAction,
 } from '@rabby-wallet/rabby-api/dist/types';
 import React, { useCallback, useMemo } from 'react';
-import styled from 'styled-components';
 import { message } from 'antd';
 import {
   findTypedWithdrawAction,
@@ -19,15 +18,6 @@ import { IconWithChain } from '@/ui/component/TokenWithChain';
 import { useTranslation } from 'react-i18next';
 import { useMiniSigner } from '@/ui/hooks/useSigner';
 import { MINI_SIGN_ERROR } from '@/ui/component/MiniSignV2/state/SignatureManager';
-
-const Wrapper = styled.div`
-  display: flex;
-  gap: 12px;
-  padding-top: 12px;
-  padding-left: 12px;
-  padding-right: 12px;
-  padding-bottom: 16px;
-`;
 
 interface ActionButtonProps {
   className?: string;
@@ -264,7 +254,7 @@ const DappActionsForPopup = ({
   }
 
   return (
-    <Wrapper>
+    <div className="flex gap-12 pt-12 px-12 pb-16">
       {showWithdraw && (
         <ActionButton
           disabled={pending}
@@ -281,7 +271,7 @@ const DappActionsForPopup = ({
           onClick={() => run('claim', handleSubmit)}
         />
       )}
-    </Wrapper>
+    </div>
   );
 };
 

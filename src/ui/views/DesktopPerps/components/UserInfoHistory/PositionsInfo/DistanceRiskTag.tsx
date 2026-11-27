@@ -22,7 +22,7 @@ export const DistanceRiskTag = ({
     >
       <div className="flex items-center justify-center gap-[2px] border border-rb-neutral-line rounded-[4px] h-[18px] px-[4px]">
         <RcIconAlarmCC className="text-rb-neutral-info" />
-        <div className="text-rb-neutral-foot font-510 text-[11px] leading-[14px]">
+        <div className="text-rb-neutral-foot font-medium text-[11px] leading-[14px]">
           {percent}
         </div>
       </div>

@@ -50,7 +50,7 @@ export const EncodeQRCode: React.FC<{
     >
       <div
         className={clsx(
-          'bg-[#000000]/80',
+          'bg-r-neutral-black/80',
           'rounded-[7px]',
           'absolute inset-0 z-10',
           'flex-col items-center justify-center',

@@ -14,7 +14,7 @@ import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { ApprovalSpenderItemToBeRevoked } from '@/utils/approve';
 import { ApprovalItem, getSpenderApprovalAmount } from '@/utils/approval';
-import styled from 'styled-components';
+import { cn } from '@/ui/utils/cn';
 import ApprovalsNameAndAddr from './NameAndAddr';
 import {
   decodeRevokeItem,
@@ -35,18 +35,9 @@ import { NFTItemBadge, Permit2Badge } from './Badges';
 import { getTokenSymbol } from '@/ui/utils/token';
 import { appIsDebugPkg } from '@/utils/env';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import styles from './RevokeApprovalModal.module.css';
 
 const BOTTOM_BUTTON_AREA = 76;
-const ModalStyled = styled(Modal)`
-  .ant-modal-header {
-    border-bottom: none;
-  }
-
-  .ant-modal-body {
-    padding-top: 16px;
-    padding-bottom: ${BOTTOM_BUTTON_AREA}px;
-  }
-`;
 
 function ApprovalAmountInfo({
   className,
@@ -255,7 +246,7 @@ export const RevokeApprovalModal = (props: {
             className={clsx(
               'relative px-[16px] h-[56px] bg-r-neutral-card1 cursor-pointer border border-transparent  hover:border-rabby-blue-default  hover:bg-r-blue-light1/10 hover:rounded-[6px] hover:z-10',
               isLastOne && 'rounded-b-[6px]',
-              'first:mt-0 first:rounded-t-[6px] dark:bg-[#292c37] dark:hover:bg-r-blue-light1'
+              'first:mt-0 first:rounded-t-[6px] dark:hover:bg-r-blue-light1'
             )}
             onClick={(e) => {
               if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -459,8 +450,8 @@ export const RevokeApprovalModal = (props: {
                   className={clsx(
                     'rounded-[4px] px-[8px] py-[3px]',
                     spender.risk_level === 'danger'
-                      ? 'bg-[#ec5151]'
-                      : 'bg-orange'
+                      ? 'bg-r-red-default'
+                      : 'bg-r-orange-default'
                   )}
                   icon={
                     <InfoCircleOutlined className="text-white pt-[4px] self-start" />
@@ -502,12 +493,13 @@ export const RevokeApprovalModal = (props: {
   if (!item) return null;
 
   return (
-    <ModalStyled
+    <Modal
       centered
       width={480}
       visible={visible}
       onCancel={onClose}
-      className={clsx(
+      className={cn(
+        styles.modalStyled,
         'revoke-approval-modal modal-support-darkmode',
         className
       )}
@@ -579,6 +571,6 @@ export const RevokeApprovalModal = (props: {
           })}
         </Button>
       </div>
-    </ModalStyled>
+    </Modal>
   );
 };

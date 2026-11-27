@@ -1,0 +1,329 @@
+.wrapper {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  & :global(.ant-table-wrapper) {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  & :global(.ant-spin-nested-loading) {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  & :global(.ant-spin-container) {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  & :global(.ant-table) {
+    background-color: transparent;
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Columns keep their fixed widths as a baseline; when the container is wider
+     the extra space is distributed across the columns (option A: stretch),
+     and when narrower the body scrolls horizontally. */
+  & :global(.ant-table) table {
+    min-width: 100%;
+  }
+
+  & :global(.ant-table-container) {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  & :global(.ant-table-container):after {
+    box-shadow: none !important;
+  }
+
+  & :global(.ant-table-header) {
+    flex-shrink: 0;
+
+    &
+      :global(.ant-table-thead)
+      > tr
+      > th:global(.ant-table-cell-scrollbar):last-child {
+      padding: 0;
+      border: none;
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+
+  & :global(.ant-table-body) {
+    flex: 1;
+    overflow-y: auto !important;
+  }
+
+  & :global(.ant-table-expanded-row) {
+    & :global(.ant-table-cell) {
+      background-color: transparent;
+    }
+  }
+
+  & :global(.ant-table-thead) > tr > th {
+    color: var(--rb-neutral-secondary, #9a9ca9);
+    font-size: 12px;
+    line-height: 14px;
+    /* antd forces table headers to 500; keep an explicit 350 so they match the
+       page's regular weight (plain inheritance can't override antd here). */
+    font-weight: 350;
+    background-color: var(--rb-neutral-bg-1, #fff);
+    border: none;
+
+    height: 38px;
+    padding: 0 8px;
+
+    &::before {
+      display: none !important;
+    }
+
+    &:first-child {
+      padding-left: 12px;
+    }
+
+    &:last-child {
+      padding-right: 12px;
+    }
+
+    &:global(.ant-table-column-has-sorters) {
+      padding-top: 0;
+      padding-bottom: 0;
+      cursor: pointer;
+      transition: none;
+
+      & :global(.ant-table-column-sorters) {
+        padding: 0;
+      }
+
+      /* Hover state */
+      &:hover {
+        color: var(--rb-neutral-title-1, #192945);
+        background-color: transparent;
+      }
+
+      /* Active (sorted) state */
+      &:global(.ant-table-column-sort) {
+        color: var(--rb-neutral-title-1, #192945);
+      }
+    }
+
+    /* Hide default antd sort icons */
+    & :global(.ant-table-column-sorter) {
+      display: none;
+    }
+
+    /* Custom sort indicator: hidden until the header is hovered (muted look) or
+       the column is the active sort (highlighted look). */
+    & :global(.sort-icon) {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 12px;
+      height: 12px;
+      margin-left: 4px;
+      vertical-align: middle;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    &:hover :global(.sort-icon),
+    &:global(.ant-table-column-sort) :global(.sort-icon) {
+      opacity: 1;
+    }
+  }
+
+  & :global(.ant-table-tbody) > tr > td {
+    /* Set from the rowHeight prop. */
+    height: var(--common-table-row-height);
+    vertical-align: middle;
+    /* 1px gap between content rows, painted in the panel background colour. */
+    border-bottom: 1px solid var(--rb-neutral-bg-1, #fff);
+
+    padding: 0 8px;
+
+    &:first-child {
+      padding-left: 12px;
+    }
+
+    &:last-child {
+      padding-right: 12px;
+    }
+
+    & :global(.is-long-bg) {
+      background: linear-gradient(
+        to right,
+        rgba(var(--rb-green-default-rgb), 0.125),
+        rgba(var(--rb-green-default-rgb), 0)
+      );
+      border-left: 2px solid var(--rb-green-default, #2abb7f);
+    }
+    & :global(.is-short-bg) {
+      background: linear-gradient(
+        to right,
+        rgba(var(--rb-red-default-rgb), 0.125),
+        rgba(var(--rb-red-default-rgb), 0)
+      );
+      border-left: 2px solid var(--rb-red-default, #e34935);
+    }
+  }
+
+  & :global(.ant-table-tbody) > tr > td:global(.ant-table-cell-row-hover) {
+    /* background-color: transparent; */
+    background-color: var(--rb-neutral-bg-3, #e0e5ec);
+  }
+  & :global(.ant-table-tbody) > tr:global(.ant-table-row):hover > td {
+    background-color: var(--rb-neutral-bg-3, #e0e5ec);
+  }
+
+  & :global(.ant-table-tbody) {
+    & td:global(.ant-table-column-sort) {
+      background-color: transparent;
+    }
+  }
+}
+
+/* Virtual table wrapper - renders header separately from virtualized body */
+.virtualWrapper {
+  --common-table-virtual-row-hover-bg: var(--rb-neutral-bg-0);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  & :global(.virtual-table-header) {
+    flex-shrink: 0;
+
+    & :global(.ant-table-wrapper) {
+      & :global(.ant-table) {
+        background-color: transparent;
+      }
+    }
+
+    & :global(.ant-table-thead) > tr > th {
+      color: var(--rb-neutral-secondary, #9a9ca9);
+      font-size: 12px;
+      line-height: 14px;
+      /* antd forces table headers to 500; keep an explicit 350 so they match the
+         page's regular weight (plain inheritance can't override antd here). */
+      font-weight: 350;
+      background-color: var(--rb-neutral-bg-1, #fff);
+      border: none;
+      height: 38px;
+      padding: 0 8px;
+
+      &::before {
+        display: none !important;
+      }
+
+      &:first-child {
+        padding-left: 12px;
+      }
+
+      &:last-child {
+        padding-right: 12px;
+      }
+
+      &:global(.ant-table-column-has-sorters) {
+        padding-top: 0;
+        padding-bottom: 0;
+        cursor: pointer;
+        transition: none;
+
+        & :global(.ant-table-column-sorters) {
+          padding: 0;
+        }
+
+        &:hover {
+          color: var(--rb-neutral-title-1, #192945);
+          background-color: transparent;
+        }
+
+        &:global(.ant-table-column-sort) {
+          color: var(--rb-neutral-title-1, #192945);
+        }
+      }
+
+      & :global(.ant-table-column-sorter) {
+        display: none;
+      }
+
+      /* Custom sort indicator: hidden until hovered (muted) or active sort
+         (highlighted). */
+      & :global(.sort-icon) {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 12px;
+        height: 12px;
+        margin-left: 4px;
+        vertical-align: middle;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+      }
+
+      &:hover :global(.sort-icon),
+      &:global(.ant-table-column-sort) :global(.sort-icon) {
+        opacity: 1;
+      }
+    }
+
+    /* Hide the empty body in header-only table */
+    & :global(.ant-table-tbody) {
+      display: none;
+    }
+  }
+
+  & :global(.virtual-table-body) {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  & :global(.virtual-row) {
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+
+    &:hover {
+      background-color: var(--common-table-virtual-row-hover-bg);
+    }
+
+    & :global(.virtual-cell) {
+      flex: 1;
+      /* flex-shrink: 0; */
+      /* No vertical padding: the row height is fixed and content is centred via
+         align-items:center, so vertical padding would only push content past the
+         row edge once the height shrinks (28px single-line / 44px two-line). */
+      padding: 0 8px;
+      /* overflow: hidden; */
+      box-sizing: border-box;
+
+      &:first-child {
+        padding-left: 12px;
+      }
+
+      &:last-child {
+        padding-right: 12px;
+      }
+    }
+  }
+}
+
+.virtualWrapperDark {
+  --common-table-virtual-row-hover-bg: var(--r-neutral-card-1);
+}

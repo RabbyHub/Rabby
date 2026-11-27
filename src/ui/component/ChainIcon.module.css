@@ -1,0 +1,47 @@
+.chainIcon {
+  border-radius: 100%;
+  width: 32px;
+  height: 32px;
+  overflow: hidden;
+}
+
+.chainIcon:global(.small) {
+  width: 20px;
+  height: 20px;
+}
+
+.tooltipContent {
+  display: flex;
+  align-items: center;
+  max-width: 280px;
+}
+
+.tooltipContent span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.tooltipContent :global(.alert-icon) {
+  width: 6px;
+  height: 6px;
+  border-radius: 100%;
+  margin-right: 5px;
+}
+
+.tooltipContent:global(.avaliable) {
+  color: #27c193;
+}
+
+.tooltipContent:global(.avaliable) :global(.alert-icon) {
+  background-color: #27c193;
+}
+
+.tooltipContent:global(.unavaliable) {
+  color: #ec5151;
+}
+
+.tooltipContent:global(.unavaliable) :global(.alert-icon) {
+  background-color: #ec5151;
+}

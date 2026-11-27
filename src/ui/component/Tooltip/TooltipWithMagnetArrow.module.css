@@ -1,0 +1,8 @@
+/* --magnet-arrow-left is set through overlayStyle while the arrow has an offset. */
+.arrowLeft :global(.ant-tooltip-arrow) {
+  left: calc(var(--magnet-arrow-left));
+}
+
+.tooltip :global(.ant-tooltip-inner) {
+  white-space: normal;
+}

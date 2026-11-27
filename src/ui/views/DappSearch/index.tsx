@@ -15,74 +15,13 @@ import clsx from 'clsx';
 import { keyBy } from 'lodash';
 import React, { useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { DappFavoriteList } from './components/DappFavoriteList';
 import { DappSearchResult } from './components/DappSearchResult';
 import { ConnectedSite } from '@/background/service/permission';
 import { useReloadPageOnCurrentAccountChanged } from '@/ui/hooks/backgroundState/useAccount';
 import { ChainSelectorButton } from '../DesktopProfile/components/ApprovalsTabPane/components/ChainSelectorButton';
+import styles from './index.module.css';
 const { Search } = Input;
-
-const SearchWrapper = styled.div`
-  .ant-input-wrapper {
-  }
-
-  .ant-input {
-    height: 24px;
-    line-height: 24px !important;
-    font-size: 17px;
-    border-radius: 0 !important;
-  }
-
-  .ant-input-affix-wrapper {
-    border-radius: 8px 0 0 8px !important;
-    border: 1px solid var(--r-neutral-line, #d3d8e0);
-    padding: 13px 15px;
-    line-height: 24px !important;
-    background: var(--r-neutral-card1, #fff);
-
-    input::placeholder {
-      color: var(--r-neutral-foot, #6a7587);
-    }
-
-    .ant-input-clear-icon {
-      color: var(--r-neutral-foot, #6a7587);
-    }
-
-    .ant-input-prefix {
-      margin-right: 12px;
-    }
-    .ant-input {
-      background-color: transparent;
-      color: var(--r-neutral-title1, #192945);
-      &::placeholder {
-        color: var(--r-neutral-foot, #6a7587);
-      }
-    }
-
-    &-focused {
-      border: 1px solid var(--r-blue-default, #7084ff);
-    }
-  }
-  .ant-input-group-addon {
-    border-radius: 0px 8px 8px 0px !important;
-  }
-
-  .anticon-close-circle {
-    font-size: 16px;
-  }
-
-  .ant-btn-primary {
-    height: 52px;
-    min-width: 120px;
-    border-radius: 0px 8px 8px 0px !important;
-
-    color: var(--r-neutral-title2, #fff);
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 20px;
-  }
-`;
 
 export const DappSearchPage = () => {
   useTitle('Dapp Search - Rabby Wallet');
@@ -210,7 +149,7 @@ export const DappSearchPage = () => {
       >
         <div className="w-[1152px] mx-auto">
           <header className="w-[720px] py-[23px]">
-            <SearchWrapper>
+            <div className={styles.searchWrapper}>
               <Search
                 placeholder={t('page.dappSearch.searchPlaceholder')}
                 allowClear
@@ -237,7 +176,7 @@ export const DappSearchPage = () => {
                   }
                 }}
               />
-            </SearchWrapper>
+            </div>
             {isFocus && !searchValue?.trim() && hotTags?.length ? (
               <div className="flex items-center gap-[12px] flex-wrap mt-[20px]">
                 {hotTags?.map((item) => {

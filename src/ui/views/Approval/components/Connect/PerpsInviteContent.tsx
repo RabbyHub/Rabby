@@ -20,13 +20,13 @@ import { CHAINS_ENUM, EVENTS, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import React, { useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useTranslation } from 'react-i18next';
-import styled from 'styled-components';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import IconMetamask from 'ui/assets/metamask-mode-circle.svg';
 import { FallbackSiteLogo } from 'ui/component';
 import { bindApproval, useApproval, useWallet } from 'ui/utils';
 import { WaitingSignMessageComponent } from '../map';
 import eventBus from '@/eventBus';
+import styles from './PerpsInviteContent.module.css';
 
 interface ConnectProps {
   params: any;
@@ -34,51 +34,6 @@ interface ConnectProps {
   defaultChain?: CHAINS_ENUM;
   approvalId?: string;
 }
-
-const Footer = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
-  border-top: 1px solid var(--r-neutral-line, #e0e5ec);
-  border-top: 0.5px solid var(--r-neutral-line, #e0e5ec);
-  width: 100%;
-  background: var(--r-neutral-card-1, #fff);
-  .ant-btn {
-    width: 100%;
-    height: 48px;
-  }
-  .security-tip {
-    width: 100%;
-    font-weight: 500;
-    font-size: 13px;
-    line-height: 15px;
-    padding: 6px;
-    display: flex;
-    align-items: center;
-    border-radius: 4px;
-    position: relative;
-    &::before {
-      content: '';
-      position: absolute;
-      width: 0;
-      height: 0;
-      border: 5px solid transparent;
-      border-bottom: 8px solid currentColor;
-      top: -12px;
-      left: 50%;
-      transform: translateX(-50%);
-    }
-    .icon-level {
-      margin-right: 6px;
-    }
-  }
-  .account-selector {
-    border: none !important;
-    background-color: transparent !important;
-    height: unset !important;
-    padding: 0;
-  }
-`;
 
 export const PerpsInviteContent = (props: ConnectProps) => {
   const {
@@ -389,13 +344,13 @@ export const PerpsInviteContent = (props: ConnectProps) => {
             </Button>
           </div>
         ) : (
-          <Footer>
+          <div className={styles.footer}>
             <div className="flex items-center justify-between mb-[20px]">
               <div className="text-[14px] leading-[17px] text-r-neutral-body">
                 {t('page.connect.connectAddress')}
               </div>
               <AccountSelector
-                className="account-selector"
+                className="account-selector p-0"
                 value={selectedAccount}
                 onChange={(account) => {
                   setSelectedAccount(account);
@@ -429,7 +384,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
                 {t('global.Cancel')}
               </Button>
             </div>
-          </Footer>
+          </div>
         )}
       </div>
     </div>

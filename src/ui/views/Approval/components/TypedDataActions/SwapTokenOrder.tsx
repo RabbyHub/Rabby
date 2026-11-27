@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo } from 'react';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
@@ -18,25 +17,7 @@ import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
 import { SubCol, SubRow, SubTable } from '../Actions/components/SubTable';
 import { SwapTokenOrderRequireData } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-`;
+import styles from './SwapTokenOrder.module.css';
 
 const Permit = ({
   data,
@@ -105,7 +86,7 @@ const Permit = ({
   };
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.swap.payToken')}</Row>
@@ -233,69 +214,74 @@ const Permit = ({
             </SubTable>
           </>
         )}
-        <Col>
-          <Row isTitle itemsCenter>
-            {t('page.signTypedData.buyNFT.listOn')}
-          </Row>
-          <Row>
-            <ViewMore
-              type="contract"
-              data={{
-                bornAt: requireData.bornAt,
-                protocol: requireData.protocol,
-                rank: requireData.rank,
-                address: requireData.id,
-                chain,
-                hasInteraction: requireData.hasInteraction,
-                title: t('page.signTypedData.buyNFT.listOn'),
-              }}
-            >
-              <Values.Address
-                id="swap-token-order-address"
-                hasHover
-                address={requireData.id}
-                chain={chain}
+        {/* requireData is empty when the typed data domain has no verifyingContract */}
+        {requireData.id && (
+          <>
+            <Col>
+              <Row isTitle itemsCenter>
+                {t('page.signTypedData.buyNFT.listOn')}
+              </Row>
+              <Row>
+                <ViewMore
+                  type="contract"
+                  data={{
+                    bornAt: requireData.bornAt,
+                    protocol: requireData.protocol,
+                    rank: requireData.rank,
+                    address: requireData.id,
+                    chain,
+                    hasInteraction: requireData.hasInteraction,
+                    title: t('page.signTypedData.buyNFT.listOn'),
+                  }}
+                >
+                  <Values.Address
+                    id="swap-token-order-address"
+                    hasHover
+                    address={requireData.id}
+                    chain={chain}
+                  />
+                </ViewMore>
+              </Row>
+            </Col>
+            <SubTable target="swap-token-order-address">
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
+                <SubRow>
+                  <ProtocolListItem protocol={requireData.protocol} />
+                </SubRow>
+              </SubCol>
+              <SubCol>
+                <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
+                <SubRow>
+                  <Values.Interacted value={requireData.hasInteraction} />
+                </SubRow>
+              </SubCol>
+
+              {isInWhitelist && (
+                <SubCol>
+                  <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
+                  <SubRow>{t('page.signTx.trusted')}</SubRow>
+                </SubCol>
+              )}
+
+              <SecurityListItem
+                id="1135"
+                engineResult={engineResultMap['1135']}
+                forbiddenText={t('page.signTx.markAsBlock')}
+                title={t('page.signTx.myMark')}
               />
-            </ViewMore>
-          </Row>
-        </Col>
-        <SubTable target="swap-token-order-address">
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.protocol')}</SubRow>
-            <SubRow>
-              <ProtocolListItem protocol={requireData.protocol} />
-            </SubRow>
-          </SubCol>
-          <SubCol>
-            <SubRow isTitle>{t('page.signTx.hasInteraction')}</SubRow>
-            <SubRow>
-              <Values.Interacted value={requireData.hasInteraction} />
-            </SubRow>
-          </SubCol>
 
-          {isInWhitelist && (
-            <SubCol>
-              <SubRow isTitle>{t('page.signTx.myMark')}</SubRow>
-              <SubRow>{t('page.signTx.trusted')}</SubRow>
-            </SubCol>
-          )}
-
-          <SecurityListItem
-            id="1135"
-            engineResult={engineResultMap['1135']}
-            forbiddenText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
-
-          <SecurityListItem
-            id="1137"
-            engineResult={engineResultMap['1137']}
-            warningText={t('page.signTx.markAsBlock')}
-            title={t('page.signTx.myMark')}
-          />
-        </SubTable>
+              <SecurityListItem
+                id="1137"
+                engineResult={engineResultMap['1137']}
+                warningText={t('page.signTx.markAsBlock')}
+                title={t('page.signTx.myMark')}
+              />
+            </SubTable>
+          </>
+        )}
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

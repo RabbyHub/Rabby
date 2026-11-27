@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@rabby-wallet/rabby-security-engine';
@@ -19,39 +18,7 @@ import {
   ContractRequireData,
   ParsedTransactionActionData,
 } from '@rabby-wallet/rabby-action';
-
-const Wrapper = styled.div`
-  .header {
-    margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
-  }
-  .icon-scam-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  .icon-fake-token {
-    margin-left: 4px;
-    width: 13px;
-  }
-  li .name-and-address {
-    justify-content: flex-start;
-    .address {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 14px;
-      color: #999999;
-    }
-    img {
-      width: 12px !important;
-      height: 12px !important;
-      margin-left: 4px !important;
-    }
-  }
-`;
+import styles from './AssetOrder.module.css';
 
 const AssetOrder = ({
   data,
@@ -115,7 +82,7 @@ const AssetOrder = ({
   };
 
   return (
-    <Wrapper>
+    <div className={styles.wrapper}>
       <Table>
         <Col>
           <Row isTitle>{t('page.signTx.assetOrder.listAsset')}</Row>
@@ -306,7 +273,7 @@ const AssetOrder = ({
           </Row>
         </Col>
       </Table>
-    </Wrapper>
+    </div>
   );
 };
 

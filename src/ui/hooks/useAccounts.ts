@@ -7,6 +7,7 @@ import { useRabbyDispatch, useRabbySelector } from '../store';
 import { sortAccountsByBalance } from '../utils/account';
 import { getWalletScore } from '../views/ManageAddress/hooks';
 import { isSameAddress } from '../utils';
+import { useShallow } from 'zustand/react/shallow';
 
 export const useAccounts = () => {
   const addressSortStore = useRabbySelector(
@@ -18,10 +19,12 @@ export const useAccounts = () => {
     accountsList,
     highlightedAddresses = [],
     loadingAccounts,
-  } = useRabbySelector((s) => ({
-    ...s.accountToDisplay,
-    highlightedAddresses: s.addressManagement.highlightedAddresses,
-  }));
+  } = useRabbySelector(
+    useShallow((s) => ({
+      ...s.accountToDisplay,
+      highlightedAddresses: s.addressManagement.highlightedAddresses,
+    }))
+  );
 
   const [sortedAccountsList, watchSortedAccountsList] = React.useMemo(() => {
     const restAccounts = [...accountsList];

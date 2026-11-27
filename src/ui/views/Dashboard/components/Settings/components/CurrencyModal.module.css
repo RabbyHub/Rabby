@@ -1,0 +1,101 @@
+.wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  left: 0;
+  top: 0;
+  display: none;
+  background-color: var(--r-neutral-bg-1, #575b70);
+  transform: translateX(100%);
+  transition: transform 0.3s;
+  padding: 20px 20px 0 20px;
+  border-radius: 16px 16px 0 0;
+}
+
+.wrapper.visible {
+  display: block;
+}
+
+.wrapper.show {
+  transform: translateX(0);
+}
+
+.wrapper :global(.currency-search) {
+  padding: 14px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--r-neutral-line, rgba(255, 255, 255, 0.12));
+  border-radius: 8px;
+  background-color: var(--r-neutral-card-1) !important;
+  font-size: 13px;
+  line-height: 13px;
+}
+
+.wrapper :global(.currency-search):active,
+.wrapper :global(.currency-search):focus {
+  border: 1px solid var(--r-blue-default, #4c65ff) !important;
+}
+
+.wrapper :global(.currency-search) :global(.ant-input) {
+  color: var(--r-neutral-title-1, #f7fafc);
+  border-radius: 0;
+}
+
+.wrapper :global(.auto-lock-option-list) {
+  overflow: auto;
+  max-height: calc(100% - 106px);
+}
+
+.wrapper :global(.auto-lock-option-list-item) {
+  display: flex;
+  height: 52px;
+  padding: 17px 15px;
+  border-radius: 6px;
+  background: var(--r-neutral-card-2, rgba(255, 255, 255, 0.06));
+  align-items: center;
+  margin-bottom: 12px;
+  color: var(--r-neutral-title-1, #f7fafc);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 16px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.wrapper :global(.auto-lock-option-list-item):hover {
+  background-color: rgba(134, 151, 255, 0.2);
+  border: 1px solid var(--r-blue-default, #7084ff);
+}
+
+.wrapper :global(.currency-icon-wrapper) {
+  width: 24px;
+  height: 24px;
+  margin-right: 8px;
+  border-radius: 9999px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.wrapper :global(.currency-icon) {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.wrapper :global(.auto-lock-option-list-item-icon) {
+  margin-left: auto;
+  width: 16px;
+  height: 16px;
+}
+
+.wrapper :global(.currency-empty) {
+  text-align: center;
+  color: var(--r-neutral-foot, #6a7587);
+  font-size: 12px;
+  line-height: 16px;
+  padding: 16px 0;
+}

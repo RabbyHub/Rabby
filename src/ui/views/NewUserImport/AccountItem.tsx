@@ -1,38 +1,47 @@
-import { Input } from 'antd';
-import styled from 'styled-components';
+import React from 'react';
+import { Input, InputProps, InputRef } from 'antd';
+import { cn } from '@/ui/utils/cn';
+import styles from './AccountItem.module.css';
 
-export const AccountItemWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  border-radius: 8px;
-  padding: 0;
-`;
+export const AccountItemWrapper = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div
+    ref={ref}
+    className={cn(styles.accountItemWrapper, className)}
+    {...rest}
+  />
+));
 
-export const AccountItemInputWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  font-weight: 500;
-`;
+export const AccountItemInputWrapper = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div
+    ref={ref}
+    className={cn(styles.accountItemInputWrapper, className)}
+    {...rest}
+  />
+));
 
-export const AccountItemInput = styled(Input)`
-  &.ant-input {
-    width: 100%;
-    height: 56px;
-    border: none;
-    border-radius: 6px;
-    background: var(--r-neutral-card2);
-    padding: 18px 12px;
-    color: var(--r-neutral-title-1);
-    font-size: 18px;
-    line-height: normal;
-    font-weight: 500;
-  }
-`;
+export const AccountItemInput = React.forwardRef<InputRef, InputProps>(
+  ({ className, ...rest }, ref) => (
+    <Input
+      ref={ref}
+      className={cn(styles.accountItemInput, className)}
+      {...rest}
+    />
+  )
+);
 
-export const AccountItemAddress = styled.div`
-  margin-top: 8px;
-  color: var(--r-neutral-foot);
-  font-size: 13px;
-  line-height: normal;
-`;
+export const AccountItemAddress = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...rest }, ref) => (
+  <div
+    ref={ref}
+    className={cn(styles.accountItemAddress, className)}
+    {...rest}
+  />
+));

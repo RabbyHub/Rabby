@@ -16,7 +16,6 @@ import { isValidAddress, toChecksumAddress } from '@ethereumjs/util';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { connectStore } from 'ui/store';
 import {
   useWallet,
   openInTab,
@@ -612,6 +611,7 @@ const SendNFT = () => {
           canBack={!(isTab || isDesktop)}
           // isShowAccount
           disableSwitchAccount
+          className="mb-0 font-black text-rb-neutral-title-1"
           rightSlot={
             isTab || isDesktop ? null : (
               <div
@@ -714,6 +714,7 @@ const SendNFT = () => {
                             <AddressViewer
                               address={nftItem.contract_id}
                               showArrow={false}
+                              className="normal text-12 text-r-neutral-body"
                             />
                             <ThemeIcon
                               src={RcIconExternal}
@@ -802,6 +803,4 @@ const SendNFTWrapper = () => (
   </DirectSubmitProvider>
 );
 
-export default isTab
-  ? connectStore()(withAccountChange(SendNFTWrapper))
-  : connectStore()(SendNFTWrapper);
+export default isTab ? withAccountChange(SendNFTWrapper) : SendNFTWrapper;

@@ -8,7 +8,6 @@ import { ReactComponent as RcIconClose } from 'ui/assets/perps/icon-close-cc.svg
 import { ReactComponent as RcIconTpSlEdit } from 'ui/assets/perps/IconTpSlEditCC.svg';
 import { ReactComponent as RcIconTpSlCancel } from 'ui/assets/perps/IconTpSlCancelCC.svg';
 import clsx from 'clsx';
-import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { useMemoizedFn } from 'ahooks';
 import { formatTpOrSlPrice, validatePriceInput } from '../utils';

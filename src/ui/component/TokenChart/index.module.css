@@ -1,0 +1,4 @@
+:global(html).curveGlobalActive {
+  --color-curve-token-green: #2abb7f;
+  --color-curve-token-red: #e34935;
+}

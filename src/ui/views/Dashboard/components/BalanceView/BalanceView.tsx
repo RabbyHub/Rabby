@@ -330,9 +330,6 @@ export const BalanceView = ({
   const currentChangeValue = currentHover ? curvePoint?.change : null;
   const { hiddenBalance } = useRabbySelector((state) => state.preference);
 
-  const shouldShowRefreshButton =
-    isManualRefreshing || balanceLoading || curveLoading;
-
   const couldShowLoadingDueToBalanceNil =
     currentBalance === null || (balanceFromCache && currentBalance === 0);
   // const couldShowLoadingDueToUpdateSource = !balanceFromCache || isManualRefreshing;
@@ -459,8 +456,8 @@ export const BalanceView = ({
             ) : null}
             <div
               className={clsx({
-                'block animate-spin': shouldShowRefreshButton,
-                hidden: !shouldShowRefreshButton,
+                'block animate-spin': isManualRefreshing,
+                hidden: !isManualRefreshing,
                 'group-hover:block': !hiddenBalance,
               })}
             >

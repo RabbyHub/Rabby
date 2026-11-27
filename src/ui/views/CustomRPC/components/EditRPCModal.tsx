@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Input, Button, InputRef } from 'antd';
-import styled from 'styled-components';
 import { useDebounce } from 'react-use';
 import { useWallet } from 'ui/utils';
 import { CHAINS_ENUM, CHAINS } from 'consts';
@@ -10,56 +9,7 @@ import { isValidateUrl } from 'ui/utils/url';
 import { RPCItem } from '@/background/service/rpc';
 import { findChainByEnum } from '@/utils/chain';
 import { useTranslation } from 'react-i18next';
-
-const ErrorMsg = styled.div`
-  color: #ec5151;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 16px;
-  margin-top: 8px;
-`;
-
-const Footer = styled.div`
-  height: 84px;
-  border-top: 0.5px solid var(--r-neutral-line, rgba(255, 255, 255, 0.1));
-  background: var(--r-neutral-card-1, rgba(255, 255, 255, 0.06));
-  padding: 16px 20px;
-  display: flex;
-  justify-content: space-between;
-  width: 100vw;
-  position: absolute;
-  left: -20px;
-  bottom: 0;
-`;
-
-const EditRPCWrapped = styled.div`
-  position: relative;
-  height: 100%;
-  .rpc-input.rpc-input {
-    height: 52px;
-
-    height: 52px;
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-    background: transparent !important;
-    border: 1px solid var(--r-neutral-line, #d3d8e0) !important;
-    border-radius: 6px;
-
-    color: var(--r-neutral-title1, #192945) !important;
-    font-size: 15px;
-    /* font-weight: 500; */
-    &:focus {
-      border-color: var(--r-blue-default, #7084ff) !important;
-    }
-    &.has-error {
-      border-color: #ec5151 !important;
-    }
-    &::placeholder {
-      color: var(--r-neutral-foot, #6a7587) !important;
-    }
-  }
-`;
+import styles from './EditRPCModal.module.css';
 
 const EditRPCModal = ({
   chain,
@@ -147,7 +97,7 @@ const EditRPCModal = ({
       }}
       isSupportDarkMode
     >
-      <EditRPCWrapped>
+      <div className={styles.editRpcWrapped}>
         <PageHeader forceShowBack onBack={onCancel} className="pt-0">
           {t('page.customRpc.EditRPCModal.title')}
         </PageHeader>
@@ -170,8 +120,12 @@ const EditRPCModal = ({
           placeholder={t('page.customRpc.EditRPCModal.rpcUrlPlaceholder')}
           onChange={(e) => handleRPCChanged(e.target.value)}
         />
-        {rpcErrorMsg && <ErrorMsg>{rpcErrorMsg}</ErrorMsg>}
-        <Footer>
+        {rpcErrorMsg && (
+          <div className="text-r-red-default font-normal text-[12px] leading-[16px] mt-8">
+            {rpcErrorMsg}
+          </div>
+        )}
+        <div className="h-[84px] border-t-[0.5px] border-t-r-neutral-line bg-r-neutral-card-1 py-16 px-20 flex justify-between w-[100vw] absolute left-[-20px] bottom-0">
           <Button
             type="primary"
             size="large"
@@ -191,8 +145,8 @@ const EditRPCModal = ({
           >
             {isValidating ? t('global.Loading') : t('global.Save')}
           </Button>
-        </Footer>
-      </EditRPCWrapped>
+        </div>
+      </div>
     </Popup>
   );
 };

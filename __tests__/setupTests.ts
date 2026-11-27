@@ -57,6 +57,10 @@ chrome.runtime.getManifest.returns({
   manifest_version: 3,
   version: '0.0.0-test',
 });
+// Build-time twin of the MV3 manifest above: webpack's DefinePlugin replaces
+// process.env.IS_MANIFEST_MV3 with a literal, and jest has no such step.
+// Any non-empty string is truthy, so to test MV2 delete it, never set 'false'.
+process.env.IS_MANIFEST_MV3 = 'true';
 if (!chrome.storage.session) {
   Object.defineProperty(chrome.storage, 'session', {
     configurable: true,

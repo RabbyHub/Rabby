@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import styles from './index.module.css';
 import { placements as rcPlacements } from 'rc-tooltip/lib/placements';
 import TooltipV6, { TooltipV6Props } from '@/ui/component/Tooltip/TooltipV6';
 
@@ -58,7 +59,7 @@ const isEmptyTitle = (title: React.ReactNode) =>
 
 /**
  * Tooltip for the Perps pro page. Same props as antd's Tooltip for the cases
- * used here; styling lives under `.perps-pro-tooltip` in ../../index.less.
+ * used here; geometry lives in ./index.module.css.
  */
 export const PerpsTooltip: React.FC<TooltipV6Props> = ({
   title,
@@ -74,7 +75,7 @@ export const PerpsTooltip: React.FC<TooltipV6Props> = ({
   return (
     <TooltipV6
       title={title}
-      overlayClassName={clsx('rectangle perps-pro-tooltip', overlayClassName)}
+      overlayClassName={clsx('rectangle', styles.tooltip, overlayClassName)}
       builtinPlacements={PLACEMENTS}
       arrowEdgeInset={EDGE}
       // antd's Tooltip default; rc-tooltip alone opens instantly, which flashes

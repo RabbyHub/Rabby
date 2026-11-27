@@ -33,7 +33,6 @@ import {
   useGasAccountLogin,
 } from '@/ui/views/GasAccount/hooks';
 import { useMemoizedFn } from 'ahooks';
-import styled from 'styled-components';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import { BalanceView, BalanceViewJumpButton } from '../BalanceView/BalanceView';
 import { useHomeBalanceViewOuterPrefetch } from '../BalanceView/useHomeBalanceView';
@@ -49,19 +48,7 @@ import {
   useLatestRepliedFeedbacks,
   useViewingFeedback,
 } from '@/ui/component/ScreenshotContextMenu/hooks';
-
-const Container = styled.div`
-  width: 100%;
-  height: 196px;
-  background: linear-gradient(0deg, #2539b7 0%, #2539b7 100%), #2539b7;
-  position: relative;
-  overflow: hidden;
-  padding: 12px 16px;
-
-  &:has(.balance-view-jump-button-external:hover) .balance-view-card {
-    background: rgba(255, 255, 255, 0.05);
-  }
-`;
+import styles from './index.module.css';
 
 export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
   onSettingClick,
@@ -119,7 +106,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
   };
 
   return (
-    <Container>
+    <div className={styles.container}>
       {currentAccount && (
         <div className={clsx('flex mb-[8px] items-center gap-[24px] relative')}>
           <div className="min-w-0 flex items-center gap-[4px]">
@@ -226,7 +213,7 @@ export const DashboardHeader: React.FC<{ onSettingClick?(): void }> = ({
       )}
       {dashboardBalanceCacheInited && <OfflineChainNotify />}
       <SeedPhraseBackupAlert className="absolute left-0 right-0 bottom-0" />
-    </Container>
+    </div>
   );
 };
 

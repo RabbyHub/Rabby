@@ -49,7 +49,10 @@ const AnimatedToken: React.FC<AnimatedTokenProps> = ({
 );
 
 /** Bottom promotion displayed over the popup Dashboard. */
-export const StablecoinSwapPopup: React.FC = () => {
+export const StablecoinSwapPopup: React.FC<{
+  /** The token animation pauses while true, e.g. when an overlay covers it. */
+  paused?: boolean;
+}> = ({ paused }) => {
   const { t } = useTranslation();
   const {
     visible,
@@ -62,7 +65,7 @@ export const StablecoinSwapPopup: React.FC = () => {
     previousReceiveToken,
     onPayTokenAnimationEnd,
     onReceiveTokenAnimationEnd,
-  } = useStablecoinSwapPopup();
+  } = useStablecoinSwapPopup({ paused });
 
   if (!visible) {
     return null;
@@ -88,7 +91,7 @@ export const StablecoinSwapPopup: React.FC = () => {
         aria-label={t('page.dashboard.home.stablecoinSwapPopup.close')}
         className="absolute right-[12px] top-[10px] flex h-[24px] w-[24px] items-center justify-center"
       >
-        <RcClose className="h-[14px] w-[14px] text-[#C5C5CF]" />
+        <RcClose className="h-[14px] w-[14px] text-r-neutral-foot" />
       </button>
 
       <div className="absolute left-1/2 top-[16px] flex -translate-x-1/2 items-center gap-[12px] whitespace-nowrap text-[16px] leading-[20px] text-r-neutral-title1">

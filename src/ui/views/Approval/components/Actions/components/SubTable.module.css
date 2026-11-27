@@ -1,0 +1,56 @@
+.subTable {
+  border-radius: 6px;
+  background: var(--r-neutral-card3, #f7fafc);
+  padding: 12px;
+  row-gap: 12px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 12px;
+}
+
+.subTable:empty {
+  display: none;
+}
+
+.subTable:empty + :global(.table-arrow) {
+  display: none;
+}
+
+.tableArrow {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.subCol {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  position: relative;
+}
+
+.subCol:global(.nested) {
+  margin-top: -6px;
+}
+
+.subCol:global(.nested) :global(.row) {
+  color: var(--r-neutral-foot, #6a7587) !important;
+  font-weight: 400 !important;
+}
+
+.subRow {
+  font-size: 14px;
+  line-height: normal;
+  color: var(--r-neutral-body, #3e495e);
+  font-weight: 500;
+}
+
+.subRow:has(:global(.security-level-tag)) {
+  padding-right: 8px;
+}
+
+.subRow:global(.title) {
+  font-weight: 400;
+  white-space: nowrap;
+}
