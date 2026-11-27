@@ -1043,7 +1043,6 @@
           "lockWallet": "Verrouiller le wallet",
           "manageAddress": "Gérer les adresses",
           "signatureRecord": "Journal des signatures",
-          "rabbyPoints": "Rabby Points",
           "searchDapps": "Rechercher des dApps",
           "gasTopUp": "Recharger le gas",
           "ecosystem": "Écosystème"
@@ -2868,61 +2867,6 @@
       "listBy": "DApp répertoriée par",
       "searchButton": "Rechercher",
       "searchPlaceholder": "Rechercher le nom d'une DApp"
-    },
-    "rabbyPoints": {
-      "claimItem": {
-        "claim": "Réclamer",
-        "disabledTip": "Aucun point à réclamer pour le moment",
-        "claimed": "Réclamé",
-        "go": "Aller",
-        "earnTip": "Limite quotidienne atteinte. Vous pourrez de nouveau gagner des points après 00:00 (UTC+0)"
-      },
-      "claimModal": {
-        "walletBalance": "Solde du portefeuille",
-        "title": "Réclamer les points initiaux",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "rabbyValuedUserBadge": "Badge Rabby d'utilisateur fidèle",
-        "addressBalance": "Solde du wallet",
-        "season2": "Saison 2",
-        "cantUseOwnCode": "Vous ne pouvez pas utiliser votre propre code de parrainage.",
-        "rabbyUser": "Utilisateur Rabby actif",
-        "invalid-code": "code invalide",
-        "referral-code": "Code de parrainage",
-        "claim": "Réclamer",
-        "activeStats": "Statut d'activité",
-        "MetaMaskSwap": "MetaMask Swap",
-        "placeholder": "Entrez le code de parrainage pour des points supplémentaires (optionnel)",
-        "snapshotTime": "Heure du snapshot : {{time}}"
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "sign": "Signer",
-          "cancel": "Annuler",
-          "verify-address": "Vérifier l'adresse",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Veuillez signer ce message texte pour vérifier que vous êtes le propriétaire de cette adresse."
-        },
-        "my-referral-code": "Mon code de parrainage",
-        "referral-code-cannot-exceed-15-characters": "Le code de parrainage ne peut pas dépasser 15 caractères",
-        "referral-code-cannot-be-empty": "Le code de parrainage ne peut pas être vide",
-        "referral-code-already-exists": "Le code de parrainage existe déjà",
-        "referral-code-available": "Code de parrainage disponible",
-        "confirm": "Confirmer",
-        "set-my-referral-code": "Définir mon code de parrainage",
-        "refer-a-new-user-to-get-50-points": "Recommandez un nouvel utilisateur pour obtenir 50 points",
-        "max-15-characters-use-numbers-and-letters-only": "15 caractères maximum ; utilisez uniquement des chiffres et des lettres.",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Une fois défini, ce code de parrainage est permanent et ne peut pas être modifié.",
-        "set-my-code": "Définir mon code"
-      },
-      "title": "Rabby Points",
-      "share-on": "Partager sur",
-      "top-100": "Top 100",
-      "earn-points": "Gagner des points",
-      "out-of-x-current-total-points": "Sur un total de {{total}} points distribués",
-      "referral-code-copied": "Code de parrainage copié",
-      "code-set-successfully": "Code de parrainage défini avec succès",
-      "secondRoundEnded": "🎉 La deuxième ronde de Rabby Points est terminée",
-      "initialPointsClaimEnded": "La période de réclamation des points initiaux est terminée",
-      "firstRoundEnded": "🎉 La première ronde de Rabby Points est terminée"
     },
     "customTestnet": {
       "CustomTestnetForm": {

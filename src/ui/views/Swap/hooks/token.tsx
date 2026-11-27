@@ -12,7 +12,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useAsync, useAsyncFn, useDebounce } from 'react-use';
+import { useAsync, useAsyncFn } from 'react-use';
+import { useDebounceEffect, useDebounceFn } from 'ahooks';
 import {
   isSwapWrapToken,
   QuoteProvider,
@@ -121,14 +122,14 @@ const useTokenInfo = ({
     refreshTokenId,
   ]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (value && !error && !loading) {
         setToken(value);
       }
     },
-    300,
-    [value, error, loading]
+    [value, error, loading],
+    { wait: 300 }
   );
 
   if (error) {
@@ -868,13 +869,19 @@ export const useTokenPair = (userAddress: string) => {
     refreshId,
   ]);
 
-  const [, cancelQuoteDebounce] = useDebounce(
+  const {
+    run: debouncedGetQuotes,
+    cancel: cancelQuoteDebounce,
+  } = useDebounceFn(
     () => {
       getQuotes();
     },
-    1000,
-    [getQuotes]
+    { wait: 1000 }
   );
+
+  useEffect(() => {
+    debouncedGetQuotes();
+  }, [getQuotes, debouncedGetQuotes]);
 
   const setQuoteRefreshLocked = useCallback(
     (locked: boolean) => {

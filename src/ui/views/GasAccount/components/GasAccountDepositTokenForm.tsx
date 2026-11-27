@@ -16,7 +16,8 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAsync, useDebounce } from 'react-use';
+import { useAsync } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import {
   GasAccountAvailableToken,
@@ -590,7 +591,7 @@ const GasAccountDepositTokenFormInner: React.FC<
     }
   }, [resetBridgeQuoteState, shouldResetBridgeQuote]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (!canFetchBridgeQuote) {
         return;
@@ -639,7 +640,6 @@ const GasAccountDepositTokenFormInner: React.FC<
           }
         });
     },
-    300,
     [
       amountValue,
       canFetchBridgeQuote,
@@ -647,7 +647,8 @@ const GasAccountDepositTokenFormInner: React.FC<
       selectedOwnerAddress,
       validationMessages.fetchQuoteFailed,
       wallet,
-    ]
+    ],
+    { wait: 300 }
   );
 
   const handleInputChange = useCallback(

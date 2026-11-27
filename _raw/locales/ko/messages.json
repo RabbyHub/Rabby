@@ -1447,7 +1447,6 @@
           "connectedDapp": "연결된 Dapps",
           "gasTopUp": "가스 충전",
           "lockWallet": "잠금 지갑",
-          "rabbyPoints": "Rabby 포인트",
           "signatureRecord": "서명 기록",
           "searchDapps": "Dapps 검색",
           "ecosystem": "생태계"
@@ -2517,61 +2516,6 @@
       "selectChain": "체인 선택",
       "searchButton": "검색",
       "searchPlaceholder": "Dapp 이름 검색"
-    },
-    "rabbyPoints": {
-      "claimItem": {
-        "claim": "수령",
-        "disabledTip": "지금 수령할 포인트가 없습니다",
-        "claimed": "수령됨",
-        "go": "가자",
-        "earnTip": "하루에 한 번 한도. 00:00 UTC+0 이후에 포인트를 적립해 주세요."
-      },
-      "claimModal": {
-        "rabbyUser": "Rabby 활성 사용자",
-        "walletBalance": "지갑 잔액",
-        "addressBalance": "지갑 잔액",
-        "claim": "수령",
-        "MetaMaskSwap": "메타마스크 스왑",
-        "title": "초기 포인트 수령",
-        "placeholder": "추천 코드를 입력하여 추가 포인트를 받으세요 (선택 사항)",
-        "snapshotTime": "스냅샷 시간: {{time}}",
-        "rabbyValuedUserBadge": "Rabby 우수 사용자 배지",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "activeStats": "활성 상태",
-        "cantUseOwnCode": "자신의 추천 코드는 사용할 수 없습니다.",
-        "invalid-code": "잘못된 코드",
-        "referral-code": "추천 코드",
-        "season2": "시즌 2"
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "verify-address": "주소 확인",
-          "cancel": "취소",
-          "sign": "서명",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "이 주소의 소유자임을 확인하기 위해 이 텍스트 메시지에 서명해 주세요."
-        },
-        "referral-code-cannot-be-empty": "추천 코드가 비어 있을 수 없습니다.",
-        "confirm": "확인",
-        "referral-code-already-exists": "추천 코드가 이미 존재합니다.",
-        "my-referral-code": "내 추천 코드",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "한 번 설정하면 이 추천 코드는 영구적이며 변경할 수 없습니다.",
-        "max-15-characters-use-numbers-and-letters-only": "최대 15자, 숫자와 문자만 사용하세요.",
-        "referral-code-available": "추천 코드 사용 가능",
-        "refer-a-new-user-to-get-50-points": "새 사용자를 추천하여 50 포인트를 얻으세요.",
-        "set-my-code": "내 코드를 설정하다",
-        "set-my-referral-code": "내 추천 코드 설정",
-        "referral-code-cannot-exceed-15-characters": "추천 코드는 15자를 초과할 수 없습니다."
-      },
-      "share-on": "공유하기",
-      "referral-code-copied": "추천 코드가 복사되었습니다.",
-      "title": "Rabby 포인트",
-      "out-of-x-current-total-points": "총 {{total}} 배포된 포인트 중에서",
-      "top-100": "상위 100",
-      "earn-points": "포인트 적립",
-      "initialPointsClaimEnded": "초기 포인트 수령 기간이 종료되었습니다",
-      "code-set-successfully": "추천 코드가 성공적으로 설정되었습니다.",
-      "secondRoundEnded": "🎉 Rabby Points의 두 번째 라운드가 종료되었습니다",
-      "firstRoundEnded": "🎉 Rabby Points의 첫 번째 라운드가 종료되었습니다."
     },
     "customTestnet": {
       "CustomTestnetForm": {

@@ -1345,7 +1345,6 @@
           "manageAddress": "Administrar direcciones",
           "connectedDapp": "dApps conectadas",
           "searchDapps": "Buscar dApps",
-          "rabbyPoints": "Rabby Points",
           "gasTopUp": "Recargar gas",
           "ecosystem": "Ecosistema"
         },
@@ -2520,61 +2519,6 @@
       "emptyFavorite": "No hay dApps favoritas",
       "searchPlaceholder": "Buscar por nombre de dApp",
       "searchButton": "Buscar"
-    },
-    "rabbyPoints": {
-      "claimItem": {
-        "claimed": "Reclamado",
-        "go": "Ir",
-        "claim": "Reclamar",
-        "disabledTip": "No se pueden reclamar puntos ahora",
-        "earnTip": "Has alcanzado el límite diario. Podrás volver a ganar puntos después de las 00:00 (UTC+0)"
-      },
-      "claimModal": {
-        "claim": "Reclamar",
-        "addressBalance": "Saldo de la wallet",
-        "rabbyUser": "Usuario activo de Rabby",
-        "MetaMaskSwap": "MetaMask Swap",
-        "placeholder": "Introduce un código de invitación para obtener puntos extra (opcional)",
-        "title": "Reclamar puntos iniciales",
-        "snapshotTime": "Hora de la instantánea: {{time}}",
-        "invalid-code": "código inválido",
-        "referral-code": "Código de invitación",
-        "activeStats": "Estado de actividad",
-        "season2": "Temporada 2",
-        "cantUseOwnCode": "No puedes usar tu propio código de invitación.",
-        "walletBalance": "Saldo de la wallet",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "rabbyValuedUserBadge": "Insignia de usuario valioso de Rabby"
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "sign": "Firmar",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Por favor, firma este mensaje de texto para verificar que eres el propietario de esta dirección.",
-          "verify-address": "Verificar dirección",
-          "cancel": "Cancelar"
-        },
-        "confirm": "Confirmar",
-        "my-referral-code": "Mi código de invitación",
-        "set-my-code": "Establecer mi código",
-        "referral-code-already-exists": "El código de invitación ya existe",
-        "referral-code-available": "Código de invitación disponible",
-        "referral-code-cannot-be-empty": "El código de invitación no puede estar vacío",
-        "max-15-characters-use-numbers-and-letters-only": "Máximo 15 caracteres, usa solo números y letras.",
-        "refer-a-new-user-to-get-50-points": "Invita a un nuevo usuario para obtener 50 puntos",
-        "referral-code-cannot-exceed-15-characters": "El código de invitación no puede superar los 15 caracteres.",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Una vez establecido, este código de invitación es permanente y no se puede cambiar.",
-        "set-my-referral-code": "Establecer mi código de invitación"
-      },
-      "title": "Rabby Points",
-      "earn-points": "Ganar puntos",
-      "top-100": "Top 100",
-      "share-on": "Compartir en",
-      "out-of-x-current-total-points": "De un total de {{total}} puntos distribuidos",
-      "code-set-successfully": "Código de invitación establecido correctamente",
-      "initialPointsClaimEnded": "La reclamación de puntos iniciales ha finalizado",
-      "secondRoundEnded": "🎉 La segunda ronda de Rabby Points ha finalizado",
-      "firstRoundEnded": "🎉 La primera ronda de Rabby Points ha terminado",
-      "referral-code-copied": "Código de invitación copiado"
     },
     "customTestnet": {
       "CustomTestnetForm": {

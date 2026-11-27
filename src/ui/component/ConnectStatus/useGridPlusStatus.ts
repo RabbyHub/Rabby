@@ -1,6 +1,6 @@
 import React from 'react';
 import { useWallet } from '@/ui/utils';
-import { useInterval } from 'react-use';
+import { useInterval } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 
 export const useGridPlusStatus = () => {

@@ -22,7 +22,7 @@ import {
 } from '@/ui/views/Dashboard/components/BalanceView/useHomeBalanceView';
 import { findChain } from '@/utils/chain';
 import { Chain } from '@debank/common';
-import { useRequest } from 'ahooks';
+import { useRequest, useDebounceEffect } from 'ahooks';
 import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { KEYRING_TYPE } from 'consts';
@@ -42,7 +42,6 @@ import {
 } from 'ui/utils';
 import { CurvePoint, CurveThumbnail } from './CurveThumbnail';
 import { CurveModal } from './CurveModal';
-import { useDebounce } from 'react-use';
 import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
 import { RcIconRefreshCC } from '@/ui/assets/desktop/profile';
 
@@ -101,14 +100,14 @@ export const BalanceView: React.FC<{
     setIsDebounceHover(false);
   };
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (isHover) {
         setIsDebounceHover(true);
       }
     },
-    300,
-    [isHover]
+    [isHover],
+    { wait: 300 }
   );
 
   const currentHover = isDebounceHover;
