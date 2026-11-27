@@ -171,13 +171,18 @@ class CustomTestnetService {
       }
     });
     this.store.customTestnet = coped;
-    const rpcStorage: RPCServiceStore = await storage.get('rpc');
+    // RPCService.init runs after this in restoreAppState, so the raw store may
+    // be missing or predate `customRPC`. Throwing here would fail the whole
+    // bootstrap, and RPCService.init would never get to recreate the store.
+    const rpcStorage: Partial<RPCServiceStore> | undefined = await storage.get(
+      'rpc'
+    );
+    const customRPC = rpcStorage?.customRPC ?? {};
     Object.values(this.store.customTestnet).forEach((chain) => {
+      const rpc = CUSTOM_RPC_ENABLED ? customRPC[chain.enum] : undefined;
       const config =
-        CUSTOM_RPC_ENABLED &&
-        rpcStorage.customRPC[chain.enum] &&
-        rpcStorage.customRPC[chain.enum]?.enable
-          ? { ...chain, rpcUrl: rpcStorage.customRPC[chain.enum].url }
+        rpc?.enable && typeof rpc.url === 'string'
+          ? { ...chain, rpcUrl: rpc.url }
           : chain;
       const client = createClientByChain(config);
       this.chains[chain.id] = client;

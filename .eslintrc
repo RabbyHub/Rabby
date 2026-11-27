@@ -5,10 +5,14 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
+    "plugin:react-you-might-not-need-an-effect/legacy-recommended",
+    "plugin:@tanstack/query/recommended",
     "plugin:prettier/recommended"
   ],
   "rules": {
     "quotes": [1, "single", "avoid-escape"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",

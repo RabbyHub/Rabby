@@ -10,6 +10,9 @@ interface MetamaskModeServiceStore {
   sites: string[];
   updatedAt: number;
 }
+
+const isSiteList = (value: unknown): value is string[] =>
+  Array.isArray(value) && value.every((item) => typeof item === 'string');
 class MetamaskModeService {
   timer: ReturnType<typeof setInterval> | null = null;
 
@@ -30,6 +33,12 @@ class MetamaskModeService {
     });
     this.store = storageCache || this.store;
     this.store.updatedAt = this.store.updatedAt || 0;
+    // A bad persisted list made every provider request throw in
+    // checkIsMetamaskMode. Reset it and refetch now instead of in 55 minutes.
+    if (!isSiteList(this.store.sites)) {
+      this.store.sites = [];
+      this.store.updatedAt = 0;
+    }
 
     this.syncMetamaskModeList();
     this.resetTimer();
@@ -43,11 +52,12 @@ class MetamaskModeService {
       return [];
     }
     try {
-      const sites = await http
-        .get('https://static.debank.com/fake_mm_dapps.json')
-        .then((res) => {
-          return res.data as string[];
-        });
+      const { data: sites } = await http.get<unknown>(
+        'https://static.debank.com/fake_mm_dapps.json'
+      );
+      if (!isSiteList(sites)) {
+        throw new Error('unexpected metamask list response');
+      }
       this.store.sites = sites;
       this.store.updatedAt = Date.now();
     } catch (e) {

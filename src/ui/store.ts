@@ -109,14 +109,6 @@ usePreferenceStore.subscribe((preference) => {
   useCombinedStore.setState({ preference });
 });
 
-/**
- * Compatibility helper for legacy call sites. The old `connect()` calls did
- * not select Redux state or consume an injected dispatch prop, so returning
- * the component directly preserves their behavior without a Redux Provider.
- */
-export const connectStore = () => <Component>(component: Component) =>
-  component;
-
 export const useRabbyDispatch = () => rabbyDispatch;
 
 /**
