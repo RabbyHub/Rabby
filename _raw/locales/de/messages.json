@@ -3567,6 +3567,8 @@
         "feeTipTooltip": "Auszahlungsgebühr von Hyperliquid: $1",
         "estReceiveLabel": "Voraussichtlicher Erhalt",
         "estReceiveTooltipNoTime": "Cross-Chain-Einzahlung wird über LiFi abgewickelt; es kann zu Preisabweichungen kommen.",
+        "estReceiveTooltipV2": "Cross-Chain-Einzahlung wird über {{name}} verarbeitet; es kann zu einer Slippage kommen. Voraussichtliche Ankunft in {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "Cross-Chain-Einzahlung wird über {{name}} abgewickelt; es kann zu Preisabweichungen kommen.",
         "hyperliquidFeeLabel": "Hyperliquid-Gebühr",
         "feeTip": "1 $ Gebühr",
         "goSwapTips": "Nur USDC auf Arbitrum wird für direkte Einzahlungen unterstützt. Bitte tauschen Sie Ihr aktuelles Token vor der Einzahlung in USDC um.",

@@ -3569,6 +3569,8 @@
         "feeTip": "$1 Ücret",
         "minimumWithdrawSize": "Minimum para çekme tutarı 2$'dır.",
         "estReceiveTooltipNoTime": "Zincirler arası yatırma LiFi üzerinden işlenir ve bir miktar fiyat kayması oluşabilir.",
+        "estReceiveTooltipV2": "Zincirler arası yatırma {{name}} üzerinden işlenir ve bir miktar fiyat kayması oluşabilir. Tahmini varış süresi {{number}} saniyedir.",
+        "estReceiveTooltipNoTimeV2": "Zincirler arası yatırma {{name}} üzerinden işlenir ve bir miktar fiyat kayması oluşabilir.",
         "receiveToken": "Token Al",
         "feeTipTooltip": "Hyperliquid tarafından tahsil edilen para çekme ücreti: $1",
         "estReceiveLabel": "Tahmini Alınacak",

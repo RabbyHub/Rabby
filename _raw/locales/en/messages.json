@@ -1203,6 +1203,8 @@
         "estReceive": "Est. Receive: {{balance}}",
         "estReceiveTooltip": "Cross-chain deposit is processed via LiFi, may incur some slippage. Estimated arrival in {{number}}s.",
         "estReceiveTooltipNoTime": "Cross-chain deposit is processed via LiFi, may incur some slippage.",
+        "estReceiveTooltipV2": "Cross-chain deposit is processed via {{name}}, may incur some slippage. Estimated arrival in {{number}}s.",
+        "estReceiveTooltipNoTimeV2": "Cross-chain deposit is processed via {{name}}, may incur some slippage.",
         "fetchQuoteFailed": "Failed to fetch deposit quote. Please switch token.",
         "goSwapTips": "Only USDC on Arbitrum is supported for direct deposit. Please swap your current token to USDC before depositing.",
         "goBridgeTips": "Only USDC on Arbitrum is supported for direct deposit. Please bridge your current token to USDC on Arbitrum before depositing.",

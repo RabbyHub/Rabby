@@ -108,13 +108,19 @@ describe('Sentry configuration', () => {
     expect(reportEvent).not.toBeNull();
     scope.captureEvent(
       { ...reportEvent!, request: { url: `https://example.com/${secret}` } },
-      { data: { bridge_sdk_report: reportEvent!.extra.bridge_sdk_report } }
+      {
+        data: {
+          bridge_sdk_report: reportEvent!.extra.bridge_sdk_report,
+          bridge_source: 'gas_account_deposit',
+        },
+      }
     );
     await client.flush(2000);
 
     expect(events).toHaveLength(1);
     expect(events[0].tags).toMatchObject({
       bridge_sdk: 'validation',
+      bridge_source: 'gas_account_deposit',
       bridge_error_code: 'BRIDGE_RECEIVER_MISMATCH',
       bridge_operation: 'buildTx',
       bridge_blocking: 'true',
@@ -129,9 +135,13 @@ describe('Sentry configuration', () => {
 
     const hint = {
       attachments: [{ filename: 'private.txt', data: secret }],
-      data: { bridge_sdk_report: reportEvent!.extra.bridge_sdk_report },
+      data: {
+        bridge_sdk_report: reportEvent!.extra.bridge_sdk_report,
+        bridge_source: secret,
+      },
     };
-    await config.beforeSend!(reportEvent!, hint);
+    const sanitized = await config.beforeSend!(reportEvent!, hint);
+    expect(sanitized?.tags).not.toHaveProperty('bridge_source');
     expect(hint.attachments).toEqual([]);
     await client.close(2000);
   });
