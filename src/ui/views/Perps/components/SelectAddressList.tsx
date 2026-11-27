@@ -351,7 +351,7 @@ function AccountItem(props: {
       px={16}
       py={0}
       right={RightArea}
-      bgColor=" var(--r-neutral-card1, #FFF);"
+      bgColor="var(--r-neutral-card1, #FFF)"
       className="h-[56px] rounded-[6px] mb-12"
       left={
         <img
