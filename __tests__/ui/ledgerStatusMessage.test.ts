@@ -9,6 +9,7 @@ jest.mock('@/ui/utils', () => ({
 }));
 
 import {
+  isLedgerBlindSigningDisabledError,
   isLedgerConnectionOpeningError,
   isLedgerConnectionRecoverableError,
   isLedgerDisconnectedError,
@@ -44,6 +45,19 @@ describe('Ledger status message helpers', () => {
     expect(isLedgerConnectionRecoverableError(message)).toBe(true);
     expect(
       isLedgerConnectionOpeningError('NotAllowedError: Permission denied')
+    ).toBe(false);
+  });
+
+  test('detects the confirmed Blind-signing-off error, not every 0x6a80', () => {
+    expect(
+      isLedgerBlindSigningDisabledError(
+        'Ledger: Blind signing is disabled in the Ethereum app. Turn on Blind signing in the Ethereum app settings on your Ledger, then try again. 0x6a80'
+      )
+    ).toBe(true);
+    expect(
+      isLedgerBlindSigningDisabledError(
+        'EthAppCommandError Invalid data 6a80 0x6a80'
+      )
     ).toBe(false);
   });
 });

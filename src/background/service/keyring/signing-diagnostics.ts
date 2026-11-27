@@ -241,6 +241,7 @@ const providerMetadataKeys: Record<string, string[]> = {
     'clear_signing_type',
     'last_required_user_interaction',
     'used_fallback',
+    'blind_signing_enabled',
   ],
   onekey: commonMetadataKeys,
   trezor: commonMetadataKeys,

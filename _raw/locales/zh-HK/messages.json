@@ -1548,6 +1548,7 @@
       },
       "ledger": {
         "blindSigTutorial": "Ledger 盲簽教學",
+        "blindSigningDisabled": "你的 Ledger 未開啟盲簽（Blind signing）。請在 Ledger 上打開 Ethereum 應用程式，進入設定（Settings）開啟 Blind signing 後重試。",
         "notConnected": "你的錢包未連接，請重新連接",
         "resent": "重試",
         "siging": "簽名請求發送中",

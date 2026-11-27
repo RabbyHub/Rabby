@@ -2,6 +2,7 @@ import { ledgerUSBVendorId } from '@ledgerhq/devices';
 import { useEffect, useState } from 'react';
 import browser from 'webextension-polyfill';
 import { hasConnectedLedgerDevice } from '@/ui/utils';
+import { LEDGER_BLIND_SIGNING_DISABLED_ERROR } from '@/constant/ledger';
 
 export enum LedgerHDPathType {
   LedgerLive = 'LedgerLive',
@@ -85,3 +86,6 @@ export const isLedgerConnectionOpeningError = (message = '') =>
 
 export const isLedgerConnectionRecoverableError = (message = '') =>
   isLedgerDisconnectedError(message) || isLedgerConnectionOpeningError(message);
+
+export const isLedgerBlindSigningDisabledError = (message = '') =>
+  message.includes(LEDGER_BLIND_SIGNING_DISABLED_ERROR);

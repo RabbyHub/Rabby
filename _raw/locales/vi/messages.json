@@ -479,6 +479,7 @@
         "txRejectedByLedger": "Giao dịch bị từ chối trên Ledger của bạn",
         "updateFirmwareAlert": "Vui lòng cập nhật firmware và Ethereum App trên Ledger của bạn.",
         "resubmited": "Đã nộp lại",
+        "blindSigningDisabled": "Ký mù (Blind signing) đang tắt trên Ledger của bạn. Mở ứng dụng Ethereum, bật Blind signing trong Cài đặt (Settings) rồi thử lại.",
         "blindSigTutorial": "Hướng dẫn Chữ ký Mù từ Ledger",
         "unlockAlert": "Vui lòng cắm và mở khóa Ledger của bạn, sau đó mở Ethereum trên đó.",
         "submitting": "Đã ký. Đang tạo giao dịch"

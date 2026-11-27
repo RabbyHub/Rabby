@@ -25,7 +25,10 @@ import {
   ApprovalPopupContainer,
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
-import { isLedgerLockError } from '@/ui/utils/ledger';
+import {
+  isLedgerBlindSigningDisabledError,
+  isLedgerLockError,
+} from '@/ui/utils/ledger';
 import { useGetTxFailedResultInWaiting } from '@/ui/hooks/useMiniApprovalDirectSign';
 
 interface ApprovalParams {
@@ -308,6 +311,8 @@ const LedgerHardwareWaiting = ({
   const currentDescription = React.useMemo(() => {
     if (isLedgerLockError(description)) {
       return t('page.signFooterBar.ledger.unlockAlert');
+    } else if (isLedgerBlindSigningDisabledError(description)) {
+      return t('page.signFooterBar.ledger.blindSigningDisabled');
     } else if (
       description.includes('0x6e00') ||
       description.includes('0x6b00')
@@ -323,6 +328,8 @@ const LedgerHardwareWaiting = ({
   const showOriginDesc = React.useCallback(() => {
     if (isLedgerLockError(description)) {
       return t('page.signFooterBar.ledger.unlockAlert');
+    } else if (isLedgerBlindSigningDisabledError(description)) {
+      return t('page.signFooterBar.ledger.blindSigningDisabled');
     } else if (
       description.includes('0x6e00') ||
       description.includes('0x6b00')
@@ -370,7 +377,8 @@ const LedgerHardwareWaiting = ({
       description={
         <>
           {txFailedResult?.[0] || currentDescription}
-          {currentDescription.includes('EthAppPleaseEnableContractData') && (
+          {(isLedgerBlindSigningDisabledError(description) ||
+            description.includes('EthAppPleaseEnableContractData')) && (
             <a
               className="underline text-blue-light block text-center mt-8"
               href="https://support.ledger.com/hc/en-us/articles/4405481324433-Enable-blind-signing-in-the-Ethereum-ETH-app?docs=true"

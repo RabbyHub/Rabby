@@ -454,6 +454,7 @@
         "unlockAlert": "Lütfen Ledger'ınızı takın ve kilidini açın, üzerinde Ethereum'u açın",
         "updateFirmwareAlert": "Lütfen Ledger'ınızdaki firmware ve Ethereum Uygulamasını güncelleyin",
         "txRejectedByLedger": "İşlem Ledger'ınızda reddedildi",
+        "blindSigningDisabled": "Ledger'ınızda kör imzalama (Blind signing) kapalı. Ethereum uygulamasını açın, Ayarlar (Settings) bölümünden Blind signing'i açın ve tekrar deneyin.",
         "blindSigTutorial": "Ledger'dan Kör İmza Eğitimi",
         "resubmited": "Yeniden gönderildi",
         "submitting": "İmzalandı. İşlem oluşturuluyor"
