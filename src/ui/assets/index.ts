@@ -1,6 +1,4 @@
-export { ReactComponent as RcIconFileJson } from './file-json.svg';
 export { default as IconImportSuccess } from './import-success.svg';
-export { ReactComponent as RcIconUploader } from './uploader.svg';
 export { default as IconChecked } from './checked.svg';
 export { default as IconNotChecked } from './not-checked.svg';
 export { default as QrScan } from './qr-scan.svg';
