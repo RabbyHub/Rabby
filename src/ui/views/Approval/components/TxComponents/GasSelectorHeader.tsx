@@ -395,6 +395,10 @@ const GasSelectorHeader = ({
         directSubmit &&
         isReady
       ) {
+        // useDebounceEffect runs this cleanup when the next debounced run
+        // starts and on unmount, so a check that resolves after a newer run
+        // has started cannot overwrite the newer result.
+        let superseded = false;
         ['slow', 'normal', 'fast'].forEach((level) => {
           const selectedGas = gasList.find((e) => e.level === level);
           checkGasLevelIsNotEnough(
@@ -413,12 +417,16 @@ const GasSelectorHeader = ({
             'native'
           )
             .then((arr) => {
+              if (superseded) return;
               setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[0] }));
             })
             .catch((e) => {
               console.log('checkGasLevelIsNotEnough native gas error', e);
             });
         });
+        return () => {
+          superseded = true;
+        };
       }
     },
     [
