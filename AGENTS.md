@@ -17,11 +17,11 @@ These invariants hold for every change. Reviewers must check them even when a PR
 
 ## Styling Conventions
 
-New UI code follows these rules; `yarn check:style` (run in CI) fails if a legacy approach grows.
+New UI code follows these rules.
 
 - Style components with Tailwind. Colors come only from the theme classes (`text-r-*`, `bg-r-*`, `border-r-*`, `*-rb-*`), which switch with dark mode.
 - Rabby's Tailwind scale is not the default one: `p-16` is 16px, spacing only has the keys in the `@theme` block of `src/ui/style/tailwind.css` (use `p-[22px]` otherwise), and `sm` means `max-width: 600px`. Classes copied from docs or other projects will be the wrong size.
-- Do not add `styled-components`, `createGlobalStyle` or new `.less` files.
+- Do not add new `.less` files, or any CSS injected at runtime (`styled-components`, Emotion, react-use's `useCss`). Injected styles sit outside the cascade layers described below and beat every Tailwind class. styled-components was removed; do not add it back. ESLint (`no-restricted-imports`) rejects these imports.
 - Overrides of antd internals: component-scoped ones go in a co-located `.module.css` (`.root :global(.ant-select-selector) { ... }`); app-wide ones go in `src/ui/style/antd-overwrite.less`. In `.module.css`, use `var(--r-*)` and plain CSS, never `@apply`.
 - Cascade layers decide who wins, not `!important`: antd and all Less/CSS (including `.module.css`) are wrapped in `@layer legacy` at build time, which sits below Tailwind's `utilities`. A Tailwind class beats any legacy rule regardless of specificity; an inline style beats a Tailwind class. Do not add `!important` to Less/CSS: a legacy `!important` beats every Tailwind class, even `!`-prefixed ones.
 - Values only known at runtime: pass a CSS variable through `style` and read it from a class (`w-(--w)`). Never set the same property both inline and with a Tailwind class.
