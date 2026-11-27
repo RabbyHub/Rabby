@@ -130,7 +130,7 @@ const AccountItem = ({
       />
       <div className="account-info flex-1">
         <p className="name">
-          <div className="flex items-center gap-4">
+          <span className="flex items-center gap-4">
             <span className="inline-block max-w-[180px] overflow-hidden text-ellipsis whitespace-nowrap text-r-neutral-title-1">
               {account.alianName}
             </span>
@@ -143,14 +143,14 @@ const AccountItem = ({
                 <ThemeIcon src={RcIconWhitelist} className={'w-14 h-14'} />
               </Tooltip>
             )}
-          </div>
+          </span>
         </p>
         <p
           className="address text-r-neutral-body"
           title={account.address}
           ref={addressElement}
         >
-          <div className="addr">{ellipsis(account.address)}</div>
+          <span className="addr">{ellipsis(account.address)}</span>
 
           <CopyChecked addr={account.address} className="icon icon-copy" />
         </p>

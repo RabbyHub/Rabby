@@ -109,7 +109,10 @@ const SignedTextHistory = () => {
   return (
     <div className="text-history">
       {textHistory.map((item) => (
-        <SignedTextHistoryItem item={item} />
+        <SignedTextHistoryItem
+          key={`${item.site?.origin}-${item.type}-${item.createAt}`}
+          item={item}
+        />
       ))}
       {textHistory.length <= 0 && (
         <Empty

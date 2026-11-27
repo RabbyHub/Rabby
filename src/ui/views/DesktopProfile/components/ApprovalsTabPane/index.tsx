@@ -1189,7 +1189,10 @@ function TableByEIP7702({
               const chainInfo = findChainByEnum(e);
               if (!chainInfo) return null;
               return (
-                <div className="h-[36px] px-12 py-8 flex items-center justify-center gap-[8px] text-r-neutral-body font-medium bg-r-neutral-card1 rounded-[16px]">
+                <div
+                  key={e}
+                  className="h-[36px] px-12 py-8 flex items-center justify-center gap-[8px] text-r-neutral-body font-medium bg-r-neutral-card1 rounded-[16px]"
+                >
                   <ChainIcon
                     chain={e}
                     size="small"

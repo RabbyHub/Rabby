@@ -78,6 +78,7 @@ export const NftPreviewSection: React.FC<Props> = ({
               {Array.from({ length: 6 }).map((_, index) => {
                 return (
                   <Skeleton.Input
+                    key={index}
                     className="w-[48px] h-[48px] rounded-[4px]"
                     active
                   />

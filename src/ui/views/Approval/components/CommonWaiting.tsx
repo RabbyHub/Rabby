@@ -20,7 +20,7 @@ import {
   Props as ApprovalPopupContainerProps,
 } from './Popup/ApprovalPopupContainer';
 import { Account } from 'background/service/preference';
-import eventBus from '@/eventBus';
+import { useScopedEventBusListener } from '@/ui/hooks/useEventBusListener';
 import { adjustV } from '@/ui/utils/gnosis';
 import { message } from 'antd';
 import { findChain } from '@/utils/chain';
@@ -70,6 +70,8 @@ export const CommonWaiting = ({
     closePopup,
     setPopupProps,
   } = useCommonPopupView();
+  // Removed on unmount; see useScopedEventBusListener.
+  const addScopedListener = useScopedEventBusListener();
   const [getApproval, resolveApproval, rejectApproval] = useApproval(
     bindApproval(approvalId, 'CommonWaiting')
   );
@@ -153,28 +155,20 @@ export const CommonWaiting = ({
       }
     }
 
-    const listen = (event: string, handler: (value?: any) => void) => {
-      eventBus.addEventListener(event, handler);
-      signal.addEventListener(
-        'abort',
-        () => eventBus.removeEventListener(event, handler),
-        { once: true }
-      );
-    };
-    listen(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
+    addScopedListener(EVENTS.COMMON_HARDWARE.REJECTED, async (data) => {
       if (type === HARDWARE_KEYRING_TYPES.Onekey.type) return;
       setErrorMessage(data);
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILED);
     });
 
-    listen(EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB, async () => {
+    addScopedListener(EVENTS.ONEKEY.REQUEST_PERMISSION_WEBUSB, async () => {
       openInternalPageInTab('request-permission?type=onekey&from=approval');
     });
 
-    listen(EVENTS.TX_SUBMITTING, async () => {
+    addScopedListener(EVENTS.TX_SUBMITTING, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.SUBMITTING);
     });
-    listen(EVENTS.SIGN_FINISHED, async (data) => {
+    addScopedListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (!isSignFinishedFor(data, params.signingOperation)) return;
       if (
         (type === HARDWARE_KEYRING_TYPES.Onekey.type || data.approvalId) &&
