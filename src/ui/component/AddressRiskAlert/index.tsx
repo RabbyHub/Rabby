@@ -38,6 +38,7 @@ import { ReactComponent as RcWhitelistGuardBordered } from '@/ui/assets/componen
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { ReactComponent as IconEditPen } from 'ui/assets/edit-pen-cc.svg';
 import { useForm } from 'antd/lib/form/Form';
+import { useShallow } from 'zustand/react/shallow';
 
 interface AddressRiskAlertProps {
   visible: boolean;
@@ -313,9 +314,11 @@ export const AddressRiskAlert = ({
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
-  const { accountsList } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-  }));
+  const { accountsList } = useRabbySelector(
+    useShallow((s) => ({
+      accountsList: s.accountToDisplay.accountsList,
+    }))
+  );
 
   const [form] = Form.useForm();
   const [hasInputPassword, setHasInputPassword] = useState(false);

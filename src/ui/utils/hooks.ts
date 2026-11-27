@@ -116,7 +116,11 @@ export const useApproval = (binding: ApprovalBinding | null) => {
     return true;
   };
 
-  const rejectApproval = async (err?, stay = false, isInternal = false) => {
+  const rejectApproval = async (
+    err?,
+    options: boolean | { userCancelled: true } = false,
+    isInternal = false
+  ) => {
     if (!binding) return false;
     const approval = await getApproval();
     if (!isOwnedByThisView(approval)) return false;
@@ -125,6 +129,8 @@ export const useApproval = (binding: ApprovalBinding | null) => {
       wallet.coboSafeResetCurrentAccount();
     }
 
+    const stay = options === true;
+    const userCancelled = typeof options === 'object' && options?.userCancelled;
     const result = await wallet.rejectApprovalFor({
       approval: {
         id: binding.approvalId,
@@ -133,6 +139,7 @@ export const useApproval = (binding: ApprovalBinding | null) => {
       error: err,
       stay,
       isInternal,
+      ...(userCancelled && { userCancelled }),
     });
     if (!result.accepted) return false;
     if (!stay && mounted.current) {

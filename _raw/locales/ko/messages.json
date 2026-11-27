@@ -2155,7 +2155,11 @@
       "title": "Rabby 지갑",
       "btnForgotPassword": "비밀번호를 잊으셨나요?",
       "description": "이더리움 및 EVM을 위한 귀하의 필수 지갑입니다.",
-      "biometricFailed": "생체 인식 잠금 해제 실패"
+      "biometricFailed": "생체 인식 잠금 해제 실패",
+      "biometricSunsetTip": "2027년 1월 1일부터 생체 인식 잠금 해제를 더 이상 사용할 수 없습니다. 지금 비밀번호 잠금 해제로 전환해 주세요. 전환하면 생체 인식 잠금 해제가 꺼집니다.",
+      "biometricSunsetTitle": "비밀번호 잠금 해제로 전환",
+      "biometricSunsetUsePassword": "비밀번호 사용",
+      "biometricSunsetUseBiometric": "생체 인증 사용"
     },
     "addToken": {
       "balance": "잔액",

@@ -89,7 +89,13 @@ describe('Unlock approval binding', () => {
     const exports: any = {};
     const modules: Record<string, any> = {
       react: React,
-      antd: { Input: React.forwardRef(() => null), Form, Button, InputRef: {} },
+      antd: {
+        Input: React.forwardRef(() => null),
+        Form,
+        Button,
+        InputRef: {},
+        Modal: () => null,
+      },
       'react-i18next': { useTranslation: () => ({ t: (key: string) => key }) },
       'react-router-dom': {
         useHistory: () => history,

@@ -96,6 +96,10 @@ import {
 } from '@/background/service/blockedAddress';
 import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
 import {
+  isUserCancelledSigningError,
+  markUserCancelledSigningError,
+} from '@/background/utils/signingCancellation';
+import {
   attachSigningContext,
   bindSigningCarrier,
   getSigningContext,
@@ -699,9 +703,13 @@ class ProviderController extends BaseController {
         !keyringService.isUnlocked() ||
         !keyringService.keyrings.includes(keyring)
       ) {
-        throw ethErrors.provider.userRejectedRequest(
+        const error = ethErrors.provider.userRejectedRequest(
           'The transaction signing request is no longer active.'
         );
+        if (transactionHistoryService.wasSigningTxUserCancelled(approvingTx)) {
+          markUserCancelledSigningError(error);
+        }
+        throw error;
       }
     };
     assertSigningActive();
@@ -997,6 +1005,7 @@ class ProviderController extends BaseController {
       const errObj: any = {
         message: e && typeof e === 'object' ? e.message : e,
       };
+      if (isUserCancelledSigningError(e)) markUserCancelledSigningError(errObj);
       if (signingContext && !carrier) {
         attachSigningContext(errObj, signingContext);
       }
@@ -1108,7 +1117,7 @@ class ProviderController extends BaseController {
           preferenceService.resetCurrentCoboSafeAddress();
         }
       };
-      const onTransactionSubmitFailed = (e: any) => {
+      const onTransactionSubmitFailed = (e: any, userCancelled = false) => {
         if (!isSpeedUp && !isCancel) {
           transactionHistoryService.addSubmitFailedTransaction({
             tx: {
@@ -1125,7 +1134,9 @@ class ProviderController extends BaseController {
           });
         }
         const errMsg = e.details || e.message || JSON.stringify(e);
-        throw new Error(errMsg);
+        const error = new Error(errMsg);
+        if (userCancelled) markUserCancelledSigningError(error);
+        throw error;
       };
 
       if (typeof signedTx === 'string') {
@@ -1360,7 +1371,7 @@ class ProviderController extends BaseController {
             : errMsg;
         }
         console.log('submit tx failed', e);
-        onTransactionSubmitFailed(errMsg);
+        onTransactionSubmitFailed(errMsg, isUserCancelledSigningError(e));
         rechargeGasAccountOnTx();
       }
     } catch (e) {

@@ -60,7 +60,11 @@ export const MarginInput: React.FC<MarginInputProps> = ({
       !isSliderChangingRef.current
     ) {
       const newMargin = (availableAmount * sliderPercentageRef.current) / 100;
-      onMarginChange(Number(new BigNumber(newMargin).toFixed(6)).toString());
+      onMarginChange(
+        new BigNumber(newMargin)
+          .decimalPlaces(2, BigNumber.ROUND_DOWN)
+          .toFixed()
+      );
     }
     prevAvailableAmountRef.current = availableAmount;
   }, [availableAmount, onMarginChange]);

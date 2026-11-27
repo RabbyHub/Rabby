@@ -2032,7 +2032,11 @@
       "title": "Кошелек Rabby",
       "btnForgotPassword": "Забыли пароль?",
       "description": "Ваш кошелек для Ethereum и EVM",
-      "biometricFailed": "Неудалось разблокировать по биометрии"
+      "biometricFailed": "Неудалось разблокировать по биометрии",
+      "biometricSunsetTip": "С 1 января 2027 года биометрическая разблокировка будет недоступна. Пожалуйста, перейдите на разблокировку паролем уже сейчас. Это отключит биометрическую разблокировку.",
+      "biometricSunsetTitle": "Перейдите на разблокировку паролем",
+      "biometricSunsetUsePassword": "Пароль",
+      "biometricSunsetUseBiometric": "Биометрия"
     },
     "addToken": {
       "noTokenFound": "Токен не найден",

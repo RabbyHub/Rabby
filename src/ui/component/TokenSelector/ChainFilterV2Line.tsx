@@ -18,26 +18,37 @@ import { getTokenSymbol } from '@/ui/utils/token';
 
 import { ReactComponent as RcDownCC } from '@/ui/assets/send-token/down-cc.svg';
 import { ReactComponent as RcIconChainFilterCloseCC } from 'ui/assets/chain-select/chain-filter-close-cc.svg';
+import { useShallow } from 'zustand/react/shallow';
 
 const useChains = ({ supportChains }: { supportChains?: Chain['enum'][] }) => {
-  const { pinned, chainBalances } = useRabbySelector((state) => {
-    return {
-      pinned: (state.preference.pinnedChain?.filter((item) =>
-        findChain({ enum: item })
-      ) || []) as CHAINS_ENUM[],
-      chainBalances: state.account.matteredChainBalances,
-      isShowTestnet: state.preference.isShowTestnet,
-    };
-  });
+  // `filter` returns a new array on every call; `useShallow` compares it by item.
+  const pinned = useRabbySelector(
+    useShallow(
+      (state) =>
+        (state.preference.pinnedChain?.filter((item) =>
+          findChain({ enum: item })
+        ) || []) as CHAINS_ENUM[]
+    )
+  );
+  const { chainBalances } = useRabbySelector(
+    useShallow((state) => {
+      return {
+        chainBalances: state.account.matteredChainBalances,
+        isShowTestnet: state.preference.isShowTestnet,
+      };
+    })
+  );
 
   const dispatch = useRabbyDispatch();
 
-  const { mainnetList, testnetList } = useRabbySelector((state) => {
-    return {
-      mainnetList: state.chains.mainnetList,
-      testnetList: state.chains.testnetList,
-    };
-  });
+  const { mainnetList, testnetList } = useRabbySelector(
+    useShallow((state) => {
+      return {
+        mainnetList: state.chains.mainnetList,
+        testnetList: state.chains.testnetList,
+      };
+    })
+  );
   const { matteredList, unmatteredList } = useMemo(() => {
     const result = varyAndSortChainItems({
       supportChains,

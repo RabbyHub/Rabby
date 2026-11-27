@@ -32,6 +32,7 @@ import { AddCustomTokenModal } from '../AddCustomTokenModal';
 import { AddressDetailModal } from '../AddressDetailModal';
 import { AddCustomNetworkModal } from '../AddCustomNetworkModal';
 import styles from './TestTokenlist.module.css';
+import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
   className?: string;
@@ -114,9 +115,11 @@ export const CustomTestnetAssetList: React.FC<Props> = ({
   selectChainId,
 }) => {
   const { t } = useTranslation();
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
   const history = useHistory();
   const [isFetched, setIsFetched] = React.useState<boolean>(false);
   const [isShowAddNetworkModal, setIsShowAddNetworkModal] = useState(false);

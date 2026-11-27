@@ -116,7 +116,7 @@ export const CommonWaiting = ({
   };
 
   const handleCancel = () => {
-    rejectApproval('user cancel');
+    rejectApproval('user cancel', { userCancelled: true });
   };
 
   const brandContent = React.useMemo(() => {
