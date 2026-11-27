@@ -87,7 +87,9 @@ const FeedbackPopup = ({ visible, onClose }: SettingsProps) => {
             onClick={data.onClick}
             className={clsx(
               '[&>.left-icon]:self-center [&>.right-icon]:self-center',
-              data.description && 'has-desc py-14'
+              'bg-r-neutral-card-2 px-16 py-0 min-h-[52px] hover:bg-[rgba(134,151,255,0.2)]',
+              data.description &&
+                'has-desc py-14 items-start [&>.field-slot]:overflow-visible'
             )}
           >
             <span className="title text-r-neutral-title-1 text-[15px] not-italic font-medium">
