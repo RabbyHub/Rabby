@@ -30,7 +30,7 @@ type LookupItem = {
   is_scam?: boolean;
   chain: string;
   owner_addr?: string;
-  tx?: { from_addr?: string } | null;
+  tx?: { from_addr?: string; to_addr?: string } | null;
 };
 
 const POLL_INTERVAL_MS = 3000;

@@ -1,3 +1,4 @@
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { openInternalPageInTab, useWallet } from '@/ui/utils';
 import { sendTransaction } from '@/ui/utils/sendTransaction';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
@@ -173,7 +174,7 @@ export const useBatchSignTxTask = ({ ga }: { ga?: Record<string, any> }) => {
             !(
               isLedgerLockError(msg) ||
               isLedgerConnectionRecoverableError(msg) ||
-              msg === 'No OneKey Device found'
+              isOneKeyDisconnectError(e)
             )
           ) {
             try {

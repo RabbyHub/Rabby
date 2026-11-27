@@ -3557,6 +3557,8 @@
         "estTimeLabel": "예상 시간",
         "minimumDepositSize": "최소 예치 금액은 5달러입니다.",
         "estReceiveTooltipNoTime": "크로스체인 입금은 LiFi를 통해 처리되며, 일부 슬리피지가 발생할 수 있습니다.",
+        "estReceiveTooltipV2": "크로스체인 입금은 {{name}}를 통해 처리되며 약간의 슬리피지가 발생할 수 있습니다. 도착 예정 시간은 {{number}}초입니다.",
+        "estReceiveTooltipNoTimeV2": "크로스체인 입금은 {{name}}를 통해 처리되며, 일부 슬리피지가 발생할 수 있습니다.",
         "feeTipTooltip": "Hyperliquid에서 부과하는 출금 수수료: $1",
         "feeTip": "$1 수수료",
         "hyperliquidFeeLabel": "Hyperliquid 수수료",
@@ -5058,7 +5060,12 @@
         "notAllowInBootloaderMode": "일반 모드에서 사용하세요",
         "deviceCheckPassphraseStateError": "계정이 현재 장치의 잠금 해제 주소와 일치하지 않습니다. 장치와 계정 주소가 일치하는지 확인한 후 다시 시도하십시오",
         "actionCancel": "작업이 취소되었습니다",
-        "deviceNeedsWebHIDPermission": "장치를 찾을 수 없거나 WebHID 권한이 필요합니다"
+        "deviceNeedsWebHIDPermission": "장치를 찾을 수 없거나 WebUSB 권한이 필요합니다",
+        "deviceNotOpenedPassphrase": "패스프레이즈 보호가 꺼져 있습니다. 숨겨진 지갑을 열려면 보호 기능을 켜세요.",
+        "pinInvalid": "PIN이 올바르지 않습니다. OneKey에서 다시 시도하세요.",
+        "deviceBusy": "OneKey가 사용 중입니다. 현재 작업을 마친 후 다시 시도하세요.",
+        "deviceInterrupted": "OneKey 연결이 끊어졌습니다. 기기를 다시 연결하세요.",
+        "webUSBUnavailable": "이 브라우저는 WebUSB를 지원하지 않습니다."
       }
     },
     "feedback": {

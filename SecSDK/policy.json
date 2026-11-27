@@ -21980,14 +21980,6 @@
       "node_modules/@noble/curves/utils.js"
     ]
   },
-  "node_modules/@noble/curves/abstract/edwards.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/curve.js",
-      "node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@noble/curves/utils.js"
-    ]
-  },
   "node_modules/@noble/curves/abstract/hash-to-curve.js": {
     "enable": true,
     "require": [
@@ -22001,19 +21993,6 @@
       "node_modules/@noble/curves/utils.js"
     ]
   },
-  "node_modules/@noble/curves/abstract/montgomery.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@noble/curves/utils.js"
-    ]
-  },
-  "node_modules/@noble/curves/abstract/utils.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/utils.js"
-    ]
-  },
   "node_modules/@noble/curves/abstract/weierstrass.js": {
     "enable": true,
     "require": [
@@ -22021,19 +22000,6 @@
       "node_modules/@noble/curves/abstract/modular.js",
       "node_modules/@noble/curves/utils.js",
       "node_modules/@noble/hashes/hmac.js",
-      "node_modules/@noble/hashes/utils.js"
-    ]
-  },
-  "node_modules/@noble/curves/ed25519.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/curve.js",
-      "node_modules/@noble/curves/abstract/edwards.js",
-      "node_modules/@noble/curves/abstract/hash-to-curve.js",
-      "node_modules/@noble/curves/abstract/modular.js",
-      "node_modules/@noble/curves/abstract/montgomery.js",
-      "node_modules/@noble/curves/utils.js",
-      "node_modules/@noble/hashes/sha2.js",
       "node_modules/@noble/hashes/utils.js"
     ]
   },
@@ -22317,12 +22283,6 @@
       "node_modules/@noble/hashes/utils.js"
     ]
   },
-  "node_modules/@noble/hashes/sha512.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/sha2.js"
-    ]
-  },
   "node_modules/@noble/hashes/utils.js": {
     "enable": true,
     "global": {
@@ -22346,9 +22306,11 @@
     "enable": true,
     "global": {
       "AbortController": "r",
+      "Blob": "r",
       "Buffer": "r",
       "ONEKEY_CONNECT_SRC": "r",
       "TextEncoder": "r",
+      "URL": "r",
       "chrome": "r",
       "clearInterval": "r",
       "clearTimeout": "r",
@@ -22356,6 +22318,7 @@
       "global": "r",
       "location": "r",
       "navigator": "r",
+      "process": "r",
       "setInterval": "r",
       "setTimeout": "r"
     },
@@ -22365,17 +22328,48 @@
       "node_modules/@noble/hashes/sha256.js",
       "node_modules/@noble/hashes/sha3.js",
       "node_modules/@noble/hashes/utils.js",
+      "node_modules/@onekeyfe/hd-core/node_modules/axios/dist/browser/axios.cjs",
       "node_modules/@onekeyfe/hd-core/node_modules/bignumber.js/bignumber.js",
       "node_modules/@onekeyfe/hd-core/node_modules/semver/index.js",
       "node_modules/@onekeyfe/hd-shared/dist/index.js",
       "node_modules/@onekeyfe/hd-transport/dist/index.js",
-      "node_modules/axios/index.js",
       "node_modules/buffer/index.js",
       "node_modules/bytebuffer/dist/bytebuffer.js",
+      "node_modules/jpeg-js/index.js",
       "node_modules/jszip/dist/jszip.min.js",
       "node_modules/lodash/lodash.js",
-      "node_modules/ripple-keypairs/dist/index.js",
       "package.json"
+    ]
+  },
+  "node_modules/@onekeyfe/hd-core/node_modules/axios/dist/browser/axios.cjs": {
+    "enable": true,
+    "global": {
+      "AbortController": "r",
+      "Blob": "r",
+      "Buffer": "r",
+      "FormData": "r",
+      "ReadableStream": "r",
+      "URL": "r",
+      "URLSearchParams": "r",
+      "WorkerGlobalScope": "r",
+      "XMLHttpRequest": "r",
+      "btoa": "r",
+      "clearTimeout": "r",
+      "console": "r",
+      "document": "r",
+      "fetch": "r",
+      "global": "r",
+      "importScripts": "r",
+      "location": "r",
+      "navigator": "r",
+      "process": "r",
+      "queueMicrotask": "r",
+      "setImmediate": "r",
+      "setTimeout": "r"
+    },
+    "require": [
+      "node_modules/buffer/index.js",
+      "node_modules/process/browser.js"
     ]
   },
   "node_modules/@onekeyfe/hd-core/node_modules/bignumber.js/bignumber.js": {
@@ -22721,6 +22715,12 @@
   },
   "node_modules/@onekeyfe/hd-transport/dist/index.js": {
     "enable": true,
+    "global": {
+      "AbortController": "r",
+      "Buffer": "r",
+      "clearTimeout": "r",
+      "setTimeout": "r"
+    },
     "require": [
       "node_modules/buffer/index.js",
       "node_modules/bytebuffer/dist/bytebuffer.js",
@@ -22746,11 +22746,16 @@
       "MozBlobBuilder": "r",
       "MutationObserver": "r",
       "ONEKEY_CONNECT_SRC": "r",
+      "ReadableStream": "r",
       "TextEncoder": "r",
+      "URL": "r",
+      "URLSearchParams": "r",
+      "WALLET_INFO_LOACAL_KEY_V5": "r",
       "Web3RpcError": "r",
       "WebAssembly": "r",
       "WebKitBlobBuilder": "r",
       "WebKitMutationObserver": "r",
+      "WorkerGlobalScope": "r",
       "XMLHttpRequest": "r",
       "_": "rw",
       "__core-js_shared__": "r",
@@ -22759,6 +22764,7 @@
       "chrome": "r",
       "clearInterval": "r",
       "clearTimeout": "r",
+      "commonLogger": "r",
       "console": "r",
       "consoleErrorInDev": "r",
       "crypto": "r",
@@ -22767,13 +22773,15 @@
       "document": "r",
       "errorValues": "r",
       "eval": "r",
-      "global": "rw",
+      "fetch": "r",
+      "global": "r",
+      "importScripts": "r",
       "localStorage": "r",
       "location": "r",
-      "msCrypto": "r",
       "navigator": "r",
       "performance": "r",
       "process": "r",
+      "queueMicrotask": "r",
       "removeEventListener": "r",
       "setImmediate": "r",
       "setInterval": "r",
@@ -40201,50 +40209,6 @@
       "node_modules/@walletconnect/window-getters/dist/cjs/index.js"
     ]
   },
-  "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@xrplf/isomorphic/dist/internal/normalizeInput.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/ripemd160/browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/ripemd160.js",
-      "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/sha256/browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/sha256.js",
-      "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/sha512/browser.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/sha512.js",
-      "node_modules/@xrplf/isomorphic/dist/internal/wrapNoble.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/utils/browser.js": {
-    "enable": true,
-    "global": {
-      "TextDecoder": "r",
-      "TextEncoder": "r"
-    },
-    "require": [
-      "node_modules/@noble/hashes/utils.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/shared.js"
-    ]
-  },
-  "node_modules/@xrplf/isomorphic/dist/utils/shared.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/hashes/utils.js"
-    ]
-  },
   "node_modules/@zumer/snapdom/dist/snapdom.mjs": {
     "enable": true,
     "global": {
@@ -51300,6 +51264,35 @@
       "global": "r"
     }
   },
+  "node_modules/jpeg-js/index.js": {
+    "enable": true,
+    "require": [
+      "node_modules/jpeg-js/lib/decoder.js",
+      "node_modules/jpeg-js/lib/encoder.js"
+    ]
+  },
+  "node_modules/jpeg-js/lib/decoder.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r",
+      "XMLHttpRequest": "r",
+      "jpeg-js": "rw"
+    },
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
+  "node_modules/jpeg-js/lib/encoder.js": {
+    "enable": true,
+    "global": {
+      "Buffer": "r",
+      "document": "r",
+      "jpeg-js": "rw"
+    },
+    "require": [
+      "node_modules/buffer/index.js"
+    ]
+  },
   "node_modules/js-cookie/src/js.cookie.js": {
     "enable": true,
     "global": {
@@ -59147,70 +59140,6 @@
       "node_modules/buffer/index.js",
       "node_modules/hash-base/index.js",
       "node_modules/inherits/inherits_browser.js"
-    ]
-  },
-  "node_modules/ripple-address-codec/dist/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-address-codec/dist/xrp-codec.js"
-    ]
-  },
-  "node_modules/ripple-address-codec/dist/xrp-codec.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@scure/base/lib/index.js",
-      "node_modules/@xrplf/isomorphic/dist/sha256/browser.js",
-      "node_modules/ripple-address-codec/dist/utils.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@xrplf/isomorphic/dist/ripemd160/browser.js",
-      "node_modules/@xrplf/isomorphic/dist/sha256/browser.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-address-codec/dist/index.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/ed25519/index.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/index.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/utils.js",
-      "node_modules/ripple-keypairs/dist/utils/assert.js",
-      "node_modules/ripple-keypairs/dist/utils/getAlgorithmFromKey.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/signing-schemes/ed25519/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/ed25519.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-keypairs/dist/utils/assert.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/index.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/utils.js",
-      "node_modules/@noble/curves/secp256k1.js",
-      "node_modules/@xrplf/isomorphic/dist/utils/browser.js",
-      "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/utils.js",
-      "node_modules/ripple-keypairs/dist/utils/assert.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/signing-schemes/secp256k1/utils.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/secp256k1.js",
-      "node_modules/ripple-keypairs/dist/utils/Sha512.js"
-    ]
-  },
-  "node_modules/ripple-keypairs/dist/utils/Sha512.js": {
-    "enable": true,
-    "require": [
-      "node_modules/@noble/curves/abstract/utils.js",
-      "node_modules/@xrplf/isomorphic/dist/sha512/browser.js"
     ]
   },
   "node_modules/rlp/dist.browser/index.js": {
@@ -81211,6 +81140,7 @@
       "src/ui/assets/walletlogo/onekey.svg",
       "src/ui/component/index.tsx",
       "src/ui/component/MiniSignV2/state/index.ts",
+      "src/ui/hooks/useCancelOneKeyOnClose.ts",
       "src/ui/hooks/useDebounceValue.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePopupContainer.tsx",
@@ -81264,6 +81194,7 @@
       "src/ui/state/exchange.ts",
       "src/ui/utils/ledger.ts",
       "src/ui/utils/number.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/utils/sendTransaction.ts",
       "src/ui/utils/time.ts",
       "src/ui/views/Approval/components/SignTx.tsx",
@@ -82017,6 +81948,14 @@
       "src/ui/hooks/usePreference.ts",
       "src/ui/store.ts",
       "src/utils/account.ts"
+    ]
+  },
+  "src/ui/hooks/useCancelOneKeyOnClose.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/react/index.js",
+      "src/constant/index.ts",
+      "src/ui/utils/index.ts"
     ]
   },
   "src/ui/hooks/useChain.ts": {
@@ -82819,6 +82758,13 @@
     "require": [
       "node_modules/bignumber.js/bignumber.js",
       "src/constant/regexp.ts"
+    ]
+  },
+  "src/ui/utils/onekey.ts": {
+    "enable": true,
+    "require": [
+      "node_modules/@onekeyfe/hd-shared/dist/index.js",
+      "node_modules/i18next/dist/esm/i18next.js"
     ]
   },
   "src/ui/utils/portfolio/expandList.ts": {
@@ -83816,11 +83762,13 @@
       "src/ui/component/index.tsx",
       "src/ui/component/PortalHost/PortalController.tsx",
       "src/ui/hooks/backgroundState/useAccount.ts",
+      "src/ui/hooks/useCancelOneKeyOnClose.ts",
       "src/ui/hooks/useEnterPassphraseModal.ts",
       "src/ui/hooks/useMiniApprovalDirectSign.tsx",
       "src/ui/hooks/usePreference.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/ledger.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/utils/sendPersonalMessage.ts",
       "src/ui/views/Approval/components/MiniSignTx/MiniFooterBar.tsx",
       "src/ui/views/Approval/components/Popup/MiniApprovalPopupContainer.tsx"
@@ -83849,6 +83797,7 @@
       "src/ui/state/securityEngine.ts",
       "src/ui/utils/index.ts",
       "src/ui/utils/ledger.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/views/Approval/components/FooterBar/ActionGroup.tsx",
       "src/ui/views/Approval/components/FooterBar/gasAccountDecision.ts",
       "src/ui/views/Approval/components/FooterBar/GasLessComponents.tsx",
@@ -86307,7 +86256,6 @@
       "node_modules/@keystonehq/bc-ur-registry/dist/index.js",
       "node_modules/@keystonehq/hw-transport-webusb/lib/index.js",
       "node_modules/@ngraveio/bc-ur/dist/index.js",
-      "node_modules/@onekeyfe/hd-shared/dist/index.js",
       "node_modules/@rabby-wallet/hyperliquid-sdk/dist/index.js",
       "node_modules/@rabby-wallet/staking-sdk/dist/index.js",
       "node_modules/@scure/bip39/esm/index.js",
@@ -86531,6 +86479,7 @@
       "src/ui/utils/ledger-dmk.ts",
       "src/ui/utils/ledger.ts",
       "src/ui/utils/number.ts",
+      "src/ui/utils/onekey.ts",
       "src/ui/utils/os.ts",
       "src/ui/utils/portfolio/collections.ts",
       "src/ui/utils/portfolio/tokenUtils.ts",

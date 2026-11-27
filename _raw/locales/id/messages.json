@@ -3566,6 +3566,8 @@
         "hyperliquidFeeLabel": "Biaya Hyperliquid",
         "fetchQuoteFailed": "Gagal mengambil penawaran deposit. Silakan ganti token.",
         "estReceiveTooltipNoTime": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi slippage.",
+        "estReceiveTooltipV2": "Setoran lintas rantai diproses melalui {{name}}, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
+        "estReceiveTooltipNoTimeV2": "Setoran lintas rantai diproses melalui {{name}}, mungkin terjadi slippage.",
         "estReceiveTooltip": "Setoran lintas rantai diproses melalui LiFi, mungkin terjadi selisih harga. Perkiraan kedatangan dalam {{number}} detik.",
         "goBridgeTips": "Hanya USDC di Arbitrum yang didukung untuk deposit langsung. Silakan jembatani token Anda saat ini ke USDC di Arbitrum sebelum melakukan deposit.",
         "hyperliquidFeeLabelTooltip": "Pengguna baru dikenakan biaya aktivasi satu kali oleh Hyperliquid.",
@@ -5058,7 +5060,12 @@
         "notAllowInBootloaderMode": "Silakan gunakan dalam mode normal",
         "deviceCheckPassphraseStateError": "Akun tidak cocok dengan alamat buka kunci perangkat saat ini. Silakan konfirmasi bahwa perangkat dan alamat akun konsisten dan coba lagi",
         "actionCancel": "Operasi dibatalkan",
-        "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebHID"
+        "deviceNeedsWebHIDPermission": "Perangkat tidak ditemukan atau memerlukan izin WebUSB",
+        "deviceNotOpenedPassphrase": "Perlindungan frasa sandi nonaktif. Aktifkan untuk membuka dompet tersembunyi.",
+        "pinInvalid": "PIN salah. Coba lagi di OneKey Anda.",
+        "deviceBusy": "OneKey sedang sibuk. Selesaikan operasi saat ini, lalu coba lagi.",
+        "deviceInterrupted": "Koneksi ke OneKey terputus. Hubungkan kembali perangkat.",
+        "webUSBUnavailable": "Browser ini tidak mendukung WebUSB."
       }
     },
     "feedback": {

@@ -3563,6 +3563,8 @@
         "minimumDepositSize": "Số tiền gửi tối thiểu là 5 USD",
         "hyperliquidFeeLabel": "Phí Hyperliquid",
         "estReceiveTooltipNoTime": "Gửi tiền xuyên chuỗi được xử lý qua LiFi, có thể phát sinh trượt giá.",
+        "estReceiveTooltipV2": "Gửi tiền liên chuỗi được xử lý qua {{name}}, có thể xảy ra một ít trượt giá. Thời gian dự kiến đến trong {{number}} giây.",
+        "estReceiveTooltipNoTimeV2": "Gửi tiền xuyên chuỗi được xử lý qua {{name}}, có thể phát sinh trượt giá.",
         "fetchQuoteFailed": "Không thể lấy báo giá ký quỹ. Vui lòng đổi sang token khác.",
         "feeTip": "Phí $1",
         "goSwapTips": "Chỉ có USDC trên Arbitrum được hỗ trợ cho nạp ký quỹ trực tiếp. Vui lòng đổi token hiện tại của bạn sang USDC trước khi nạp ký quỹ.",
@@ -5058,7 +5060,12 @@
         "notAllowInBootloaderMode": "Vui lòng sử dụng ở chế độ bình thường",
         "deviceCheckPassphraseStateError": "Tài khoản không khớp với địa chỉ mở khóa thiết bị hiện tại. Vui lòng xác nhận thiết bị và địa chỉ tài khoản nhất quán và thử lại",
         "actionCancel": "Thao tác đã được hủy",
-        "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebHID"
+        "deviceNeedsWebHIDPermission": "Không tìm thấy thiết bị hoặc cần quyền WebUSB",
+        "deviceNotOpenedPassphrase": "Tính năng bảo vệ bằng cụm mật khẩu đang tắt. Hãy bật để mở ví ẩn.",
+        "pinInvalid": "Sai mã PIN. Vui lòng thử lại trên OneKey.",
+        "deviceBusy": "OneKey đang bận. Hãy hoàn tất thao tác hiện tại rồi thử lại.",
+        "deviceInterrupted": "Kết nối với OneKey bị gián đoạn. Hãy kết nối lại thiết bị.",
+        "webUSBUnavailable": "Trình duyệt này không hỗ trợ WebUSB."
       }
     },
     "feedback": {

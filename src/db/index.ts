@@ -8,6 +8,7 @@ import {
   schemaV3,
   schemaV4,
   schemaV5,
+  schemaV7,
 } from './schema';
 import { TxHistoryItemRow } from './schema/history';
 import { judgeIsSmallUsdTx } from '@/utils/history';
@@ -31,7 +32,7 @@ db.version(6).upgrade((trans) => {
       }
     });
 });
-db.version(7).stores(schema);
+db.version(7).stores(schemaV7);
 // re-judge is_small_tx after including sends in judgeIsSmallUsdTx
 db.version(8).upgrade((trans) => {
   trans
@@ -45,6 +46,8 @@ db.version(8).upgrade((trans) => {
       }
     });
 });
+
+db.version(9).stores(schema);
 
 // An open that never settles is invisible: dexie-react-hooks only throws once
 // the query emits an error, so a blocked or stalled open leaves every view

@@ -39,6 +39,7 @@ import {
   CHAINS_ENUM,
   SAFE_RPC_METHODS,
   KEYRING_TYPE,
+  KEYRING_CLASS,
   EVENTS,
   INTERNAL_REQUEST_SESSION,
   INTERNAL_REQUEST_ORIGIN,
@@ -1002,6 +1003,9 @@ class ProviderController extends BaseController {
       if (carrier) {
         bindSigningCarrier(errObj, carrier);
         errObj.reportedFromBackground = true;
+      }
+      if (keyring.type === KEYRING_CLASS.HARDWARE.ONEKEY && e?.code != null) {
+        errObj.code = e.code;
       }
       errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
 
