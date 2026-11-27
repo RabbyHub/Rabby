@@ -133,12 +133,16 @@ export const AddressesInHD: React.FC<Props> = ({ setting, ...props }) => {
         exitRef.current = true;
       }
     }
+    // stopped by a settings change (not by reaching the end): restart.
+    // Comparing `i` with the limit misses when the limit is not a multiple of
+    // the step (e.g. a QR keyring in pubkey mode holding one account): `i`
+    // steps past it and the list restarts for ever.
+    const stoppedManually = stoppedRef.current;
     stoppedRef.current = true;
     if (exitRef.current) {
       return;
     }
-    // maybe stop by manual, so we need restart
-    if (i !== index + maxCountRef.current) {
+    if (stoppedManually) {
       runGetAccounts();
     }
   }, []);
