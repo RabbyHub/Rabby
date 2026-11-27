@@ -44,7 +44,8 @@ import { ReactComponent as RcIconGasAccountBlurCC } from 'ui/assets/sign/tx/gas-
 import { ReactComponent as RcIconGasAccountActive } from 'ui/assets/sign/tx/gas-account-active.svg';
 import { BigNumber } from 'bignumber.js';
 import { MenuButtonStyled } from '../GasMenuButton';
-import { GasMethod } from '../GasSelectorHeader';
+import { GasMethod, GasSelectorResponse } from '../GasSelectorHeader';
+import type { GasAccountCheckResult } from 'background/service/openapi';
 import { ReactComponent as ArrowSVG } from '@/ui/assets/arrow-cc.svg';
 import { useSecurityEngineStore } from '@/ui/state/securityEngine';
 import { useShallow } from 'zustand/react/shallow';
@@ -60,6 +61,11 @@ type GasSelectorHeaderProps = ComponentProps<
 
 export interface SignMainnetGasSelectorHeaderProps
   extends GasSelectorHeaderProps {
+  directSubmit?: boolean;
+  checkGasLevelIsNotEnough?: (
+    gas: GasSelectorResponse,
+    gasType: 'native' | 'gasAccount'
+  ) => Promise<[boolean, number, undefined | GasAccountCheckResult]>;
   nativeTokenInsufficient?: boolean;
   freeGasAvailable?: boolean;
   noCustomRPC?: boolean;
