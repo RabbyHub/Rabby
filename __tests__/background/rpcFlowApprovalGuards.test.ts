@@ -107,8 +107,10 @@ jest.mock('consts', () => ({
 }));
 
 import rpcFlow from '@/background/controller/provider/rpcFlow';
+import { markUserCancelledSigningError } from '@/background/utils/signingCancellation';
 import eventBus from '@/eventBus';
 import { hex2Text } from '@/utils/signText';
+import { captureException } from '@sentry/browser';
 
 const baseRequest = () => ({
   data: { method: 'eth_signTypedData_v4', params: [] },
@@ -119,6 +121,35 @@ const baseRequest = () => ({
   },
   account: { address: '0xaccount', type: 'SimpleKeyring' },
 });
+
+test.each([true, false])(
+  'reports only unclassified signing rejections (confirmed cancel: %s)',
+  async (userCancelled) => {
+    jest.clearAllMocks();
+    const error = new Error(
+      'The transaction signing request is no longer active.'
+    );
+    if (userCancelled) markUserCancelledSigningError(error);
+    ethSignTypedDataV4.mockRejectedValueOnce(error);
+    const logError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => undefined);
+    try {
+      await expect(rpcFlow(baseRequest() as any)).rejects.toBe(error);
+      if (userCancelled) expect(captureException).not.toHaveBeenCalled();
+      else expect(captureException).toHaveBeenCalledWith(error);
+      expect(eventBus.emit).toHaveBeenCalledWith('broadcastToUI', {
+        method: 'SIGN_FINISHED',
+        params: expect.objectContaining({
+          success: false,
+          errorMsg: error.message,
+        }),
+      });
+    } finally {
+      logError.mockRestore();
+    }
+  }
+);
 
 describe('rpcFlow personal-sign review bytes', () => {
   const from = `0x${'11'.repeat(20)}`;

@@ -119,7 +119,7 @@ export const PrivatekeyWaiting = ({
   );
 
   const handleCancel = () => {
-    rejectApproval('user cancel');
+    rejectApproval('user cancel', { userCancelled: true });
   };
 
   const { isDarkTheme } = useThemeMode();

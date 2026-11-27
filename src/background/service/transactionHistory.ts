@@ -200,6 +200,7 @@ class TxHistory {
   store!: TxHistoryStore;
 
   private _signingTxList: TransactionSigningItem[] = [];
+  private userCancelledSigningTxs = new WeakSet<TransactionSigningItem>();
   private _availableTxs: TxHistory['store']['transactions'] = {};
   private _txHistoryLimit = 100;
 
@@ -218,6 +219,15 @@ class TxHistory {
 
   getSigningTx(id: string) {
     return this._signingTxList.find((item) => item.id === id);
+  }
+
+  markSigningTxUserCancelled(id: string) {
+    const signingTx = this.getSigningTx(id);
+    if (signingTx) this.userCancelledSigningTxs.add(signingTx);
+  }
+
+  wasSigningTxUserCancelled(signingTx: TransactionSigningItem) {
+    return this.userCancelledSigningTxs.has(signingTx);
   }
 
   removeSigningTx(id: string) {

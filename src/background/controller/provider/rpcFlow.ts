@@ -42,6 +42,7 @@ import {
 } from '@/background/service/signTxPreparation';
 import { v4 as uuidv4 } from 'uuid';
 import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
+import { isUserCancelledSigningError } from '@/background/utils/signingCancellation';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -541,8 +542,8 @@ const flowContext = flow
                   Sentry.captureException(signingCarrier);
                 }
               } else if (
-                !isSignApproval(approvalType) ||
-                (e && typeof e === 'object')
+                !isUserCancelledSigningError(e) &&
+                (!isSignApproval(approvalType) || (e && typeof e === 'object'))
               ) {
                 Sentry.captureException(e);
               }

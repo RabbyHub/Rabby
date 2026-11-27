@@ -7,9 +7,15 @@ import {
 } from '@/utils/transaction';
 import { buildTempoTransaction, TempoTxCall } from '@/utils/tempo';
 import providerController from '@/background/controller/provider/controller';
-import { keyringService } from 'background/service';
+import {
+  keyringService,
+  openapiService as transactionOpenapi,
+  RPCService,
+  transactionHistoryService,
+} from 'background/service';
 import openapiService from '@/background/service/openapi';
 import { clearBlockedAddressCache } from '@/background/service/blockedAddress';
+import { isUserCancelledSigningError } from '@/background/utils/signingCancellation';
 
 const from = '0x7e5f4552091a69125d5dfcb7b8c2659029395bdf';
 const to = '0x20c0000000000000000000000000000000000000';
@@ -31,8 +37,18 @@ jest.mock('background/service', () => ({
   i18n: { t: (key: string) => key },
   transactionHistoryService: {
     getSigningTx: () => mockSigningTx,
+    wasSigningTxUserCancelled: jest.fn(() => false),
+    updateSigningTx: jest.fn(),
+    addSubmitFailedTransaction: jest.fn(),
   },
-  RPCService: { probeBestRPC: jest.fn() },
+  RPCService: {
+    probeBestRPC: jest.fn(),
+    hasCustomRPC: jest.fn(() => false),
+    getDefaultRPC: jest.fn(() => ({ txPushToRPC: true })),
+    getDefaultRPCByChainServerId: jest.fn(() => ({})),
+    defaultRPCSubmitTxWithFallback: jest.fn(),
+  },
+  openapiService: { submitTxV2: jest.fn() },
 }));
 jest.mock('@/background/service/openapi', () => ({
   __esModule: true,
@@ -41,6 +57,7 @@ jest.mock('@/background/service/openapi', () => ({
 jest.mock('consts', () => ({
   KEYRING_TYPE: { SimpleKeyring: 'Simple Key Pair', HdKeyring: 'HD Key Tree' },
   KEYRING_CATEGORY_MAP: {},
+  GASPRICE_RANGE: {},
   EVENTS: { COMMON_HARDWARE: { REJECTED: 'REJECTED' } },
 }));
 jest.mock('@/utils/chain', () => {
@@ -109,6 +126,9 @@ describe('ethSendTransaction blocked address check', () => {
     mockSigningTx = { rawTx: {} };
     keyringService.keyrings = [keyring];
     jest.mocked(keyringService.isUnlocked).mockReturnValue(true);
+    jest
+      .mocked(transactionHistoryService.wasSigningTxUserCancelled)
+      .mockReturnValue(false);
     jest.spyOn(console, 'error').mockImplementation(() => undefined);
   });
 
@@ -203,21 +223,51 @@ describe('ethSendTransaction blocked address check', () => {
     }
   );
 
-  test('does not continue to broadcast when cancelled during signing', async () => {
-    isBlockedAddress.mockResolvedValue({ is_blocked: false });
-    jest
-      .mocked(keyringService.signTransaction)
-      .mockImplementationOnce(async () => {
-        mockSigningTx = undefined;
-        return {
-          r: '01',
-          s: '01',
-          v: '1b',
-          serializedTransaction: '0x76ff',
-        } as any;
-      });
-    await expect(submit()).rejects.toMatchObject({
-      message: 'The transaction signing request is no longer active.',
-    });
-  });
+  test.each([
+    ['signing', true],
+    ['signing', false],
+    ['frontend RPC push', true],
+    ['frontend RPC push', false],
+  ] as const)(
+    'stops when the record is removed during %s (confirmed cancel: %s)',
+    async (stage, userCancelled) => {
+      isBlockedAddress.mockResolvedValue({ is_blocked: false });
+      const signingTx = mockSigningTx;
+      jest
+        .mocked(transactionHistoryService.wasSigningTxUserCancelled)
+        .mockReturnValueOnce(userCancelled);
+      jest
+        .mocked(keyringService.signTransaction)
+        .mockImplementationOnce(async () => {
+          if (stage === 'signing') mockSigningTx = undefined;
+          return {
+            r: '01',
+            s: '01',
+            v: '1b',
+            serializedTransaction: '0x76ff',
+          } as any;
+        });
+      jest
+        .mocked(RPCService.defaultRPCSubmitTxWithFallback)
+        .mockImplementation(async () => {
+          mockSigningTx = undefined;
+          throw new Error('RPC unavailable');
+        });
+      jest.spyOn(console, 'log').mockImplementation(() => undefined);
+
+      const error = await submit().catch((e) => e);
+      expect(RPCService.defaultRPCSubmitTxWithFallback).toHaveBeenCalledTimes(
+        stage === 'signing' ? 0 : 1
+      );
+      expect(error.message).toContain(
+        'The transaction signing request is no longer active.'
+      );
+      expect(
+        transactionHistoryService.wasSigningTxUserCancelled
+      ).toHaveBeenCalledWith(signingTx);
+      expect(isUserCancelledSigningError(error)).toBe(userCancelled);
+      expect(transactionOpenapi.submitTxV2).not.toHaveBeenCalled();
+      if (stage === 'signing') expect(error.method).toBe('REJECTED');
+    }
+  );
 });
