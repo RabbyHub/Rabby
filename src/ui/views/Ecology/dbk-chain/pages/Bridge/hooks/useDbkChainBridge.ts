@@ -9,15 +9,24 @@ import { DbkBridgeHistoryItem } from '@rabby-wallet/rabby-api/dist/types';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { message } from 'antd';
 import BigNumber from 'bignumber.js';
-import { getContract, parseEther, WriteContractParameters } from 'viem';
+import {
+  getContract,
+  parseAbi,
+  parseEther,
+  WriteContractParameters,
+} from 'viem';
 import { getWithdrawals } from 'viem/op-stack';
 import { DbkBridgeStatus, dbk } from '../../../utils';
 import { useCreateViemClient } from './useCreateViemClient';
-import {
-  l1StandardBridgeABI,
-  optimismPortalABI,
-} from '@eth-optimism/contracts-ts';
 import { writeContract } from 'viem/actions';
+
+// L1StandardBridge / OptimismPortal fragments from the OP Stack Bedrock contracts
+const l1StandardBridgeABI = parseAbi([
+  'function depositETH(uint32 _minGasLimit, bytes _extraData) payable',
+]);
+const optimismPortalABI = parseAbi([
+  'function finalizeWithdrawalTransaction((uint256 nonce, address sender, address target, uint256 value, uint256 gasLimit, bytes data) _tx)',
+]);
 
 export const useDbkChainBridge = ({
   action,
