@@ -9,13 +9,9 @@ import { HardwareWallets } from '@/ui/views/AddAddress/HardwareWallets';
 import ImportAddressSuccess from '@/ui/views/AddAddress/ImportAddressSuccess';
 import ImportKeyOrSeed from '@/ui/views/AddAddress/ImportKeyOrSeed';
 import { InstitutionalWallets } from '@/ui/views/AddAddress/InstitutionalWallets';
-import { AddFromCurrentSeedPhrase } from '@/ui/views/AddFromCurrentSeedPhrase';
 import { ImportCoboArgus } from '@/ui/views/ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from '@/ui/views/ImportCoinbase/ImportCoinbase';
 import ImportGnosisAddress from '@/ui/views/ImportGnosisAddress';
-import ImportJson from '@/ui/views/ImportJson';
-import { ImportMyMetaMaskAccount } from '@/ui/views/ImportMyMetaMaskAccount';
-import ImportPrivateKey from '@/ui/views/ImportPrivateKey';
 import ImportSuccess from '@/ui/views/ImportSuccess';
 import ImportWatchAddress from '@/ui/views/ImportWatchAddress';
 import WalletConnectTemplate from '@/ui/views/WalletConnect';
@@ -99,9 +95,7 @@ const AddAddressModalContent: React.FC = () => {
   });
   return (
     <PopupContainer>
-      {importType === 'add-from-current-seed-phrase' ? (
-        <AddFromCurrentSeedPhrase isInModal />
-      ) : importType === 'add-new-address' ? (
+      {importType === 'add-new-address' ? (
         <AddNewAddress isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'create-address-success' ? (
         <CreateAddressSuccess isInModal onNavigate={onNavigate} state={state} />
@@ -124,16 +118,6 @@ const AddAddressModalContent: React.FC = () => {
         <HardwareWallets isInModal onBack={onBack} onNavigate={onNavigate} />
       ) : importType === 'institutional-wallets' ? (
         <InstitutionalWallets
-          isInModal
-          onBack={onBack}
-          onNavigate={onNavigate}
-        />
-      ) : importType === 'key' ? (
-        <ImportPrivateKey isInModal onBack={onBack} onNavigate={onNavigate} />
-      ) : importType === 'json' ? (
-        <ImportJson isInModal onBack={onBack} onNavigate={onNavigate} />
-      ) : importType === 'metamask' ? (
-        <ImportMyMetaMaskAccount
           isInModal
           onBack={onBack}
           onNavigate={onNavigate}

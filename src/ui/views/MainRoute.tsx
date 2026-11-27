@@ -4,7 +4,6 @@ import { PrivateRoute } from 'ui/component';
 import Welcome from './Welcome';
 import NoAddress from './NoAddress';
 import CreatePassword from './CreatePassword';
-import ImportMode from './ImportMode';
 import ImportWatchAddress from './ImportWatchAddress';
 import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
@@ -233,9 +232,6 @@ const Main = () => {
         <Route exact path="/biometric-unlock-setup">
           <BiometricUnlockSetup />
         </Route>
-        <PrivateRoute exact path="/import">
-          <ImportMode />
-        </PrivateRoute>
         <PrivateRoute exact path="/import/mnemonics">
           <InputMnemonics />
         </PrivateRoute>
