@@ -62,6 +62,14 @@ jest.mock('@/utils/env', () => ({
   isManifestV3: true,
 }));
 
+// The real preference service pulls in the whole background service graph.
+jest.mock('@/background/service/preference', () => ({
+  __esModule: true,
+  default: {
+    getIsLedgerClearSigningEnabled: jest.fn(() => false),
+  },
+}));
+
 import LedgerBridgeKeyring, {
   getLedgerErrorMessage,
 } from 'background/service/keyring/eth-ledger-keyring';

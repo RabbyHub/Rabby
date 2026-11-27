@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { UI_TYPE } from '@/constant/ui';
 import { WALLET_BRAND_CONTENT, IWalletBrandContent } from 'consts';
-import { connectStore } from '@/ui/store';
 import { useAddAddressWalletOptions } from '@/ui/views/AddAddress/shared';
 import { Item } from '@/ui/component';
 import { ReactComponent as RcRightArrow } from 'ui/assets/address/right-arrow.svg';
@@ -250,4 +249,4 @@ const AddAddressOptions: React.FC<{
   );
 };
 
-export default connectStore()(AddAddressOptions);
+export default AddAddressOptions;

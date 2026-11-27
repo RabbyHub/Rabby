@@ -20,7 +20,6 @@ import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
 } from '@/constant';
-import { connectStore } from '@/ui/store';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
@@ -288,4 +287,4 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   );
 };
 
-export const AddressInfo = connectStore()(AddressInfo1);
+export const AddressInfo = AddressInfo1;

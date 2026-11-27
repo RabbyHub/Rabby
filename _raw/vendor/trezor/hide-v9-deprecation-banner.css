@@ -1,0 +1,8 @@
+/*
+ * Trezor Connect v9 popup (connect.trezor.io/9/popup.html) ships a static
+ * "older version of Trezor Connect" deprecation banner. Hide it until Rabby
+ * upgrades to Trezor Connect v10. Injected via manifest content_scripts.
+ */
+.deprecation-banner {
+  display: none !important;
+}

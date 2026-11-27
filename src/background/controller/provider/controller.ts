@@ -39,6 +39,7 @@ import {
   CHAINS_ENUM,
   SAFE_RPC_METHODS,
   KEYRING_TYPE,
+  KEYRING_CLASS,
   EVENTS,
   INTERNAL_REQUEST_SESSION,
   INTERNAL_REQUEST_ORIGIN,
@@ -74,7 +75,6 @@ import {
   findShadowedBuiltinType,
   isTypeGraphTooLarge,
   parseTypedDataJson,
-  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
 import {
@@ -94,6 +94,10 @@ import {
   hasBlockedAddress,
 } from '@/background/service/blockedAddress';
 import { handleGasAccountLoginSuccess } from '@/background/utils/gasAccountLogin';
+import {
+  isUserCancelledSigningError,
+  markUserCancelledSigningError,
+} from '@/background/utils/signingCancellation';
 import {
   attachSigningContext,
   bindSigningCarrier,
@@ -407,11 +411,7 @@ const signTypedDataVlidation = ({
   if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
-  const invalidValue = findInvalidTypedDataValue(jsonData);
-  reportInvalidTypedDataValue(invalidValue, {
-    rawTypedData: data,
-  });
-  if (invalidValue) {
+  if (findInvalidTypedDataValue(jsonData)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   if (!permissionService.isInternalOrigin(session!.origin)) {
@@ -472,6 +472,18 @@ class ProviderController extends BaseController {
       chainServerId = forceChainServerId;
     }
 
+    // The chain can be missing (custom network removed, chain list not yet
+    // restored). Fail closed before the cache or any RPC is touched.
+    const chain = findChain({
+      serverId: chainServerId,
+    });
+    if (!chain) {
+      throw ethErrors.provider.custom({
+        code: 4902,
+        message: `Unrecognized chain "${chainServerId}".`,
+      });
+    }
+
     const currentAddress = account?.address?.toLowerCase() || '0x';
     const cache = RpcCache.get(currentAddress, {
       method,
@@ -479,9 +491,6 @@ class ProviderController extends BaseController {
       chainId: chainServerId,
     });
     if (cache) return cache;
-    const chain = findChain({
-      serverId: chainServerId,
-    })!;
     if (!chain.isTestnet && method === 'eth_sendRawTransaction') {
       void RPCService.probeBestRPC(chainServerId);
     }
@@ -531,10 +540,7 @@ class ProviderController extends BaseController {
         return promise;
       }
     } else {
-      const chainData = findChain({
-        serverId: chainServerId,
-      })!;
-      const client = customTestnetService.getClient(chainData.id);
+      const client = customTestnetService.getClient(chain.id);
       return client.request({ method, params });
     }
   };
@@ -698,9 +704,13 @@ class ProviderController extends BaseController {
         !keyringService.isUnlocked() ||
         !keyringService.keyrings.includes(keyring)
       ) {
-        throw ethErrors.provider.userRejectedRequest(
+        const error = ethErrors.provider.userRejectedRequest(
           'The transaction signing request is no longer active.'
         );
+        if (transactionHistoryService.wasSigningTxUserCancelled(approvingTx)) {
+          markUserCancelledSigningError(error);
+        }
+        throw error;
       }
     };
     assertSigningActive();
@@ -996,12 +1006,16 @@ class ProviderController extends BaseController {
       const errObj: any = {
         message: e && typeof e === 'object' ? e.message : e,
       };
+      if (isUserCancelledSigningError(e)) markUserCancelledSigningError(errObj);
       if (signingContext && !carrier) {
         attachSigningContext(errObj, signingContext);
       }
       if (carrier) {
         bindSigningCarrier(errObj, carrier);
         errObj.reportedFromBackground = true;
+      }
+      if (keyring.type === KEYRING_CLASS.HARDWARE.ONEKEY && e?.code != null) {
+        errObj.code = e.code;
       }
       errObj.method = EVENTS.COMMON_HARDWARE.REJECTED;
 
@@ -1104,7 +1118,7 @@ class ProviderController extends BaseController {
           preferenceService.resetCurrentCoboSafeAddress();
         }
       };
-      const onTransactionSubmitFailed = (e: any) => {
+      const onTransactionSubmitFailed = (e: any, userCancelled = false) => {
         if (!isSpeedUp && !isCancel) {
           transactionHistoryService.addSubmitFailedTransaction({
             tx: {
@@ -1121,7 +1135,9 @@ class ProviderController extends BaseController {
           });
         }
         const errMsg = e.details || e.message || JSON.stringify(e);
-        throw new Error(errMsg);
+        const error = new Error(errMsg);
+        if (userCancelled) markUserCancelledSigningError(error);
+        throw error;
       };
 
       if (typeof signedTx === 'string') {
@@ -1356,7 +1372,7 @@ class ProviderController extends BaseController {
             : errMsg;
         }
         console.log('submit tx failed', e);
-        onTransactionSubmitFailed(errMsg);
+        onTransactionSubmitFailed(errMsg, isUserCancelledSigningError(e));
         rechargeGasAccountOnTx();
       }
     } catch (e) {

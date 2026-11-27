@@ -1,3 +1,4 @@
+import { useCancelOneKeyOnClose } from '@/ui/hooks/useCancelOneKeyOnClose';
 import {
   KEYRING_TYPE,
   INTERNAL_REQUEST_SESSION,
@@ -49,6 +50,15 @@ export const MiniSignTypedDate = ({
   }, [account, _currentAccount]);
 
   const task = useBatchSignTypedDataTask({});
+
+  const cancelSigning = useCancelOneKeyOnClose(
+    currentAccount,
+    task.status === 'active'
+  );
+  const handleCancel = () => {
+    cancelSigning();
+    onReject?.();
+  };
 
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
@@ -138,7 +148,7 @@ export const MiniSignTypedDate = ({
           status={'FAILED'}
           content={content}
           description={desc}
-          onCancel={onReject}
+          onCancel={onReject && handleCancel}
           onRetry={async () => {
             const hash = await task.retry();
             onResolve?.(hash);
@@ -152,7 +162,7 @@ export const MiniSignTypedDate = ({
         originLogo={INTERNAL_REQUEST_SESSION.icon}
         // TODO: REMOVE chain
         chain={CHAINS.ETH}
-        onCancel={() => onReject?.()}
+        onCancel={handleCancel}
         onSubmit={handleAllow}
         isTestnet={false}
         onIgnoreAllRules={noop}

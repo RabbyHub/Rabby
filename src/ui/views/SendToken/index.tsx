@@ -31,7 +31,7 @@ import {
   CAN_NOT_SPECIFY_INTRINSIC_GAS_CHAINS,
   KEYRING_TYPE,
 } from 'consts';
-import { connectStore, useRabbySelector } from 'ui/store';
+import { useRabbySelector } from 'ui/store';
 import {
   getUiType,
   isSameAddress,
@@ -3428,6 +3428,4 @@ const SendTokenWrapper = () => {
   );
 };
 
-export default isTab
-  ? connectStore()(withAccountChange(SendTokenWrapper))
-  : connectStore()(SendTokenWrapper);
+export default isTab ? withAccountChange(SendTokenWrapper) : SendTokenWrapper;

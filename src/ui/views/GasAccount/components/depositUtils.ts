@@ -3,6 +3,7 @@ import { L2_DEPOSIT_ADDRESS_MAP } from '@/constant/gas-account';
 import { isSameAddress } from '@/ui/utils';
 import type { WalletControllerType } from '@/ui/utils/WalletContext';
 import { findChain, findChainByServerID } from '@/utils/chain';
+import { validateDepositQuote } from '@/utils/deposit-bridge';
 import BigNumber from 'bignumber.js';
 import { addHexPrefix, toChecksumAddress } from '@ethereumjs/util';
 import { Account } from '@/background/service/preference';
@@ -79,7 +80,7 @@ export const buildTopUpGasAccount = async ({
   } as Tx;
 };
 
-const getGasAccountBridgeRawAmount = ({
+export const getGasAccountBridgeRawAmount = ({
   token,
   usdValue,
 }: {
@@ -102,21 +103,29 @@ export const fetchGasAccountBridgeQuote = async ({
   token,
   account,
   usdValue,
+  fromTokenRawAmount,
 }: {
   wallet: Pick<WalletControllerType, 'openapi'>;
   token: Pick<TokenItem, 'chain' | 'id' | 'decimals' | 'price'>;
   account: Account;
   usdValue: number;
+  fromTokenRawAmount?: string;
 }) => {
-  return wallet.openapi.getGasAccountBridgeQuote({
+  const rawAmount =
+    fromTokenRawAmount ??
+    getGasAccountBridgeRawAmount({
+      token,
+      usdValue,
+    });
+  const request = {
     user_addr: account.address,
     from_chain_id: token.chain,
     from_token_id: token.id,
-    from_token_raw_amount: getGasAccountBridgeRawAmount({
-      token,
-      usdValue,
-    }),
-  });
+    from_token_raw_amount: rawAmount,
+  };
+  const quote = await wallet.openapi.getGasAccountBridgeQuote(request);
+  validateDepositQuote(quote, request, 'gas_account_deposit');
+  return quote;
 };
 
 export const buildGasAccountBridgeTxs = async ({
@@ -125,13 +134,31 @@ export const buildGasAccountBridgeTxs = async ({
   account,
   quote,
   usdValue,
+  fromTokenRawAmount,
 }: {
   wallet: Pick<WalletControllerType, 'approveToken' | 'requestETHRpc'>;
   token: Pick<TokenItem, 'chain' | 'id' | 'decimals' | 'price'>;
   account: Account;
   quote: GasAccountBridgeQuote;
   usdValue: number;
+  fromTokenRawAmount?: string;
 }) => {
+  const rawAmount =
+    fromTokenRawAmount ??
+    getGasAccountBridgeRawAmount({
+      token,
+      usdValue,
+    });
+  validateDepositQuote(
+    quote,
+    {
+      user_addr: account.address,
+      from_chain_id: token.chain,
+      from_token_id: token.id,
+      from_token_raw_amount: rawAmount,
+    },
+    'gas_account_deposit'
+  );
   const txs: Tx[] = [];
   const fromChain = findChain({ serverId: token.chain });
   const isNative =
@@ -139,10 +166,6 @@ export const buildGasAccountBridgeTxs = async ({
     isSameAddress(token.id, fromChain.nativeTokenAddress);
 
   if (!isNative && quote.approve_contract_id) {
-    const rawAmount = getGasAccountBridgeRawAmount({
-      token,
-      usdValue,
-    });
     const allowanceHex = await wallet.requestETHRpc<string>(
       {
         method: 'eth_call',

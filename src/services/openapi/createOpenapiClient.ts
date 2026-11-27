@@ -29,7 +29,15 @@ export const createReadyOpenapiProxy = <Client extends object>(
     {},
     {
       get(_target, method) {
-        if (method === 'then') return undefined;
+        // Not API methods: keep the proxy from looking like a thenable and let
+        // JSON.stringify / Sentry / coercion inspect it without throwing.
+        if (
+          method === 'then' ||
+          method === 'toJSON' ||
+          typeof method === 'symbol'
+        ) {
+          return undefined;
+        }
         return async (...params: unknown[]) => {
           await getReady();
           const target = client[method as keyof Client];

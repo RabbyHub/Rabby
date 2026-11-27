@@ -737,8 +737,9 @@ export const useTokenPair = (userAddress: string) => {
           if (index === -1) {
             return [...e, v];
           }
-          e[index] = v;
-          return [...e];
+          const next = [...e];
+          next[index] = v;
+          return next;
         });
       }
     },

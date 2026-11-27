@@ -167,7 +167,7 @@ export const BlancesWithNfts = ({
     <Col>
       {hasNft &&
         nfts.map((n) => (
-          <div className="mb-4 text-[14px] text-r-neutral-title1">
+          <div key={n.id} className="mb-4 text-[14px] text-r-neutral-title1">
             <span>{getCollectionDisplayName(n.collection)}</span> x{n.amount}
           </div>
         ))}

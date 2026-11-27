@@ -112,7 +112,10 @@ const SignedTextHistory = () => {
   return (
     <div className="flex flex-col">
       {textHistory.map((item) => (
-        <SignedTextHistoryItem item={item} />
+        <SignedTextHistoryItem
+          key={`${item.site?.origin}-${item.type}-${item.createAt}`}
+          item={item}
+        />
       ))}
       {textHistory.length <= 0 && (
         <Empty

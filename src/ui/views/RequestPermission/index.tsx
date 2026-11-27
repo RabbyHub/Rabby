@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { StrayPage } from 'ui/component';
 import { query2obj } from 'ui/utils/url';
@@ -27,6 +27,7 @@ const RequestPermission = () => {
   const wallet = useWallet();
   const needConfirm = ['ledger', 'keystone', 'imkey', 'onekey'].includes(type);
   const [loading, setLoading] = useState(false);
+  const oneKeyRequest = useRef<AbortController | null>(null);
   const keystoneErrorCatcher = useKeystoneUSBErrorCatcher();
   const isReconnect = !!qs.reconnect;
 
@@ -179,9 +180,15 @@ const RequestPermission = () => {
       }
     }
     if (type === 'onekey') {
+      if (oneKeyRequest.current) return;
+      const request = new AbortController();
+      oneKeyRequest.current = request;
+      setLoading(true);
       try {
         await getOneKeyFirstOneKeyDevice();
+        if (request.signal.aborted) return;
         await wallet.authorizeOneKeyHIDPermission();
+        if (request.signal.aborted) return;
         if (isReconnect) {
           wallet.activeFirstApproval();
           window.close();
@@ -198,11 +205,18 @@ const RequestPermission = () => {
             keyring: HARDWARE_KEYRING_TYPES.Onekey.type,
           },
           search: withHardwareImportSelectAddressSource(
-            `?connectType=ONEKEY&&hd=${HARDWARE_KEYRING_TYPES.Onekey.type}&`
+            `?connectType=ONEKEY&hd=${HARDWARE_KEYRING_TYPES.Onekey.type}`
           ),
         });
       } catch (e) {
-        console.error(e);
+        if (!request.signal.aborted && e?.name !== 'NotFoundError') {
+          message.error(
+            e?.message || t('page.newAddress.hd.tooltip.connectError')
+          );
+        }
+      } finally {
+        if (!request.signal.aborted) setLoading(false);
+        if (oneKeyRequest.current === request) oneKeyRequest.current = null;
       }
     }
   };
@@ -217,6 +231,7 @@ const RequestPermission = () => {
 
   useEffect(() => {
     !needConfirm && init();
+    return () => oneKeyRequest.current?.abort();
   }, []);
 
   return (

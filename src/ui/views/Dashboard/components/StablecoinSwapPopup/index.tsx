@@ -49,7 +49,10 @@ const AnimatedToken: React.FC<AnimatedTokenProps> = ({
 );
 
 /** Bottom promotion displayed over the popup Dashboard. */
-export const StablecoinSwapPopup: React.FC = () => {
+export const StablecoinSwapPopup: React.FC<{
+  /** The token animation pauses while true, e.g. when an overlay covers it. */
+  paused?: boolean;
+}> = ({ paused }) => {
   const { t } = useTranslation();
   const {
     visible,
@@ -62,7 +65,7 @@ export const StablecoinSwapPopup: React.FC = () => {
     previousReceiveToken,
     onPayTokenAnimationEnd,
     onReceiveTokenAnimationEnd,
-  } = useStablecoinSwapPopup();
+  } = useStablecoinSwapPopup({ paused });
 
   if (!visible) {
     return null;

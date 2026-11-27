@@ -61,12 +61,13 @@ export const SelectChainItem = forwardRef(
     ref: React.ForwardedRef<HTMLDivElement>
   ) => {
     const customRPC = useCustomRPCStore((state) => state.customRPC);
-    const cachedChainBalances = useRabbySelector((state) => ({
-      cachedChainBalances: {
-        mainnet: state.account.matteredChainBalances,
-        testnet: state.account.testnetMatteredChainBalances,
-      },
-    })).cachedChainBalances;
+    // One item per chain is rendered, so select only this chain's stored entry:
+    // the item re-renders when its own balance changes, not on every store update.
+    const chainBalanceItem = useRabbySelector(
+      (state) =>
+        state.account.matteredChainBalances?.[data.serverId] ||
+        state.account.testnetMatteredChainBalances?.[data.serverId]
+    );
 
     const finalDisabledTips = useMemo(() => {
       if (typeof disabledTips === 'function') {
@@ -75,13 +76,6 @@ export const SelectChainItem = forwardRef(
 
       return disabledTips;
     }, [disabledTips, data]);
-
-    const chainBalanceItem = useMemo(() => {
-      return (
-        cachedChainBalances.mainnet?.[data.serverId] ||
-        cachedChainBalances.testnet?.[data.serverId]
-      );
-    }, [cachedChainBalances, data.serverId]);
 
     const { disable: disableFromToAddress, shortReason } = useMemo(() => {
       return (

@@ -23,8 +23,10 @@ jobs:
           fetch-depth: 0
 
       - name: Download JSON file
+        env:
+          JSON_URL: ${{ inputs.json_url }}
         run: |
-          curl -L -o approvelist.json "${{ inputs.json_url }}"
+          curl -L -o approvelist.json --url "$JSON_URL"
 
       - name: Update local JSON file
         run: |

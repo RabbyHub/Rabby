@@ -13,7 +13,7 @@ import { findAccountByPriority } from '@/utils/account';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { getUiType, isSameAddress, openInternalPageInTab } from '@/ui/utils';
 import { PageHeader } from '@/ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { useWhitelistStore } from '@/ui/state/whitelist';
 import { EnterAddress } from './components/EnterAddress';
 import { padWatchAccount } from './util';
@@ -465,4 +465,4 @@ const SelectToAddress = () => {
   );
 };
 
-export default connectStore()(SelectToAddress);
+export default SelectToAddress;

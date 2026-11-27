@@ -259,7 +259,6 @@ describe('SignTypedData security lifecycle', () => {
         isDeepJSON: () => false,
         getNormalizeTypeDataVersion: () => 'V4',
         normalizeTypeData: (data: any) => ({ typedData: data, failures: [] }),
-        reportNormalizeTypeDataFailures: () => undefined,
       },
       '@rabby-wallet/rabby-security-engine/dist/rules': {
         Level,

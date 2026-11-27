@@ -1,6 +1,7 @@
 import { ETH_USDT_CONTRACT } from '@/constant';
 import { DEFAULT_SWAP_TO_TOKEN_ITEM_BY_CHAIN_SERVER_ID } from '@/constant/dex-swap';
-import { useMemoizedFn } from 'ahooks';
+import { useCommonPopupView } from '@/ui/utils';
+import { useDocumentVisibility, useMemoizedFn } from 'ahooks';
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
@@ -54,12 +55,27 @@ const STABLECOIN_SWAP_ROUTE = `/dex-swap?${new URLSearchParams({
 const STABLECOIN_SWAP_POPUP_DISMISSED_KEY =
   'rabby:dashboard:ad:stablecoin-swap-popup:dismissed';
 
-export const useStablecoinSwapPopup = () => {
+/**
+ * @param paused true while something on the Dashboard covers the popup (the
+ * settings sheet, the pending-approval overlay).
+ */
+export const useStablecoinSwapPopup = ({
+  paused = false,
+}: { paused?: boolean } = {}) => {
   const history = useHistory();
   const [visible, setVisible] = useState(
     () =>
       window.localStorage.getItem(STABLECOIN_SWAP_POPUP_DISMISSED_KEY) !== '1'
   );
+  const { visible: commonPopupVisible } = useCommonPopupView();
+  const documentVisibility = useDocumentVisibility();
+  // Only rotate the tokens while the strip can be seen: the common popup
+  // (asset list etc.) covers it, and a hidden page shows nothing.
+  const animating =
+    visible &&
+    !paused &&
+    !commonPopupVisible &&
+    documentVisibility !== 'hidden';
   const payTokenIndexRef = useRef(0);
   const receiveTokenIndexRef = useRef(1);
   const nextTokenSideRef = useRef<'pay' | 'receive'>('receive');
@@ -73,7 +89,7 @@ export const useStablecoinSwapPopup = () => {
   >(null);
 
   useEffect(() => {
-    if (!visible) {
+    if (!animating) {
       return;
     }
 
@@ -105,7 +121,7 @@ export const useStablecoinSwapPopup = () => {
     }, 2000);
 
     return () => window.clearInterval(timer);
-  }, [visible]);
+  }, [animating]);
 
   const onClose = useMemoizedFn(() => {
     window.localStorage.setItem(STABLECOIN_SWAP_POPUP_DISMISSED_KEY, '1');

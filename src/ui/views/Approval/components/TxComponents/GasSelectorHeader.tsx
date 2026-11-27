@@ -634,9 +634,14 @@ const GasSelectorHeader = ({
     });
   };
   const [loadingGasEstimated, setLoadingGasEstimated] = useState(false);
+  // The customGas currently in the input. A gas-market response for a value
+  // the user has since changed is dropped, so it cannot overwrite the
+  // estimate, base fee or loading state of the current value.
+  const latestCustomGasRef = useRef(customGas);
 
   // reset loading state when custom gas change
   useEffect(() => {
+    latestCustomGasRef.current = customGas;
     setLoadingGasEstimated(true);
   }, [customGas]);
 
@@ -644,12 +649,14 @@ const GasSelectorHeader = ({
     () => {
       if (isReady || !isFirstTimeLoad) {
         if (customGas === undefined) return;
-        loadCustomGasData(Number(customGas) * 1e9).then((data) => {
+        const requestedCustomGas = customGas;
+        loadCustomGasData(Number(requestedCustomGas) * 1e9).then((data) => {
+          if (latestCustomGasRef.current !== requestedCustomGas) return;
           if (data) setCustomGasEstimated(data.estimated_seconds);
           setSelectedGas((gas) => ({
             ...gas,
             level: 'custom',
-            price: Number(customGas) * 1e9,
+            price: Number(requestedCustomGas) * 1e9,
             front_tx_count: 0,
             estimated_seconds: data?.estimated_seconds ?? 0,
             priority_price: gas?.priority_price ?? null,
@@ -728,7 +735,7 @@ const GasSelectorHeader = ({
       return;
     }
 
-    let priorityPrice = calcMaxPriorityFee(
+    const priorityPrice = calcMaxPriorityFee(
       gasList,
       selectedGas,
       chainId,
@@ -737,10 +744,10 @@ const GasSelectorHeader = ({
 
     setMaxPriorityFee((prevFee = priorityPrice / 1e9) => {
       // Compare with selectedGas.price to avoid customMaxPriorityFee is more than maxGasFee
-      if (hasCustomPriorityFee.current) {
-        priorityPrice = Math.min(selectedGas.price, prevFee * 1e9);
-      }
-      return priorityPrice / 1e9;
+      const nextPriorityPrice = hasCustomPriorityFee.current
+        ? Math.min(selectedGas.price, prevFee * 1e9)
+        : priorityPrice;
+      return nextPriorityPrice / 1e9;
     });
   }, [gasList, selectedGas, isReady, chainId, isSelectCustom, isNilCustomGas]);
 

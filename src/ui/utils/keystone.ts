@@ -62,14 +62,9 @@ export const useKeystoneDeviceConnected = () => {
 };
 
 export const useIsKeystoneUsbAvailable = (brand?: string) => {
-  const [isAvailable, setIsAvailable] = useState(false);
   const connected = useKeystoneDeviceConnected();
 
-  useEffect(() => {
-    setIsAvailable(connected && brand === 'Keystone');
-  }, [connected, brand]);
-
-  return isAvailable;
+  return connected && brand === 'Keystone';
 };
 
 const extractErrorCode = (errorMsg: string): number | null => {
