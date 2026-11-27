@@ -2032,8 +2032,8 @@
       "btnForgotPassword": "Passwort vergessen?",
       "description": "Ihr bevorzugtes Wallet für Ethereum und EVM",
       "biometricFailed": "Biometrische Entsperrung fehlgeschlagen",
-      "biometricSunsetTip": "Sie wird am 1. Jan. 2027 entfernt. Bitte entsperre stattdessen mit deinem Passwort. Dadurch wird die biometrische Entsperrung deaktiviert.",
-      "biometricSunsetTitle": "Biometrische Entsperrung endet",
+      "biometricSunsetTip": "Ab dem 1. Januar 2027 ist die biometrische Entsperrung nicht mehr verfügbar. Bitte wechseln Sie jetzt zur Passwort-Entsperrung. Dadurch wird die biometrische Entsperrung deaktiviert.",
+      "biometricSunsetTitle": "Zur Passwort-Entsperrung wechseln",
       "biometricSunsetUsePassword": "Passwort verwenden",
       "biometricSunsetUseBiometric": "Biometrie verwenden"
     },

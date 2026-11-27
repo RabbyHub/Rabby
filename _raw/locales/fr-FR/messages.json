@@ -2628,8 +2628,8 @@
       "btnForgotPassword": "Mot de passe oublié ?",
       "description": "Votre portefeuille incontournable pour Ethereum et EVM",
       "biometricFailed": "Le déverrouillage biométrique a échoué",
-      "biometricSunsetTip": "Il sera supprimé le 1er janv. 2027. Veuillez plutôt déverrouiller avec votre mot de passe. Cela désactivera le déverrouillage biométrique.",
-      "biometricSunsetTitle": "Fin du déverrouillage biométrique",
+      "biometricSunsetTip": "Le déverrouillage biométrique ne sera plus disponible à partir du 1er janvier 2027. Veuillez passer dès maintenant au déverrouillage par mot de passe. Cela désactivera le déverrouillage biométrique.",
+      "biometricSunsetTitle": "Passer au déverrouillage par mot de passe",
       "biometricSunsetUsePassword": "Mot de passe",
       "biometricSunsetUseBiometric": "Biométrie"
     },

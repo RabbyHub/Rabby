@@ -3511,8 +3511,8 @@
       "description": "Your go-to wallet for Ethereum and EVM",
       "btnForgotPassword": "Forgot Password?",
       "biometricFailed": "Biometric unlock failed",
-      "biometricSunsetTip": "It will be removed on Jan 1, 2027. Please unlock with your password instead. Doing so will turn off biometric unlock.",
-      "biometricSunsetTitle": "Biometric unlock ending",
+      "biometricSunsetTip": "Biometric unlock will no longer be available starting Jan 1, 2027. Please switch to password unlock now. This will turn off biometric unlock.",
+      "biometricSunsetTitle": "Switch to password unlock",
       "biometricSunsetUsePassword": "Use password",
       "biometricSunsetUseBiometric": "Use biometrics"
     },

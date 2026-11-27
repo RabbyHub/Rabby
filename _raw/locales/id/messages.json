@@ -2156,8 +2156,8 @@
       "title": "Rabby Wallet",
       "description": "Dompet andalan Anda untuk Ethereum dan EVM",
       "biometricFailed": "Pembukaan biometrik gagal",
-      "biometricSunsetTip": "Fitur ini akan dihapus pada 1 Jan 2027. Silakan buka kunci dengan kata sandi Anda. Tindakan ini akan menonaktifkan buka kunci biometrik.",
-      "biometricSunsetTitle": "Buka kunci biometrik berakhir",
+      "biometricSunsetTip": "Buka kunci biometrik tidak akan tersedia lagi mulai 1 Januari 2027. Silakan beralih ke buka kunci dengan kata sandi sekarang. Ini akan menonaktifkan buka kunci biometrik.",
+      "biometricSunsetTitle": "Beralih ke buka kunci dengan kata sandi",
       "biometricSunsetUsePassword": "Gunakan kata sandi",
       "biometricSunsetUseBiometric": "Gunakan biometrik"
     },

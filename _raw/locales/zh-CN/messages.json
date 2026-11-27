@@ -2170,8 +2170,8 @@
       "title": "Rabby Wallet",
       "description": "你首选的以太坊和 EVM 钱包",
       "biometricFailed": "生物识别解锁失败",
-      "biometricSunsetTip": "将于 2027 年 1 月 1 日下线，请改用密码解锁。使用密码解锁后，生物识别解锁会自动关闭。",
-      "biometricSunsetTitle": "生物识别即将下线",
+      "biometricSunsetTip": "自 2027 年 1 月 1 日起，生物识别解锁将不再可用。请立即切换到密码解锁，切换后生物识别解锁会自动关闭。",
+      "biometricSunsetTitle": "切换到密码解锁",
       "biometricSunsetUsePassword": "使用密码",
       "biometricSunsetUseBiometric": "继续使用生物识别"
     },

@@ -2032,8 +2032,8 @@
       "btnForgotPassword": "¿Olvidaste la contraseña?",
       "description": "Tu billetera de referencia para Ethereum y EVM",
       "biometricFailed": "Desbloqueo biométrico fallido",
-      "biometricSunsetTip": "Se eliminará el 1 de ene. de 2027. Por favor, desbloquea con tu contraseña. Al hacerlo, se desactivará el desbloqueo biométrico.",
-      "biometricSunsetTitle": "El desbloqueo biométrico termina",
+      "biometricSunsetTip": "El desbloqueo biométrico dejará de estar disponible a partir del 1 de enero de 2027. Por favor, cambia ahora al desbloqueo con contraseña. Esto desactivará el desbloqueo biométrico.",
+      "biometricSunsetTitle": "Cambiar a desbloqueo con contraseña",
       "biometricSunsetUsePassword": "Usar contraseña",
       "biometricSunsetUseBiometric": "Usar biometría"
     },
