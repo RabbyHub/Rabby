@@ -1,7 +1,7 @@
 import React from 'react';
 import { TBody, THeadCell, THeader, Table } from './Table';
 import { TokenItem, Props as TokenItemProps } from '../TokenItem';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import { TokenDetailPopup } from '@/ui/views/Dashboard/components/TokenDetailPopup';
 import { TokenItem as TokenItemType } from '@/background/service/openapi';
 import { useTranslation } from 'react-i18next';
@@ -15,25 +15,20 @@ export interface Props {
   EmptyComponent?: React.ReactNode;
 }
 
-interface TokenRowData {
-  list: Props['list'];
-  onSelect: (item: TokenItemProps['item']) => void;
-}
+type OnSelectToken = (item: TokenItemProps['item']) => void;
 
-const VirtualTokenRow = ({
-  data,
-  index,
-  style,
-}: ListChildComponentProps<TokenRowData>) => {
-  const item = data.list![index];
-  // react-window sizes the slot inline (itemSize), so the row keeps its own
-  // h-[60px] mt-8 inside the slot instead of taking the slot's style.
-  return (
-    <div style={style} key={`${item.chain}-${item.id}`}>
-      <TokenItem onClick={() => data.onSelect(item)} item={item} />
-    </div>
-  );
-};
+// Each row is exactly fixedItemHeight (virtual.itemSize, via
+// --token-row-height) tall. TokenItem keeps its own h-[60px] mt-8 inside the
+// row; flow-root stops that top margin collapsing out of the row.
+const renderVirtualTokenRow = (
+  _index: number,
+  item: TokenItemProps['item'],
+  onSelect: OnSelectToken
+) => (
+  <div className="flow-root h-(--token-row-height)">
+    <TokenItem onClick={() => onSelect(item)} item={item} />
+  </div>
+);
 
 export const TokenTable: React.FC<Props> = ({
   list,
@@ -77,15 +72,19 @@ export const TokenTable: React.FC<Props> = ({
           </THeader> */}
           <TBody className="mt-0">
             {virtual ? (
-              <FixedSizeList
-                height={virtual.height}
-                width="100%"
-                itemData={{ list, onSelect: setSelected }}
-                itemCount={list?.length || 0}
-                itemSize={virtual.itemSize}
-              >
-                {VirtualTokenRow}
-              </FixedSizeList>
+              <Virtuoso
+                style={
+                  {
+                    height: virtual.height,
+                    width: '100%',
+                    '--token-row-height': `${virtual.itemSize}px`,
+                  } as React.CSSProperties
+                }
+                data={list}
+                context={setSelected}
+                fixedItemHeight={virtual.itemSize}
+                itemContent={renderVirtualTokenRow}
+              />
             ) : (
               list?.map((item) => {
                 return (

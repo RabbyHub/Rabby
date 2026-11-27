@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { VariableSizeList as VList, ListOnScrollProps } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
@@ -281,12 +281,25 @@ const AddressManagement = () => {
     );
   }, [gotoAddAddress]);
 
-  const Row = useCallback(
+  const renderRow = useCallback(
     (
-      props: any //ListChildComponentProps<typeof accountsList[] | typeof accountsList>
+      index: number,
+      account: typeof accountsList[number] | typeof accountsList
     ) => {
-      const { data, index, style } = props;
-      const account = data[index];
+      const isLast = index === filteredAccounts.length - 1;
+      // The last non-watch address, followed by a gap before the watch-only
+      // ones. The index is from the unfiltered list, so a search can move it.
+      const isLastNormal = index === sortedAccountsList.length - 1;
+      // Rows size themselves: AddressItem is 52px, and this padding makes a
+      // 60px pitch, 16px more after the last non-watch address, and 24px of
+      // bottom space under the add-address button on the last row.
+      const rowPadding = isLast
+        ? isLastNormal
+          ? 'pb-[48px]'
+          : 'pb-32'
+        : isLastNormal
+        ? 'pb-24'
+        : 'pb-8';
 
       const render = (
         account: typeof accountsList[number],
@@ -303,9 +316,8 @@ const AddressManagement = () => {
             <div
               className={clsx(
                 'address-wrap-with-padding px-[20px]',
-                isGroup && 'row-group'
+                isGroup ? 'row-group' : rowPadding
               )}
-              style={!isGroup ? style : undefined}
               key={account.address}
             >
               <AddressItem
@@ -355,21 +367,23 @@ const AddressManagement = () => {
                 enableSwitch={enableSwitch}
               />
 
-              {!isGroup && index === data.length - 1
-                ? AddNewAddressColumn
-                : null}
+              {!isGroup && isLast ? AddNewAddressColumn : null}
             </div>
           </>
         );
       };
 
       if (addressSortStore.sortType === 'addressType') {
+        // 20px between groups, plus 24px under the add-address button.
         return (
-          <div style={style} className="address-type-container">
+          <div
+            className={clsx(
+              'address-type-container',
+              isLast ? 'pb-[44px]' : 'pb-20'
+            )}
+          >
             {(account as typeof accountsList)?.map((e) => render(e, true))}
-            {index === data.length - 1 ? (
-              <div className="mx-20">{AddNewAddressColumn}</div>
-            ) : null}
+            {isLast ? <div className="mx-20">{AddNewAddressColumn}</div> : null}
           </div>
         );
       }
@@ -382,6 +396,8 @@ const AddressManagement = () => {
       switchAccount,
       addressSortStore?.sortType,
       dispatch?.addressManagement?.toggleHighlightedAddressAsync,
+      filteredAccounts.length,
+      sortedAccountsList.length,
     ]
   );
 
@@ -408,21 +424,41 @@ const AddressManagement = () => {
     });
   }, [searchKeyword]);
 
-  const listRef = useRef<
-    VList<IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][]>
-  >(null);
-
-  const { run: handleScroll } = useDebounceFn(
-    (p: ListOnScrollProps) => {
+  const { run: saveScrollOffset } = useDebounceFn(
+    (scrollOffset: number) => {
       dispatch.preference.setAddressSortStoreValue({
         key: 'lastScrollOffset',
-        value: p.scrollOffset,
+        value: scrollOffset,
       });
     },
     {
       wait: 500,
     }
   );
+
+  const listKey = addressSortStore.sortType + debouncedSearchKeyword;
+  // Every (re)mounted list starts at the top, so record offset 0. Only the
+  // list's first mount restores the saved offset, through initialScrollTop.
+  useEffect(() => {
+    saveScrollOffset(0);
+  }, [listKey, saveScrollOffset]);
+
+  const listMountedRef = useRef(false);
+  const [initialScrollTop] = React.useState(() => {
+    const { lastCurrentRecordTime, lastScrollOffset } = addressSortStore;
+    if (
+      !lastCurrentRecordTime ||
+      !lastScrollOffset ||
+      !filteredAccounts?.length ||
+      dayjs().isAfter(dayjs.unix(lastCurrentRecordTime).add(15, 'minute'))
+    ) {
+      return undefined;
+    }
+    return lastScrollOffset;
+  });
+  useEffect(() => {
+    listMountedRef.current = true;
+  }, []);
 
   useEffect(() => {
     if (
@@ -445,8 +481,7 @@ const AddressManagement = () => {
       addressSortStore.lastScrollOffset &&
       filteredAccounts?.length
     ) {
-      listRef.current?.scrollTo(addressSortStore.lastScrollOffset);
-
+      // The scroll itself is restored through initialScrollTop.
       return () => {
         dispatch.preference.setAddressSortStoreValue({
           key: 'lastCurrentRecordTime',
@@ -455,28 +490,6 @@ const AddressManagement = () => {
       };
     }
   }, []);
-
-  const getItemSize = React.useCallback(
-    (i: number) => {
-      const lastAddAddrBtn = 52 + 20;
-      const lastPadding =
-        i === filteredAccounts.length - 1 ? 24 + lastAddAddrBtn : 0;
-      if (addressSortStore.sortType === 'addressType') {
-        return (
-          52 * (filteredAccounts as typeof accountsList[])[i].length +
-          20 +
-          lastPadding
-        );
-      }
-
-      return lastPadding + (i !== sortedAccountsList.length - 1 ? 60 : 76);
-    },
-    [filteredAccounts, sortedAccountsList, addressSortStore.sortType]
-  );
-
-  useEffect(() => {
-    listRef.current?.resetAfterIndex(0);
-  }, [accountsList.length]);
 
   return (
     <div className="page-address-management px-0 overflow-hidden">
@@ -582,28 +595,31 @@ const AddressManagement = () => {
         <NoSearchedAddressUI />
       ) : (
         <div className={'address-group-list management'}>
-          <VList
-            ref={listRef}
-            key={addressSortStore.sortType + debouncedSearchKeyword}
-            height={
-              currentAccountIndex === -1
-                ? 461
-                : hasStatusBar
-                ? 358
-                : showBackupWarning
-                ? 372
-                : 416
-            }
-            width="100%"
-            itemData={filteredAccounts}
-            itemCount={filteredAccounts.length}
-            itemSize={getItemSize}
-            className="address-scroll-container"
-            overscanCount={6}
-            onScroll={handleScroll}
+          <Virtuoso<
+            IDisplayedAccountWithBalance | IDisplayedAccountWithBalance[]
           >
-            {Row}
-          </VList>
+            key={listKey}
+            style={{
+              height:
+                currentAccountIndex === -1
+                  ? 461
+                  : hasStatusBar
+                  ? 358
+                  : showBackupWarning
+                  ? 372
+                  : 416,
+              width: '100%',
+            }}
+            className="address-scroll-container"
+            data={filteredAccounts}
+            itemContent={renderRow}
+            // About six 60px rows beyond each edge of the viewport
+            increaseViewportBy={360}
+            initialScrollTop={
+              listMountedRef.current ? undefined : initialScrollTop
+            }
+            onScroll={(e) => saveScrollOffset(e.currentTarget.scrollTop)}
+          />
         </div>
       )}
     </div>

@@ -21,6 +21,8 @@ import {
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import { useDebounce } from 'react-use';
+// Global styles: also used by AddressManagement's .address-wrap-with-padding rows.
+import './style.less';
 
 export interface AddressItemProps {
   account: {
