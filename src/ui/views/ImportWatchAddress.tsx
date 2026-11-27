@@ -11,7 +11,7 @@ import { openInternalPageInTab } from 'ui/utils/webapi';
 import { EVENTS, KEYRING_CLASS } from 'consts';
 import { ReactComponent as RcIconArrowDown } from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
-import { useMedia } from '@/ui/hooks/useMedia';
+import { UI_TYPE } from '@/constant/ui';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import IconBack from 'ui/assets/icon-back.svg';
@@ -41,7 +41,7 @@ const ImportWatchAddress: React.FC<{
 
   const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
   const [tags, setTags] = useState<string[]>([]);
-  const isWide = useMedia('(min-width: 401px)');
+  const isWide = UI_TYPE.isTab || UI_TYPE.isDesktop;
   const isValidAddr = isValidAddress(inputAddress.trim());
   const { show, contextHolder } = useRepeatImportConfirm();
   const ModalComponent = isWide ? Modal : Popup;

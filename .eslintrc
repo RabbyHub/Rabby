@@ -41,7 +41,7 @@
               "useMedia",
               "createGlobalState"
             ],
-            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\"). The other names are utility hooks that moved to ahooks or src/ui/hooks, whose signatures differ: useDebounce -> ahooks useDebounceEffect or useDebounceFn with an explicit wait (default 1000 ms), or useDebouncedValue from @/ui/hooks/useDebounceValue for a debounced input (skills/rabby-data-fetching/SKILL.md); usePrevious -> usePreviousRender from @/ui/hooks/usePreviousRender (ahooks usePrevious returns the last different value); useMedia -> @/ui/hooks/useMedia; createGlobalState -> a zustand store; useThrottleFn -> ahooks useThrottle or useThrottledValueLeading/Trailing; the rest -> the ahooks hook of the same name."
+            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\"). The other names are utility hooks that moved to ahooks or src/ui/hooks, whose signatures differ: useDebounce -> ahooks useDebounceEffect or useDebounceFn with an explicit wait (default 1000 ms), or useDebouncedValue from @/ui/hooks/useDebounceValue for a debounced input (skills/rabby-data-fetching/SKILL.md); usePrevious -> usePreviousRender from @/ui/hooks/usePreviousRender (ahooks usePrevious returns the last different value); useMedia -> UI_TYPE from @/constant/ui for popup-vs-tab layouts, or window.matchMedia; createGlobalState -> a zustand store; useThrottleFn -> ahooks useThrottle or useThrottledValueLeading/Trailing; the rest -> the ahooks hook of the same name."
           }
         ],
         "patterns": [
@@ -78,7 +78,7 @@
               "react-use/lib/factory/createGlobalState",
               "react-use/esm/factory/createGlobalState"
             ],
-            "message": "This utility hook moved to ahooks or src/ui/hooks, whose signatures differ: useDebounce -> ahooks useDebounceEffect or useDebounceFn with an explicit wait (default 1000 ms), or useDebouncedValue from @/ui/hooks/useDebounceValue for a debounced input (skills/rabby-data-fetching/SKILL.md); usePrevious -> usePreviousRender from @/ui/hooks/usePreviousRender (ahooks usePrevious returns the last different value); useMedia -> @/ui/hooks/useMedia; createGlobalState -> a zustand store; useThrottleFn -> ahooks useThrottle or useThrottledValueLeading/Trailing; the rest -> the ahooks hook of the same name."
+            "message": "This utility hook moved to ahooks or src/ui/hooks, whose signatures differ: useDebounce -> ahooks useDebounceEffect or useDebounceFn with an explicit wait (default 1000 ms), or useDebouncedValue from @/ui/hooks/useDebounceValue for a debounced input (skills/rabby-data-fetching/SKILL.md); usePrevious -> usePreviousRender from @/ui/hooks/usePreviousRender (ahooks usePrevious returns the last different value); useMedia -> UI_TYPE from @/constant/ui for popup-vs-tab layouts, or window.matchMedia; createGlobalState -> a zustand store; useThrottleFn -> ahooks useThrottle or useThrottledValueLeading/Trailing; the rest -> the ahooks hook of the same name."
           }
         ]
       }
