@@ -18,8 +18,6 @@ const passThrough = ({ children }: any) =>
   React.createElement('div', null, children);
 
 const loadSwapTokenOrder = () => {
-  const Div = ({ children, className }: any) =>
-    React.createElement('div', { className }, children);
   const securityState = {
     rules: [],
     currentTx: { processedRules: [] },
@@ -28,7 +26,10 @@ const loadSwapTokenOrder = () => {
   };
   const modules: Record<string, any> = {
     react: React,
-    'styled-components': { __esModule: true, default: { div: () => Div } },
+    './SwapTokenOrder.module.css': {
+      __esModule: true,
+      default: { wrapper: 'wrapper' },
+    },
     'react-i18next': { useTranslation: () => ({ t: (key: string) => key }) },
     '@/ui/utils/number': {
       formatAmount: (v: any) => String(v),
