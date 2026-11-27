@@ -4,7 +4,7 @@ import { Input, InputRef } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import styles from './TokenSearchInput.module.css';
 
 export interface Props {
@@ -27,12 +27,12 @@ export const TokenSearchInput = React.forwardRef<InputRef, Props>(
       }
     }, [visible]);
 
-    useDebounce(
+    useDebounceEffect(
       () => {
         onSearch?.(input);
       },
-      300,
-      [input]
+      [input],
+      { wait: 300 }
     );
 
     return (

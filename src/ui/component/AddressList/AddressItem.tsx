@@ -20,7 +20,7 @@ import {
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 
 export interface AddressItemProps {
   account: {
@@ -137,14 +137,14 @@ const AddressItemContent = memo(
         alianNameConfirm,
       }));
 
-      useDebounce(
+      useDebounceEffect(
         () => {
           if (!showEditIcon) {
             alianNameConfirm();
           }
         },
-        200,
-        [alianName, showEditIcon]
+        [alianName, showEditIcon],
+        { wait: 200 }
       );
 
       const updateAlianName = async (alianName) => {

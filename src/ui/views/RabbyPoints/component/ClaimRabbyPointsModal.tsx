@@ -4,7 +4,7 @@ import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import clsx from 'clsx';
-import { useInterval } from 'react-use';
+import { useInterval } from 'ahooks';
 import { ReactComponent as IconInputLoading } from 'ui/assets/rabby-points/loading.svg';
 import { ReactComponent as IconInputError } from 'ui/assets/rabby-points/error.svg';
 import { ReactComponent as IconInputChecked } from 'ui/assets/rabby-points/checked.svg';
@@ -201,7 +201,7 @@ const ClaimPoints = ({
     () => {
       setLoadingNum((s) => s + 1);
     },
-    !!snapshot && !snapshotLoading && loadingNum < list.length ? 900 : null
+    !!snapshot && !snapshotLoading && loadingNum < list.length ? 900 : undefined
   );
 
   const onSubmit = React.useCallback(() => {

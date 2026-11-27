@@ -18,7 +18,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useAsyncFn, useDebounce } from 'react-use';
+import { useAsyncFn } from 'react-use';
+import { useDebounceEffect, useDebounceFn } from 'ahooks';
 import useAsync from 'react-use/lib/useAsync';
 import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
 import { getChainDefaultToken, tokenAmountBn } from '@/ui/utils/token';
@@ -154,14 +155,14 @@ const useToken = (type: 'from' | 'to', refreshTokenId: number) => {
     chain,
   ]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (value && !error && !loading) {
         setToken(value);
       }
     },
-    300,
-    [value, error, loading]
+    [value, error, loading],
+    { wait: 300 }
   );
 
   return [chain, token, setToken, switchChain] as const;
@@ -633,13 +634,16 @@ export const useBridge = () => {
     }
   }, [canRunQuoteRequest, slippageObj.slippage, refreshId]);
 
-  const [, cancelDebounce] = useDebounce(
+  const { run: debouncedGetQuoteList, cancel: cancelDebounce } = useDebounceFn(
     () => {
       getQuoteList();
     },
-    300,
-    [getQuoteList]
+    { wait: 300 }
   );
+
+  useEffect(() => {
+    debouncedGetQuoteList();
+  }, [getQuoteList, debouncedGetQuoteList]);
 
   const setQuoteRefreshLocked = useCallback(
     (locked: boolean) => {
