@@ -113,13 +113,14 @@ export const useLoginDepositConfirm = (params: {
   const { login } = useGasAccountMethods();
 
   const history = useHistory();
+  const onGotoGasAccount = params?.onGotoGasAccount;
   const gotoGasAccount = React.useCallback(() => {
-    params?.onGotoGasAccount?.();
+    onGotoGasAccount?.();
     history.push({
       pathname: '/gas-account',
       search: `?resetKey=${nanoid()}`,
     });
-  }, [params?.onGotoGasAccount]);
+  }, [onGotoGasAccount, history]);
 
   const modalConfirm = React.useCallback(
     (type: 'login' | 'deposit') => {
@@ -159,7 +160,7 @@ export const useLoginDepositConfirm = (params: {
         },
       });
     },
-    [t, login, gotoGasAccount]
+    [t, login, gotoGasAccount, currentAccount]
   );
 
   return modalConfirm;

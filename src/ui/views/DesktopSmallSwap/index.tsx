@@ -107,11 +107,10 @@ const DesktopSmallSwapContent: React.FC = () => {
     setChainServerId(serverId);
   });
 
-  const chain = useMemo(() => {
-    return findChain({
-      serverId: chainServerId,
-    });
-  }, [chainList, chainServerId]);
+  // Not memoized: findChain reads the chain store, which a deps array cannot see.
+  const chain = findChain({
+    serverId: chainServerId,
+  });
 
   const {
     tokens: allTokens,
@@ -213,7 +212,7 @@ const DesktopSmallSwapContent: React.FC = () => {
     if (task.status === 'completed') {
       handleRefresh();
     }
-  }, [task.status]);
+  }, [task.status, handleRefresh]);
 
   const location = useLocation();
   useMount(() => {

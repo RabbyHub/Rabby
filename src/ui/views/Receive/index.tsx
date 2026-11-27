@@ -7,7 +7,7 @@ import ThemeIcon from '@/ui/component/ThemeMode/ThemeIcon';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { OfflineChainNotify } from '@/ui/views/Dashboard/components/OfflineChainNotify';
 import { findChain, findChainByEnum, getChainList } from '@/utils/chain';
-import { useRequest } from 'ahooks';
+import { useRequest, useMount } from 'ahooks';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
@@ -45,7 +45,7 @@ const useAccount = () => {
       setAccount(a);
       setAddress(a!.address.toLowerCase());
     });
-  }, []);
+  }, [wallet]);
   useEffect(() => {
     if (address) {
       wallet.getAlianName(address).then(setName);
@@ -57,7 +57,7 @@ const useAccount = () => {
         .getInMemoryAddressBalance(address)
         .then((d) => setBalance(d.total_usd_value));
     }
-  }, [address]);
+  }, [address, wallet]);
 
   return {
     ...account,
@@ -158,9 +158,9 @@ const Receive = () => {
       return;
     }
   };
-  useEffect(() => {
+  useMount(() => {
     init();
-  }, []);
+  });
   useEffect(() => {
     if (account?.type !== KEYRING_CLASS.WATCH) {
       return;

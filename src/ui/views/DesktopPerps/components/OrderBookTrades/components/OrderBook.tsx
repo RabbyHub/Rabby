@@ -114,7 +114,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
 
   const szDecimals = useMemo(() => {
     return marketDataMap[selectedCoin]?.szDecimals ?? 5;
-  }, [currentMarketData, selectedCoin]);
+  }, [selectedCoin, marketDataMap]);
 
   const quoteAsset = marketDataMap[selectedCoin]?.quoteAsset ?? 'USDC';
   const pxDecimals = marketDataMap[selectedCoin]?.pxDecimals ?? 2;
@@ -132,6 +132,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
   // For BTC (szDecimals=5): baseTickSize = 1 → 1, 2, 5, 10, 100, 1000
   // For ETH (szDecimals=4): baseTickSize = 0.1 → 0.1, 0.2, 0.5, 1, 10, 100
   // For SOL (szDecimals=2): baseTickSize = 0.01 → 0.01, 0.02, 0.05, 0.1, 1, 10
+  const hasMarkPx = markPx > 0;
   const aggregationLevels = useMemo<AggregationConfig[]>(() => {
     if (!markPx || !isInitialized) return [];
     const result = getPerpTickOptions(markPx, szDecimals);
@@ -143,10 +144,10 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         label: level.displayPrice.toString(),
       };
     });
-    // Depend on `markPx > 0` (a boundary signal) rather than markPx itself:
+    // Depend on `hasMarkPx` (a boundary signal) rather than markPx itself:
     // recompute only when price crosses the 0 boundary (no price → has price),
     // not on every WS tick. The tick options only care about price magnitude.
-  }, [markPx > 0, szDecimals, selectedCoin, isInitialized]);
+  }, [hasMarkPx, szDecimals, selectedCoin, isInitialized]);
 
   useEffect(() => {
     setAggregationIndex(0);
@@ -176,7 +177,7 @@ export const OrderBook: React.FC<{ latestTrade?: Trade }> = ({
         },
       });
     },
-    []
+    [dispatch.perps]
   );
 
   // Subscribe to order book data via WebSocket

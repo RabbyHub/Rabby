@@ -1,6 +1,6 @@
 import { useInterval } from 'ahooks';
 import dayjs from 'dayjs';
-import React, { useMemo, useState } from 'react';
+import React, { useState } from 'react';
 
 const formatEndTime = (endTime: number) => {
   const diffMs = dayjs.unix(endTime).diff().valueOf();
@@ -44,7 +44,7 @@ export const EndTime: React.FC<{
   style?: React.CSSProperties;
   onEnd?: () => void;
 }> = ({ end, className, style, onEnd }) => {
-  const [key, setKey] = useState(0);
+  const [, setKey] = useState(0);
 
   const clearInterval = useInterval(() => {
     if (dayjs.unix(end).isBefore(dayjs())) {
@@ -54,15 +54,9 @@ export const EndTime: React.FC<{
     setKey((prev) => prev + 1);
   }, 1000);
 
-  const { displayTime, fullTime } = useMemo(() => {
-    const endTime = dayjs.unix(end);
-    const displayTime = formatEndTime(end);
-    const fullTime = endTime.format('YYYY-MM-DD HH:mm:ss');
-    return {
-      displayTime,
-      fullTime,
-    };
-  }, [end, key]);
+  // The interval above re-renders every second, so these follow the clock.
+  const displayTime = formatEndTime(end);
+  const fullTime = dayjs.unix(end).format('YYYY-MM-DD HH:mm:ss');
 
   return (
     <span title={fullTime} className={className} style={style}>

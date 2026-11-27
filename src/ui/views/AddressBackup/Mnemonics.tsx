@@ -68,7 +68,7 @@ const AddressBackupMnemonics: React.FC<{
         duration: 0.5,
       });
     });
-  }, [data]);
+  }, [data, t]);
 
   const handleShowQrCode = () => {
     Popup.open({

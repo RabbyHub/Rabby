@@ -157,7 +157,15 @@ export const KeystoneWiredWaiting: React.FC<IKeystoneWaitingProps> = ({
       return keystoneErrorCatcher(error);
     }
     return '';
-  }, [error, errorMessage, statusProp, shouldAutoRetry]);
+  }, [
+    error,
+    errorMessage,
+    statusProp,
+    shouldAutoRetry,
+    handleCancel,
+    keystoneErrorCatcher,
+    t,
+  ]);
 
   useEffect(() => {
     setHiddenSwitchButton(['FAILED', 'REJECTED'].includes(statusProp));

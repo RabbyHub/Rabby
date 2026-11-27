@@ -82,9 +82,9 @@ const Dashboard = () => {
     }
   };
 
-  useEffect(() => {
+  useMount(() => {
     getCurrentAccount();
-  }, []);
+  });
 
   useEffect(() => {
     if (currentAccount) {
@@ -93,7 +93,7 @@ const Dashboard = () => {
         currentAccount,
       });
     }
-  }, [currentAccount]);
+  }, [currentAccount, dispatch.gift]);
 
   useEffect(() => {
     (async () => {
@@ -104,7 +104,12 @@ const Dashboard = () => {
       const hasAnyAccountClaimedGift = await wallet.getHasAnyAccountClaimedGift();
       dispatch.gift.setField({ hasClaimedGift: hasAnyAccountClaimedGift });
     })();
-  }, []);
+  }, [
+    dispatch.accountToDisplay,
+    dispatch.addressManagement,
+    dispatch.gift,
+    wallet,
+  ]);
 
   // Discovery costs one gas account balance lookup per address. The dashboard
   // only consumes the two fields discovery derives for a logged-out wallet —

@@ -110,7 +110,7 @@ export const NFTTabPane: React.FC<{ selectChainId?: string }> = ({
       isEditListing: false,
       resultState: null,
     });
-  }, [currentAccount?.address]);
+  }, [currentAccount?.address, setState]);
 
   return (
     <div className="py-[16px] px-[20px]">

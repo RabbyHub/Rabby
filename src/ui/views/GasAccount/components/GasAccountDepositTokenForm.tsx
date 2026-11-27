@@ -892,7 +892,7 @@ const GasAccountDepositTokenFormInner: React.FC<
         throw error;
       }
     },
-    [closeSign, openDirect, openUI, resetGasStore]
+    [closeSign, openDirect, openUI, resetGasStore, getContainer]
   );
 
   const afterBridgeTopUpGasAccount = useCallback(
@@ -1242,6 +1242,7 @@ const GasAccountDepositTokenFormInner: React.FC<
     submitDirectDeposit,
     t,
     waitForDepositResult,
+    closeSign,
   ]);
 
   const amountTokenText = selectedToken

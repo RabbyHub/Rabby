@@ -48,7 +48,7 @@ export const ActionsContainer: React.FC<
     wallet
       .checkNeedDisplayCancelAllApproval()
       .then(setDisplayCancelAllApproval);
-  }, []);
+  }, [wallet]);
 
   const displayPopup =
     displayBlockedRequestApproval || displayCancelAllApproval;

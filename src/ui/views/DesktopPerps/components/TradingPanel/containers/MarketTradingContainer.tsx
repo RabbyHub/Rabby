@@ -121,14 +121,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
       isValid: error === '',
       error,
     };
-  }, [
-    markPrice,
-    positionSize.amount,
-    tradeSize,
-    currentMarketData,
-    percentage,
-    t,
-  ]);
+  }, [markPrice, positionSize.amount, currentMarketData, t]);
 
   // Direction-specific validation
   const { handleOpenMarketOrder } = usePerpsProPosition();
@@ -450,7 +443,7 @@ export const MarketTradingContainer: React.FC<TradingContainerProps> = () => {
     //   4
     // )} / Max ${formatPercent(marketSlippage, 0)}`;
     return `Max ${formatPercent(marketSlippage, 2)}`;
-  }, [estPrice, positionSize.amount, midPrice, marketSlippage]);
+  }, [marketSlippage]);
 
   const handleSetSlippage = () => {
     setSlippageVisible(true);

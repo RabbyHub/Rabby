@@ -288,7 +288,7 @@ export function VirtualTable<RecordType extends object>({
       rowIndex: 0,
       shouldForceUpdate: true,
     });
-  }, []);
+  }, [gridRef]);
 
   useEffect(() => {
     resetVirtualGrid();
@@ -320,7 +320,7 @@ export function VirtualTable<RecordType extends object>({
     // return isDesktop
     //   ? Math.min(totalHeight, window.innerHeight > 900 ? 556 : 280)
     //   : (scroll!.y as number);
-  }, [isDesktop, scroll]);
+  }, [isDesktop, scroll, totalHeight]);
 
   const renderVirtualList = (
     rowList: readonly RecordType[],
@@ -401,21 +401,18 @@ export function VirtualTable<RecordType extends object>({
     );
   };
 
-  const renderTableBody = useCallback(
-    (...args: Parameters<typeof renderVirtualList>) => {
-      if (!markHoverRow) return renderVirtualList(...args);
+  const renderTableBody = (...args: Parameters<typeof renderVirtualList>) => {
+    if (!markHoverRow) return renderVirtualList(...args);
 
-      return (
-        <div
-          className="am-table-vgrid-wrapper"
-          onMouseLeave={onLeaveTableBodyWrapper}
-        >
-          {renderVirtualList(...args)}
-        </div>
-      );
-    },
-    [markHoverRow, onLeaveTableBodyWrapper, renderVirtualList]
-  );
+    return (
+      <div
+        className="am-table-vgrid-wrapper"
+        onMouseLeave={onLeaveTableBodyWrapper}
+      >
+        {renderVirtualList(...args)}
+      </div>
+    );
+  };
 
   const renderEmpty = useCallback(
     () => <TableBodyEmpty isLoading={isLoading} />,

@@ -37,8 +37,12 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
   const { currentAccount } = useSceneAccountInfo();
   const allowNavigationRef = React.useRef(false);
   const batchRevokeState = location.state;
-  const revokeList = batchRevokeState?.revokeList ?? [];
-  const dataSource = batchRevokeState?.dataSource ?? [];
+  const revokeList = React.useMemo(() => batchRevokeState?.revokeList ?? [], [
+    batchRevokeState?.revokeList,
+  ]);
+  const dataSource = React.useMemo(() => batchRevokeState?.dataSource ?? [], [
+    batchRevokeState?.dataSource,
+  ]);
   const accountMode = React.useMemo(
     () => getBatchRevokeAccountMode(currentAccount?.type),
     [currentAccount?.type]
@@ -66,17 +70,12 @@ export const ManageBatchRevokeApprovals: React.FC = () => {
     }
   }, [batchRevokeState, history]);
 
+  const { status, init } = task;
   React.useEffect(() => {
-    if (batchRevokeState && task.status === 'idle') {
-      task.init(filteredDataSource, revokeList);
+    if (batchRevokeState && status === 'idle') {
+      init(filteredDataSource, revokeList);
     }
-  }, [
-    batchRevokeState,
-    filteredDataSource,
-    revokeList,
-    task.init,
-    task.status,
-  ]);
+  }, [batchRevokeState, filteredDataSource, revokeList, init, status]);
 
   const isPaused = task.status === 'paused';
   const processText = ` (${task.revokedApprovals}/${task.totalApprovals})`;

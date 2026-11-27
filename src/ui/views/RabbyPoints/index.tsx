@@ -216,7 +216,7 @@ const RabbyPoints = () => {
         window.close();
       }
     },
-    [wallet?.rabbyPointVerifyAddress, account]
+    [account, forceUpdate, wallet]
   );
 
   const claimSnapshot = React.useCallback(
@@ -231,7 +231,7 @@ const RabbyPoints = () => {
       }
       lockRef.current = false;
     },
-    [account?.address, wallet?.openapi, rabbyPointVerifyAddress]
+    [rabbyPointVerifyAddress]
   );
 
   const verifyAddr = React.useCallback(() => {
@@ -275,7 +275,8 @@ const RabbyPoints = () => {
       signature,
       refreshUserPoints,
       account?.address,
-      wallet?.openapi?.claimRabbyPointsById,
+      claimItemLoading,
+      wallet.openapi,
     ]
   );
 
@@ -291,10 +292,10 @@ const RabbyPoints = () => {
         message.success(t('page.rabbyPoints.code-set-successfully'), 2);
       }
     },
-    [wallet.openapi, account?.address, signature]
+    [wallet.openapi, account?.address, signature, t]
   );
 
-  const ended = useMemo(() => true, [campaignIsEnded]);
+  const ended = useMemo(() => true, []);
 
   useEffect(() => {
     if (
@@ -316,7 +317,7 @@ const RabbyPoints = () => {
 
   useEffect(() => {
     wallet.clearPageStateCache();
-  }, []);
+  }, [wallet]);
 
   const currentUserIdx = useMemo(() => {
     if (topUsers && account?.address) {

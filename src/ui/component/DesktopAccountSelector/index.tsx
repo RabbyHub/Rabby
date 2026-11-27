@@ -172,7 +172,7 @@ const useAccountList = (options?: { scene?: Scene }) => {
       }
       return item.type !== KEYRING_TYPE.WatchAddressKeyring;
     });
-  }, [sortedAccountsList]);
+  }, [sortedAccountsList, scene]);
 
   useRequest(
     async () => {

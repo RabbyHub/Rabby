@@ -125,14 +125,14 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
     }
 
     return Number(currentMarketData?.markPx || 0);
-  }, [wsActiveAssetCtx, currentMarketData]);
+  }, [wsActiveAssetCtx, currentMarketData, selectedCoin]);
 
   const midPrice = React.useMemo(() => {
     if (wsActiveAssetCtx && wsActiveAssetCtx.coin === selectedCoin) {
       return Number(wsActiveAssetCtx.ctx.midPx || 0);
     }
     return Number(currentMarketData?.midPx || 0);
-  }, [wsActiveAssetCtx, currentMarketData]);
+  }, [wsActiveAssetCtx, currentMarketData, selectedCoin]);
 
   const szDecimals = currentMarketData?.szDecimals ?? 4;
   const pxDecimals = currentMarketData?.pxDecimals ?? 2;
@@ -163,14 +163,13 @@ export const usePerpsTradingState = ({ readOnly = false } = {}) => {
   );
 
   // Available balance - direction-agnostic min of buy/sell available.
+  const availableToBuy = wsActiveAssetData?.availableToTrade?.[0];
+  const availableToSell = wsActiveAssetData?.availableToTrade?.[1];
   const availableBalance = React.useMemo(() => {
-    const buy = Number(wsActiveAssetData?.availableToTrade?.[0] || 0);
-    const sell = Number(wsActiveAssetData?.availableToTrade?.[1] || 0);
+    const buy = Number(availableToBuy || 0);
+    const sell = Number(availableToSell || 0);
     return Math.min(buy, sell);
-  }, [
-    wsActiveAssetData?.availableToTrade?.[0],
-    wsActiveAssetData?.availableToTrade?.[1],
-  ]);
+  }, [availableToBuy, availableToSell]);
 
   const rawMaxBuyTradeSize = wsActiveAssetData?.maxTradeSzs[0];
   const rawMaxSellTradeSize = wsActiveAssetData?.maxTradeSzs[1];

@@ -39,9 +39,10 @@ export const CreateAddressSuccess: React.FC<{
     onNavigate,
   });
 
-  const state = (outerState ||
-    location.state ||
-    {}) as CreateAddressSuccessState;
+  const state = React.useMemo(
+    () => (outerState || location.state || {}) as CreateAddressSuccessState,
+    [outerState, location.state]
+  );
   const title = state.title || t('page.newAddress.newSeedPhraseCreated');
   const description = state.description || '';
   const addresses = React.useMemo(() => normalizeSuccessAddresses(state), [

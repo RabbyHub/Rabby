@@ -4,7 +4,7 @@ import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { message, Table } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
-import React, { useCallback, useMemo, useEffect, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import { UserHistoricalOrders, WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import dayjs from 'dayjs';
@@ -16,6 +16,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { formatPerpsOrderStatus } from '@/ui/views/DesktopPerps/utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
+import { useMount } from 'ahooks';
 
 export const OrderHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -38,11 +39,11 @@ export const OrderHistory: React.FC = () => {
     sdk.info.getUserHistoricalOrders().then((res) => {
       dispatch.perps.patchState({ historicalOrders: res.slice(0, 2000) });
     });
-  }, []);
+  }, [dispatch.perps]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchHistoricalOrders();
-  }, []);
+  });
 
   const columns = useMemo<ColumnType<UserHistoricalOrders>[]>(
     () => [
@@ -282,7 +283,7 @@ export const OrderHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, t]
+    [marketDataMap, t, dispatch.perps]
   );
   // The order table has many columns. Instead of squeezing them until values
   // overflow, give the whole table a minimum width: above it the columns stretch

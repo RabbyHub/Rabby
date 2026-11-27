@@ -190,6 +190,7 @@ const useCheckGasAndNonce = ({
       isSpeedUp,
       isGnosisAccount,
       nativeTokenBalance,
+      recommendGasLimitRatio,
     ]
   );
 };

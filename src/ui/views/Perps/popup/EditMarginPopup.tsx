@@ -71,7 +71,7 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
   const [margin, setMargin] = React.useState('');
   const markPrice = useMemo(() => {
     return Number(activeAssetCtx?.markPx || currentAssetCtx?.markPx || 0);
-  }, [activeAssetCtx]);
+  }, [activeAssetCtx, currentAssetCtx?.markPx]);
 
   const marginNormalized = useMemo(() => {
     const newMargin = margin.startsWith('$') ? margin.slice(1) : margin;
@@ -97,15 +97,14 @@ export const EditMarginPopup: React.FC<EditMarginPopupProps> = ({
       leverageMax
     ).toFixed(pxDecimals);
   }, [
-    marginUsed,
     markPrice,
-    leverage,
     leverageMax,
     margin,
     direction,
     positionSize,
     pxDecimals,
     noChangeMargin,
+    marginNormalized,
   ]);
 
   const minMargin = useMemo(() => {

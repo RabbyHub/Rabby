@@ -172,11 +172,7 @@ export const BridgeContent = () => {
       return t('page.bridge.approve-and-bridge');
     }
     return t('page.bridge.title');
-  }, [
-    selectedBridgeQuote?.shouldApproveToken,
-    showExternalDappTips,
-    externalDapps,
-  ]);
+  }, [selectedBridgeQuote?.shouldApproveToken, showExternalDappTips, t]);
 
   const wallet = useWallet();
   const rbiSource = useRbiSource();
@@ -428,7 +424,7 @@ export const BridgeContent = () => {
       clearTimeout(buildBridgeTxsTimerRef.current);
       buildBridgeTxsTimerRef.current = null;
     }
-  }, [quoteRequestId]);
+  }, [quoteRequestId, mutateTxs]);
 
   const runBuildBridgeTxsForKey = useMemoizedFn((buildKey: string) => {
     const buildPromise = runBuildBridgeTxs(buildKey);
@@ -814,6 +810,8 @@ export const BridgeContent = () => {
     quoteRequestId,
     awaitingTopUpResume,
     depositFlowActive,
+    mutateTxs,
+    runBuildBridgeTxsForKey,
   ]);
 
   useEffect(() => {

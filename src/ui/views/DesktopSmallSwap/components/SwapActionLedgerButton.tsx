@@ -47,6 +47,7 @@ export const SwapActionLedgerButton: React.FC<{
   const { t } = useTranslation();
   const { status } = useLedgerStatus();
   const currentApprovalIndex = task.currentTaskIndex;
+  const { pause, addTask, currentApprovalRef } = task;
   const totalApprovals = task?.list?.length || 1;
   const [
     visibleLedgerConnectModal,
@@ -61,10 +62,10 @@ export const SwapActionLedgerButton: React.FC<{
         isLedgerConnectionRecoverableError(message)
       ) {
         setVisibleLedgerConnectModal(true);
-        task.pause();
+        pause();
 
         if (!isLedgerDisconnectedError(message)) {
-          task.addTask(task.currentApprovalRef.current!, 1);
+          addTask(currentApprovalRef.current!, 1);
         }
       }
     };
@@ -74,7 +75,7 @@ export const SwapActionLedgerButton: React.FC<{
     return () => {
       eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
     };
-  }, [task.addTask]);
+  }, [addTask, pause, currentApprovalRef]);
 
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {

@@ -1,5 +1,5 @@
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import { ColumnType } from 'antd/lib/table';
 import {
@@ -13,7 +13,7 @@ import BigNumber from 'bignumber.js';
 import { Button } from 'antd';
 import { ReactComponent as RcIconArrowDown } from '@/ui/assets/perps/icon-arrow-down.svg';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useMount } from 'ahooks';
 import { useTranslation } from 'react-i18next';
 import { usePerpsProPosition } from '../../../hooks/usePerpsProPosition';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
@@ -73,18 +73,18 @@ export const Twap: React.FC = () => {
     });
 
     return orders;
-  }, [twapStates, twapHistory, twapSliceFills]);
+  }, [twapStates, twapSliceFills]);
 
   const fetchUserTwapSliceFills = useCallback(() => {
     const sdk = getPerpsSDK();
     sdk.info.getUserTwapSliceFills().then((res) => {
       dispatch.perps.patchState({ twapSliceFills: res.slice(0, 2000) });
     });
-  }, []);
+  }, [dispatch.perps]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchUserTwapSliceFills();
-  }, []);
+  });
 
   const historyTwapOrders = useMemo(() => {
     const orders: TwapOrder[] = [];
@@ -566,7 +566,14 @@ export const Twap: React.FC = () => {
         : [...commonColumns];
 
     return columns;
-  }, [expandedRowKeys, handleCancelTWAPOrder, activeTab, t]);
+  }, [
+    expandedRowKeys,
+    handleCancelTWAPOrder,
+    activeTab,
+    t,
+    dispatch.perps,
+    marketDataMap,
+  ]);
 
   // Expanded row render
   const expandedRowRender = (record: TwapOrder) => {

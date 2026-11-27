@@ -49,7 +49,7 @@ export const useTwoStepSwap = ({
         setApprovePending(true);
       }
     },
-    [shouldTwoStep, currentTxs]
+    [shouldTwoStep, currentTxs, onApprovePending]
   );
 
   const [approvePending, setApprovePending] = useState(false);

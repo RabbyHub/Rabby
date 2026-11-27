@@ -24,20 +24,23 @@ export const WithdrawConfirmPopup = ({
   gasFees,
 }: Props) => {
   const { t } = useTranslation();
-  const checkList = [
-    {
-      label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question1'),
-      value: 1,
-    },
-    {
-      label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question2'),
-      value: 2,
-    },
-    {
-      label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question3'),
-      value: 3,
-    },
-  ];
+  const checkList = useMemo(
+    () => [
+      {
+        label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question1'),
+        value: 1,
+      },
+      {
+        label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question2'),
+        value: 2,
+      },
+      {
+        label: t('page.ecology.dbk.bridge.WithdrawConfirmPopup.question3'),
+        value: 3,
+      },
+    ],
+    [t]
+  );
   const [checked, setChecked] = React.useState<number[]>([]);
 
   const isCheckedAll = useMemo(() => {

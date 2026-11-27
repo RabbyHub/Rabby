@@ -103,7 +103,7 @@ export const MiniSignPersonalMessage = ({
 
   const content = useMemo(() => {
     return t('page.signFooterBar.qrcode.txFailed');
-  }, [task?.error]);
+  }, [t]);
 
   const desc = useMemo(() => {
     let msg = task.error;
@@ -126,7 +126,7 @@ export const MiniSignPersonalMessage = ({
       msg = getLedgerError(msg);
     }
     return msg;
-  }, [task.error, currentAccount?.type]);
+  }, [task.error, currentAccount?.type, t]);
 
   return (
     <>

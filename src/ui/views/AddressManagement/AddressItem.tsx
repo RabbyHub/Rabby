@@ -99,7 +99,7 @@ const AddressItem = memo(
     const canFastDeleteAccount = useMemo(
       // not privacy secret
       () => (onDelete ? true : isCurrentAccount ? false : true),
-      [type, onDelete]
+      [onDelete, isCurrentAccount]
     );
     const deleteAccount = async (e: React.MouseEvent<any>) => {
       e.stopPropagation();

@@ -22,21 +22,24 @@ export const useCollection = () => {
     [starredList]
   );
 
-  const fetchData = React.useCallback(async (id: string) => {
-    try {
-      setIsLoading(true);
-      const collections = await wallet.openapi.collectionList({
-        id,
-        isAll: false,
-      });
+  const fetchData = React.useCallback(
+    async (id: string) => {
+      try {
+        setIsLoading(true);
+        const collections = await wallet.openapi.collectionList({
+          id,
+          isAll: false,
+        });
 
-      setList(commonCollectionsFilter(collections));
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+        setList(commonCollectionsFilter(collections));
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [wallet.openapi]
+  );
 
   const onToggleStar = React.useCallback(
     async (collection: CollectionList) => {
@@ -54,12 +57,12 @@ export const useCollection = () => {
 
       await wallet.getCollectionStarred().then(setStarredToken);
     },
-    [checkStarred, fetchData]
+    [checkStarred, wallet]
   );
 
   React.useEffect(() => {
     wallet.getCollectionStarred().then(setStarredToken);
-  }, []);
+  }, [wallet]);
 
   React.useEffect(() => {
     if (currentAccount) {

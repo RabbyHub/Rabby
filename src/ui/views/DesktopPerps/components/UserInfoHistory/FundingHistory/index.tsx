@@ -5,7 +5,7 @@ import { ColumnType } from 'antd/lib/table';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import dayjs from 'dayjs';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { CommonTable } from '../CommonTable';
 import { sortBy } from 'lodash';
 import { Trans, useTranslation } from 'react-i18next';
@@ -13,6 +13,7 @@ import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
+import { useMount } from 'ahooks';
 
 export const FundingHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -43,11 +44,11 @@ export const FundingHistory: React.FC = () => {
         })),
       });
     });
-  }, []);
+  }, [dispatch.perps]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchFundingHistory();
-  }, []);
+  });
 
   const columns = useMemo<ColumnType<WsUserFunding['fundings'][number]>[]>(
     () => [
@@ -181,7 +182,7 @@ export const FundingHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, t]
+    [marketDataMap, t, dispatch.perps]
   );
   return (
     <CommonTable

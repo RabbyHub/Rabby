@@ -16,7 +16,7 @@ import { ReactComponent as RcIconRight } from '@/ui/assets/address/right.svg';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 
 import { EVENTS, KEYRING_CLASS } from '@/constant';
-import { useDebounceFn, useRequest } from 'ahooks';
+import { useDebounceFn, useRequest, useMount } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
@@ -161,14 +161,15 @@ const AddressManagement = () => {
     return result;
   }, [
     sortedAccountsList,
-    watchSortedAccountsList,
     debouncedSearchKeyword,
     addressSortStore.sortType,
+    allSortedAccountList,
+    loadingAccounts,
   ]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchAllAccounts();
-  }, []);
+  });
 
   const {
     runAsync: handleUpdateAllBalance,
@@ -252,18 +253,18 @@ const AddressManagement = () => {
 
   const gotoAddAddress = useCallback(() => {
     history.push('/add-address');
-  }, []);
+  }, [history]);
 
   const gotoManageAddress = useCallback(() => {
     history.push('/settings/address?back=true');
-  }, []);
+  }, [history]);
 
   const switchAccount = useCallback(
     async (account: typeof accountsList[number]) => {
       await dispatch.account.changeAccountAsync(account);
       history.push('/dashboard');
     },
-    [dispatch?.account?.changeAccountAsync]
+    [dispatch.account, history]
   );
 
   const AddNewAddressColumn = useMemo(() => {
@@ -279,7 +280,7 @@ const AddressManagement = () => {
         </span>
       </div>
     );
-  }, [gotoAddAddress]);
+  }, [gotoAddAddress, t]);
 
   const Row = useCallback(
     (
@@ -406,7 +407,7 @@ const AddressManagement = () => {
       key: 'search',
       value: searchKeyword,
     });
-  }, [searchKeyword]);
+  }, [searchKeyword, dispatch.preference]);
 
   const listRef = useRef<
     VList<IDisplayedAccountWithBalance[] | IDisplayedAccountWithBalance[][]>

@@ -355,7 +355,7 @@ const LightweightKlineChart: React.FC<ChartProps> = ({
       });
       priceLineRefs.current.liquidation = liquidationLine;
     }
-  }, [lineTagInfo, t]);
+  }, [lineTagInfo, colors.greenLineColor, colors.redLineColor]);
 
   // Initialize chart
   useEffect(() => {

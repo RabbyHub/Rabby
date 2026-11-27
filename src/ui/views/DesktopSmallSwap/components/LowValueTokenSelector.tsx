@@ -76,7 +76,7 @@ export const LowValueTokenSelector: React.FC<LowValueTokenSelectorProps> = ({
       ),
       (item) => -(item.amount * item.price || 0)
     );
-  }, [tokenList, currentThreshold]);
+  }, [tokenList, currentThreshold, chain?.nativeTokenAddress]);
 
   const [now, setNow] = React.useState(Date.now());
   useInterval(() => {

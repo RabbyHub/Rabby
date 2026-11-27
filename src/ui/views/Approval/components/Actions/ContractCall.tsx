@@ -43,7 +43,7 @@ const ContractCall = ({
         item.chainId === chain.serverId &&
         isSameAddress(item.address, requireData.id)
     );
-  }, [contractWhitelist, requireData]);
+  }, [contractWhitelist, requireData, chain.serverId]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};

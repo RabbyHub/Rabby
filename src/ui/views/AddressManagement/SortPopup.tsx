@@ -55,7 +55,7 @@ export const AddressSortPopup = ({
           label: t('page.manageAddress.sort-by-address-note'),
         },
       ] as const,
-    []
+    [t]
   );
   return (
     <Popup

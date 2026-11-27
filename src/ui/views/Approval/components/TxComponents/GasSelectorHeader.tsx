@@ -255,7 +255,7 @@ const GasSelectorHeader = ({
           });
       return list.find((item) => item.level === 'custom')!;
     },
-    []
+    [chain, tx, wallet]
   );
 
   const engineResultMap = useMemo(() => {

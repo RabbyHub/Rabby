@@ -95,6 +95,7 @@ export const useDesktopBalanceView = ({ address }: { address?: string }) => {
     latestChainBalancesWithValue,
     latestCurveChartData,
     currentHomeBalanceCache,
+    latestAppChainIds,
   ]);
 
   const getCacheExpired = useCallback(async () => {

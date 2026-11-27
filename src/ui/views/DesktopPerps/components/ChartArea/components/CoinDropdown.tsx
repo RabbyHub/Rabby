@@ -547,8 +547,6 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
     ),
     [
       sortedAndFilteredData,
-      sortField,
-      sortOrder,
       searchText,
       itemData,
       renderHeaderCell,

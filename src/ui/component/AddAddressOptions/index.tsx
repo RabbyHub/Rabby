@@ -208,6 +208,7 @@ const AddAddressOptions: React.FC<{
       createNewSeedPhrase,
       seedPhraseList?.length,
       approvalId,
+      setPendingAction,
     ]
   );
 

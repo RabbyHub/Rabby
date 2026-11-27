@@ -119,7 +119,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
     if (tokenId) {
       doSearch();
     }
-  }, [chain?.serverId, tokenId]);
+  }, [chain?.serverId, tokenId, doSearch]);
 
   const token = useMemo(() => tokenList?.[0], [tokenList]);
   // const { isLocal: isLocalToken } = useIsTokenAddedLocally(token);
@@ -170,7 +170,7 @@ export const AddCustomTokenPopup = ({ visible, onClose, onConfirm }: Props) => {
       setChecked(false);
       form.resetFields();
     }
-  }, [visible, resetSearchResult]);
+  }, [visible, resetSearchResult, form, setChainSelectorState]);
 
   const inputRef = useRef<InputRef>(null);
   useLayoutEffect(() => {

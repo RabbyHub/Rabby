@@ -81,7 +81,7 @@ export const CustomTestnetTokenDetail = ({
     history.push(
       `/send-token?rbisource=tokendetail&token=${chain?.serverId}:${token?.id}`
     );
-  }, [history, token]);
+  }, [history, token, chain?.serverId, onClose, setVisible]);
 
   const goToReceive = useCallback(() => {
     setVisible(false);
@@ -89,7 +89,7 @@ export const CustomTestnetTokenDetail = ({
     history.push(
       `/receive?rbisource=tokendetail&chain=${chain?.enum}&token=${token?.symbol}`
     );
-  }, [history, token]);
+  }, [history, token, chain?.enum, onClose, setVisible]);
 
   const customizeHasNotAdd = useMemo(() => !isNativeToken && !isAdded, [
     isNativeToken,

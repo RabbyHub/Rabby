@@ -159,7 +159,7 @@ const AddressDeleteModal = ({
       return BRAND_ALIAN_TYPE_TEXT[type];
     }
     return type;
-  }, [brandName]);
+  }, [brandName, type]);
 
   return (
     <Popup

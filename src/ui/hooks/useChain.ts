@@ -66,7 +66,7 @@ export function useAsyncInitializeChainList({
     await dispatch.preference.getPreference('pinnedChain');
     await dispatch.account.getMatteredChainBalance({});
     updateInitStage('fetched');
-  }, [updateInitStage]);
+  }, [updateInitStage, dispatch.account, dispatch.preference]);
 
   useEffect(() => {
     fetchDataOnce();
@@ -81,7 +81,7 @@ export function useAsyncInitializeChainList({
         updateInitStage('inited');
       }
     },
-    []
+    [updateInitStage]
   );
 
   useEffect(() => {

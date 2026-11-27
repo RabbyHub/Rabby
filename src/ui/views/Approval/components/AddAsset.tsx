@@ -110,7 +110,7 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
     } finally {
       setEntityLoading(false);
     }
-  }, [token]);
+  }, [token, wallet.openapi]);
 
   React.useEffect(() => {
     if (token?.id && token?.chain) {
@@ -155,7 +155,7 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
       disable: false,
       reason: '',
     };
-  }, [customTokens, token, customTestnetToken, isCustomTestnetTokenAdded]);
+  }, [customTokens, token, customTestnetToken, isCustomTestnetTokenAdded, t]);
 
   const supportChains = useMemo(() => {
     const chains: CHAINS_ENUM[] = [];

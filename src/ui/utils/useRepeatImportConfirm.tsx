@@ -29,7 +29,7 @@ export const useRepeatImportConfirm = () => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
-  }, []);
+  }, [dispatch.accountToDisplay, dispatch.addressManagement]);
   const show = async ({ address, type }: { address: string; type: string }) => {
     const account = accountsList.find(
       (item) => isSameAddress(item.address, address) && item.type === type

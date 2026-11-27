@@ -96,7 +96,7 @@ export const usePerpsProInit = (isActive = true) => {
     return () => {
       unsubscribe();
     };
-  }, [selectedCoin]);
+  }, [selectedCoin, dispatch.perps]);
 
   useEffect(() => {
     if (!selectedCoin || !currentPerpsAccount?.address) {
@@ -114,7 +114,7 @@ export const usePerpsProInit = (isActive = true) => {
     return () => {
       unsubscribe();
     };
-  }, [selectedCoin, currentPerpsAccount?.address]);
+  }, [selectedCoin, currentPerpsAccount?.address, dispatch.perps]);
 
   const lang = useRabbySelector((state) => state.preference.locale);
 

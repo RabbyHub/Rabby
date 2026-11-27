@@ -53,7 +53,7 @@ const CancelTx = ({
       }
     });
     return tx as { type: string; gasPrice: number } | null;
-  }, [requireData]);
+  }, [requireData, t]);
 
   const canCancel = useMemo(() => {
     if (!pendingTx) return true;

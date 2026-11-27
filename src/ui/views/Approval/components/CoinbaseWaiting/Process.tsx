@@ -56,7 +56,7 @@ const Process = ({
       WALLET_BRAND_CONTENT[WALLET_BRAND_NAME_KEY[displayBrandName]]?.icon ||
       WALLET_BRAND_CONTENT.WALLETCONNECT.icon
     );
-  }, [brandRealUrl]);
+  }, [brandRealUrl, displayBrandName]);
   const [sendingCounter, setSendingCounter] = React.useState(
     INIT_SENDING_COUNTER
   );

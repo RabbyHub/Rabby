@@ -53,7 +53,7 @@ const ImportSeedPhraseContent = () => {
         }
       }
     },
-    [isSlip39]
+    [isSlip39, wallet]
   );
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const ImportSeedPhraseContent = () => {
         passphrase: '',
       });
     }
-  }, [needPassphrase]);
+  }, [needPassphrase, form]);
 
   const [secretShares, setSecretShares] = React.useState<string[]>([]);
   const checkSlip39Mnemonics = React.useCallback(
@@ -100,7 +100,7 @@ const ImportSeedPhraseContent = () => {
         console.log('slip39GetThreshold error', err);
       }
     },
-    [isSlip39]
+    [isSlip39, form, wallet]
   );
 
   const [errMsgs, setErrMsgs] = React.useState<string[]>();
@@ -123,7 +123,7 @@ const ImportSeedPhraseContent = () => {
         return false;
       }
     },
-    [isSlip39]
+    [isSlip39, wallet]
   );
 
   const run = React.useCallback(
@@ -158,7 +158,7 @@ const ImportSeedPhraseContent = () => {
         ]);
       }
     },
-    [validateMnemonic, checkSubmitSlip39Mnemonics, setStore, form, t]
+    [validateMnemonic, checkSubmitSlip39Mnemonics, setStore, form, t, history]
   );
 
   return (

@@ -297,7 +297,7 @@ export const TransactionExplain = ({
       content,
       icon,
     };
-  }, [action]);
+  }, [action, isGasDeposit, t]);
 
   return (
     <div className="tx-explain" onClick={onOpenScan}>

@@ -162,7 +162,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     if (limitOrderType === 'Ioc') return 'IOC';
     if (limitOrderType === 'Alo') return 'ALO';
     return '';
-  }, [tpslConfig.enabled, limitOrderType, t]);
+  }, [tpslConfig.enabled, limitOrderType]);
 
   const canEnableBbo = !bboDisabledReason;
 
@@ -325,7 +325,7 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
       currentBestAskPrice: midPrice,
       currentBestBidPrice: midPrice,
     };
-  }, [wsActiveAssetCtx, markPrice, selectedCoin]);
+  }, [wsActiveAssetCtx, selectedCoin, midPrice]);
 
   // Form validation (direction-agnostic, ALO check moved to button click;
   // the per-side max gate lives at the buttons)
@@ -368,7 +368,6 @@ export const LimitTradingContainer: React.FC<TradingContainerProps> = () => {
     buyLimitPrice,
     sellLimitPrice,
     limitPrice,
-    percentage,
     currentMarketData,
     t,
   ]);

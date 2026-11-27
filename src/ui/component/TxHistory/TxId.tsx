@@ -22,7 +22,7 @@ export const TxId = React.memo(({ chain, id }: TxIdProps) => {
       const link = getTxScanLink(info?.scanLink, id);
       openInTab(link);
     }
-  }, [info]);
+  }, [info, id]);
   const { t } = useTranslation();
   return (
     <div className="ui tx-id-container flex items-center">

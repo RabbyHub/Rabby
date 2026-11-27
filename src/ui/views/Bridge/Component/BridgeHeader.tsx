@@ -41,7 +41,7 @@ export const Header = ({
 
   const openHistory = useCallback(() => {
     setHistoryVisible(true);
-  }, []);
+  }, [setHistoryVisible]);
 
   const gotoDashboard = () => {
     history.push('/dashboard');
@@ -49,12 +49,12 @@ export const Header = ({
 
   const closeFeePopup = useCallback(() => {
     setFeePopupVisible(false);
-  }, []);
+  }, [setFeePopupVisible]);
 
   useEffect(() => {
     dispath.bridge.fetchAggregatorsList();
     dispath.bridge.fetchSupportedChains();
-  }, []);
+  }, [dispath.bridge]);
   const history = useHistory();
 
   return (
@@ -98,7 +98,7 @@ export const Header = ({
         visible={historyVisible}
         onClose={useCallback(() => {
           setHistoryVisible(false);
-        }, [])}
+        }, [setHistoryVisible])}
         getContainer={getContainer}
       />
       <RabbyFeePopup

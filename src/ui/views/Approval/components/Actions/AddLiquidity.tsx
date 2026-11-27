@@ -55,7 +55,7 @@ const AddLiquidity = ({
         item.chainId === chain.serverId &&
         isSameAddress(item.address, requireData.id)
     );
-  }, [contractWhitelist, requireData]);
+  }, [contractWhitelist, requireData, chain.serverId]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -67,7 +67,7 @@ const AddLiquidity = ({
 
   const hasReceiver = useMemo(() => {
     return !isSameAddress(requireData.receiver, requireData.sender);
-  }, [requireData, requireData.receiver]);
+  }, [requireData]);
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);

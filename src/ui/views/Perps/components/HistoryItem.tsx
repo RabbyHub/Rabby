@@ -232,7 +232,7 @@ export const HistoryItem: React.FC<HistoryItemProps> = ({
       return t('page.perps.historyDetail.title.openShort');
     }
     return fill?.dir;
-  }, [fill, orderTpOrSl, stableCoinSwap]);
+  }, [fill, orderTpOrSl, stableCoinSwap, t]);
 
   const itemData = marketData[coin];
   const logoUrl = itemData?.logoUrl;

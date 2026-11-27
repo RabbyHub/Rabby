@@ -141,7 +141,7 @@ export const PendingTxItem = forwardRef<
         type
       );
       setData(historyData as PendingTxData);
-    }, [type, userAddress]);
+    }, [type, userAddress, wallet]);
 
     useEffect(() => {
       fetchHistory();

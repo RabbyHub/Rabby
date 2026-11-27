@@ -15,6 +15,7 @@ import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
 import { Modal as CustomModal } from '@/ui/component';
+import { useMount } from 'ahooks';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -93,16 +94,19 @@ export const GridPlusManager: React.FC = () => {
     }
 
     setLoading(false);
-  }, []);
+  }, [createTask, keyringId, wallet]);
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(GRIDPLUS_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(GRIDPLUS_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
   const refreshCurrentAccounts = React.useCallback(
     () => createTask(() => getCurrentAccounts({ resetInitialAccounts: true })),
-    []
+    [createTask, getCurrentAccounts]
   );
 
   const detectInitialHDPathType = React.useCallback(
@@ -133,12 +137,12 @@ export const GridPlusManager: React.FC = () => {
 
       return initialHDPathType;
     },
-    []
+    [changeHDPathTask, refreshCurrentAccounts]
   );
 
-  React.useEffect(() => {
+  useMount(() => {
     fetchInitAccountsTask();
-  }, []);
+  });
   const { t } = useTranslation();
   const openSwitchHD = React.useCallback(async () => {
     Modal.error({
@@ -165,7 +169,7 @@ export const GridPlusManager: React.FC = () => {
       maskClosable: true,
       className: 'hd-manager-switch-modal modal-support-darkmode',
     });
-  }, []);
+  }, [keyringId, t, wallet]);
 
   return (
     <>

@@ -14,7 +14,7 @@ export const useSwitch = (initialState?: boolean) => {
 
   const toggle = useCallback(() => {
     setOn(!on);
-  }, [on]);
+  }, [on, setOn]);
 
   return useMemo(
     () => ({
@@ -24,6 +24,6 @@ export const useSwitch = (initialState?: boolean) => {
       turnOn,
       toggle,
     }),
-    [on, toggle, turnOff, turnOn]
+    [on, toggle, turnOff, turnOn, setOn]
   );
 };

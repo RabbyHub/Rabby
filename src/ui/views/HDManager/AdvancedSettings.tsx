@@ -259,7 +259,7 @@ export const AdvancedSettings: React.FC<Props> = ({
         type && initAccounts?.[type].some((account) => account.chains?.length)
       );
     },
-    [disabledSelectHDPath]
+    [disabledSelectHDPath, initAccounts]
   );
 
   const currentHdPathTypeTip = React.useMemo(() => {
@@ -275,7 +275,7 @@ export const AdvancedSettings: React.FC<Props> = ({
     return isOnChain(hdPathType)
       ? HDPathTypeTips[keyring][hdPathType]
       : HDPathTypeTipsNoChain[keyring][hdPathType];
-  }, [hdPathType, keyring, disabledSelectHDPath, HDPathTypeGroup]);
+  }, [hdPathType, keyring, disabledSelectHDPath, HDPathTypeGroup, isOnChain]);
 
   const handleSubmit = () =>
     onConfirm?.({

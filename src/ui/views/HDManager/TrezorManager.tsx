@@ -60,7 +60,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       type,
     });
     setLoading(false);
-  }, []);
+  }, [getCurrentAccounts, keyringId, setting, wallet]);
   const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
 
   const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
@@ -74,11 +74,14 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
     setSetting(data);
   }, []);
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(TREZOR_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(TREZOR_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
 
   const [modal, contextHolder] = useModal();
   const { t } = useTranslation();

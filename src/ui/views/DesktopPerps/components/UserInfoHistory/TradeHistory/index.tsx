@@ -4,7 +4,7 @@ import { formatUsdValue, splitNumberByStep } from '@/ui/utils';
 import { message, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import { WsFill } from '@rabby-wallet/hyperliquid-sdk';
 import dayjs from 'dayjs';
@@ -16,6 +16,7 @@ import { getPerpsSDK } from '@/ui/views/Perps/sdkManager';
 import { DashedUnderlineText } from '../../DashedUnderlineText';
 import { formatPerpsCoin } from '@/ui/views/DesktopPerps/utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
+import { useMount } from 'ahooks';
 
 export const TradeHistory: React.FC = () => {
   const dispatch = useRabbyDispatch();
@@ -36,11 +37,11 @@ export const TradeHistory: React.FC = () => {
         userFills: res.slice(0, 2000),
       });
     });
-  }, []);
+  }, [dispatch.perps]);
 
-  useEffect(() => {
+  useMount(() => {
     fetchUserFills();
-  }, []);
+  });
 
   const list = useMemo<WsFill[]>(() => {
     return sortBy(userFills, (item) => -item.time);
@@ -229,7 +230,7 @@ export const TradeHistory: React.FC = () => {
         },
       },
     ],
-    [marketDataMap, t]
+    [marketDataMap, t, dispatch.perps]
   );
   return (
     <CommonTable

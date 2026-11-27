@@ -209,7 +209,7 @@ export const ImportOrCreatedSuccess = () => {
     if (store.clearKeyringId) {
       wallet.requestKeyring(hd, 'cleanUp', store.clearKeyringId, true);
     }
-  }, []);
+  }, [hd, store.clearKeyringId, wallet]);
 
   useEffect(() => {
     window.addEventListener('beforeunload', () => {

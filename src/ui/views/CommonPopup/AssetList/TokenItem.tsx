@@ -70,7 +70,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
         `/dex-swap?rbisource=assetlist&chain=${item.chain}&payTokenId=${tokenId}`
       );
     },
-    [history, item.chain, tokenId]
+    [history, item.chain, tokenId, setVisible]
   );
 
   const gotoSend = useCallback(
@@ -81,7 +81,7 @@ const TokenItemAsset: React.FC<TokenItemAssetProps> = ({
         `/send-token?rbisource=assetlist&token=${item.chain}:${tokenId}`
       );
     },
-    [history, item.chain, tokenId]
+    [history, item.chain, tokenId, setVisible]
   );
 
   return (

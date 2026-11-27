@@ -242,7 +242,7 @@ export const useGasAccountMethods = () => {
       );
       return assertGasAccountSignText(text, account.address);
     },
-    [wallet, dispatch, refresh, refreshHistory]
+    [wallet]
   );
 
   const handleLoginOnSig = useCallback(
@@ -269,7 +269,7 @@ export const useGasAccountMethods = () => {
         return signature;
       }
     },
-    [wallet, refresh, refreshHistory]
+    [wallet, refresh, refreshHistory, dispatch.gasAccount, dispatch.gift]
   );
 
   const handleNoSignLogin = useCallback(

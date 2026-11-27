@@ -159,7 +159,7 @@ const GasAccountInner = () => {
     dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
-  }, []);
+  }, [dispatch.accountToDisplay, dispatch.addressManagement]);
 
   useEffect(() => {
     if (isLogin || pendingHardwareAccount) {
@@ -232,7 +232,15 @@ const GasAccountInner = () => {
     }
 
     openDepositPopup();
-  }, [emptyStateLoading, isLogin, pendingHardwareAccount, refresh, t]);
+  }, [
+    emptyStateLoading,
+    isLogin,
+    pendingHardwareAccount,
+    refresh,
+    t,
+    handleRefreshHistory,
+    login,
+  ]);
 
   const lowBalanceWarningMessage =
     visibleBalance < LOW_GAS_ACCOUNT_BALANCE && hasGasAccountInfo
@@ -271,7 +279,7 @@ const GasAccountInner = () => {
 
   useEffect(() => {
     wallet.clearPageStateCache();
-  }, [wallet?.clearPageStateCache]);
+  }, [wallet?.clearPageStateCache, wallet]);
 
   return (
     <div className="h-full min-h-full overflow-hidden bg-r-neutral-bg2 flex flex-col">

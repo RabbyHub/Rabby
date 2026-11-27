@@ -48,7 +48,7 @@ export const RevokeButton: React.FC<Props> = ({
     } finally {
       setIsRevokeLoading(false);
     }
-  }, [onRevoke]);
+  }, [onRevoke, isRevokeLoading]);
 
   const handleRevoke = React.useCallback(() => {
     const hasPackedPermit2Sign = Object.values(
@@ -91,7 +91,13 @@ export const RevokeButton: React.FC<Props> = ({
         className: 'w-[100%] h-[44px]',
       },
     });
-  }, [handleOnRevoke, enableBatchRevoke, t]);
+  }, [
+    handleOnRevoke,
+    enableBatchRevoke,
+    t,
+    revokeSummary.permit2Revokes,
+    revokeSummary.statics.txCount,
+  ]);
 
   const revokeTxCount = revokeSummary.statics.txCount;
   const spenderCount = revokeSummary.statics.spenderCount;
@@ -142,7 +148,7 @@ export const RevokeEIP7702Button = ({
     } finally {
       setIsRevokeLoading(false);
     }
-  }, [onRevoke]);
+  }, [onRevoke, isRevokeLoading]);
 
   return (
     <>

@@ -301,7 +301,7 @@ const Unlock = () => {
 
   useEffect(() => {
     wallet.savedUnencryptedKeyringData().then(setHasForgotPassword);
-  }, []);
+  }, [wallet]);
 
   useEffect(() => {
     if (UiType.isTab || UiType.isDesktop) {

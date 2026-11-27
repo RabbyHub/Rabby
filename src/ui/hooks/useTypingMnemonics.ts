@@ -34,7 +34,7 @@ export default function useTypingMnemonics({
       onSetCurrentHints?.(val);
       _setCurrentHints(val);
     },
-    [lastTypingWord, onSetCurrentHints]
+    [onSetCurrentHints]
   );
 
   const inputRef = React.useRef<HTMLTextAreaElement | null>(null);
@@ -59,7 +59,7 @@ export default function useTypingMnemonics({
 
       return nextVal;
     },
-    [mnemonics]
+    [mnemonics, onAppendLastMnemonicsPart]
   );
 
   React.useEffect(() => {

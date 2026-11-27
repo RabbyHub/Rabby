@@ -45,7 +45,7 @@ const ImportMnemonicsContent = () => {
         }
       }
     },
-    [isSlip39]
+    [isSlip39, wallet]
   );
 
   const [run, loading] = useWalletRequest(
@@ -128,7 +128,7 @@ const ImportMnemonicsContent = () => {
         passphrase: '',
       });
     }
-  }, [needPassphrase]);
+  }, [needPassphrase, form]);
 
   const [secretShares, setSecretShares] = React.useState<string[]>([]);
   const checkSlip39Mnemonics = React.useCallback(
@@ -147,7 +147,7 @@ const ImportMnemonicsContent = () => {
         console.log('slip39GetThreshold error', err);
       }
     },
-    [isSlip39]
+    [isSlip39, form, wallet]
   );
 
   const [errMsgs, setErrMsgs] = React.useState<string[]>();

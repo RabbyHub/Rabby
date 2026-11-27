@@ -306,6 +306,7 @@ export const CommonWaiting = ({
     description: description,
   });
 
+  const failedRetryType = txFailedResult?.[1];
   React.useEffect(() => {
     if (
       [
@@ -314,12 +315,12 @@ export const CommonWaiting = ({
       ].includes(connectStatus)
     ) {
       setContent(
-        txFailedResult?.[1]
+        failedRetryType
           ? t('page.signFooterBar.qrcode.txFailedRetry')
           : t('page.signFooterBar.qrcode.txFailed')
       );
     }
-  }, [txFailedResult?.[1], connectStatus]);
+  }, [failedRetryType, connectStatus]);
 
   if (!brandContent) {
     throw new Error(t('page.signFooterBar.common.notSupport', [brandName]));

@@ -278,7 +278,7 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
       setContent('');
       return;
     }
-  }, [status, errorMessage]);
+  }, [status, errorMessage, t]);
 
   const [hiddenSwitchButton, setHiddenSwitchButton] = useState(false);
   const shouldShowSignatureSwitchButton = useMemo(() => {

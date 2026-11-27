@@ -320,6 +320,7 @@ export const ImKeyHardwareWaiting = ({
     description: description,
   });
 
+  const failedRetryType = txFailedResult?.[1];
   React.useEffect(() => {
     if (
       [
@@ -328,12 +329,12 @@ export const ImKeyHardwareWaiting = ({
       ].includes(connectStatus)
     ) {
       setContent(
-        txFailedResult?.[1]
+        failedRetryType
           ? t('page.signFooterBar.qrcode.txFailedRetry')
           : t('page.signFooterBar.qrcode.txFailed')
       );
     }
-  }, [txFailedResult?.[1], connectStatus]);
+  }, [failedRetryType, connectStatus]);
 
   return (
     <ApprovalPopupContainer

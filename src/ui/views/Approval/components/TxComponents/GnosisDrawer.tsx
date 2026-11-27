@@ -111,7 +111,7 @@ const GnosisDrawer = ({
     } else {
       wallet.getGnosisTransactionSignatures().then(setSignatures);
     }
-  }, [confirmations]);
+  }, [confirmations, wallet]);
 
   return (
     <div className="gnosis-drawer-container">

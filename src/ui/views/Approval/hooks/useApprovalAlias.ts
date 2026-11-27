@@ -25,20 +25,23 @@ export const useApprovalAlias = () => {
       const alias = await wallet.getAlianName(address);
       setAccounts([...accounts, { address, alias }]);
     },
-    [accounts]
+    [accounts, wallet]
   );
 
-  const update = React.useCallback((address: string, alias: string) => {
-    setAccounts((accounts) => {
-      return accounts.map((account) => {
-        if (account.address === address) {
-          wallet.updateAlianName(address, alias);
-          return { ...account, alias };
-        }
-        return account;
+  const update = React.useCallback(
+    (address: string, alias: string) => {
+      setAccounts((accounts) => {
+        return accounts.map((account) => {
+          if (account.address === address) {
+            wallet.updateAlianName(address, alias);
+            return { ...account, alias };
+          }
+          return account;
+        });
       });
-    });
-  }, []);
+    },
+    [wallet]
+  );
 
   return { accountMap, add, update };
 };

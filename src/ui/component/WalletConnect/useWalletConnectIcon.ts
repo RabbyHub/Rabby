@@ -46,7 +46,7 @@ export const useWalletConnectIcon = (
         };
         img.src = result.realBrandUrl!;
       });
-  }, [account]);
+  }, [account, wallet]);
 
   return url;
 };

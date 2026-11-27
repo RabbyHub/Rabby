@@ -15,7 +15,7 @@ import {
 } from '@/ui/utils';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import clsx from 'clsx';
 import { range, sortBy, uniqBy } from 'lodash';
 import React, {
@@ -152,7 +152,7 @@ export const SelectAddressList = ({
     };
   }, [accountsList, clearinghouseStateMap]);
 
-  const handleChange = async (account: Account) => {
+  const handleChange = useMemoizedFn(async (account: Account) => {
     if (loadingAddress) {
       return;
     }
@@ -164,7 +164,7 @@ export const SelectAddressList = ({
     } catch (error) {
       setLoadingAddress(null);
     }
-  };
+  });
 
   const renderGroupContent = useCallback(
     (index: number) => {
@@ -341,7 +341,7 @@ function AccountItem(props: {
         ) : null}
       </div>
     );
-  }, [loading, info, positionCount, account.balance, t]);
+  }, [loading, info, positionCount, t]);
 
   return (
     <Item

@@ -252,7 +252,7 @@ export const ConnectContent = (
       cancelBtnText,
       level,
     };
-  }, [resultsWithoutDisable, processedRules]);
+  }, [resultsWithoutDisable, processedRules, t]);
 
   const hasForbidden = useMemo(() => {
     return resultsWithoutDisable.some((item) => item.level === Level.FORBIDDEN);
@@ -557,7 +557,7 @@ export const ConnectContent = (
     wallet
       .checkNeedDisplayBlockedRequestApproval()
       .then(setDisplayBlockedRequestApproval);
-  }, []);
+  }, [wallet]);
 
   const activeCancelPopup = () => {
     setData({

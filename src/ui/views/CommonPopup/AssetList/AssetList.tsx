@@ -43,7 +43,7 @@ export const AssetList = ({
 
   React.useEffect(() => {
     setHeight(500);
-  }, []);
+  }, [setHeight]);
 
   React.useEffect(() => {
     if (visible) {

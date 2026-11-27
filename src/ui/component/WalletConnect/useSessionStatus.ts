@@ -95,7 +95,7 @@ export const useSessionStatus = (
           setStatus(result);
         });
     }
-  }, [account, ignoreStore]);
+  }, [account, ignoreStore, wallet]);
 
   const currStatus = React.useMemo(() => {
     if (pendingConnect) {

@@ -126,7 +126,7 @@ const LogUserActive = () => {
         );
       }
     })();
-  }, []);
+  }, [wallet]);
 
   return null;
 };

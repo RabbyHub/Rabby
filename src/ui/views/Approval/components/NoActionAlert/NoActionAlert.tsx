@@ -55,7 +55,7 @@ export const NoActionAlert: React.FC<Props> = ({
       setRequestedCount(res.count ? res.count : 1);
       setIsRequested(true);
     });
-  }, [data, currentAccount]);
+  }, [data, currentAccount, wallet.openapi]);
 
   return (
     <div className="flex flex-col bg-r-neutral-card-1 rounded-[6px] p-[15px] font-medium text-13 leading-[18px] text-r-neutral-body w-[360px]">

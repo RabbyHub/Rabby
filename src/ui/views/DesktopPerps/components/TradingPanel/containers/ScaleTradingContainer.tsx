@@ -159,6 +159,7 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     szDecimals,
     limitOrderType,
     reduceOnly,
+    calculateScaleOrdersWithSkew,
   ]);
 
   // Form validation
@@ -217,15 +218,11 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     positionSize.notionalValue,
     scaleMaxTradeSize,
     reduceOnly,
-    limitOrderType,
-    percentage,
-    tradeSize,
-    marginRequired,
-    availableBalance,
     currentMarketData,
     startPrice,
     endPrice,
     t,
+    positionSize.amount,
   ]);
 
   const requestConfirm = useOrderConfirm();
@@ -293,13 +290,10 @@ export const ScaleTradingContainer: React.FC<TradingContainerProps> = () => {
     quoteAsset,
     scaleOrders,
     leverage,
-    marginRequired,
     availableBalance,
-    marginUsage,
     selectedCoin,
     startPrice,
     endPrice,
-    scaleOrders,
   ]);
 
   // Scale always confirms: no `dontShowAgainText`, so the dialog omits the

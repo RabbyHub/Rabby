@@ -11,14 +11,17 @@ interface Props {
 export const AddToRabby: React.FC<Props> = ({ checked, onChange }) => {
   const [locked, setLocked] = React.useState(false);
 
-  const handleOnChange = React.useCallback(async (value: boolean) => {
-    setLocked(true);
-    try {
-      await onChange?.(value);
-    } finally {
-      setLocked(false);
-    }
-  }, []);
+  const handleOnChange = React.useCallback(
+    async (value: boolean) => {
+      setLocked(true);
+      try {
+        await onChange?.(value);
+      } finally {
+        setLocked(false);
+      }
+    },
+    [onChange]
+  );
   return (
     <RcSwitch
       disabled={locked}

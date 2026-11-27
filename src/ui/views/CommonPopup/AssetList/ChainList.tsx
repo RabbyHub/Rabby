@@ -21,9 +21,13 @@ export const ChainList = ({
   isTestnet?: boolean;
 }) => {
   const { data, visible, apps } = useCommonPopupView();
-  const chainList = isTestnet
-    ? (data?.matteredTestnetChainBalances as DisplayChainWithWhiteLogo[]) ?? []
-    : (data?.matteredChainBalances as DisplayChainWithWhiteLogo[]) ?? [];
+  const matteredChainBalances = isTestnet
+    ? data?.matteredTestnetChainBalances
+    : data?.matteredChainBalances;
+  const chainList = React.useMemo(
+    () => (matteredChainBalances as DisplayChainWithWhiteLogo[]) ?? [],
+    [matteredChainBalances]
+  );
   const balance = isTestnet
     ? (data?.testnetBalance as number) ?? 0
     : (data?.balance as number) ?? 0;

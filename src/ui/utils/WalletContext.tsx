@@ -1,4 +1,5 @@
 import React, { ReactNode, createContext, useContext, useState } from 'react';
+import { useMemoizedFn } from 'ahooks';
 import { Object } from 'ts-toolbelt';
 import { WalletController as WalletControllerClass } from 'background/controller/wallet';
 import { IExtractFromPromise } from './type';
@@ -49,23 +50,25 @@ const useCommonPopupViewState = () => {
   const [apps, setApps] = useState<AppChain[]>();
   const [popupProps, setPopupProps] = useState<PopupProps | undefined>();
 
-  const activePopup = (name: CommonPopupComponentName) => {
+  // Stable, like the useState setters next to them, so consumers can list
+  // them as hook dependencies without re-running on every popup change.
+  const activePopup = useMemoizedFn((name: CommonPopupComponentName) => {
     setComponentName(name);
     setVisible(true);
-  };
+  });
 
-  const closePopup = () => {
+  const closePopup = useMemoizedFn(() => {
     setVisible(false);
     setComponentName(undefined);
-  };
+  });
 
-  const activeApprovalPopup = () => {
+  const activeApprovalPopup = useMemoizedFn(() => {
     if (componentName === 'Approval' && visible === false) {
       setVisible(true);
       return true;
     }
     return false;
-  };
+  });
 
   return {
     visible,

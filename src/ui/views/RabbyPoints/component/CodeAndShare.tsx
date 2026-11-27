@@ -50,7 +50,7 @@ export const CodeAndShare = ({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('page.rabbyPoints.referral-code-copied'),
     });
-  }, [invitedCode]);
+  }, [invitedCode, t]);
 
   const share = React.useCallback(() => {
     shareRabbyPointsTwitter({ snapshot, usedOtherInvitedCode, invitedCode });

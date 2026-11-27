@@ -45,7 +45,13 @@ export const RevokeActionLedgerButton: React.FC<{
 }> = ({ task, onDone }) => {
   const { t } = useTranslation();
   const { status } = useLedgerStatus();
-  const { totalApprovals, currentApprovalIndex } = task;
+  const {
+    totalApprovals,
+    currentApprovalIndex,
+    pause,
+    addRevokeTask,
+    currentApprovalRef,
+  } = task;
   const [
     visibleLedgerConnectModal,
     setVisibleLedgerConnectModal,
@@ -59,10 +65,10 @@ export const RevokeActionLedgerButton: React.FC<{
         isLedgerConnectionRecoverableError(message)
       ) {
         setVisibleLedgerConnectModal(true);
-        task.pause();
+        pause();
 
         if (!isLedgerDisconnectedError(message)) {
-          task.addRevokeTask(task.currentApprovalRef.current!, 1);
+          addRevokeTask(currentApprovalRef.current!, 1);
         }
       }
     };
@@ -72,7 +78,7 @@ export const RevokeActionLedgerButton: React.FC<{
     return () => {
       eventBus.removeEventListener(EVENTS.COMMON_HARDWARE.REJECTED, listener);
     };
-  }, [task.addRevokeTask]);
+  }, [addRevokeTask, pause, currentApprovalRef]);
 
   React.useEffect(() => {
     if (task.status === 'active' && status === 'DISCONNECTED') {

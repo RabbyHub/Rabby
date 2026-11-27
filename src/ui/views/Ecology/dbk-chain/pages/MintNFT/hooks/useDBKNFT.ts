@@ -39,7 +39,7 @@ export const useMintNFT = () => {
 
   const clientL2 = useMemo(
     () => createL2Client({ chainId: DBK_CHAIN_ID, wallet }),
-    []
+    [wallet]
   );
 
   const mintNFT = () => {
@@ -73,7 +73,7 @@ export const useMintNFT = () => {
 
   useEffect(() => {
     updateMintCounts();
-  }, [account?.address]);
+  }, [account?.address, updateMintCounts]);
 
   return {
     mintNFT,

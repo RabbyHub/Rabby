@@ -65,7 +65,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
 
   const amountSum = useMemo(() => {
     return token?.amount || _token.amount || 0;
-  }, [token]);
+  }, [token, _token.amount]);
 
   const amount = useMemo(() => (priceType === 'holding' ? amountSum : 1), [
     priceType,
@@ -193,7 +193,7 @@ export const TokenCharts = ({ token: _token, className }: TokenChartsProps) => {
         key: 'holding',
       },
     ];
-  }, [token.amount]);
+  }, [token.amount, t]);
 
   // const color = useMemo(() => {
   //   return isUp ? '#2ABB7F' : 'var(--r-red-default, #E34935)';

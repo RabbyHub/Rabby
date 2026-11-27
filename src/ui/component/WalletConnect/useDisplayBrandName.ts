@@ -30,7 +30,7 @@ export const useDisplayBrandName = (
         setRealBrandName(result.realBrandName || result.brandName);
       });
     }
-  }, [address, brandName]);
+  }, [address, brandName, wallet]);
 
   return [displayBrandName, realBrandName];
 };

@@ -20,7 +20,7 @@ import { getTokenSymbol } from '@/ui/utils/token';
 import { findChain, findChainByID } from '@/utils/chain';
 import { LoadingOutlined } from '@ant-design/icons';
 import { SafeTransactionDataPartial } from '@safe-global/types-kit';
-import { useMemoizedFn, useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest, useMount } from 'ahooks';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import { intToHex, toChecksumAddress } from '@ethereumjs/util';
 import { useHistory } from 'react-router-dom';
@@ -112,9 +112,9 @@ const TransactionConfirmations = ({
     const accounts = await wallet.getAllVisibleAccountsArray();
     setVisibleAccounts(accounts);
   };
-  useEffect(() => {
+  useMount(() => {
     init();
-  }, []);
+  });
   return (
     <div className="tx-confirm">
       <div className="tx-confirm__head">
@@ -447,9 +447,9 @@ const GnosisTransactionItem = ({
     }
   };
 
-  useEffect(() => {
+  useMount(() => {
     init();
-  }, []);
+  });
 
   const { getContainer } = usePopupContainer();
 

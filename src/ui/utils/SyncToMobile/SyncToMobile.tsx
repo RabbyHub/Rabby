@@ -23,7 +23,7 @@ export const SyncToMobile: React.FC<Props> = ({ children }) => {
         openInTab('index.html#/unlock');
       }
     });
-  }, []);
+  }, [wallet]);
 
   const themeMode = useRabbySelector((state) => state.preference.themeMode);
 

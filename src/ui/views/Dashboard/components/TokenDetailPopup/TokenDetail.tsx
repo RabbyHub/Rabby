@@ -110,7 +110,7 @@ const TokenDetail = ({
         amount: info.amount,
       });
     }
-  }, [token]);
+  }, [token, currentAccount, wallet.openapi]);
 
   const getTokenEntity = React.useCallback(async () => {
     try {
@@ -123,7 +123,7 @@ const TokenDetail = ({
     } finally {
       setEntityLoading(false);
     }
-  }, [token]);
+  }, [token, wallet.openapi]);
 
   React.useEffect(() => {
     if (currentAccount) {
@@ -235,7 +235,15 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token, isSend, handleInTokenSelect, desktopPathname]);
+  }, [
+    history,
+    token,
+    isSend,
+    handleInTokenSelect,
+    desktopPathname,
+    onClose,
+    setVisible,
+  ]);
 
   const goToReceive = useCallback(() => {
     setVisible(false);
@@ -253,7 +261,7 @@ const TokenDetail = ({
         }&token=${token?.symbol}`
       );
     }
-  }, [history, token, isDesktop, desktopPathname]);
+  }, [history, token, desktopPathname, onClose, setVisible]);
 
   const gotoBridge = useCallback(() => {
     setVisible(false);
@@ -271,7 +279,15 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token, desktopPathname]);
+  }, [
+    history,
+    token,
+    desktopPathname,
+    handleInTokenSelect,
+    isBridge,
+    onClose,
+    setVisible,
+  ]);
 
   const goToSwap = useCallback(() => {
     setVisible(false);
@@ -289,7 +305,15 @@ const TokenDetail = ({
         );
       }
     }
-  }, [history, token, isSwap, handleInTokenSelect, desktopPathname]);
+  }, [
+    history,
+    token,
+    isSwap,
+    handleInTokenSelect,
+    desktopPathname,
+    onClose,
+    setVisible,
+  ]);
 
   const BottomBtn = useMemo(() => {
     if (footerScene === 'hidden') {
@@ -413,7 +437,6 @@ const TokenDetail = ({
       </div>
     );
   }, [
-    isDesktop,
     goToReceive,
     goToSend,
     goToSwap,

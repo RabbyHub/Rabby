@@ -152,7 +152,7 @@ const Staking = () => {
     [filters?.chains]
   );
 
-  const pools = poolList?.pools || [];
+  const pools = useMemo(() => poolList?.pools || [], [poolList?.pools]);
   const protocolHoldingMap = useMemo(
     () =>
       pools.reduce<Record<string, boolean>>((result, pool) => {

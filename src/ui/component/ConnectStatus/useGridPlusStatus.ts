@@ -2,6 +2,7 @@ import React from 'react';
 import { useWallet } from '@/ui/utils';
 import { useInterval } from 'react-use';
 import { useTranslation } from 'react-i18next';
+import { useMount } from 'ahooks';
 
 export const useGridPlusStatus = () => {
   const wallet = useWallet();
@@ -18,9 +19,9 @@ export const useGridPlusStatus = () => {
 
   const { t } = useTranslation();
 
-  React.useEffect(() => {
+  useMount(() => {
     getConnectStatus();
-  }, []);
+  });
 
   useInterval(() => {
     getConnectStatus();
@@ -49,7 +50,7 @@ export const useGridPlusStatus = () => {
     return isConnect
       ? t('component.ConnectStatus.gridPlusConnected')
       : t('component.ConnectStatus.gridPlusNotConnected');
-  }, [isConnect]);
+  }, [isConnect, t]);
 
   return {
     content,

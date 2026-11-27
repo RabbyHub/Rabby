@@ -3,6 +3,7 @@ import { BrowserQRCodeReader } from '@zxing/browser';
 import { openInternalPageInTab } from 'ui/utils';
 import { cn } from '@/ui/utils/cn';
 import { message } from 'antd';
+import { useMount } from 'ahooks';
 
 interface QRCodeReaderProps {
   onSuccess(text: string): void;
@@ -41,9 +42,9 @@ const QRCodeReader = ({
     }
   };
 
-  useEffect(() => {
+  useMount(() => {
     checkCameraPermission();
-  }, []);
+  });
   useEffect(() => {
     const videoElem = document.getElementById('video');
     const canplayListener = () => {

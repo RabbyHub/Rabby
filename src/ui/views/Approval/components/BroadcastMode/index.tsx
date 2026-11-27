@@ -5,7 +5,7 @@ import { useAccount } from '@/ui/store-hooks';
 import { useWallet } from '@/ui/utils';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { TxPushType } from '@rabby-wallet/rabby-api/dist/types';
-import { useRequest } from 'ahooks';
+import { useMemoizedFn, useRequest } from 'ahooks';
 import clsx from 'clsx';
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -104,7 +104,15 @@ export const BroadcastMode = ({
       result.low_gas.tips = t('page.signTx.BroadcastMode.tips.notSupported');
     }
     return result;
-  }, [supportedPushType, account?.type]);
+  }, [
+    supportedPushType,
+    account?.type,
+    hasCustomRPC,
+    isCancel,
+    isGasTopUp,
+    isSpeedUp,
+    t,
+  ]);
 
   useEffect(() => {
     if (value?.type && disabledMap[value.type]?.disabled) {
@@ -152,7 +160,7 @@ export const BroadcastMode = ({
 
   const selectedOption = options.find((option) => option.value === value.type);
 
-  const handleSelect = React.useCallback((option: typeof options[0]) => {
+  const handleSelect = useMemoizedFn((option: typeof options[0]) => {
     if (option.disabled) {
       return;
     }
@@ -162,7 +170,7 @@ export const BroadcastMode = ({
         option.value === 'low_gas' ? deadlineOptions[1]?.value : undefined,
     });
     setDrawerVisible(false);
-  }, []);
+  });
 
   return (
     <>

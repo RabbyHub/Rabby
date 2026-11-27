@@ -64,7 +64,7 @@ export const HomePerpsPositionList: React.FC<{
         unsubscribeAllDexsAssetCtxs();
       };
     }
-  }, [hasPositions, needFetchMarket]);
+  }, [hasPositions, needFetchMarket, dispatch.perps]);
 
   if (!hasPositions) {
     return null;

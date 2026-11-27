@@ -176,7 +176,7 @@ const ClaimPoints = ({
             },
           ]
         : fixedList,
-    [fixedList, codeStatus?.invite_code_exist]
+    [fixedList, codeStatus?.invite_code_exist, t]
   );
   const points = useMemo(() => {
     if (snapshot) {

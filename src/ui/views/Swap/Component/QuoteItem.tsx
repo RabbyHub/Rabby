@@ -200,15 +200,16 @@ export const DexQuoteItem = (
     quote?.toTokenAmount,
     quote?.toTokenDecimals,
     inSufficient,
-    receiveToken.decimals,
-    receiveToken.price,
-    receiveToken.symbol,
     preExecResult,
     isSdkDataPass,
     bestQuoteAmount,
     bestQuoteGasUsd,
     isBestQuote,
     sortIncludeGasFee,
+    dexId,
+    payAmount,
+    receiveToken,
+    t,
   ]);
 
   const gasFeeTooHigh = useMemo(() => {
@@ -258,6 +259,7 @@ export const DexQuoteItem = (
     gasFeeTooHigh,
     receiveToken,
     onSelect,
+    openSwapQuote,
   ]);
 
   const isWrapToken = useMemo(
@@ -283,18 +285,19 @@ export const DexQuoteItem = (
     return false;
   }, [onlyShow, gasFeeTooHigh, inSufficient, disabled]);
 
+  const { onlyShowErrorQuote, onErrQuote } = props;
   useEffect(() => {
-    if (isErrorQuote && props.onlyShowErrorQuote) {
-      props?.onErrQuote?.((e) => {
+    if (isErrorQuote && onlyShowErrorQuote) {
+      onErrQuote?.((e) => {
         return e.includes(dexId) ? e : [...e, dexId];
       });
     }
-    if (!props.onlyShowErrorQuote && !isErrorQuote) {
-      props?.onErrQuote?.((e) =>
+    if (!onlyShowErrorQuote && !isErrorQuote) {
+      onErrQuote?.((e) =>
         e.includes(dexId) ? e.filter((e) => e !== dexId) : e
       );
     }
-  }, [props.onlyShowErrorQuote, isErrorQuote, dexId, props?.onErrQuote]);
+  }, [onlyShowErrorQuote, isErrorQuote, dexId, onErrQuote]);
 
   if (!isErrorQuote && props.onlyShowErrorQuote) {
     return null;

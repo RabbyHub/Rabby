@@ -85,7 +85,7 @@ export const TransactionItem = ({
     return (
       chain && !chain.isTestnet && supportedDirectSign(account?.type || '')
     );
-  }, [account?.type]);
+  }, [account?.type, item.chainId]);
 
   const originGasPrice = useMemo(() => {
     const maxGasTx = item.txs[item.txs.length - 1]!;

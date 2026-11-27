@@ -32,7 +32,7 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
         setDelegates(delegates);
         setIsLoading(false);
       });
-  }, [address]);
+  }, [address, wallet]);
 
   if (isLoading) {
     return (

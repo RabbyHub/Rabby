@@ -250,6 +250,8 @@ const DappActions = ({
       onPreExecChange,
       setVisible,
       wallet,
+      closeSign,
+      resetGasStore,
     ]
   );
 

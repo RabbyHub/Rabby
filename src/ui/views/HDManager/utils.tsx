@@ -70,7 +70,7 @@ const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
       setLoading(false);
       return accountsWithAliasName;
     },
-    []
+    [keyring, keyringId, wallet]
   );
 
   const removeCurrentAccount = React.useCallback((address: string) => {

@@ -32,9 +32,10 @@ export const ImportAddressSuccess: React.FC<{
     return query.get(RETURN_TO_QUERY_KEY) || '';
   }, [location.search]);
 
-  const state = (outerState ||
-    location.state ||
-    {}) as CreateAddressSuccessState;
+  const state = React.useMemo(
+    () => (outerState || location.state || {}) as CreateAddressSuccessState,
+    [outerState, location.state]
+  );
   const addresses = React.useMemo(() => normalizeSuccessAddresses(state), [
     state,
   ]);

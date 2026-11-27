@@ -14,6 +14,7 @@ import { Account } from './AccountList';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { useTranslation } from 'react-i18next';
 import { Modal as CustomModal } from '@/ui/component';
+import { useMount } from 'ahooks';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -84,16 +85,19 @@ export const LedgerManager: React.FC = () => {
     }
 
     setLoading(false);
-  }, []);
+  }, [createTask, keyringId, wallet]);
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
   const refreshCurrentAccounts = React.useCallback(
     () => createTask(() => getCurrentAccounts({ resetInitialAccounts: true })),
-    []
+    [createTask, getCurrentAccounts]
   );
 
   const detectInitialHDPathType = React.useCallback(
@@ -124,12 +128,12 @@ export const LedgerManager: React.FC = () => {
 
       return initialHDPathType;
     },
-    []
+    [changeHDPathTask, refreshCurrentAccounts]
   );
 
-  React.useEffect(() => {
+  useMount(() => {
     fetchInitAccountsTask();
-  }, []);
+  });
   const { t } = useTranslation();
 
   return (

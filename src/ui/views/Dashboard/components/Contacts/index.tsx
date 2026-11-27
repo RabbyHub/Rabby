@@ -10,6 +10,7 @@ import { ellipsis } from 'ui/utils/address';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import styles from './index.module.css';
+import { useMount } from 'ahooks';
 
 const ContactItem = ({ item }: { item: ContactBookItem }) => {
   const { t } = useTranslation();
@@ -97,11 +98,11 @@ const Contacts = ({
         </p>
       </div>
     );
-  }, [contacts?.length]);
+  }, [contacts?.length, t]);
 
-  useEffect(() => {
+  useMount(() => {
     init();
-  }, []);
+  });
 
   return (
     <div

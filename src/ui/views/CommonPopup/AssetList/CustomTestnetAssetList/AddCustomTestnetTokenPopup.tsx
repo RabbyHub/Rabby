@@ -118,7 +118,7 @@ export const AddCustomTestnetTokenContent = ({
       setChecked(false);
       form.resetFields();
     }
-  }, [visible]);
+  }, [visible, form, setChainSelectorState]);
 
   const inputRef = useRef<InputRef>(null);
   useLayoutEffect(() => {

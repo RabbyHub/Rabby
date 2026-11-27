@@ -265,7 +265,7 @@ export const BridgeToken = ({
         }, 200);
       }
     },
-    [token, onInputChange, onChangeToken]
+    [token, onInputChange, onChangeToken, chain]
   );
 
   const changeChain = React.useCallback(
@@ -300,7 +300,10 @@ export const BridgeToken = ({
     }
   }, [value]);
 
-  const showNoQuote = useMemo(() => isToToken && !!noQuote, [type, noQuote]);
+  const showNoQuote = useMemo(() => isToToken && !!noQuote, [
+    noQuote,
+    isToToken,
+  ]);
 
   const useValue = useMemo(() => {
     if (token && value) {
@@ -309,7 +312,7 @@ export const BridgeToken = ({
       );
     }
     return '$0.00';
-  }, [token?.price, value]);
+  }, [value, token]);
 
   const inputChange = React.useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {

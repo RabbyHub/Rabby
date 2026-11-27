@@ -11,19 +11,20 @@ export const OneKey: React.FC<{
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const { t } = useTranslation();
 
+  const isPopupContent = !isModalContent;
   React.useEffect(() => {
-    if (!isModalContent) {
+    if (isPopupContent) {
       setTitle(t('page.dashboard.hd.onekeyIsDisconnected'));
       setHeight(320);
     }
-  }, [!isModalContent]);
+  }, [isPopupContent]);
 
   React.useEffect(() => {
-    if (!isModalContent && hasConnectedLedgerHID) {
+    if (isPopupContent && hasConnectedLedgerHID) {
       message.success(t('page.dashboard.hd.ledger.connected'));
       closePopup();
     }
-  }, [hasConnectedLedgerHID, !isModalContent]);
+  }, [hasConnectedLedgerHID, isPopupContent]);
 
   const handleClick = async () => {
     if (!isModalContent) {

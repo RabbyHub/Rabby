@@ -5,21 +5,22 @@ import clsx from 'clsx';
 // const SearchInput = React.forwardRef<InputProps>();
 const SearchInput = function (props: InputProps) {
   const [isFocusing, setIsFocusing] = React.useState(false);
+  const { onFocus, onBlur } = props;
 
   const handleFocus = React.useCallback(
     (e) => {
       setIsFocusing(true);
-      props.onFocus?.(e);
+      onFocus?.(e);
     },
-    [props.onFocus]
+    [onFocus]
   );
 
   const handleBlur = React.useCallback(
     (e) => {
       setIsFocusing(false);
-      props.onBlur?.(e);
+      onBlur?.(e);
     },
-    [props.onBlur]
+    [onBlur]
   );
 
   return (

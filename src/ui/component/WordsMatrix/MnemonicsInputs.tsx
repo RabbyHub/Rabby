@@ -187,7 +187,7 @@ function MnemonicsInputs({
 
   const hasInputValue = useMemo(() => {
     return value?.trim?.()?.length > 0;
-  }, [inputTexts]);
+  }, [value]);
 
   React.useEffect(() => {
     setFocusing({

@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { KEYRING_CLASS } from '@/constant';
 import { useWallet } from '@/ui/utils';
 import { Modal } from '@/ui/component';
+import { useMount } from 'ahooks';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -61,19 +62,22 @@ export const MnemonicManager: React.FC = () => {
       type: HDPathType.BIP44,
     });
     setLoading(false);
-  }, []);
+  }, [createTask, getCurrentAccounts, setting]);
   const { t } = useTranslation();
 
-  React.useEffect(() => {
+  useMount(() => {
     changeHDPathTask(HDPathType.BIP44);
     fetchCurrentAccounts();
-  }, []);
+  });
 
-  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    await createTask(() =>
-      wallet.requestKeyring(MNEMONIC_TYPE, 'setHDPathType', keyringId, type)
-    );
-  }, []);
+  const changeHDPathTask = React.useCallback(
+    async (type: HDPathType) => {
+      await createTask(() =>
+        wallet.requestKeyring(MNEMONIC_TYPE, 'setHDPathType', keyringId, type)
+      );
+    },
+    [createTask, keyringId, wallet]
+  );
 
   return (
     <>

@@ -325,7 +325,7 @@ export const useTokenPair = (userAddress: string) => {
       setSlider(0);
       setActiveProvider(undefined);
     },
-    [setPayToken, setReceiveToken]
+    [setPayToken, setReceiveToken, handleChain, setActiveProvider]
   );
 
   const { search } = useLocation();
@@ -653,7 +653,13 @@ export const useTokenPair = (userAddress: string) => {
       ];
     }
     return [false, ''];
-  }, [payToken?.id, receiveToken?.id, chain]);
+  }, [
+    payToken?.id,
+    receiveToken?.id,
+    chain,
+    payToken?.symbol,
+    receiveToken?.symbol,
+  ]);
 
   const { feeRate, feeTier } = useMemo(
     () =>
@@ -692,12 +698,13 @@ export const useTokenPair = (userAddress: string) => {
     autoSlippageValue
   );
 
+  const { autoSlippage, setSlippage } = slippageObj;
   useEffect(() => {
-    if (slippageObj.autoSlippage) {
-      slippageObj.setSlippage(autoSlippageValue);
+    if (autoSlippage) {
+      setSlippage(autoSlippageValue);
       setAutoSuggestSlippage(autoSlippageValue);
     }
-  }, [slippageObj.autoSlippage, autoSlippageValue]);
+  }, [autoSlippage, setSlippage, autoSlippageValue]);
 
   const [quoteList, setQuotesList] = useState<TDexQuoteData[]>([]);
   const fetchIdRef = useRef(0);
@@ -750,9 +757,10 @@ export const useTokenPair = (userAddress: string) => {
 
   const [pending, setPending] = useState(false);
 
+  const setAutoSlippageMode = slippageObj.setAutoSlippage;
   const setAutoSlippage = useCallback(() => {
-    slippageObj.setAutoSlippage(true);
-  }, [slippageObj.setAutoSlippage]);
+    setAutoSlippageMode(true);
+  }, [setAutoSlippageMode]);
 
   useAutoSlippageEffect({
     chainServerId: findChainByEnum(chain)?.serverId || '',
@@ -1078,7 +1086,7 @@ export const useTokenPair = (userAddress: string) => {
 
   const openQuotesList = useCallback(() => {
     openQuote(true);
-  }, []);
+  }, [openQuote]);
 
   useEffect(() => {
     setQuoteRefreshCountdown(null);
@@ -1345,5 +1353,5 @@ export const useDetectLoss = ({
     const cut = receive.minus(pay).div(pay).times(100);
 
     return cut.lte(-5);
-  }, [payAmount, payToken?.price, receiveAmount, receiveToken?.price]);
+  }, [payAmount, receiveAmount, payToken, receiveToken]);
 };

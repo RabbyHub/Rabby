@@ -37,7 +37,7 @@ export const QRCodePanel: React.FC = () => {
     } catch (e) {
       // do nothing
     }
-  }, []);
+  }, [t, wallet]);
 
   const handleModalConfirm = React.useCallback(
     async (accounts: IDisplayedAccountWithBalance[]) => {
@@ -49,7 +49,7 @@ export const QRCodePanel: React.FC = () => {
 
       setData(data);
     },
-    []
+    [wallet]
   );
 
   React.useEffect(() => {

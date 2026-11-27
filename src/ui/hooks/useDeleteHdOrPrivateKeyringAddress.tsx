@@ -283,7 +283,7 @@ export const useHandleDeleteHdKeyringAndSimpleKeyringAccount = () => {
       handleReset();
       setDeletedProps(params);
     },
-    [wallet?.removeAddress]
+    [t, wallet]
   );
 
   const renderDelete = useCallback(
