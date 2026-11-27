@@ -1,5 +1,3 @@
-import * as Sentry from '@sentry/browser';
-
 // Names the signer treats as built-in when they are absent from `types`.
 // Anchored at the start so an over-long key cannot trigger quadratic backtracking.
 const BUILTIN_TYPE_REG = /^(address|bool|string|function|bytes\d*|u?int\d*|u?fixed(\d+x\d+)?)(\[\d*\])*$/;
@@ -190,22 +188,6 @@ export const findInvalidTypedDataValue = (
     typedData.message,
     'message'
   );
-};
-
-export const reportInvalidTypedDataValue = (
-  invalidValue: InvalidTypedDataValue | undefined,
-  context: { rawTypedData: string }
-) => {
-  if (!invalidValue) return;
-  try {
-    Sentry.captureMessage('eip712-sec: typed data value type mismatch', {
-      extra: {
-        rawTypedData: context.rawTypedData,
-      },
-    });
-  } catch (e) {
-    // Reporting failures must not affect validation.
-  }
 };
 
 /**

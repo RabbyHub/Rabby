@@ -75,7 +75,6 @@ import {
   findShadowedBuiltinType,
   isTypeGraphTooLarge,
   parseTypedDataJson,
-  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
 import {
@@ -412,11 +411,7 @@ const signTypedDataVlidation = ({
   if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
-  const invalidValue = findInvalidTypedDataValue(jsonData);
-  reportInvalidTypedDataValue(invalidValue, {
-    rawTypedData: data,
-  });
-  if (invalidValue) {
+  if (findInvalidTypedDataValue(jsonData)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   if (!permissionService.isInternalOrigin(session!.origin)) {

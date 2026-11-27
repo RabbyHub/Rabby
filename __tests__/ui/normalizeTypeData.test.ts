@@ -2,20 +2,16 @@
  * @jest-environment node
  */
 // abi-utils and eth-sig-util reject jsdom's Uint8Array as a foreign realm.
-jest.mock('@sentry/browser', () => ({ captureMessage: jest.fn() }));
 jest.mock('@/i18n', () => ({ t: (key: string) => key }));
 jest.mock('@/ui/views/Approval/components/Actions/utils', () => ({}));
 
-import * as Sentry from '@sentry/browser';
 import { SignTypedDataVersion, TypedDataUtils } from '@metamask/eth-sig-util';
 import {
   getNormalizeTypeDataVersion,
   normalizeTypeData,
-  reportNormalizeTypeDataFailures,
 } from '@/ui/views/Approval/components/TypedDataActions/utils';
 
 const { V3, V4 } = SignTypedDataVersion;
-const captureMessage = Sentry.captureMessage as jest.Mock;
 
 const EIP712Domain = [
   { name: 'name', type: 'string' },
@@ -197,56 +193,5 @@ describe('getNormalizeTypeDataVersion', () => {
     ['ethSignTypedDataV4', V4],
   ])('reads %s as %s', (method, version) => {
     expect(getNormalizeTypeDataVersion(method)).toBe(version);
-  });
-});
-
-describe('reportNormalizeTypeDataFailures', () => {
-  const context = {
-    rawTypedData: JSON.stringify({
-      message: { contents: 'x'.repeat(1000) },
-    }),
-  };
-
-  beforeEach(() => captureMessage.mockClear());
-
-  it('does not report without failures', () => {
-    reportNormalizeTypeDataFailures([], context);
-    expect(captureMessage).not.toHaveBeenCalled();
-  });
-
-  it('reports only the original typed data', () => {
-    reportNormalizeTypeDataFailures(
-      [
-        {
-          reason: 'field',
-          path: 'message.amount',
-          type: 'uint256',
-          error: new TypeError('bad value'),
-        },
-        { reason: 'digest', path: '', type: 'Mail' },
-      ],
-      context
-    );
-    expect(captureMessage).toHaveBeenCalledTimes(1);
-    expect(captureMessage).toHaveBeenCalledWith(
-      'eip712-sec: typed data normalize failed',
-      {
-        extra: {
-          rawTypedData: context.rawTypedData,
-        },
-      }
-    );
-  });
-
-  it('does not throw when reporting fails', () => {
-    captureMessage.mockImplementationOnce(() => {
-      throw new Error('sentry down');
-    });
-    expect(() =>
-      reportNormalizeTypeDataFailures(
-        [{ reason: 'digest', path: '', type: 'Mail' }],
-        context
-      )
-    ).not.toThrow();
   });
 });
