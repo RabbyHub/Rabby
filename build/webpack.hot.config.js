@@ -560,14 +560,25 @@ const otherConfig = {
 module.exports = Promise.all([
   import('code-inspector-plugin'),
   import('@code-inspector/core'),
-]).then(async ([{ codeInspectorPlugin }, { startServer }]) => {
-  const plugin = codeInspectorPlugin({ bundler: 'webpack' });
-  await startServer(plugin.options, {
+]).then(async ([{ codeInspectorPlugin }, inspector]) => {
+  // cache: true stops the plugin from stamping the ui cache with a new version
+  // at every start, which discarded the whole persistent cache each time
+  const plugin = codeInspectorPlugin({ bundler: 'webpack', cache: true });
+  const record = {
     port: 0,
     entry: '',
     output: plugin.options.output,
     envDir: process.cwd(),
-  });
+  };
+  await inspector.startServer(plugin.options, record);
+  // Two things shape the ui modules without webpack seeing them: the inspector
+  // port compiled into the entry, and whether ts-loader adds React Refresh.
+  // Keyed on both, the cache is reused only while they are unchanged.
+  const { port } = inspector.getProjectRecord(record);
+  uiConfig.cache = {
+    ...uiConfig.cache,
+    version: `inspector-${port}-${isHot ? 'hot' : 'plain'}`,
+  };
   uiConfig.plugins.push(plugin);
   return [uiConfig, otherConfig];
 });
