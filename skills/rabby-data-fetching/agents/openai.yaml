@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rabby Data Fetching"
+  short_description: "Fetch server data in Rabby with TanStack Query"
+  default_prompt: "Use $rabby-data-fetching to add or migrate a Rabby UI data request with useQuery and the src/ui/query resource modules."
