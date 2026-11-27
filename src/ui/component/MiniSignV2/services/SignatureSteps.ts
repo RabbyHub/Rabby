@@ -1,3 +1,4 @@
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import BigNumber from 'bignumber.js';
 import { intToHex } from '@/ui/utils/number';
 import { findChain, isTestnet } from '@/utils/chain';
@@ -1151,7 +1152,7 @@ export class SignatureSteps {
         !(
           isLedgerLockError(msg) ||
           isLedgerConnectionRecoverableError(msg) ||
-          msg === 'No OneKey Device found'
+          isOneKeyDisconnectError(e)
         )
       ) {
         try {

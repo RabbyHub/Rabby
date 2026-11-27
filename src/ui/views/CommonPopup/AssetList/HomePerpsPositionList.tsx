@@ -38,6 +38,7 @@ export const HomePerpsPositionList: React.FC<{
 
   const { data } = usePerpsClearHouseState({
     address: currentAccount?.address,
+    type: currentAccount?.type,
   });
   const wallet = useWallet();
   const dispatch = useRabbyDispatch();

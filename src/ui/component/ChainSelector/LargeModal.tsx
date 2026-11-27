@@ -35,6 +35,7 @@ import NetSwitchTabs, {
 import { useTranslation } from 'react-i18next';
 import { LoadingBalances } from './LoadingBalances';
 import styles from './LargeModal.module.css';
+import { useShallow } from 'zustand/react/shallow';
 
 interface ChainSelectorModalProps {
   visible: boolean;
@@ -59,18 +60,26 @@ const useChainSeletorList = ({
   netTabKey?: NetSwitchTabsKey;
 }) => {
   const [search, setSearch] = useState('');
-  const { pinned, chainBalances } = useRabbySelector((state) => {
-    return {
-      pinned: (state.preference.pinnedChain?.filter((item) =>
-        findChainByEnum(item)
-      ) || []) as CHAINS_ENUM[],
-      chainBalances:
-        netTabKey === 'testnet'
-          ? state.account.testnetMatteredChainBalances
-          : state.account.matteredChainBalances,
-      isShowTestnet: state.preference.isShowTestnet,
-    };
-  });
+  // `filter` returns a new array on every call; `useShallow` compares it by item.
+  const pinned = useRabbySelector(
+    useShallow(
+      (state) =>
+        (state.preference.pinnedChain?.filter((item) =>
+          findChainByEnum(item)
+        ) || []) as CHAINS_ENUM[]
+    )
+  );
+  const { chainBalances } = useRabbySelector(
+    useShallow((state) => {
+      return {
+        chainBalances:
+          netTabKey === 'testnet'
+            ? state.account.testnetMatteredChainBalances
+            : state.account.matteredChainBalances,
+        isShowTestnet: state.preference.isShowTestnet,
+      };
+    })
+  );
 
   const dispatch = useRabbyDispatch();
 

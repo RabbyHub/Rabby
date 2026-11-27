@@ -59,9 +59,10 @@ jobs:
           path: dist
           retention-days: 7
 
-  # build:pro no longer type-checks or lints, so these gate every PR instead
+  # build:pro no longer type-checks or lints, so these gate every PR instead.
+  # jest only transpiles, so its type coverage comes from the typecheck step.
   ci-checks:
-    name: lint and typecheck
+    name: lint, typecheck and test
     runs-on: ubuntu-latest
     steps:
       - name: checkout
@@ -93,3 +94,6 @@ jobs:
 
       - name: style ratchet
         run: yarn check:style
+
+      - name: unit test
+        run: yarn test --ci

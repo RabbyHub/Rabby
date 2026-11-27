@@ -44,7 +44,7 @@ export const BatchRevokePermit2 = ({
       <Table>
         {Object.keys(group).map((spender) => {
           return (
-            <>
+            <React.Fragment key={spender}>
               <Col>
                 <Row isTitle>
                   {t('page.signTx.revokeTokenApprove.revokeToken')}
@@ -53,6 +53,7 @@ export const BatchRevokePermit2 = ({
                   <div className="flex gap-y-12 flex-col">
                     {group[spender].map((token) => (
                       <LogoWithText
+                        key={token.id}
                         logo={token.logo_url}
                         text={<Values.TokenSymbol token={token} />}
                         logoRadius="100%"
@@ -94,7 +95,7 @@ export const BatchRevokePermit2 = ({
                   </SubRow>
                 </SubCol>
               </SubTable>
-            </>
+            </React.Fragment>
           );
         })}
       </Table>

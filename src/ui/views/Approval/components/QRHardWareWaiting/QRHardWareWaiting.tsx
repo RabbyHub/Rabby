@@ -213,7 +213,9 @@ const QRHardWareWaiting = ({ params, account: $account, approvalId }) => {
   }, [signFinishedData, isClickDone]);
 
   const handleCancel = () => {
-    rejectApproval('User rejected the request.');
+    rejectApproval('User rejected the request.', {
+      userCancelled: true,
+    });
   };
   const handleRequestSignature = async () => {
     const approval = await getApproval();

@@ -3,6 +3,7 @@ import browser from 'webextension-polyfill';
 import { v4 as uuidv4 } from 'uuid';
 import { pick } from 'lodash';
 
+import { isUserCancelledSigningError } from '@/background/utils/signingCancellation';
 import { getSentryEnv } from '@/utils/env';
 import { createBridgeSdkSentryEvent } from '@/utils/bridge-sdk-report';
 import { shouldReportUserBehaviorData } from '@/utils/user-data-tracking';
@@ -94,6 +95,10 @@ export const getSentryConfig = (): BrowserOptions => {
       return breadcrumb;
     },
     beforeSend: async (event, hint) => {
+      const originalException = hint?.originalException;
+      // The global rejection handler can capture a cancelled signing attempt.
+      if (isUserCancelledSigningError(originalException)) return null;
+
       if (!(await shouldReportUserBehaviorData())) {
         return null;
       }
@@ -101,7 +106,8 @@ export const getSentryConfig = (): BrowserOptions => {
       if (event.tags?.bridge_sdk === 'validation') {
         if (!hint?.data?.bridge_sdk_report) return null;
         const reportEvent = createBridgeSdkSentryEvent(
-          hint.data.bridge_sdk_report
+          hint.data.bridge_sdk_report,
+          hint.data.bridge_source
         );
         if (!reportEvent) return null;
         if (hint?.attachments) hint.attachments = [];
@@ -116,7 +122,6 @@ export const getSentryConfig = (): BrowserOptions => {
           sdkProcessingMetadata: event.sdkProcessingMetadata,
         };
       }
-      const originalException = hint?.originalException;
 
       // Owns the whole ignore list, including what the SDK's own `ignoreErrors`
       // used to drop, so it needs the Sentry-generated event text as well.

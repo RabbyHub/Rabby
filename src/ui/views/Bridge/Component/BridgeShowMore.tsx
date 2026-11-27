@@ -71,6 +71,7 @@ import {
   TxWithTempoExtras,
 } from '@/utils/tempo';
 import styles from './BridgeShowMore.module.css';
+import { useShallow } from 'zustand/react/shallow';
 
 export const BridgeShowMore = ({
   openQuotesList,
@@ -494,9 +495,11 @@ export const DirectSignGasInfo = ({
 }) => {
   const wallet = useWallet();
   const [swapGasQuoteVisible, setSwapGasQuoteVisible] = useState(false);
-  const { cachedTokenList } = useRabbySelector((s) => ({
-    cachedTokenList: s.account.tokens.list,
-  }));
+  const { cachedTokenList } = useRabbySelector(
+    useShallow((s) => ({
+      cachedTokenList: s.account.tokens.list,
+    }))
+  );
   const cachedTokenItems = useMemo(
     () => (cachedTokenList || []).map(abstractTokenToTokenItem),
     [cachedTokenList]

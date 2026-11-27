@@ -51,6 +51,7 @@ import { isNil, isNumber } from 'lodash';
 import { ExternalTokenRow } from './ExternalToken';
 import { getCexIds } from '@/ui/utils/portfolio/tokenUtils';
 import { UnknownTag } from '@/ui/component';
+import { useShallow } from 'zustand/react/shallow';
 
 const isTab = getUiType().isTab;
 
@@ -136,9 +137,11 @@ const TokenSelector = ({
   const [isInputActive, setIsInputActive] = useState(false);
   const history = useHistory();
 
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
 
   const { chainItem, isTestnet } = useMemo(() => {
     const chain = !chainServerId

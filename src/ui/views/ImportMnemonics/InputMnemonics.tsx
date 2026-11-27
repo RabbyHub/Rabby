@@ -16,7 +16,7 @@ type IFormStates = {
   mnemonics: string;
   passphrase: string;
 };
-const ImportMnemonics = () => {
+const ImportMnemonicsContent = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm<IFormStates>();
@@ -103,12 +103,6 @@ const ImportMnemonics = () => {
       },
     }
   );
-
-  // if is pop, redirect to dashboard
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
 
   useEffect(() => {
     (async () => {
@@ -230,4 +224,19 @@ const ImportMnemonics = () => {
   );
 };
 
-export default connectStore()(ImportMnemonics);
+// The popup check lives here so it does not sit in front of the content
+// component's hooks (rules of hooks). In the popup, redirect to the dashboard.
+const ImportMnemonicsGate = () => {
+  const history = useHistory();
+  const isPop = getUiType().isPop;
+
+  useEffect(() => {
+    if (isPop) {
+      history.replace('/dashboard');
+    }
+  }, [isPop, history]);
+
+  return isPop ? null : <ImportMnemonicsContent />;
+};
+
+export default connectStore()(ImportMnemonicsGate);

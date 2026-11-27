@@ -24,6 +24,7 @@ import { NftPreviewSection } from './NftPreviewSection';
 import type { NftPreviewItem } from './NftPreviewSection';
 import { useNFTCollections } from '@/ui/hooks/useNFTCollections';
 import { usePortfolioDisplayTokens } from '@/ui/hooks/useRemovedTokens';
+import { useShallow } from 'zustand/react/shallow';
 
 interface Props {
   className?: string;
@@ -44,9 +45,11 @@ export const AssetListContainer: React.FC<Props> = ({
   const handleOnSearch = React.useCallback((value: string) => {
     setSearch(value);
   }, []);
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
   const {
     collections: nftCollections,
     isLoading: isNftLoading,

@@ -1,3 +1,4 @@
+import { useCancelOneKeyOnClose } from '@/ui/hooks/useCancelOneKeyOnClose';
 import React, { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { intToHex, noop, useWallet } from '@/ui/utils';
@@ -86,6 +87,10 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
 
   const { ctx, config, error, status } = state;
   const currentAccount = config?.account;
+  const cancelSigning = useCancelOneKeyOnClose(
+    currentAccount,
+    ctx?.signInfo?.status === 'signing'
+  );
   const shouldShowGasModule = currentAccount?.type !== KEYRING_CLASS.GNOSIS;
   const gasCalcMethod = useMemoizedFn(async (price: number) => {
     const nativePrice = ctx?.nativeTokenPrice || 0;
@@ -531,6 +536,7 @@ const MiniSignTxV2 = ({ isDesktop }: { isDesktop?: boolean }) => {
   };
 
   const handleCancel = () => {
+    cancelSigning();
     instance.close();
   };
 

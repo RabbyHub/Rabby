@@ -678,7 +678,6 @@ const SettingsInner = ({
   const [connectedDappsVisible, setConnectedDappsVisible] = useState(false);
   const [feedbackVisible, setFeedbackVisible] = useState(false);
   const [isShowDappAccountModal, setIsShowDappAccountModal] = useState(false);
-  const [biometricSupported, setBiometricSupported] = useState(false);
   const [biometricBusy, setBiometricBusy] = useState(false);
   const [perpsWidgetEnabled, setPerpsWidgetEnabled] = useState(false);
   const [perpsWidgetBusy, setPerpsWidgetBusy] = useState(false);
@@ -775,24 +774,10 @@ const SettingsInner = ({
     }
   });
 
+  // Biometric unlock is being sunset: the setting can only be turned off.
   const handleToggleBiometricUnlock = useMemoizedFn(
     async (checked: boolean) => {
       if (checked) {
-        if (!biometricSupported) {
-          message.error(
-            t('page.dashboard.settings.biometricUnlockUnsupported')
-          );
-          return;
-        }
-        setBiometricBusy(true);
-        try {
-          await wallet.openBiometricUnlockSetupWindow({ from: 'settings' });
-        } finally {
-          setBiometricBusy(false);
-        }
-        if (getUiType().isPop) {
-          window.close();
-        }
         return;
       }
 
@@ -808,6 +793,32 @@ const SettingsInner = ({
         );
       } finally {
         setBiometricBusy(false);
+      }
+    }
+  );
+
+  // Debug Kits only (stripped from production builds): biometric unlock can no
+  // longer be enabled from the regular settings, so keep a way to set it up
+  // for testing.
+  const handleDebugToggleBiometricUnlock = useMemoizedFn(
+    async (checked: boolean) => {
+      if (!checked) {
+        await handleToggleBiometricUnlock(false);
+        return;
+      }
+
+      if (!(await isBiometricUnlockSupported())) {
+        message.error(t('page.dashboard.settings.biometricUnlockUnsupported'));
+        return;
+      }
+      setBiometricBusy(true);
+      try {
+        await wallet.openBiometricUnlockSetupWindow({ from: 'settings' });
+      } finally {
+        setBiometricBusy(false);
+      }
+      if (getUiType().isPop) {
+        window.close();
       }
     }
   );
@@ -888,18 +899,6 @@ const SettingsInner = ({
       });
     }
   };
-
-  useEffect(() => {
-    let mounted = true;
-    isBiometricUnlockSupported().then((supported) => {
-      if (mounted) {
-        setBiometricSupported(supported);
-      }
-    });
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   useEffect(() => {
     wallet
@@ -998,23 +997,26 @@ const SettingsInner = ({
     settings: {
       label: t('page.dashboard.settings.settings.label'),
       items: [
-        {
-          leftIcon: RCIconBiometric,
-          leftIconClassName: 'text-r-neutral-body',
-          className: 'js-setting-biometric',
-          content: t('page.dashboard.settings.settings.biometricUnlock'),
-          rightIcon: (
-            <Switch
-              checked={!!biometricUnlockEnabled}
-              disabled={
-                biometricBusy ||
-                (!biometricSupported && !biometricUnlockEnabled)
-              }
-              loading={biometricBusy}
-              onChange={handleToggleBiometricUnlock}
-            />
-          ),
-        },
+        // Biometric unlock is being sunset: only shown to users who already
+        // enabled it, so they can turn it off.
+        ...(biometricUnlockEnabled
+          ? [
+              {
+                leftIcon: RCIconBiometric,
+                leftIconClassName: 'text-r-neutral-body',
+                className: 'js-setting-biometric',
+                content: t('page.dashboard.settings.settings.biometricUnlock'),
+                rightIcon: (
+                  <Switch
+                    checked
+                    disabled={biometricBusy}
+                    loading={biometricBusy}
+                    onChange={handleToggleBiometricUnlock}
+                  />
+                ),
+              },
+            ]
+          : []),
         {
           leftIcon: RcIconPerps,
           leftIconClassName: 'text-r-neutral-body',
@@ -1261,6 +1263,19 @@ const SettingsInner = ({
     debugkits: {
       label: 'Debug Kits (Not present on production)',
       items: [
+        {
+          leftIcon: RCIconBiometric,
+          leftIconClassName: 'text-r-neutral-body',
+          content: <span>Biometric Unlock (for testing)</span>,
+          rightIcon: (
+            <Switch
+              checked={!!biometricUnlockEnabled}
+              disabled={biometricBusy}
+              loading={biometricBusy}
+              onChange={handleDebugToggleBiometricUnlock}
+            />
+          ),
+        },
         {
           leftIcon: RcIconServerCC,
           content: (

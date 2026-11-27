@@ -42,6 +42,7 @@ import {
 } from '@/background/service/signTxPreparation';
 import { v4 as uuidv4 } from 'uuid';
 import { isSigningCarrierReported, takeSigningCarrier } from '@/utils/sentry';
+import { isUserCancelledSigningError } from '@/background/utils/signingCancellation';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -388,6 +389,26 @@ const flowContext = flow
         );
 
         ctx.approvalRes = await approvalPromise;
+        const account = ctx.request.account;
+        if (
+          isSignApproval(approvalType) &&
+          account?.type === KEYRING_CLASS.HARDWARE.ONEKEY
+        ) {
+          const approved = ctx.approvalRes;
+          const address = account.address.toLowerCase();
+          if (
+            approved?.uiRequestComponent !== 'CommonWaiting' ||
+            approved.type !== account.type ||
+            approved.address?.toLowerCase() !== address ||
+            approved.$account?.type !== account.type ||
+            approved.$account?.address?.toLowerCase() !== address ||
+            approved.isGnosis
+          ) {
+            throw ethErrors.provider.userRejectedRequest(
+              'OneKey signing approval does not match the requested account.'
+            );
+          }
+        }
       } finally {
         if (signTxPreparationId) {
           cancelSignTxPreparation(signTxPreparationId);
@@ -425,24 +446,42 @@ const flowContext = flow
     // metadata separate so the controller receives the original result.
     const { uiRequestComponent, ...rest } = approvalRes || {};
 
+    const oneKeyWaiting =
+      uiRequestComponent === 'CommonWaiting' &&
+      rest.type === KEYRING_CLASS.HARDWARE.ONEKEY;
+    const waiting = oneKeyWaiting ? new AbortController() : undefined;
+    // Capture the instance while the account is present. A later approval
+    // may be using a different keyring by the time the user dismisses this one.
+    const waitingKeyring = oneKeyWaiting
+      ? await keyringService.getKeyringForAccount(rest.address, rest.type)
+      : undefined;
+    if (oneKeyWaiting && !keyringService.keyrings.includes(waitingKeyring)) {
+      throw ethErrors.provider.userRejectedRequest(
+        'OneKey account is no longer available.'
+      );
+    }
+    let waitingId: string | undefined;
+    let activeAttempts = 0;
+
     const createRequestDeferFn = (
       originApprovalRes: typeof approvalRes
     ) => async (isRetry = false) =>
       new Promise((resolve, reject) => {
-        let waitSignComponentPromise = Promise.resolve();
-
-        if (isSignApproval(approvalType) && uiRequestComponent) {
-          waitSignComponentPromise = waitSignComponentAmounted();
-        }
-
-        // if (approvalRes?.isGnosis && !approvalRes.safeMessage) {
-        //   return resolve(undefined);
-        // }
         if (originApprovalRes?.isGnosis) {
           return resolve(undefined);
         }
+        const waitSignComponentPromise =
+          isSignApproval(approvalType) && uiRequestComponent
+            ? waitSignComponentAmounted(
+                waiting?.signal,
+                waiting ? (id) => !!id && id === waitingId : undefined
+              )
+            : Promise.resolve();
 
-        return waitSignComponentPromise.then(() => {
+        const task = waitSignComponentPromise.then(() => {
+          if (waiting?.signal.aborted) {
+            throw ethErrors.provider.userRejectedRequest();
+          }
           let _approvalRes = originApprovalRes;
 
           if (
@@ -500,6 +539,7 @@ const flowContext = flow
             }
           }
 
+          activeAttempts++;
           return Promise.resolve(
             ctx.controllerMethod.call(providerController, {
               ...request,
@@ -507,6 +547,8 @@ const flowContext = flow
             })
           )
             .then((result) => {
+              if (waiting?.signal.aborted)
+                throw ethErrors.provider.userRejectedRequest();
               if (isSignApproval(approvalType)) {
                 eventBus.emit(EVENTS.broadcastToUI, {
                   method: EVENTS.SIGN_FINISHED,
@@ -514,6 +556,7 @@ const flowContext = flow
                     success: true,
                     data: result,
                     signingOperation,
+                    ...(waitingId && { approvalId: waitingId }),
                   },
                 });
               }
@@ -521,6 +564,10 @@ const flowContext = flow
             })
             .then(resolve)
             .catch((e: any) => {
+              if (waiting?.signal.aborted) {
+                reject(e);
+                return;
+              }
               console.error(e);
               const payload = {
                 method: EVENTS.SIGN_FINISHED,
@@ -528,9 +575,10 @@ const flowContext = flow
                   success: false,
                   errorMsg: e?.message || JSON.stringify(e),
                   signingOperation,
+                  ...(waitingId && { approvalId: waitingId }),
                 },
               };
-              if (e.method) {
+              if (e.method && !waitingId) {
                 payload.method = e.method;
                 payload.params = e.message;
               }
@@ -541,8 +589,8 @@ const flowContext = flow
                   Sentry.captureException(signingCarrier);
                 }
               } else if (
-                !isSignApproval(approvalType) ||
-                (e && typeof e === 'object')
+                !isUserCancelledSigningError(e) &&
+                (!isSignApproval(approvalType) || (e && typeof e === 'object'))
               ) {
                 Sentry.captureException(e);
               }
@@ -550,8 +598,12 @@ const flowContext = flow
                 eventBus.emit(EVENTS.broadcastToUI, payload);
               }
               reject(e);
+            })
+            .finally(() => {
+              activeAttempts--;
             });
         });
+        void task.catch(reject);
       });
 
     const requestDeferFn = createRequestDeferFn(approvalRes);
@@ -565,20 +617,34 @@ const flowContext = flow
       notificationService.setCurrentRequestDeferFn(requestDeferFn);
     }
     const requestDefer = requestDeferFn();
+    if (waiting) {
+      // The approval owns the result. Cancelling it also rejects the device task.
+      void requestDefer.catch(() => undefined);
+    }
     async function requestApprovalLoop({
       uiRequestComponent,
       $account,
       ...rest
     }) {
       ctx.request.requestedApproval = true;
-      const res = await notificationService.requestApproval({
-        approvalComponent: uiRequestComponent,
-        params: rest,
-        account: $account,
-        origin,
-        approvalType,
-        isUnshift: true,
-      });
+      const res = await notificationService.requestApproval(
+        {
+          approvalComponent: uiRequestComponent,
+          params: rest,
+          account: $account,
+          origin,
+          approvalType,
+          isUnshift: true,
+        },
+        undefined,
+        waiting
+          ? {
+              onCurrent: ({ id, component }) => {
+                if (component === 'CommonWaiting') waitingId = id;
+              },
+            }
+          : undefined
+      );
       if (res?.uiRequestComponent) {
         return await requestApprovalLoop(res);
       } else {
@@ -595,12 +661,22 @@ const flowContext = flow
           ...rest,
           signingOperation,
         });
+      } catch (error) {
+        if (waitingKeyring && keyringService.isUnlocked()) {
+          if (activeAttempts) {
+            void Promise.resolve(waitingKeyring.cancel()).catch(console.error);
+          } else if (rest.isGnosis) {
+            // Safe owner signatures are initiated by signTypedDataWithUI.
+            void Promise.resolve(waitingKeyring.cancelPendingWork()).catch(
+              console.error
+            );
+          }
+        }
+        throw error;
       } finally {
+        waiting?.abort();
         // The retry target re-runs an approved request, so it must not
-        // outlive the waiting component it was registered for: a later
-        // "Retry" that found it would replay this request. No other request
-        // can have registered one meanwhile - that takes a sign page handing
-        // off, which cannot happen while this waiting approval is pending.
+        // outlive the waiting component it was registered for.
         notificationService.clearCurrentRequestDeferFn();
       }
       if (rest?.safeMessage) {

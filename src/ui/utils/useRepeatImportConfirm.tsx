@@ -7,6 +7,7 @@ import { AccountItem } from '@/ui/component/AccountSelector/AccountItem';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import './confirmPopup.less';
 import { UI_TYPE } from '@/constant/ui';
+import { useShallow } from 'zustand/react/shallow';
 
 type NullFunction = () => void;
 let cleanup: NullFunction | undefined;
@@ -17,9 +18,11 @@ export const useRepeatImportConfirm = () => {
   const [modal, contextHolder] = Modal.useModal();
   const history = useHistory();
 
-  const { accountsList } = useRabbySelector((s) => ({
-    ...s.accountToDisplay,
-  }));
+  const { accountsList } = useRabbySelector(
+    useShallow((s) => ({
+      ...s.accountToDisplay,
+    }))
+  );
   const dispatch = useRabbyDispatch();
 
   useEffect(() => {

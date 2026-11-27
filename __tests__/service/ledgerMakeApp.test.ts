@@ -22,6 +22,7 @@ const mockRuntimeOnMessageAddListener = jest.fn((listener) => {
   mockRuntimeMessageListener = listener;
 });
 const mockCaptureMessage = jest.fn();
+const mockGetIsLedgerClearSigningEnabled = jest.fn();
 
 const flushMicrotasks = async () => {
   for (let i = 0; i < 10; i++) {
@@ -111,6 +112,9 @@ jest.mock('webextension-polyfill', () => ({
 jest.mock(
   '@ledgerhq/context-module',
   () => ({
+    ClearSignContextType: {
+      ERROR: 'error',
+    },
     ContextModuleChainID: {
       Ethereum: 'ethereum',
     },
@@ -152,11 +156,20 @@ jest.mock('@/utils/env', () => ({
   isManifestV3: true,
 }));
 
+// The real preference service pulls in the whole background service graph.
+jest.mock('@/background/service/preference', () => ({
+  __esModule: true,
+  default: {
+    getIsLedgerClearSigningEnabled: () => mockGetIsLedgerClearSigningEnabled(),
+  },
+}));
+
 import LedgerBridgeKeyring from 'background/service/keyring/eth-ledger-keyring';
 
 describe('LedgerBridgeKeyring makeApp', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    mockGetIsLedgerClearSigningEnabled.mockReturnValue(true);
     mockListenToAvailableDevices.mockReturnValue(of([], [{ id: 'ledger' }]));
     mockDisconnect.mockResolvedValue(undefined);
     mockGetDeviceSessionState.mockReturnValue(of(connectedState));
@@ -400,6 +413,35 @@ describe('LedgerBridgeKeyring makeApp', () => {
     await expect(blindSigningReporter.report()).resolves.toBeUndefined();
 
     await keyring.cleanUp();
+  });
+
+  it('builds the DMK signer without clear-sign contexts when clear signing is disabled', async () => {
+    mockGetIsLedgerClearSigningEnabled.mockReturnValue(false);
+    const keyring = new LedgerBridgeKeyring();
+
+    try {
+      await keyring.unlock("m/44'/60'/0'/0/0");
+
+      const { ContextModuleBuilder } = jest.requireMock(
+        '@ledgerhq/context-module'
+      );
+      expect(ContextModuleBuilder).not.toHaveBeenCalled();
+      expect(mockWithContextModule).toHaveBeenCalled();
+      for (const [module] of mockWithContextModule.mock.calls) {
+        expect(module).not.toBe(mockContextModule);
+      }
+
+      const contextModule = mockWithContextModule.mock.calls[0][0];
+      await expect(contextModule.getContexts()).resolves.toEqual([]);
+      await expect(contextModule.getFieldContext()).resolves.toMatchObject({
+        type: 'error',
+      });
+      await expect(contextModule.getTypedDataFilters()).resolves.toMatchObject({
+        type: 'error',
+      });
+    } finally {
+      await keyring.cleanUp();
+    }
   });
 
   it('does not reuse a disconnected Ledger session', async () => {

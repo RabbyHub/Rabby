@@ -9,6 +9,7 @@ import {
   WALLET_BRAND_CONTENT,
 } from '@/constant';
 import { useRabbySelector } from '../store';
+import { useShallow } from 'zustand/react/shallow';
 
 export const useBrandIcon = ({
   address,
@@ -29,9 +30,11 @@ export const useBrandIcon = ({
 
   const { isDarkTheme } = useThemeMode();
 
-  const { accountsList } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-  }));
+  const { accountsList } = useRabbySelector(
+    useShallow((s) => ({
+      accountsList: s.accountToDisplay.accountsList,
+    }))
+  );
 
   const isWhitelist = React.useMemo(
     () =>

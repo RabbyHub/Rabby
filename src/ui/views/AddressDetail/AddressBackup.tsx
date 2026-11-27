@@ -28,14 +28,16 @@ export const AddressBackup = ({ address, type }: Props) => {
 
   const [form] = useForm();
 
+  const invokeEnterPassphrase = useEnterPassphraseModal('address');
+
+  // Resolves to true without a wallet call for non-mnemonic types.
+  const { hasBackup } = useCheckSeedPhraseBackup({ address, type });
+
   if (
     ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type as any)
   ) {
     return null;
   }
-  const invokeEnterPassphrase = useEnterPassphraseModal('address');
-
-  const { hasBackup } = useCheckSeedPhraseBackup({ address, type });
 
   const handleBackup = async (path: 'mneonics' | 'private-key') => {
     form.resetFields();

@@ -60,6 +60,7 @@ import {
   requestBridgeQuoteTx,
 } from '../utils/submit';
 import twoStepApproveStyles from '@/ui/views/Swap/Component/twoStepApproveModal.module.css';
+import { useShallow } from 'zustand/react/shallow';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -78,9 +79,11 @@ export const BridgeContent = () => {
     amountMode?: FormAmountMode;
   }
 
-  const { userAddress } = useRabbySelector((state) => ({
-    userAddress: state.account.currentAccount?.address || '',
-  }));
+  const { userAddress } = useRabbySelector(
+    useShallow((state) => ({
+      userAddress: state.account.currentAccount?.address || '',
+    }))
+  );
 
   const {
     fromChain,
@@ -181,7 +184,7 @@ export const BridgeContent = () => {
   const [fetchingBridgeQuote, setFetchingBridgeQuote] = useState(false);
   const history = useHistory();
 
-  const gotoBridge = useCallback(async () => {
+  const gotoBridge = useMemoizedFn(async () => {
     if (
       !inSufficient &&
       fromToken &&
@@ -237,25 +240,7 @@ export const BridgeContent = () => {
         setFetchingBridgeQuote(false);
       }
     }
-  }, [
-    inSufficient,
-    fromToken,
-    toToken,
-    selectedBridgeQuote?.tx,
-    selectedBridgeQuote?.shouldApproveToken,
-    selectedBridgeQuote?.shouldTwoStepApprove,
-    selectedBridgeQuote?.aggregator.id,
-    selectedBridgeQuote?.bridge_id,
-    selectedBridgeQuote?.to_token_amount,
-    selectedBridgeQuote?.duration,
-    wallet,
-    amount,
-    feeRate,
-    rbiSource,
-    slippageState,
-    slippage,
-    maxNativeTokenGasPrice,
-  ]);
+  });
 
   const selectedBridgeQuoteBuildKey = useMemo(() => {
     if (!selectedBridgeQuote || !fromToken || !toToken) {

@@ -1,3 +1,4 @@
+import { isOneKeyDisconnectError } from '@/ui/utils/onekey';
 import { Account } from '@/background/service/preference';
 import { ReactComponent as RcIconCheckedCC } from '@/ui/assets/icon-checked-cc.svg';
 import { useThemeMode } from '@/ui/hooks/usePreference';
@@ -85,8 +86,7 @@ export const MiniOneKeyAction: React.FC<Props> = ({
 
   React.useEffect(() => {
     const listener = (msg) => {
-      if (msg === 'No OneKey Device found') {
-        console.log('msgmsg', msg);
+      if (isOneKeyDisconnectError(msg)) {
         setDisconnectTipsModal(true);
         task.stop();
       }

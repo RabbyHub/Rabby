@@ -40,6 +40,7 @@ import {
   AutoSizeAmountInput,
   AmountInputOverflowPosition,
 } from '../AutoSizeAmountInput';
+import { useShallow } from 'zustand/react/shallow';
 
 interface TokenAmountInputProps {
   token: TokenItem | null;
@@ -126,9 +127,11 @@ const TokenAmountInput = ({
   const [updateNonce, setUpdateNonce] = useState(0);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const selectorOpened = useRef(false);
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
   const wallet = useWallet();
   const [keyword, setKeyword] = useState('');
   const [lpTokenMode, setLpTokenMode] = useState(false);

@@ -28,6 +28,7 @@ import {
   contactAmountTokens,
   scamTokenFilter,
 } from '@/ui/utils/portfolio/tokenUtils';
+import { useShallow } from 'zustand/react/shallow';
 const isTab = getUiType().isTab;
 
 interface CommonProps {
@@ -110,9 +111,11 @@ const TokenSelect = forwardRef<
     const [initLoading, setInitLoading] = useState(true);
     const [updateNonce, setUpdateNonce] = useState(0);
     const [lpTokenMode, setLpTokenMode] = useState(false);
-    const { currentAccount } = useRabbySelector((s) => ({
-      currentAccount: s.account.currentAccount,
-    }));
+    const { currentAccount } = useRabbySelector(
+      useShallow((s) => ({
+        currentAccount: s.account.currentAccount,
+      }))
+    );
     const wallet = useWallet();
     const { t } = useTranslation();
     const isFromMode = useMemo(() => {

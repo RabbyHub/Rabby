@@ -13,6 +13,21 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/][arguments.length=1] > ArrowFunctionExpression > :matches(ObjectExpression, ArrayExpression).body",
+        "message": "This selector returns a new object or array on every call. Wrap it in `useShallow` from 'zustand/react/shallow'. Otherwise useRabbySelector re-renders on every store update, and a plain `create` store hook can loop forever (zustand v5)."
+      },
+      {
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/][arguments.length=1] > ArrowFunctionExpression > BlockStatement > ReturnStatement > :matches(ObjectExpression, ArrayExpression)",
+        "message": "This selector returns a new object or array on every call. Wrap it in `useShallow` from 'zustand/react/shallow'. Otherwise useRabbySelector re-renders on every store update, and a plain `create` store hook can loop forever (zustand v5)."
+      },
+      {
+        "selector": "CallExpression[callee.name=/^(useRabbySelector|use[A-Z]\\w*Store)$/] > ArrowFunctionExpression > LogicalExpression > :matches(ObjectExpression, ArrayExpression).right",
+        "message": "A `|| []` / `?? {}` fallback in a selector is a new value on every call. Use a constant defined outside the component."
+      }
+    ],
     "prettier/prettier": [
       "error",
       {

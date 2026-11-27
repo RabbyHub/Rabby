@@ -27,3 +27,4 @@ New UI code follows these rules; `yarn check:style` (run in CI) fails if a legac
 - Values only known at runtime: pass a CSS variable through `style` and read it from a class (`w-(--w)`). Never set the same property both inline and with a Tailwind class.
 - Merge class names with `cn()` from `@/ui/utils/cn` whenever a caller may override a component's classes; `clsx` alone does not resolve conflicts. New custom font sizes or weights in `tailwind.config.js` must also be registered in `cn.ts`.
 - Do not build Tailwind class names from strings (`` `bg-${color}` ``); the build cannot see them.
+- In one `clsx()`, do not pair an always-on class with a conditional class for the same property (`'h-full', inModal && 'h-[600px]'`): Tailwind's stylesheet order, not the argument order, picks the winner, so the override may never apply. Put both values in the ternary (`inModal ? 'h-[600px]' : 'h-full'`).
