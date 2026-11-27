@@ -234,17 +234,19 @@ const ImportMnemonicsContent = () => {
   );
 };
 
-const ImportMnemonics = () => {
+// The popup check lives here so it does not sit in front of the content
+// component's hooks (rules of hooks). In the popup, redirect to the dashboard.
+const ImportMnemonicsGate = () => {
   const history = useHistory();
+  const isPop = getUiType().isPop;
 
-  // if is pop, redirect to dashboard. Checked before ImportMnemonicsContent
-  // mounts, so its hooks always run in the same order.
-  if (getUiType().isPop) {
-    history.replace('/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (isPop) {
+      history.replace('/dashboard');
+    }
+  }, [isPop, history]);
 
-  return <ImportMnemonicsContent />;
+  return isPop ? null : <ImportMnemonicsContent />;
 };
 
-export default connectStore()(ImportMnemonics);
+export default connectStore()(ImportMnemonicsGate);

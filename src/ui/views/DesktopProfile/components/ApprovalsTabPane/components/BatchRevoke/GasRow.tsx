@@ -29,10 +29,9 @@ export const GasRow: React.FC<Props> = ({ record }) => {
   );
   if (!chainItem?.enum) return <div>-</div>;
 
-  // Plain values, not hooks: the early returns above flip once the revoke
-  // settles, so a hook here would change the hook count between renders.
+  // Plain values, not hooks: the early returns above depend on the row status,
+  // which changes while the batch runs, so hooks here would change in number.
   const gasCostUsdStr = `$${formatGasCostUsd(gasCost.gasCostUsd!)}`;
-
   const gasCostAmountStr = `${formatTokenAmount(
     gasCost.gasCostAmount.toString(10),
     6

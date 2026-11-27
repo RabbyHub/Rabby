@@ -218,9 +218,11 @@ const RabbyPoints = () => {
   );
   const [visible, setVisible] = useState(false);
   const [verifyVisible, setVerifyVisible] = useState(false);
-  const [previousPoints, setPreviousPoints] = useState(0);
-
-  const [currentPoints, setCurrentPoint] = useState(0);
+  // previous/current move together so one pure updater can advance both.
+  const [
+    { previous: previousPoints, current: currentPoints },
+    setPoints,
+  ] = useState({ previous: 0, current: 0 });
   const [showDiffPoints, setShowDiffPoints] = useState(false);
   const [diffPoints, setDiffPoints] = useState(0);
 
@@ -235,8 +237,8 @@ const RabbyPoints = () => {
   }, []);
 
   useEffect(() => {
-    setPreviousPoints(userPointsDetail?.claimed_points || 0);
-    setCurrentPoint(userPointsDetail?.claimed_points || 0);
+    const claimedPoints = userPointsDetail?.claimed_points || 0;
+    setPoints({ previous: claimedPoints, current: claimedPoints });
   }, [userPointsDetail?.claimed_points]);
 
   const total = useMemo(
@@ -313,11 +315,11 @@ const RabbyPoints = () => {
             campaign_id: campaign_id,
             signature,
           });
-          setCurrentPoint((e) => {
-            setPreviousPoints(e);
-            setDiffPoints(points);
-            return e + points;
-          });
+          setPoints((prev) => ({
+            previous: prev.current,
+            current: prev.current + points,
+          }));
+          setDiffPoints(points);
           refreshUserPoints();
           setClaimedIds((e) =>
             e.includes(campaign_id) ? e : [...e, campaign_id]

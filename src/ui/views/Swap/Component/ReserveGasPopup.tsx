@@ -51,7 +51,7 @@ const ReserveGasContent = React.forwardRef<
 
   const sortedList = React.useMemo(
     () =>
-      gasList?.sort((a, b) => {
+      gasList?.slice().sort((a, b) => {
         const v1 = SORT_SCORE[a.level];
         const v2 = SORT_SCORE[b.level];
         return v1 - v2;

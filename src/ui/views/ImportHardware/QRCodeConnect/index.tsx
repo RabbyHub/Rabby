@@ -18,21 +18,7 @@ type Valueof<T> = T[keyof T];
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
 
-// Checks `brand` before QRCodeConnectContent mounts, so its hooks always run in
-// the same order.
-export const QRCodeConnect = () => {
-  const history = useHistory();
-  const { search } = useLocation();
-  const brand = new URLSearchParams(search).get('brand');
-
-  if (!brand) {
-    history.goBack();
-    return null;
-  }
-
-  return <QRCodeConnectContent brand={brand} />;
-};
-
+// Rendered only with a brand; see QRCodeConnect below.
 const QRCodeConnectContent = ({ brand }: { brand: string }) => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -199,4 +185,23 @@ const QRCodeConnectContent = ({ brand }: { brand: string }) => {
       </main>
     </div>
   );
+};
+
+// The missing-brand check lives here so it does not sit in front of
+// QRCodeConnectContent's hooks (rules of hooks).
+export const QRCodeConnect = () => {
+  const history = useHistory();
+  const { search } = useLocation();
+  const brand = new URLSearchParams(search).get('brand');
+
+  useEffect(() => {
+    if (!brand) {
+      history.goBack();
+    }
+  }, [brand, history]);
+
+  if (!brand) {
+    return null;
+  }
+  return <QRCodeConnectContent brand={brand} />;
 };

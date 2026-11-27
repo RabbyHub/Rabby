@@ -20,7 +20,7 @@ type Props = {
   type: string;
   brandName?: string;
 };
-const AddressBackupContent = ({ address, type }: Props) => {
+export const AddressBackup = ({ address, type }: Props) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
@@ -30,7 +30,14 @@ const AddressBackupContent = ({ address, type }: Props) => {
 
   const invokeEnterPassphrase = useEnterPassphraseModal('address');
 
+  // Resolves to true without a wallet call for non-mnemonic types.
   const { hasBackup } = useCheckSeedPhraseBackup({ address, type });
+
+  if (
+    ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type as any)
+  ) {
+    return null;
+  }
 
   const handleBackup = async (path: 'mneonics' | 'private-key') => {
     form.resetFields();
@@ -143,17 +150,4 @@ const AddressBackupContent = ({ address, type }: Props) => {
       </div>
     </div>
   );
-};
-
-// Only HD and private-key keyrings can be backed up. Checking here, before
-// AddressBackupContent mounts, keeps its hooks unconditional.
-export const AddressBackup = (props: Props) => {
-  if (
-    ![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(
-      props.type as any
-    )
-  ) {
-    return null;
-  }
-  return <AddressBackupContent {...props} />;
 };

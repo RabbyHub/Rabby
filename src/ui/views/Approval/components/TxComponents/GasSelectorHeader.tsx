@@ -757,7 +757,7 @@ const GasSelectorHeader = ({
       return;
     }
 
-    let priorityPrice = calcMaxPriorityFee(
+    const priorityPrice = calcMaxPriorityFee(
       gasList,
       selectedGas,
       chainId,
@@ -766,10 +766,10 @@ const GasSelectorHeader = ({
 
     setMaxPriorityFee((prevFee = priorityPrice / 1e9) => {
       // Compare with selectedGas.price to avoid customMaxPriorityFee is more than maxGasFee
-      if (hasCustomPriorityFee.current) {
-        priorityPrice = Math.min(selectedGas.price, prevFee * 1e9);
-      }
-      return priorityPrice / 1e9;
+      const nextPriorityPrice = hasCustomPriorityFee.current
+        ? Math.min(selectedGas.price, prevFee * 1e9)
+        : priorityPrice;
+      return nextPriorityPrice / 1e9;
     });
   }, [gasList, selectedGas, isReady, chainId, isSelectCustom, isNilCustomGas]);
 
