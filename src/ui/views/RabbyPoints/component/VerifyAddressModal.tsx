@@ -56,7 +56,7 @@ const Inner = ({
           onClick={onCancel}
           className={clsx(
             'flex-1 h-[44px] text-[15px] font-medium border-r-blue-default text-r-blue-default',
-            'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+            'hover:bg-r-blue-light-1 active:bg-r-neutral-black/10',
             'before:content-none'
           )}
         >

@@ -121,7 +121,7 @@ const EditRPCModal = ({
           onChange={(e) => handleRPCChanged(e.target.value)}
         />
         {rpcErrorMsg && (
-          <div className="text-[#ec5151] font-normal text-[12px] leading-[16px] mt-8">
+          <div className="text-r-red-default font-normal text-[12px] leading-[16px] mt-8">
             {rpcErrorMsg}
           </div>
         )}

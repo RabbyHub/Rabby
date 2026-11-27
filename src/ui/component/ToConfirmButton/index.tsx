@@ -93,11 +93,7 @@ export const ToConfirmBtn = (props: {
           type="primary"
           disabled={props.disabled}
           block
-          className={clsx(
-            'h-[48px] rounded-[8px]',
-            props.loading && 'border-[#3646d9] bg-[#3646d9]',
-            props.buttonClassName
-          )}
+          className={clsx('h-[48px] rounded-[8px]', props.buttonClassName)}
           style={
             props.loading
               ? {

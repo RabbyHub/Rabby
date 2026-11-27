@@ -519,24 +519,24 @@ const AddressManagement = () => {
                 <SessionStatusBar
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={accountList[currentAccountIndex].brandName || ''}
-                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  className="m-[16px] mt-0 text-white bg-r-neutral-black/10"
                   type={accountList[currentAccountIndex].type}
                 />
               )}
               {isLedger && (
-                <LedgerStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                <LedgerStatusBar className="m-[16px] mt-0 text-white bg-r-neutral-black/10" />
               )}
               {isKeystone && (
-                <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                <KeystoneStatusBar className="m-[16px] mt-0 text-white bg-r-neutral-black/10" />
               )}
               {isGridPlus && (
-                <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+                <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-r-neutral-black/10" />
               )}
               {isCoinbase && (
                 <SessionStatusBar
                   address={accountList[currentAccountIndex].address || ''}
                   brandName={KEYRING_CLASS.Coinbase}
-                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                  className="m-[16px] mt-0 text-white bg-r-neutral-black/10"
                   type={KEYRING_CLASS.Coinbase}
                 />
               )}
