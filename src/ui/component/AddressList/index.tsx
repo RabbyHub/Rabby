@@ -101,6 +101,7 @@ const AddressList: any = forwardRef(
     const addressItems = useRef(new Array(list.length));
     const fixedList = useRef<FixedSizeList>();
     const combinedList = list
+      .slice()
       .sort((a, b) => {
         return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
       })

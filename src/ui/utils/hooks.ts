@@ -176,8 +176,7 @@ export const useSelectOption = <T>({
   };
 
   const handleRemove = (i: number) => {
-    idxs.splice(i, 1);
-    changeValue(idxs);
+    changeValue(idxs.filter((_, j) => j !== i));
   };
 
   const handleChoose = (i: number) => {
@@ -185,8 +184,7 @@ export const useSelectOption = <T>({
       return;
     }
 
-    idxs.push(i);
-    changeValue(idxs);
+    changeValue([...idxs, i]);
   };
 
   const handleToggle = (i: number) => {
