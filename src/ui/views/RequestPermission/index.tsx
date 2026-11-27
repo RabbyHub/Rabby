@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Button, message } from 'antd';
 import { TransportWebUSB } from '@keystonehq/hw-transport-webusb';
 import { StrayPage } from 'ui/component';
-import { query2obj } from 'ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useWallet } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_TYPES } from 'consts';
 import IconSuccess from 'ui/assets/success-large.svg';
@@ -19,7 +19,7 @@ import { requestLedgerHIDPermission } from '@/ui/utils/ledger-dmk';
 
 const RequestPermission = () => {
   const [showSuccess, setShowSuccess] = useState(false);
-  const qs = query2obj(window.location.href);
+  const qs = useSearchParams();
   const type = qs.type;
   const from = qs.from;
   const { t } = useTranslation();

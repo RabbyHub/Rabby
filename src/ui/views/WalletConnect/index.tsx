@@ -24,7 +24,6 @@ import { findChainByEnum } from '@/utils/chain';
 import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import { UI_TYPE } from '@/constant/ui';
 import { action } from 'webextension-polyfill';
-import qs from 'qs';
 import { WALLETCONNECT_CLOCK_SKEW } from '@/utils/walletconnect-error';
 
 const WalletConnectName = WALLET_BRAND_CONTENT['WALLETCONNECT']?.name;

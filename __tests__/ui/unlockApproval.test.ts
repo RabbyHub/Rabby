@@ -139,7 +139,7 @@ describe('Unlock approval binding', () => {
       },
       clsx: () => '',
       lodash: { isString: (value: unknown) => typeof value === 'string' },
-      qs: { parse: () => ({}) },
+      '@/ui/hooks/useSearchParams': { useSearchParams: () => ({}) },
       './index.module.css': styleModuleMock,
       ahooks,
     };

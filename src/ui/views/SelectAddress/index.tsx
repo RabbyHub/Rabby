@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { KEYRING_CLASS } from 'consts';
 import './style.less';
 import { HDManager } from '../HDManager/HDManager';
@@ -16,7 +17,7 @@ type State = {
 };
 
 const SelectAddress = () => {
-  const { state = {} as State, search } = useLocation<{
+  const { state = {} as State } = useLocation<{
     keyring: string;
     isMnemonics?: boolean;
     isWebHID?: boolean;
@@ -25,12 +26,12 @@ const SelectAddress = () => {
     ledgerLive?: boolean;
     brand?: string;
   }>();
-  const query = new URLSearchParams(search);
+  const query = useSearchParams();
 
-  state.keyring = state?.keyring || (query.get('hd') as string);
-  state.brand = state?.brand || (query.get('brand') as string);
-  if (query.get('keyringId') && !state.keyringId) {
-    state.keyringId = Number(query.get('keyringId') as string);
+  state.keyring = state?.keyring || query.hd;
+  state.brand = state?.brand || query.brand;
+  if (query.keyringId && !state.keyringId) {
+    state.keyringId = Number(query.keyringId);
   }
 
   const [isMounted, setIsMounted] = React.useState(false);

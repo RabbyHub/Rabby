@@ -1,6 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Card } from '@/ui/component/NewUserImport';
 import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { ReactComponent as RcIconCopy } from '@/ui/assets/component/icon-copy-cc.svg';
 import { useMemoizedFn } from 'ahooks';
 import { useWallet } from '@/ui/utils';
-import { query2obj } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useHideScreenshotContextMenu } from '@/ui/hooks/useScreenshotContextMenuVisible';
 import { PinGuideTips } from './PinGuideTips';
 
@@ -25,11 +25,7 @@ export const BackupSeedPhrase = () => {
   const { store, setStore } = useNewUserGuideStore();
 
   const mnemonics = React.useMemo(() => store.seedPhrase, [store.seedPhrase]);
-  const location = useLocation();
-
-  const { address } = React.useMemo(() => query2obj(location.search), [
-    location.search,
-  ]);
+  const { address } = useSearchParams();
 
   const onCopyMnemonics = React.useCallback(() => {
     mnemonics &&

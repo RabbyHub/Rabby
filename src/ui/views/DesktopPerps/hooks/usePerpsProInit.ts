@@ -1,5 +1,6 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { usePerpsDefaultAccount } from '../../Perps/hooks/usePerpsDefaultAccount';
 import {
   getPerpsSDK,
@@ -32,9 +33,7 @@ export const usePerpsProInit = (isActive = true) => {
   const history = useHistory();
   const location = useLocation();
 
-  const urlCoin = useMemo(() => {
-    return new URLSearchParams(location.search).get('coin');
-  }, [location.search]);
+  const { coin: urlCoin } = useSearchParams();
 
   // Init persisted settings + coin (URL coin > persisted coin)
   useEffect(() => {

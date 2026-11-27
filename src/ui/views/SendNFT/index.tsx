@@ -11,6 +11,7 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { Form, message, Button, Modal } from 'antd';
 import { isValidAddress, toChecksumAddress } from '@ethereumjs/util';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
@@ -73,6 +74,7 @@ const SendNFT = () => {
   const wallet = useWallet();
   const history = useHistory();
   const { search } = useLocation();
+  const searchParams = useSearchParams();
   const { t } = useTranslation();
   const rbisource = useRbiSource();
   const currentAccount = useCurrentAccount();
@@ -116,8 +118,7 @@ const SendNFT = () => {
   );
 
   const nftItem = useMemo(() => {
-    const query = new URLSearchParams(search);
-    const nftItemParam = query.get('nftItem');
+    const nftItemParam = searchParams.nftItem;
 
     if (nftItemParam) {
       try {
@@ -129,13 +130,9 @@ const SendNFT = () => {
       }
     }
     return null;
-  }, [search]);
+  }, [searchParams.nftItem]);
 
-  const toAddress = useMemo(() => {
-    const query = new URLSearchParams(search);
-    const toParam = query.get('to');
-    return toParam || '';
-  }, [search]);
+  const toAddress = searchParams.to || '';
 
   const updateUrlAmount = useCallback(
     (newAmount: number) => {

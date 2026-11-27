@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { Button, message } from 'antd';
 import { useMemoizedFn } from 'ahooks';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { Virtuoso } from 'react-virtuoso';
 import { KEYRING_CLASS } from '@/constant';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
@@ -324,16 +325,14 @@ export const AddMoreAddressesFromSeedPhrase: React.FC<{
     onNavigate,
   });
 
-  const query = React.useMemo(() => new URLSearchParams(location.search), [
-    location.search,
-  ]);
+  const query = useSearchParams();
   const state = React.useMemo(
     () =>
       ({
         publicKey:
           (outerState as AddMoreAddressesState | undefined)?.publicKey ||
           location.state?.publicKey ||
-          query.get('publicKey') ||
+          query.publicKey ||
           '',
         successState:
           (outerState as AddMoreAddressesState | undefined)?.successState ||

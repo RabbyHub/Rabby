@@ -225,7 +225,6 @@ const AccountItem: React.FC<{
                     address: item.address,
                     type: item.type,
                     brandName: item.brandName,
-                    //@ts-expect-error byImport is boolean
                     byImport: item.byImport || '',
                   })}`
                 );

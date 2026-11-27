@@ -2,7 +2,7 @@ import { Modal, ModalProps } from 'antd';
 import React, { useMemo } from 'react';
 import SendToken from '../../../SendToken';
 import WhitelistInput from '../../../WhitelistInput';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { ModalCloseIcon } from '../TokenDetailModal';
 import SelectToAddress from '@/ui/views/SelectToAddress';
 import SendNFT from '@/ui/views/SendNFT';
@@ -10,9 +10,7 @@ import { DesktopSelectAccountList } from '@/ui/component/DesktopSelectAccountLis
 import { PopupContainer } from '@/ui/hooks/usePopupContainer';
 
 export const SendTokenModal: React.FC<ModalProps> = (props) => {
-  const location = useLocation();
-  const sendPageType =
-    new URLSearchParams(location.search).get('sendPageType') || 'sendToken';
+  const sendPageType = useSearchParams().sendPageType || 'sendToken';
 
   const SendPage = useMemo(() => {
     if (sendPageType === 'sendToken') {

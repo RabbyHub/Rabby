@@ -33,7 +33,7 @@ import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 
 const isDesktop = getUiType().isDesktop;
 const BridgeOrNative = ({
@@ -282,13 +282,11 @@ const ListSiteAndCex = ({
     | undefined;
 }) => {
   const { getContainer: fromModalContainer } = usePopupContainer();
-  const location = useLocation();
-  const action = new URLSearchParams(location.search).get('action');
+  const { action } = useSearchParams();
   const isInDesktopActionModal =
     isDesktop &&
     (action === 'send' || action === 'swap' || action === 'bridge');
-  const isInSendModal =
-    new URLSearchParams(location.search).get('action') === 'send';
+  const isInSendModal = action === 'send';
   const getContainer = isInDesktopActionModal
     ? isInSendModal
       ? '.js-rabby-popup-container'

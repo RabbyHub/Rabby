@@ -20,8 +20,7 @@ import { useQueryDbkBridgeHistory } from './hooks/useQueryDbkBridgeHistory';
 import { useCheckBridgeStatus } from './hooks/useCheckBridgeStatus';
 import { useTranslation } from 'react-i18next';
 import { sortBy } from 'lodash';
-import { useLocation } from 'react-router-dom';
-import { query2obj } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { AutoSizeAmountInput } from '@/ui/component/AutoSizeAmountInput';
 import styles from './index.module.css';
 
@@ -85,8 +84,7 @@ export const DbkChainBridge = () => {
     },
   ];
 
-  const { search } = useLocation();
-  const qs = query2obj(search);
+  const qs = useSearchParams();
   const [activeTab, setActiveTab] = React.useState<'deposit' | 'withdraw'>(
     'withdraw'
   );

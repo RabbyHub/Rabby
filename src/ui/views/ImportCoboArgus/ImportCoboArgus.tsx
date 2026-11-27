@@ -14,7 +14,6 @@ import { findChainByID } from '@/utils/chain';
 import { useRepeatImportConfirm } from '@/ui/utils/useRepeatImportConfirm';
 import { safeJSONParse } from '@/utils';
 import { UI_TYPE } from '@/constant/ui';
-import qs from 'qs';
 import { useCreateAddressActions } from '../AddAddress/useCreateAddress';
 
 type Type = 'select-chain' | 'add-address' | 'select-address';

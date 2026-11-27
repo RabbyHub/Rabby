@@ -3,7 +3,7 @@ import { Button, Input, InputRef, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import browser from 'webextension-polyfill';
 import clsx from 'clsx';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 
 import { ReactComponent as BackgroundSVG } from '@/ui/assets/unlock/background.svg';
 import { ReactComponent as BiometricsSVG } from '@/ui/assets/unlock/biometrics.svg';
@@ -19,14 +19,13 @@ import styles from './index.module.css';
 export const BiometricUnlockSetup = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const location = useLocation();
   const dispatch = useRabbyDispatch();
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [inputError, setInputError] = useState('');
   const inputRef = useRef<InputRef>(null);
   const disableSubmit = !password || loading;
-  const from = new URLSearchParams(location.search).get('from');
+  const { from } = useSearchParams();
   const isFromSettings = from === 'settings';
 
   const closeCurrentWindowOnly = async () => {

@@ -344,7 +344,6 @@ const AddressManagement = () => {
                       address: account.address,
                       type: account.type,
                       brandName: account.brandName,
-                      //@ts-expect-error byImport is boolean
                       byImport: account.byImport || '',
                     })}`
                   );

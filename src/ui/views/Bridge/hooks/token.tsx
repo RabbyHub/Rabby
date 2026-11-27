@@ -25,8 +25,7 @@ import { getChainDefaultToken, tokenAmountBn } from '@/ui/utils/token';
 import BigNumber from 'bignumber.js';
 import { isNaN } from 'lodash';
 import { useBridgeSlippage } from './slippage';
-import { useLocation } from 'react-router-dom';
-import { query2obj } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import eventBus from '@/eventBus';
 import {
   bridgeQuoteScore,
@@ -806,7 +805,7 @@ export const useBridge = () => {
     };
   }, [clearExpiredTimer]);
 
-  const { search } = useLocation();
+  const query = useSearchParams();
   const [searchObj] = useState<{
     fromChain?: CHAINS_ENUM;
     fromChainServerId?: string;
@@ -819,7 +818,7 @@ export const useBridge = () => {
 
     chain?: string; // for from swap switch to bridge use from token
     payTokenId?: string; // for from swap switch to bridge
-  }>(query2obj(search));
+  }>(query);
 
   useEffect(() => {
     let active = true;

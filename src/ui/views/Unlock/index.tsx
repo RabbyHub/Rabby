@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Input, Form, Button, InputRef, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import {
   useWallet,
   useApproval,
@@ -17,7 +17,7 @@ import { ReactComponent as PasswordSwitchSVG } from '@/ui/assets/dashboard/setti
 import { ReactComponent as BiometricSwitchSVG } from '@/ui/assets/dashboard/settings/biometric.svg';
 import clsx from 'clsx';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
-import qs from 'qs';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { isString } from 'lodash';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import {
@@ -58,7 +58,6 @@ const Unlock = () => {
     biometricSunsetModalVisible,
     setBiometricSunsetModalVisible,
   ] = useState(false);
-  const location = useLocation();
   const [inputError, setInputError] = React.useState('');
   const biometricUnlockEnabled = useRabbySelector(
     (state) => state.preference.biometricUnlockEnabled
@@ -72,11 +71,7 @@ const Unlock = () => {
   const biometricUnlockIv = useRabbySelector(
     (state) => state.preference.biometricUnlockIv
   );
-  const query = useMemo(() => {
-    return qs.parse(location.search, {
-      ignoreQueryPrefix: true,
-    });
-  }, [location.search]);
+  const query = useSearchParams();
   const dispatch = useRabbyDispatch();
   const inputErrorNode = useMemo(() => {
     if (!inputError) return null;

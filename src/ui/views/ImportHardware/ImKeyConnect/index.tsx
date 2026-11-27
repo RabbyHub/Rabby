@@ -1,18 +1,16 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { hasConnectedImKeyDevice } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
-import { query2obj } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { withHardwareImportSelectAddressSource } from '@/ui/views/SelectAddress/route';
 
 export const ImKeyConnect = () => {
   const history = useHistory();
   const { t } = useTranslation();
-  const { search } = useLocation();
-
-  const qs = query2obj(search);
+  const qs = useSearchParams();
   const isReconnect = !!qs.reconnect;
 
   const onSubmit = async () => {

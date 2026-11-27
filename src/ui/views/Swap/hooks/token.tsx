@@ -20,8 +20,7 @@ import {
   useQuoteMethods,
 } from './quote';
 import { useRefreshId, useSetQuoteVisible, useSetRefreshId } from './context';
-import { useLocation } from 'react-router-dom';
-import { query2obj } from '@/ui/utils/url';
+import { useSearchParams } from '@/ui/hooks/useSearchParams';
 import { useAsyncInitializeChainList } from '@/ui/hooks/useChain';
 import { EVENTS, SWAP_SUPPORT_CHAINS } from '@/constant';
 import { findChain, findChainByEnum } from '@/utils/chain';
@@ -328,14 +327,14 @@ export const useTokenPair = (userAddress: string) => {
     [setPayToken, setReceiveToken]
   );
 
-  const { search } = useLocation();
+  const query = useSearchParams();
   const [searchObj] = useState<{
     payTokenId?: string;
     chain?: string;
     inputAmount?: string;
     receiveTokenId?: string;
     isMax?: boolean;
-  }>(query2obj(search));
+  }>(query);
   const [chainInitialized, setChainInitialized] = useState(
     !!initialSelectedChain ||
       !!searchObj?.chain ||
