@@ -7,7 +7,7 @@ import { useWallet } from '@/ui/utils';
 import { LedgerHDPathType as HDPathType } from '@/ui/utils/ledger';
 import { URDecoder } from '@ngraveio/bc-ur';
 import * as Sentry from '@sentry/browser';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -18,11 +18,10 @@ import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { useMount } from 'ahooks';
 import { findEthAccountByMultiAccounts } from '../ImportHardware/OneKeyConnect/utils';
 import { ImageCarousel } from '../ImportHardware/OneKeyConnect/ImageCarousel';
-import { useHDWalletUnlockAndRedirect } from './hooks/useHardWareUnlockAddress';
-import { useAsyncFn } from 'react-use';
 import { getOneKeyFirstOneKeyDevice } from '@/ui/utils/onekey';
 
 const KEYSTONE_TYPE = HARDWARE_KEYRING_TYPES.Keystone.type;
+const ONEKEY_TYPE = HARDWARE_KEYRING_TYPES.Onekey.type;
 
 enum ConnectType {
   QRCode = 'qrcode',
@@ -156,35 +155,81 @@ export const NewUserImportOneKey = () => {
     };
   }, [connectType]);
 
+  const usbRequest = useRef<AbortController | null>(null);
+  const [usbLoading, setUsbLoading] = useState(false);
   useEffect(() => {
-    // init onekey sdk
-    wallet.requestKeyring(
-      HARDWARE_KEYRING_TYPES.Onekey.type,
-      'searchDevices',
-      null
-    );
-  }, []);
-
-  const handle = useHDWalletUnlockAndRedirect(
-    HARDWARE_KEYRING_TYPES.Onekey.type
-  );
+    if (connectType !== ConnectType.USB) return;
+    setUsbLoading(false);
+    const cancel = () => {
+      usbRequest.current?.abort();
+      usbRequest.current = null;
+    };
+    window.addEventListener('beforeunload', cancel);
+    return () => {
+      window.removeEventListener('beforeunload', cancel);
+      cancel();
+    };
+  }, [connectType]);
 
   const onConnectViaUSB = async () => {
+    if (usbRequest.current || !store.password) return;
+    const request = new AbortController();
+    usbRequest.current = request;
+    setUsbLoading(true);
+    const { signal } = request;
     try {
-      if (!store.password) {
-        throw new Error('empty password');
-      }
       await getOneKeyFirstOneKeyDevice();
+      if (signal.aborted) return;
       await wallet.authorizeOneKeyHIDPermission();
-      await handle();
+      if (signal.aborted) return;
+      // Obtain the keyring ID before getAddresses can prompt on the device.
+      const id = await wallet.connectHardware({
+        type: ONEKEY_TYPE,
+        isWebHID: true,
+      });
+      if (signal.aborted) return;
+      signal.addEventListener(
+        'abort',
+        () => {
+          void wallet
+            .requestKeyring(ONEKEY_TYPE, 'cleanUp', id, true)
+            .catch(console.error);
+        },
+        { once: true }
+      );
+      const [account] = await wallet.requestKeyring(
+        ONEKEY_TYPE,
+        'getAddresses',
+        id,
+        0,
+        1
+      );
+      if (signal.aborted) return;
+      if (!account)
+        throw new Error(t('page.newAddress.hd.tooltip.connectError'));
+      await wallet.boot(store.password);
+      if (signal.aborted) return;
+      await wallet.unlockHardwareAccount(ONEKEY_TYPE, [account.index - 1], id);
+      if (signal.aborted) return;
+      usbRequest.current = null;
+      setStore({ clearKeyringId: undefined });
+      history.push({
+        pathname: '/new-user/success',
+        search: `?hd=${encodeURIComponent(ONEKEY_TYPE)}&keyringId=${id}`,
+      });
     } catch (error) {
-      console.error(error);
+      if (!signal.aborted && error?.name !== 'NotFoundError') {
+        message.error(
+          error?.message || t('page.newAddress.hd.tooltip.connectError')
+        );
+      }
+    } finally {
+      if (usbRequest.current === request) {
+        usbRequest.current = null;
+        setUsbLoading(false);
+      }
     }
   };
-
-  const [{ loading }, runHandleConnect] = useAsyncFn(onConnectViaUSB, [
-    onConnectViaUSB,
-  ]);
 
   const handleScan = () => {
     setErrorMessage('');
@@ -260,8 +305,8 @@ export const NewUserImportOneKey = () => {
                 className="w-[200px] mx-auto"
               />
               <Button
-                onClick={runHandleConnect}
-                loading={loading}
+                onClick={onConnectViaUSB}
+                loading={usbLoading}
                 block
                 type="primary"
                 className={clsx(

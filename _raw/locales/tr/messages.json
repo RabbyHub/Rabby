@@ -5064,7 +5064,12 @@
         "notAllowInBootloaderMode": "Normal modda kullanın",
         "deviceCheckPassphraseStateError": "Hesap, mevcut cihaz kilit açma adresi ile eşleşmiyor. Cihaz ve hesap adresinin tutarlı olduğunu doğrulayın ve tekrar deneyin",
         "actionCancel": "İşlem iptal edildi",
-        "deviceNeedsWebHIDPermission": "Cihaz bulunamadı veya WebHID izni gerekiyor"
+        "deviceNeedsWebHIDPermission": "Cihaz bulunamadı veya WebUSB izni gerekiyor",
+        "deviceNotOpenedPassphrase": "Parola koruması kapalı. Gizli cüzdanı açmak için korumayı etkinleştirin.",
+        "pinInvalid": "PIN yanlış. OneKey üzerinde tekrar deneyin.",
+        "deviceBusy": "OneKey meşgul. Geçerli işlemi bitirip tekrar deneyin.",
+        "deviceInterrupted": "OneKey bağlantısı kesildi. Cihazı yeniden bağlayın.",
+        "webUSBUnavailable": "Bu tarayıcı WebUSB'yi desteklemiyor."
       }
     },
     "feedback": {

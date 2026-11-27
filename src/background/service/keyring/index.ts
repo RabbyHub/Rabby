@@ -499,20 +499,26 @@ export class KeyringService extends EventEmitter {
    * @emits KeyringController#lock
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  async setLocked(): Promise<MemStoreState> {
-    // set locked
-    // release all transport before lock wallet
-    this.keyrings.forEach((keyring) => {
-      if (keyring.cleanUp) {
-        keyring.cleanUp();
+  async setLocked(pendingImports: any[] = []): Promise<MemStoreState> {
+    const sessionCleanups: Promise<void>[] = [];
+    for (const keyring of new Set([...this.keyrings, ...pendingImports])) {
+      if (keyring.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+        // Invalidate synchronously. A disconnected device may never acknowledge
+        // cancellation, so only local session cleanup should delay the lock event.
+        void Promise.resolve(keyring.cancelPendingWork()).catch(console.error);
+        sessionCleanups.push(
+          Promise.resolve(keyring.cleanUp()).catch(console.error)
+        );
+      } else {
+        keyring.cleanUp?.();
       }
-    });
+    }
     this.password = null;
     passwordClearKey();
     this.memStore.updateState({ isUnlocked: false });
     // remove keyrings
     this.keyrings = [];
-    await this._updateMemStoreKeyrings();
+    await Promise.all([this._updateMemStoreKeyrings(), ...sessionCleanups]);
     this.emit('lock');
     return this.fullUpdate();
   }
@@ -903,6 +909,13 @@ export class KeyringService extends EventEmitter {
             keyring?.consumePairingCredsRefreshed?.()
           ) {
             await this.persistAllKeyrings();
+          }
+          if (keyring?.type === KEYRING_CLASS.HARDWARE.ONEKEY) {
+            const repaired = keyring.consumePassphraseStateCleared?.();
+            const protocolsChanged = keyring.consumeDeviceProtocolsChanged?.();
+            if ((repaired || protocolsChanged) && this.isUnlocked()) {
+              await this.persistUpdate();
+            }
           }
         }
       },

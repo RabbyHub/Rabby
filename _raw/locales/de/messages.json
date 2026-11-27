@@ -5061,7 +5061,12 @@
         "notAllowInBootloaderMode": "Bitte im normalen Modus verwenden",
         "deviceCheckPassphraseStateError": "Das Konto stimmt nicht mit der aktuellen Entsperradresse des Geräts überein. Vergewissern Sie sich, dass Gerät und Kontoadresse übereinstimmen, und versuchen Sie es erneut",
         "actionCancel": "Vorgang abgebrochen",
-        "deviceNeedsWebHIDPermission": "Gerät nicht gefunden oder Zugriff erforderlich"
+        "deviceNeedsWebHIDPermission": "Gerät nicht gefunden oder WebUSB-Zugriff erforderlich",
+        "deviceNotOpenedPassphrase": "Der Passphrasenschutz ist deaktiviert. Aktiviere ihn, um die versteckte Wallet zu öffnen.",
+        "pinInvalid": "Falsche PIN. Versuche es auf deinem OneKey erneut.",
+        "deviceBusy": "OneKey ist beschäftigt. Beende den aktuellen Vorgang und versuche es erneut.",
+        "deviceInterrupted": "Die Verbindung zum OneKey wurde unterbrochen. Verbinde das Gerät erneut.",
+        "webUSBUnavailable": "Dieser Browser unterstützt WebUSB nicht."
       }
     },
     "feedback": {

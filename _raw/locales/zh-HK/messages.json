@@ -5072,7 +5072,12 @@
         "notAllowInBootloaderMode": "請在正常模式下使用",
         "deviceCheckPassphraseStateError": "帳戶與目前裝置的解鎖地址不符，請確認裝置與帳戶地址一致後重試",
         "actionCancel": "操作已取消",
-        "deviceNeedsWebHIDPermission": "未找到裝置或需要 WebHID 權限"
+        "deviceNeedsWebHIDPermission": "未找到裝置或需要 WebUSB 權限",
+        "deviceNotOpenedPassphrase": "裝置上的 Passphrase 已關閉。請先開啟，再開啟隱藏錢包。",
+        "pinInvalid": "PIN 碼不正確，請在 OneKey 上重試。",
+        "deviceBusy": "OneKey 正忙，請在目前操作結束後重試。",
+        "deviceInterrupted": "OneKey 連線中斷，請重新連接裝置後重試。",
+        "webUSBUnavailable": "目前的瀏覽器不支援 WebUSB。"
       }
     }
   },

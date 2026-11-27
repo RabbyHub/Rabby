@@ -14,7 +14,12 @@
         "notAllowInBootloaderMode": "Veuillez utiliser en mode normal",
         "deviceCheckPassphraseStateError": "Le compte ne correspond pas à l'adresse de déverrouillage de l'appareil actuel. Vérifiez que l'appareil et l'adresse du compte correspondent, puis réessayez",
         "actionCancel": "Opération annulée",
-        "deviceNeedsWebHIDPermission": "Appareil introuvable ou autorisation WebHID requise"
+        "deviceNeedsWebHIDPermission": "Appareil introuvable ou autorisation WebUSB requise",
+        "deviceNotOpenedPassphrase": "La protection par phrase secrète est désactivée. Activez-la pour ouvrir le portefeuille caché.",
+        "pinInvalid": "Code PIN incorrect. Réessayez sur votre OneKey.",
+        "deviceBusy": "OneKey est occupé. Terminez l’opération en cours, puis réessayez.",
+        "deviceInterrupted": "La connexion à OneKey a été interrompue. Reconnectez l’appareil.",
+        "webUSBUnavailable": "Ce navigateur ne prend pas en charge WebUSB."
       }
     },
     "error": {
