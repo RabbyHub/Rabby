@@ -11,10 +11,8 @@ export const Slip39TextareaContainer: React.FC<Props> = ({ data }) => {
   return (
     <div className="space-y-12">
       {secretShares.map((secretShare) => (
-        <div className="relative">
-          <div className="private-key" key={secretShare}>
-            {secretShare}
-          </div>
+        <div className="relative" key={secretShare}>
+          <div className="private-key">{secretShare}</div>
           <Copy
             icon={IconCopy}
             data={secretShare}

@@ -108,7 +108,7 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
         </div>
       </div>
       {delegates.map((item) => (
-        <div className="rabby-list-item">
+        <div className="rabby-list-item" key={item}>
           <div className="rabby-list-item-content py-0 min-h-[40px]">
             <NameAndAddress address={item} nameClass="max-143" />
           </div>

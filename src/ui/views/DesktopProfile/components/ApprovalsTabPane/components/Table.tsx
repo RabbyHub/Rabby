@@ -443,16 +443,13 @@ export function VirtualTable<RecordType extends object>({
     <ConfigProvider renderEmpty={renderEmpty}>
       <ResizeObserver
         onResize={({ width }) => {
-          setTableWidth((e) => {
-            if (isDesktop) {
-              if (e && !onResize.current) {
-                return e;
-              }
-              onResize.current = false;
-              return width;
-            }
-            return width;
-          });
+          if (!isDesktop) {
+            setTableWidth(width);
+            return;
+          }
+          const forceResize = onResize.current;
+          onResize.current = false;
+          setTableWidth((e) => (e && !forceResize ? e : width));
         }}
       >
         <Table<RecordType>
