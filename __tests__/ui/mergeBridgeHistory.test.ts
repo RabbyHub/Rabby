@@ -1,8 +1,13 @@
 import { BridgeHistory } from '@rabby-wallet/rabby-api/dist/types';
 import {
+  getBridgeAltContracts,
+  getBridgeRouter,
+} from '@rabby-wallet/rabby-bridge';
+import {
   collectInitialBridgeTxIds,
   collectOutgoingTxIds,
   collectViewportOutgoingTxIds,
+  isBridgeCandidate,
   mergeHistoryWithBridge,
 } from '@/ui/views/History/utils/mergeBridgeHistory';
 
@@ -12,22 +17,24 @@ jest.mock('@/ui/utils', () => ({
 }));
 
 const user = '0xuser';
+const randomContract = '0x000000000000000000000000000000000000dead';
 
 const tx = (
   id: string,
   chain: string,
-  from = user
+  from = user,
+  to = getBridgeRouter('lifi', chain) || randomContract
 ): {
   _id: string;
   id: string;
   chain: string;
-  tx: { from_addr: string };
+  tx: { from_addr: string; to_addr?: string };
   sends?: unknown[] | null;
 } => ({
   _id: `${chain}-${id}`,
   id,
   chain,
-  tx: { from_addr: from },
+  tx: { from_addr: from, to_addr: to },
   sends: [{}],
 });
 
@@ -45,12 +52,92 @@ const bridge = (
     to_tx: { tx_id: toId },
   } as unknown) as BridgeHistory);
 
+describe('isBridgeCandidate', () => {
+  it('matches chain-specific bridge routers case-insensitively', () => {
+    const ethAcrossRouter = getBridgeRouter('across', 'eth')!;
+    expect(
+      isBridgeCandidate(
+        tx('0x1', 'eth', user, ethAcrossRouter.toUpperCase()),
+        user
+      )
+    ).toBe(true);
+  });
+
+  it('matches global alt contracts only on chains supported by that aggregator', () => {
+    const acrossPeriphery = getBridgeAltContracts('across')[1];
+    const relayProxy = getBridgeAltContracts('relay')[0];
+
+    expect(
+      isBridgeCandidate(tx('0x1', 'eth', user, acrossPeriphery), user)
+    ).toBe(true);
+    expect(isBridgeCandidate(tx('0x2', 'arb', user, relayProxy), user)).toBe(
+      true
+    );
+    // Across does not support avax, so its alt contract should not match on avax
+    expect(
+      isBridgeCandidate(tx('0x3', 'avax', user, acrossPeriphery), user)
+    ).toBe(false);
+    expect(
+      isBridgeCandidate(tx('0x4', 'unknown_chain', user, relayProxy), user)
+    ).toBe(false);
+  });
+
+  it('rejects non-bridge contracts and wrong-chain routers', () => {
+    const ethAcrossRouter = getBridgeRouter('across', 'eth')!;
+    expect(
+      isBridgeCandidate(tx('0x1', 'eth', user, randomContract), user)
+    ).toBe(false);
+    expect(
+      isBridgeCandidate(tx('0x2', 'arb', user, ethAcrossRouter), user)
+    ).toBe(false);
+    expect(
+      isBridgeCandidate({ ...tx('0x3', 'eth'), tx: { from_addr: user } }, user)
+    ).toBe(false);
+  });
+
+  it('rejects approve, scam, and non-user outgoing txs even to a bridge router', () => {
+    const ethAcrossRouter = getBridgeRouter('across', 'eth')!;
+    expect(
+      isBridgeCandidate(
+        { ...tx('0x1', 'eth', user, ethAcrossRouter), cate_id: 'approve' },
+        user
+      )
+    ).toBe(false);
+    expect(
+      isBridgeCandidate(
+        { ...tx('0x2', 'eth', user, ethAcrossRouter), is_scam: true },
+        user
+      )
+    ).toBe(false);
+    expect(
+      isBridgeCandidate(tx('0x3', 'eth', '0xrelayer', ethAcrossRouter), user)
+    ).toBe(false);
+  });
+
+  it('allows send cate_id only when target is a whitelisted bridge contract', () => {
+    const relayRouter = getBridgeRouter('relay', 'eth')!;
+    expect(
+      isBridgeCandidate(
+        { ...tx('0x1', 'eth', user, relayRouter), cate_id: 'send' },
+        user
+      )
+    ).toBe(true);
+    expect(
+      isBridgeCandidate(
+        { ...tx('0x2', 'eth', user, randomContract), cate_id: 'send' },
+        user
+      )
+    ).toBe(false);
+  });
+});
+
 describe('collectOutgoingTxIds', () => {
   it('collects outgoing candidates and skips known ids', () => {
     const items = [
       tx('0x1', 'eth'),
       tx('0x2', 'eth', '0xother'),
       tx('0x3', 'arb'),
+      tx('0x4', 'eth', user, randomContract),
     ];
     const skip = new Set(['0x1']);
     expect(collectOutgoingTxIds(items, user, skip, 20)).toEqual(['0x3']);
@@ -59,7 +146,7 @@ describe('collectOutgoingTxIds', () => {
 
   it('does not query cancel transactions', () => {
     const items = [
-      { ...tx('0xcancel', 'eth'), cate_id: 'cancel' },
+      { ...tx('0xcancel', 'eth', user, user), cate_id: 'cancel' },
       tx('0xok', 'eth'),
     ];
     expect(collectOutgoingTxIds(items, user, new Set(), 20)).toEqual(['0xok']);
