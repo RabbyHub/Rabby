@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dropdown, Menu } from 'antd';
 import { PerpsTooltip } from '../../PerpsTooltip';
+import styles from './PerpsDropdown.module.css';
 
 interface PerpsDropdownOption {
   key: string;
@@ -23,7 +24,7 @@ interface PerpsDropdownProps {
 
 // Menu sits 2px under its trigger (Figma 165065:93924); antd's default is 4px.
 export const PERPS_DROPDOWN_ALIGN = { offset: [0, 2] as [number, number] };
-export const PERPS_DROPDOWN_MENU_CLASS = 'desktop-perps-dropdown-menu';
+export const PERPS_DROPDOWN_MENU_CLASS = styles.menu;
 // Compact text trigger from the same Figma node: 24px tall, 6px side padding
 // (5px + the 1px border), borderless until hovered or open. antd tags the
 // trigger with `ant-dropdown-open` while its menu is showing.
@@ -55,9 +56,7 @@ export const PerpsDropdown: React.FC<PerpsDropdownProps> = ({
             <Menu.Item key={option.key}>
               {option.title ? (
                 <PerpsTooltip title={option.title} placement="left">
-                  <span className="desktop-perps-dropdown-item-fill">
-                    {option.label}
-                  </span>
+                  <span className="block mx-[-8px] px-8">{option.label}</span>
                 </PerpsTooltip>
               ) : (
                 option.label

@@ -3113,7 +3113,7 @@ const SendToken = () => {
           forceShowBack={!(isTab || isDesktop)}
           isShowAccount
           canBack={!(isTab || isDesktop)}
-          className="mb-[10px]"
+          className="mb-[10px] pt-20 font-black text-rb-neutral-title-1"
           onBeforeSwitchAccountChange={async (nextAccount) => {
             const isSameAccount =
               currentAccount?.address &&

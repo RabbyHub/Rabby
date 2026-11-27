@@ -11,6 +11,9 @@ import { DesktopTokenLabel } from '@/ui/views/DesktopProfile/components/Transact
 import clsx from 'clsx';
 import { UI_TYPE } from '@/constant/ui';
 
+const TOKEN_ICON_CLASS =
+  'token-icon shrink-0 w-14 h-14 mr-6 rounded-[50%] object-cover';
+
 type TokenChangeProps = {
   data: TxHistoryItemRow;
   canClickToken?: boolean;
@@ -29,7 +32,7 @@ export const TokenChange = ({
   }
 
   return (
-    <div className="ui token-change">
+    <div className="ui token-change ml-auto flex flex-col gap-4 text-12 max-w-[200px] min-w-[130px]">
       {info.sends?.map((v) => {
         const token = v.token;
         const isNft = v.token_id?.length === 32;
@@ -41,7 +44,7 @@ export const TokenChange = ({
 
         return (
           <div
-            className="token-change-item"
+            className="token-change-item flex justify-end text-r-neutral-body"
             title={name}
             data-id={v.token_id}
             data-name={name}
@@ -49,14 +52,14 @@ export const TokenChange = ({
           >
             {isNft ? (
               <NFTAvatar
-                className="token-icon"
+                className={TOKEN_ICON_CLASS}
                 thumbnail
                 content={token?.content}
                 type={token?.content_type}
               ></NFTAvatar>
             ) : (
               <img
-                className="token-icon"
+                className={TOKEN_ICON_CLASS}
                 src={token?.logo_url || IconUnknown}
                 alt=""
               />
@@ -70,7 +73,7 @@ export const TokenChange = ({
             >
               -
             </span>
-            <span className="token-change-item-text">
+            <span className="token-change-item-text truncate">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
             {UI_TYPE.isDesktop ? (
@@ -105,20 +108,20 @@ export const TokenChange = ({
           <div
             data-id={v.token_id}
             data-name={name}
-            className="token-change-item is-success"
+            className="token-change-item is-success flex justify-end text-r-green-default"
             title={name}
             key={v.token_id}
           >
             {isNft ? (
               <NFTAvatar
-                className="token-icon"
+                className={TOKEN_ICON_CLASS}
                 thumbnail
                 content={token?.content}
                 type={token?.content_type}
               ></NFTAvatar>
             ) : (
               <img
-                className="token-icon"
+                className={TOKEN_ICON_CLASS}
                 src={token?.logo_url || IconUnknown}
                 alt=""
               />
@@ -132,7 +135,7 @@ export const TokenChange = ({
             >
               +
             </span>
-            <span className="token-change-item-text">
+            <span className="token-change-item-text truncate">
               {isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)}
             </span>
             {UI_TYPE.isDesktop ? (

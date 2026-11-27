@@ -9,6 +9,7 @@ import { Tooltip } from 'antd';
 
 import { useWallet } from 'ui/utils';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { ALIAS_ADDRESS, CHAINS_ENUM, ThemeIconType } from '@/constant';
 import { openInTab } from '@/ui/utils';
 import { findChainByEnum } from '@/utils/chain';
@@ -16,7 +17,6 @@ import { copyAddress } from '@/ui/utils/clipboard';
 
 import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import IconExternal from 'ui/assets/icon-share.svg';
-import './index.less';
 import { useTranslation } from 'react-i18next';
 import { getAddressScanLink } from '@/utils';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
@@ -116,19 +116,34 @@ const NameAndAddress = ({
   }, [copyIcon]);
 
   return (
-    <div className={clsx('name-and-address', className)}>
+    <div
+      className={cn(
+        'name-and-address flex justify-center items-center',
+        className
+      )}
+    >
       {localName && (
         <Tooltip
           {...(!tooltipAliasName && { visible: false })}
           overlay={<>{localName}</>}
         >
-          <div className={clsx('name', nameClass)} title={localName}>
+          <div
+            className={cn(
+              'name mr-6 font-medium text-[15px] text-r-neutral-body truncate',
+              nameClass
+            )}
+            title={localName}
+          >
             {localName}
           </div>
         </Tooltip>
       )}
       <div
-        className={clsx('address', addressClass, !localName && noNameClass)}
+        className={cn(
+          'address font-normal text-14 leading-[16px] text-r-neutral-foot',
+          addressClass,
+          !localName && noNameClass
+        )}
         title={address.toLowerCase()}
       >
         {localName

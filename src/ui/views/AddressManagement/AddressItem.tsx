@@ -170,13 +170,13 @@ const AddressItem = memo(
         )}
         <div
           className={clsx({
-            'bg-blue-light rounded-[8px] overflow-hidden': isCurrentAccount,
+            'bg-r-blue-default rounded-[8px] overflow-hidden': isCurrentAccount,
           })}
         >
           <div
             className={clsx(
               'rabby-address-item relative',
-              isCurrentAccount ? 'is-current bg-blue-light pr-0' : 'group',
+              isCurrentAccount ? 'is-current bg-r-blue-default pr-0' : 'group',
               !isCurrentAccount && (enableSwitch ? 'is-switch' : 'is-detail')
             )}
             onClick={enableSwitch ? onSwitchCurrentAccount : onClick}
@@ -263,7 +263,7 @@ const AddressItem = memo(
                     checkedClassName={clsx(
                       isCurrentAccount
                         ? 'text-r-neutral-title-2'
-                        : 'text-[#00C087]'
+                        : 'text-r-green-default'
                     )}
                   />
                   {!isCurrentAccount && (
@@ -291,7 +291,7 @@ const AddressItem = memo(
 
               {enableSwitch && !isCurrentAccount && (
                 <div className="rabby-address-item-extra flex justify-center items-center pr-[12px]">
-                  <div className="opacity-0 group-hover:opacity-100 w-[20px] h-[20px] rounded-full bg-blue-light flex items-center justify-center">
+                  <div className="opacity-0 group-hover:opacity-100 w-[20px] h-[20px] rounded-full bg-r-blue-default flex items-center justify-center">
                     <img src={IconCheck} className="w-[54%] icon icon-check" />
                   </div>
                 </div>
@@ -334,7 +334,7 @@ const AddressItem = memo(
                 className={clsx(
                   isCurrentAccount
                     ? 'flex text-white'
-                    : 'text-blue-light hidden group-hover:flex'
+                    : 'text-r-blue-default hidden group-hover:flex'
                 )}
               >
                 <RcIconArrowRight />

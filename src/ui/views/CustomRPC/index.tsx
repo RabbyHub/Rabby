@@ -13,7 +13,6 @@ import { PageHeader } from 'ui/component';
 import ChainIcon from 'ui/component/ChainIcon';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import EditRPCModal from './components/EditRPCModal';
-import './style.less';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useMemoizedFn } from 'ahooks';
 import styles from './index.module.css';
@@ -201,9 +200,9 @@ const CustomRPC = () => {
   }, [rpcModalVisible, chainSelectorVisible]);
 
   const NoAddressUI = (
-    <div className="no-address">
+    <div className="flex-1 px-20 pt-[117px] pb-[30px]">
       <img
-        className="no-data-image"
+        className="w-[100px] mx-auto my-0"
         src="/images/nodata-tx.png"
         alt="no address"
       />
@@ -214,7 +213,7 @@ const CustomRPC = () => {
   );
 
   return (
-    <div className="custom-rpc">
+    <div className="h-[100vh] relative flex flex-col bg-r-neutral-bg-2">
       <PageHeader
         className="pt-[24px] mx-[20px] mb-16"
         canBack={false}

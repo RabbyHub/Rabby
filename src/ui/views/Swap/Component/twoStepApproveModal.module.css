@@ -1,0 +1,25 @@
+/* Confirm modal for the two-step approve flow; shared by Swap and Bridge. */
+.modal :global(.ant-modal-content) {
+  background: #fff;
+}
+
+.modal :global(.ant-modal-body) {
+  padding: 12px 8px 32px 16px;
+}
+
+.modal :global(.ant-modal-confirm-content) {
+  padding: 4px 0 0 0;
+}
+
+.modal :global(.ant-modal-confirm-btns) {
+  justify-content: center;
+}
+
+.modal :global(.ant-modal-confirm-btns) :global(.ant-btn-primary) {
+  width: 260px;
+  height: 40px;
+}
+
+.modal :global(.ant-modal-confirm-btns) button:first-child {
+  display: none;
+}

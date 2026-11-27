@@ -120,7 +120,7 @@ const ChainIcon = ({
               <div
                 className={cn(
                   size,
-                  'absolute right-[-2px] top-[-2px] border border-[#ffffff] bg-[#27c193] rounded-full overflow-hidden',
+                  'absolute right-[-2px] top-[-2px] border border-white bg-r-green-default rounded-full overflow-hidden',
                   size === 'small' ? 'w-[8px] h-[8px]' : 'w-[10px] h-[10px]'
                 )}
               />
@@ -128,7 +128,7 @@ const ChainIcon = ({
               <div
                 className={cn(
                   size,
-                  'absolute right-[-2px] top-[-2px] border border-[#ffffff] bg-[#ec5151] rounded-full overflow-hidden',
+                  'absolute right-[-2px] top-[-2px] border border-white bg-r-red-default rounded-full overflow-hidden',
                   size === 'small' ? 'w-[8px] h-[8px]' : 'w-[10px] h-[10px]'
                 )}
               />
@@ -174,7 +174,7 @@ const ChainIcon = ({
               <div
                 className={cn(
                   size,
-                  'absolute right-[-2px] top-[-2px] border border-[#ffffff] bg-[#27c193] rounded-full overflow-hidden',
+                  'absolute right-[-2px] top-[-2px] border border-white bg-r-green-default rounded-full overflow-hidden',
                   size === 'small' ? 'w-[8px] h-[8px]' : 'w-[10px] h-[10px]'
                 )}
               />
@@ -182,7 +182,7 @@ const ChainIcon = ({
               <div
                 className={cn(
                   size,
-                  'absolute right-[-2px] top-[-2px] border border-[#ffffff] bg-[#ec5151] rounded-full overflow-hidden',
+                  'absolute right-[-2px] top-[-2px] border border-white bg-r-red-default rounded-full overflow-hidden',
                   size === 'small' ? 'w-[8px] h-[8px]' : 'w-[10px] h-[10px]'
                 )}
               />

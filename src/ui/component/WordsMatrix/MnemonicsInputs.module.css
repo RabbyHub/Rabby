@@ -169,7 +169,7 @@
 
 .matrix :global(.matrix-word-item:hover .mnemonics-input),
 .matrix :global(.matrix-word-item:hover) .numberFlag {
-  opacity: 1 !important;
+  opacity: 1;
 }
 
 .matrix .numberFlag {
@@ -232,3 +232,47 @@
   z-index: 9;
 }
 /* for MnemonicsInputs :end */
+
+/* Suggestion menu and popover; both render outside the matrix. */
+.inputMenu:global(.ant-dropdown-menu)
+  :global(.ant-dropdown-menu-item .text-wrapper) {
+  height: 100%;
+  padding: 11px 8px;
+  line-height: 1.2;
+}
+.inputMenu:global(.ant-dropdown-menu)
+  :global(.ant-dropdown-menu-item .text-wrapper:hover) {
+  background-color: var(--r-blue-light-1, #eef1ff);
+}
+.inputMenu:global(.ant-dropdown-menu)
+  :global(.ant-dropdown-menu-item .text-wrapper.show-more) {
+  height: auto;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  line-height: 18px;
+  font-size: 12px;
+  color: var(--r-neutral-foot, #8697b1);
+}
+.inputMenu:global(.ant-dropdown-menu)
+  :global(.ant-dropdown-menu-item .text-wrapper.show-more:hover) {
+  background-color: transparent;
+}
+
+.suggestionsPopover {
+  pointer-events: auto !important;
+}
+.suggestionsPopover :global(.ant-popover-arrow) {
+  display: none;
+}
+.suggestionsPopover :global(.ant-popover-inner) {
+  border-radius: 8px;
+  border: 0.5px solid var(--r-neutral-line, #e0e5ec);
+  background: var(--r-neutral-bg1, #fff);
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.17);
+}
+.suggestionsPopover :global(.ant-popover-inner-content) {
+  padding: 4px;
+}

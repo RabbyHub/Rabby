@@ -68,7 +68,7 @@ export const CoboArgusInfo = ({ address }: { address: string }) => {
             </div>
             {accountDetail?.isModuleEnabled ? null : (
               <div
-                className={`${styles.errorAlert} bg-red-forbidden before:border-b-red-forbidden`}
+                className={`${styles.errorAlert} bg-r-red-default before:border-b-r-red-default`}
               >
                 <img src={IconInfo} className="mr-6" />
                 <span>{t('page.addressDetail.coboSafeErrorModule')}</span>

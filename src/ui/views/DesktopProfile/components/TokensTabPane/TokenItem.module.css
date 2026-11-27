@@ -1,8 +1,6 @@
 .tokenRowWrapper {
   border-bottom: 1px solid var(--rb-neutral-bg-4, #ebedf0);
   height: 60px;
-  padding-left: 8px !important;
-  padding-right: 8px !important;
 }
 
 .tokenRowWrapper :global(.swap-action-btn) {

@@ -126,9 +126,7 @@ export const TokenItemAsset: React.FC<Props> = ({
               hover:text-r-blue-default hover:underline 
             `}
           />
-          {isUnknownToken(item) && (
-            <UnknownTag className="ml-12 !bg-r-neutral-line shrink-0" />
-          )}
+          {isUnknownToken(item) && <UnknownTag className="ml-12 shrink-0" />}
           {isLpToken(item) && (
             <LpTokenTag
               iconClassName="ml-4 inline-flex shrink-0"
@@ -262,8 +260,8 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       {isNil(item.price_24h_change) ? null : (
         <div
           className={clsx('font-normal text-12', {
-            'text-green': item.price_24h_change > 0,
-            'text-red-forbidden': item.price_24h_change < 0,
+            'text-r-green-default': item.price_24h_change > 0,
+            'text-r-red-default': item.price_24h_change < 0,
           })}
         >
           {item.price_24h_change > 0 ? '+' : ''}

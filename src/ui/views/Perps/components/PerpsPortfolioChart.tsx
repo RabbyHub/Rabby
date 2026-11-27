@@ -277,7 +277,7 @@ export const PerpsPortfolioChart: React.FC<{
             )}
             style={{ background: BUBBLE_BG }}
           >
-            <div className="text-[#C5C5CF]">
+            <div className="text-light-rb-neutral-info">
               {formatPortfolioTooltipTime(hover.point.timestamp)}
             </div>
             <div className="font-bold text-white">

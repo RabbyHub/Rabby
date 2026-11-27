@@ -189,8 +189,8 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       {isNumber(item.price_24h_change) && (
         <div
           className={clsx('font-normal text-12 text-r-neutral-foot', {
-            'text-green': item.price_24h_change > 0,
-            'text-red-forbidden': item.price_24h_change < 0,
+            'text-r-green-default': item.price_24h_change > 0,
+            'text-r-red-default': item.price_24h_change < 0,
           })}
         >
           ({item.price_24h_change > 0 ? '+' : ''}
@@ -222,8 +222,8 @@ const TokenItemMarketInfo: React.FC<Props> = ({ item }) => {
         {isNumber(item.price_24h_change) && (
           <div
             className={clsx('font-normal text-13 leading-[16px]', {
-              'text-green': item.price_24h_change > 0,
-              'text-red-forbidden': item.price_24h_change < 0,
+              'text-r-green-default': item.price_24h_change > 0,
+              'text-r-red-default': item.price_24h_change < 0,
               'text-r-neutral-foot': !item.price_24h_change,
             })}
           >
@@ -257,7 +257,7 @@ export const TokenItem: React.FC<Props> = ({ item, style, onClick }) => {
         'group cursor-pointer',
         'h-[60px] mt-8 px-12 justify-between',
         'rounded-[8px] border border-transparent',
-        'hover:border-blue-light'
+        'hover:border-r-blue-default'
       )}
     >
       <TokenItemAsset item={item} showButtons={showButtons} />

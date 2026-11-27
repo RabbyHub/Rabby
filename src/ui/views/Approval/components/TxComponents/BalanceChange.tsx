@@ -91,8 +91,8 @@ const NFTBalanceChange = ({
                   className="flex-1 overflow-hidden whitespace-nowrap text-ellipsis"
                   title={item.collection ? item.collection.name : item.name}
                 >
-                  <span className="text-green">+ {item.amount}</span>{' '}
-                  <span className="text-green">
+                  <span className="text-r-green-default">+ {item.amount}</span>{' '}
+                  <span className="text-r-green-default">
                     {item.collection ? item.collection.name : item.name}
                   </span>
                 </span>
@@ -129,8 +129,8 @@ const NFTBalanceChange = ({
                   className="flex-1 overflow-hidden whitespace-nowrap text-ellipsis"
                   title={item.collection ? item.collection.name : item.name}
                 >
-                  <span className="text-red-forbidden">- {item.amount}</span>{' '}
-                  <span className="text-red-forbidden">
+                  <span className="text-r-red-default">- {item.amount}</span>{' '}
+                  <span className="text-r-red-default">
                     {item.collection ? item.collection.name : item.name}
                   </span>
                 </span>
@@ -292,7 +292,7 @@ const BalanceChange = ({
                   text={
                     <div className="max-w-[200px] flex relative">
                       <span
-                        className="text-red-forbidden font-medium flex-1 overflow-hidden text-ellipsis"
+                        className="text-r-red-default font-medium flex-1 overflow-hidden text-ellipsis"
                         title={token.amount.toString()}
                       >
                         - {formatAmount(token.amount)}
@@ -301,7 +301,7 @@ const BalanceChange = ({
                       <span
                         onClick={() => handleClickToken(token)}
                         title={getTokenSymbol(token)}
-                        className="group-hover:underline cursor-pointer text-red-forbidden font-medium overflow-hidden text-ellipsis max-w-[100px] ml-4"
+                        className="group-hover:underline cursor-pointer text-r-red-default font-medium overflow-hidden text-ellipsis max-w-[100px] ml-4"
                       >
                         {getTokenSymbol(token)}
                       </span>
@@ -335,7 +335,7 @@ const BalanceChange = ({
                   text={
                     <div className="max-w-[200px] flex relative">
                       <span
-                        className="text-green font-medium flex-1 overflow-hidden text-ellipsis"
+                        className="text-r-green-default font-medium flex-1 overflow-hidden text-ellipsis"
                         title={token.amount.toString()}
                       >
                         + {formatAmount(token.amount)}
@@ -343,7 +343,7 @@ const BalanceChange = ({
                       <span
                         onClick={() => handleClickToken(token)}
                         title={getTokenSymbol(token)}
-                        className="group-hover:underline cursor-pointer text-green font-medium overflow-hidden text-ellipsis max-w-[80px] ml-2"
+                        className="group-hover:underline cursor-pointer text-r-green-default font-medium overflow-hidden text-ellipsis max-w-[80px] ml-2"
                       >
                         {getTokenSymbol(token)}
                       </span>

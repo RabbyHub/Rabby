@@ -44,7 +44,7 @@ const Reader = ({ requestId, setErrorMessage, brandName, onScan }) => {
 
   return (
     <div>
-      <div className="p-[10px] border border-gray-divider rounded-[8px] m-auto w-[222px] h-[222px]">
+      <div className="p-[10px] border border-r-neutral-line rounded-[8px] m-auto w-[222px] h-[222px]">
         <QRCodeReader width={200} height={200} onSuccess={handleSuccess} />
       </div>
       {progress > 0 ? (

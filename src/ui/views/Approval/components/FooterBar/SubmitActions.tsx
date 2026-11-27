@@ -49,13 +49,13 @@ export const SubmitActions: React.FC<Props> = ({
       {isSign ? (
         <div
           className={clsx(
-            'bg-blue-light w-[246px]',
+            'bg-r-blue-default w-[246px]',
             'text-white',
             'rounded-[8px] h-[48px]',
             'flex items-center',
             'relative',
             'before:absolute before:right-[60px]',
-            'before:bg-[#FFFFFF1A]',
+            'before:bg-white/10',
             'before:h-[32px] before:w-1',
             'hover:before:hidden',
             'overflow-hidden',
@@ -65,7 +65,7 @@ export const SubmitActions: React.FC<Props> = ({
           <button
             disabled={disabledProcess || isSubmitting}
             className={clsx(
-              'hover:bg-[#00000033]',
+              'hover:bg-r-neutral-black/20',
               'w-[184px] h-full',
               'font-medium',
               isSubmitting ? 'flex items-center justify-center gap-[8px]' : ''
@@ -81,7 +81,7 @@ export const SubmitActions: React.FC<Props> = ({
           </button>
           <button
             className={clsx(
-              'hover:bg-[#00000033]',
+              'hover:bg-r-neutral-black/20',
               'flex-1 h-full',
               'flex justify-center items-center'
             )}
@@ -113,7 +113,7 @@ export const SubmitActions: React.FC<Props> = ({
                 gasLess && 'gasLess',
                 gasLessThemeColor && 'gasLessConfig',
                 'w-[246px] h-[48px] rounded-[8px]',
-                'disabled:text-white/40 disabled:bg-blue-light/40 border-transparent',
+                'disabled:text-white/40 disabled:bg-r-blue-disable border-transparent',
                 'before:content-none'
               )}
               style={

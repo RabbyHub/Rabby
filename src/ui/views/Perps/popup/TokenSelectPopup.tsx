@@ -275,64 +275,66 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     }) => {
       const item = data[index];
 
+      // react-window sizes the slot inline (itemSize 64), so the 8px gap is
+      // padding on the slot and the card's height lives on an inner element.
       return (
-        <div
-          key={item.id}
-          style={style}
-          className={clsx(
-            'flex justify-between items-center cursor-pointer h-[56px] mb-8 border border-transparent',
-            'bg-r-neutral-card1 rounded-[12px] p-16',
-            'text-13 font-medium text-r-neutral-title-1',
-            'hover:border-rabby-blue-default',
-            'hover:bg-r-blue-light-1'
-          )}
-          onClick={(e) => handleClickToken(item)}
-        >
-          <div className="flex items-center gap-12">
-            <TokenWithChain
-              token={item}
-              hideConer
-              width="32px"
-              height="32px"
-              isShowChainTooltip
-            />
-            <span className="text-15 text-r-neutral-title-1 font-medium">
-              {getTokenSymbol(item)}
-            </span>
-            {isDirectDepositToken(item) && !isWithdrawMode && (
-              <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-6 py-2">
-                <svg
-                  width="8"
-                  height="10"
-                  viewBox="0 0 10 12"
-                  fill="currentColor"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M5.833 0 0 6.667h4.167L4.167 12 10 5.333H5.833z" />
-                </svg>
-                {t('page.perps.directDepositFast')}
+        <div key={item.id} style={style} className="pb-8">
+          <div
+            className={clsx(
+              'flex justify-between items-center cursor-pointer h-[56px] border border-transparent',
+              'bg-r-neutral-card1 rounded-[12px] p-16',
+              'text-13 font-medium text-r-neutral-title-1',
+              'hover:border-rabby-blue-default',
+              'hover:bg-r-blue-light-1'
+            )}
+            onClick={(e) => handleClickToken(item)}
+          >
+            <div className="flex items-center gap-12">
+              <TokenWithChain
+                token={item}
+                hideConer
+                width="32px"
+                height="32px"
+                isShowChainTooltip
+              />
+              <span className="text-15 text-r-neutral-title-1 font-medium">
+                {getTokenSymbol(item)}
+              </span>
+              {isDirectDepositToken(item) && !isWithdrawMode && (
+                <div className="flex items-center gap-4 text-[11px] font-medium text-r-blue-default bg-r-blue-light-1 rounded-[4px] px-6 py-2">
+                  <svg
+                    width="8"
+                    height="10"
+                    viewBox="0 0 10 12"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M5.833 0 0 6.667h4.167L4.167 12 10 5.333H5.833z" />
+                  </svg>
+                  {t('page.perps.directDepositFast')}
+                </div>
+              )}
+            </div>
+            {!isWithdrawMode && (
+              <div className="flex flex-col gap-2 items-end">
+                <div className="text-15 text-r-neutral-title-1 font-medium">
+                  {formatUsdValue(
+                    isDirectDepositToken(item)
+                      ? item.amount
+                      : item.amount * item.price || 0
+                  )}
+                </div>
+                <div className="text-[12px] text-r-neutral-foot">
+                  {formatAmount(item.amount)}
+                </div>
+              </div>
+            )}
+            {isWithdrawMode && (
+              <div className="text-15 text-r-neutral-title-1 font-medium">
+                {formatAmount(withdrawBalanceMap[item.id + item.chain] ?? 0)}
               </div>
             )}
           </div>
-          {!isWithdrawMode && (
-            <div className="flex flex-col gap-2 items-end">
-              <div className="text-15 text-r-neutral-title-1 font-medium">
-                {formatUsdValue(
-                  isDirectDepositToken(item)
-                    ? item.amount
-                    : item.amount * item.price || 0
-                )}
-              </div>
-              <div className="text-[12px] text-r-neutral-foot">
-                {formatAmount(item.amount)}
-              </div>
-            </div>
-          )}
-          {isWithdrawMode && (
-            <div className="text-15 text-r-neutral-title-1 font-medium">
-              {formatAmount(withdrawBalanceMap[item.id + item.chain] ?? 0)}
-            </div>
-          )}
         </div>
       );
     },

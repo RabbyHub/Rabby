@@ -36,8 +36,8 @@ export const MigrationBanner = () => {
           </div>
           <div className="w-[280px] text-center uppercase text-[12px] font-semibold">
             Fantom is migrating to Sonic <br />
-            <span className="text-[#1969FF]">$FTM</span> IS BECOMING{' '}
-            <span className="text-[#FE9A4C]">$S</span>
+            <span className="text-r-sonic-ftm">$FTM</span> IS BECOMING{' '}
+            <span className="text-r-sonic-s">$S</span>
           </div>
         </div>
       </div>

@@ -225,12 +225,7 @@ export const AssetListContainer: React.FC<Props> = ({
           />
         )}
 
-        <div
-          className="empty:hidden"
-          style={{
-            display: visible ? 'block' : 'none',
-          }}
-        >
+        <div className={visible ? 'block empty:hidden' : 'hidden'}>
           {isPortfoliosLoading && isAppPortfoliosLoading ? (
             <TokenListSkeleton />
           ) : (

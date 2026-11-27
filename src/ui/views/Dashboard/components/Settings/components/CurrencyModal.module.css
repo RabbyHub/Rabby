@@ -20,11 +20,6 @@
   transform: translateX(0);
 }
 
-.wrapper :global(.page-header) {
-  padding-top: 0;
-  margin-bottom: 28px;
-}
-
 .wrapper :global(.currency-search) {
   padding: 14px 12px;
   margin-bottom: 12px;

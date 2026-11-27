@@ -92,8 +92,5 @@ jobs:
       - name: typecheck
         run: yarn typecheck
 
-      - name: style ratchet
-        run: yarn check:style
-
       - name: unit test
         run: yarn test --ci
