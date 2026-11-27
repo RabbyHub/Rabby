@@ -33,7 +33,7 @@ export const AddCustomTokenModal: React.FC<
       }}
     >
       <PopupContainer>
-        <div className="h-[600px] overflow-auto">
+        <div className="h-[600px] overflow-auto bg-r-neutral-bg-2">
           <div className="text-r-neutral-title1 text-center text-[20px] leading-[24px] font-medium pt-[20px] pb-[16px]">
             Add Custom Network Token
           </div>
