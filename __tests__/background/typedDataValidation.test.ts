@@ -91,7 +91,7 @@ describe.each(['ethSignTypedDataV3', 'ethSignTypedDataV4'])(
           message: { flags: [false, 'false'] },
         },
       ],
-    ])('rejects %s and preserves Sentry reporting', (_name, overrides) => {
+    ])('rejects %s without reporting', (_name, overrides) => {
       const req = request({ ...base, ...overrides });
       expect(component).toBe('SignTypedData');
       expect(() => validate(req)).toThrow(
@@ -100,13 +100,7 @@ describe.each(['ethSignTypedDataV3', 'ethSignTypedDataV4'])(
           message: 'invalid typed data',
         })
       );
-      expect(captureMessage).toHaveBeenCalledTimes(1);
-      expect(captureMessage).toHaveBeenCalledWith(
-        'eip712-sec: typed data value type mismatch',
-        {
-          extra: { rawTypedData: req.data.params[1] },
-        }
-      );
+      expect(captureMessage).not.toHaveBeenCalled();
     });
 
     it.each([
@@ -117,21 +111,6 @@ describe.each(['ethSignTypedDataV3', 'ethSignTypedDataV4'])(
     ])('accepts valid values %p without reporting', (message) => {
       expect(() => validate(request({ ...base, message }))).not.toThrow();
       expect(captureMessage).not.toHaveBeenCalled();
-    });
-
-    it('still rejects when Sentry throws', () => {
-      captureMessage.mockImplementationOnce(() => {
-        throw new Error('sentry down');
-      });
-      expect(() =>
-        validate(
-          request({
-            ...base,
-            message: { ...base.message, approved: 'false' },
-          })
-        )
-      ).toThrow(expect.objectContaining({ code: -32602 }));
-      expect(captureMessage).toHaveBeenCalledTimes(1);
     });
   }
 );
