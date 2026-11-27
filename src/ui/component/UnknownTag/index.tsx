@@ -1,4 +1,4 @@
-import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import React from 'react';
 import { Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ const UnknownTag = ({ className }: UnknownTagProps) => {
       mouseEnterDelay={0}
     >
       <span
-        className={clsx(
+        className={cn(
           'inline-flex items-center justify-center whitespace-nowrap',
           'rounded-[4px] px-[4px] py-[2px]',
           'bg-rb-neutral-bg-0 text-rb-neutral-secondary',
