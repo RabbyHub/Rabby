@@ -18954,7 +18954,7 @@ __metadata:
     react-refresh-typescript: "npm:2.0.11"
     react-router-dom: "npm:5.3.4"
     react-use: "npm:17.2.4"
-    react-virtuoso: "npm:4.6.1"
+    react-virtuoso: "npm:4.18.22"
     react-window: "npm:1.8.6"
     recharts: "npm:2.7.1"
     reflect-metadata: "npm:0.1.13"
@@ -19836,13 +19836,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:4.6.1":
-  version: 4.6.1
-  resolution: "react-virtuoso@npm:4.6.1"
+"react-virtuoso@npm:4.18.22":
+  version: 4.18.22
+  resolution: "react-virtuoso@npm:4.18.22"
   peerDependencies:
-    react: ">=16 || >=17 || >= 18"
-    react-dom: ">=16 || >=17 || >= 18"
-  checksum: 10c0/a6ce1189a3341929a7cec47c317d639d15ef1ce14b731999f9f352b2bfe4ce363d4c1e9e0ad8f3ea8862b088080515e60c7975b4faf40cdac8714db41e1903b4
+    react: ">=16 || >=17 || >= 18 || >= 19"
+    react-dom: ">=16 || >=17 || >= 18 || >=19"
+  checksum: 10c0/b3ec29ad9ed949dea258beae7a78c0437c9afea2237512fe8b2978101a94ef4bb3c7f725a27848cd453a9ddf657bb29af057eb3aeee0193be7c0c84d8e09a212
   languageName: node
   linkType: hard
 
