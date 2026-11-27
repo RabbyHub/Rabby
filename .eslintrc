@@ -17,6 +17,10 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
     "@typescript-eslint/no-unused-vars": "off",
+    "react-you-might-not-need-an-effect/no-event-handler": "off",
+    "react-you-might-not-need-an-effect/no-adjust-state-on-prop-change": "off",
+    "react-you-might-not-need-an-effect/no-chain-state-updates": "off",
+    "react-you-might-not-need-an-effect/no-initialize-state": "off",
     "no-restricted-imports": [
       "error",
       {
