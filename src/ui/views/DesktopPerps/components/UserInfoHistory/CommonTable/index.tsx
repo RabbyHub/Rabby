@@ -2,7 +2,7 @@ import { Table } from 'antd';
 import { TableProps, ColumnType } from 'antd/lib/table';
 import React, { useState, useMemo, useRef, useCallback } from 'react';
 import { ReactComponent as RcIconEmpty } from '@/ui/assets/perps/IconHistoryEmpty.svg';
-import { FixedSizeList as List, ListChildComponentProps } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import ResizeObserver from 'rc-resize-observer';
 import { useThemeMode } from '@/ui/hooks/usePreference';
 import clsx from 'clsx';
@@ -45,24 +45,27 @@ export const SortIcon: React.FC<{ order: 'ascend' | 'descend' | null }> = ({
   );
 };
 
-// Types for virtual row data
-interface VirtualRowData<T> {
+// Shared by every virtual row, passed through Virtuoso's context
+interface VirtualRowContext<T> {
   columns: ColumnType<T>[];
-  rawData: T[];
   columnWidths: number[];
 }
 
-// Virtual row component for react-window
 function VirtualRow<T extends object>({
   index,
-  style,
-  data,
-}: ListChildComponentProps<VirtualRowData<T>>) {
-  const { columns, rawData, columnWidths } = data;
-  const record = rawData[index];
+  record,
+  context,
+}: {
+  index: number;
+  record: T;
+  context: VirtualRowContext<T>;
+}) {
+  const { columns, columnWidths } = context;
 
+  // The row height comes from the rowHeight prop through the wrapper's
+  // --common-table-row-height, and must match the list's fixedItemHeight.
   return (
-    <div className="virtual-row" style={style}>
+    <div className="virtual-row h-(--common-table-row-height)">
       {columns.map((column, colIndex) => {
         const { dataIndex } = column;
 
@@ -108,6 +111,12 @@ function VirtualRow<T extends object>({
     </div>
   );
 }
+
+const renderVirtualRow = <T extends object>(
+  index: number,
+  record: T,
+  context: VirtualRowContext<T>
+) => <VirtualRow index={index} record={record} context={context} />;
 
 interface CommonTableProps<T extends object> extends TableProps<T> {
   columns: ColumnType<T>[];
@@ -268,14 +277,12 @@ export const CommonTable = <T extends object>({
     setBodyHeight(height);
   }, []);
 
-  // Virtual list item data
-  const virtualItemData = useMemo(
-    (): VirtualRowData<T> => ({
+  const virtualRowContext = useMemo(
+    (): VirtualRowContext<T> => ({
       columns: enhancedColumns as ColumnType<T>[],
-      rawData: sortedData,
       columnWidths,
     }),
-    [enhancedColumns, sortedData, columnWidths]
+    [enhancedColumns, columnWidths]
   );
 
   // List height calculation - use actual body height from container
@@ -315,6 +322,11 @@ export const CommonTable = <T extends object>({
             styles.virtualWrapper,
             isDarkTheme && styles.virtualWrapperDark
           )}
+          style={
+            {
+              '--common-table-row-height': `${rowHeight}px`,
+            } as React.CSSProperties
+          }
         >
           {/* Header-only table */}
           <div className="virtual-table-header" ref={headerRef}>
@@ -331,16 +343,17 @@ export const CommonTable = <T extends object>({
           <ResizeObserver onResize={handleBodyResize}>
             <div className="virtual-table-body" ref={bodyRef}>
               {listHeight > 0 && (
-                <List<VirtualRowData<T>>
-                  height={listHeight}
-                  itemCount={sortedData.length}
-                  itemSize={rowHeight}
-                  width={containerWidth || '100%'}
-                  itemData={virtualItemData}
-                  style={{ overflowX: 'hidden' }}
-                >
-                  {VirtualRow as React.ComponentType<ListChildComponentProps>}
-                </List>
+                <Virtuoso
+                  style={{
+                    height: listHeight,
+                    width: containerWidth || '100%',
+                    overflowX: 'hidden',
+                  }}
+                  data={sortedData}
+                  context={virtualRowContext}
+                  fixedItemHeight={rowHeight}
+                  itemContent={renderVirtualRow}
+                />
               )}
             </div>
           </ResizeObserver>

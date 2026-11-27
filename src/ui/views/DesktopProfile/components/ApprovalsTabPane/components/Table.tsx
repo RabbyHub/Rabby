@@ -1,6 +1,5 @@
 import React, {
   useMemo,
-  useEffect,
   useCallback,
   useRef,
   useState,
@@ -13,7 +12,7 @@ import type { ColumnGroupType, ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
 import ResizeObserver from 'rc-resize-observer';
 import type { RenderedCell } from 'rc-table/lib/interface';
-import { VariableSizeGrid as VGrid, areEqual } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import { ROW_HEIGHT, SCROLLBAR_WIDTH } from '../constant';
 
 import { ReactComponent as RcIconNoMatchCC } from '../icons/no-match-cc.svg';
@@ -59,23 +58,31 @@ function TableHeadCell({
   );
 }
 
-type IVGridItemDataType<RecordType> = {
+type GetRowHeight<RecordType> = (
+  row: RecordType,
+  idx: number,
+  rows: readonly RecordType[]
+) => number | void;
+
+type IVirtualTableContext<RecordType> = {
   columns: (ColumnGroupType<RecordType> | ColumnType<RecordType>)[];
+  columnWidths: number[];
   rowList: readonly RecordType[];
+  getRowHeight?: GetRowHeight<RecordType>;
   sortingKey?: SorterResult<RecordType>['columnKey'];
   hoveredRowIndex?: number | null;
   onClickRow?: HandleClickTableRow<RecordType>;
   onMouseEnterCell?: (
-    ctx: IVGridContextualPayload<RecordType> & {
+    ctx: IVirtualTableCellPayload<RecordType> & {
       event: React.MouseEvent<HTMLDivElement>;
     }
   ) => void;
   getCellClassName?: (
-    ctx: IVGridContextualPayload<RecordType>
+    ctx: IVirtualTableCellPayload<RecordType>
   ) => string | undefined;
 };
 
-export type IVGridContextualPayload<RecordType> = {
+export type IVirtualTableCellPayload<RecordType> = {
   columnIndex: number;
   rowIndex: number;
   record: RecordType;
@@ -93,28 +100,25 @@ const isRenderedCell = <T extends object>(
   );
 };
 
-const TableCellProto = <RecordType extends object = any>({
+function TableCell<RecordType extends object = any>({
   columnIndex,
   rowIndex,
-  style,
-  data,
-}: {
-  columnIndex: number;
-  rowIndex: number;
-  style: React.CSSProperties;
-  data: IVGridItemDataType<RecordType>;
-}) => {
+  record,
+  context,
+}: IVirtualTableCellPayload<RecordType> & {
+  context: IVirtualTableContext<RecordType>;
+}) {
   const {
     rowList,
     columns,
+    columnWidths,
     getCellClassName,
     onClickRow,
     hoveredRowIndex,
     onMouseEnterCell,
     sortingKey,
-  } = data;
+  } = context;
 
-  const record = rowList[rowIndex];
   const columnConfig = columns[columnIndex];
 
   const colConfig = columnConfig as ColumnType<RecordType>;
@@ -144,10 +148,8 @@ const TableCellProto = <RecordType extends object = any>({
 
   return (
     <div
-      // pointless, see itemKey property of VGrid
-      key={`r-${rowIndex}-c-${columnIndex}-${columnConfig.key}`}
       className={clsx(
-        'am-virtual-table-cell',
+        'am-virtual-table-cell relative shrink-0 w-(--am-cell-width)',
         columnConfig.className,
         cellClassName,
         `column-cell-J_key-${columnConfig.key}`,
@@ -160,6 +162,11 @@ const TableCellProto = <RecordType extends object = any>({
           'is-sorting-cell': columnConfig.key === sortingKey,
         }
       )}
+      style={
+        {
+          '--am-cell-width': `${columnWidths[columnIndex]}px`,
+        } as React.CSSProperties
+      }
       onClick={(event) =>
         onClickRow?.({
           event,
@@ -169,7 +176,6 @@ const TableCellProto = <RecordType extends object = any>({
           columnKey: columnConfig.key,
         })
       }
-      style={style}
       onMouseEnter={
         !onMouseEnterCell
           ? undefined
@@ -186,11 +192,38 @@ const TableCellProto = <RecordType extends object = any>({
       <div className={clsx('am-virtual-table-cell-inner')}>{cellNode}</div>
     </div>
   );
-};
-const TableCellRenderer = React.memo(
-  TableCellProto,
-  areEqual
-) as typeof TableCellProto;
+}
+
+// Each row is exactly getRowHeight tall and its cells stretch to fill it.
+// Taller cell content spills into the cells' vertical padding instead of
+// growing the row. Virtuoso measures the rows itself.
+const renderTableRow = <RecordType extends object>(
+  rowIndex: number,
+  record: RecordType,
+  context: IVirtualTableContext<RecordType>
+) => (
+  <div
+    className="flex h-(--am-row-height)"
+    style={
+      {
+        '--am-row-height': `${
+          context.getRowHeight?.(record, rowIndex, context.rowList) ??
+          ROW_HEIGHT
+        }px`,
+      } as React.CSSProperties
+    }
+  >
+    {context.columns.map((column, columnIndex) => (
+      <TableCell<RecordType>
+        key={String(column.key ?? columnIndex)}
+        columnIndex={columnIndex}
+        rowIndex={rowIndex}
+        record={record}
+        context={context}
+      />
+    ))}
+  </div>
+);
 
 export type HandleClickTableRow<T> = (ctx: {
   event: React.MouseEvent;
@@ -202,11 +235,9 @@ export type HandleClickTableRow<T> = (ctx: {
 
 export function VirtualTable<RecordType extends object>({
   markHoverRow,
-  vGridRef,
   onClickRow,
   getRowHeight,
-  getTotalHeight,
-  getCellKey,
+  getRowKey,
   getCellClassName,
   showScrollbar = true,
   emptyText = 'No Data',
@@ -216,16 +247,11 @@ export function VirtualTable<RecordType extends object>({
   ...props
 }: TableProps<RecordType> & {
   markHoverRow?: boolean;
-  vGridRef?: React.RefObject<VGrid>;
   onClickRow?: HandleClickTableRow<RecordType>;
-  getTotalHeight?: (rows: readonly RecordType[]) => number;
-  getRowHeight?: (
-    row: RecordType,
-    idx: number,
-    rows: readonly RecordType[]
-  ) => number | void;
-  getCellKey?: (params: IVGridContextualPayload<RecordType>) => string | number;
-  getCellClassName?: IVGridItemDataType<RecordType>['getCellClassName'];
+  /** Height of a row, ROW_HEIGHT by default */
+  getRowHeight?: GetRowHeight<RecordType>;
+  getRowKey?: (record: RecordType, rowIndex: number) => React.Key;
+  getCellClassName?: IVirtualTableContext<RecordType>['getCellClassName'];
   showScrollbar?: boolean;
   emptyText?: string;
   sortedInfo?: SorterResult<RecordType>;
@@ -259,40 +285,20 @@ export function VirtualTable<RecordType extends object>({
     });
   }, [columns, tableWidth, widthColumnCount, isDesktop]);
 
-  const localGridRef = useRef<VGrid>(null);
-
-  const gridRef = vGridRef || localGridRef;
-  const [connectObject] = useState<any>(() => {
-    const obj = {};
-    Object.defineProperty(obj, 'scrollLeft', {
-      get: () => {
-        if (gridRef.current) {
-          // @ts-expect-error state is expected as {}, but it is not
-          return gridRef.current?.state?.scrollLeft;
-        }
-        return null;
-      },
-      set: (scrollLeft: number) => {
-        if (gridRef.current) {
-          gridRef.current.scrollTo({ scrollLeft });
-        }
-      },
-    });
-
-    return obj;
-  });
-
-  const resetVirtualGrid = useCallback(() => {
-    gridRef.current?.resetAfterIndices({
-      columnIndex: 0,
-      rowIndex: 0,
-      shouldForceUpdate: true,
-    });
-  }, []);
-
-  useEffect(() => {
-    resetVirtualGrid();
-  }, [tableWidth]);
+  const scrollerRef = useRef<HTMLElement | null>(null);
+  // rc-table keeps the header's scrollLeft in sync through this object. It is
+  // not the scroller element itself: given an element, rc-table would measure
+  // its scrollbar and narrow the header's last column.
+  const [connectObject] = useState(() => ({
+    get scrollLeft() {
+      return scrollerRef.current ? scrollerRef.current.scrollLeft : null;
+    },
+    set scrollLeft(scrollLeft: number | null) {
+      if (scrollerRef.current && scrollLeft !== null) {
+        scrollerRef.current.scrollLeft = scrollLeft;
+      }
+    },
+  }));
 
   const [hoveredRowIndex, setHoveredRowIndex] = useState<number | null>(null);
   const onLeaveTableBodyWrapper = useCallback(() => {
@@ -307,27 +313,36 @@ export function VirtualTable<RecordType extends object>({
   }, [props.loading]);
 
   const totalHeight = useMemo(() => {
-    return (
-      getTotalHeight?.(props.dataSource || []) ||
-      (props.dataSource?.length ?? 0) * ROW_HEIGHT
+    const rows = props.dataSource || [];
+    return rows.reduce(
+      (sum, row, index) =>
+        sum + (getRowHeight?.(row, index, rows) ?? ROW_HEIGHT),
+      0
     );
-  }, [getTotalHeight, props.dataSource]);
+  }, [getRowHeight, props.dataSource]);
 
   const { t } = useTranslation();
 
-  const tableHeight = useMemo(() => {
-    return isDesktop ? Math.min(totalHeight, 556) : (scroll!.y as number);
-    // return isDesktop
-    //   ? Math.min(totalHeight, window.innerHeight > 900 ? 556 : 280)
-    //   : (scroll!.y as number);
-  }, [isDesktop, scroll]);
+  const tableHeight = isDesktop
+    ? Math.min(totalHeight, 556)
+    : (scroll!.y as number);
+
+  // When the rows overflow, the last column gives up the scrollbar's width so
+  // the body still fits under the header.
+  const columnWidths = mergedColumns.map((column, index) => {
+    const width = column.width as number;
+    return showScrollbar &&
+      totalHeight > (scroll!.y as number) &&
+      index === mergedColumns.length - 1
+      ? width - SCROLLBAR_WIDTH - 1
+      : width;
+  });
 
   const renderVirtualList = (
     rowList: readonly RecordType[],
-    { scrollbarSize, ref, onScroll }: any
+    { ref, onScroll }: any
   ) => {
     ref.current = connectObject;
-    // const totalHeight = rowList.length * ROW_HEIGHT;
 
     if (!rowList.length) {
       return (
@@ -342,44 +357,21 @@ export function VirtualTable<RecordType extends object>({
     }
 
     return (
-      <VGrid<IVGridItemDataType<RecordType>>
-        ref={gridRef}
+      <Virtuoso<RecordType, IVirtualTableContext<RecordType>>
+        scrollerRef={(element) => {
+          scrollerRef.current = element as HTMLElement | null;
+        }}
         className={clsx(
           'am-virtual-grid',
-          isDesktop,
           markHoverRow && 'am-virtual-grid__supported-hover-row'
         )}
-        itemKey={(params) => {
-          const keyStr = getCellKey?.({
-            rowIndex: params.rowIndex,
-            columnIndex: params.columnIndex,
-            record: params.data.rowList[params.rowIndex],
-          });
-          if (keyStr) return keyStr;
-
-          const idValue = (params.data as any)?.$id || (params.data as any)?.id;
-          return `${params.rowIndex}-${params.columnIndex}-${idValue}`;
-        }}
-        columnCount={mergedColumns.length}
-        columnWidth={(index: number) => {
-          const { width } = mergedColumns[index];
-
-          if (!showScrollbar) return width as number;
-
-          return totalHeight > (scroll!.y! as number) &&
-            index === mergedColumns.length - 1
-            ? (width as number) - SCROLLBAR_WIDTH - 1
-            : (width as number);
-        }}
-        rowCount={rowList.length}
-        rowHeight={(rowIndex: number) => {
-          return (
-            getRowHeight?.(rowList[rowIndex], rowIndex, rowList) ?? ROW_HEIGHT
-          );
-        }}
-        itemData={{
+        style={{ height: tableHeight, width: tableWidth }}
+        data={rowList}
+        context={{
           columns: mergedColumns,
+          columnWidths,
           rowList,
+          getRowHeight,
           sortingKey: sortedInfo?.columnKey,
           onClickRow,
           hoveredRowIndex: !markHoverRow ? -1 : hoveredRowIndex,
@@ -390,14 +382,15 @@ export function VirtualTable<RecordType extends object>({
               },
           getCellClassName,
         }}
-        height={tableHeight}
-        width={tableWidth}
-        onScroll={({ scrollLeft }: { scrollLeft: number }) => {
-          onScroll({ scrollLeft });
+        computeItemKey={(rowIndex, record) =>
+          getRowKey?.(record, rowIndex) ?? rowIndex
+        }
+        defaultItemHeight={ROW_HEIGHT}
+        itemContent={renderTableRow}
+        onScroll={(event) => {
+          onScroll({ scrollLeft: event.currentTarget.scrollLeft });
         }}
-      >
-        {TableCellRenderer}
-      </VGrid>
+      />
     );
   };
 

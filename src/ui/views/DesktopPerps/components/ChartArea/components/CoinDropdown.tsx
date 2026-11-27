@@ -4,7 +4,6 @@ import React, {
   useCallback,
   useRef,
   useEffect,
-  CSSProperties,
   memo,
 } from 'react';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -21,7 +20,7 @@ import { formatPercent } from '@/ui/views/Perps/utils';
 import { formatUsdValueKMB } from '@/ui/views/Dashboard/components/TokenDetailPopup/utils';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import { FixedSizeList } from 'react-window';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { formatPerpsCoin } from '../../../utils';
 import { PerpsDisplayCoinName } from '@/ui/views/Perps/components/PerpsDisplayCoinName';
 import { SortIcon } from '../../UserInfoHistory/CommonTable';
@@ -45,18 +44,19 @@ type SortField =
   | 'openInterest';
 type SortOrder = 'asc' | 'desc';
 
+interface MarketRowData {
+  items: MarketData[];
+  favoritedCoins: string[];
+  lastFavoritedIndex: number;
+  onSelectCoin: (coin: string) => void;
+  onToggleFavorite: (coinName: string, e: React.MouseEvent) => void;
+  setDropdownVisible: (visible: boolean) => void;
+  setSearchText: (text: string) => void;
+}
+
 interface MarketRowProps {
   index: number;
-  style: CSSProperties;
-  data: {
-    items: MarketData[];
-    favoritedCoins: string[];
-    lastFavoritedIndex: number;
-    onSelectCoin: (coin: string) => void;
-    onToggleFavorite: (coinName: string, e: React.MouseEvent) => void;
-    setDropdownVisible: (visible: boolean) => void;
-    setSearchText: (text: string) => void;
-  };
+  data: MarketRowData;
 }
 
 const calculateChangeValue = (item: MarketData) => {
@@ -75,7 +75,7 @@ const calculateChange = (item: MarketData) => {
 };
 
 const MarketRowComponent = memo(
-  ({ index, style, data }: MarketRowProps) => {
+  ({ index, data }: MarketRowProps) => {
     const {
       items,
       favoritedCoins,
@@ -95,8 +95,8 @@ const MarketRowComponent = memo(
 
     return (
       <div
-        style={style}
         className={clsx(
+          'h-[38px]',
           isLastFavorited && 'border-b border-solid border-rb-neutral-line'
         )}
       >
@@ -218,6 +218,12 @@ const MarketRowComponent = memo(
   }
 );
 
+const renderMarketRow = (
+  index: number,
+  _item: MarketData,
+  context: MarketRowData
+) => <MarketRowComponent index={index} data={context} />;
+
 export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   coin,
   onSelectCoin,
@@ -233,7 +239,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<InputRef | null>(null);
-  const listRef = useRef<FixedSizeList>(null);
+  const listRef = useRef<VirtuosoHandle>(null);
   const {
     marketData,
     favoritedCoins,
@@ -249,7 +255,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
       setSearchText('');
       // Reset virtual list scroll position
       setTimeout(() => {
-        listRef.current?.scrollTo(0);
+        listRef.current?.scrollTo({ top: 0 });
         searchInputRef.current?.focus();
       }, 0);
     }
@@ -404,7 +410,7 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
   }, [sortedAndFilteredData, favoritedCoins]);
 
   // Memoized item data to prevent unnecessary re-renders
-  const itemData = useMemo(
+  const itemData = useMemo<MarketRowData>(
     () => ({
       items: sortedAndFilteredData,
       favoritedCoins,
@@ -531,17 +537,15 @@ export const CoinDropdown: React.FC<CoinDropdownProps> = ({
         </div>
 
         <div ref={scrollContainerRef} className="flex-1">
-          <FixedSizeList
+          <Virtuoso
             ref={listRef}
-            width="100%"
-            height={350}
-            itemCount={sortedAndFilteredData.length}
-            itemData={itemData}
-            itemSize={ROW_HEIGHT}
+            style={{ height: 350, width: '100%' }}
             className="trades-container-no-scrollbar"
-          >
-            {MarketRowComponent}
-          </FixedSizeList>
+            data={sortedAndFilteredData}
+            context={itemData}
+            fixedItemHeight={ROW_HEIGHT}
+            itemContent={renderMarketRow}
+          />
         </div>
       </div>
     ),

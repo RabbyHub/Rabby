@@ -1,4 +1,4 @@
-import React, { CSSProperties, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { message, Skeleton, DrawerProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -8,7 +8,7 @@ import { formatUsdValue, useWallet } from '@/ui/utils';
 import { isDirectDepositToken } from '@/ui/views/Perps/constants';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { FixedSizeList } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import { useMemoizedFn } from 'ahooks';
 import { usePopupContainer } from '@/ui/hooks/usePopupContainer';
 import { useRabbySelector } from '@/ui/store';
@@ -104,27 +104,18 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     }
   });
 
-  const TokenRow = useCallback(
-    ({
-      index,
-      data,
-      style,
-    }: {
-      index: number;
-      data: TokenItem[];
-      style: CSSProperties;
-    }) => {
-      const item = data[index];
+  const renderTokenRow = useCallback(
+    (_index: number, item: TokenItem) => {
       const isDisabled =
         !isWithdrawMode &&
         !supportedChains.includes(
           findChainByServerID(item.chain)?.enum || CHAINS_ENUM.ETH
         );
 
-      // react-window sizes the slot inline (itemSize 56), so the 8px gap is
-      // padding on the slot and the card's height lives on an inner element.
+      // The row is exactly fixedItemHeight (56) tall: the 8px gap is bottom
+      // padding, and the card's 48px height lives on an inner element.
       return (
-        <div key={item.id} style={style} className="pb-8">
+        <div className="h-[56px] pb-8">
           <div
             className={clsx(
               'flex justify-between items-center h-[48px] border',
@@ -268,16 +259,13 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               ))}
             </div>
           ) : (
-            <FixedSizeList
-              width={'100%'}
-              height={listHeight}
-              itemCount={sortedTokenList?.length || 0}
-              itemData={sortedTokenList}
-              itemSize={56}
+            <Virtuoso
+              style={{ height: listHeight, width: '100%' }}
               className="trades-container-no-scrollbar"
-            >
-              {TokenRow}
-            </FixedSizeList>
+              data={sortedTokenList}
+              fixedItemHeight={56}
+              itemContent={renderTokenRow}
+            />
           )}
         </div>
       </div>

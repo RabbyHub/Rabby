@@ -10,8 +10,7 @@ import { DrawerProps, Skeleton } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FixedSizeList } from 'react-window';
-import type { ListChildComponentProps } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import {
   GasAccountAvailableToken,
   getTokenUsdValue,
@@ -40,8 +39,7 @@ type GasAccountDepositTokenOwnerAccount = {
   alianName?: string;
 };
 
-type GasAccountDepositTokenPickerRowData = {
-  tokens: GasAccountAvailableToken[];
+type GasAccountDepositTokenPickerRowContext = {
   ownerAccountMap: Map<string, GasAccountDepositTokenOwnerAccount>;
   showOwnerInfo: boolean;
   onSelect?: GasAccountDepositTokenPickerProps['onSelect'];
@@ -77,16 +75,21 @@ const GasAccountDepositTokenOwnerInfo = ({
 };
 
 const GasAccountDepositTokenPickerRow = ({
-  index,
-  data,
-  style,
-}: ListChildComponentProps<GasAccountDepositTokenPickerRowData>) => {
-  const item = data.tokens[index];
+  item,
+  context,
+}: {
+  item: GasAccountAvailableToken;
+  context: GasAccountDepositTokenPickerRowContext;
+}) => {
   const usdValue = getTokenUsdValue(item);
-  const ownerAccount = data.ownerAccountMap.get(item.owner_addr.toLowerCase());
+  const ownerAccount = context.ownerAccountMap.get(
+    item.owner_addr.toLowerCase()
+  );
 
+  // h-[76px] is GAS_ACCOUNT_DEPOSIT_TOKEN_PICKER_ROW_HEIGHT (the list's
+  // fixedItemHeight); the 8px gap is bottom padding below the 68px card.
   return (
-    <div style={style} className="pb-8">
+    <div className="h-[76px] pb-8">
       <div
         className={clsx(
           'flex w-full justify-between items-center h-[68px] px-16 rounded-[12px] text-left',
@@ -94,8 +97,8 @@ const GasAccountDepositTokenPickerRow = ({
           'cursor-pointer hover:border-rabby-blue-default hover:bg-r-blue-light-1'
         )}
         onClick={() => {
-          data.onSelect?.(item);
-          data.onClose?.();
+          context.onSelect?.(item);
+          context.onClose?.();
         }}
       >
         <div className="flex items-center gap-12 min-w-0 flex-1">
@@ -112,7 +115,7 @@ const GasAccountDepositTokenPickerRow = ({
                 {getTokenSymbol(item)}
               </div>
             </div>
-            {data.showOwnerInfo ? (
+            {context.showOwnerInfo ? (
               <GasAccountDepositTokenOwnerInfo
                 address={item.owner_addr}
                 account={ownerAccount}
@@ -134,12 +137,15 @@ const GasAccountDepositTokenPickerRow = ({
 };
 
 const getGasAccountDepositTokenPickerItemKey = (
-  index: number,
-  data: GasAccountDepositTokenPickerRowData
-) => {
-  const token = data.tokens[index];
-  return `${token.owner_addr}:${token.chain}:${token.id}`;
-};
+  _index: number,
+  token: GasAccountAvailableToken
+) => `${token.owner_addr}:${token.chain}:${token.id}`;
+
+const renderGasAccountDepositTokenPickerRow = (
+  _index: number,
+  item: GasAccountAvailableToken,
+  context: GasAccountDepositTokenPickerRowContext
+) => <GasAccountDepositTokenPickerRow item={item} context={context} />;
 
 export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPickerProps> = ({
   visible,
@@ -175,15 +181,14 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
 
     return ownerAddresses.size > 1;
   }, [availableTokens]);
-  const rowData = React.useMemo<GasAccountDepositTokenPickerRowData>(
+  const rowContext = React.useMemo<GasAccountDepositTokenPickerRowContext>(
     () => ({
-      tokens: availableTokens,
       ownerAccountMap,
       showOwnerInfo,
       onSelect,
       onClose: handleClose,
     }),
-    [availableTokens, handleClose, onSelect, ownerAccountMap, showOwnerInfo]
+    [handleClose, onSelect, ownerAccountMap, showOwnerInfo]
   );
 
   return (
@@ -260,17 +265,15 @@ export const GasAccountDepositTokenPicker: React.FC<GasAccountDepositTokenPicker
               </div>
               <div>{t('page.gasTopUp.Balance')}</div>
             </div>
-            <FixedSizeList
-              width="100%"
-              height={listHeight}
-              itemCount={availableTokens.length}
-              itemData={rowData}
-              itemKey={getGasAccountDepositTokenPickerItemKey}
-              itemSize={GAS_ACCOUNT_DEPOSIT_TOKEN_PICKER_ROW_HEIGHT}
+            <Virtuoso
+              style={{ height: listHeight, width: '100%' }}
               className="trades-container-no-scrollbar"
-            >
-              {GasAccountDepositTokenPickerRow}
-            </FixedSizeList>
+              data={availableTokens}
+              context={rowContext}
+              computeItemKey={getGasAccountDepositTokenPickerItemKey}
+              fixedItemHeight={GAS_ACCOUNT_DEPOSIT_TOKEN_PICKER_ROW_HEIGHT}
+              itemContent={renderGasAccountDepositTokenPickerRow}
+            />
           </div>
         ) : (
           <div className="flex-1 flex items-center justify-center">

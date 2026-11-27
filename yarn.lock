@@ -1433,7 +1433,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/runtime@npm:^7.0.0, @babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.1, @babel/runtime@npm:^7.10.4, @babel/runtime@npm:^7.11.1, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.7, @babel/runtime@npm:^7.18.0, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.20.0, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.25.0":
+"@babel/runtime@npm:^7.1.2, @babel/runtime@npm:^7.10.1, @babel/runtime@npm:^7.10.4, @babel/runtime@npm:^7.11.1, @babel/runtime@npm:^7.11.2, @babel/runtime@npm:^7.12.13, @babel/runtime@npm:^7.12.5, @babel/runtime@npm:^7.16.7, @babel/runtime@npm:^7.18.0, @babel/runtime@npm:^7.18.3, @babel/runtime@npm:^7.20.0, @babel/runtime@npm:^7.20.7, @babel/runtime@npm:^7.21.0, @babel/runtime@npm:^7.22.5, @babel/runtime@npm:^7.25.0":
   version: 7.29.2
   resolution: "@babel/runtime@npm:7.29.2"
   checksum: 10c0/30b80a0140d16467792e1bbeb06f655b0dab70407da38dfac7fedae9c859f9ae9d846ef14ad77bd3814c064295fe9b1bc551f1541ea14646ae9f22b71a8bc17a
@@ -7762,15 +7762,6 @@ __metadata:
     "@types/history": "npm:^4.7.11"
     "@types/react": "npm:*"
   checksum: 10c0/1f7eee61981d2f807fa01a34a0ef98ebc0774023832b6611a69c7f28fdff01de5a38cabf399f32e376bf8099dcb7afaf724775bea9d38870224492bea4cb5737
-  languageName: node
-  linkType: hard
-
-"@types/react-window@npm:1.8.5":
-  version: 1.8.5
-  resolution: "@types/react-window@npm:1.8.5"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/911ea6dddbe04cb8f30520aaaefdfbd597407229ba2065f6942788a9afe749e2d858b9056fa759d5da01719be824c2656291f82a61af9a8a07fde0b32dabe466
   languageName: node
   linkType: hard
 
@@ -16737,13 +16728,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"memoize-one@npm:>=3.1.1 <6":
-  version: 5.2.1
-  resolution: "memoize-one@npm:5.2.1"
-  checksum: 10c0/fd22dbe9a978a2b4f30d6a491fc02fb90792432ad0dab840dc96c1734d2bd7c9cdeb6a26130ec60507eb43230559523615873168bcbe8fafab221c30b11d54c1
-  languageName: node
-  linkType: hard
-
 "merge-descriptors@npm:^2.0.0":
   version: 2.0.0
   resolution: "merge-descriptors@npm:2.0.0"
@@ -18869,7 +18853,6 @@ __metadata:
     "@types/react": "npm:18.3.11"
     "@types/react-dom": "npm:18.3.1"
     "@types/react-router-dom": "npm:^5.3.3"
-    "@types/react-window": "npm:1.8.5"
     "@types/readable-stream": "npm:4.0.14"
     "@types/sinon": "npm:10.0.13"
     "@types/use-sync-external-store": "npm:0.0.3"
@@ -18954,8 +18937,7 @@ __metadata:
     react-refresh-typescript: "npm:2.0.11"
     react-router-dom: "npm:5.3.4"
     react-use: "npm:17.2.4"
-    react-virtuoso: "npm:4.6.1"
-    react-window: "npm:1.8.6"
+    react-virtuoso: "npm:4.18.22"
     recharts: "npm:2.7.1"
     reflect-metadata: "npm:0.1.13"
     regenerator-runtime: "npm:0.13.11"
@@ -19836,26 +19818,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-virtuoso@npm:4.6.1":
-  version: 4.6.1
-  resolution: "react-virtuoso@npm:4.6.1"
+"react-virtuoso@npm:4.18.22":
+  version: 4.18.22
+  resolution: "react-virtuoso@npm:4.18.22"
   peerDependencies:
-    react: ">=16 || >=17 || >= 18"
-    react-dom: ">=16 || >=17 || >= 18"
-  checksum: 10c0/a6ce1189a3341929a7cec47c317d639d15ef1ce14b731999f9f352b2bfe4ce363d4c1e9e0ad8f3ea8862b088080515e60c7975b4faf40cdac8714db41e1903b4
-  languageName: node
-  linkType: hard
-
-"react-window@npm:1.8.6":
-  version: 1.8.6
-  resolution: "react-window@npm:1.8.6"
-  dependencies:
-    "@babel/runtime": "npm:^7.0.0"
-    memoize-one: "npm:>=3.1.1 <6"
-  peerDependencies:
-    react: ^15.0.0 || ^16.0.0 || ^17.0.0
-    react-dom: ^15.0.0 || ^16.0.0 || ^17.0.0
-  checksum: 10c0/590dd58ced06fbfcce06d11135f0c6dd50ad778b90ce1af6340b7e5b9063ab2e05a4a4c964bbf855087b6f5c437790d01c41f27cee7b46045721be86bfe03820
+    react: ">=16 || >=17 || >= 18 || >= 19"
+    react-dom: ">=16 || >=17 || >= 18 || >=19"
+  checksum: 10c0/b3ec29ad9ed949dea258beae7a78c0437c9afea2237512fe8b2978101a94ef4bb3c7f725a27848cd453a9ddf657bb29af057eb3aeee0193be7c0c84d8e09a212
   languageName: node
   linkType: hard
 

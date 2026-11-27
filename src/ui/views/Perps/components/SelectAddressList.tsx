@@ -18,13 +18,7 @@ import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { useRequest } from 'ahooks';
 import clsx from 'clsx';
 import { range, sortBy, uniqBy } from 'lodash';
-import React, {
-  ComponentType,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GroupedVirtuoso, TopItemListProps } from 'react-virtuoso';
 import { ReactComponent as RcIconLoginLoading } from 'ui/assets/perps/IconLoginLoading.svg';
@@ -402,13 +396,7 @@ function AccountItem(props: {
   );
 }
 
-const GroupHeaderContainer: ComponentType<TopItemListProps> = ({
-  children,
-  ...rest
-}: TopItemListProps) => {
-  return (
-    <div {...rest} style={{ position: 'static' }}>
-      {children}
-    </div>
-  );
+// Virtuoso passes `style` (overridden here) and `context`; neither belongs on the div.
+const GroupHeaderContainer = ({ children }: TopItemListProps) => {
+  return <div style={{ position: 'static' }}>{children}</div>;
 };

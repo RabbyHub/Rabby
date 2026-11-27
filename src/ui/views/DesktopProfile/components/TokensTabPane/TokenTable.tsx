@@ -6,24 +6,15 @@ import {
   Table,
 } from '@/ui/views/CommonPopup/AssetList/components/Table';
 import { Props as TokenItemProps } from '@/ui/views/CommonPopup/AssetList/TokenItem';
-import { FixedSizeList } from 'react-window';
 import { TokenItem } from './TokenItem';
 import { useTranslation } from 'react-i18next';
 
 export interface Props {
   list?: TokenItemProps['item'][];
-  virtual?: {
-    height: number;
-    itemSize: number;
-  };
   EmptyComponent?: React.ReactNode;
 }
 
-export const TokenTable: React.FC<Props> = ({
-  list,
-  virtual,
-  EmptyComponent,
-}) => {
+export const TokenTable: React.FC<Props> = ({ list, EmptyComponent }) => {
   const { t } = useTranslation();
   return (
     <>
@@ -49,39 +40,16 @@ export const TokenTable: React.FC<Props> = ({
             </THeadCell>
           </THeader>
           <TBody className="mt-0">
-            {virtual ? (
-              <FixedSizeList
-                height={virtual.height}
-                width="100%"
-                itemData={list}
-                itemCount={list?.length || 0}
-                itemSize={virtual.itemSize}
-              >
-                {({ data, index, style }) => {
-                  const item = data[index];
-                  const last = index === (list?.length || 0) - 1;
-                  return (
-                    <TokenItem
-                      style={style}
-                      key={`${item.chain}-${item.id}`}
-                      item={item}
-                      isLast={last}
-                    />
-                  );
-                }}
-              </FixedSizeList>
-            ) : (
-              list?.map((item, index) => {
-                const last = index === (list?.length || 0) - 1;
-                return (
-                  <TokenItem
-                    key={`${item.chain}-${item.id}`}
-                    item={item}
-                    isLast={last}
-                  />
-                );
-              })
-            )}
+            {list?.map((item, index) => {
+              const last = index === (list?.length || 0) - 1;
+              return (
+                <TokenItem
+                  key={`${item.chain}-${item.id}`}
+                  item={item}
+                  isLast={last}
+                />
+              );
+            })}
           </TBody>
         </Table>
       )}

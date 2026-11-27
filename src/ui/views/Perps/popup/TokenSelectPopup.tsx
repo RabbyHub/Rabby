@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React from 'react';
 import { message, Modal, Skeleton, Spin } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { formatUsdValue, useWallet } from '@/ui/utils';
@@ -23,7 +23,7 @@ import {
 import { useMemoizedFn } from 'ahooks';
 import { TokenWithChain } from '@/ui/component';
 import { getTokenSymbol } from '@/ui/utils/token';
-import { FixedSizeList } from 'react-window';
+import { Virtuoso } from 'react-virtuoso';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { PerpsBlueBorderedButton } from '../components/BlueBorderedButton';
@@ -263,22 +263,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
     }
   });
 
-  const Row = React.useCallback(
-    ({
-      index,
-      data,
-      style,
-    }: {
-      index: number;
-      data: TokenItem[];
-      style: CSSProperties;
-    }) => {
-      const item = data[index];
-
-      // react-window sizes the slot inline (itemSize 64), so the 8px gap is
-      // padding on the slot and the card's height lives on an inner element.
+  const renderRow = React.useCallback(
+    (_index: number, item: TokenItem) => {
+      // The row is exactly fixedItemHeight (64) tall: the 8px gap is bottom
+      // padding, and the card's 56px height lives on an inner element.
       return (
-        <div key={item.id} style={style} className="pb-8">
+        <div className="h-[64px] pb-8">
           <div
             className={clsx(
               'flex justify-between items-center cursor-pointer h-[56px] border border-transparent',
@@ -393,15 +383,12 @@ export const TokenSelectPopup: React.FC<TokenSelectPopupProps> = ({
               ))}
             </div>
           ) : (
-            <FixedSizeList
-              width={'100%'}
-              height={444}
-              itemCount={sortedList?.length || 0}
-              itemData={sortedList}
-              itemSize={64}
-            >
-              {Row}
-            </FixedSizeList>
+            <Virtuoso
+              style={{ height: 444, width: '100%' }}
+              data={sortedList}
+              fixedItemHeight={64}
+              itemContent={renderRow}
+            />
           )}
         </div>
       </div>
