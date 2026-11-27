@@ -111,8 +111,8 @@ export const WithdrawConfirmPopup = ({
               className={clsx(
                 'flex items-center gap-[12px] px-[15px] py-[10px] ',
                 'rounded-[8px] bg-r-neutral-card-2 cursor-pointer',
-                'border-transparent border-[1px] hover:border-rabby-orange-DBK',
-                isChecked && 'border-rabby-orange-DBK'
+                'border-[1px] hover:border-rabby-orange-DBK',
+                isChecked ? 'border-rabby-orange-DBK' : 'border-transparent'
               )}
               key={item.value}
               onClick={() => {

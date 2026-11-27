@@ -579,7 +579,7 @@ export const PositionsInfo: React.FC = () => {
           return (
             <div
               className={clsx(
-                'text-[12px] leading-[14px]  text-rb-neutral-foot',
+                'text-[12px] leading-[14px]',
                 isGain ? 'text-rb-green-default' : 'text-rb-red-default'
               )}
             >

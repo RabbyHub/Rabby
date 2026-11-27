@@ -123,8 +123,8 @@ export const RabbyFeePopup = ({
             className={clsx(
               'flex justify-between items-center',
               'px-16 h-[44px]',
-              'border-b-[1px] border-solid border-rabby-neutral-line',
-              idx === list.length - 1 ? 'border-b-0' : ''
+              'border-solid border-rabby-neutral-line',
+              idx === list.length - 1 ? 'border-b-0' : 'border-b-[1px]'
             )}
           >
             <div className="flex items-center">

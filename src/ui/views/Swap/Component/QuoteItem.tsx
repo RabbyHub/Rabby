@@ -405,9 +405,9 @@ export const DexQuoteItem = (
               <div className={clsx('flex items-center')}>
                 <div
                   className={clsx(
-                    'inline-flex items-center gap-4 px-4',
+                    'items-center gap-4 px-4',
                     gasFeeTooHigh && 'bg-r-red-light',
-                    inSufficient && 'hidden'
+                    inSufficient ? 'hidden' : 'inline-flex'
                   )}
                 >
                   <RcIconGasCC
