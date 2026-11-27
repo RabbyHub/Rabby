@@ -515,7 +515,7 @@ const TokenDetail = ({
               {ellipsisOverflowedText(getTokenSymbol(token), 16)}
             </div>
             {isUnknownToken(token) && (
-              <UnknownTag className="ml-8 !px-[8px] !py-[4px] !text-[13px] !leading-[13px] bg-rb-neutral-line" />
+              <UnknownTag className="ml-8 bg-rb-neutral-line" />
             )}
             {isLpToken(token) && (
               <LpTokenTag
