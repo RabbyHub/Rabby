@@ -80,7 +80,7 @@ export const GnosisMessageQueueConfirmations = ({
               address={owner}
               className="text-13"
               nameClass="max-129 text-13"
-              addressClass="text-13"
+              addressClass="text-13 leading-[16px]"
               noNameClass="no-name"
             />
             {visibleAccounts.find((account) =>

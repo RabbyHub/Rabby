@@ -30,7 +30,7 @@ export const EcosystemBanner = ({
         <PageHeader
           forceShowBack
           onBack={handleCancel}
-          className="bg-neutral-bg1 sticky top-0"
+          className="bg-neutral-bg1 sticky top-0 pt-0 mb-[28px]"
         >
           {t('page.dashboard.settings.features.ecosystem')}
         </PageHeader>

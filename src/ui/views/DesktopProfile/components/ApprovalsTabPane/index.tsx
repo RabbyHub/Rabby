@@ -72,7 +72,9 @@ import { RevokeButton, RevokeEIP7702Button } from './components/RevokeButton';
 import SearchInput from './components/SearchInput';
 import { useInspectRowItem } from './components/ModalDebugRowItem';
 import { IS_WINDOWS, KEYRING_CLASS } from '@/constant';
-import ApprovalsNameAndAddr from './components/NameAndAddr';
+import ApprovalsNameAndAddr, {
+  getCellNameAndAddrClasses,
+} from './components/NameAndAddr';
 import NetSwitchTabs, {
   useSwitchNetTab,
 } from '@/ui/component/PillsSwitch/NetSwitchTabs';
@@ -108,6 +110,7 @@ function getColumnsForContract({
   toggleSelectAll,
   isSelectedAll,
   isIndeterminate,
+  isDesktop,
 }: {
   sortedInfo: SorterResult<ContractApprovalItem>;
   selectedRows: ApprovalSpenderItemToBeRevoked[];
@@ -115,6 +118,7 @@ function getColumnsForContract({
   // t: ReturnType<typeof useTranslation>['t']
   toggleSelectAll: () => void;
   t: any;
+  isDesktop?: boolean;
 } & TableSelectResult) {
   const columnsForContract: ColumnType<ContractApprovalItem>[] = [
     {
@@ -211,7 +215,7 @@ function getColumnsForContract({
 
               <ApprovalsNameAndAddr
                 className="ml-[6px]"
-                addressClass=""
+                {...getCellNameAndAddrClasses(isDesktop)}
                 address={row.id}
                 chainEnum={chainItem.enum}
                 copyIconClass="text-r-neutral-body"
@@ -597,12 +601,14 @@ function getColumnsForAsset({
   toggleSelectAll,
   isSelectedAll,
   isIndeterminate,
+  isDesktop,
 }: {
   sortedInfo: SorterResult<AssetApprovalSpender>;
   selectedRows: ApprovalSpenderItemToBeRevoked[];
   // t: ReturnType<typeof useTranslation>['t']
   t: any;
   toggleSelectAll: () => void;
+  isDesktop?: boolean;
 } & TableSelectResult) {
   const isSelected = (record: AssetApprovalSpender) => {
     return (
@@ -775,7 +781,12 @@ function getColumnsForAsset({
       ),
       key: 'approveSpender',
       dataIndex: 'key',
-      render: (_, spender) => <SpenderRow spender={spender} />,
+      render: (_, spender) => (
+        <SpenderRow
+          spender={spender}
+          {...getCellNameAndAddrClasses(isDesktop)}
+        />
+      ),
       width: 380,
     },
     // My Approval Time
@@ -811,11 +822,13 @@ function getColumnsForEIP7702({
   toggleSelectAll,
   isSelectedAll,
   isIndeterminate,
+  isDesktop,
 }: {
   selectedRows: EIP7702Delegated[];
   onChangeSelected: (item: EIP7702Delegated[]) => void;
   t: ReturnType<typeof useTranslation>['t'];
   toggleSelectAll: () => void;
+  isDesktop?: boolean;
 } & TableSelectResult) {
   const columnsForContract: ColumnType<EIP7702Delegated>[] = [
     {
@@ -888,7 +901,7 @@ function getColumnsForEIP7702({
             />
             <ApprovalsNameAndAddr
               className="ml-[6px]"
-              addressClass=""
+              {...getCellNameAndAddrClasses(isDesktop)}
               address={row.delegatedAddress || ''}
               chainEnum={chainItem?.enum}
               copyIconClass="text-r-neutral-body"
@@ -1035,6 +1048,7 @@ function TableByContracts({
       isSelectedAll,
       isIndeterminate,
       t,
+      isDesktop,
     });
   }, [
     dataSource,
@@ -1045,6 +1059,7 @@ function TableByContracts({
     toggleAllContractRevoke,
     isSelectedAll,
     isIndeterminate,
+    isDesktop,
   ]);
 
   return (
@@ -1123,6 +1138,7 @@ function TableByAssetSpenders({
         isSelectedAll,
         isIndeterminate,
         t,
+        isDesktop,
       })}
       sortedInfo={sortedInfo}
       emptyText={
@@ -1218,6 +1234,7 @@ function TableByEIP7702({
           isSelectedAll,
           isIndeterminate,
           t,
+          isDesktop,
         })}
         sortedInfo={sortedInfo}
         emptyText={

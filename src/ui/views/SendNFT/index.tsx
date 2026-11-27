@@ -612,6 +612,7 @@ const SendNFT = () => {
           canBack={!(isTab || isDesktop)}
           // isShowAccount
           disableSwitchAccount
+          className="mb-0 font-black text-rb-neutral-title-1"
           rightSlot={
             isTab || isDesktop ? null : (
               <div
@@ -714,6 +715,7 @@ const SendNFT = () => {
                             <AddressViewer
                               address={nftItem.contract_id}
                               showArrow={false}
+                              className="normal text-12 text-r-neutral-body"
                             />
                             <ThemeIcon
                               src={RcIconExternal}

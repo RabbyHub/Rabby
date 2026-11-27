@@ -45,14 +45,6 @@
       color: #13141A;
     }
   }
-  .field {
-    & + .field {
-      margin-top: 0;
-    }
-    &:not(.opacity-40):hover {
-      background: var(--r-blue-light-1, #eef1ff) !important;
-    }
-  }
 }
 
 .select-address-wrapper {
@@ -123,9 +115,6 @@
       & > div:nth-last-child(1) {
         margin-bottom: 0 !important;
       }
-      .field + .field {
-        margin-top: 0;
-      }
     }
     ::-webkit-scrollbar {
       display: none;
@@ -135,12 +124,5 @@
     background: #FAFBFC;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
-  }
-}
-@media (max-width: 600px) {
-  .select-address {
-    .field {
-      width: 360px;
-    }
   }
 }
