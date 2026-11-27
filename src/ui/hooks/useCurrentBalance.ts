@@ -78,6 +78,20 @@ export default function useCurrentBalance(
             });
             setMissingList(chainNames);
             setSuccess(true);
+            // AppChain 余额可能已更新到本地缓存，回读一次同步页面显示
+            if (account) {
+              wallet
+                .getAddressCacheBalance(account)
+                .then((cacheData) => {
+                  if (!cacheData || isCanceled) return;
+                  setBalance(cacheData.total_usd_value);
+                  setEvmBalance(cacheData.evmUsdValue || 0);
+                  setAppChainIds(cacheData.appChainIds || []);
+                  setChainBalances(normalizeChainList(cacheData.chain_list));
+                  dispatch.accountToDisplay.getAllAccountsToDisplay();
+                })
+                .catch(() => undefined);
+            }
             return;
           }
         } catch (e) {
