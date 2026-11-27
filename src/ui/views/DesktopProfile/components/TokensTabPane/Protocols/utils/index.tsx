@@ -10,10 +10,6 @@ export function Amount(value: number) {
   return value;
 }
 
-export function SharedRate(dailyRate: number) {
-  return dailyRate * 356 * 100 + '%';
-}
-
 export function ArraySort<T>(
   arr: Array<T>,
   cb: (v: T | any) => any,

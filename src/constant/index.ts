@@ -1,10 +1,9 @@
 import {
   ensureChainHashValid,
   ensureChainListValid,
-  getChainList,
   getMainnetChainList,
 } from '@/utils/chain';
-import { CHAINS, CHAINS_ENUM, Chain } from '@debank/common';
+import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { Level } from '@rabby-wallet/rabby-security-engine/dist/rules';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import IconClosed, {
@@ -249,28 +248,6 @@ const IconMnemonicWhite = isDesktop
   ? IconMnemonicDesktopWhite
   : IconMnemonicWhiteRaw;
 
-interface PortfolioChain extends Chain {
-  isSupportHistory: boolean;
-}
-
-export const CHAIN_ID_LIST = new Map<string, PortfolioChain>(
-  getChainList('mainnet').map((chain) => {
-    return [chain.serverId, { ...chain, isSupportHistory: false }];
-  })
-);
-
-export const syncChainIdList = () => {
-  const chainList = getChainList('mainnet');
-  for (const chain of chainList) {
-    if (!CHAIN_ID_LIST.has(chain.serverId)) {
-      CHAIN_ID_LIST.set(chain.serverId, {
-        ...chain,
-        isSupportHistory: false,
-      });
-    }
-  }
-};
-
 export const KEYRING_TYPE = {
   HdKeyring: 'HD Key Tree',
   SimpleKeyring: 'Simple Key Pair',
@@ -320,11 +297,6 @@ export const CORE_KEYRING_TYPES = [
   KEYRING_CLASS.MNEMONIC,
   KEYRING_CLASS.PRIVATE_KEY,
   ...Object.values(KEYRING_CLASS.HARDWARE),
-];
-
-export const KEYRING_WITH_INDEX = [
-  KEYRING_CLASS.HARDWARE.LEDGER,
-  KEYRING_CLASS.HARDWARE.GRIDPLUS,
 ];
 
 export const SUPPORT_1559_KEYRING_TYPE = [
@@ -389,14 +361,6 @@ export const HARDWARE_KEYRING_TYPES = {
   },
 } as const;
 
-export enum TX_TYPE_ENUM {
-  SEND = 1,
-  APPROVE = 2,
-  CANCEL_APPROVE = 3,
-  CANCEL_TX = 4,
-  SIGN_TX = 5,
-}
-
 export const IS_CHROME = /Chrome\//i.test(global.navigator?.userAgent);
 
 export const IS_FIREFOX = /Firefox\//i.test(global.navigator?.userAgent);
@@ -410,19 +374,6 @@ browser.tabs.onCreated.addListener((tab) => {
 
 export const IS_LINUX = /linux/i.test(global.navigator?.userAgent);
 
-let chromeVersion: number | null = null;
-
-if (IS_CHROME) {
-  const matches = global.navigator?.userAgent.match(/Chrome\/(\d+[^.\s])/);
-  if (matches && matches.length >= 2) {
-    chromeVersion = Number(matches[1]);
-  }
-}
-
-export const IS_AFTER_CHROME91 = IS_CHROME
-  ? chromeVersion && chromeVersion >= 91
-  : false;
-
 export const GAS_LEVEL_TEXT = {
   $unknown: 'Unknown',
   slow: 'Standard',
@@ -432,13 +383,6 @@ export const GAS_LEVEL_TEXT = {
 } as const;
 
 export const IS_WINDOWS = /windows/i.test(global.navigator?.userAgent);
-
-export const CHECK_METAMASK_INSTALLED_URL = {
-  Chrome: 'chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/phishing.html',
-  Firefox: '',
-  Brave: '',
-  Edge: '',
-};
 
 export const SAFE_RPC_METHODS = [
   'eth_blockNumber',
@@ -490,10 +434,6 @@ export const SAFE_RPC_METHODS = [
 
 export const MINIMUM_GAS_LIMIT = 21000;
 
-export enum WATCH_ADDRESS_CONNECT_TYPE {
-  WalletConnect = 'WalletConnect',
-}
-
 export enum BRAND_WALLET_CONNECT_TYPE {
   WalletConnect = 'WalletConnect',
   BitBox02Connect = 'BitBox02Connect',
@@ -543,7 +483,6 @@ export const EVENTS = {
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
     TRANSPORT_ERROR: 'TRANSPORT_ERROR',
-    SCAN_ACCOUNT: 'SCAN_ACCOUNT',
   },
   GNOSIS: {
     TX_BUILT: 'TransactionBuilt',
@@ -1064,11 +1003,6 @@ export const KEYRING_ICONS = {
   // [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 } as const;
 
-type BasicKeyringNames = {
-  [P in keyof typeof KEYRING_TYPE]: typeof KEYRING_TYPE[P];
-};
-export type BasicKeyrings = BasicKeyringNames[keyof BasicKeyringNames];
-
 type HardwareKeyringNames = {
   [P in keyof typeof HARDWARE_KEYRING_TYPES]: typeof HARDWARE_KEYRING_TYPES[P]['type'];
 };
@@ -1175,30 +1109,6 @@ export const NEXT_KEYRING_ICONS = {
   } as NextKeyringIconType,
 };
 
-export const RC_KEYRING_ICONS = Object.entries(NEXT_KEYRING_ICONS).reduce(
-  (acc, [keyringClass, keyringIcons]) => {
-    acc[keyringClass] = keyringIcons;
-    return acc;
-  },
-  {} as {
-    [P in keyof typeof NEXT_KEYRING_ICONS]: {
-      rcDark: typeof NEXT_KEYRING_ICONS[P]['rcDark'];
-      rcLight: typeof NEXT_KEYRING_ICONS[P]['rcLight'];
-    };
-  }
-);
-
-export const NOT_CLOSE_UNFOCUS_LIST: string[] = [
-  WALLET_BRAND_TYPES.AMBER,
-  WALLET_BRAND_TYPES.COBO,
-];
-
-export const SPECIFIC_TEXT_BRAND = {
-  [WALLET_BRAND_TYPES.JADE]: {
-    i18nKey: 'WatchGuideStep2JADE',
-  },
-};
-
 export const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
   [KEYRING_TYPE.SimpleKeyring]: 2,
@@ -1232,14 +1142,6 @@ export const GASPRICE_RANGE = ensureChainHashValid({
   [CHAINS_ENUM.METIS]: [0, 50000],
 });
 
-export const HDPaths = {
-  [HARDWARE_KEYRING_TYPES.Ledger.type]: [
-    { name: 'Ledger Live', value: "m/44'/60'/0'/0/0" },
-    { name: 'Legacy (MEW / MyCrypto)', value: "m/44'/60'/0'" },
-    { name: 'BIP44 Standard', value: "m/44'/60'/0'/0" },
-  ],
-};
-
 export enum KEYRING_CATEGORY {
   Mnemonic = 'Mnemonic',
   PrivateKey = 'PrivateKey',
@@ -1266,8 +1168,6 @@ export const KEYRING_CATEGORY_MAP = {
   [KEYRING_CLASS.HARDWARE.IMKEY]: KEYRING_CATEGORY.Hardware,
 };
 
-export const SWAP_FEE_PRECISION = 1e5;
-
 export const DEFAULT_GAS_LIMIT_RATIO = 1.5;
 
 export const SAFE_GAS_LIMIT_RATIO = {
@@ -1288,69 +1188,6 @@ export const GAS_TOP_UP_ADDRESS = '0x7559e1bbe06e94aeed8000d5671ed424397d25b5';
 export const GAS_TOP_UP_PAY_ADDRESS =
   '0x1f1f2bf8942861e6194fda1c0a9f13921c0cf117';
 export const FREE_GAS_ADDRESS = '0x76dd65529dc6c073c1e0af2a5ecc78434bdbf7d9';
-
-export const GAS_TOP_UP_SUPPORT_TOKENS: Record<string, string[]> = {
-  arb: [
-    '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
-    '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
-    '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9',
-    'arb',
-  ],
-  astar: ['astar'],
-  aurora: ['aurora'],
-  avax: ['avax'],
-  base: ['0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', 'base'],
-  boba: ['boba'],
-  bsc: [
-    '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3',
-    '0x2170ed0880ac9a755fd29b2688956bd959f933f8',
-    '0x55d398326f99059ff775485246999027b3197955',
-    '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d',
-    '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
-    'bsc',
-  ],
-  canto: ['canto'],
-  celo: ['celo'],
-  cro: ['0x5c7f8a570d578ed84e63fdfa7b1ee72deae1ae23', 'cro'],
-  era: ['era'],
-  eth: [
-    '0x6b175474e89094c44da98b954eedeac495271d0f',
-    '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    '0xdac17f958d2ee523a2206206994597c13d831ec7',
-    'eth',
-  ],
-  evmos: ['evmos'],
-  ftm: ['0x21be370d5312f44cb42ce377bc9b8a0cef1a4c83', 'ftm'],
-  hmy: ['hmy'],
-  kava: ['kava'],
-  kcc: ['kcc'],
-  linea: ['linea'],
-  matic: [
-    '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
-    '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
-    '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063',
-    '0xc2132d05d31c914a87c6611c10748aeb04b58e8f',
-    'matic',
-  ],
-  metis: ['metis'],
-  mnt: ['mnt'],
-  mobm: ['mobm'],
-  movr: ['movr'],
-  nova: ['nova'],
-  okt: ['okt'],
-  op: [
-    '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
-    '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58',
-    '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1',
-    'op',
-  ],
-  opbnb: ['opbnb'],
-  pls: ['pls'],
-  pze: ['pze'],
-  scrl: ['scrl'],
-  xdai: ['xdai'],
-};
 
 export const EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST = ['5degrees.io'];
 
@@ -1425,16 +1262,6 @@ export const CAN_ESTIMATE_L1_FEE_CHAINS = [
   'CITREA',
 ];
 
-export const SecurityEngineLevelOrder = [
-  Level.FORBIDDEN,
-  Level.DANGER,
-  Level.WARNING,
-  Level.SAFE,
-  null,
-  Level.ERROR,
-  'proceed',
-];
-
 export const SecurityEngineLevel = {
   [Level.SAFE]: {
     color: '#27C193',
@@ -1478,8 +1305,6 @@ declare global {
     __is_rd__?: boolean;
   }
 }
-
-export const IS_RD = typeof window === 'undefined' ? false : window.__is_rd__;
 
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
@@ -1669,16 +1494,6 @@ export enum SIGN_PERMISSION_TYPES {
   MAINNET_AND_TESTNET = 'MAINNET_AND_TESTNET',
   TESTNET = 'TESTNET',
 }
-export const SIGN_PERMISSION_OPTIONS = [
-  {
-    label: 'Mainnet & Testnet',
-    value: SIGN_PERMISSION_TYPES.MAINNET_AND_TESTNET,
-  },
-  {
-    label: 'Only Testnets',
-    value: SIGN_PERMISSION_TYPES.TESTNET,
-  },
-];
 
 export enum CANCEL_TX_TYPE {
   QUICK_CANCEL = 'QUICK_CANCEL',

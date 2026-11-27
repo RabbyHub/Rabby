@@ -44,54 +44,6 @@ export function useIsTokenAddedLocally(token?: TokenItem | null) {
   return addedInfo;
 }
 
-export function varyTokensByLocal<
-  T extends TokenItem[] | AbstractPortfolioToken[]
->(
-  tokenList: T,
-  input: {
-    customize?: AbstractPortfolioToken[];
-    blocked?: AbstractPortfolioToken[];
-  }
-) {
-  const { customize = [], blocked = [] } = input;
-
-  const varied = {
-    remote: [] as TokenItem[],
-    local: [] as TokenItem[],
-  };
-  const localMap = {} as Record<TokenItem['id'], TokenItem>;
-  const wholeList = customize.concat(blocked);
-  for (let i = 0; i < wholeList.length; i++) {
-    const item = wholeList[i];
-    localMap[`${item.chain}-${item.id}`] = item;
-  }
-
-  tokenList.forEach((token) => {
-    const matched = localMap[`${token.chain}-${token.id}`];
-    if (matched) {
-      varied.local.push(matched);
-    } else {
-      varied.remote.push(token);
-    }
-  });
-
-  return varied;
-}
-
-export function useVaryTokensByLocal<
-  T extends TokenItem[] | AbstractPortfolioToken[]
->(tokenList: T) {
-  const { customize, blocked } = useRabbySelector(
-    (state) => state.account.tokens
-  );
-
-  const varied = useMemo(() => {
-    return varyTokensByLocal(tokenList, { customize, blocked });
-  }, [customize, blocked]);
-
-  return varied;
-}
-
 export function useOperateCustomToken() {
   const dispatch = useRabbyDispatch();
 

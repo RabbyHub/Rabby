@@ -1,4 +1,4 @@
-import { AccountHistoryItem, PositionAndOpenOrder } from '@/ui/state/perps';
+import { AccountHistoryItem } from '@/ui/state/perps';
 import {
   UserHistoricalOrders,
   UserTwapSliceFill,
@@ -40,12 +40,6 @@ export interface SpotBalance {
   supplied?: string;
   spotHold?: string;
 }
-
-export const getPositionDirection = (
-  position: PositionAndOpenOrder['position']
-): 'Long' | 'Short' => {
-  return Number(position.szi || 0) > 0 ? 'Long' : 'Short';
-};
 
 export const handleUpdateHistoricalOrders = (
   historicalOrders: UserHistoricalOrders[],

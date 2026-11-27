@@ -46,29 +46,3 @@ export const QuoteLoading = () => {
     </div>
   );
 };
-
-export const TokenPairLoading = () => {
-  return (
-    <div className="px-20 min-h-[56px] flex items-center justify-between">
-      <div className="flex items-center gap-12">
-        <Skeleton.Avatar active size={24} shape="circle" />
-        <Skeleton.Input
-          active
-          style={{
-            borderRadius: '2px',
-            width: 84,
-            height: 18,
-          }}
-        />
-      </div>
-      <Skeleton.Input
-        active
-        style={{
-          borderRadius: '2px',
-          width: 74,
-          height: 18,
-        }}
-      />
-    </div>
-  );
-};

@@ -3,7 +3,6 @@ import { WalletControllerType } from '../WalletContext';
 
 import { PortfolioProject } from './types';
 import { DisplayedProject } from './project';
-import { getTokenHistoryPrice } from './price';
 import { TokenItem } from '@rabby-wallet/rabby-api/dist/types';
 
 export interface PortfolioItemToken extends TokenItem {
@@ -54,23 +53,6 @@ export const portfolio2Display = (
   dict[p.id] = new DisplayedProject(p, p.portfolio_item_list);
 };
 
-export const patchPortfolioHistory = (
-  portfolio: PortfolioProject,
-  dict: Record<string, DisplayedProject>
-) => {
-  // fetched failed
-  if (!portfolio) {
-    return;
-  }
-
-  const projectId = portfolio.id;
-
-  // history empty, 100% increse
-  if (dict[projectId]) {
-    dict[projectId].patchHistory(portfolio.portfolio_item_list, true);
-  }
-};
-
 export const loadPortfolioSnapshot = (
   userAddr: string,
   wallet: WalletControllerType
@@ -89,18 +71,6 @@ export const loadAppChainList = (
   });
 };
 
-/**
- * @deprecated
- */
-export const loadTestnetPortfolioSnapshot = (
-  userAddr: string,
-  wallet: WalletControllerType
-) => {
-  return pQueue.add(() => {
-    return wallet.openapi.getComplexProtocolList(userAddr);
-  });
-};
-
 export const batchLoadProjects = async (
   user_id: string,
   projectIds: string[],
@@ -111,55 +81,6 @@ export const batchLoadProjects = async (
     pQueue.add(() => wallet.openapi.getProtocol({ addr: user_id, id }))
   );
   return await Promise.all(queues);
-};
-
-export const batchLoadHistoryProjects = async (
-  user_id: string,
-  projectIds: string[],
-  wallet: WalletControllerType,
-  time_at?: number,
-  _isTestnet = false
-) => {
-  const queues = projectIds.map((id) => {
-    return pQueue.add(() => {
-      return wallet.openapi.getHistoryProtocol({
-        addr: user_id,
-        id,
-        timeAt: time_at,
-      });
-    });
-  });
-  const result = await Promise.all(queues);
-  return result;
-};
-
-export const getMissedTokenPrice = async (
-  missedTokens: Record<string, Set<string>>,
-  timeAt: number,
-  wallet: WalletControllerType,
-  isTestnet = false
-) => {
-  const tokens = missedTokens && Object.entries(missedTokens);
-
-  if (!tokens?.length) {
-    return;
-  }
-
-  return Promise.all(
-    tokens.map(([chain, missed]) =>
-      getTokenHistoryPrice(chain, [...missed], timeAt, wallet, isTestnet)
-        .then((dict) => [chain, dict] as const)
-        .catch(() => [chain] as const)
-    )
-  ).then((dicts) => {
-    return dicts.reduce((m, n) => {
-      if (n[1]) {
-        m[n[0]] = n[1];
-      }
-
-      return m;
-    }, {} as Record<string, Record<string, number>>);
-  });
 };
 
 export const chunk = <T>(input: T[], size = 3) => {

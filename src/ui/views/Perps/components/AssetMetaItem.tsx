@@ -10,27 +10,6 @@ import { ReactComponent as IconTopSecond } from '@/ui/assets/perps/IconTopSecond
 import { ReactComponent as IconTopThree } from '@/ui/assets/perps/IconTopThree.svg';
 const formatPct = (v: number) => `${(v * 100).toFixed(2)}%`;
 
-export const FavoriteTag: React.FC<{
-  className?: string;
-}> = ({ className }) => (
-  <div
-    className={clsx(
-      'absolute top-0 right-0 w-[36px] h-[15px] flex items-center justify-center rounded-bl-[8px] bg-r-orange-light',
-      className
-    )}
-  >
-    <svg
-      width="13"
-      height="12"
-      viewBox="0 0 13 12"
-      fill="#FFB020"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path d="M6.5 0.5L8.09 3.83L11.75 4.36L9.125 6.92L9.68 10.56L6.5 8.89L3.32 10.56L3.875 6.92L1.25 4.36L4.91 3.83L6.5 0.5Z" />
-    </svg>
-  </div>
-);
-
 const MEDAL_ICON: Record<number, React.FC<React.SVGProps<SVGSVGElement>>> = {
   1: IconTopFirst,
   2: IconTopSecond,

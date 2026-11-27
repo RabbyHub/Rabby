@@ -15,26 +15,6 @@ import { useRequest } from 'ahooks';
 import { flatten, keyBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 
-export const useTxRequests = (
-  reqIds: string | string[],
-  options?: {
-    onSuccess?: (data: Record<string, TxRequest>) => void;
-  }
-) => {
-  const wallet = useWallet();
-  const onSuccess = options?.onSuccess;
-  return useRequest(
-    async () => {
-      const res = await wallet.openapi.getTxRequests(reqIds);
-      return keyBy(res, 'id');
-    },
-    {
-      refreshDeps: [Array.isArray(reqIds) ? reqIds.join(',') : reqIds],
-      onSuccess,
-    }
-  );
-};
-
 export const useLoadTxRequests = (
   pendings: TransactionGroup[],
   options?: {

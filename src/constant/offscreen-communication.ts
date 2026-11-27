@@ -63,10 +63,6 @@ export enum BitBox02Action {
   ethSignTypedMessage = 'bitbox02-sign-typed-message',
   ethXpub = 'bitbox02-xpub',
 }
-
-export enum LatticeAction {
-  getCreds = 'lattice-get-creds',
-}
 /**
  * Defines domain origins that we expect to interface with in our offscreen
  * document. Any reference to a domain as an origin should use this enum

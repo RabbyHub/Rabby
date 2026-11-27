@@ -131,69 +131,6 @@ export function getCustomTxParamsData(
   }
 }
 
-export function varyTxSignType(txDetail: ExplainTxResponse | null) {
-  let isNFT = false;
-  let isToken = false;
-  let gaCategory: 'Security' | 'Send' = 'Send';
-  let gaAction:
-    | 'signTx'
-    | 'signDeclineTokenApproval'
-    | 'signDeclineNFTApproval'
-    | 'signDeclineTokenAndNFTApproval' = 'signTx';
-
-  if (
-    txDetail?.type_deploy_contract ||
-    txDetail?.type_cancel_tx ||
-    txDetail?.type_call
-  ) {
-    // nothing to do
-  }
-  if (
-    txDetail?.type_cancel_token_approval ||
-    txDetail?.type_cancel_single_nft_approval ||
-    txDetail?.type_cancel_nft_collection_approval
-  ) {
-    gaCategory = 'Security';
-  } else {
-    gaCategory = 'Send';
-  }
-
-  if (
-    txDetail?.type_send ||
-    txDetail?.type_cancel_token_approval ||
-    txDetail?.type_token_approval
-  ) {
-    isToken = true;
-  }
-
-  if (
-    txDetail?.type_cancel_single_nft_approval ||
-    txDetail?.type_cancel_nft_collection_approval ||
-    txDetail?.type_single_nft_approval ||
-    txDetail?.type_nft_collection_approval ||
-    txDetail?.type_nft_send
-  ) {
-    isNFT = true;
-  }
-
-  if (gaCategory === 'Security') {
-    if (isToken && !isNFT) {
-      gaAction = 'signDeclineTokenApproval';
-    } else if (!isToken && isNFT) {
-      gaAction = 'signDeclineNFTApproval';
-    } else if (isToken && isNFT) {
-      gaAction = 'signDeclineTokenAndNFTApproval';
-    }
-  }
-
-  return {
-    gaCategory,
-    gaAction,
-    isNFT,
-    isToken,
-  };
-}
-
 /**
  * @description accept input data as hex or string, and return the formatted result
  */

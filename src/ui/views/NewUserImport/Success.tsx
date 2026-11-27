@@ -17,10 +17,15 @@ import { ReactComponent as RcIconExternalCC } from '@/ui/assets/new-user-import/
 import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { Account } from '@/background/service/preference';
-import { useAsync, useClickAway } from 'react-use';
+import { useAsync } from 'react-use';
 import { useNewUserGuideStore } from './hooks/useNewUserGuideStore';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from '@/constant';
-import { useDocumentVisibility, useMemoizedFn, useRequest } from 'ahooks';
+import {
+  useDocumentVisibility,
+  useMemoizedFn,
+  useRequest,
+  useClickAway,
+} from 'ahooks';
 import { GnosisChainList } from './GnosisChainList';
 import {
   AccountItemAddress,
@@ -53,11 +58,15 @@ const AccountItem = ({
     updateAlias(localName.trim() ? localName : defaultName);
   }, [defaultName, localName, updateAlias]);
 
-  useClickAway(updateRef, () => {
-    if (init.current) {
-      update();
-    }
-  });
+  useClickAway(
+    () => {
+      if (init.current) {
+        update();
+      }
+    },
+    updateRef,
+    ['mousedown', 'touchstart']
+  );
 
   useEffect(() => {
     if (name && !localName && !init.current) {
@@ -141,15 +150,6 @@ export const ImportOrCreatedSuccess = () => {
     return [];
   }, [documentVisibility, keyringId]);
 
-  // const { value: allAccounts } = useAsync(
-  //   wallet.getAllVisibleAccountsArray,
-  //   []
-  // );
-
-  // const isNewUserImport = React.useMemo(() => {
-  //   return allAccounts?.length === 1;
-  // }, [!!allAccounts?.length]);
-
   const getStarted = React.useCallback(async () => {
     // window.close();
     try {
@@ -157,13 +157,6 @@ export const ImportOrCreatedSuccess = () => {
     } catch (e) {
       console.error('open popup failed', e);
     }
-    // if (isNewUserImport) {
-    //   history.push({
-    //     pathname: '/new-user/ready',
-    //   });
-    // } else {
-    //   window.close();
-    // }
   }, []);
 
   useEffect(() => {

@@ -365,34 +365,6 @@ class PerpsService {
     return this.memoryState.agentWallets[normalizedAddress];
   };
 
-  updateAgentWalletPreference = async (
-    address: string,
-    preference: AgentWalletInfo['preference']
-  ) => {
-    if (!this.store) {
-      throw new Error('PerpsService not initialized');
-    }
-
-    const normalizedAddress = address.toLowerCase();
-    const existingPreference = this.store.agentPreferences[normalizedAddress];
-
-    if (!existingPreference) {
-      throw new Error(`Agent wallet not found for address: ${address}`);
-    }
-
-    this.store.agentPreferences = {
-      ...this.store.agentPreferences,
-      [normalizedAddress]: {
-        agentAddress: preference.agentAddress,
-        approveSignatures: preference.approveSignatures,
-      },
-    };
-
-    if (this.memoryState.agentWallets[normalizedAddress]) {
-      this.memoryState.agentWallets[normalizedAddress].preference = preference;
-    }
-  };
-
   setCurrentAccount = async (account: Account | null) => {
     if (!this.store) {
       throw new Error('PerpsService not initialized');
@@ -639,18 +611,6 @@ class PerpsService {
       throw new Error('PerpsService not initialized');
     }
     this.store.quoteUnit = quoteUnit;
-  };
-
-  getIsNeedSetDarkTheme = async () => {
-    if (!this.store) {
-      throw new Error('PerpsService not initialized');
-    }
-    if (this.store.firstOpenPerpsNeedDark) {
-      this.store.firstOpenPerpsNeedDark = false;
-      return true;
-    } else {
-      return false;
-    }
   };
 
   getSelectedCoin = async () => {

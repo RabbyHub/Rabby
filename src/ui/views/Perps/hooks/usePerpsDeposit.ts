@@ -10,7 +10,6 @@ import {
 } from '@/constant';
 import { useMemoizedFn } from 'ahooks';
 import { findAccountByPriority } from '@/utils/account';
-import { useInterval } from 'react-use';
 import pRetry, { AbortError } from 'p-retry';
 import { toChecksumAddress } from '@ethereumjs/util';
 import {

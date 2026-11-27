@@ -26,15 +26,6 @@ import Loading from '../../TxComponents/Loading';
 import ViewRawModal from '../../TxComponents/ViewRawModal';
 import { TestnetUnknownAction } from './UnknownAction';
 import { Account } from '@/background/service/preference';
-import { cn } from '@/ui/utils/cn';
-import styles from './index.module.css';
-
-export const SignTitle = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...rest }, ref) => (
-  <div ref={ref} className={cn(styles.signTitle, className)} {...rest} />
-));
 
 export const TestnetActions = ({
   data,

@@ -1,13 +1,8 @@
 import { DEX } from '@/constant';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
-import React, { SVGProps } from 'react';
+import React from 'react';
 import { useSwapStore } from '@/ui/state/swap';
-import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
-import { useTranslation } from 'react-i18next';
-
-import { useThemeMode } from '@/ui/hooks/usePreference';
-import styles from './loading.module.css';
 
 type QuoteListLoadingProps = {
   fetchedList?: string[];
@@ -88,113 +83,5 @@ export const QuoteListLoading = ({
         return <QuoteLoading logo={value.logo} key={key} name={value.name} />;
       })}
     </>
-  );
-};
-
-const Dots: React.FC = () => {
-  return (
-    <span className={clsx(styles.dots, 'relative -top-2')}>
-      <span className="dot1">.</span>
-      <span className="dot2">.</span>
-      <span className="dot3">.</span>
-    </span>
-  );
-};
-
-const SvgComponent = (props: SVGProps<SVGSVGElement>) => {
-  const { isDarkTheme } = useThemeMode();
-
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width={267}
-      height={81}
-      viewBox="0 0 267 81"
-      fill="none"
-      {...props}
-    >
-      <g filter="url(#a)">
-        <rect
-          width={239.918}
-          height={54.175}
-          x={13.807}
-          y={6.661}
-          fill={isDarkTheme ? '#404455' : '#fff'}
-          rx={5.147}
-        />
-        <rect
-          width={239.596}
-          height={53.853}
-          x={13.968}
-          y={6.822}
-          stroke="var(--r-neutral-line)"
-          strokeWidth={0.322}
-          rx={4.986}
-        />
-        <circle
-          cx={35.187}
-          cy={27.571}
-          r={10.293}
-          fill="var(--r-neutral-card-2)"
-        />
-        <path
-          fill="var(--r-neutral-card-2)"
-          d="M53.22 18.558h84.92v12.867H53.22zM156.462 18.558h84.92v12.867h-84.92zM53.197 37.853h58.543V50.72H53.197zM182.776 37.853h58.543V50.72h-58.543z"
-        />
-      </g>
-      <defs>
-        <filter
-          id="a"
-          width={265.573}
-          height={79.831}
-          x={0.979}
-          y={0.247}
-          colorInterpolationFilters="sRGB"
-          filterUnits="userSpaceOnUse"
-        >
-          <feFlood floodOpacity={0} result="BackgroundImageFix" />
-          <feColorMatrix
-            in="SourceAlpha"
-            result="hardAlpha"
-            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-          />
-          <feOffset dy={6.414} />
-          <feGaussianBlur stdDeviation={6.414} />
-          <feComposite in2="hardAlpha" operator="out" />
-          <feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
-          <feBlend
-            in2="BackgroundImageFix"
-            result="effect1_dropShadow_103889_1305"
-          />
-          <feBlend
-            in="SourceGraphic"
-            in2="effect1_dropShadow_103889_1305"
-            result="shape"
-          />
-        </filter>
-      </defs>
-    </svg>
-  );
-};
-
-export const BestQuoteLoading = () => {
-  const { t } = useTranslation();
-
-  return (
-    <div>
-      <div className={styles.loading}>
-        <SvgComponent className="item item-1" />
-        <SvgComponent className="item item-2" />
-        <SvgComponent className="item item-3" />
-      </div>
-
-      <div className="mt-18 flex items-center justify-center gap-4">
-        <img src={ImgRabbyWallet} className="w-14 h-14 rounded-full" />
-        <span className="text-12 text-r-neutral-foot">
-          {t('page.swap.fetch-best-quote')}
-        </span>
-        <Dots />
-      </div>
-    </div>
   );
 };

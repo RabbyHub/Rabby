@@ -20,12 +20,6 @@ export enum OrderSide {
   SELL = 'sell',
 }
 
-export interface OrderSettings {
-  marginMode: MarginMode;
-  leverage: number;
-  orderType: OrderType;
-}
-
 export type PositionSizeInputSource = 'amount' | 'notional' | 'slider';
 
 export interface PositionSize {
@@ -45,8 +39,6 @@ export interface Position {
   liquidationPrice: number;
   unrealizedPnl: number;
 }
-// Input mode type: 'price' means user input price, 'percentage' means user input percentage
-export type TPSLInputMode = 'price' | 'percentage';
 
 // TP/SL setting mode for the new three-mode design
 export type TPSLSettingMode = 'price' | 'pnl' | 'roi';
@@ -70,23 +62,6 @@ export interface TPSLConfig {
   enabled: boolean;
   takeProfit: TPSLConfigItem;
   stopLoss: TPSLConfigItem;
-}
-
-// Legacy TPSLConfig types kept for backward compatibility during migration
-export interface LegacyTPSLConfig {
-  enabled: boolean;
-  takeProfit: {
-    price: string;
-    percentage: string;
-    error: string;
-    inputMode: TPSLInputMode;
-  };
-  stopLoss: {
-    price: string;
-    error: string;
-    percentage: string;
-    inputMode: TPSLInputMode;
-  };
 }
 
 export interface OrderSummaryData {

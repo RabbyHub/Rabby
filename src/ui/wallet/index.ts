@@ -53,13 +53,7 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 });
 
 export const wallet = walletClient.wallet;
-export const walletReady = walletClient.ready;
-export const walletRequest = walletClient.request;
 export const onWalletReconnect = walletClient.onReconnect;
-export const disposeWallet = () => {
-  uiOpenapiRuntime.dispose();
-  walletClient.dispose();
-};
 
 export { createWallet } from './createWallet';
 export type { WalletMessageChannel, WalletRequest } from './createWallet';

@@ -22,7 +22,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import {
   GasCardBody,
   GasPriceDesc,
@@ -257,7 +257,7 @@ export const SignMainnetCustomGasSheet = ({
     setLoadingGasEstimated(true);
   }, [customGas, visible]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (!visible || customGas === undefined || customGas === '') {
         setLoadingGasEstimated(false);
@@ -285,8 +285,8 @@ export const SignMainnetCustomGasSheet = ({
         setLoadingGasEstimated(false);
       });
     },
-    200,
-    [customGas, gasList, loadCustomGasData, visible]
+    [customGas, gasList, loadCustomGasData, visible],
+    { wait: 200 }
   );
 
   const gasCostUsdStr = useMemo(() => {

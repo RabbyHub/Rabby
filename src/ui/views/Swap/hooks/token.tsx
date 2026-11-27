@@ -12,7 +12,8 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useAsync, useAsyncFn, useDebounce } from 'react-use';
+import { useAsync, useAsyncFn } from 'react-use';
+import { useDebounceEffect, useDebounceFn } from 'ahooks';
 import {
   isSwapWrapToken,
   QuoteProvider,
@@ -39,7 +40,7 @@ import { isTempoChain } from '@/utils/tempo';
 import { useGasAccountDepositFlowActive } from '@/ui/views/GasAccount/hooks/runtime';
 import { isQuoteReceiveValueTooLowForEarlyDisplay } from '@/ui/utils/quote';
 import { getDefaultSwapToTokenItem } from '@/constant/dex-swap';
-import { getRabbyFeeInfo, SwapFeeRate } from './fee';
+import { getRabbyFeeInfo } from './fee';
 const isTab = getUiType().isTab;
 
 export const enableInsufficientQuote = true;
@@ -121,14 +122,14 @@ const useTokenInfo = ({
     refreshTokenId,
   ]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (value && !error && !loading) {
         setToken(value);
       }
     },
-    300,
-    [value, error, loading]
+    [value, error, loading],
+    { wait: 300 }
   );
 
   if (error) {
@@ -136,11 +137,6 @@ const useTokenInfo = ({
   }
   return [token, setToken] as const;
 };
-
-export interface FeeProps {
-  fee: SwapFeeRate;
-  symbol?: string;
-}
 
 export const useTokenPair = (userAddress: string) => {
   const refreshId = useRefreshId();
@@ -868,13 +864,19 @@ export const useTokenPair = (userAddress: string) => {
     refreshId,
   ]);
 
-  const [, cancelQuoteDebounce] = useDebounce(
+  const {
+    run: debouncedGetQuotes,
+    cancel: cancelQuoteDebounce,
+  } = useDebounceFn(
     () => {
       getQuotes();
     },
-    1000,
-    [getQuotes]
+    { wait: 1000 }
   );
+
+  useEffect(() => {
+    debouncedGetQuotes();
+  }, [getQuotes, debouncedGetQuotes]);
 
   const setQuoteRefreshLocked = useCallback(
     (locked: boolean) => {

@@ -1,20 +1,12 @@
 import { useEffect, useState } from 'react';
-import { useGasAccountMethods, useGasAccountSign } from './index';
-import { useAsyncFn, useDebounce } from 'react-use';
+import { useGasAccountSign } from './index';
+import { useAsyncFn } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import { Tx } from '@rabby-wallet/rabby-api/dist/types';
-import { useCurrentAccount } from '@/ui/hooks/backgroundState/useAccount';
-import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
-import React from 'react';
-import { Modal } from 'antd';
-import clsx from 'clsx';
 import { Account } from '@/background/service/preference';
 import { useRequest } from 'ahooks';
-import { nanoid } from 'nanoid';
 import { getGasAccountDecision } from '@/ui/views/Approval/components/FooterBar/gasAccountDecision';
 import { KEYRING_CLASS } from '@/constant';
-import styles from './checkTxs.module.css';
 
 export const GAS_ACCOUNT_INSUFFICIENT_TIP =
   'Gas balance is not enough for transaction';
@@ -103,64 +95,4 @@ export const useGasAccountTxsCheck = ({
     sig,
     isFirstGasCostLoading,
   };
-};
-
-export const useLoginDepositConfirm = (params: {
-  onGotoGasAccount?: () => void;
-}) => {
-  const { t } = useTranslation();
-  const currentAccount = useCurrentAccount();
-  const { login } = useGasAccountMethods();
-
-  const history = useHistory();
-  const gotoGasAccount = React.useCallback(() => {
-    params?.onGotoGasAccount?.();
-    history.push({
-      pathname: '/gas-account',
-      search: `?resetKey=${nanoid()}`,
-    });
-  }, [params?.onGotoGasAccount]);
-
-  const modalConfirm = React.useCallback(
-    (type: 'login' | 'deposit') => {
-      const isLogin = type === 'login';
-      const title = isLogin
-        ? t('page.signFooterBar.gasAccount.loginTips')
-        : t('page.signFooterBar.gasAccount.depositTips');
-      Modal.confirm({
-        width: 320,
-        closable: false,
-        centered: true,
-        className: styles.depositModal,
-        title: title,
-        content: null,
-        focusTriggerAfterClose: false,
-        okButtonProps: {
-          autoFocus: false,
-        },
-        cancelButtonProps: {
-          ghost: true,
-          className: clsx(
-            'h-[40px] border-r-blue-default text-r-blue-default',
-            'hover:bg-r-blue-light1 active:bg-r-neutral-black/10',
-            'rounded-[6px]',
-            'before:content-none',
-            'flex items-center justify-center'
-          ),
-        },
-        cancelText: t('global.Cancel'),
-        okText: t('global.Confirm'),
-        onOk() {
-          if (isLogin && currentAccount) {
-            login(currentAccount);
-          } else {
-            gotoGasAccount();
-          }
-        },
-      });
-    },
-    [t, login, gotoGasAccount]
-  );
-
-  return modalConfirm;
 };

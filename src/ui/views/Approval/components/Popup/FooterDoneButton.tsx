@@ -1,7 +1,7 @@
 import { useCommonPopupView } from '@/ui/utils';
 import { Button } from 'antd';
 import React from 'react';
-import { useInterval } from 'react-use';
+import { useInterval } from 'ahooks';
 
 export interface Props {
   onDone: () => void;

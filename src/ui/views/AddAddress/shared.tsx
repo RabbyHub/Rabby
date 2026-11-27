@@ -6,16 +6,11 @@ import {
   WALLET_SORT_SCORE,
 } from 'consts';
 import _ from 'lodash';
-import React, { useState } from 'react';
-import { Tooltip } from 'antd';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
-import { Item } from '@/ui/component';
 import { useWallet } from '@/ui/utils';
 import { UI_TYPE } from '@/constant/ui';
-import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
 
 export interface AddAddressNavigateHandler {
   (type: string, state?: Record<string, any>): void;
@@ -44,79 +39,6 @@ const isDesktop = UI_TYPE.isDesktop;
 const getSortNum = (brand: string) => WALLET_SORT_SCORE[brand] || 999999;
 
 type ValueOf<T> = T[keyof T];
-
-const AddressItem = ({ data }: { data: WalletBrandItem }) => {
-  const { t } = useTranslation();
-  const [visible, setVisible] = useState(false);
-
-  const leftNode = (
-    <div className="relative w-[29px] h-[28px]">
-      <img src={data.image} className="w-[28px] h-[28px]" />
-      {data.connectType === 'WalletConnect' &&
-        data.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
-          <img
-            src={IconWalletConnect}
-            className="absolute -bottom-6 -right-6 w-[14px] h-[14px] rounded-full"
-          />
-        )}
-    </div>
-  );
-
-  return (
-    <Item
-      bgColor="transparent"
-      className={clsx('flex-col justify-center hover:border-transparent', {
-        'cursor-not-allowed': data.preventClick,
-      })}
-      hoverBgColor={data.preventClick ? '' : undefined}
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-      py={10}
-      px={0}
-      left={
-        <Tooltip
-          title={data.tipI18nKey ? t(data.tipI18nKey) : undefined}
-          placement="topLeft"
-          visible={!!data.tipI18nKey && visible}
-          arrowPointAtCenter
-          overlayClassName="rectangle w-[max-content]"
-        >
-          {leftNode}
-        </Tooltip>
-      }
-      rightIcon={null}
-      onClick={data.onClick}
-    >
-      <span className="text-12 font-medium text-r-neutral-title-1 mt-[8px]">
-        {data.content}
-      </span>
-    </Item>
-  );
-};
-
-export const WalletBrandGrid = ({
-  wallets,
-  className,
-}: {
-  wallets: WalletBrandItem[];
-  className?: string;
-}) => {
-  if (!wallets.length) {
-    return null;
-  }
-
-  return (
-    <div
-      className={clsx('mx-[16px] bg-r-neutral-card-2 rounded-[6px]', className)}
-    >
-      <div className="py-[8px] grid grid-cols-3 gap-x-0">
-        {wallets.map((wallet) => (
-          <AddressItem key={wallet.brand} data={wallet} />
-        ))}
-      </div>
-    </div>
-  );
-};
 
 export const useAddAddressWalletOptions = ({
   onNavigate,

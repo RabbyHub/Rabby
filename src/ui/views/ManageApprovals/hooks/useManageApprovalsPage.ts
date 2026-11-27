@@ -27,11 +27,7 @@ import { getAddressScanLink } from '@/utils';
 import { obj2query } from '@/ui/utils/url';
 import { findChainByServerID } from '@/utils/chain';
 import { useBatchRevoke } from '../../ManageBatchApprovals/hooks/useBatchRevoke';
-import type {
-  NFTApproval,
-  NFTApprovalContract,
-  Spender,
-} from '@/background/service/openapi';
+import type { NFTApproval, Spender } from '@/background/service/openapi';
 import { checkCompareContractItem } from '../../DesktopProfile/components/ApprovalsTabPane/utils';
 
 export type {
@@ -485,29 +481,6 @@ export function getAssetApprovalPrimaryText(assetApproval: AssetApprovalItem) {
   }
 
   return assetApproval.name || 'Unknown';
-}
-
-export function getContractApprovalMemberText(
-  member: ContractApprovalItem['list'][number]
-) {
-  if ('symbol' in member) {
-    return member.symbol || member.id;
-  }
-  if ('contract_name' in member) {
-    const contractMember = member as NFTApprovalContract;
-    return contractMember.contract_name || contractMember.contract_id;
-  }
-  if ('inner_id' in member) {
-    const nftMember = member as NFTApproval;
-    return `${nftMember.contract_name || nftMember.contract_id} #${
-      nftMember.inner_id
-    }`;
-  }
-  return (member as Spender).id;
-}
-
-export function getAssetSpenderText(spender: AssetApprovalSpender) {
-  return spender.protocol?.name || spender.id;
 }
 
 export function sortContractListAsCards(

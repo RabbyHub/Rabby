@@ -2,12 +2,6 @@ import { EVENTS } from '@/constant';
 import eventBus from '@/eventBus';
 import { createPersistStore } from 'background/utils';
 
-export type GasAccountRecord = {
-  chain_id: string;
-  token_id: string;
-  amount: number;
-};
-
 export type GasAccountServiceStore = {
   accountId?: string;
   sig?: string;

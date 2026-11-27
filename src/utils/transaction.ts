@@ -6,7 +6,6 @@ import {
   DEFAULT_GAS_LIMIT_BUFFER,
   DEFAULT_GAS_LIMIT_RATIO,
   GASPRICE_RANGE,
-  KEYRING_CATEGORY_MAP,
   MINIMUM_GAS_LIMIT,
   SAFE_GAS_LIMIT_BUFFER,
   SAFE_GAS_LIMIT_RATIO,
@@ -217,19 +216,6 @@ export const validateGasPriceRange = (tx: Tx) => {
   if (Number((tx as Tx).gasPrice || tx.maxFeePerGas) / 1e9 > max)
     throw new Error('GasPrice too high');
   return true;
-};
-
-export const convert1559ToLegacy = (tx) => {
-  return {
-    chainId: tx.chainId,
-    from: tx.from,
-    to: tx.to,
-    value: tx.value,
-    data: tx.data,
-    gas: tx.gas,
-    gasPrice: tx.maxFeePerGas,
-    nonce: tx.nonce,
-  };
 };
 
 export const convertLegacyTo1559 = (tx: Tx) => {
@@ -552,10 +538,6 @@ export const buildPreExecTxRequest = ({
   delegate_call: delegateCall,
 });
 
-export function getKRCategoryByType(type?: string) {
-  return KEYRING_CATEGORY_MAP[type as any] || null;
-}
-
 // return maxPriorityPrice or maxGasPrice
 export const calcMaxPriorityFee = (
   gasList: GasLevel[],
@@ -786,23 +768,6 @@ export async function calcGasLimit({
     recommendGasLimitRatio,
   };
 }
-
-export const getNativeTokenBalance = async ({
-  wallet,
-  address,
-  chainId,
-}: {
-  wallet: WalletControllerType;
-  address: string;
-  chainId: number;
-}): Promise<string> => {
-  const gasToken = await getGasTokenBalance({
-    wallet,
-    address,
-    chainId,
-  });
-  return gasToken.rawBalance;
-};
 
 export const getGasTokenBalance = async ({
   wallet,

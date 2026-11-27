@@ -1,11 +1,9 @@
 import {
-  PortfolioItem,
-  PortfolioItemToken,
   TokenItem,
   TokenItemWithEntity,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { CHAINS } from 'consts';
-import { DisplayedProject, encodeProjectTokenId } from './project';
+import { encodeProjectTokenId } from './project';
 import { WalletControllerType } from '../WalletContext';
 import { requestOpenApiWithChainId } from '@/ui/utils/openapi';
 import {
@@ -65,54 +63,6 @@ export const batchQueryTokens = async (
       isTestnet,
     }
   );
-};
-
-export const batchQueryHistoryTokens = async (
-  user_id: string,
-  time_at: number,
-  wallet: WalletControllerType,
-  isTestnet = false
-) => {
-  return requestOpenApiWithChainId(
-    ({ openapi }) =>
-      openapi.getHistoryTokenList({ id: user_id, timeAt: time_at }),
-    {
-      wallet,
-      isTestnet,
-    }
-  );
-};
-
-export const walletProject = new DisplayedProject({
-  id: 'Wallet',
-  name: 'Wallet',
-});
-
-export const setWalletTokens = (
-  p?: DisplayedProject,
-  tokensDict?: Record<string, TokenItem[]>
-) => {
-  if (!p || !tokensDict) {
-    return;
-  }
-
-  Object.entries(tokensDict).forEach(([chain, tokens]) => {
-    p?.setPortfolios([
-      // 假的结构 portfolio，只是用来对齐结构 PortfolioItem
-      {
-        pool: {
-          id: chain,
-        },
-        asset_token_list: tokens as PortfolioItemToken[],
-      } as PortfolioItem,
-    ]);
-  });
-};
-
-export const sortWalletTokens = (wallet: DisplayedProject) => {
-  return wallet._portfolios
-    .flatMap((x) => x._tokenList)
-    .sort((m, n) => (n._usdValue || 0) - (m._usdValue || 0));
 };
 export const concatAndSort = <
   T extends {
@@ -224,15 +174,6 @@ export const replaceTokensWithLatest = (
     ...latestTokens,
     ...tokens.filter((token) => token.chain !== chainServerId),
   ]);
-};
-
-export const groupTokensByChain = (tokens: TokenItem[]) => {
-  return tokens.reduce((m, n) => {
-    m[n.chain] = m[n.chain] || [];
-    m[n.chain].push(n);
-
-    return m;
-  }, {} as Record<string, TokenItem[]>);
 };
 
 export const parseTokenItem = (token: TokenItem): AbstractPortfolioToken => {

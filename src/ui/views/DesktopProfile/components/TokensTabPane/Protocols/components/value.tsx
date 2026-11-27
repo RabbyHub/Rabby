@@ -106,14 +106,6 @@ export const TokenUSDValue = (props: { value: PortfolioItemToken }) => {
   return <TokensUSDValue value={[props.value]} />;
 };
 
-export const Bool = (props: { value: number }) => {
-  return (
-    <Col className="text-[14px] text-r-neutral-title1">
-      {props.value ? 'Yes' : 'No'}
-    </Col>
-  );
-};
-
 export const Percent = (props: { value?: number | string }) => {
   if (props.value === undefined || Number.isNaN(+props.value))
     return <Col></Col>;
@@ -128,16 +120,6 @@ export const NumberWithCommas = (props: { value?: number | string }) => {
   return (
     <Col className="text-[14px] text-r-neutral-title1">
       {numberWithCommas(props.value ?? 0, 2)}
-    </Col>
-  );
-};
-
-export const NumbersWithCommas = (props: {
-  value: (number | string | undefined)[];
-}) => {
-  return (
-    <Col className="text-[14px] text-r-neutral-title1">
-      {props.value.map((v) => (v ? numberWithCommas(v, 2) : '-')).join(' / ')}
     </Col>
   );
 };

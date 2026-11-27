@@ -71,8 +71,3 @@ export const UseSeedPhrase = () => {
     handleAddSeedPhraseAddress,
   };
 };
-
-export const useHadSeedPhrase = () => {
-  const { value, loading } = useGetHdKeys();
-  return !loading && !!value && value?.length > 0;
-};
