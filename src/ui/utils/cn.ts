@@ -14,6 +14,13 @@ const twMerge = extendTailwindMerge({
       'font-size': [{ text: ['12', '13', '14', '15', '18', '20', '24', '28'] }],
     },
   },
+  override: {
+    // By default a font size drops any earlier `leading-*`. In Tailwind v4 a
+    // font size only sets a fallback (`line-height: var(--tw-leading, 14px)`),
+    // so `leading-*` wins in either order and must be kept. A size with a
+    // line-height modifier (`text-12/[20px]`) still replaces it.
+    conflictingClassGroups: { 'font-size': [] },
+  },
 });
 
 /**

@@ -419,7 +419,7 @@ export const RevokeApprovalModal = (props: {
                 </div>
                 <ApprovalsNameAndAddr
                   className="justify-start"
-                  addressClass="text-12"
+                  addressClass="text-12 leading-[14px]"
                   copyIconClass="w-[14px] h-[14px]"
                   address={spender.id}
                 />

@@ -24,6 +24,17 @@ describe('cn', () => {
     expect(cn('text-12', 'text-14')).toBe('text-14');
   });
 
+  it('keeps a line height placed before a font size', () => {
+    expect(cn('leading-[20px] text-[16px]')).toBe('leading-[20px] text-[16px]');
+    expect(cn('text-14 leading-[16px]', 'text-12')).toBe(
+      'leading-[16px] text-12'
+    );
+  });
+
+  it('lets a font size with a line-height modifier replace a line height', () => {
+    expect(cn('leading-[16px]', 'text-12/[20px]')).toBe('text-12/[20px]');
+  });
+
   it('lets a caller className override the component default', () => {
     expect(cn('px-8 py-2', false && 'hidden', 'px-16')).toBe('py-2 px-16');
   });
