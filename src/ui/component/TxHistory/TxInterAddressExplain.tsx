@@ -13,6 +13,9 @@ import {
 import { isSameAddress } from '@/ui/utils';
 import { findChainByServerID } from '@/utils/chain';
 
+const TITLE_CLASS = 'tx-explain-title truncate text-r-neutral-title-1';
+const DESC_CLASS = 'tx-explain-desc truncate text-r-neutral-foot';
+
 type TxInterAddressExplainProps = {
   data: TxHistoryItemRow & { isGasDeposit?: boolean };
 };
@@ -52,15 +55,13 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
     tokenURL = data.sends?.[0]?.token?.logo_url || '';
     interAddressExplain = (
       <>
-        <div className="tx-explain-title">Deposited Gas</div>
-        <div className="tx-explain-desc">To Gas Deposit</div>
+        <div className={TITLE_CLASS}>Deposited Gas</div>
+        <div className={DESC_CLASS}>To Gas Deposit</div>
       </>
     );
   } else if (isCancel) {
     interAddressExplain = (
-      <div className="tx-explain-title">
-        {t('page.transactions.explain.cancel')}
-      </div>
+      <div className={TITLE_CLASS}>{t('page.transactions.explain.cancel')}</div>
     );
   } else if (isApprove) {
     const tokenId = data.token_approve?.token_id || '';
@@ -71,7 +72,7 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
 
     // todo: translate
     interAddressExplain = (
-      <div className="tx-explain-title">
+      <div className={TITLE_CLASS}>
         Approve {amount < 1e9 ? amount.toFixed(4) : 'infinite'}{' '}
         {`${getTokenSymbol(approveToken)} for `}
         {projectName}
@@ -87,8 +88,8 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
     // gas deposit
     interAddressExplain = (
       <>
-        <div className="tx-explain-title">Deposited Gas</div>
-        <div className="tx-explain-desc">To Gas Deposit</div>
+        <div className={TITLE_CLASS}>Deposited Gas</div>
+        <div className={DESC_CLASS}>To Gas Deposit</div>
       </>
     );
   } else if (
@@ -100,8 +101,8 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
     // gas received
     interAddressExplain = (
       <>
-        <div className="tx-explain-title">Received Gas</div>
-        <div className="tx-explain-desc">From Gas Deposit</div>
+        <div className={TITLE_CLASS}>Received Gas</div>
+        <div className={DESC_CLASS}>From Gas Deposit</div>
       </>
     );
   } else if (
@@ -115,34 +116,40 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
     // gas withdraw
     interAddressExplain = (
       <>
-        <div className="tx-explain-title">Withdrawn Gas</div>
-        <div className="tx-explain-desc">From Gas Deposit</div>
+        <div className={TITLE_CLASS}>Withdrawn Gas</div>
+        <div className={DESC_CLASS}>From Gas Deposit</div>
       </>
     );
   } else {
     interAddressExplain = (
       <>
-        <div className="tx-explain-title">
+        <div className={TITLE_CLASS}>
           {data.cate_item?.name ??
             (data.tx?.name || t('page.transactions.explain.unknown'))}
         </div>
-        <div className="tx-explain-desc">{projectName}</div>
+        <div className={DESC_CLASS}>{projectName}</div>
       </>
     );
   }
 
   return (
-    <div className="ui tx-explain">
+    <div className="ui tx-explain flex items-center gap-8 overflow-hidden text-12">
       {tokenURL ? (
-        <img src={tokenURL} alt="" className="tx-icon rounded-full" />
+        <img
+          src={tokenURL}
+          alt=""
+          className="tx-icon w-28 h-28 rounded-full object-cover"
+        />
       ) : (
         <TxAvatar
           src={data.isGasDeposit ? undefined : data.project_item?.logo_url}
           cateId={data.isGasDeposit ? 'send' : data.cate_id}
-          className="tx-icon"
+          className="tx-icon w-28 h-28 rounded-[2px] object-cover"
         ></TxAvatar>
       )}
-      <div className="tx-explain-body">{interAddressExplain}</div>
+      <div className="tx-explain-body flex flex-col justify-center gap-4 overflow-hidden">
+        {interAddressExplain}
+      </div>
     </div>
   );
 };
