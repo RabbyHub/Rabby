@@ -53,10 +53,10 @@ export const EncodeQRCode: React.FC<{
           'bg-r-neutral-black/80',
           'rounded-[7px]',
           'absolute inset-0 z-10',
-          'flex flex-col items-center justify-center',
+          'flex-col items-center justify-center',
           'cursor-pointer',
           'backdrop-blur-md',
-          isHidden ? 'block' : 'hidden'
+          isHidden ? 'flex' : 'hidden'
         )}
         onClick={() => {
           onClick?.();

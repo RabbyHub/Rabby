@@ -19,6 +19,7 @@ import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge, Tooltip } from 'antd';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import React, {
   createContext,
   useEffect,
@@ -803,7 +804,7 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
       <div className="absolute right-[3px] top-[50%] translate-y-[-50%] h-[92px] w-[13px]">
         <div
           ref={scrollbarTrackRef}
-          className={clsx(
+          className={cn(
             'absolute right-0 top-[6px] h-[80px] cursor-pointer select-none',
             isScrollbarDragging && 'cursor-grabbing'
           )}

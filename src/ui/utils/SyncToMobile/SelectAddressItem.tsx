@@ -13,6 +13,7 @@ import { CopyChecked } from '@/ui/component/CopyChecked';
 import { ReactComponent as IconUnCheck } from '@/ui/assets/sync-to-mobile/uncheck.svg';
 import { ReactComponent as IconChecked } from '@/ui/assets/sync-to-mobile/checked.svg';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { isNil } from 'lodash';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 import { BAN_REASONS } from './SelectAddressModal';
@@ -65,7 +66,7 @@ export const SelectAddressItem: React.FC<{
       }
     >
       <div
-        className={clsx(
+        className={cn(
           'flex items-center justify-between',
           'cursor-pointer',
           'bg-r-neutral-card1',

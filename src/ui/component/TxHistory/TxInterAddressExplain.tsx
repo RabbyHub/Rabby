@@ -39,7 +39,7 @@ export const TxInterAddressExplain = ({ data }: TxInterAddressExplainProps) => {
         <NameAndAddress
           className="max-w-[170px] justify-normal gap-4"
           nameClass="m-0 font-normal text-12 text-r-neutral-foot"
-          addressClass="text-12 truncate"
+          addressClass="text-12 leading-[14px] truncate"
           address={data.other_addr}
           copyIcon={!data.is_scam}
         />

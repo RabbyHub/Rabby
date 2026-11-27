@@ -9,6 +9,7 @@ import ChainIcon from '@/ui/component/ChainIcon';
 import { ellipsisAddress } from '@/ui/utils/address';
 import { findChainByEnum } from '@/utils/chain';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { EIP7702Delegated } from '../../DesktopProfile/components/ApprovalsTabPane/useEIP7702Approvals';
 import { CheckboxV2 } from '../../DesktopSmallSwap/components/Checkbox';
 import { EIP7702SupportedChainsPopup } from './EIP7702SupportedChainsPopup';
@@ -159,7 +160,7 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
                 <div
                   key={`${item.chain}-${item.delegatedAddress}`}
                   onClick={() => toggleSelected(item)}
-                  className={clsx(
+                  className={cn(
                     'flex px-[11px] py-[13px] cursor-pointer items-center gap-[12px] rounded-[8px]',
                     'border-solid border-[1px]  hover:border-rabby-blue-default',
                     checked

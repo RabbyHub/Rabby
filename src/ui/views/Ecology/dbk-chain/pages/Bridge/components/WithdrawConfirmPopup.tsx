@@ -1,7 +1,7 @@
 import { ReactComponent as RcIconChecked } from '@/ui/assets/checked.svg';
 import { ReactComponent as RcIconUnCheckedCC } from '@/ui/assets/icon-unchecked-cc.svg';
 import { Popup } from '@/ui/component';
-import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import React, { useEffect, useMemo } from 'react';
 import { DbkButton } from '../../../components/DbkButton';
 import { formatUsdValue } from '@/ui/utils';
@@ -108,7 +108,7 @@ export const WithdrawConfirmPopup = ({
           const isChecked = checked.includes(item.value);
           return (
             <div
-              className={clsx(
+              className={cn(
                 'flex items-center gap-[12px] px-[15px] py-[10px] ',
                 'rounded-[8px] bg-r-neutral-card-2 cursor-pointer',
                 'border-transparent border-[1px] hover:border-rabby-orange-DBK',

@@ -15,6 +15,7 @@ import { ClearinghouseState } from '@rabby-wallet/hyperliquid-sdk';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { Popover, Tooltip } from 'antd';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { flatten, sortBy } from 'lodash';
 import React, { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -418,7 +419,7 @@ const AccountItem: React.FC<{
     <Tooltip title={tips} overlayClassName="rectangle">
       <div className={clsx(!isLast ? 'pb-[12px]' : '', 'group min-h-[1px]')}>
         <div
-          className={clsx(
+          className={cn(
             'rounded-[12px] px-[12px] py-[11px] cursor-pointer flex items-center gap-[8px] min-h-[62px]',
             'border-solid border-[0.5px]',
             'desktop-account-item',

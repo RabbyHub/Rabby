@@ -6,6 +6,7 @@ import ImgMetaMask from '@/ui/assets/swap/metamask.png';
 import ImgPhantom from '@/ui/assets/swap/phantom.png';
 import ImgRabbyWallet from '@/ui/assets/swap/rabby-wallet.png';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import { Button, DrawerProps } from 'antd';
 import { DEX } from '@/constant';
 
@@ -120,7 +121,7 @@ export const RabbyFeePopup = ({
         {fee[type].map((item, idx, list) => (
           <div
             key={item.name}
-            className={clsx(
+            className={cn(
               'flex justify-between items-center',
               'px-16 h-[44px]',
               'border-b-[1px] border-solid border-rabby-neutral-line',

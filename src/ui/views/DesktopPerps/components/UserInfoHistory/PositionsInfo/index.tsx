@@ -8,6 +8,7 @@ import { formatUsdValue, sleep, splitNumberByStep } from '@/ui/utils';
 import { Button, message, Modal, Table, Tooltip } from 'antd';
 import { ColumnType } from 'antd/lib/table';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { CommonTable } from '../CommonTable';
 import BigNumber from 'bignumber.js';
@@ -578,7 +579,7 @@ export const PositionsInfo: React.FC = () => {
           const isGain = Number(record.sinceOpenFunding) < 0;
           return (
             <div
-              className={clsx(
+              className={cn(
                 'text-[12px] leading-[14px]  text-rb-neutral-foot',
                 isGain ? 'text-rb-green-default' : 'text-rb-red-default'
               )}

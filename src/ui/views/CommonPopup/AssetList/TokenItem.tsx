@@ -188,7 +188,7 @@ const TokenItemPrice: React.FC<Props> = ({ item }) => {
       <div>${item._priceStr}</div>
       {isNumber(item.price_24h_change) && (
         <div
-          className={clsx('font-normal text-12 text-r-neutral-foot', {
+          className={cn('font-normal text-12 text-r-neutral-foot', {
             'text-r-green-default': item.price_24h_change > 0,
             'text-r-red-default': item.price_24h_change < 0,
           })}

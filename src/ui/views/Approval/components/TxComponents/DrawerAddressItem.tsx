@@ -3,6 +3,7 @@ import { useThemeMode } from '@/ui/hooks/usePreference';
 import { pickKeyringThemeIcon } from '@/utils/account';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
+import { cn } from '@/ui/utils/cn';
 import {
   KEYRING_CLASS,
   KEYRING_ICONS,
@@ -46,7 +47,7 @@ export const AddressItem = ({
   const disabled = !account.type || signed;
   return (
     <div
-      className={clsx(
+      className={cn(
         'flex items-center gap-[6px] p-[15px] rounded-[8px] border-[1px] border-transparent',
         'bg-r-neutral-card2',
         disabled
