@@ -377,12 +377,14 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
   const renderEditMode = useMemoizedFn(() => (
     <>
-      <div className="flex-1 px-20">
-        <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-12 pb-4">
-          {t('page.perpsDetail.PerpsOpenPositionPopup.openCoinPosition', {
-            coin: formatPerpsCoin(coin),
-          })}
-        </div>
+      {/* Title stays outside the scroll area so it lines up with the drawer's close button. */}
+      <div className="flex-shrink-0 px-20 text-20 font-medium text-r-neutral-title-1 text-center pt-12 pb-4">
+        {t('page.perpsDetail.PerpsOpenPositionPopup.openCoinPosition', {
+          coin: formatPerpsCoin(coin),
+        })}
+      </div>
+      {/* Bottom padding clears the fixed footer. */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-20 pb-[80px]">
         <div className="flex mt-12 mb-12 bg-r-neutral-card1 rounded-[8px] p-4 h-[42px]">
           <div
             className={clsx(
@@ -655,13 +657,13 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
 
   const renderReviewMode = useMemoizedFn(() => (
     <>
-      <div className="text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
+      <div className="flex-shrink-0 text-20 font-medium text-r-neutral-title-1 text-center pt-16 pb-12">
         {orderType === 'limit'
           ? t('page.perpsDetail.PerpsOpenPositionPopup.checkLimitOrder')
           : t('page.perpsDetail.PerpsOpenPositionPopup.checkMarketOrder')}
       </div>
 
-      <div className="flex-1 px-20">
+      <div className="flex-1 min-h-0 overflow-y-auto px-20 pb-[80px]">
         {/* Order Details Section */}
         <div className="bg-r-neutral-card1 rounded-[8px] py-12 px-16 mb-12">
           <div className="space-y-16">
@@ -849,7 +851,7 @@ export const PerpsOpenPositionPopup: React.FC<OpenPositionPopupProps> = ({
         onCancel={onCancel}
         onClose={isReviewMode ? handleBackToEdit : onCancel}
       >
-        <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px] overflow-auto pb-[80px]">
+        <div className="flex flex-col h-full bg-r-neutral-bg2 rounded-t-[16px]">
           {isReviewMode ? renderReviewMode() : renderEditMode()}
         </div>
       </Popup>
