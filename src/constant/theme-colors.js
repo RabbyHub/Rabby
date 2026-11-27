@@ -50,6 +50,9 @@ const themeColors = {
     'sonic-card-border': 'rgba(80, 97, 121, 0.1)',
     'sonic-background': 'rgba(245, 245, 245, 1)',
     'sonic-foreground': 'rgba(0, 0, 0, 1)',
+    /* token brand colors on the Sonic migration banner, same in both themes */
+    'sonic-ftm': 'rgba(25, 105, 255, 1)',
+    'sonic-s': 'rgba(254, 154, 76, 1)',
   },
   dark: {
     /* -------------------- base define -------------------- */
@@ -102,6 +105,8 @@ const themeColors = {
     'sonic-foreground': 'rgba(255,255,255, 1)',
     'sonic-btn': 'rgba(254, 154, 76, 0.16)',
     'sonic-btn-foreground': 'rgba(254, 154, 76, 1)',
+    'sonic-ftm': 'rgba(25, 105, 255, 1)',
+    'sonic-s': 'rgba(254, 154, 76, 1)',
   },
 };
 

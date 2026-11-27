@@ -865,8 +865,8 @@ function CommonTokenItem(props: {
                   {isNumber(value?.price_24h_change) && (
                     <div
                       className={clsx('font-normal text-13 leading-[14px]', {
-                        'text-green': value?.price_24h_change > 0,
-                        'text-red-forbidden': value?.price_24h_change < 0,
+                        'text-r-green-default': value?.price_24h_change > 0,
+                        'text-r-red-default': value?.price_24h_change < 0,
                       })}
                     >
                       ({value?.price_24h_change > 0 ? '+' : ''}

@@ -258,7 +258,7 @@ const ImportSuccess = ({
                 src={IconImportSuccess}
                 className="mx-auto mb-18 w-[100px] h-[100px]"
               />
-              <div className="text-green text-20 mb-2">{title}</div>
+              <div className="text-r-green-default text-20 mb-2">{title}</div>
               <div className="text-title text-15 mb-12">
                 <Trans
                   i18nKey="page.importSuccess.addressCount"

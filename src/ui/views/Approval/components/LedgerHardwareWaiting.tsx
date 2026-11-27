@@ -370,7 +370,7 @@ const LedgerHardwareWaiting = ({
           {txFailedResult?.[0] || currentDescription}
           {currentDescription.includes('EthAppPleaseEnableContractData') && (
             <a
-              className="underline text-blue-light block text-center mt-8"
+              className="underline text-r-blue-default block text-center mt-8"
               href="https://support.ledger.com/hc/en-us/articles/4405481324433-Enable-blind-signing-in-the-Ethereum-ETH-app?docs=true"
               onClick={(e) => {
                 e.preventDefault();

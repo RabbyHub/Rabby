@@ -80,27 +80,27 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
     switch (status) {
       case 'SENDING':
         setImage('');
-        setIconColor('bg-blue-light');
+        setIconColor('bg-r-blue-default');
         setContentColor('text-r-neutral-title-1');
         break;
       case 'WAITING':
       case 'SUBMITTING':
         setImage('');
-        setIconColor('bg-blue-light');
+        setIconColor('bg-r-blue-default');
         setContentColor('text-r-neutral-title-1');
         break;
       case 'FAILED':
       case 'REJECTED':
         setImage(retryUpdateType ? TxWarnSVG : TxErrorSVG);
         setIconColor(
-          retryUpdateType ? 'bg-r-orange-default' : 'bg-red-forbidden'
+          retryUpdateType ? 'bg-r-orange-default' : 'bg-r-red-default'
         );
         setContentColor('text-r-neutral-title-1');
         break;
       case 'RESOLVED':
         setImage(TxSucceedSVG);
-        setIconColor('bg-green');
-        setContentColor('text-green');
+        setIconColor('bg-r-green-default');
+        setContentColor('text-r-green-default');
         break;
       default:
         break;

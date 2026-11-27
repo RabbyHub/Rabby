@@ -23,8 +23,8 @@ export const CollectionPopup: React.FC<Props> = ({ data }) => {
   const { t } = useTranslation();
   return (
     <div>
-      <div className="flex mb-10 text-[15px] font-medium text-[#333]">
-        <span className="left mr-6 font-normal text-[#4b4d59]">
+      <div className="flex mb-10 text-[15px] font-medium text-r-neutral-title-1">
+        <span className="left mr-6 font-normal text-r-neutral-body">
           {t('page.signTx.nftCollection')}
         </span>
         <span className="right flex-1 truncate">{data.collection.name}</span>

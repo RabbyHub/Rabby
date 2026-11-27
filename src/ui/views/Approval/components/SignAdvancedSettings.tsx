@@ -212,7 +212,7 @@ export const SignAdvancedSettings = ({
                   </Form.Item>
                 </Tooltip>
                 {validateStatus.gasLimit.message ? (
-                  <p className="tip text-red-light not-italic">
+                  <p className="tip text-r-red-default not-italic">
                     {validateStatus.gasLimit.message}
                   </p>
                 ) : (
@@ -252,7 +252,7 @@ export const SignAdvancedSettings = ({
                     />
                   </Form.Item>
                   {validateStatus.nonce.message ? (
-                    <p className="tip text-red-light not-italic">
+                    <p className="tip text-r-red-default not-italic">
                       {validateStatus.nonce.message}
                     </p>
                   ) : (

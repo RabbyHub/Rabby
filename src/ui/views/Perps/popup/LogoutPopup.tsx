@@ -38,7 +38,7 @@ const LogoutCurrentAddress = ({ account }: { account: Account }) => {
         className={clsx(
           'w-[14px] h-[14px] ml-4 text-14 cursor-pointer relative top-1'
         )}
-        checkedClassName={clsx('text-[#00C087]')}
+        checkedClassName={clsx('text-r-green-default')}
       />
     </div>
   );
