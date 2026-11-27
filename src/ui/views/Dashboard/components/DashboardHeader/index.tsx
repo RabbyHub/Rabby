@@ -10,7 +10,6 @@ import {
 import React, { useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { useInterval } from 'react-use';
 import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy-1.svg';
 import WatchLogo from 'ui/assets/waitcup.svg';
 
@@ -32,7 +31,7 @@ import {
   useGasAccountInfoV2,
   useGasAccountLogin,
 } from '@/ui/views/GasAccount/hooks';
-import { useMemoizedFn } from 'ahooks';
+import { useMemoizedFn, useInterval } from 'ahooks';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import { BalanceView, BalanceViewJumpButton } from '../BalanceView/BalanceView';
 import { useHomeBalanceViewOuterPrefetch } from '../BalanceView/useHomeBalanceView';

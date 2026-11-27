@@ -21,7 +21,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
 import { Popup } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -387,7 +387,7 @@ const GasSelectorHeader = ({
     return formatGasAccountUSDValue(n || '0');
   }, []);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (
         checkGasLevelIsNotEnough &&
@@ -395,7 +395,6 @@ const GasSelectorHeader = ({
         directSubmit &&
         isReady
       ) {
-        let init = true;
         ['slow', 'normal', 'fast'].forEach((level) => {
           const selectedGas = gasList.find((e) => e.level === level);
           checkGasLevelIsNotEnough(
@@ -414,21 +413,14 @@ const GasSelectorHeader = ({
             'native'
           )
             .then((arr) => {
-              if (init) {
-                setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[0] }));
-              }
+              setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[0] }));
             })
             .catch((e) => {
               console.log('checkGasLevelIsNotEnough native gas error', e);
             });
         });
-
-        return () => {
-          init = false;
-        };
       }
     },
-    100,
     [
       isReady,
       directSubmit,
@@ -439,7 +431,8 @@ const GasSelectorHeader = ({
       chainId,
       isCancel,
       isSpeedUp,
-    ]
+    ],
+    { wait: 100 }
   );
 
   const handleConfirmGas = () => {
@@ -645,7 +638,7 @@ const GasSelectorHeader = ({
     setLoadingGasEstimated(true);
   }, [customGas]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (isReady || !isFirstTimeLoad) {
         if (customGas === undefined) return;
@@ -666,8 +659,8 @@ const GasSelectorHeader = ({
         });
       }
     },
-    200,
-    [customGas]
+    [customGas],
+    { wait: 200 }
   );
 
   useEffect(() => {

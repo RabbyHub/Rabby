@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Input, Button, InputRef } from 'antd';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import { useWallet } from 'ui/utils';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Popup, PageHeader } from 'ui/component';
@@ -64,7 +64,13 @@ const EditRPCModal = ({
     }
   };
 
-  useDebounce(rpcValidation, 200, [rpcUrl]);
+  useDebounceEffect(
+    () => {
+      rpcValidation();
+    },
+    [rpcUrl],
+    { wait: 200 }
+  );
 
   useEffect(() => {
     if (rpcInfo) {

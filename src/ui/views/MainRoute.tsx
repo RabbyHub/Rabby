@@ -40,7 +40,6 @@ import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
-import RabbyPoints from './RabbyPoints';
 import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
 import InputMnemonics from './ImportMnemonics/InputMnemonics';
 import ImportHardware from './ImportHardware';
@@ -68,7 +67,6 @@ import { NewUserImportKeystone } from './NewUserImport/ImportKeystone';
 import { NewUserImportOneKey } from './NewUserImport/ImportOnekey';
 import { BackupSeedPhrase } from './NewUserImport/BackupSeedPhrase';
 import { ImportOrCreatedSuccess } from './NewUserImport/Success';
-import { ReadyToUse } from './NewUserImport/ReadyToUse';
 import { NewUserImportHardware } from './NewUserImport/ImportHardWare';
 import { KEYRING_CLASS } from '@/constant';
 import {
@@ -213,10 +211,6 @@ const Main = () => {
           <ImportOrCreatedSuccess />
         </Route>
 
-        <Route exact path="/new-user/ready">
-          <ReadyToUse />
-        </Route>
-
         <Route exact path="/password">
           <CreatePassword />
         </Route>
@@ -267,9 +261,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/popup/import/success">
           <ImportSuccess isPopup />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/success">
-          <ImportSuccess />
         </PrivateRoute>
 
         <PrivateRoute exact path="/add-address/new-address">
@@ -397,9 +388,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
-        </PrivateRoute>
-        <PrivateRoute exact path="/rabby-points">
-          <RabbyPoints />
         </PrivateRoute>
         <PrivateRoute path="/ecology/:chainId">
           <Ecology />

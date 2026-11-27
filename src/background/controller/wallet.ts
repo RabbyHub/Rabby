@@ -40,7 +40,6 @@ import {
   unTriggerTxCounter,
   securityEngineService,
   transactionBroadcastWatchService,
-  RabbyPointsService,
   HDKeyRingLastAddAddrTimeService,
   bridgeService,
   gasAccountService,
@@ -2860,11 +2859,6 @@ export class WalletController extends BaseController {
         throw new Error(`Unknown persisted store: ${String(key)}`);
     }
   };
-
-  setRedirect2Points = RabbyPointsService.setRedirect2Points;
-  setRabbyPointsSignature = RabbyPointsService.setSignature;
-  getRabbyPointsSignature = RabbyPointsService.getSignature;
-  clearRabbyPointsSignature = RabbyPointsService.clearSignature;
 
   addHDKeyRingLastAddAddrTime = HDKeyRingLastAddAddrTimeService.addUnixRecord;
   getHDKeyRingLastAddAddrTimeStore = HDKeyRingLastAddAddrTimeService.getStore;
@@ -6524,64 +6518,6 @@ export class WalletController extends BaseController {
     },
     { timeout: 10000, maxSize: 0 }
   ).fn;
-
-  rabbyPointVerifyAddress = async (params?: {
-    code?: string;
-    claimSnapshot?: boolean;
-    claimNumber?: number;
-    // text: string;
-  }) => {
-    const { code, claimSnapshot } = params || {};
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error(t('background.error.noCurrentAccount'));
-    let claimText = '';
-    let verifyText = '';
-
-    if (claimSnapshot) {
-      claimText = (
-        await wallet.openapi.getRabbyClaimTextV2({
-          id: account?.address,
-          invite_code: code,
-        })
-      )?.text; //`${account?.address} Claims Rabby Points`;
-    } else {
-      verifyText = (
-        await wallet.openapi.getRabbySignatureTextV2({
-          id: account?.address,
-        })
-      )?.text; //`Rabby Wallet wants you to sign in with your address:\n${account?.address}`;
-    }
-
-    const msg = `0x${Buffer.from(
-      claimSnapshot ? claimText : verifyText,
-      'utf-8'
-    ).toString('hex')}`;
-
-    const signature = await this.sendRequest<string>({
-      method: 'personal_sign',
-      params: [msg, account.address],
-    });
-
-    this.setRabbyPointsSignature(account.address, signature);
-    if (claimSnapshot) {
-      try {
-        await wallet.openapi.claimRabbyPointsSnapshotV2({
-          id: account?.address,
-          invite_code: code,
-          signature,
-        });
-      } catch (error) {
-        console.error(error);
-      }
-    } else {
-      this.setPageStateCache({
-        path: '/rabby-points',
-        params: {},
-        states: {},
-      });
-    }
-    return signature;
-  };
 
   private async executeGasAccountLogin(
     account: Account,

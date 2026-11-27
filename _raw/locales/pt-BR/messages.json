@@ -1346,7 +1346,6 @@
           "connectedDapp": "Dapp Conectado",
           "gasTopUp": "Recarga de gás",
           "searchDapps": "Pesquisar Dapps",
-          "rabbyPoints": "Rabby Points",
           "ecosystem": "Ecossistema"
         },
         "settings": {
@@ -2521,61 +2520,6 @@
       "searchPlaceholder": "Pesquisar nome do Dapp",
       "searchButton": "Buscar"
     },
-    "rabbyPoints": {
-      "claimItem": {
-        "claim": "Reivindicar",
-        "go": "Vai",
-        "claimed": "Reivindicado",
-        "disabledTip": "Nenhum ponto a ser reivindicado agora",
-        "earnTip": "Uma vez por dia limitado. Por favor, ganhe pontos após 00:00 UTC+0"
-      },
-      "claimModal": {
-        "placeholder": "Insira o código de indicação para pontos extras (opcional)",
-        "rabbyUser": "Usuário Ativo do Rabby",
-        "referral-code": "Código de Referência",
-        "rabbyValuedUserBadge": "Distintivo de usuário valorizado da Rabby",
-        "title": "Reivindicar Pontos Iniciais",
-        "addressBalance": "Saldo da carteira",
-        "snapshotTime": "Tempo da captura: {{time}}",
-        "MetaMaskSwap": "MetaMask Swap",
-        "invalid-code": "código inválido",
-        "activeStats": "Status Ativo",
-        "walletBalance": "Saldo da carteira",
-        "claim": "Reivindicar",
-        "season2": "Temporada 2",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "cantUseOwnCode": "Você não pode usar seu próprio código de referência."
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "verify-address": "Verificar Endereço",
-          "sign": "Assinar",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Por favor, assine esta mensagem de texto para verificar que você é o proprietário deste endereço",
-          "cancel": "Cancelar"
-        },
-        "referral-code-available": "Código de indicação disponível",
-        "referral-code-already-exists": "O código de indicação já existe",
-        "referral-code-cannot-be-empty": "O código de referência não pode estar vazio",
-        "referral-code-cannot-exceed-15-characters": "O código de indicação não pode exceder 15 caracteres",
-        "my-referral-code": "Meu código de indicação",
-        "refer-a-new-user-to-get-50-points": "Indique um novo usuário para ganhar 50 pontos",
-        "confirm": "Confirmar",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Depois de definido, este código de referência é permanente e não pode ser alterado.",
-        "set-my-code": "Definir meu código",
-        "set-my-referral-code": "Definir meu código de indicação",
-        "max-15-characters-use-numbers-and-letters-only": "Máximo de 15 caracteres, use apenas números e letras."
-      },
-      "title": "Rabby Points",
-      "top-100": "Top 100",
-      "referral-code-copied": "Código de indicação copiado",
-      "earn-points": "Ganhe Pontos",
-      "share-on": "Compartilhar no",
-      "out-of-x-current-total-points": "De um total de {{total}} Pontos Distribuídos",
-      "initialPointsClaimEnded": "A reivindicação de Pontos Iniciais terminou",
-      "code-set-successfully": "Código de indicação definido com sucesso",
-      "secondRoundEnded": "🎉 A segunda rodada de Rabby Points terminou",
-      "firstRoundEnded": "🎉 A primeira rodada de Rabby Points foi encerrada"
-    },
     "customTestnet": {
       "CustomTestnetForm": {
         "nativeTokenSymbol": "Símbolo da moeda",
@@ -2618,37 +2562,6 @@
       "transactionSpeed": "Velocidade de Transação"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "earnBtn": "Em breve",
-          "migrateBtn": "Em breve",
-          "arcadeDesc": "Jogue jogos gratuitos para ganhar pontos para o airdrop S.",
-          "airdrop": "Airdrop",
-          "migrateTitle": "Migrar",
-          "arcadeBtn": "Jogar agora",
-          "migrateDesc": "→",
-          "socialsTitle": "Participe",
-          "airdropDesc": "~200 milhões S para usuários no Opera e Sonic.",
-          "airdropBtn": "Ganhe pontos",
-          "earnTitle": "Ganhar",
-          "earnDesc": "Faça stake do seu $S"
-        },
-        "points": {
-          "sonicArcadeBtn": "Comece a jogar",
-          "today": "Hoje",
-          "sonicPoints": "Sonic Points",
-          "pointsDashboard": "Painel de Pontos",
-          "shareOn": "Compartilhar no",
-          "referralCode": "Código de indicação",
-          "sonicArcade": "Sonic Arcade",
-          "referralCodeCopied": "Código de referência copiado",
-          "retry": "Tentar novamente",
-          "getReferralCode": "Obter código de indicação",
-          "errorTitle": "Não foi possível carregar pontos",
-          "pointsDashboardBtn": "Comece a ganhar pontos",
-          "errorDesc": "Houve um erro ao carregar seus pontos. Por favor, tente novamente."
-        }
-      },
       "dbk": {
         "home": {
           "mintNFTBtn": "Mint",
@@ -2931,14 +2844,10 @@
         "backupSeedPhrase": "Fazer backup da frase de recuperação"
       },
       "readyToUse": {
-        "pin": "Fixar Rabby Wallet",
         "guides": {
           "step2": "Fixar a Carteira Rabby",
           "step1": "Clique no ícone da extensão do navegador"
-        },
-        "desc": "Encontre a Rabby Wallet e fixe-a",
-        "title": "Sua carteira Rabby está pronta!",
-        "extensionTip": "Clique <1/> e depois <3/>"
+        }
       },
       "importSeedPhrase": {
         "title": "Importar frase de recuperação",

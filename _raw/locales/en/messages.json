@@ -2827,7 +2827,6 @@
           "connectedDapp": "Connected Dapps",
           "searchDapps": "Search Dapps",
           "gasTopUp": "Gas Top Up",
-          "rabbyPoints": "Rabby Points",
           "ecosystem": "Ecosystem"
         },
         "settings": {
@@ -3875,61 +3874,6 @@
       "searchPlaceholder": "Search Dapp name",
       "searchButton": "Search"
     },
-    "rabbyPoints": {
-      "title": "Rabby Points",
-      "out-of-x-current-total-points": "Out of {{total}} Total Distributed Points",
-      "share-on": "Share on",
-      "referral-code-copied": "Referral code copied",
-      "earn-points": "Earn Points",
-      "top-100": "Top 100",
-      "claimItem": {
-        "claim": "Claim",
-        "disabledTip": "No points to be claimed now",
-        "go": "Go",
-        "earnTip": "Once a day limit. Please earn points after 00:00 UTC+0",
-        "claimed": "Claimed"
-      },
-      "claimModal": {
-        "title": "Claim Initial Points",
-        "snapshotTime": "Snapshot time: {{time}}",
-        "placeholder": "Enter Referral Code for extra points (optional)",
-        "claim": "Claim",
-        "addressBalance": "Wallet balance",
-        "MetaMaskSwap": "MetaMask Swap",
-        "rabbyUser": "Rabby Active User",
-        "rabbyValuedUserBadge": "Rabby Valued User Badge",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "walletBalance": "Wallet Balance",
-        "activeStats": "Active Status",
-        "referral-code": "Referral Code",
-        "invalid-code": "invalid code",
-        "cantUseOwnCode": "You cannot use your own referral code.",
-        "season2": "Season 2"
-      },
-      "referralCode": {
-        "referral-code-cannot-be-empty": "Referral code cannot be empty",
-        "referral-code-cannot-exceed-15-characters": "Referral code cannot exceed 15 characters",
-        "referral-code-already-exists": "Referral code already exists",
-        "referral-code-available": "Referral code available",
-        "my-referral-code": "My referral code",
-        "refer-a-new-user-to-get-50-points": "Refer a new user to get 50 points",
-        "set-my-code": "Set my code",
-        "set-my-referral-code": "Set my referral code",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Once set, this referral code is permanent and cannot be changed.",
-        "max-15-characters-use-numbers-and-letters-only": "Max 15 characters, use numbers and letters only.",
-        "confirm": "Confirm",
-        "verifyAddressModal": {
-          "verify-address": "Verify Address",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Please sign this text message to verify that you are the owner of this address",
-          "cancel": "Cancel",
-          "sign": "Sign"
-        }
-      },
-      "code-set-successfully": "Referral code set successfully",
-      "initialPointsClaimEnded": "Initial Points claim ended",
-      "firstRoundEnded": "🎉 The first round of Rabby Points has ended",
-      "secondRoundEnded": "🎉 The second round of Rabby Points has ended"
-    },
     "customTestnet": {
       "title": "Custom Network",
       "desc": "Rabby cannot verify the security of custom networks. Please add trusted networks only.",
@@ -3972,37 +3916,6 @@
       "transactionSpeed": "Transaction Speed"
     },
     "ecology": {
-      "sonic": {
-        "home": {
-          "airdrop": "Airdrop",
-          "airdropDesc": "~200 million S to users on Opera and Sonic.",
-          "airdropBtn": "Earn points",
-          "arcadeDesc": "Play free games to earn points for the S airdrop.",
-          "arcadeBtn": "Play now",
-          "migrateTitle": "Migrate",
-          "migrateDesc": "→",
-          "migrateBtn": "Coming soon",
-          "earnTitle": "Earn",
-          "earnDesc": "Stake your $S",
-          "earnBtn": "Coming soon",
-          "socialsTitle": "Get Involved"
-        },
-        "points": {
-          "sonicPoints": "Sonic Points",
-          "referralCode": "Referral code",
-          "referralCodeCopied": "Referral code copied",
-          "today": "Today",
-          "shareOn": "Share on",
-          "sonicArcade": "Sonic Arcade",
-          "sonicArcadeBtn": "Start playing",
-          "pointsDashboard": "Points Dashboard",
-          "pointsDashboardBtn": "Start earning points",
-          "errorTitle": "Unable to load points",
-          "errorDesc": "There was an error loading your points. Please try again.",
-          "retry": "Retry",
-          "getReferralCode": "Get referral code"
-        }
-      },
       "dbk": {
         "home": {
           "bridge": "Bridge To DBK Chain",
@@ -4285,10 +4198,6 @@
         "backupSeedPhrase": "Backup Seed Phrase"
       },
       "readyToUse": {
-        "title": "Your Rabby Wallet is Ready !",
-        "desc": "Find Rabby Wallet and Pin it",
-        "pin": "Pin Rabby Wallet",
-        "extensionTip": "Click <1/> and then <3/>",
         "guides": {
           "step1": "Click the browser extension icon",
           "step2": "Pin Rabby Wallet"
