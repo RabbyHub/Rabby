@@ -1346,7 +1346,6 @@
           "connectedDapp": "接続されたDapp",
           "gasTopUp": "ガス補充",
           "searchDapps": "Dappsを検索",
-          "rabbyPoints": "Rabby Points",
           "ecosystem": "エコシステム"
         },
         "settings": {
@@ -2520,61 +2519,6 @@
       "emptySearch": "Dappが見つかりませんでした",
       "searchButton": "検索",
       "searchPlaceholder": "Dapp名を検索"
-    },
-    "rabbyPoints": {
-      "claimItem": {
-        "go": "行く",
-        "claim": "受け取る",
-        "claimed": "受取済み",
-        "disabledTip": "現在は獲得できるポイントがありません",
-        "earnTip": "1日1回の制限があります。00:00 UTC+0以降にポイントを獲得してください。"
-      },
-      "claimModal": {
-        "addressBalance": "ウォレット残高",
-        "claim": "受け取る",
-        "rabbyUser": "Rabby アクティブユーザー",
-        "placeholder": "リファラルコードを入力して追加ポイントを獲得 (オプション)",
-        "MetaMaskSwap": "MetaMask Swap",
-        "snapshotTime": "スナップショット時間: {{time}}",
-        "title": "初期ポイントを申請する",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "season2": "シーズン2",
-        "rabbyValuedUserBadge": "Rabby優良ユーザーバッジ",
-        "walletBalance": "ウォレット残高",
-        "cantUseOwnCode": "自分の紹介コードを使用することはできません。",
-        "referral-code": "紹介コード",
-        "activeStats": "アクティブステータス",
-        "invalid-code": "無効なコード"
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "verify-address": "アドレスを確認",
-          "cancel": "キャンセル",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "このアドレスの所有者であることを確認するために、このテキストメッセージに署名してください。",
-          "sign": "署名"
-        },
-        "confirm": "確認",
-        "referral-code-already-exists": "紹介コードは既に存在します",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "設定されると、この紹介コードは永久的で変更できません。",
-        "my-referral-code": "私の紹介コード",
-        "refer-a-new-user-to-get-50-points": "新しいユーザーを紹介して50ポイントを獲得",
-        "set-my-code": "マイコードを設定する",
-        "referral-code-available": "紹介コード利用可能",
-        "referral-code-cannot-be-empty": "紹介コードを空にすることはできません。",
-        "set-my-referral-code": "リファーラルコードを設定する",
-        "referral-code-cannot-exceed-15-characters": "紹介コードは15文字を超えることはできません",
-        "max-15-characters-use-numbers-and-letters-only": "最大 15 文字、数字と文字のみを使用してください。"
-      },
-      "top-100": "トップ 100",
-      "title": "Rabby Points",
-      "share-on": "シェアする",
-      "out-of-x-current-total-points": "{{total}} 点数の合計中",
-      "earn-points": "ポイントを獲得",
-      "referral-code-copied": "紹介コードをコピーしました。",
-      "initialPointsClaimEnded": "初期ポイントの受取期間は終了しました",
-      "firstRoundEnded": "🎉 第1回のRabby Pointsは終了しました",
-      "secondRoundEnded": "🎉 Rabby Points の第2ラウンドが終了しました",
-      "code-set-successfully": "リファーラルコードが正常に設定されました"
     },
     "customTestnet": {
       "CustomTestnetForm": {

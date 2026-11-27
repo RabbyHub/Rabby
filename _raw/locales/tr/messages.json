@@ -1346,7 +1346,6 @@
           "connectedDapp": "Bağlı Dapp'ler",
           "gasTopUp": "Gas yükleme",
           "searchDapps": "Dapp'leri Ara",
-          "rabbyPoints": "Rabby Puanları",
           "ecosystem": "Ekosistem"
         },
         "settings": {
@@ -2523,61 +2522,6 @@
       "listBy": "Dapp listelendi tarafından",
       "searchButton": "Ara",
       "searchPlaceholder": "Dapp adını ara"
-    },
-    "rabbyPoints": {
-      "claimItem": {
-        "claimed": "Talep edildi",
-        "disabledTip": "Şu anda talep edilecek puan yok",
-        "go": "Gitmesini",
-        "claim": "Talep Et",
-        "earnTip": "Günde bir kez sınır. Lütfen puanları 00:00 UTC+0'dan sonra kazanın."
-      },
-      "claimModal": {
-        "rabbyValuedUserBadge": "Rabby Değerli Kullanıcı Rozeti",
-        "invalid-code": "geçersiz kod",
-        "claim": "Talep",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "cantUseOwnCode": "Kendi referral kodunuzu kullanamazsınız.",
-        "title": "Başlangıç Puanlarını Talep Edin",
-        "addressBalance": "Cüzdan bakiyesi",
-        "walletBalance": "Cüzdan Bakiyesi",
-        "MetaMaskSwap": "MetaMask Swap",
-        "activeStats": "Aktif Durum",
-        "season2": "Sezon 2",
-        "rabbyUser": "Rabby Aktif Kullanıcı",
-        "placeholder": "Ekstra puanlar için Tavsiye Kodunu girin (isteğe bağlı)",
-        "snapshotTime": "Anlık görüntü zamanı: {{time}}",
-        "referral-code": "Referans Kodu"
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "cancel": "İptal",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Lütfen bu adresin sahibi olduğunuzu doğrulamak için bu metin mesajını imzalayın",
-          "sign": "İmzala",
-          "verify-address": "Adres Doğrula"
-        },
-        "referral-code-already-exists": "Referans kodu zaten mevcut",
-        "referral-code-cannot-exceed-15-characters": "Referans kodu 15 karakteri geçemez",
-        "referral-code-cannot-be-empty": "Referans kodu boş olamaz",
-        "refer-a-new-user-to-get-50-points": "Yeni bir kullanıcı yönlendirerek 50 puan kazanın",
-        "set-my-code": "Kodumu ayarla",
-        "max-15-characters-use-numbers-and-letters-only": "Maksimum 15 karakter, sadece rakam ve harf kullanın.",
-        "set-my-referral-code": "Referans kodumu ayarla",
-        "referral-code-available": "Referans kodu mevcut",
-        "my-referral-code": "Referans kodum",
-        "confirm": "Onayla",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Bir kez ayarlandığında, bu referans kodu kalıcıdır ve değiştirilemez."
-      },
-      "earn-points": "Puan Kazanın",
-      "referral-code-copied": "Referans kodu kopyalandı",
-      "top-100": "İlk 100",
-      "title": "Rabby Puanları",
-      "share-on": "Paylaş",
-      "out-of-x-current-total-points": "Toplam Dağıtılan Puanlardan {{total}}",
-      "secondRoundEnded": "🎉 Rabby Points ikinci turu sona erdi",
-      "firstRoundEnded": "🎉 İlk Rabby Puanı turu sona erdi",
-      "initialPointsClaimEnded": "İlk Puanlar talep süresi sona erdi",
-      "code-set-successfully": "Referans kodu başarıyla ayarlandı"
     },
     "customTestnet": {
       "CustomTestnetForm": {

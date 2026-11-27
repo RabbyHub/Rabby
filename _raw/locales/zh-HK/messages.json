@@ -262,7 +262,6 @@
           "manageAddress": "管理地址",
           "signatureRecord": "簽名記錄",
           "searchDapps": "搜尋 Dapp",
-          "rabbyPoints": "Rabby 積分",
           "gasTopUp": "Gas 充值",
           "ecosystem": "生態系統"
         },
@@ -2438,61 +2437,6 @@
       "searchPlaceholder": "搜尋 Dapp 名稱",
       "foundDapps": "找到 <2>{{count}}</2> 個 Dapp",
       "totalDapps": "共 <2>{{count}}</2> 個 Dapp"
-    },
-    "rabbyPoints": {
-      "title": "Rabby 積分",
-      "out-of-x-current-total-points": "共分發 {{total}} 積分",
-      "share-on": "分享至",
-      "referral-code-copied": "推薦碼已複製",
-      "earn-points": "賺取積分",
-      "top-100": "前 100 名",
-      "claimItem": {
-        "claim": "領取",
-        "disabledTip": "暫無可領取的積分",
-        "go": "前往",
-        "earnTip": "每天僅限一次。請在 UTC+0 00:00 後再次賺取積分",
-        "claimed": "已領取"
-      },
-      "claimModal": {
-        "title": "領取初始積分",
-        "snapshotTime": "快照時間：{{time}}",
-        "placeholder": "輸入推薦碼以獲得額外積分（選填）",
-        "claim": "領取",
-        "addressBalance": "錢包餘額",
-        "MetaMaskSwap": "MetaMask 兌換",
-        "rabbyUser": "Rabby 活躍用戶",
-        "rabbyValuedUserBadge": "Rabby 重要用戶徽章",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "walletBalance": "錢包餘額",
-        "activeStats": "活躍狀態",
-        "referral-code": "推薦碼",
-        "invalid-code": "無效的推薦碼",
-        "cantUseOwnCode": "你不能使用自己的推薦碼。",
-        "season2": "第 2 季"
-      },
-      "referralCode": {
-        "referral-code-cannot-be-empty": "推薦碼不能為空",
-        "referral-code-cannot-exceed-15-characters": "推薦碼不能超過 15 個字元",
-        "referral-code-already-exists": "推薦碼已存在",
-        "referral-code-available": "推薦碼可用",
-        "my-referral-code": "我的推薦碼",
-        "refer-a-new-user-to-get-50-points": "推薦新用戶獲得 50 積分",
-        "set-my-code": "設定我的推薦碼",
-        "set-my-referral-code": "設定我的推薦碼",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "設定後，此推薦碼將永久不變，無法更改。",
-        "max-15-characters-use-numbers-and-letters-only": "最多 15 個字元，僅可使用數字和字母。",
-        "confirm": "確認",
-        "verifyAddressModal": {
-          "verify-address": "驗證地址",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "請簽署此文字訊息以驗證你是該地址的所有者",
-          "cancel": "取消",
-          "sign": "簽署"
-        }
-      },
-      "code-set-successfully": "推薦碼設定成功",
-      "initialPointsClaimEnded": "初始積分領取已結束",
-      "firstRoundEnded": "🎉 Rabby Points 第一輪已結束",
-      "secondRoundEnded": "🎉 Rabby Points 第二輪已結束"
     },
     "customTestnet": {
       "title": "自訂網絡",

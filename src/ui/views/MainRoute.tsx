@@ -40,7 +40,6 @@ import { KeystoneConnect } from './ImportHardware/KeystoneConnect';
 import { ImportCoboArgus } from './ImportCoboArgus/ImportCoboArgus';
 import { ImportCoinbase } from './ImportCoinbase/ImportCoinbase';
 import { DappSearchPage } from './DappSearch';
-import RabbyPoints from './RabbyPoints';
 import { ImKeyConnect } from './ImportHardware/ImKeyConnect';
 import InputMnemonics from './ImportMnemonics/InputMnemonics';
 import ImportHardware from './ImportHardware';
@@ -397,9 +396,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/nft">
           <NFTView />
-        </PrivateRoute>
-        <PrivateRoute exact path="/rabby-points">
-          <RabbyPoints />
         </PrivateRoute>
         <PrivateRoute path="/ecology/:chainId">
           <Ecology />

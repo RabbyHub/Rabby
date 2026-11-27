@@ -1344,7 +1344,6 @@
           "signatureRecord": "Signaturverlauf",
           "manageAddress": "Adressen verwalten",
           "connectedDapp": "Verbundene dApps",
-          "rabbyPoints": "Rabby Points",
           "searchDapps": "dApps durchsuchen",
           "gasTopUp": "Gas aufladen",
           "ecosystem": "Ökosystem"
@@ -2520,61 +2519,6 @@
       "expand": "Erweitern",
       "searchButton": "Suchen",
       "searchPlaceholder": "DApp-Namen suchen"
-    },
-    "rabbyPoints": {
-      "claimItem": {
-        "go": "Los",
-        "disabledTip": "Derzeit keine Punkte zu beanspruchen",
-        "claim": "Beanspruchen",
-        "claimed": "Beansprucht",
-        "earnTip": "Tägliches Limit erreicht. Nach 00:00 Uhr (UTC+0) können Sie wieder Punkte verdienen"
-      },
-      "claimModal": {
-        "rabbyValuedUserBadge": "Rabby-Badge für treue Nutzer",
-        "addressBalance": "Wallet-Guthaben",
-        "MetaMaskSwap": "MetaMask Swap",
-        "rabbyUser": "Aktiver Rabby-Nutzer",
-        "placeholder": "Geben Sie den Empfehlungscode für zusätzliche Punkte ein (optional)",
-        "claim": "Beanspruchen",
-        "snapshotTime": "Snapshot-Zeitpunkt: {{time}}",
-        "title": "Anfängliche Punkte beanspruchen",
-        "walletBalance": "Wallet-Guthaben",
-        "activeStats": "Aktivitätsstatus",
-        "season2": "Saison 2",
-        "invalid-code": "ungültiger Code",
-        "rabbyDesktopGenesisNft": "Rabby Desktop Genesis NFT",
-        "referral-code": "Empfehlungscode",
-        "cantUseOwnCode": "Sie können Ihren eigenen Empfehlungscode nicht verwenden."
-      },
-      "referralCode": {
-        "verifyAddressModal": {
-          "sign": "Unterschreiben",
-          "please-sign-this-text-message-to-verify-that-you-are-the-owner-of-this-address": "Bitte unterschreiben Sie diese Textnachricht, um zu verifizieren, dass Sie der Besitzer dieser Adresse sind.",
-          "cancel": "Abbrechen",
-          "verify-address": "Adresse überprüfen"
-        },
-        "set-my-referral-code": "Meinen Empfehlungscode festlegen",
-        "referral-code-already-exists": "Empfehlungscode existiert bereits",
-        "confirm": "Bestätigen",
-        "set-my-code": "Code festlegen",
-        "my-referral-code": "Mein Empfehlungscode",
-        "referral-code-available": "Empfehlungscode verfügbar",
-        "referral-code-cannot-be-empty": "Empfehlungscode darf nicht leer sein",
-        "once-set-this-referral-code-is-permanent-and-cannot-change": "Sobald dieser Empfehlungscode festgelegt ist, ist er dauerhaft und kann nicht mehr geändert werden.",
-        "refer-a-new-user-to-get-50-points": "Einen neuen Nutzer empfehlen und 50 Punkte erhalten",
-        "max-15-characters-use-numbers-and-letters-only": "Maximal 15 Zeichen; nur Zahlen und Buchstaben verwenden.",
-        "referral-code-cannot-exceed-15-characters": "Empfehlungscode darf 15 Zeichen nicht überschreiten"
-      },
-      "top-100": "Top 100",
-      "title": "Rabby Points",
-      "earn-points": "Punkte verdienen",
-      "share-on": "Teilen auf",
-      "referral-code-copied": "Empfehlungscode kopiert",
-      "out-of-x-current-total-points": "Von insgesamt {{total}} verteilten Punkten",
-      "firstRoundEnded": "🎉 Die erste Runde der Rabby Points ist beendet",
-      "initialPointsClaimEnded": "Die Beanspruchung der anfänglichen Punkte ist beendet",
-      "secondRoundEnded": "🎉 Die zweite Runde von Rabby Points ist beendet",
-      "code-set-successfully": "Empfehlungscode erfolgreich festgelegt"
     },
     "customTestnet": {
       "CustomTestnetForm": {
