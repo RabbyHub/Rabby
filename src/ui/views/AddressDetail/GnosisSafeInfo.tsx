@@ -14,6 +14,7 @@ import { NameAndAddress } from '@/ui/component';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import { Trans, useTranslation } from 'react-i18next';
 import { findChain } from '@/utils/chain';
+import { useShallow } from 'zustand/react/shallow';
 
 const GnosisAdminItem = ({
   accounts,
@@ -55,10 +56,12 @@ export const GnonisSafeInfo = ({
       }
     | undefined
   >(undefined);
-  const { accountsList, highlightedAddresses } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-    highlightedAddresses: s.addressManagement.highlightedAddresses,
-  }));
+  const { accountsList, highlightedAddresses } = useRabbySelector(
+    useShallow((s) => ({
+      accountsList: s.accountToDisplay.accountsList,
+      highlightedAddresses: s.addressManagement.highlightedAddresses,
+    }))
+  );
   const { value: safeInfo, error, loading } = useAsync(async () => {
     const networks = await wallet.getGnosisNetworkIds(address);
     const res = await Promise.all(

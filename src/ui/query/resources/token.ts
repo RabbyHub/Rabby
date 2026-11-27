@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import type { WalletControllerType } from '@/ui/utils/WalletContext';
+import { wallet } from '@/ui/wallet';
 import { createQueryKey } from '../queryKey';
 
 export type TokenQueryParams = {
@@ -24,10 +24,11 @@ export const tokenQueryKey = ({
     }
   );
 
-export const tokenQueryOptions = (
-  wallet: WalletControllerType,
-  { address, chainServerId, tokenId }: TokenQueryParams
-) =>
+export const tokenQueryOptions = ({
+  address,
+  chainServerId,
+  tokenId,
+}: TokenQueryParams) =>
   queryOptions({
     queryKey: tokenQueryKey({ address, chainServerId, tokenId }),
     queryFn: () => {

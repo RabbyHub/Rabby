@@ -15,9 +15,10 @@ export const TestnetChainList = ({
   onChange(id: string | null): void;
 }) => {
   const { visible } = useCommonPopupView();
-  const chainList = useRabbySelector((store) =>
-    sortBy(store.chains.testnetList, (item) => item.name)
-  );
+  const testnetList = useRabbySelector((store) => store.chains.testnetList);
+  const chainList = useMemo(() => sortBy(testnetList, (item) => item.name), [
+    testnetList,
+  ]);
   const {
     showMore,
     setShowMore,

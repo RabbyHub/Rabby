@@ -4,6 +4,7 @@ import { useRabbySelector } from '@/ui/store';
 import { useCommonPopupView } from '@/ui/utils';
 import { useQueryProjects } from '@/ui/utils/portfolio';
 import { useEffect, useMemo, useState } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 
 export const useTokenAndDefiData = ({
   selectChainId,
@@ -14,9 +15,11 @@ export const useTokenAndDefiData = ({
 }) => {
   const [lpTokenMode, setLpTokenMode] = useState(false);
 
-  const { currentAccount } = useRabbySelector((s) => ({
-    currentAccount: s.account.currentAccount,
-  }));
+  const { currentAccount } = useRabbySelector(
+    useShallow((s) => ({
+      currentAccount: s.account.currentAccount,
+    }))
+  );
 
   const { setApps } = useCommonPopupView();
 

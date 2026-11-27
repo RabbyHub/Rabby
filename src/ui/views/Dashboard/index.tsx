@@ -235,7 +235,10 @@ const Dashboard = () => {
             <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
           </div>
         </div>
-        <StablecoinSwapPopup />
+        {/* The settings sheet and the pending-approval overlay cover it. */}
+        <StablecoinSwapPopup
+          paused={settingVisible || pendingApprovalCount > 0}
+        />
         <ExtensionUpdateBanner
           key={`${pendingVersion}:${updateLevel}:${dismissedUntil}`}
           visible={showUpdateBanner && !settingVisible}

@@ -39,6 +39,7 @@ import {
 import { create, maxBy, minBy } from 'lodash';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
+import { useShallow } from 'zustand/react/shallow';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 interface SignAction {
@@ -50,9 +51,11 @@ interface SignAction {
 export const usePerpsInitial = () => {
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
-  const { accountsList } = useRabbySelector((s) => ({
-    accountsList: s.accountToDisplay.accountsList,
-  }));
+  const { accountsList } = useRabbySelector(
+    useShallow((s) => ({
+      accountsList: s.accountToDisplay.accountsList,
+    }))
+  );
   const perpsState = useRabbySelector((state) => state.perps);
   const {
     isInitialized,

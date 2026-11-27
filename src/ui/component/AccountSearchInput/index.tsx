@@ -18,16 +18,19 @@ import type { IDisplayedAccountWithBalance } from '@/ui/state/accountToDisplay';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as RcNoMatchedAddress } from '@/ui/assets/address/no-matched-addr.svg';
 import ThemeIcon from '../ThemeMode/ThemeIcon';
+import { useShallow } from 'zustand/react/shallow';
 
 function useSearchAccount(searchKeyword?: string) {
   const {
     accountsList,
     highlightedAddresses = [],
     loadingAccounts,
-  } = useRabbySelector((s) => ({
-    ...s.accountToDisplay,
-    highlightedAddresses: s.addressManagement.highlightedAddresses,
-  }));
+  } = useRabbySelector(
+    useShallow((s) => ({
+      ...s.accountToDisplay,
+      highlightedAddresses: s.addressManagement.highlightedAddresses,
+    }))
+  );
 
   const [sortedAccountsList, watchSortedAccountsList] = React.useMemo(() => {
     const restAccounts = [...accountsList];

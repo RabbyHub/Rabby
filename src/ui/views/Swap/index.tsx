@@ -11,13 +11,16 @@ import { withAccountChange } from '@/ui/utils/withAccountChange';
 import { FullscreenContainer } from '@/ui/component/FullscreenContainer';
 import { DirectSubmitProvider } from '@/ui/hooks/useMiniApprovalDirectSign';
 import { useRabbySelector } from '@/ui/store';
+import { useShallow } from 'zustand/react/shallow';
 const isTab = getUiType().isTab;
 
 const Swap = () => {
-  const { userAddress, accountType } = useRabbySelector((state) => ({
-    userAddress: state.account.currentAccount?.address || '',
-    accountType: state.account.currentAccount?.type,
-  }));
+  const { userAddress, accountType } = useRabbySelector(
+    useShallow((state) => ({
+      userAddress: state.account.currentAccount?.address || '',
+      accountType: state.account.currentAccount?.type,
+    }))
+  );
   return (
     <RefreshIdProvider key={userAddress + accountType}>
       <QuoteVisibleProvider>
