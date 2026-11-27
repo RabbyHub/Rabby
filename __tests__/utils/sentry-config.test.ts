@@ -11,6 +11,7 @@ import { getSentryConfig } from '@/utils/sentry-config';
 import { createBridgeSdkSentryEvent } from '@/utils/bridge-sdk-report';
 import { applySigningContext, attachSigningContext } from '@/utils/sentry';
 import type { SigningOperation } from '@/background/service/keyring/signing-diagnostics';
+import { markUserCancelledSigningError } from '@/background/utils/signingCancellation';
 
 const attachHardwareSigningContext = (
   error: unknown,
@@ -512,6 +513,37 @@ describe('Sentry configuration', () => {
       },
     });
   });
+
+  test.each([
+    ['drops', true],
+    ['reports', false],
+  ] as const)(
+    '%s a globally captured signing rejection (marked: %s)',
+    async (_action, marked) => {
+      const events: any[] = [];
+      const { client, scope } = createRecordingClient(events);
+      const rejection = {
+        message: 'The transaction signing request is no longer active.',
+        method: 'COMMON_HARDWARE_REJECTED',
+      };
+      if (marked) markUserCancelledSigningError(rejection);
+
+      scope.captureEvent(
+        {
+          exception: {
+            values: [{ type: 'UnhandledRejection', value: rejection.message }],
+          },
+        },
+        { originalException: rejection }
+      );
+      await client.flush(2000);
+
+      expect(
+        events.map((event) => event.exception?.values?.[0]?.value)
+      ).toEqual(marked ? [] : [rejection.message]);
+      await client.close(2000);
+    }
+  );
 
   test('keeps and deduplicates hardware HTTP failures through Sentry', async () => {
     const events: any[] = [];
