@@ -12,8 +12,8 @@ export const CheckboxV2: React.FC<{
   return (
     <div
       className={clsx(
-        'flex items-center justify-center cursor-pointer',
-        disabled ? 'cursor-not-allowed opacity-50' : '',
+        'flex items-center justify-center',
+        disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
         className
       )}
       onClick={(evt) => {

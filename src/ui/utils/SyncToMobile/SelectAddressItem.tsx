@@ -67,13 +67,13 @@ export const SelectAddressItem: React.FC<{
       <div
         className={clsx(
           'flex items-center justify-between',
-          'cursor-pointer',
-          'bg-r-neutral-card1',
           'py-[11px] px-[16px] rounded-[8px]',
-          'border border-transparent border-solid',
+          'border border-solid',
           'hover:bg-r-blue-light1 hover:border-rabby-blue-default',
-          checked && 'bg-r-blue-light1 border-rabby-blue-default',
-          disabled && 'cursor-not-allowed opacity-50',
+          checked
+            ? 'bg-r-blue-light1 border-rabby-blue-default'
+            : 'bg-r-neutral-card1 border-transparent',
+          disabled ? 'cursor-not-allowed opacity-50' : 'cursor-pointer',
           className
         )}
         onClick={handleClickItem}

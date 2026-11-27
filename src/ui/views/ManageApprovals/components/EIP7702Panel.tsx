@@ -160,13 +160,13 @@ export const EIP7702Panel: React.FC<EIP7702PanelProps> = ({
                   key={`${item.chain}-${item.delegatedAddress}`}
                   onClick={() => toggleSelected(item)}
                   className={clsx(
-                    'flex px-[11px] py-[13px] cursor-pointer items-center gap-[12px] rounded-[8px]',
+                    'flex px-[11px] py-[13px] items-center gap-[12px] rounded-[8px]',
                     'border-solid border-[1px]  hover:border-rabby-blue-default',
                     checked
                       ? 'bg-r-blue-light1 border-rabby-blue-default'
                       : 'bg-r-neutral-card1 border-transparent',
                     isAllowed
-                      ? ''
+                      ? 'cursor-pointer'
                       : 'cursor-not-allowed opacity-50 pointer-events-none'
                   )}
                 >

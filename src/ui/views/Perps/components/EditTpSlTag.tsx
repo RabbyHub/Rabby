@@ -289,9 +289,11 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
           className={clsx(
             'group inline-flex items-center justify-end gap-[5px] pl-12 pr-6 rounded-[10px]',
             'bg-rb-neutral-bg-5/50 border border-solid border-transparent',
-            'cursor-pointer hover:border-rabby-blue-default',
+            'hover:border-rabby-blue-default',
             hasPrice ? 'h-[40px]' : 'h-[20px]',
-            disableEdit && !hasPrice && 'opacity-50 cursor-not-allowed'
+            disableEdit && !hasPrice
+              ? 'opacity-50 cursor-not-allowed'
+              : 'cursor-pointer'
           )}
           onClick={handleTagClick}
         >
@@ -330,8 +332,8 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
       ) : (
         <div
           className={clsx(
-            'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px] cursor-pointer',
-            disableEdit && 'opacity-50 cursor-not-allowed'
+            'inline-flex items-center gap-[5px] px-12 py-4 pr-6 rounded-[100px]',
+            disableEdit ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
           )}
           onClick={handleTagClick}
         >
@@ -435,8 +437,10 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
 
             <div
               className={clsx(
-                'bg-r-neutral-card1 rounded-[12px] p-12 border  border-transparent border-solid',
-                inputFocused && 'border-rabby-blue-default'
+                'bg-r-neutral-card1 rounded-[12px] p-12 border border-solid',
+                inputFocused
+                  ? 'border-rabby-blue-default'
+                  : 'border-transparent'
               )}
             >
               <input
@@ -448,8 +452,10 @@ export const EditTpSlTag: React.FC<EditTpSlTagProps> = ({
                 onChange={(e) => handlePriceChange(e.target.value)}
                 placeholder="$0"
                 className={clsx(
-                  'text-24 text-rb-neutral-title-1 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
-                  priceValidation.error && 'text-r-red-default'
+                  'text-24 font-bold bg-transparent border-none p-0 w-full outline-none focus:outline-none',
+                  priceValidation.error
+                    ? 'text-r-red-default'
+                    : 'text-rb-neutral-title-1'
                 )}
                 style={{
                   boxShadow: 'none',

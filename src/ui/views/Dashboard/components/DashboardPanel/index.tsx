@@ -996,8 +996,8 @@ export const DashboardPanel: React.FC<{ onSettingClick?(): void }> = ({
         <div
           ref={scrollbarTrackRef}
           className={clsx(
-            'absolute right-0 top-[6px] h-[80px] cursor-pointer select-none',
-            isScrollbarDragging && 'cursor-grabbing'
+            'absolute right-0 top-[6px] h-[80px] select-none',
+            isScrollbarDragging ? 'cursor-grabbing' : 'cursor-pointer'
           )}
           style={{
             touchAction: 'none',
