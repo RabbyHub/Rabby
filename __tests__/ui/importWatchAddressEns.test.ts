@@ -32,7 +32,7 @@ const history = {
   goBack: jest.fn(),
   replace: jest.fn(),
 };
-const scanListeners = new Set<(data: { address: string }) => void>();
+let qrScanSuccess: ((data: string) => void) | undefined;
 let formInstance: FormInstance;
 
 // Keep the real Form store, watchers and field updates while excluding the
@@ -79,11 +79,15 @@ function loadImportWatchAddress() {
     },
     'react-router-dom': { useHistory: () => history },
     'react-i18next': { useTranslation: () => ({ t: (key: string) => key }) },
-    'ui/component/QRCodeReader': Empty,
+    'ui/component/QRCodeReader': ({ onSuccess }: any) => {
+      qrScanSuccess = onSuccess;
+      return null;
+    },
     '@ethereumjs/util': { isValidAddress },
     'ui/component': {
       StrayPageWithButton: TestPage,
-      Popup: Empty,
+      Popup: ({ children }: any) =>
+        React.createElement(React.Fragment, null, children),
       Modal: Empty,
     },
     'ui/utils': {
@@ -92,7 +96,6 @@ function loadImportWatchAddress() {
     },
     'ui/utils/webapi': { openInternalPageInTab: jest.fn() },
     consts: {
-      EVENTS: { WALLETCONNECT: { SCAN_ACCOUNT: 'scan-account' } },
       KEYRING_CLASS: { WATCH: 'Watch Address' },
     },
     '@/constant/ui': {
@@ -106,12 +109,6 @@ function loadImportWatchAddress() {
     clsx: () => '',
     'ui/utils/useRepeatImportConfirm': {
       useRepeatImportConfirm: () => ({ show: jest.fn(), contextHolder: null }),
-    },
-    '@/eventBus': {
-      addEventListener: (_event: string, listener: any) =>
-        scanListeners.add(listener),
-      removeEventListener: (_event: string, listener: any) =>
-        scanListeners.delete(listener),
     },
     '@/utils': { safeJSONParse: JSON.parse },
     '@/ui/hooks/useEnsInputResolver': { useEnsInputResolver },
@@ -165,7 +162,7 @@ describe('watch address ENS input', () => {
     jest.clearAllMocks();
     mockResolve.mockReset();
     wallet.getPageStateCache.mockResolvedValue(null);
-    scanListeners.clear();
+    qrScanSuccess = undefined;
     (globalThis as any).IS_REACT_ACT_ENVIRONMENT = true;
     container = document.createElement('div');
     document.body.appendChild(container);
@@ -242,7 +239,7 @@ describe('watch address ENS input', () => {
   });
 
   it.each([ADDRESS_B, ` ${ADDRESS_B} `])(
-    'invalidates an in-flight lookup when the scan event supplies %p',
+    'invalidates an in-flight lookup when a QR scan supplies %p',
     async (scannedAddress) => {
       const pending = deferred<{ addr: string; name: string } | null>();
       mockResolve.mockReturnValue(pending.promise);
@@ -250,11 +247,7 @@ describe('watch address ENS input', () => {
       await typeAddress('alice.eth');
       await startLookup();
 
-      await act(async () => {
-        scanListeners.forEach((listener) =>
-          listener({ address: scannedAddress })
-        );
-      });
+      await act(async () => qrScanSuccess!(scannedAddress));
       await act(async () =>
         pending.resolve({ addr: ADDRESS_A, name: 'alice.eth' })
       );

@@ -39,7 +39,6 @@ import {
 import { create, maxBy, minBy } from 'lodash';
 import { useEnterPassphraseModal } from '@/ui/hooks/useEnterPassphraseModal';
 import { typedDataSignatureStore } from '@/ui/component/MiniSignV2';
-import { useShallow } from 'zustand/react/shallow';
 type SignActionType = 'approveAgent' | 'approveBuilderFee';
 
 interface SignAction {
@@ -47,93 +46,6 @@ interface SignAction {
   type: SignActionType;
   signature: string;
 }
-
-export const usePerpsInitial = () => {
-  const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
-  const { accountsList } = useRabbySelector(
-    useShallow((s) => ({
-      accountsList: s.accountToDisplay.accountsList,
-    }))
-  );
-  const perpsState = useRabbySelector((state) => state.perps);
-  const {
-    isInitialized,
-    currentPerpsAccount,
-    isLogin,
-    accountSummary,
-  } = perpsState;
-
-  const safeCheckBuilderFee = useMemoizedFn(async () => {
-    try {
-      const sdk = getPerpsSDK();
-      const res = await sdk.info.getMaxBuilderFee(
-        PERPS_BUILD_FEE_RECEIVE_ADDRESS
-      );
-      if (!res && currentPerpsAccount?.address) {
-        logout(currentPerpsAccount?.address);
-        wallet.createPerpsAgentWallet(currentPerpsAccount?.address);
-        console.error('Failed to set builder fee');
-        capturePerpsError('set builder fee error, no max builder fee', null, {
-          accountType: currentPerpsAccount?.type,
-        });
-      }
-    } catch (error) {
-      console.error('Failed to set builder fee:', error);
-    }
-  });
-
-  const logout = useMemoizedFn((address: string) => {
-    dispatch.perps.logout();
-    wallet.setPerpsCurrentAccount(null);
-    wallet.setSendApproveAfterDeposit(address, []);
-  });
-
-  const positionAndOpenOrders = useMemo(() => {
-    if (!perpsState.clearinghouseState || !perpsState.openOrders) {
-      return [];
-    }
-
-    return perpsState.clearinghouseState.assetPositions.map((position) => {
-      return {
-        ...position,
-        openOrders: perpsState.openOrders.filter(
-          (item) => item.coin === position.position.coin
-        ),
-      };
-    });
-  }, [perpsState.clearinghouseState, perpsState.openOrders]);
-
-  const perpsPositionInfo = useMemo(() => {
-    if (
-      !isLogin ||
-      !positionAndOpenOrders ||
-      positionAndOpenOrders.length === 0
-    ) {
-      return {
-        pnl: 0,
-        show: false,
-      };
-    }
-
-    const pnl = positionAndOpenOrders.reduce((acc, order) => {
-      return acc + Number(order.position.unrealizedPnl);
-    }, 0);
-
-    return {
-      pnl,
-      show: true,
-    };
-  }, [positionAndOpenOrders]);
-
-  return {
-    accountSummary,
-    isLogin,
-    safeCheckBuilderFee,
-    perpsPositionInfo,
-    positionAndOpenOrders,
-  };
-};
 
 export const usePerpsState = ({
   setDeleteAgentModalVisible,

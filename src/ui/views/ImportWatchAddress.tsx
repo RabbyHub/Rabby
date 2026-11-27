@@ -8,7 +8,7 @@ import { isValidAddress } from '@ethereumjs/util';
 import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import { EVENTS, KEYRING_CLASS } from 'consts';
+import { KEYRING_CLASS } from 'consts';
 import { ReactComponent as RcIconArrowDown } from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
 import { UI_TYPE } from '@/constant/ui';
@@ -16,7 +16,6 @@ import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import IconBack from 'ui/assets/icon-back.svg';
 import { useRepeatImportConfirm } from 'ui/utils/useRepeatImportConfirm';
-import eventBus from '@/eventBus';
 import { safeJSONParse } from '@/utils';
 import { useEnsInputResolver } from '@/ui/hooks/useEnsInputResolver';
 import WatchLogo from 'ui/assets/watch-only-hero.svg';
@@ -108,24 +107,12 @@ const ImportWatchAddress: React.FC<{
     },
     [ensResult, handleConfirmENS]
   );
-  const handleScanAccount = useCallback(
-    (data) => setInputAddress(data.address),
-    [setInputAddress]
-  );
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
-    eventBus.addEventListener(
-      EVENTS.WALLETCONNECT.SCAN_ACCOUNT,
-      handleScanAccount
-    );
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      eventBus.removeEventListener(
-        EVENTS.WALLETCONNECT.SCAN_ACCOUNT,
-        handleScanAccount
-      );
     };
-  }, [handleKeyDown, handleScanAccount]);
+  }, [handleKeyDown]);
 
   const handleScanQRCodeSuccess = (data) => {
     setInputAddress(data);

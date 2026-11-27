@@ -552,14 +552,6 @@ export const getTempoUserFeeTokenPreference = async (params: {
   return null;
 };
 
-export const getTempoFeeTokenAddress = async (params: {
-  wallet: WalletControllerType;
-  userAddress?: string | null;
-  chainServerId?: string | null;
-}) => {
-  return (await getTempoUserFeeTokenPreference(params)) || TEMPO_PATH_USD_TOKEN;
-};
-
 const readErc20Balance = async (params: {
   wallet: WalletControllerType;
   tokenAddress: string;
@@ -1118,15 +1110,6 @@ export const resolveTempoPreferredFeeTokenId = (params: {
   }
 
   return TEMPO_PATH_USD_TOKEN;
-};
-
-export const findTempoFeeTokenOption = (
-  options: TempoFeeTokenOption[],
-  tokenId?: string | null
-) => {
-  if (!tokenId) return undefined;
-
-  return options.find((item) => isSameTokenId(item.id, tokenId));
 };
 
 const findEnabledTempoFeeTokenOption = (

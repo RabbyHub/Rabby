@@ -29,7 +29,6 @@ import { normalizeSafeOperation } from '@/utils/gnosis';
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
 export const TransactionConfirmedEvent = 'TransactionConfirmed';
-export const TransactionReadyForExecEvent = 'TransactionReadyForExec';
 
 interface SignTransactionOptions {
   signatures: string[];

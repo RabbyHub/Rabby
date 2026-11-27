@@ -14,10 +14,6 @@ export const normalizeGasAccountBridgeSupportTokenList = (
   wallet_tokens: value?.wallet_tokens || [],
 });
 
-export const hasGasAccountBridgeSupportTokens = (
-  value?: GasAccountBridgeSupportTokenList | null
-) => !!(value?.hyperliquid_tokens?.length || value?.wallet_tokens?.length);
-
 export const isGasAccountBridgeSupportTokenListFresh = (updatedAt = 0) =>
   updatedAt > 0 &&
   Date.now() - updatedAt < GAS_ACCOUNT_BRIDGE_SUPPORT_CACHE_TTL;

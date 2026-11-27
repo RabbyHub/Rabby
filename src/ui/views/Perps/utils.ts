@@ -5,7 +5,6 @@ import { Meta, MarginTable } from '@rabby-wallet/hyperliquid-sdk';
 import { PerpTopTokenV3 } from '@rabby-wallet/rabby-api/dist/types';
 import {
   PERPS_MAX_NTL_VALUE,
-  PERPS_POSITION_RISK_LEVEL,
   PERPS_BUILD_FEE_RECEIVE_ADDRESS,
   PerpsQuoteAsset,
   COLLATERAL_TOKEN_TO_QUOTE,
@@ -215,18 +214,6 @@ export const calculateDistanceToLiquidation = (
   return Math.abs((liqPx - markPx) / markPx);
 };
 
-export const getRiskLevel = (
-  distanceLiquidation: number
-): PERPS_POSITION_RISK_LEVEL => {
-  if (distanceLiquidation <= 0.03) {
-    return PERPS_POSITION_RISK_LEVEL.DANGER;
-  } else if (distanceLiquidation > 0.03 && distanceLiquidation < 0.08) {
-    return PERPS_POSITION_RISK_LEVEL.WARNING;
-  } else {
-    return PERPS_POSITION_RISK_LEVEL.SAFE;
-  }
-};
-
 export const formatPercent = (value: number, decimals = 8) => {
   return `${(value * 100).toFixed(decimals)}%`;
 };
@@ -246,15 +233,6 @@ export const calTransferMarginRequired = (
     0.1 * nationalValue
   );
   return transferMarginRequired;
-};
-
-export const validateTradeAmount = (value: string, szDecimals: number) => {
-  if (!value || value === '0' || value === '0.') return true;
-};
-
-export const formatTradeAmount = (value: string, szDecimals: number) => {
-  if (!value || value === '0' || value === '0.') return '0';
-  return value;
 };
 
 export const checkPerpsReference = async ({

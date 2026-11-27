@@ -27,11 +27,3 @@ export const ChainIcon = ({ chain, className, style }: ChainIconProps) => {
     />
   );
 };
-
-export const getChainName = (chain: string) => {
-  if (!chain) {
-    return null;
-  }
-  const data = findChain({ serverId: chain });
-  return data?.name || chain;
-};

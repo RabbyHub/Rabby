@@ -61,16 +61,6 @@ export class AbortedDirectSubmitError extends Error {
   }
 }
 
-export const isAbortedDirectSubmitError = (e: any) => {
-  if (
-    e instanceof AbortedDirectSubmitError &&
-    e.code === AbortedDirectSubmitErrorCode
-  ) {
-    return true;
-  }
-  return false;
-};
-
 export const useStartDirectSigning = () => {
   const setDirectSigning = useSetDirectSigning();
 

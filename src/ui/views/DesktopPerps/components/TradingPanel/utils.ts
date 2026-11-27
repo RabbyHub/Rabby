@@ -1,4 +1,3 @@
-import { formatUsdValue } from '@/ui/utils/number';
 import { BigNumber } from 'bignumber.js';
 import type { PositionSize } from '../../types';
 
@@ -21,20 +20,6 @@ export const calcAssetNotionalByAmount = (
     .multipliedBy(new BigNumber(markPrice))
     .toFixed(2, BigNumber.ROUND_DOWN);
   return notional;
-};
-
-export const calculateTargetPrice = (
-  pnL: number,
-  direction: 'Long' | 'Short',
-  size: number,
-  markPrice: number
-) => {
-  const priceDiff = pnL / size;
-  return direction === 'Long' ? markPrice + priceDiff : markPrice - priceDiff;
-};
-
-export const formatPnL = (pnL: number) => {
-  return pnL >= 0 ? `+${formatUsdValue(pnL)}` : formatUsdValue(pnL);
 };
 
 export const calculatePnL = (

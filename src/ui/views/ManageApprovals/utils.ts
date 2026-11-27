@@ -4,7 +4,6 @@ import {
   NFTApproval,
   NFTApprovalContract,
   Spender,
-  TokenApproval,
 } from '@rabby-wallet/rabby-api/dist/types';
 import { Chain } from '@debank/common';
 
@@ -70,20 +69,6 @@ export function checkCompareContractItem(
 
 export function encodeRevokeItemIndex(approval: ApprovalItem) {
   return `${approval.chain}:${approval.id}`;
-}
-
-export function parseContractApprovalListItem(
-  spender: ContractApprovalItem['list'][number]
-) {
-  // NFTApproval | NFTApprovalContract | TokenApproval
-  const id =
-    (spender as NFTApproval | TokenApproval).id ||
-    (spender as NFTApprovalContract).spender.id;
-
-  return {
-    id,
-    chain: spender.chain,
-  };
 }
 
 export function encodeApprovalKey(approvalItem: ApprovalItem) {
@@ -271,33 +256,6 @@ export function parseApprovalSpenderSelection<T extends TParseMaps>(
   return preset;
 }
 
-export function querySelectedContractSpender(
-  assetRevokeMap: Record<string, ApprovalSpenderItemToBeRevoked>,
-  approval: ContractApprovalItem,
-  contract?: ContractApprovalItem['list'][number] | null
-) {
-  if (!contract) return null;
-  const key = encodeApprovalSpenderKey(approval, contract, true);
-  return key && assetRevokeMap[key]
-    ? { spenderKey: key, spender: assetRevokeMap[key] }
-    : null;
-}
-
-export function querySelectedAssetSpender(
-  assetRevokeMap: Record<string, ApprovalSpenderItemToBeRevoked>,
-  spender?: AssetApprovalSpender | null
-) {
-  if (!spender || !spender.$assetContract || !spender.$assetToken) return null;
-  const key = encodeApprovalSpenderKey(
-    spender.$assetContract,
-    spender.$assetToken,
-    spender
-  );
-  return key && assetRevokeMap[key]
-    ? { spenderKey: key, spender: assetRevokeMap[key] }
-    : null;
-}
-
 export function getAbiType<
   T extends SpendersHost = ApprovalItem['list'][number]
 >(spenderHost: T) {
@@ -413,25 +371,6 @@ export function getFinalRiskInfo(contract: ContractApprovalItem) {
     isDanger,
     isWarning,
   };
-}
-export function sortContractListAsTable(
-  a: ContractApprovalItem,
-  b: ContractApprovalItem
-) {
-  const checkResult = checkCompareContractItem(a, b);
-  // descending to keep risk-first-return-value
-  if (checkResult.shouldEarlyReturn) return -checkResult.comparison;
-
-  return (
-    // descending order by client total risk score
-    reEvaluateContractRisk(b).totalRiskScore -
-      reEvaluateContractRisk(a).totalRiskScore ||
-    // ascending order by risk exposure
-    a.$riskAboutValues.risk_spend_usd_value -
-      b.$riskAboutValues.risk_spend_usd_value ||
-    // or descending order by approved count
-    b.list.length - a.list.length
-  );
 }
 const RiskNumMapMirrors = Object.entries(RiskNumMap).reduce(
   (acc, [k, v]) => {

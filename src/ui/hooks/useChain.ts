@@ -5,14 +5,6 @@ import { CHAINS_ENUM, Chain } from '@debank/common';
 import { useRabbyDispatch, useRabbySelector } from '../store';
 import { useShallow } from 'zustand/react/shallow';
 
-export type ChainSelectorPurpose =
-  | 'dashboard'
-  | 'sendToken'
-  | 'connect'
-  | 'swap'
-  | 'customRPC'
-  | 'addAsset';
-
 type FetchDataStage = false | 'fetching' | 'fetched' | 'inited';
 /**
  * @description support mainnet ONLY now

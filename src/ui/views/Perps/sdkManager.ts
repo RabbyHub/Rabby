@@ -74,11 +74,6 @@ export const getBboSDK = () => {
   return bboSdkInstance;
 };
 
-export const destroyBboSDK = () => {
-  bboSdkInstance?.ws.disconnect();
-  bboSdkInstance = null;
-};
-
 export const isSelfSignPerpsAccount = (type?: string) =>
   type === KEYRING_CLASS.PRIVATE_KEY || type === KEYRING_CLASS.MNEMONIC;
 

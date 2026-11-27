@@ -28,11 +28,6 @@ const contactBookStoreSchema = z.record(
 
 export type ContactBookItem = z.output<typeof contactBookItemSchema>;
 
-export interface UIContactBookItem {
-  name: string;
-  address: string;
-}
-
 export type ContactBookStore = z.output<typeof contactBookStoreSchema>;
 
 const createContactBookStoreTemplate = (): ContactBookStore =>
