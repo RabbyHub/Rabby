@@ -9,11 +9,6 @@ const mockBitboxBridge = {
 const mockImKeyBridge = {
   unlock: jest.fn(() => Promise.resolve('unlocked')),
 };
-const mockTrezorConnect = {
-  on: jest.fn(),
-  init: jest.fn(() => Promise.resolve()),
-  dispose: jest.fn(() => Promise.resolve()),
-};
 
 jest.mock('webextension-polyfill', () => ({
   __esModule: true,
@@ -49,11 +44,6 @@ jest.mock(
   })
 );
 
-jest.mock('@trezor/connect-web', () => ({
-  __esModule: true,
-  default: mockTrezorConnect,
-}));
-
 jest.mock(
   '@bitboxswiss/bitbox-api',
   () => ({
@@ -67,14 +57,12 @@ import {
   ImKeyAction,
   OffscreenCommunicationTarget,
   OneKeyAction,
-  TrezorAction,
 } from '@/constant/offscreen-communication';
 import { isPrivilegedOffscreenSender } from '@/utils/offscreenMessageSecurity';
 import { initBitBox02 } from '@/offscreen/scripts/bitbox02';
 import { initImKey } from '@/offscreen/scripts/imkey';
 import initLattice from '@/offscreen/scripts/lattice';
 import { initOneKey } from '@/offscreen/scripts/onekey';
-import { initTrezor } from '@/offscreen/scripts/trezor';
 
 type Listener = (
   message: any,
@@ -93,22 +81,6 @@ const listeners: Listener[] = [];
 let mockWindowOpen: jest.SpyInstance;
 
 const cases = [
-  {
-    name: 'Trezor',
-    register: initTrezor,
-    message: {
-      target: OffscreenCommunicationTarget.trezorOffscreen,
-      action: TrezorAction.init,
-      params: {},
-    },
-    expectRejected: () => {
-      expect(mockTrezorConnect.init).not.toHaveBeenCalled();
-      expect(mockTrezorConnect.on).not.toHaveBeenCalled();
-    },
-    expectAccepted: () => {
-      expect(mockTrezorConnect.init).toHaveBeenCalledTimes(1);
-    },
-  },
   {
     name: 'OneKey',
     register: initOneKey,

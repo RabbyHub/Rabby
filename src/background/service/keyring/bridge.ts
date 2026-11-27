@@ -13,7 +13,7 @@ const OneKeyBridge = process.env.IS_MANIFEST_MV3
   : require('./eth-onekey-keyring/onekey-bridge');
 
 const TrezorBridge = process.env.IS_MANIFEST_MV3
-  ? require('./eth-trezor-keyring/trezor-offscreen-bridge')
+  ? require('./eth-trezor-keyring/trezor-webextension-bridge')
   : require('@rabby-wallet/eth-trezor-keyring/dist/trezor-bridge');
 
 const BitBox02Bridge = process.env.IS_MANIFEST_MV3
