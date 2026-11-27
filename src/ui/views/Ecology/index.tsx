@@ -1,12 +1,21 @@
 import { EcologyNavBar } from '@/ui/component/Ecology/EcologyNavBar';
 import React, { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
-import { EcoChainMap } from './constants';
+import { Redirect, useParams } from 'react-router-dom';
+import { EcoChains } from './constants';
 
 export const Ecology = () => {
   const { chainId } = useParams<{ chainId: string }>();
 
-  const chain = useMemo(() => EcoChainMap[chainId], [chainId]);
+  // Indexing EcoChainMap with an unlisted id gives undefined, or an
+  // Object.prototype member for ids like `constructor`.
+  const chain = useMemo(
+    () => EcoChains.find((item) => String(item.id) === chainId),
+    [chainId]
+  );
+
+  if (!chain) {
+    return <Redirect to="/" />;
+  }
 
   return (
     <div
@@ -17,7 +26,7 @@ export const Ecology = () => {
     >
       <EcologyNavBar
         className={`sticky top-0 w-full ${chain.navBarClassName}`}
-        chainId={+chainId}
+        chainId={chain.id}
       />
       {chain.entry && <chain.entry />}
     </div>
