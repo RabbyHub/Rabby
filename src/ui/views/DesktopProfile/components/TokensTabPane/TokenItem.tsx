@@ -126,9 +126,7 @@ export const TokenItemAsset: React.FC<Props> = ({
               hover:text-r-blue-default hover:underline 
             `}
           />
-          {isUnknownToken(item) && (
-            <UnknownTag className="ml-12 !bg-r-neutral-line shrink-0" />
-          )}
+          {isUnknownToken(item) && <UnknownTag className="ml-12 shrink-0" />}
           {isLpToken(item) && (
             <LpTokenTag
               iconClassName="ml-4 inline-flex shrink-0"
