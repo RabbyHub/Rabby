@@ -50,7 +50,7 @@ export const CopyChecked = ({
     return (
       <RcIconCopyCheck
         viewBox="0 0 14 14"
-        className={clsx(className, checkedClassName ?? 'text-[#00C087]')}
+        className={clsx(className, checkedClassName ?? 'text-r-green-default')}
       />
     );
   }

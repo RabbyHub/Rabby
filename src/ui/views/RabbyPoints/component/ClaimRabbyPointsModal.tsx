@@ -230,7 +230,7 @@ const ClaimPoints = ({
           <span
             style={{
               fontSize: 15,
-              fontWeight: 510,
+              fontWeight: 500,
               lineHeight: 'normal',
               background:
                 'linear-gradient(91deg, #326CFF 1.88%, #AE2BFF 99.85%)',
@@ -277,7 +277,7 @@ const ClaimPoints = ({
       </div>
 
       <div className="rounded-[8px] bg-r-neutral-card-3 px-[12px] py-[16px]">
-        <div className="text-center text-[10px] text-[#7c86c8] mb-[12px]">
+        <div className="text-center text-[10px] text-r-neutral-foot mb-[12px]">
           {t('page.rabbyPoints.claimModal.snapshotTime', {
             time: snapshotTime,
           })}

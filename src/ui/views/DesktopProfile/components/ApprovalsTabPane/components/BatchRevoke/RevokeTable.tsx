@@ -129,6 +129,7 @@ export const RevokeTable: React.FC<RevokeTableProps> = ({
             render: (_, spender) => (
               <SpenderRow
                 spender={spender}
+                addressClass="text-r-neutral-title1 mr-2 font-medium"
                 hasCopyIcon={false}
                 hasExternalIcon={false}
                 hasPermit2Badge={false}

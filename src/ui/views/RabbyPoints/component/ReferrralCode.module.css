@@ -3,7 +3,7 @@
   border: 1px solid var(--r-neutral-line, #d3d8e0);
   height: 52px;
   font-size: 14px;
-  font-weight: 510;
+  font-weight: 500;
   text-align: left;
   background: var(--r-neutral-bg1, #fff);
   & > :global(input.ant-input) {

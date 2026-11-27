@@ -187,8 +187,8 @@ export const ProtocolItem = ({
             'group flex items-center justify-start',
             'title border border-solid bg-r-neutral-card1 border-transparent rounded-[8px] h-[48px] pr-14',
             'py-12 pl-12 cursor-pointer',
-            'hover:bg-blue-light/10',
-            'hover:border-blue-light'
+            'hover:bg-r-blue-light-1',
+            'hover:border-r-blue-default'
           )}
           onClick={onClickTitle}
         >

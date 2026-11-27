@@ -350,7 +350,7 @@ export const PerpsInviteContent = (props: ConnectProps) => {
                 {t('page.connect.connectAddress')}
               </div>
               <AccountSelector
-                className="account-selector"
+                className="account-selector p-0"
                 value={selectedAccount}
                 onChange={(account) => {
                   setSelectedAccount(account);

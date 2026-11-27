@@ -1,0 +1,8 @@
+/* style/antd-overwrite.less gives every `.ant-drawer-content` a 1.5px top
+   border, the seam the app's bottom-sheet drawers need against the page behind
+   them. This drawer slides in from the right at full height, so that seam lands
+   as a stray light line across the top. Two classes deep, same as the rule it
+   undoes, so it needs the `.ant-drawer` part to outrank it. */
+.drawer:global(.ant-drawer) :global(.ant-drawer-content) {
+  border-top: none;
+}

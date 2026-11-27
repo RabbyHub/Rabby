@@ -391,7 +391,7 @@ function AccountItem(props: {
             addr={account.address}
             className={clsx('copy-icon w-[12px] h-[12px] ml-4 text-12')}
             // copyClassName={clsx()}
-            checkedClassName={clsx('text-[#00C087]')}
+            checkedClassName={clsx('text-r-green-default')}
           />
           <span className="ml-[4px] text-13 text-r-neutral-body leading-[16px] truncate flex-1 block">
             ${splitNumberByStep(account.balance?.toFixed(2))}

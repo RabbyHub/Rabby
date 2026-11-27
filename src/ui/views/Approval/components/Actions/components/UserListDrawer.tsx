@@ -50,7 +50,7 @@ const UserListDrawer = ({
           className={itemClassName}
           onClick={() => onChange({ onBlacklist: false, onWhitelist: true })}
         >
-          <div className="text-green">{t('page.signTx.trusted')}</div>
+          <div className="text-r-green-default">{t('page.signTx.trusted')}</div>
           <div>
             <Checkbox
               width="20px"
@@ -66,7 +66,7 @@ const UserListDrawer = ({
           className={itemClassName}
           onClick={() => onChange({ onBlacklist: true, onWhitelist: false })}
         >
-          <div className="text-red">{t('page.signTx.blocked')}</div>
+          <div className="text-r-red-default">{t('page.signTx.blocked')}</div>
           <div>
             <Checkbox
               width="20px"

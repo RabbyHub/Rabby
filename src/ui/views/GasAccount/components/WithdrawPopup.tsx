@@ -107,7 +107,7 @@ const Selector = ({
             className={clsx(
               'rounded-[6px] w-full h-[56px] px-16',
               'justify-between',
-              !disabled && 'hover:border-blue-light',
+              !disabled && 'hover:border-r-blue-default',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
             bgColor="var(--r-neutral-card2, #F2F4F7)"
@@ -159,7 +159,7 @@ const Selector = ({
             className={clsx(
               'rounded-[6px] w-full h-[56px] px-16 mb-12',
               'justify-between',
-              !disabled && 'hover:border-blue-light',
+              !disabled && 'hover:border-r-blue-default',
               disabled && 'opacity-50 cursor-not-allowed'
             )}
             bgColor="var(--r-neutral-card2, #F2F4F7)"

@@ -13,7 +13,6 @@ import useTypingMnemonics from '@/ui/hooks/useTypingMnemonics';
 import DebouncedInput from '../DebouncedInput';
 import { TooltipWithMagnetArrow } from '../Tooltip/TooltipWithMagnetArrow';
 
-import './MnemonicsInputs.less';
 import styles from './MnemonicsInputs.module.css';
 import { Trans, useTranslation } from 'react-i18next';
 import { clearClipboard } from '@/ui/utils/clipboard';
@@ -313,7 +312,8 @@ function MnemonicsInputs({
           overlay={
             <Menu
               className={clsx(
-                'mnemonics-input-menu py-8px rounded-[8px] bg-r-neutral-bg-1',
+                styles.inputMenu,
+                'py-8px rounded-[8px] bg-r-neutral-bg-1',
                 UI_TYPE.isPop && 'max-h-[334px] overflow-y-auto'
               )}
             >
@@ -566,7 +566,7 @@ function MnemonicsInputs({
           return (
             <Popover
               key={`word-item-${idx}`}
-              overlayClassName="mnemonics-input-suggestions-popover"
+              overlayClassName={styles.suggestionsPopover}
               align={{
                 offset: [0, -4],
               }}
@@ -750,7 +750,7 @@ const SLIP39MnemonicsInput = ({
           'h-[56px] border-rabby-neutral-line bg-rabby-neutral-card-1 ',
           'text-15 text-r-neutral-title-1 font-normal leading-[18px]',
           error ? 'border-rabby-red-default' : '',
-          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-blue'
+          'placeholder-shown:text-r-neutral-foot placeholder-shown:text-14 focus:border-r-blue-default'
         )}
         spellCheck={false}
         placeholder={t(

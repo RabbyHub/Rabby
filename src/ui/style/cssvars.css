@@ -49,6 +49,8 @@
   --rabby-light-sonic-card-border: rgba(80, 97, 121, 0.1);
   --rabby-light-sonic-background: rgba(245, 245, 245, 1);
   --rabby-light-sonic-foreground: rgba(0, 0, 0, 1);
+  --rabby-light-sonic-ftm: rgba(25, 105, 255, 1);
+  --rabby-light-sonic-s: rgba(254, 154, 76, 1);
 
   --rabby-dark-blue-default: rgba(76, 101, 255, 1);
   --rabby-dark-blue-light1: rgba(33, 38, 64, 1);
@@ -94,6 +96,8 @@
   --rabby-dark-sonic-foreground: rgba(255,255,255, 1);
   --rabby-dark-sonic-btn: rgba(254, 154, 76, 0.16);
   --rabby-dark-sonic-btn-foreground: rgba(254, 154, 76, 1);
+  --rabby-dark-sonic-ftm: rgba(25, 105, 255, 1);
+  --rabby-dark-sonic-s: rgba(254, 154, 76, 1);
 
 
   --rb-light-brand-default: rgba(76, 101, 255, 1);
@@ -285,6 +289,10 @@
   --r-sonic-background: var(--rabby-light-sonic-background);
   --r-sonic-foreground-rgb: 0, 0, 0;
   --r-sonic-foreground: var(--rabby-light-sonic-foreground);
+  --r-sonic-ftm-rgb: 25, 105, 255;
+  --r-sonic-ftm: var(--rabby-light-sonic-ftm);
+  --r-sonic-s-rgb: 254, 154, 76;
+  --r-sonic-s: var(--rabby-light-sonic-s);
 
   
 
@@ -477,6 +485,10 @@ html.dark, body.dark {
   --r-sonic-btn: var(--rabby-dark-sonic-btn);
   --r-sonic-btn-foreground-rgb: 254, 154, 76;
   --r-sonic-btn-foreground: var(--rabby-dark-sonic-btn-foreground);
+  --r-sonic-ftm-rgb: 25, 105, 255;
+  --r-sonic-ftm: var(--rabby-dark-sonic-ftm);
+  --r-sonic-s-rgb: 254, 154, 76;
+  --r-sonic-s: var(--rabby-dark-sonic-s);
 
   
 

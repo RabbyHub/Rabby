@@ -35,6 +35,7 @@ export const Item = memo(
                 url={item.icon}
                 origin={item.origin}
                 width="24px"
+                className="relative overflow-visible"
                 style={{
                   borderRadius: '50%',
                 }}

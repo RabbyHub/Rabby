@@ -475,13 +475,6 @@
               display: flex;
               align-items: center;
 
-              .address-viewer-text {
-                color: var(--r-neutral-foot);
-                font-size: 13px;
-                font-weight: 500;
-                margin-right: 0;
-              }
-
               .icon-copy {
                 width: 16px;
                 height: 16px;
@@ -527,13 +520,6 @@
               height: 16px;
               cursor: pointer;
             }
-
-            .address-viewer-text {
-              color: var(--r-neutral-foot);
-              font-size: 13px;
-              font-weight: 500;
-              margin-right: 0;
-            }
           }
         }
       }
@@ -575,10 +561,6 @@
             .protocol-info__spender {
               margin-left: 8px;
             }
-          }
-
-          .address-viewer-text {
-            line-height: 1;
           }
         }
       }
@@ -1034,12 +1016,6 @@
             padding-bottom: 13px;
             border-bottom: 0.5px solid var(--r-neutral-line);
             margin-bottom: 14px;
-            .address-viewer-text.normal {
-              font-size: 12px;
-              line-height: 18px;
-              color: var(--r-neutral-foot);
-              font-weight: normal;
-            }
             .icon-gnosis {
               width: 18px;
               height: 18px;
@@ -1065,9 +1041,6 @@
             .protocol {
               .protocol-info__name {
                 font-size: 12px;
-                .address-viewer-text.normal {
-                  font-size: 12px;
-                }
               }
             }
           }
@@ -1483,9 +1456,6 @@
   }
 
   .gas-selector-panel {
-    .field-slot {
-      margin-left: 0;
-    }
     .gas-content {
       display: flex;
       align-items: center;
@@ -1540,11 +1510,6 @@
       //   border: none;
       //   border-bottom: 0.5px solid var(--r-neutral-line);
       // }
-    }
-    &.invalid {
-      .field.border-blue-light {
-        border-color: #f24822 !important;
-      }
     }
   }
   .priority-slider {
@@ -2352,9 +2317,6 @@
         background-color: var(--r-neutral-card-2) !important;
         border-color: transparent;
         opacity: 1 !important;
-        .address-viewer-text.normal {
-          color: var(--r-neutral-title-1);
-        }
         .icon-tag {
           margin-left: 8px;
           height: 16px;
@@ -2362,9 +2324,6 @@
         &.disabled {
           color: var(--r-neutral-foot);
           border-color: transparent !important;
-          .address-viewer-text.normal {
-            color: var(--r-neutral-foot);
-          }
         }
       }
     }
@@ -2418,17 +2377,6 @@
   .ant-drawer-header,
   .ant-drawer-body {
     padding: 0;
-  }
-
-  .field {
-    & + .field {
-      margin-top: 8px;
-    }
-    &.selected {
-      svg path {
-        stroke: var(--r-blue-default, #7084ff);
-      }
-    }
   }
 }
 

@@ -151,7 +151,7 @@ const TransactionConfirmations = ({
               address={owner}
               className="text-13"
               nameClass="max-129 text-13"
-              addressClass="text-13"
+              addressClass="text-13 leading-[16px]"
               noNameClass="no-name"
             />
             {visibleAccounts.find((account) =>
@@ -767,8 +767,8 @@ export const GnosisTransactionQueueList = (props: {
         <div className="tx-history__empty">
           {isLoading || loading || isSafeInfoLoading ? (
             <>
-              <LoadingOutlined className="text-24 text-gray-content" />
-              <p className="text-14 text-gray-content mt-12">
+              <LoadingOutlined className="text-24 text-r-neutral-foot" />
+              <p className="text-14 text-r-neutral-foot mt-12">
                 {t('page.safeQueue.loading')}
               </p>
             </>
@@ -785,7 +785,7 @@ export const GnosisTransactionQueueList = (props: {
           ) : (
             <>
               <img className="no-data" src="./images/nodata-tx.png" />
-              <p className="text-14 text-gray-content mt-8">
+              <p className="text-14 text-r-neutral-foot mt-8">
                 {t('page.safeQueue.noData')}
               </p>
             </>

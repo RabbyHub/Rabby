@@ -53,7 +53,11 @@ export default function SwitchThemeModal({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.settings.themeMode')}
       </PageHeader>
       <div className="switch-theme-option-list">

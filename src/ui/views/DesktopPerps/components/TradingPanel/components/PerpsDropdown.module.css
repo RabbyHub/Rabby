@@ -1,0 +1,25 @@
+/* Dropdown menus on the Perps pro page (Figma 165065:93924): bg-1 surface with
+   a 1px line border; 28px rows that fill with bg-5 on hover. */
+.menu:global(.ant-dropdown-menu) {
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--rb-neutral-line);
+  border-radius: 6px;
+  background: var(--rb-neutral-bg-1);
+  box-shadow: 0 16px 12px rgba(0, 0, 0, 0.1);
+}
+
+.menu:global(.ant-dropdown-menu) :global(.ant-dropdown-menu-item) {
+  height: 28px;
+  padding: 0 8px;
+  color: var(--rb-neutral-body);
+  font-size: 12px;
+  font-weight: var(--font-weight-medium, 500);
+  line-height: 28px;
+}
+
+.menu:global(.ant-dropdown-menu) :global(.ant-dropdown-menu-item:hover),
+.menu:global(.ant-dropdown-menu)
+  :global(.ant-dropdown-menu-item.ant-dropdown-menu-item-active) {
+  background: var(--rb-neutral-bg-5);
+}

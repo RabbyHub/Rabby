@@ -587,7 +587,7 @@ const AddAsset = ({ params, account, approvalId }: AddAssetProps) => {
           >
             <Button
               type="ghost"
-              className="w-[172px] h-[44px] border-blue-light text-blue-light hover:bg-[#8697FF1A] active:bg-[#0000001A] rounded-[8px]"
+              className="w-[172px] h-[44px] border-r-blue-default text-r-blue-default hover:bg-r-blue-light-1 active:bg-r-neutral-black/10 rounded-[8px]"
               onClick={() => rejectApproval('User rejected the request.')}
             >
               {t('global.cancelButton')}

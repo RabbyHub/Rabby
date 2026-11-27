@@ -94,7 +94,11 @@ export const CurrencyModal = ({
         isVisible && styles.show
       )}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.settings.currency')}
       </PageHeader>
       <Input
