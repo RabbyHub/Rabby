@@ -128,8 +128,9 @@ export const CustomTestnet = ({
   return (
     <div
       className={clsx(
-        'relative flex flex-col bg-r-neutral-bg-2 h-full overflow-auto',
-        inModal ? 'h-[600px]' : ''
+        'relative flex flex-col bg-r-neutral-bg-2 overflow-auto',
+        // h-full and h-[600px] together leave the winner to CSS order
+        inModal ? 'h-[600px]' : 'h-full'
       )}
     >
       <PageHeader
