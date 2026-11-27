@@ -157,13 +157,11 @@ describe('SignTypedData security lifecycle', () => {
       react: React,
       '@tanstack/react-query': { useQuery },
       '@/ui/query/queryKey': { createQueryKey },
-      'react-use': {
-        useAsyncRetry,
-        useScroll: () => undefined,
-      },
+      'react-use': { useAsyncRetry },
       'react-i18next': { useTranslation: () => ({ t: (key: string) => key }) },
       ahooks: {
         useSize: () => undefined,
+        useScroll: () => undefined,
         useDebounceFn: (fn: any) => ({ run: fn }),
       },
       antd: {

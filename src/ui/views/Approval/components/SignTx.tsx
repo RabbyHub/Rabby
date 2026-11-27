@@ -44,8 +44,13 @@ import {
 } from 'consts';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { useScroll } from 'react-use';
-import { useSize, useDebounceFn, useRequest, useMemoizedFn } from 'ahooks';
+import {
+  useSize,
+  useDebounceFn,
+  useRequest,
+  useMemoizedFn,
+  useScroll,
+} from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   bindApproval,
@@ -2680,13 +2685,13 @@ const SignTx = ({
   }, [isReady, isSecurityReady, engineResults]);
 
   useEffect(() => {
-    if (scrollRef.current && scrollInfo && scrollRefSize) {
+    if (scrollRef.current && scrollRefSize) {
       const avaliableHeight =
         scrollRef.current.scrollHeight - scrollRefSize.height;
       if (avaliableHeight <= 0) {
         setFooterShowShadow(false);
       } else {
-        setFooterShowShadow(avaliableHeight - 20 > scrollInfo.y);
+        setFooterShowShadow(avaliableHeight - 20 > (scrollInfo?.top ?? 0));
       }
     }
   }, [scrollInfo, scrollRefSize]);

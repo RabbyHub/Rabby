@@ -27,8 +27,21 @@
           },
           {
             "name": "react-use",
-            "importNames": ["useCss"],
-            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+            "importNames": [
+              "useCss",
+              "useDebounce",
+              "useInterval",
+              "useMount",
+              "useSetState",
+              "usePrevious",
+              "useClickAway",
+              "useScroll",
+              "useThrottleFn",
+              "useToggle",
+              "useMedia",
+              "createGlobalState"
+            ],
+            "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\"). The other names are utility hooks that moved to ahooks or src/ui/hooks, whose signatures differ: useDebounce -> ahooks useDebounceEffect or useDebounceFn with an explicit wait (default 1000 ms), or useDebouncedValue from @/ui/hooks/useDebounceValue for a debounced input (skills/rabby-data-fetching/SKILL.md); usePrevious -> usePreviousRender from @/ui/hooks/usePreviousRender (ahooks usePrevious returns the last different value); useMedia -> @/ui/hooks/useMedia; createGlobalState -> a zustand store; useThrottleFn -> ahooks useThrottle or useThrottledValueLeading/Trailing; the rest -> the ahooks hook of the same name."
           }
         ],
         "patterns": [
@@ -39,6 +52,33 @@
           {
             "group": ["react-use/lib/useCss", "react-use/esm/useCss"],
             "message": "useCss injects styles at runtime, outside the cascade layers, so they beat every Tailwind class. Use Tailwind classes, or a .module.css for antd internals (AGENTS.md, \"Styling Conventions\")."
+          },
+          {
+            "group": [
+              "react-use/lib/useDebounce",
+              "react-use/esm/useDebounce",
+              "react-use/lib/useInterval",
+              "react-use/esm/useInterval",
+              "react-use/lib/useMount",
+              "react-use/esm/useMount",
+              "react-use/lib/useSetState",
+              "react-use/esm/useSetState",
+              "react-use/lib/usePrevious",
+              "react-use/esm/usePrevious",
+              "react-use/lib/useClickAway",
+              "react-use/esm/useClickAway",
+              "react-use/lib/useScroll",
+              "react-use/esm/useScroll",
+              "react-use/lib/useThrottleFn",
+              "react-use/esm/useThrottleFn",
+              "react-use/lib/useToggle",
+              "react-use/esm/useToggle",
+              "react-use/lib/useMedia",
+              "react-use/esm/useMedia",
+              "react-use/lib/factory/createGlobalState",
+              "react-use/esm/factory/createGlobalState"
+            ],
+            "message": "This utility hook moved to ahooks or src/ui/hooks, whose signatures differ: useDebounce -> ahooks useDebounceEffect or useDebounceFn with an explicit wait (default 1000 ms), or useDebouncedValue from @/ui/hooks/useDebounceValue for a debounced input (skills/rabby-data-fetching/SKILL.md); usePrevious -> usePreviousRender from @/ui/hooks/usePreviousRender (ahooks usePrevious returns the last different value); useMedia -> @/ui/hooks/useMedia; createGlobalState -> a zustand store; useThrottleFn -> ahooks useThrottle or useThrottledValueLeading/Trailing; the rest -> the ahooks hook of the same name."
           }
         ]
       }

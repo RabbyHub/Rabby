@@ -17,7 +17,7 @@ import {
 import { IconImportSuccess } from 'ui/assets';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
-import { useMedia } from 'react-use';
+import { useMedia } from '@/ui/hooks/useMedia';
 import { useRabbyDispatch } from '@/ui/store';
 import { Chain } from '@debank/common';
 import { UI_TYPE } from '@/constant/ui';

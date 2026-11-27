@@ -52,7 +52,10 @@ jest.mock('@/ui/component/WalletConnect/useDisplayBrandName', () => ({
 jest.mock('@/ui/component/WalletConnect/useWalletConnectIcon', () => ({
   useWalletConnectIcon: () => '',
 }));
-jest.mock('react-use', () => ({ useInterval: jest.fn() }));
+jest.mock('ahooks', () => ({
+  ...jest.requireActual('ahooks'),
+  useInterval: jest.fn(),
+}));
 jest.mock('@/ui/component/Spin', () => ({
   __esModule: true,
   default: () => require('react').createElement('div', { role: 'progressbar' }),

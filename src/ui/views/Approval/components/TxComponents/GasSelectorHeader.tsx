@@ -1,11 +1,6 @@
 import { Button, DrawerProps, Input, InputRef, Skeleton, Tooltip } from 'antd';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import {
-  GasAccountCheckResult,
-  GasLevel,
-  Tx,
-  TxPushType,
-} from 'background/service/openapi';
+import { GasLevel, Tx, TxPushType } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
@@ -21,7 +16,7 @@ import React, {
   useState,
 } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import { ReactComponent as IconInfoSVG } from 'ui/assets/info-cc.svg';
 import { Popup } from 'ui/component';
 import { TooltipWithMagnetArrow } from 'ui/component/Tooltip/TooltipWithMagnetArrow';
@@ -128,11 +123,6 @@ interface GasSelectorProps {
     balance_is_enough: boolean;
     chain_not_support: boolean;
   };
-  directSubmit?: boolean;
-  checkGasLevelIsNotEnough?: (
-    gas: GasSelectorResponse,
-    gasType: 'native' | 'gasAccount'
-  ) => Promise<[boolean, number, undefined | GasAccountCheckResult]>;
   getContainer?: DrawerProps['getContainer'];
 }
 
@@ -167,8 +157,6 @@ const GasSelectorHeader = ({
   gasAccountCost,
   onChangeGasMethod,
   tx,
-  checkGasLevelIsNotEnough,
-  directSubmit,
   gasToken,
   getContainer,
 }: GasSelectorProps) => {
@@ -374,11 +362,6 @@ const GasSelectorHeader = ({
     },
   }).gasCostUsd;
 
-  const [gasIsNotEnough, setGasIsNotEnough] = useState({
-    slow: false,
-    normal: false,
-    fast: false,
-  });
   const calcGasAccountUsd = useCallback((n: number | string) => {
     const v = Number(n);
     if (!Number.isNaN(v) && v < 0.0001) {
@@ -386,61 +369,6 @@ const GasSelectorHeader = ({
     }
     return formatGasAccountUSDValue(n || '0');
   }, []);
-
-  useDebounce(
-    () => {
-      if (
-        checkGasLevelIsNotEnough &&
-        gasList.length &&
-        directSubmit &&
-        isReady
-      ) {
-        let init = true;
-        ['slow', 'normal', 'fast'].forEach((level) => {
-          const selectedGas = gasList.find((e) => e.level === level);
-          checkGasLevelIsNotEnough(
-            {
-              ...gasList.find((e) => e.level === level),
-              gasLimit: Number(afterGasLimit),
-              nonce: Number(customNonce),
-              level: selectedGas!.level,
-              maxPriorityFee: calcMaxPriorityFee(
-                gasList,
-                selectedGas!,
-                chainId,
-                isCancel || isSpeedUp
-              ),
-            } as GasSelectorResponse,
-            'native'
-          )
-            .then((arr) => {
-              if (init) {
-                setGasIsNotEnough((pre) => ({ ...pre, [level]: arr[0] }));
-              }
-            })
-            .catch((e) => {
-              console.log('checkGasLevelIsNotEnough native gas error', e);
-            });
-        });
-
-        return () => {
-          init = false;
-        };
-      }
-    },
-    100,
-    [
-      isReady,
-      directSubmit,
-      afterGasLimit,
-      checkGasLevelIsNotEnough,
-      customNonce,
-      gasList,
-      chainId,
-      isCancel,
-      isSpeedUp,
-    ]
-  );
 
   const handleConfirmGas = () => {
     if (!selectedGas) return;
@@ -645,7 +573,7 @@ const GasSelectorHeader = ({
     setLoadingGasEstimated(true);
   }, [customGas]);
 
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (isReady || !isFirstTimeLoad) {
         if (customGas === undefined) return;
@@ -666,8 +594,8 @@ const GasSelectorHeader = ({
         });
       }
     },
-    200,
-    [customGas]
+    [customGas],
+    { wait: 200 }
   );
 
   useEffect(() => {

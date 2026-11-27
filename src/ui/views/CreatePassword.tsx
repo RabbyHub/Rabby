@@ -6,7 +6,7 @@ import { openInTab, useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
 import IconCheck from 'ui/assets/check.svg';
 import clsx from 'clsx';
-import { useToggle } from 'react-use';
+import { useToggle } from 'ahooks';
 import styles from './CreatePassword.module.css';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
@@ -54,7 +54,7 @@ const CreatePassword = () => {
     }
   };
 
-  const [agreeTerm, toggleAgreeTerm] = useToggle(true);
+  const [agreeTerm, { toggle: toggleAgreeTerm }] = useToggle(true);
 
   const isInvalidForm = useCallback(
     () =>

@@ -2,7 +2,8 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import { Button, Skeleton, Tooltip } from 'antd';
 import Popup, { PopupProps } from '@/ui/component/Popup';
 import { useTranslation } from 'react-i18next';
-import { useAsync, useDebounce } from 'react-use';
+import { useAsync } from 'react-use';
+import { useDebounceEffect } from 'ahooks';
 import { ReactComponent as RcIconInfo } from '@/ui/assets/perps/IconInfo.svg';
 import {
   batchQueryTokens,
@@ -311,7 +312,7 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
   );
 
   // Debounced mini sign tx update so each keystroke doesn't refire
-  useDebounce(
+  useDebounceEffect(
     () => {
       if (!visible) return;
       if (!isValidAmount) return;
@@ -322,8 +323,8 @@ export const PerpsDepositAmountPopup: React.FC<PerpsDepositAmountPopupProps> = (
         false
       );
     },
-    300,
-    [gasPrice, usdValue, visible, updateMiniSignTx, tokenInfo]
+    [gasPrice, usdValue, visible, updateMiniSignTx, tokenInfo],
+    { wait: 300 }
   );
 
   useEffect(() => {

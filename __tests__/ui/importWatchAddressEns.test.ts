@@ -95,7 +95,7 @@ function loadImportWatchAddress() {
       EVENTS: { WALLETCONNECT: { SCAN_ACCOUNT: 'scan-account' } },
       KEYRING_CLASS: { WATCH: 'Watch Address' },
     },
-    'react-use': { useMedia: () => false },
+    '@/ui/hooks/useMedia': { useMedia: () => false },
     clsx: () => '',
     'ui/utils/useRepeatImportConfirm': {
       useRepeatImportConfirm: () => ({ show: jest.fn(), contextHolder: null }),

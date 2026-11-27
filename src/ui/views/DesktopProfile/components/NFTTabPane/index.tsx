@@ -10,7 +10,7 @@ import { Skeleton, Switch } from 'antd';
 import clsx from 'clsx';
 import { omit, range } from 'lodash';
 import React, { useEffect } from 'react';
-import { useSetState } from 'react-use';
+import { useSetState } from 'ahooks';
 import { AcceptOfferModal } from './components/AcceptOfferModal';
 import { CancelListingModal } from './components/CancelListingModal';
 import { CreateListingModal } from './components/CreateListingModal';
