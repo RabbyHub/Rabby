@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/browser';
 import i18n from '@/i18n';
 import { ParsedTypedDataActionData } from '@rabby-wallet/rabby-action';
 import { getActionTypeText as getTransactionActionTypeText } from '../Actions/utils';
@@ -227,26 +226,6 @@ export function normalizeTypeData(
 
   return { typedData, failures };
 }
-
-/**
- * Reports a request whose typed data did not normalize, to learn how often it
- * happens before such a request is rejected.
- */
-export const reportNormalizeTypeDataFailures = (
-  failures: NormalizeTypeDataFailure[],
-  context: { rawTypedData: string }
-) => {
-  if (!failures.length) return;
-  try {
-    Sentry.captureMessage('eip712-sec: typed data normalize failed', {
-      extra: {
-        rawTypedData: context.rawTypedData,
-      },
-    });
-  } catch (e) {
-    // Reporting must not change what the approval shows.
-  }
-};
 
 export function cleanEIP712Payload(rawPayload: {
   primaryType: string;

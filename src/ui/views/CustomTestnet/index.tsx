@@ -129,8 +129,9 @@ export const CustomTestnet = ({
   return (
     <div
       className={clsx(
-        'custom-testnet h-full overflow-auto',
-        inModal ? 'h-[600px]' : ''
+        'custom-testnet overflow-auto',
+        // h-full and h-[600px] together leave the winner to CSS order
+        inModal ? 'h-[600px]' : 'h-full'
       )}
     >
       <PageHeader

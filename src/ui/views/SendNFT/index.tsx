@@ -16,7 +16,6 @@ import { isValidAddress, toChecksumAddress } from '@ethereumjs/util';
 import abiCoderInst, { AbiCoder } from 'web3-eth-abi';
 import { useMemoizedFn, useRequest } from 'ahooks';
 import { CHAINS_ENUM, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { connectStore } from 'ui/store';
 import {
   useWallet,
   openInTab,
@@ -802,6 +801,4 @@ const SendNFTWrapper = () => (
   </DirectSubmitProvider>
 );
 
-export default isTab
-  ? connectStore()(withAccountChange(SendNFTWrapper))
-  : connectStore()(SendNFTWrapper);
+export default isTab ? withAccountChange(SendNFTWrapper) : SendNFTWrapper;

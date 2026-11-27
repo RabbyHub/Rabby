@@ -110,11 +110,21 @@ export const PerpsWithdrawPopup: React.FC<PerpsWithdrawPopupProps> = ({
           ? sym
           : 'USDC'
       ];
+    // Ignore a fee that returns after the token or account changed: it belongs
+    // to the previous bridge.
+    let cancelled = false;
     const sdk = getPerpsSDK();
     sdk.info
       .getPreTransferCheck(bridge, currentPerpsAccount.address)
-      .then((res) => setHypeTransferFee(res?.fee || '0'))
-      .catch(() => setHypeTransferFee('0'));
+      .then((res) => {
+        if (!cancelled) setHypeTransferFee(res?.fee || '0');
+      })
+      .catch(() => {
+        if (!cancelled) setHypeTransferFee('0');
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [visible, currentPerpsAccount?.address, selectedToken]);
 
   // Re-render only when HYPE price changes, not on every marketDataMap update.

@@ -75,7 +75,6 @@ import {
   findShadowedBuiltinType,
   isTypeGraphTooLarge,
   parseTypedDataJson,
-  reportInvalidTypedDataValue,
 } from '@/background/utils/typedDataTypes';
 import { add0x } from '@/ui/utils/address';
 import {
@@ -412,11 +411,7 @@ const signTypedDataVlidation = ({
   if (isTypeGraphTooLarge(jsonData?.primaryType, jsonData?.types)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
-  const invalidValue = findInvalidTypedDataValue(jsonData);
-  reportInvalidTypedDataValue(invalidValue, {
-    rawTypedData: data,
-  });
-  if (invalidValue) {
+  if (findInvalidTypedDataValue(jsonData)) {
     throw ethErrors.rpc.invalidParams('invalid typed data');
   }
   if (!permissionService.isInternalOrigin(session!.origin)) {
@@ -477,6 +472,18 @@ class ProviderController extends BaseController {
       chainServerId = forceChainServerId;
     }
 
+    // The chain can be missing (custom network removed, chain list not yet
+    // restored). Fail closed before the cache or any RPC is touched.
+    const chain = findChain({
+      serverId: chainServerId,
+    });
+    if (!chain) {
+      throw ethErrors.provider.custom({
+        code: 4902,
+        message: `Unrecognized chain "${chainServerId}".`,
+      });
+    }
+
     const currentAddress = account?.address?.toLowerCase() || '0x';
     const cache = RpcCache.get(currentAddress, {
       method,
@@ -484,9 +491,6 @@ class ProviderController extends BaseController {
       chainId: chainServerId,
     });
     if (cache) return cache;
-    const chain = findChain({
-      serverId: chainServerId,
-    })!;
     if (!chain.isTestnet && method === 'eth_sendRawTransaction') {
       void RPCService.probeBestRPC(chainServerId);
     }
@@ -536,10 +540,7 @@ class ProviderController extends BaseController {
         return promise;
       }
     } else {
-      const chainData = findChain({
-        serverId: chainServerId,
-      })!;
-      const client = customTestnetService.getClient(chainData.id);
+      const client = customTestnetService.getClient(chain.id);
       return client.request({ method, params });
     }
   };

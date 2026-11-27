@@ -131,11 +131,12 @@ test.each([true, false])(
     const logError = jest
       .spyOn(console, 'error')
       .mockImplementation(() => undefined);
+    const emit = jest.spyOn(eventBus, 'emit');
     try {
       await expect(rpcFlow(baseRequest() as any)).rejects.toBe(error);
       if (userCancelled) expect(captureException).not.toHaveBeenCalled();
       else expect(captureException).toHaveBeenCalledWith(error);
-      expect(eventBus.emit).toHaveBeenCalledWith('broadcastToUI', {
+      expect(emit).toHaveBeenCalledWith('broadcastToUI', {
         method: 'SIGN_FINISHED',
         params: expect.objectContaining({
           success: false,
@@ -143,6 +144,7 @@ test.each([true, false])(
         }),
       });
     } finally {
+      emit.mockRestore();
       logError.mockRestore();
     }
   }

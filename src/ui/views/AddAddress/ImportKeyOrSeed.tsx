@@ -8,7 +8,6 @@ import { KEYRING_CLASS } from 'consts';
 import * as bip39 from '@scure/bip39';
 import { wordlist } from '@scure/bip39/wordlists/english';
 import { clearClipboard } from '@/ui/utils/clipboard';
-import { connectStore } from '@/ui/store';
 import { useImportMnemonicsStore } from '@/ui/state/importMnemonics';
 import { PageHeader } from '@/ui/component';
 import PillsSwitch from '@/ui/component/PillsSwitch';
@@ -552,4 +551,4 @@ const ImportKeyOrSeed: React.FC<{
   );
 };
 
-export default connectStore()(ImportKeyOrSeed);
+export default ImportKeyOrSeed;

@@ -1,13 +1,6 @@
 /* eslint "react-hooks/exhaustive-deps": ["error"] */
 /* eslint-enable react-hooks/exhaustive-deps */
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import PQueue from 'p-queue';
 import { isValidAddress } from '@ethereumjs/util';
@@ -200,6 +193,9 @@ export const useAddressRisks = (options: {
   }, [toAddress]);
 
   useEffect(() => {
+    // Drop responses for an address the user has already moved away from, so
+    // they cannot overwrite the description shown for the current one.
+    let cancelled = false;
     (async () => {
       if (!isValidAddress(toAddress)) {
         return;
@@ -208,6 +204,7 @@ export const useAddressRisks = (options: {
       try {
         const addrDescRes = await wallet.openapi.addrDesc(toAddress);
         const cexId = await wallet.getCexId(toAddress);
+        if (cancelled) return;
         if (addrDescRes) {
           if (cexId) {
             const localCexInfo = exchanges.find(
@@ -235,9 +232,14 @@ export const useAddressRisks = (options: {
       } catch (error) {
         /* empty */
       } finally {
-        setLoadingAddrDesc(false);
+        if (!cancelled) {
+          setLoadingAddrDesc(false);
+        }
       }
     })();
+    return () => {
+      cancelled = true;
+    };
   }, [toAddress, dispatch, editCex, exchanges, wallet]);
 
   const memoForbiddenCheck = useMemo(() => {
@@ -255,30 +257,40 @@ export const useAddressRisks = (options: {
   ]);
   const forbiddenCheck = useDebouncedValue(memoForbiddenCheck, 300);
 
-  const reqForbiddenTip = useCallback(async () => {
+  useEffect(() => {
     const allValuesSet =
       forbiddenCheck?.chain_id &&
       forbiddenCheck?.to_addr &&
       forbiddenCheck?.user_addr &&
       forbiddenCheck?.id;
-    if (allValuesSet) {
-      await wallet.openapi
-        .checkTokenDepositForbidden({
-          chain_id: forbiddenCheck?.chain_id || 'eth',
-          to_addr: forbiddenCheck?.to_addr || '',
-          user_addr: forbiddenCheck?.user_addr || '',
-          id: forbiddenCheck?.id || '',
-        })
-        .then((res) => {
-          setForbiddenTip(res?.msg || '');
-        })
-        .catch((error) => {
-          console.error('checkTokenDepositForbidden error', error);
-          setForbiddenTip('');
-        });
-    } else {
+    if (!allValuesSet) {
       setForbiddenTip('');
+      return;
     }
+    // A late response for an earlier address or token must not clear or
+    // replace the warning for the current one.
+    let cancelled = false;
+    wallet.openapi
+      .checkTokenDepositForbidden({
+        chain_id: forbiddenCheck?.chain_id || 'eth',
+        to_addr: forbiddenCheck?.to_addr || '',
+        user_addr: forbiddenCheck?.user_addr || '',
+        id: forbiddenCheck?.id || '',
+      })
+      .then((res) => {
+        if (!cancelled) {
+          setForbiddenTip(res?.msg || '');
+        }
+      })
+      .catch((error) => {
+        console.error('checkTokenDepositForbidden error', error);
+        if (!cancelled) {
+          setForbiddenTip('');
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [
     wallet,
     forbiddenCheck?.chain_id,
@@ -286,10 +298,6 @@ export const useAddressRisks = (options: {
     forbiddenCheck?.user_addr,
     forbiddenCheck?.id,
   ]);
-
-  useEffect(() => {
-    reqForbiddenTip();
-  }, [reqForbiddenTip]);
 
   const riskGetRef = useRef({
     requestKey: '',
