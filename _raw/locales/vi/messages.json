@@ -2155,7 +2155,11 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "Quên mật khẩu?",
       "description": "Ví đáng tin cậy của bạn cho Ethereum và EVM",
-      "biometricFailed": "Mở khóa sinh trắc học thất bại"
+      "biometricFailed": "Mở khóa sinh trắc học thất bại",
+      "biometricSunsetTip": "Mở khóa sinh trắc học sẽ không còn khả dụng kể từ ngày 1/1/2027. Vui lòng chuyển sang mở khóa bằng mật khẩu ngay bây giờ. Thao tác này sẽ tắt mở khóa sinh trắc học.",
+      "biometricSunsetTitle": "Chuyển sang mở khóa bằng mật khẩu",
+      "biometricSunsetUsePassword": "Dùng mật khẩu",
+      "biometricSunsetUseBiometric": "Dùng sinh trắc học"
     },
     "addToken": {
       "noTokenFound": "Không tìm thấy token",

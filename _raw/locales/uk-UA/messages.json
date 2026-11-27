@@ -2043,7 +2043,11 @@
       "btnForgotPassword": "Забули пароль?",
       "title": "Rabby Wallet",
       "description": "Ваш основний гаманець для Ethereum та EVM",
-      "biometricFailed": "Не вдалося розблокувати за допомогою біометрії"
+      "biometricFailed": "Не вдалося розблокувати за допомогою біометрії",
+      "biometricSunsetTip": "З 1 січня 2027 року біометричне розблокування буде недоступне. Будь ласка, перейдіть на розблокування паролем уже зараз. Це вимкне біометричне розблокування.",
+      "biometricSunsetTitle": "Перейдіть на розблокування паролем",
+      "biometricSunsetUsePassword": "Пароль",
+      "biometricSunsetUseBiometric": "Біометрія"
     },
     "addToken": {
       "noTokenFound": "Токен не знайдено",
