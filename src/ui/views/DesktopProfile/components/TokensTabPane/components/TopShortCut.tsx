@@ -51,7 +51,6 @@ export const TopShortcut = memo(
           if (parent) {
             if ($anchor) {
               $anchor.style.width = $portfolioList?.clientWidth - 2 + 'px';
-              $parent.style.width = $portfolioList?.clientWidth - 2 + 'px';
               if ($parent?.parentElement?.style?.paddingBottom) {
                 $parent.parentElement.style.paddingBottom = '0px';
               }
