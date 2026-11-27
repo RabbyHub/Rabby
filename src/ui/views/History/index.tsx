@@ -30,6 +30,7 @@ export const HistoryPage = () => {
     <div className="txs-history">
       <PageHeader
         className="transparent-wrap"
+        contentClassName="mb-0"
         fixed
         rightSlot={
           selectedTab === 'mainnet' && isSupportAccount ? (

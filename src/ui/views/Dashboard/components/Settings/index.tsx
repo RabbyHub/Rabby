@@ -203,7 +203,11 @@ const OpenApiModal = ({
     <div
       className={clsx('openapi-modal', { show: isVisible, hidden: !visible })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {title}
       </PageHeader>
       <Form onFinish={handleSubmit} form={form}>
@@ -294,7 +298,7 @@ const DappAccountModal = ({
       <PageHeader
         closeable
         onClose={handleCancel}
-        className="text-[16px] leading-[19px] mb-[20px]"
+        className="pt-0 text-[16px] leading-[19px] mb-[20px]"
         closeCn={'top-[-1px]'}
       >
         {t('page.dashboard.settings.DappAccount.title')}
@@ -371,7 +375,11 @@ const ResetAccountModal = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.clearPending')}
       </PageHeader>
       <div>
@@ -481,7 +489,11 @@ const AutoLockModal = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.autoLockTime')}
       </PageHeader>
       <div className="auto-lock-option-list">
@@ -554,7 +566,11 @@ const SwitchLangModal = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.settings.settings.currentLanguage')}
       </PageHeader>
       <div className="auto-lock-option-list">
@@ -1575,8 +1591,12 @@ const SettingsInner = ({
                       }
                       onClick={data.onClick}
                       className={clsx(
+                        'bg-r-neutral-card-2 px-16 py-0 min-h-[52px] hover:bg-[rgba(134,151,255,0.2)]',
+                        // One rounded group; a hovered row is rounded on its own.
+                        'rounded-none first:rounded-t-[6px] last:rounded-b-[6px] hover:rounded-[6px]',
                         data.className,
-                        data.description ? 'has-desc' : null
+                        data.description &&
+                          'has-desc pt-12 items-start [&>.field-slot]:overflow-visible'
                       )}
                     >
                       {data.content}

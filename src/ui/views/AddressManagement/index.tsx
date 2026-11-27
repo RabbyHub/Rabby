@@ -480,7 +480,7 @@ const AddressManagement = () => {
 
   return (
     <div className="page-address-management px-0 overflow-hidden">
-      <PageHeader className="address-page-header mx-[20px]">
+      <PageHeader className="mx-[20px] h-[60px] pt-0 mb-10" backCn="bottom-20">
         {enableSwitch
           ? t('page.manageAddress.current-address')
           : t('page.manageAddress.address-management')}

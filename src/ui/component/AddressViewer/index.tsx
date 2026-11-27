@@ -1,8 +1,15 @@
 import React from 'react';
-import cx from 'clsx';
 import { SvgIconArrowDown } from 'ui/assets';
 import { ellipsis as ellipsisAddress } from 'ui/utils/address';
-import './style.less';
+import { cn } from '@/ui/utils/cn';
+
+// Styles of the variant classes a caller can put in className. They stay on the
+// element as well; a className without one only gets the caller's classes.
+const VARIANT_CLASSES: Record<string, string> = {
+  normal: 'mr-4 text-15 font-medium text-white',
+  subtitle: 'text-[12px] text-r-neutral-body',
+  'import-color': 'mr-4 text-15 font-medium text-[#000]',
+};
 
 interface AddressViewProps {
   address: string;
@@ -31,10 +38,18 @@ export default ({
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
       <div
-        className={cx('address-viewer-text', className)}
+        className={cn(
+          'address-viewer-text',
+          className.split(/\s+/).map((c) => VARIANT_CLASSES[c]),
+          className
+        )}
         title={address?.toLowerCase()}
       >
-        {showIndex && index >= 0 && <div className="number-index">{index}</div>}
+        {showIndex && index >= 0 && (
+          <div className="number-index font-normal text-[12px] text-r-neutral-foot mr-[22px]">
+            {index}
+          </div>
+        )}
         {ellipsis
           ? ellipsisAddress(address.toLowerCase())
           : address?.toLowerCase()}
