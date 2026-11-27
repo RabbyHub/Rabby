@@ -5,7 +5,11 @@
 
 @source "../";
 
-@import 'tailwindcss';
+/* source(none): scan only the @source above. Left to auto-detect, Tailwind
+   starts at the project root and hands every top-level directory to webpack
+   as a context dependency, and webpack then walks all of them on each dev
+   start, .claude/worktrees and the node_modules inside it included. */
+@import 'tailwindcss' source(none);
 /* Colors: generated from src/constant/theme-colors.js by scripts/make-theme.js. */
 @import './tailwind-theme.css';
 
