@@ -25,7 +25,6 @@ import React, { useMemo } from 'react';
 import { ReactComponent as RcIconCloseCC } from 'ui/assets/component/close-cc.svg';
 import { useNFTTradingConfig } from '../hooks/useNFTTradingConfig';
 import { EndTime } from './EndTime';
-import IconDefaultNFT from '@/ui/assets/default-nft.svg';
 import { useNFTListingOrders } from '../hooks/useNFTListingOrders';
 import { useTranslation } from 'react-i18next';
 
