@@ -110,7 +110,11 @@ const Contacts = ({
         hidden: !visible,
       })}
     >
-      <PageHeader forceShowBack onBack={handleCancel}>
+      <PageHeader
+        forceShowBack
+        onBack={handleCancel}
+        className="pt-0 mb-[28px]"
+      >
         {t('page.dashboard.contacts.oldContactList')}
       </PageHeader>
       <div className="desc mb-20 text-r-neutral-body">

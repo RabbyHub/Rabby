@@ -100,6 +100,8 @@ export const CoboDelegatedDrawer = ({
               }
               onSelect={handleSelectAccount}
               networkId={networkId}
+              className="h-[52px] min-h-[52px]"
+              addressClassName="text-[12px] leading-[18px] font-normal text-r-neutral-title-1"
             />
           ))
         ) : (
