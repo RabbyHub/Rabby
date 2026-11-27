@@ -266,6 +266,7 @@ export interface PerpsState {
   // Static spot metadata (token list + pair universe); fetched once on login.
   spotMeta: SpotMeta | null;
   userAbstraction: UserAbstractionResp;
+  userAbstractionStatus: 'idle' | 'loading' | 'ready' | 'error';
   historicalOrders: UserHistoricalOrders[];
   userFunding: WsUserFunding['fundings'];
   nonFundingLedgerUpdates: UserNonFundingLedgerUpdates[];
@@ -461,6 +462,7 @@ export const getDefaultPerpsState = (): PerpsState =>
     openOrders: [],
     historicalOrders: [],
     userAbstraction: 'default',
+    userAbstractionStatus: 'idle',
     spotState: {
       accountValue: '0',
       availableToTrade: '0',
@@ -986,6 +988,8 @@ const perpsReducers = definePerpsReducers({
             stakingStatus: 'idle' as const,
             isSpotStateReady: false,
             isUserDataReady: false,
+            clearinghouseState: null,
+            userAbstractionStatus: 'idle' as const,
             // Per-dex frames are keyed by dex, not address; leftovers from
             // the previous account would be re-aggregated into this one and
             // their newer timestamps could make the WS path drop this
@@ -1327,6 +1331,9 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     const isStillCurrent = () =>
       usePerpsStore.getState().currentPerpsAccount?.address?.toLowerCase() ===
       target.toLowerCase();
+    if (isStillCurrent()) {
+      dispatch.perps.patchState({ userAbstractionStatus: 'loading' });
+    }
     try {
       const sdk = getPerpsSDK();
       const userAbstraction = await sdk.info.getUserAbstraction(target);
@@ -1334,7 +1341,10 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
       // a response for the account switched away from must not overwrite the
       // newly-selected account's userAbstraction.
       if (!isStillCurrent()) return;
-      dispatch.perps.patchState({ userAbstraction: userAbstraction });
+      dispatch.perps.patchState({
+        userAbstraction,
+        userAbstractionStatus: 'ready',
+      });
     } catch (error) {
       console.error('Failed to fetch user abstraction:', error);
       // Same guard: a late failure for the previous account must not reset
@@ -1342,6 +1352,7 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
       if (!isStillCurrent()) return;
       dispatch.perps.patchState({
         userAbstraction: UserAbstractionResp.default,
+        userAbstractionStatus: 'error',
       });
     }
   },
@@ -1888,7 +1899,13 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     } = sdk.ws.subscribeToAllDexsClearinghouseState(address, (data) => {
       const { clearinghouseStates } = data;
       const user = (data as any).user;
-      if (!isSameAddress(user, address)) {
+      if (
+        !isSameAddress(user, address) ||
+        !isSameAddress(
+          address,
+          usePerpsStore.getState().currentPerpsAccount?.address || ''
+        )
+      ) {
         return;
       }
       // Drop the frame if max-time isn't newer than what we have; otherwise
@@ -1943,7 +1960,13 @@ const createPerpsEffects = (dispatch: PerpsDispatch) => ({
     const { unsubscribe: unsubscribeSpotState } = sdk.ws.subscribeToSpotState(
       (data) => {
         const { spotState, user } = data;
-        if (!isSameAddress(user, address)) {
+        if (
+          !isSameAddress(user, address) ||
+          !isSameAddress(
+            address,
+            usePerpsStore.getState().currentPerpsAccount?.address || ''
+          )
+        ) {
           return;
         }
 
