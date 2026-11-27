@@ -37,6 +37,7 @@ jest.mock('@/background/service/transactionHistory', () => ({
   default: {
     addSigningTx: jest.fn(() => 'signing-tx-id'),
     getSigningTx: jest.fn(),
+    markSigningTxUserCancelled: jest.fn(),
     removeSigningTx: jest.fn(),
     removeAllSigningTx: jest.fn(),
   },
@@ -50,6 +51,7 @@ jest.mock('@/utils/env', () => ({ isManifestV3: true }));
 jest.mock('@sentry/browser', () => ({ captureException: jest.fn() }));
 
 import notificationService from '@/background/service/notification';
+import transactionHistoryService from '@/background/service/transactionHistory';
 
 const flushMicrotasks = async () => {
   for (let index = 0; index < 8; index++) await Promise.resolve();
@@ -100,6 +102,9 @@ const completeFirstTransaction = async () => {
 
 describe('notification window lifecycle', () => {
   beforeEach(() => {
+    jest
+      .mocked(transactionHistoryService.markSigningTxUserCancelled)
+      .mockClear();
     finishPendingOperations = [];
     notificationService.approvals = [];
     notificationService.currentApproval = null;
@@ -166,11 +171,30 @@ describe('notification window lifecycle', () => {
     await expect(second.response).resolves.toMatchObject({ code: 4001 });
 
     expect(second.onRejected).toHaveBeenCalledTimes(1);
+    expect(
+      transactionHistoryService.markSigningTxUserCancelled
+    ).toHaveBeenCalledWith(second.approval.signingTxId);
     expect(notificationService.notifiWindowId).toBeNull();
     expect(notificationService.getApproval()).toBeNull();
     expect(notificationService.approvals).toEqual([]);
     expect(mockOpenNotification).toHaveBeenCalledTimes(1);
   });
+
+  test.each([true, false])(
+    'marks an explicitly cancelled approval (user gesture: %s)',
+    async (userCancelled) => {
+      const { approval, response } = requestTransaction();
+      await notificationService.rejectApprovalFor({
+        approval: { id: approval.id, component: 'SignTx' },
+        userCancelled,
+      });
+
+      await expect(response).resolves.toMatchObject({ code: 4001 });
+      expect(
+        transactionHistoryService.markSigningTxUserCancelled
+      ).toHaveBeenCalledTimes(userCancelled ? 1 : 0);
+    }
+  );
 
   test('an old window id cannot close or detach the new current window', async () => {
     mockOpenNotification.mockResolvedValueOnce(2);

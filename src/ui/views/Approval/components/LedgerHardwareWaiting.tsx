@@ -104,7 +104,7 @@ const LedgerHardwareWaiting = ({
   const showDueToStatusChangeRef = React.useRef(false);
 
   const handleCancel = () => {
-    rejectApproval('user cancel');
+    rejectApproval('user cancel', { userCancelled: true });
   };
 
   const handleRetry = async (showToast = true) => {
