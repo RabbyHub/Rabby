@@ -60,6 +60,7 @@ import {
   buildBridgeTokenSideParams,
   requestBridgeQuoteTx,
 } from '../utils/submit';
+import { useShallow } from 'zustand/react/shallow';
 
 const isTab = getUiType().isTab;
 const isDesktop = getUiType().isDesktop;
@@ -78,9 +79,11 @@ export const BridgeContent = () => {
     amountMode?: FormAmountMode;
   }
 
-  const { userAddress } = useRabbySelector((state) => ({
-    userAddress: state.account.currentAccount?.address || '',
-  }));
+  const { userAddress } = useRabbySelector(
+    useShallow((state) => ({
+      userAddress: state.account.currentAccount?.address || '',
+    }))
+  );
 
   const {
     fromChain,

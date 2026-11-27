@@ -20,6 +20,7 @@ import {
   isBridgePendingExpired,
   resolveBridgePendingFromHistoryList,
 } from '../utils/pendingStatus';
+import { useShallow } from 'zustand/react/shallow';
 
 type PendingTxData = BridgeTxHistoryItem;
 
@@ -66,9 +67,11 @@ export const BridgePendingTxItem = ({
   const wallet = useWallet();
   const [detailVisible, setDetailVisible] = useState(false);
   const [data, setData] = useState<PendingTxData | null>(null);
-  const { userAddress } = useRabbySelector((state) => ({
-    userAddress: state.account.currentAccount?.address || '',
-  }));
+  const { userAddress } = useRabbySelector(
+    useShallow((state) => ({
+      userAddress: state.account.currentAccount?.address || '',
+    }))
+  );
 
   useEffect(() => {
     onDisplayChange?.(!!data && !hidden);
