@@ -2032,7 +2032,11 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "パスワードをお忘れですか?",
       "description": "EthereumとEVMのための定番ウォレット",
-      "biometricFailed": "生体認証の解除に失敗しました"
+      "biometricFailed": "生体認証の解除に失敗しました",
+      "biometricSunsetTip": "2027年1月1日以降、生体認証によるロック解除は利用できなくなります。今すぐパスワードでのロック解除に切り替えてください。切り替えると生体認証によるロック解除はオフになります。",
+      "biometricSunsetTitle": "パスワードでのロック解除に切り替え",
+      "biometricSunsetUsePassword": "パスワードを使用",
+      "biometricSunsetUseBiometric": "生体認証を使用"
     },
     "addToken": {
       "noTokenFound": "トークンが見つかりません",

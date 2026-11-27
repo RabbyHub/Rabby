@@ -2156,7 +2156,11 @@
       "title": "Rabby Wallet",
       "btnForgotPassword": "Esqueceu a palavra-passe?",
       "description": "A sua carteira de referência para Ethereum e EVM",
-      "biometricFailed": "Desbloqueio biométrico falhou"
+      "biometricFailed": "Desbloqueio biométrico falhou",
+      "biometricSunsetTip": "O desbloqueio biométrico deixará de estar disponível a partir de 1 de janeiro de 2027. Por favor, mude agora para o desbloqueio por palavra-passe. Isto irá desativar o desbloqueio biométrico.",
+      "biometricSunsetTitle": "Mudar para desbloqueio por palavra-passe",
+      "biometricSunsetUsePassword": "Usar palavra-passe",
+      "biometricSunsetUseBiometric": "Usar biometria"
     },
     "addToken": {
       "title": "Adicione um token personalizado ao Rabby",

@@ -2170,7 +2170,11 @@
       "btnForgotPassword": "忘記密碼？",
       "title": "Rabby Wallet",
       "description": "你首選的以太坊和 EVM 錢包",
-      "biometricFailed": "生物識別解鎖失敗"
+      "biometricFailed": "生物識別解鎖失敗",
+      "biometricSunsetTip": "自 2027 年 1 月 1 日起，生物辨識解鎖將不再可用。請立即切換到密碼解鎖，切換後生物辨識解鎖會自動關閉。",
+      "biometricSunsetTitle": "切換到密碼解鎖",
+      "biometricSunsetUsePassword": "使用密碼",
+      "biometricSunsetUseBiometric": "繼續使用生物辨識"
     },
     "addressDetail": {
       "add-to-whitelist": "新增到白名單",

@@ -2035,7 +2035,11 @@
       "btnForgotPassword": "Şifrenizi mi unuttunuz?",
       "title": "Rabby Wallet",
       "description": "Ethereum ve EVM için tercih ettiğiniz cüzdan",
-      "biometricFailed": "Biyometrik kilit açma başarısız oldu"
+      "biometricFailed": "Biyometrik kilit açma başarısız oldu",
+      "biometricSunsetTip": "Biyometrik kilit açma, 1 Ocak 2027'den itibaren artık kullanılamayacak. Lütfen şimdi şifreyle kilit açmaya geçin. Bu işlem biyometrik kilit açmayı kapatır.",
+      "biometricSunsetTitle": "Şifreyle kilit açmaya geçin",
+      "biometricSunsetUsePassword": "Şifre kullan",
+      "biometricSunsetUseBiometric": "Biyometrik kullan"
     },
     "addToken": {
       "noTokenFound": "Token bulunamadı",
