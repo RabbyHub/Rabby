@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Virtuoso } from 'react-virtuoso';
+import { Virtuoso, VirtuosoHandle } from 'react-virtuoso';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import { ReactComponent as RcIconPinned } from 'ui/assets/icon-pinned.svg';
@@ -437,13 +437,24 @@ const AddressManagement = () => {
   );
 
   const listKey = addressSortStore.sortType + debouncedSearchKeyword;
-  // Every (re)mounted list starts at the top, so record offset 0. Only the
-  // list's first mount restores the saved offset, through initialScrollTop.
+  // Every (re)mounted list starts at the top, so record offset 0.
   useEffect(() => {
     saveScrollOffset(0);
   }, [listKey, saveScrollOffset]);
 
-  const listMountedRef = useRef(false);
+  const listHeight =
+    currentAccountIndex === -1
+      ? 461
+      : hasStatusBar
+      ? 358
+      : showBackupWarning
+      ? 372
+      : 416;
+
+  // Only the list's first mount restores the saved offset; a list remounted
+  // by a sort or search change starts at the top.
+  const listRef = useRef<VirtuosoHandle>(null);
+  const firstListKeyRef = useRef(listKey);
   const [initialScrollTop] = React.useState(() => {
     const { lastCurrentRecordTime, lastScrollOffset } = addressSortStore;
     if (
@@ -456,9 +467,21 @@ const AddressManagement = () => {
     }
     return lastScrollOffset;
   });
-  useEffect(() => {
-    listMountedRef.current = true;
-  }, []);
+  const pendingScrollTopRef = useRef(initialScrollTop);
+  // Not Virtuoso's initialScrollTop: it waits for two rendered items, and the
+  // address-type sort often renders a single group. Scroll once the list,
+  // with its estimated heights, is tall enough that the offset isn't clamped.
+  const restoreScrollTop = (totalHeight: number) => {
+    const top = pendingScrollTopRef.current;
+    if (top === undefined) return;
+    if (listKey !== firstListKeyRef.current) {
+      pendingScrollTopRef.current = undefined;
+      return;
+    }
+    if (totalHeight - listHeight < top) return;
+    pendingScrollTopRef.current = undefined;
+    requestAnimationFrame(() => listRef.current?.scrollTo({ top }));
+  };
 
   useEffect(() => {
     if (
@@ -481,7 +504,7 @@ const AddressManagement = () => {
       addressSortStore.lastScrollOffset &&
       filteredAccounts?.length
     ) {
-      // The scroll itself is restored through initialScrollTop.
+      // The scroll itself is restored by restoreScrollTop.
       return () => {
         dispatch.preference.setAddressSortStoreValue({
           key: 'lastCurrentRecordTime',
@@ -599,25 +622,14 @@ const AddressManagement = () => {
             IDisplayedAccountWithBalance | IDisplayedAccountWithBalance[]
           >
             key={listKey}
-            style={{
-              height:
-                currentAccountIndex === -1
-                  ? 461
-                  : hasStatusBar
-                  ? 358
-                  : showBackupWarning
-                  ? 372
-                  : 416,
-              width: '100%',
-            }}
+            ref={listRef}
+            style={{ height: listHeight, width: '100%' }}
             className="address-scroll-container"
             data={filteredAccounts}
             itemContent={renderRow}
             // About six 60px rows beyond each edge of the viewport
             increaseViewportBy={360}
-            initialScrollTop={
-              listMountedRef.current ? undefined : initialScrollTop
-            }
+            totalListHeightChanged={restoreScrollTop}
             onScroll={(e) => saveScrollOffset(e.currentTarget.scrollTop)}
           />
         </div>
